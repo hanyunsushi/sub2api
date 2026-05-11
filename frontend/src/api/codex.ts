@@ -44,6 +44,10 @@ async function cpaRequest<T>(path: string, options: CpaRequestOptions & RequestI
     Accept: 'application/json',
     ...(headers as Record<string, string> | undefined),
   }
+  const sub2apiToken = localStorage.getItem('auth_token')
+  if (sub2apiToken) {
+    requestHeaders['X-Sub2API-Authorization'] = `Bearer ${sub2apiToken}`
+  }
   if (managementKey) {
     requestHeaders.Authorization = `Bearer ${managementKey}`
   }

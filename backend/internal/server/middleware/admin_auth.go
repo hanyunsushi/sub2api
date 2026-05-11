@@ -22,8 +22,10 @@ func NewAdminAuthMiddleware(
 
 // adminAuth 管理员认证中间件实现
 // 支持两种认证方式（通过不同的 header 区分）：
-// 1. Admin API Key: x-api-key: <admin-api-key>
-// 2. JWT Token: Authorization: Bearer <jwt-token> (需要管理员角色)
+//  1. Admin API Key: x-api-key: <admin-api-key>
+//  2. JWT Token: Authorization: Bearer <jwt-token> (需要管理员角色)
+//  3. JWT Token: X-Sub2API-Authorization: Bearer <jwt-token> for proxy routes
+//     that must preserve Authorization for upstream services.
 func adminAuth(
 	authService *service.AuthService,
 	userService *service.UserService,
@@ -54,8 +56,12 @@ func adminAuth(
 			return
 		}
 
-		// 检查 Authorization header（JWT 认证）
-		authHeader := c.GetHeader("Authorization")
+		// 检查 Authorization header（JWT 认证）. X-Sub2API-Authorization is used
+		// by same-origin proxy routes where Authorization belongs to the upstream.
+		authHeader := c.GetHeader("X-Sub2API-Authorization")
+		if authHeader == "" {
+			authHeader = c.GetHeader("Authorization")
+		}
 		if authHeader != "" {
 			parts := strings.SplitN(authHeader, " ", 2)
 			if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") {

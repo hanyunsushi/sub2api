@@ -22,6 +22,7 @@ describe('codex CPA API adapter', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', mockFetch)
     mockFetch.mockReset()
+    localStorage.clear()
   })
 
   afterEach(() => {
@@ -67,6 +68,7 @@ describe('codex CPA API adapter', () => {
   })
 
   it('sends management key as Authorization bearer header without localStorage', async () => {
+    localStorage.setItem('auth_token', 'sub2api-admin-token')
     mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
@@ -84,6 +86,7 @@ describe('codex CPA API adapter', () => {
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: 'Bearer secret-key',
+          'X-Sub2API-Authorization': 'Bearer sub2api-admin-token',
         }),
       })
     )

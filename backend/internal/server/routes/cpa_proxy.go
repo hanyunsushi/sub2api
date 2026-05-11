@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +18,10 @@ const (
 
 // RegisterCPAManagementProxyRoutes proxies browser-local CPA management calls to
 // the local CPA service. CPA remains the authority for its management key.
-func RegisterCPAManagementProxyRoutes(r *gin.Engine) {
+func RegisterCPAManagementProxyRoutes(r *gin.Engine, adminAuth middleware.AdminAuthMiddleware) {
+	group := r.Group(cpaManagementProxyPrefix)
+	group.Use(gin.HandlerFunc(adminAuth))
+
 	target := strings.TrimSpace(os.Getenv("CPA_MANAGEMENT_PROXY_TARGET"))
 	if target == "" {
 		target = defaultCPAManagementProxyTarget
@@ -25,14 +29,14 @@ func RegisterCPAManagementProxyRoutes(r *gin.Engine) {
 
 	proxy, err := newCPAManagementProxy(target)
 	if err != nil {
-		r.Any(cpaManagementProxyPrefix, invalidCPAManagementProxyTarget(err))
-		r.Any(cpaManagementProxyPrefix+"/*path", invalidCPAManagementProxyTarget(err))
+		group.Any("", invalidCPAManagementProxyTarget(err))
+		group.Any("/*path", invalidCPAManagementProxyTarget(err))
 		return
 	}
 
 	handler := gin.WrapH(proxy)
-	r.Any(cpaManagementProxyPrefix, handler)
-	r.Any(cpaManagementProxyPrefix+"/*path", handler)
+	group.Any("", handler)
+	group.Any("/*path", handler)
 }
 
 func invalidCPAManagementProxyTarget(err error) gin.HandlerFunc {
@@ -69,8 +73,18 @@ func newCPAManagementProxy(rawTarget string) (*httputil.ReverseProxy, error) {
 		// Do not leak Sub2API browser session cookies to CPA. Authorization is
 		// preserved because CPA validates its own management key.
 		req.Header.Del("Cookie")
+		req.Header.Del("X-Sub2API-Authorization")
+	}
+	proxy.ModifyResponse = func(resp *http.Response) error {
+		resp.Header.Del("Set-Cookie")
+		return nil
 	}
 	return proxy, nil
+}
+
+func IsCPAManagementProxyPath(path string) bool {
+	trimmed := strings.TrimSpace(path)
+	return trimmed == cpaManagementProxyPrefix || strings.HasPrefix(trimmed, cpaManagementProxyPrefix+"/")
 }
 
 func joinCPAProxyPath(basePath, suffix string) string {
