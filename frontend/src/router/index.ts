@@ -10,6 +10,7 @@ import { useAdminSettingsStore } from '@/stores/adminSettings'
 import { useNavigationLoadingState } from '@/composables/useNavigationLoading'
 import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { resolveDocumentTitle } from './title'
+import { codexRoutes } from './codex'
 
 /**
  * Route definitions with lazy loading
@@ -444,6 +445,7 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
+  ...codexRoutes,
 
   // ==================== Payment Admin Routes ====================
   {
