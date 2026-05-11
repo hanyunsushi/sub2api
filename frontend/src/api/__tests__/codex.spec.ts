@@ -99,6 +99,21 @@ describe('codex CPA API adapter', () => {
     })
   })
 
+  it('treats CPA disk fallback entries without source as deletable json files', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'fallback-account.json',
+      type: 'file',
+      modtime: '2026-05-10T10:00:00Z',
+    })
+
+    expect(view).toMatchObject({
+      name: 'fallback-account.json',
+      source: 'unknown',
+      canDelete: true,
+      canDownload: true,
+    })
+  })
+
   it('maps disabled and failed CPA status defensively', () => {
     expect(mapCpaAuthFileToView({ name: 'a.json', disabled: true }).status).toBe('disabled')
     expect(mapCpaAuthFileToView({ name: 'b.json', unavailable: true }).status).toBe('failed')
@@ -122,6 +137,7 @@ describe('codex CPA API adapter', () => {
     expect(mockFetch).toHaveBeenCalledWith(
       '/cpa-management/auth-files',
       expect.objectContaining({
+        cache: 'no-store',
         headers: expect.objectContaining({
           Authorization: 'Bearer secret-key',
           'X-Sub2API-Authorization': 'Bearer sub2api-admin-token',

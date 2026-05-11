@@ -180,7 +180,7 @@ describe('useCodexStore', () => {
   it('deletes CPA file accounts and removes matching Sub2 metadata', async () => {
     vi.mocked(cpaAPI.deleteAuthFile).mockResolvedValue(undefined)
     vi.mocked(cpaAPI.listAuthFiles).mockResolvedValueOnce([
-      { name: 'account1.json', status: 'ok', source: 'file' },
+      { name: 'account1.json', status: 'ok' },
     ]).mockResolvedValueOnce([])
     vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
     vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValueOnce([

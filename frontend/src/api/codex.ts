@@ -99,6 +99,7 @@ function extractAuthFiles(payload: unknown): CpaAuthFileRaw[] {
 export async function listAuthFiles(options: CpaRequestOptions = {}): Promise<CpaAuthFileRaw[]> {
   const payload = await cpaRequest<unknown>('/auth-files', {
     method: 'GET',
+    cache: 'no-store',
     ...options,
   })
   return extractAuthFiles(payload)
@@ -233,6 +234,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
   const runtimeOnly = raw.runtime_only === true
+  const jsonFileName = name.toLowerCase().endsWith('.json')
   const statusMessage = String(raw.status_message || raw.status || '')
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
   const lastError = firstString(raw, [
@@ -252,8 +254,8 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     status: normalizeStatus(raw),
     statusMessage,
     source,
-    canDelete: source === 'file',
-    canDownload: source === 'file' && !runtimeOnly,
+    canDelete: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
+    canDownload: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
     size: typeof raw.size === 'number' ? raw.size : undefined,
     modifiedAt: raw.modtime || raw.updated_at || raw.created_at,
     lastRefreshAt: firstString(raw, ['last_refresh', 'last_checked_at', 'refreshed_at']),

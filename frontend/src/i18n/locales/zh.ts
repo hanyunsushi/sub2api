@@ -1091,6 +1091,7 @@ export default {
         rememberConnectionHint: '仅保存到当前浏览器 localStorage',
         connect: '连接',
         refreshQuotaStatus: '刷新额度与状态',
+        refreshSucceeded: '已刷新额度与状态',
         accountList: '认证账户列表',
         search: '搜索认证账户',
         allStatus: '全部状态',

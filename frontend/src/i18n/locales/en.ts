@@ -1070,6 +1070,7 @@ export default {
         rememberConnectionHint: 'Stored only in this browser localStorage',
         connect: 'Connect',
         refreshQuotaStatus: 'Refresh quota and status',
+        refreshSucceeded: 'Quota and status refreshed',
         accountList: 'Auth accounts',
         search: 'Search auth accounts',
         allStatus: 'All status',

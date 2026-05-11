@@ -489,7 +489,11 @@ async function connectAndLoad(): Promise<void> {
 
 async function refreshAccounts(): Promise<void> {
   syncConnectionDraft()
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
   await codexStore.loadAll()
+  operationNotice.value = t('admin.codex.accounts.refreshSucceeded')
 }
 
 function syncConnectionDraft(): void {
