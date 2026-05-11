@@ -150,6 +150,35 @@
   gap: 6px;
 }
 
+.codex-remember {
+  display: inline-flex;
+  min-height: 40px;
+  max-width: 260px;
+  align-items: center;
+  gap: 10px;
+  color: var(--codex-text);
+  font-size: 13px;
+}
+
+.codex-remember strong,
+.codex-remember small {
+  display: block;
+}
+
+.codex-remember small {
+  margin-top: 2px;
+  color: var(--codex-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.codex-checkbox {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--codex-accent);
+}
+
 .codex-label {
   font-size: 12px;
   font-weight: 650;
@@ -238,6 +267,12 @@
 .codex-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.codex-button--compact {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 .codex-button--primary {
@@ -357,7 +392,7 @@
 
 .codex-table th:last-child,
 .codex-table td:last-child {
-  width: 72px;
+  width: 148px;
   text-align: center;
 }
 

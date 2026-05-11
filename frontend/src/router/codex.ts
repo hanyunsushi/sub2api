@@ -12,7 +12,7 @@ export const codexRoutes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       requiresAdmin: true,
-      title: 'Codex Account Management',
+      title: 'CPA Management',
       titleKey: 'admin.codex.accounts.title',
       descriptionKey: 'admin.codex.accounts.description',
     },

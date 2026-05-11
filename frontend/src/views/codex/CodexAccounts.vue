@@ -10,11 +10,11 @@
           <button
             type="button"
             class="codex-button codex-button--primary"
-            :disabled="codexStore.loading"
+            :disabled="codexStore.loading || !managementKeyDraft.trim()"
             @click="refreshAccounts"
           >
             <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
-            {{ t('common.refresh') }}
+            {{ t('admin.codex.accounts.refreshQuotaStatus') }}
           </button>
         </header>
 
@@ -41,6 +41,17 @@
                     autocomplete="off"
                     :placeholder="t('admin.codex.accounts.managementKeyPlaceholder')"
                   />
+                </label>
+                <label class="codex-remember">
+                  <input
+                    v-model="rememberConnectionDraft"
+                    class="codex-checkbox"
+                    type="checkbox"
+                  />
+                  <span>
+                    <strong>{{ t('admin.codex.accounts.rememberConnection') }}</strong>
+                    <small>{{ t('admin.codex.accounts.rememberConnectionHint') }}</small>
+                  </span>
                 </label>
                 <button
                   type="button"
@@ -78,6 +89,15 @@
                 <h2 class="codex-panel-title">{{ t('admin.codex.accounts.accountList') }}</h2>
                 <div class="codex-list-actions">
                   <div class="codex-list-actions__primary">
+                    <button
+                      type="button"
+                      class="codex-button codex-button--primary"
+                      :disabled="codexStore.loading || !managementKeyDraft.trim()"
+                      @click="refreshAccounts"
+                    >
+                      <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
+                      {{ t('admin.codex.accounts.refreshQuotaStatus') }}
+                    </button>
                     <input
                       ref="authFileInput"
                       class="sr-only"
@@ -209,7 +229,7 @@
                       <td>
                         <button
                           type="button"
-                          class="codex-icon-button codex-icon-button--danger"
+                          class="codex-button codex-button--compact codex-button--danger"
                           :disabled="!account.canDelete || deletingAuthName === account.name"
                           :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
                           :aria-label="account.canDelete
@@ -218,6 +238,7 @@
                           @click.stop="requestDeleteAccount(account.name)"
                         >
                           <Icon name="trash" size="sm" />
+                          <span>{{ t('admin.codex.accounts.deleteAuthAccount') }}</span>
                         </button>
                       </td>
                     </tr>
@@ -368,6 +389,7 @@ const codexStore = useCodexStore()
 
 const baseUrlDraft = ref(codexStore.managementBaseUrl)
 const managementKeyDraft = ref(codexStore.managementKey)
+const rememberConnectionDraft = ref(codexStore.rememberConnection)
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const selectedAuthName = ref('')
@@ -457,6 +479,7 @@ function parseTags(value: string): string[] {
 
 async function connectAndLoad(): Promise<void> {
   codexStore.setManagementBaseUrl(baseUrlDraft.value)
+  codexStore.setRememberConnection(rememberConnectionDraft.value)
   codexStore.setManagementKey(managementKeyDraft.value)
   await codexStore.loadAll()
   if (!selectedAuthName.value && codexStore.accounts[0]) {
@@ -465,11 +488,13 @@ async function connectAndLoad(): Promise<void> {
 }
 
 async function refreshAccounts(): Promise<void> {
+  syncConnectionDraft()
   await codexStore.loadAll()
 }
 
 function syncConnectionDraft(): void {
   codexStore.setManagementBaseUrl(baseUrlDraft.value)
+  codexStore.setRememberConnection(rememberConnectionDraft.value)
   codexStore.setManagementKey(managementKeyDraft.value)
 }
 

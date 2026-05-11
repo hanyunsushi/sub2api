@@ -18,14 +18,25 @@ import type {
 } from '@/types/codex'
 
 const MANAGEMENT_KEY_SESSION_KEY = 'codex.managementKey'
+const MANAGEMENT_KEY_LOCAL_KEY = 'codex.rememberedManagementKey'
 const MANAGEMENT_BASE_LOCAL_KEY = 'codex.cpaManagementBaseUrl'
+const REMEMBER_CONNECTION_LOCAL_KEY = 'codex.rememberConnection'
 
 function readSessionManagementKey(): string {
-  return sessionStorage.getItem(MANAGEMENT_KEY_SESSION_KEY) || ''
+  const sessionKey = sessionStorage.getItem(MANAGEMENT_KEY_SESSION_KEY)
+  if (sessionKey) return sessionKey
+  if (localStorage.getItem(REMEMBER_CONNECTION_LOCAL_KEY) === 'true') {
+    return localStorage.getItem(MANAGEMENT_KEY_LOCAL_KEY) || ''
+  }
+  return ''
 }
 
 function readManagementBaseUrl(): string {
   return localStorage.getItem(MANAGEMENT_BASE_LOCAL_KEY) || DEFAULT_CPA_MANAGEMENT_BASE
+}
+
+function readRememberConnection(): boolean {
+  return localStorage.getItem(REMEMBER_CONNECTION_LOCAL_KEY) === 'true'
 }
 
 function mergeAccounts(
@@ -59,6 +70,7 @@ function mergeAccounts(
 export const useCodexStore = defineStore('codex', () => {
   const managementBaseUrl = ref(readManagementBaseUrl())
   const managementKey = ref(readSessionManagementKey())
+  const rememberConnection = ref(readRememberConnection())
   const rawAccounts = ref<CpaAuthFileRaw[]>([])
   const groups = ref<CodexGroup[]>([])
   const accountMetadata = ref<CodexAccountMetadata[]>([])
@@ -77,8 +89,25 @@ export const useCodexStore = defineStore('codex', () => {
     managementKey.value = key
     if (key) {
       sessionStorage.setItem(MANAGEMENT_KEY_SESSION_KEY, key)
+      if (rememberConnection.value) {
+        localStorage.setItem(MANAGEMENT_KEY_LOCAL_KEY, key)
+      }
     } else {
       sessionStorage.removeItem(MANAGEMENT_KEY_SESSION_KEY)
+      localStorage.removeItem(MANAGEMENT_KEY_LOCAL_KEY)
+    }
+  }
+
+  function setRememberConnection(remember: boolean): void {
+    rememberConnection.value = remember
+    if (remember) {
+      localStorage.setItem(REMEMBER_CONNECTION_LOCAL_KEY, 'true')
+      if (managementKey.value) {
+        localStorage.setItem(MANAGEMENT_KEY_LOCAL_KEY, managementKey.value)
+      }
+    } else {
+      localStorage.removeItem(REMEMBER_CONNECTION_LOCAL_KEY)
+      localStorage.removeItem(MANAGEMENT_KEY_LOCAL_KEY)
     }
   }
 
@@ -158,6 +187,7 @@ export const useCodexStore = defineStore('codex', () => {
   return {
     managementBaseUrl,
     managementKey,
+    rememberConnection,
     rawAccounts,
     groups,
     accountMetadata,
@@ -167,6 +197,7 @@ export const useCodexStore = defineStore('codex', () => {
     accounts,
     orphanMetadata,
     setManagementKey,
+    setRememberConnection,
     setManagementBaseUrl,
     loadAll,
     updateAccountMetadata,

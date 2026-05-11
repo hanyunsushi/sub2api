@@ -41,6 +41,36 @@ describe('useCodexStore', () => {
     expect(store.managementKey).toBe('secret-key')
     expect(sessionStorage.getItem('codex.managementKey')).toBe('secret-key')
     expect(localStorage.getItem('codex.managementKey')).toBeNull()
+    expect(localStorage.getItem('codex.rememberedManagementKey')).toBeNull()
+  })
+
+  it('can remember CPA management key in localStorage when explicitly enabled', () => {
+    const store = useCodexStore()
+
+    store.setManagementKey('secret-key')
+    store.setRememberConnection(true)
+
+    expect(store.rememberConnection).toBe(true)
+    expect(sessionStorage.getItem('codex.managementKey')).toBe('secret-key')
+    expect(localStorage.getItem('codex.rememberConnection')).toBe('true')
+    expect(localStorage.getItem('codex.rememberedManagementKey')).toBe('secret-key')
+
+    store.setRememberConnection(false)
+
+    expect(store.rememberConnection).toBe(false)
+    expect(sessionStorage.getItem('codex.managementKey')).toBe('secret-key')
+    expect(localStorage.getItem('codex.rememberConnection')).toBeNull()
+    expect(localStorage.getItem('codex.rememberedManagementKey')).toBeNull()
+  })
+
+  it('restores remembered CPA management key on next store initialization', () => {
+    localStorage.setItem('codex.rememberConnection', 'true')
+    localStorage.setItem('codex.rememberedManagementKey', 'remembered-key')
+
+    const store = useCodexStore()
+
+    expect(store.rememberConnection).toBe(true)
+    expect(store.managementKey).toBe('remembered-key')
   })
 
   it('loads CPA accounts and database metadata, then merges by auth name', async () => {
@@ -209,5 +239,6 @@ describe('useCodexStore', () => {
       managementKey: 'secret-key',
     })
     expect(localStorage.getItem('codex.managementKey')).toBeNull()
+    expect(localStorage.getItem('codex.rememberedManagementKey')).toBeNull()
   })
 })
