@@ -5,33 +5,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Claude-style warm orange
+        // 主色调 - Claude-inspired restrained coral orange
         primary: {
-          50: '#fff8f2',
-          100: '#ffeadc',
-          200: '#ffd2ba',
-          300: '#ffb088',
-          400: '#f38b5d',
-          500: '#d97757',
-          600: '#c15f3f',
-          700: '#9f4b33',
-          800: '#7f3f2e',
-          900: '#563024',
+          50: '#faf9f5',
+          100: '#f0eee7',
+          200: '#e2dbcf',
+          300: '#d5c5b4',
+          400: '#d49a80',
+          500: '#cc785c',
+          600: '#b96850',
+          700: '#9f5642',
+          800: '#7e4436',
+          900: '#583128',
           950: '#2b1712'
         },
         // 辅助色 - warm neutral
         accent: {
-          50: '#faf8f5',
-          100: '#f1ece5',
-          200: '#e4d8cc',
-          300: '#cdbbaa',
-          400: '#ab9480',
-          500: '#8b715f',
-          600: '#71584a',
-          700: '#5b473d',
-          800: '#3f312b',
-          900: '#2a211d',
-          950: '#17110f'
+          50: '#faf9f5',
+          100: '#f4f1ea',
+          200: '#e5dfd3',
+          300: '#cfc6b8',
+          400: '#aaa092',
+          500: '#80786e',
+          600: '#6f6b63',
+          700: '#4c4943',
+          800: '#2f2d29',
+          900: '#1d1c19',
+          950: '#141413'
         },
         // 深色模式背景 - warm charcoal
         dark: {
@@ -65,22 +65,22 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(86, 48, 36, 0.10)',
-        'glass-sm': '0 8px 22px rgba(86, 48, 36, 0.08)',
-        glow: '0 10px 28px rgba(217, 119, 87, 0.18)',
-        'glow-lg': '0 18px 44px rgba(217, 119, 87, 0.22)',
-        card: '0 1px 2px rgba(86, 48, 36, 0.05), 0 8px 22px rgba(86, 48, 36, 0.06)',
-        'card-hover': '0 16px 36px rgba(86, 48, 36, 0.10)',
-        'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        glass: '0 14px 40px rgba(20, 20, 19, 0.09)',
+        'glass-sm': '0 8px 22px rgba(20, 20, 19, 0.07)',
+        glow: '0 10px 28px rgba(204, 120, 92, 0.18)',
+        'glow-lg': '0 18px 44px rgba(204, 120, 92, 0.22)',
+        card: '0 1px 2px rgba(20, 20, 19, 0.05), 0 8px 22px rgba(20, 20, 19, 0.055)',
+        'card-hover': '0 16px 36px rgba(20, 20, 19, 0.09)',
+        'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #d97757 0%, #9f4b33 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #cc785c 0%, #9f5642 100%)',
         'gradient-dark': 'linear-gradient(135deg, #332621 0%, #120d0b 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
-          'radial-gradient(at 28% 16%, rgba(217, 119, 87, 0.12) 0px, transparent 46%), radial-gradient(at 84% 0%, rgba(255, 176, 136, 0.10) 0px, transparent 44%), radial-gradient(at 4% 72%, rgba(159, 75, 51, 0.08) 0px, transparent 48%)'
+          'linear-gradient(180deg, rgba(250,249,245,0.98), rgba(244,241,234,0.72))'
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
@@ -118,8 +118,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(217, 119, 87, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(217, 119, 87, 0.24)' }
+          '0%': { boxShadow: '0 10px 28px rgba(204, 120, 92, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(204, 120, 92, 0.24)' }
         }
       },
       backdropBlur: {

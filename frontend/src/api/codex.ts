@@ -193,25 +193,86 @@ function normalizeSource(source: unknown): CodexAccountSource {
   return 'unknown'
 }
 
+function valueCandidates(raw: CpaAuthFileRaw): Record<string, unknown>[] {
+  const candidates: Record<string, unknown>[] = [raw]
+  for (const key of ['account', 'account_info', 'quota', 'usage', 'billing', 'stats']) {
+    const value = raw[key]
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      candidates.push(value as Record<string, unknown>)
+    }
+  }
+  return candidates
+}
+
+function firstString(raw: CpaAuthFileRaw, keys: string[]): string | undefined {
+  for (const candidate of valueCandidates(raw)) {
+    for (const key of keys) {
+      const value = candidate[key]
+      if (typeof value === 'string' && value.trim()) return value.trim()
+      if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+    }
+  }
+  return undefined
+}
+
+function firstNumber(raw: CpaAuthFileRaw, keys: string[]): number | undefined {
+  for (const candidate of valueCandidates(raw)) {
+    for (const key of keys) {
+      const value = candidate[key]
+      if (typeof value === 'number' && Number.isFinite(value)) return value
+      if (typeof value === 'string' && value.trim()) {
+        const parsed = Number(value.replace(/,/g, ''))
+        if (Number.isFinite(parsed)) return parsed
+      }
+    }
+  }
+  return undefined
+}
+
 export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
   const runtimeOnly = raw.runtime_only === true
+  const statusMessage = String(raw.status_message || raw.status || '')
+  const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
+  const lastError = firstString(raw, [
+    'last_error',
+    'last_error_message',
+    'error_message',
+    'failure_reason',
+    'last_failure',
+    'error',
+  ])
 
   return {
     key: String(raw.auth_index || raw.id || name),
     name,
     provider: String(raw.provider || 'codex'),
-    label: String(raw.label || raw.account || raw.email || name),
+    label,
     status: normalizeStatus(raw),
-    statusMessage: String(raw.status_message || raw.status || ''),
+    statusMessage,
     source,
     canDelete: source === 'file',
     canDownload: source === 'file' && !runtimeOnly,
     size: typeof raw.size === 'number' ? raw.size : undefined,
     modifiedAt: raw.modtime || raw.updated_at || raw.created_at,
-    lastRefreshAt: raw.last_refresh,
+    lastRefreshAt: firstString(raw, ['last_refresh', 'last_checked_at', 'refreshed_at']),
     email: raw.email,
+    balance: firstNumber(raw, [
+      'balance',
+      'credit',
+      'credits',
+      'credit_balance',
+      'remaining_balance',
+      'available_balance',
+      'available_credits',
+      'free_credits',
+    ]),
+    balanceText: firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text']),
+    quotaText: firstString(raw, ['quota_text', 'quota', 'limit_text', 'rate_limit', 'plan', 'tier', 'subscription']),
+    usageText: firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status']),
+    lastError: lastError && lastError !== statusMessage ? lastError : undefined,
+    lastErrorAt: firstString(raw, ['last_error_at', 'error_at', 'failed_at', 'last_failed_at']),
     success: raw.success,
     failed: raw.failed,
   }

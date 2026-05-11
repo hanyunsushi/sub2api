@@ -1062,7 +1062,7 @@ export default {
     codex: {
       accounts: {
         title: 'Codex Account Management',
-        description: 'Manage CPA auth files with database-backed labels, groups, notes, tags, and sort order',
+        description: 'Admin-only CPA auth-file management with database-backed labels, groups, notes, tags, and sort order',
         cpaBaseUrl: 'CPA management URL',
         managementKey: 'Management key',
         managementKeyPlaceholder: 'Session only',
@@ -1100,6 +1100,9 @@ export default {
         popupBlocked: 'The browser blocked the OAuth popup.',
         openOAuthLink: 'Open OAuth link',
         successFailed: '{success} ok / {failed} failed',
+        balanceUnavailable: 'Not returned by CPA',
+        lastRefreshAt: 'Refreshed {time}',
+        lastError: 'Error: {error}',
         status: {
           active: 'Active',
           expiring: 'Expiring',
@@ -1110,6 +1113,7 @@ export default {
         columns: {
           account: 'Account',
           status: 'Status',
+          balance: 'Balance / quota',
           group: 'Group',
           tags: 'Tags',
           activity: 'Activity',

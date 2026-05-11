@@ -15,12 +15,12 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-[radial-gradient(circle_at_15%_12%,rgba(217,119,87,0.13),transparent_30%),linear-gradient(135deg,#fff8f2_0%,#f7efe7_54%,#f1e8df_100%)] dark:bg-[radial-gradient(circle_at_15%_12%,rgba(217,119,87,0.16),transparent_34%),linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
+    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#faf9f5_0%,#f4f1ea_100%)] dark:bg-[linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
   >
     <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(159,75,51,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(159,75,51,0.045)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(255,176,136,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,176,136,0.04)_1px,transparent_1px)]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(20,20,19,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(20,20,19,0.035)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(255,176,136,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,176,136,0.04)_1px,transparent_1px)]"
       ></div>
     </div>
 
@@ -118,7 +118,7 @@
             <div>
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
-                class="btn btn-primary px-8 py-3 text-base shadow-lg shadow-primary-500/30"
+                class="btn btn-primary px-8 py-3 text-base"
               >
                 {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
                 <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />

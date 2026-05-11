@@ -1,8 +1,8 @@
 <template>
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary-50 p-4 dark:bg-dark-950">
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-accent-50 p-4 dark:bg-dark-950">
     <!-- Background -->
     <div
-      class="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(217,119,87,0.13),transparent_32%),linear-gradient(135deg,#fff8f2_0%,#f7efe7_52%,#f1e8df_100%)] dark:bg-[radial-gradient(circle_at_18%_12%,rgba(217,119,87,0.18),transparent_34%),linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
+      class="absolute inset-0 bg-[linear-gradient(180deg,#faf9f5_0%,#f4f1ea_100%)] dark:bg-[linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
     ></div>
 
     <!-- Decorative Elements -->

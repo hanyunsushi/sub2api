@@ -136,6 +136,7 @@
                     <tr>
                       <th>{{ t('admin.codex.accounts.columns.account') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.status') }}</th>
+                      <th>{{ t('admin.codex.accounts.columns.balance') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.group') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.tags') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.activity') }}</th>
@@ -160,6 +161,16 @@
                           :message="account.statusMessage"
                           :label="statusLabel(account.status)"
                         />
+                        <div v-if="account.statusMessage" class="codex-account-detail">
+                          {{ account.statusMessage }}
+                        </div>
+                      </td>
+                      <td>
+                        <div class="codex-balance-list">
+                          <span class="codex-balance-value">{{ accountBalanceLabel(account) }}</span>
+                          <span v-if="account.quotaText" class="codex-balance-meta">{{ account.quotaText }}</span>
+                          <span v-if="account.usageText" class="codex-balance-meta">{{ account.usageText }}</span>
+                        </div>
                       </td>
                       <td>
                         <span v-if="account.group" class="codex-group-chip">
@@ -184,6 +195,15 @@
                         </div>
                         <div v-if="account.modifiedAt" class="codex-account-meta">
                           {{ formatDate(account.modifiedAt) }}
+                        </div>
+                        <div v-if="account.lastRefreshAt" class="codex-account-detail">
+                          {{ t('admin.codex.accounts.lastRefreshAt', { time: formatDate(account.lastRefreshAt) }) }}
+                        </div>
+                        <div v-if="account.lastError" class="codex-account-detail codex-account-detail--danger">
+                          {{ t('admin.codex.accounts.lastError', { error: account.lastError }) }}
+                        </div>
+                        <div v-if="account.lastErrorAt" class="codex-account-detail">
+                          {{ formatDate(account.lastErrorAt) }}
                         </div>
                       </td>
                       <td>
@@ -341,6 +361,7 @@ import CodexStatusBadge from '@/components/codex/CodexStatusBadge.vue'
 import { DEFAULT_CPA_MANAGEMENT_BASE } from '@/api/codex'
 import { createGroup as createCodexGroup } from '@/api/codexMetadata'
 import { useCodexStore } from '@/stores'
+import type { CodexAccountMerged } from '@/types/codex'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -586,6 +607,14 @@ function formatDate(value: string): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
   return date.toLocaleString()
+}
+
+function accountBalanceLabel(account: CodexAccountMerged): string {
+  if (account.balanceText) return account.balanceText
+  if (typeof account.balance === 'number') {
+    return Number.isInteger(account.balance) ? String(account.balance) : account.balance.toFixed(2)
+  }
+  return t('admin.codex.accounts.balanceUnavailable')
 }
 
 function statusLabel(status: string): string {

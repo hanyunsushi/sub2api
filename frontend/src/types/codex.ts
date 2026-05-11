@@ -21,7 +21,22 @@ export interface CpaAuthFileRaw {
   last_refresh?: string
   email?: string
   account_type?: string
-  account?: string
+  account?: string | Record<string, unknown>
+  balance?: number | string
+  credit?: number | string
+  credits?: number | string
+  credit_balance?: number | string
+  remaining_balance?: number | string
+  available_balance?: number | string
+  quota?: number | string
+  quota_text?: string
+  usage?: number | string
+  usage_text?: string
+  last_error?: string
+  error_message?: string
+  failure_reason?: string
+  last_error_at?: string
+  failed_at?: string
   success?: number
   failed?: number
   recent_requests?: Array<{ time: string; success: number; failed: number }>
@@ -42,6 +57,12 @@ export interface CodexAccountView {
   modifiedAt?: string
   lastRefreshAt?: string
   email?: string
+  balance?: number
+  balanceText?: string
+  quotaText?: string
+  usageText?: string
+  lastError?: string
+  lastErrorAt?: string
   success?: number
   failed?: number
 }

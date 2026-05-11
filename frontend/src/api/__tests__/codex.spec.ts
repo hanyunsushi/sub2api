@@ -43,6 +43,11 @@ describe('codex CPA API adapter', () => {
       size: 123,
       modtime: '2026-05-10T10:00:00Z',
       email: 'user@example.com',
+      balance: '12.5',
+      quota_text: 'Pro plan',
+      usage_text: '5h 20%',
+      last_error: 'rate limit',
+      last_error_at: '2026-05-10T11:00:00Z',
       success: 8,
       failed: 1,
     })
@@ -59,8 +64,38 @@ describe('codex CPA API adapter', () => {
       size: 123,
       modifiedAt: '2026-05-10T10:00:00Z',
       email: 'user@example.com',
+      balance: 12.5,
+      quotaText: 'Pro plan',
+      usageText: '5h 20%',
+      lastError: 'rate limit',
+      lastErrorAt: '2026-05-10T11:00:00Z',
       success: 8,
       failed: 1,
+    })
+  })
+
+  it('maps nested CPA account quota fields without exposing raw auth data', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'nested.json',
+      account: {
+        email: 'nested@example.com',
+        remaining_balance: 3,
+        plan: 'Team',
+      },
+      billing: {
+        usage_text: '7d 40%',
+      },
+      stats: {
+        last_error_message: 'token refresh failed',
+      },
+    })
+
+    expect(view).toMatchObject({
+      label: 'nested@example.com',
+      balance: 3,
+      quotaText: 'Team',
+      usageText: '7d 40%',
+      lastError: 'token refresh failed',
     })
   })
 

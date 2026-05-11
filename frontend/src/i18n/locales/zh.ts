@@ -1083,7 +1083,7 @@ export default {
     codex: {
       accounts: {
         title: 'Codex 账号管理',
-        description: '管理 CPA 授权文件，并把显示名、分组、备注、标签和排序写入数据库',
+        description: '仅管理员可管理 CPA 授权文件；显示名、分组、备注、标签和排序写入 Sub2 数据库',
         cpaBaseUrl: 'CPA 管理地址',
         managementKey: '管理密钥',
         managementKeyPlaceholder: '仅本次浏览器会话保存',
@@ -1121,6 +1121,9 @@ export default {
         popupBlocked: '浏览器拦截了 OAuth 弹窗。',
         openOAuthLink: '打开 OAuth 链接',
         successFailed: '{success} 成功 / {failed} 失败',
+        balanceUnavailable: 'CPA 未返回',
+        lastRefreshAt: '刷新 {time}',
+        lastError: '错误: {error}',
         status: {
           active: '活跃',
           expiring: '即将过期',
@@ -1131,6 +1134,7 @@ export default {
         columns: {
           account: '账号',
           status: '状态',
+          balance: '余额/额度',
           group: '分组',
           tags: '标签',
           activity: '活动',
