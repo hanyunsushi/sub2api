@@ -1105,6 +1105,13 @@ export default {
         newGroup: '新分组名称',
         createGroup: '创建分组',
         successFailed: '{success} 成功 / {failed} 失败',
+        status: {
+          active: '活跃',
+          expiring: '即将过期',
+          failed: '失败',
+          disabled: '已禁用',
+          unknown: '未知',
+        },
         columns: {
           account: '账号',
           status: '状态',

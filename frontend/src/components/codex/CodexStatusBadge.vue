@@ -2,10 +2,10 @@
   <span
     class="codex-status-badge"
     :class="`codex-status-badge--${normalizedStatus}`"
-    :title="message || statusLabel"
+    :title="message || displayLabel"
   >
     <span class="codex-status-badge__dot" aria-hidden="true"></span>
-    {{ statusLabel }}
+    {{ displayLabel }}
   </span>
 </template>
 
@@ -24,11 +24,12 @@ const STATUS_LABELS: Record<CodexAccountStatus, string> = {
 const props = defineProps<{
   status: CodexAccountStatus
   message?: string
+  label?: string
 }>()
 
 const normalizedStatus = computed<CodexAccountStatus>(() => {
   return props.status in STATUS_LABELS ? props.status : 'unknown'
 })
 
-const statusLabel = computed(() => STATUS_LABELS[normalizedStatus.value])
+const displayLabel = computed(() => props.label || STATUS_LABELS[normalizedStatus.value])
 </script>

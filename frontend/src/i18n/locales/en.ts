@@ -1084,6 +1084,13 @@ export default {
         newGroup: 'New group name',
         createGroup: 'Create group',
         successFailed: '{success} ok / {failed} failed',
+        status: {
+          active: 'Active',
+          expiring: 'Expiring',
+          failed: 'Failed',
+          disabled: 'Disabled',
+          unknown: 'Unknown',
+        },
         columns: {
           account: 'Account',
           status: 'Status',

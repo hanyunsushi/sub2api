@@ -27,6 +27,17 @@ describe('CodexStatusBadge', () => {
     expect(wrapper.classes()).toContain('codex-status-badge--failed')
   })
 
+  it('allows callers to provide localized labels', () => {
+    const wrapper = mount(CodexStatusBadge, {
+      props: {
+        status: 'active',
+        label: '活跃',
+      },
+    })
+
+    expect(wrapper.text()).toContain('活跃')
+  })
+
   it('falls back to unknown for unsupported values', () => {
     const wrapper = mount(CodexStatusBadge, {
       props: {

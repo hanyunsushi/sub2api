@@ -84,12 +84,9 @@
                     :placeholder="t('admin.codex.accounts.search')"
                   />
                   <select v-model="statusFilter" class="codex-select !min-h-9 !w-36">
-                    <option value="all">{{ t('admin.codex.accounts.allStatus') }}</option>
-                    <option value="active">Active</option>
-                    <option value="expiring">Expiring</option>
-                    <option value="failed">Failed</option>
-                    <option value="disabled">Disabled</option>
-                    <option value="unknown">Unknown</option>
+                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                      {{ option.label }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -124,7 +121,11 @@
                         <div v-if="account.email" class="codex-account-meta">{{ account.email }}</div>
                       </td>
                       <td>
-                        <CodexStatusBadge :status="account.status" :message="account.statusMessage" />
+                        <CodexStatusBadge
+                          :status="account.status"
+                          :message="account.statusMessage"
+                          :label="statusLabel(account.status)"
+                        />
                       </td>
                       <td>
                         <span v-if="account.group" class="codex-group-chip">
@@ -268,6 +269,14 @@ const metadataDraft = reactive({
 
 const activeCount = computed(() => codexStore.accounts.filter((item) => item.status === 'active').length)
 const failedCount = computed(() => codexStore.accounts.filter((item) => item.status === 'failed').length)
+const statusOptions = computed(() => [
+  { value: 'all', label: t('admin.codex.accounts.allStatus') },
+  { value: 'active', label: t('admin.codex.accounts.status.active') },
+  { value: 'expiring', label: t('admin.codex.accounts.status.expiring') },
+  { value: 'failed', label: t('admin.codex.accounts.status.failed') },
+  { value: 'disabled', label: t('admin.codex.accounts.status.disabled') },
+  { value: 'unknown', label: t('admin.codex.accounts.status.unknown') },
+])
 
 const filteredAccounts = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
@@ -376,6 +385,10 @@ function formatDate(value: string): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
   return date.toLocaleString()
+}
+
+function statusLabel(status: string): string {
+  return t(`admin.codex.accounts.status.${status}`)
 }
 
 watch(selectedAccount, applyDraftFromSelected, { immediate: true })
