@@ -61,13 +61,14 @@ type CreateCodexGroupRequest struct {
 }
 
 type UpdateCodexAccountMetadataRequest struct {
-	AuthName    string         `json:"auth_name"`
-	GroupID     *int64         `json:"group_id"`
-	DisplayName *string        `json:"display_name"`
-	Note        *string        `json:"note"`
-	LocalTags   []string       `json:"local_tags"`
-	Settings    map[string]any `json:"settings"`
-	SortOrder   *int           `json:"sort_order"`
+	AuthName     string         `json:"auth_name"`
+	GroupID      *int64         `json:"group_id"`
+	ClearGroupID bool           `json:"clear_group_id"`
+	DisplayName  *string        `json:"display_name"`
+	Note         *string        `json:"note"`
+	LocalTags    []string       `json:"local_tags"`
+	Settings     map[string]any `json:"settings"`
+	SortOrder    *int           `json:"sort_order"`
 }
 
 func NewCodexMetadataService(repo CodexMetadataRepository) *CodexMetadataService {
@@ -118,7 +119,9 @@ func (s *CodexMetadataService) UpdateAccountMetadata(ctx context.Context, req Up
 	}
 
 	metadata.AuthName = authName
-	if req.GroupID != nil {
+	if req.ClearGroupID {
+		metadata.GroupID = nil
+	} else if req.GroupID != nil {
 		metadata.GroupID = req.GroupID
 	}
 	if req.DisplayName != nil {

@@ -56,6 +56,27 @@ func TestCodexMetadataService_UpdateAccountMetadataRejectsBlankAuthName(t *testi
 	require.Equal(t, 0, repo.upsertAccountMetadataCalls)
 }
 
+func TestCodexMetadataService_UpdateAccountMetadataClearsGroup(t *testing.T) {
+	ctx := context.Background()
+	repo := newFakeCodexMetadataRepository()
+	svc := NewCodexMetadataService(repo)
+
+	_, err := svc.UpdateAccountMetadata(ctx, UpdateCodexAccountMetadataRequest{
+		AuthName: "account1.json",
+		GroupID:  codexInt64Ptr(7),
+	})
+	require.NoError(t, err)
+
+	got, err := svc.UpdateAccountMetadata(ctx, UpdateCodexAccountMetadataRequest{
+		AuthName:     "account1.json",
+		GroupID:      codexInt64Ptr(9),
+		ClearGroupID: true,
+	})
+
+	require.NoError(t, err)
+	require.Nil(t, got.GroupID)
+}
+
 func TestCodexMetadataService_CreateGroupRejectsBlankName(t *testing.T) {
 	ctx := context.Background()
 	repo := newFakeCodexMetadataRepository()
