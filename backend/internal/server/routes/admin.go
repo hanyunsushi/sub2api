@@ -88,6 +88,9 @@ func RegisterAdminRoutes(
 
 		// 渠道管理
 		registerChannelRoutes(admin, h)
+
+		// Codex / CPA 管理
+		registerCodexMetadataRoutes(admin, h)
 	}
 }
 
@@ -561,5 +564,18 @@ func registerChannelRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		channels.POST("", h.Admin.Channel.Create)
 		channels.PUT("/:id", h.Admin.Channel.Update)
 		channels.DELETE("/:id", h.Admin.Channel.Delete)
+	}
+}
+
+func registerCodexMetadataRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	codex := admin.Group("/codex")
+	{
+		codex.GET("/groups", h.Admin.CodexMetadata.ListGroups)
+		codex.POST("/groups", h.Admin.CodexMetadata.CreateGroup)
+		codex.PUT("/groups/:id", h.Admin.CodexMetadata.UpdateGroup)
+		codex.DELETE("/groups/:id", h.Admin.CodexMetadata.DeleteGroup)
+		codex.GET("/accounts/metadata", h.Admin.CodexMetadata.ListAccountMetadata)
+		codex.PUT("/accounts/:auth_name/metadata", h.Admin.CodexMetadata.UpdateAccountMetadata)
+		codex.DELETE("/accounts/:auth_name/metadata", h.Admin.CodexMetadata.DeleteAccountMetadata)
 	}
 }

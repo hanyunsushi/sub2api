@@ -109,6 +109,65 @@ func TestCodexMetadataService_CreateGroupNormalizesDefaults(t *testing.T) {
 	require.Equal(t, got, repo.groups[0])
 }
 
+func TestCodexMetadataService_ListAndUpdateAndDeleteGroups(t *testing.T) {
+	ctx := context.Background()
+	repo := newFakeCodexMetadataRepository()
+	svc := NewCodexMetadataService(repo)
+	repo.groups = []*CodexGroup{{ID: 3, Name: "Existing", Color: "#111111", SortOrder: 2}}
+
+	groups, err := svc.ListGroups(ctx)
+	require.NoError(t, err)
+	require.Equal(t, []CodexGroup{{ID: 3, Name: "Existing", Color: "#111111", SortOrder: 2}}, groups)
+
+	updated, err := svc.UpdateGroup(ctx, 3, CreateCodexGroupRequest{
+		Name:      "  Updated  ",
+		Color:     "  #d97757  ",
+		SortOrder: codexIntPtr(9),
+	})
+	require.NoError(t, err)
+	require.Equal(t, int64(3), updated.ID)
+	require.Equal(t, "Updated", updated.Name)
+	require.Equal(t, "#d97757", updated.Color)
+	require.Equal(t, 9, updated.SortOrder)
+
+	require.NoError(t, svc.DeleteGroup(ctx, 3))
+	require.Empty(t, repo.groups)
+}
+
+func TestCodexMetadataService_UpdateGroupRejectsBlankName(t *testing.T) {
+	ctx := context.Background()
+	repo := newFakeCodexMetadataRepository()
+	svc := NewCodexMetadataService(repo)
+
+	_, err := svc.UpdateGroup(ctx, 3, CreateCodexGroupRequest{Name: " "})
+
+	require.ErrorIs(t, err, ErrCodexGroupNameEmpty)
+}
+
+func TestCodexMetadataService_ListAndDeleteAccountMetadata(t *testing.T) {
+	ctx := context.Background()
+	repo := newFakeCodexMetadataRepository()
+	svc := NewCodexMetadataService(repo)
+	repo.metadata["account1.json"] = &CodexAccountMetadata{AuthName: "account1.json"}
+
+	items, err := svc.ListAccountMetadata(ctx)
+	require.NoError(t, err)
+	require.Equal(t, []CodexAccountMetadata{{AuthName: "account1.json"}}, items)
+
+	require.NoError(t, svc.DeleteAccountMetadata(ctx, " account1.json "))
+	require.Empty(t, repo.metadata)
+}
+
+func TestCodexMetadataService_DeleteAccountMetadataRejectsBlankAuthName(t *testing.T) {
+	ctx := context.Background()
+	repo := newFakeCodexMetadataRepository()
+	svc := NewCodexMetadataService(repo)
+
+	err := svc.DeleteAccountMetadata(ctx, " ")
+
+	require.ErrorIs(t, err, ErrCodexAccountMetadataEmpty)
+}
+
 type fakeCodexMetadataRepository struct {
 	groups                     []*CodexGroup
 	metadata                   map[string]*CodexAccountMetadata

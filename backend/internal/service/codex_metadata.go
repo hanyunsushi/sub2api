@@ -75,6 +75,10 @@ func NewCodexMetadataService(repo CodexMetadataRepository) *CodexMetadataService
 	return &CodexMetadataService{repo: repo}
 }
 
+func (s *CodexMetadataService) ListGroups(ctx context.Context) ([]CodexGroup, error) {
+	return s.repo.ListGroups(ctx)
+}
+
 func (s *CodexMetadataService) CreateGroup(ctx context.Context, req CreateCodexGroupRequest) (*CodexGroup, error) {
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
@@ -98,6 +102,36 @@ func (s *CodexMetadataService) CreateGroup(ctx context.Context, req CreateCodexG
 		return nil, err
 	}
 	return group, nil
+}
+
+func (s *CodexMetadataService) UpdateGroup(ctx context.Context, id int64, req CreateCodexGroupRequest) (*CodexGroup, error) {
+	name := strings.TrimSpace(req.Name)
+	if name == "" {
+		return nil, ErrCodexGroupNameEmpty
+	}
+
+	color := strings.TrimSpace(req.Color)
+	if color == "" {
+		color = defaultCodexGroupColor
+	}
+
+	group := &CodexGroup{
+		ID:    id,
+		Name:  name,
+		Color: color,
+	}
+	if req.SortOrder != nil {
+		group.SortOrder = *req.SortOrder
+	}
+
+	if err := s.repo.UpdateGroup(ctx, group); err != nil {
+		return nil, err
+	}
+	return group, nil
+}
+
+func (s *CodexMetadataService) DeleteGroup(ctx context.Context, id int64) error {
+	return s.repo.DeleteGroup(ctx, id)
 }
 
 func (s *CodexMetadataService) UpdateAccountMetadata(ctx context.Context, req UpdateCodexAccountMetadataRequest) (*CodexAccountMetadata, error) {
@@ -150,6 +184,18 @@ func (s *CodexMetadataService) UpdateAccountMetadata(ctx context.Context, req Up
 		return nil, err
 	}
 	return metadata, nil
+}
+
+func (s *CodexMetadataService) ListAccountMetadata(ctx context.Context) ([]CodexAccountMetadata, error) {
+	return s.repo.ListAccountMetadata(ctx)
+}
+
+func (s *CodexMetadataService) DeleteAccountMetadata(ctx context.Context, authName string) error {
+	authName = strings.TrimSpace(authName)
+	if authName == "" {
+		return ErrCodexAccountMetadataEmpty
+	}
+	return s.repo.DeleteAccountMetadata(ctx, authName)
 }
 
 func normalizeCodexLocalTags(tags []string) []string {
