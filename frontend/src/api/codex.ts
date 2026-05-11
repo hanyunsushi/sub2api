@@ -56,10 +56,11 @@ async function cpaRequest<T>(path: string, options: CpaRequestOptions & RequestI
   const body = await readResponseBody(response)
 
   if (!response.ok) {
+    const bodyRecord = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : null
     const message =
       typeof body === 'string'
         ? body || response.statusText
-        : String((body as Record<string, unknown>)?.message || response.statusText)
+        : String(bodyRecord?.message || bodyRecord?.error || response.statusText)
     throw new CpaApiError(message, response.status)
   }
 

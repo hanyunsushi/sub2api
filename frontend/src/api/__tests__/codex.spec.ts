@@ -105,6 +105,21 @@ describe('codex CPA API adapter', () => {
     })
   })
 
+  it('handles JSON CPA error responses with error field', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ error: 'invalid management key' }),
+    })
+
+    await expect(listAuthFiles({ managementKey: 'bad-key' })).rejects.toMatchObject({
+      status: 401,
+      message: 'invalid management key',
+    })
+  })
+
   it('throws CpaApiError for malformed auth-files payload', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
