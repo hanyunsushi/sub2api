@@ -5,47 +5,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Teal/Cyan 青色系
+        // 主色调 - Claude-style warm orange
         primary: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-          950: '#042f2e'
+          50: '#fff8f2',
+          100: '#ffeadc',
+          200: '#ffd2ba',
+          300: '#ffb088',
+          400: '#f38b5d',
+          500: '#d97757',
+          600: '#c15f3f',
+          700: '#9f4b33',
+          800: '#7f3f2e',
+          900: '#563024',
+          950: '#2b1712'
         },
-        // 辅助色 - 深蓝灰
+        // 辅助色 - warm neutral
         accent: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617'
+          50: '#faf8f5',
+          100: '#f1ece5',
+          200: '#e4d8cc',
+          300: '#cdbbaa',
+          400: '#ab9480',
+          500: '#8b715f',
+          600: '#71584a',
+          700: '#5b473d',
+          800: '#3f312b',
+          900: '#2a211d',
+          950: '#17110f'
         },
-        // 深色模式背景
+        // 深色模式背景 - warm charcoal
         dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617'
+          50: '#faf7f2',
+          100: '#efe6dc',
+          200: '#d6c5b7',
+          300: '#c8b5a5',
+          400: '#b59f8e',
+          500: '#a68f7d',
+          600: '#6f5548',
+          700: '#49352e',
+          800: '#332621',
+          900: '#211a17',
+          950: '#120d0b'
         }
       },
       fontFamily: {
@@ -65,22 +65,22 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        'glass-sm': '0 4px 16px rgba(0, 0, 0, 0.06)',
-        glow: '0 0 20px rgba(20, 184, 166, 0.25)',
-        'glow-lg': '0 0 40px rgba(20, 184, 166, 0.35)',
-        card: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
+        glass: '0 14px 40px rgba(86, 48, 36, 0.10)',
+        'glass-sm': '0 8px 22px rgba(86, 48, 36, 0.08)',
+        glow: '0 10px 28px rgba(217, 119, 87, 0.18)',
+        'glow-lg': '0 18px 44px rgba(217, 119, 87, 0.22)',
+        card: '0 1px 2px rgba(86, 48, 36, 0.05), 0 8px 22px rgba(86, 48, 36, 0.06)',
+        'card-hover': '0 16px 36px rgba(86, 48, 36, 0.10)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #d97757 0%, #9f4b33 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #332621 0%, #120d0b 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
-          'radial-gradient(at 40% 20%, rgba(20, 184, 166, 0.12) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.08) 0px, transparent 50%)'
+          'radial-gradient(at 28% 16%, rgba(217, 119, 87, 0.12) 0px, transparent 46%), radial-gradient(at 84% 0%, rgba(255, 176, 136, 0.10) 0px, transparent 44%), radial-gradient(at 4% 72%, rgba(159, 75, 51, 0.08) 0px, transparent 48%)'
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
@@ -118,8 +118,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 0 20px rgba(20, 184, 166, 0.25)' },
-          '100%': { boxShadow: '0 0 30px rgba(20, 184, 166, 0.4)' }
+          '0%': { boxShadow: '0 10px 28px rgba(217, 119, 87, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(217, 119, 87, 0.24)' }
         }
       },
       backdropBlur: {

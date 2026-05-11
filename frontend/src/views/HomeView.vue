@@ -15,24 +15,12 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+    class="relative flex min-h-screen flex-col overflow-hidden bg-[radial-gradient(circle_at_15%_12%,rgba(217,119,87,0.13),transparent_30%),linear-gradient(135deg,#fff8f2_0%,#f7efe7_54%,#f1e8df_100%)] dark:bg-[radial-gradient(circle_at_15%_12%,rgba(217,119,87,0.16),transparent_34%),linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
   >
     <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-primary-400/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary-500/15 blur-3xl"
-      ></div>
-      <div
-        class="absolute left-1/3 top-1/4 h-72 w-72 rounded-full bg-primary-300/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(159,75,51,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(159,75,51,0.045)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(255,176,136,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,176,136,0.04)_1px,transparent_1px)]"
       ></div>
     </div>
 
@@ -41,7 +29,7 @@
       <nav class="mx-auto flex max-w-6xl items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
+          <div class="h-10 w-10 overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
         </div>
@@ -205,13 +193,13 @@
         </div>
 
         <!-- Features Grid -->
-        <div class="mb-12 grid gap-6 md:grid-cols-3">
+        <div class="mb-12 grid gap-6 md:grid-cols-[1.15fr_.95fr_.9fr]">
           <!-- Feature 1: Unified Gateway -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-600 shadow-sm shadow-primary-600/20 transition-transform group-hover:scale-105 dark:bg-primary-500"
             >
               <Icon name="server" size="lg" class="text-white" />
             </div>
@@ -225,10 +213,10 @@
 
           <!-- Feature 2: Account Pool -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-110"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 shadow-sm shadow-primary-500/20 transition-transform group-hover:scale-105"
             >
               <svg
                 class="h-6 w-6 text-white"
@@ -254,10 +242,10 @@
 
           <!-- Feature 3: Billing & Quota -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-transform group-hover:scale-110"
+              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-800 shadow-sm shadow-accent-800/15 transition-transform group-hover:scale-105 dark:bg-primary-700"
             >
               <svg
                 class="h-6 w-6 text-white"
@@ -295,7 +283,7 @@
         <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
           <!-- Claude - Supported -->
           <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500"
@@ -310,7 +298,7 @@
           </div>
           <!-- GPT - Supported -->
           <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600"
@@ -325,10 +313,10 @@
           </div>
           <!-- Gemini - Supported -->
           <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4285f4]"
             >
               <span class="text-xs font-bold text-white">G</span>
             </div>
@@ -340,7 +328,7 @@
           </div>
           <!-- Antigravity - Supported -->
           <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-pink-600"
@@ -355,7 +343,7 @@
           </div>
           <!-- More - Coming Soon -->
           <div
-            class="flex items-center gap-2 rounded-xl border border-gray-200/50 bg-white/40 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/40"
+            class="flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/50"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
@@ -490,8 +478,8 @@ onMounted(() => {
 /* Terminal Window */
 .terminal-window {
   width: 420px;
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 14px;
+  background: linear-gradient(145deg, #332621 0%, #120d0b 100%);
+  border-radius: 10px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -510,7 +498,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(51, 38, 33, 0.82);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -590,13 +578,13 @@ onMounted(() => {
   font-weight: bold;
 }
 .code-cmd {
-  color: #38bdf8;
+  color: #ffb088;
 }
 .code-flag {
-  color: #a78bfa;
+  color: #d6c5b7;
 }
 .code-url {
-  color: #14b8a6;
+  color: #ffb088;
 }
 .code-comment {
   color: #64748b;
@@ -637,8 +625,8 @@ onMounted(() => {
 :deep(.dark) .terminal-window {
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(20, 184, 166, 0.2),
-    0 0 40px rgba(20, 184, 166, 0.1),
+    0 0 0 1px rgba(217, 119, 87, 0.22),
+    0 18px 44px rgba(217, 119, 87, 0.10),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 </style>
