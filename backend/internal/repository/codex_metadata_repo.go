@@ -18,7 +18,8 @@ func NewCodexMetadataRepository(client *dbent.Client) service.CodexMetadataRepos
 }
 
 func (r *codexMetadataRepository) ListGroups(ctx context.Context) ([]service.CodexGroup, error) {
-	groups, err := r.client.CodexGroup.Query().
+	client := clientFromContext(ctx, r.client)
+	groups, err := client.CodexGroup.Query().
 		Order(codexgroup.BySortOrder(), codexgroup.ByName(), codexgroup.ByID()).
 		All(ctx)
 	if err != nil {
@@ -28,7 +29,8 @@ func (r *codexMetadataRepository) ListGroups(ctx context.Context) ([]service.Cod
 }
 
 func (r *codexMetadataRepository) CreateGroup(ctx context.Context, group *service.CodexGroup) error {
-	created, err := r.client.CodexGroup.Create().
+	client := clientFromContext(ctx, r.client)
+	created, err := client.CodexGroup.Create().
 		SetName(group.Name).
 		SetColor(group.Color).
 		SetSortOrder(group.SortOrder).
@@ -44,7 +46,8 @@ func (r *codexMetadataRepository) CreateGroup(ctx context.Context, group *servic
 }
 
 func (r *codexMetadataRepository) UpdateGroup(ctx context.Context, group *service.CodexGroup) error {
-	updated, err := r.client.CodexGroup.UpdateOneID(group.ID).
+	client := clientFromContext(ctx, r.client)
+	updated, err := client.CodexGroup.UpdateOneID(group.ID).
 		SetName(group.Name).
 		SetColor(group.Color).
 		SetSortOrder(group.SortOrder).
@@ -63,7 +66,8 @@ func (r *codexMetadataRepository) UpdateGroup(ctx context.Context, group *servic
 }
 
 func (r *codexMetadataRepository) DeleteGroup(ctx context.Context, id int64) error {
-	if err := r.client.CodexGroup.DeleteOneID(id).Exec(ctx); err != nil {
+	client := clientFromContext(ctx, r.client)
+	if err := client.CodexGroup.DeleteOneID(id).Exec(ctx); err != nil {
 		if dbent.IsNotFound(err) {
 			return service.ErrCodexGroupNotFound
 		}
@@ -73,7 +77,8 @@ func (r *codexMetadataRepository) DeleteGroup(ctx context.Context, id int64) err
 }
 
 func (r *codexMetadataRepository) GetAccountMetadata(ctx context.Context, authName string) (*service.CodexAccountMetadata, error) {
-	metadata, err := r.client.CodexAccountMetadata.Query().
+	client := clientFromContext(ctx, r.client)
+	metadata, err := client.CodexAccountMetadata.Query().
 		Where(codexaccountmetadata.AuthNameEQ(authName)).
 		Only(ctx)
 	if err != nil {
@@ -87,13 +92,7 @@ func (r *codexMetadataRepository) GetAccountMetadata(ctx context.Context, authNa
 }
 
 func (r *codexMetadataRepository) UpsertAccountMetadata(ctx context.Context, metadata *service.CodexAccountMetadata) error {
-	existing, err := r.client.CodexAccountMetadata.Query().
-		Where(codexaccountmetadata.AuthNameEQ(metadata.AuthName)).
-		Only(ctx)
-	if err != nil && !dbent.IsNotFound(err) {
-		return err
-	}
-
+	client := clientFromContext(ctx, r.client)
 	localTags := metadata.LocalTags
 	if localTags == nil {
 		localTags = []string{}
@@ -103,36 +102,35 @@ func (r *codexMetadataRepository) UpsertAccountMetadata(ctx context.Context, met
 		settings = map[string]any{}
 	}
 
-	if dbent.IsNotFound(err) {
-		created, createErr := r.client.CodexAccountMetadata.Create().
-			SetAuthName(metadata.AuthName).
-			SetNillableGroupID(metadata.GroupID).
-			SetDisplayName(metadata.DisplayName).
-			SetNote(metadata.Note).
-			SetLocalTags(localTags).
-			SetSettings(settings).
-			SetSortOrder(metadata.SortOrder).
-			Save(ctx)
-		if createErr != nil {
-			return createErr
-		}
-		*metadata = codexAccountMetadataEntityToService(created)
-		return nil
-	}
-
-	update := r.client.CodexAccountMetadata.UpdateOneID(existing.ID).
+	upsert := client.CodexAccountMetadata.Create().
+		SetAuthName(metadata.AuthName).
+		SetNillableGroupID(metadata.GroupID).
 		SetDisplayName(metadata.DisplayName).
 		SetNote(metadata.Note).
 		SetLocalTags(localTags).
 		SetSettings(settings).
-		SetSortOrder(metadata.SortOrder)
+		SetSortOrder(metadata.SortOrder).
+		OnConflictColumns(codexaccountmetadata.FieldAuthName).
+		UpdateUpdatedAt().
+		UpdateDisplayName().
+		UpdateNote().
+		UpdateLocalTags().
+		UpdateSettings().
+		UpdateSortOrder()
 	if metadata.GroupID == nil {
-		update.ClearGroupID()
+		upsert.ClearGroupID()
 	} else {
-		update.SetGroupID(*metadata.GroupID)
+		upsert.UpdateGroupID()
 	}
 
-	updated, err := update.Save(ctx)
+	id, err := upsert.ID(ctx)
+	if err != nil {
+		return translateCodexMetadataAccountWriteError(err)
+	}
+
+	updated, err := client.CodexAccountMetadata.Query().
+		Where(codexaccountmetadata.IDEQ(id)).
+		Only(ctx)
 	if err != nil {
 		return err
 	}
@@ -141,7 +139,8 @@ func (r *codexMetadataRepository) UpsertAccountMetadata(ctx context.Context, met
 }
 
 func (r *codexMetadataRepository) ListAccountMetadata(ctx context.Context) ([]service.CodexAccountMetadata, error) {
-	rows, err := r.client.CodexAccountMetadata.Query().
+	client := clientFromContext(ctx, r.client)
+	rows, err := client.CodexAccountMetadata.Query().
 		Order(codexaccountmetadata.BySortOrder(), codexaccountmetadata.ByAuthName(), codexaccountmetadata.ByID()).
 		All(ctx)
 	if err != nil {
@@ -156,9 +155,17 @@ func (r *codexMetadataRepository) ListAccountMetadata(ctx context.Context) ([]se
 }
 
 func (r *codexMetadataRepository) DeleteAccountMetadata(ctx context.Context, authName string) error {
-	_, err := r.client.CodexAccountMetadata.Delete().
+	client := clientFromContext(ctx, r.client)
+	_, err := client.CodexAccountMetadata.Delete().
 		Where(codexaccountmetadata.AuthNameEQ(authName)).
 		Exec(ctx)
+	return err
+}
+
+func translateCodexMetadataAccountWriteError(err error) error {
+	if isForeignKeyConstraintViolation(err) {
+		return service.ErrCodexGroupNotFound.WithCause(err)
+	}
 	return err
 }
 

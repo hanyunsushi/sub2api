@@ -4,10 +4,14 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"sync"
 	"testing"
+	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/codexaccountmetadata"
+	"github.com/Wei-Shaw/sub2api/ent/codexgroup"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/stretchr/testify/suite"
 )
@@ -104,6 +108,61 @@ func (s *CodexMetadataRepositorySuite) TestUpsertAccountMetadataCreatesThenUpdat
 	s.Require().Equal(7, got.SortOrder)
 }
 
+func (s *CodexMetadataRepositorySuite) TestUpsertAccountMetadataConcurrentCreatesSingleRow() {
+	client := testEntClient(s.T())
+	repo := NewCodexMetadataRepository(client)
+	ctx := context.Background()
+	authName := "account-concurrent-" + time.Now().Format(time.RFC3339Nano) + ".json"
+	s.T().Cleanup(func() {
+		_, _ = client.CodexAccountMetadata.Delete().
+			Where(codexaccountmetadata.AuthNameEQ(authName)).
+			Exec(context.Background())
+	})
+
+	const goroutines = 12
+	var wg sync.WaitGroup
+	errs := make([]error, goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			metadata := &service.CodexAccountMetadata{
+				AuthName:    authName,
+				DisplayName: fmt.Sprintf("Account %02d", idx),
+				LocalTags:   []string{fmt.Sprintf("tag-%02d", idx)},
+				Settings:    map[string]any{"idx": idx},
+				SortOrder:   idx,
+			}
+			errs[idx] = repo.UpsertAccountMetadata(ctx, metadata)
+		}(i)
+	}
+	wg.Wait()
+
+	for i, err := range errs {
+		s.Require().NoError(err, "goroutine %d", i)
+	}
+
+	rows, err := client.CodexAccountMetadata.Query().
+		Where(codexaccountmetadata.AuthNameEQ(authName)).
+		All(ctx)
+	s.Require().NoError(err)
+	s.Require().Len(rows, 1)
+}
+
+func (s *CodexMetadataRepositorySuite) TestUpsertAccountMetadataInvalidGroupIDReturnsDomainError() {
+	missingGroupID := int64(999999999)
+	metadata := &service.CodexAccountMetadata{
+		AuthName:  "account-missing-group.json",
+		GroupID:   &missingGroupID,
+		LocalTags: []string{},
+		Settings:  map[string]any{},
+	}
+
+	err := s.repo.UpsertAccountMetadata(s.ctx, metadata)
+	s.Require().ErrorIs(err, service.ErrCodexGroupNotFound)
+}
+
 func (s *CodexMetadataRepositorySuite) TestUpsertAccountMetadataClearsGroupID() {
 	group := &service.CodexGroup{Name: "Prod", Color: "#d97757", SortOrder: 0}
 	s.Require().NoError(s.repo.CreateGroup(s.ctx, group))
@@ -143,4 +202,54 @@ func (s *CodexMetadataRepositorySuite) TestDeleteGroupSetsAccountMetadataGroupID
 	s.Require().NoError(err)
 	s.Require().NotNil(got)
 	s.Require().Nil(got.GroupID)
+}
+
+func (s *CodexMetadataRepositorySuite) TestTxContextRollbackIsolation() {
+	baseClient := testEntClient(s.T())
+	tx, err := baseClient.Tx(context.Background())
+	s.Require().NoError(err, "begin tx")
+	defer func() {
+		if tx != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	repo := NewCodexMetadataRepository(baseClient)
+	txCtx := dbent.NewTxContext(context.Background(), tx)
+	suffix := time.Now().Format(time.RFC3339Nano)
+	groupName := "tx-codex-group-" + suffix
+	authName := "tx-codex-account-" + suffix + ".json"
+	s.T().Cleanup(func() {
+		_, _ = baseClient.CodexAccountMetadata.Delete().
+			Where(codexaccountmetadata.AuthNameEQ(authName)).
+			Exec(context.Background())
+		_, _ = baseClient.CodexGroup.Delete().
+			Where(codexgroup.NameEQ(groupName)).
+			Exec(context.Background())
+	})
+
+	group := &service.CodexGroup{Name: groupName, Color: "#d97757", SortOrder: 0}
+	s.Require().NoError(repo.CreateGroup(txCtx, group))
+	metadata := &service.CodexAccountMetadata{
+		AuthName:  authName,
+		GroupID:   &group.ID,
+		LocalTags: []string{},
+		Settings:  map[string]any{},
+	}
+	s.Require().NoError(repo.UpsertAccountMetadata(txCtx, metadata))
+
+	s.Require().NoError(tx.Rollback(), "rollback tx")
+	tx = nil
+
+	count, err := baseClient.CodexAccountMetadata.Query().
+		Where(codexaccountmetadata.AuthNameEQ(authName)).
+		Count(context.Background())
+	s.Require().NoError(err)
+	s.Require().Zero(count)
+
+	count, err = baseClient.CodexGroup.Query().
+		Where(codexgroup.NameEQ(groupName)).
+		Count(context.Background())
+	s.Require().NoError(err)
+	s.Require().Zero(count)
 }

@@ -95,3 +95,18 @@ func isUniqueConstraintViolation(err error) bool {
 		strings.Contains(msg, "unique constraint") ||
 		strings.Contains(msg, "duplicate entry")
 }
+
+func isForeignKeyConstraintViolation(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	var pgErr *pq.Error
+	if errors.As(err, &pgErr) {
+		return pgErr.Code == "23503"
+	}
+
+	msg := strings.ToLower(err.Error())
+	return strings.Contains(msg, "foreign key constraint") ||
+		strings.Contains(msg, "violates foreign key")
+}
