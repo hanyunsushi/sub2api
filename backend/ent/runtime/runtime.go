@@ -10,6 +10,8 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/announcement"
 	"github.com/Wei-Shaw/sub2api/ent/announcementread"
 	"github.com/Wei-Shaw/sub2api/ent/apikey"
+	"github.com/Wei-Shaw/sub2api/ent/codexaccountmetadata"
+	"github.com/Wei-Shaw/sub2api/ent/codexgroup"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/idempotencyrecord"
@@ -309,6 +311,104 @@ func init() {
 	announcementreadDescCreatedAt := announcementreadFields[3].Descriptor()
 	// announcementread.DefaultCreatedAt holds the default value on creation for the created_at field.
 	announcementread.DefaultCreatedAt = announcementreadDescCreatedAt.Default.(func() time.Time)
+	codexaccountmetadataMixin := schema.CodexAccountMetadata{}.Mixin()
+	codexaccountmetadataMixinFields0 := codexaccountmetadataMixin[0].Fields()
+	_ = codexaccountmetadataMixinFields0
+	codexaccountmetadataFields := schema.CodexAccountMetadata{}.Fields()
+	_ = codexaccountmetadataFields
+	// codexaccountmetadataDescCreatedAt is the schema descriptor for created_at field.
+	codexaccountmetadataDescCreatedAt := codexaccountmetadataMixinFields0[0].Descriptor()
+	// codexaccountmetadata.DefaultCreatedAt holds the default value on creation for the created_at field.
+	codexaccountmetadata.DefaultCreatedAt = codexaccountmetadataDescCreatedAt.Default.(func() time.Time)
+	// codexaccountmetadataDescUpdatedAt is the schema descriptor for updated_at field.
+	codexaccountmetadataDescUpdatedAt := codexaccountmetadataMixinFields0[1].Descriptor()
+	// codexaccountmetadata.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	codexaccountmetadata.DefaultUpdatedAt = codexaccountmetadataDescUpdatedAt.Default.(func() time.Time)
+	// codexaccountmetadata.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	codexaccountmetadata.UpdateDefaultUpdatedAt = codexaccountmetadataDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// codexaccountmetadataDescAuthName is the schema descriptor for auth_name field.
+	codexaccountmetadataDescAuthName := codexaccountmetadataFields[0].Descriptor()
+	// codexaccountmetadata.AuthNameValidator is a validator for the "auth_name" field. It is called by the builders before save.
+	codexaccountmetadata.AuthNameValidator = func() func(string) error {
+		validators := codexaccountmetadataDescAuthName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(auth_name string) error {
+			for _, fn := range fns {
+				if err := fn(auth_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// codexaccountmetadataDescDisplayName is the schema descriptor for display_name field.
+	codexaccountmetadataDescDisplayName := codexaccountmetadataFields[2].Descriptor()
+	// codexaccountmetadata.DefaultDisplayName holds the default value on creation for the display_name field.
+	codexaccountmetadata.DefaultDisplayName = codexaccountmetadataDescDisplayName.Default.(string)
+	// codexaccountmetadata.DisplayNameValidator is a validator for the "display_name" field. It is called by the builders before save.
+	codexaccountmetadata.DisplayNameValidator = codexaccountmetadataDescDisplayName.Validators[0].(func(string) error)
+	// codexaccountmetadataDescNote is the schema descriptor for note field.
+	codexaccountmetadataDescNote := codexaccountmetadataFields[3].Descriptor()
+	// codexaccountmetadata.DefaultNote holds the default value on creation for the note field.
+	codexaccountmetadata.DefaultNote = codexaccountmetadataDescNote.Default.(string)
+	// codexaccountmetadataDescLocalTags is the schema descriptor for local_tags field.
+	codexaccountmetadataDescLocalTags := codexaccountmetadataFields[4].Descriptor()
+	// codexaccountmetadata.DefaultLocalTags holds the default value on creation for the local_tags field.
+	codexaccountmetadata.DefaultLocalTags = codexaccountmetadataDescLocalTags.Default.([]string)
+	// codexaccountmetadataDescSettings is the schema descriptor for settings field.
+	codexaccountmetadataDescSettings := codexaccountmetadataFields[5].Descriptor()
+	// codexaccountmetadata.DefaultSettings holds the default value on creation for the settings field.
+	codexaccountmetadata.DefaultSettings = codexaccountmetadataDescSettings.Default.(func() map[string]interface{})
+	// codexaccountmetadataDescSortOrder is the schema descriptor for sort_order field.
+	codexaccountmetadataDescSortOrder := codexaccountmetadataFields[6].Descriptor()
+	// codexaccountmetadata.DefaultSortOrder holds the default value on creation for the sort_order field.
+	codexaccountmetadata.DefaultSortOrder = codexaccountmetadataDescSortOrder.Default.(int)
+	codexgroupMixin := schema.CodexGroup{}.Mixin()
+	codexgroupMixinFields0 := codexgroupMixin[0].Fields()
+	_ = codexgroupMixinFields0
+	codexgroupFields := schema.CodexGroup{}.Fields()
+	_ = codexgroupFields
+	// codexgroupDescCreatedAt is the schema descriptor for created_at field.
+	codexgroupDescCreatedAt := codexgroupMixinFields0[0].Descriptor()
+	// codexgroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	codexgroup.DefaultCreatedAt = codexgroupDescCreatedAt.Default.(func() time.Time)
+	// codexgroupDescUpdatedAt is the schema descriptor for updated_at field.
+	codexgroupDescUpdatedAt := codexgroupMixinFields0[1].Descriptor()
+	// codexgroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	codexgroup.DefaultUpdatedAt = codexgroupDescUpdatedAt.Default.(func() time.Time)
+	// codexgroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	codexgroup.UpdateDefaultUpdatedAt = codexgroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// codexgroupDescName is the schema descriptor for name field.
+	codexgroupDescName := codexgroupFields[0].Descriptor()
+	// codexgroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	codexgroup.NameValidator = func() func(string) error {
+		validators := codexgroupDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// codexgroupDescColor is the schema descriptor for color field.
+	codexgroupDescColor := codexgroupFields[1].Descriptor()
+	// codexgroup.DefaultColor holds the default value on creation for the color field.
+	codexgroup.DefaultColor = codexgroupDescColor.Default.(string)
+	// codexgroup.ColorValidator is a validator for the "color" field. It is called by the builders before save.
+	codexgroup.ColorValidator = codexgroupDescColor.Validators[0].(func(string) error)
+	// codexgroupDescSortOrder is the schema descriptor for sort_order field.
+	codexgroupDescSortOrder := codexgroupFields[2].Descriptor()
+	// codexgroup.DefaultSortOrder holds the default value on creation for the sort_order field.
+	codexgroup.DefaultSortOrder = codexgroupDescSortOrder.Default.(int)
 	errorpassthroughruleMixin := schema.ErrorPassthroughRule{}.Mixin()
 	errorpassthroughruleMixinFields0 := errorpassthroughruleMixin[0].Fields()
 	_ = errorpassthroughruleMixinFields0

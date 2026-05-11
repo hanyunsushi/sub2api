@@ -338,6 +338,67 @@ var (
 			},
 		},
 	}
+	// CodexAccountMetadataColumns holds the columns for the "codex_account_metadata" table.
+	CodexAccountMetadataColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "auth_name", Type: field.TypeString, Unique: true, Size: 255},
+		{Name: "display_name", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "note", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "local_tags", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "settings", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "sort_order", Type: field.TypeInt, Default: 0},
+		{Name: "group_id", Type: field.TypeInt64, Nullable: true},
+	}
+	// CodexAccountMetadataTable holds the schema information for the "codex_account_metadata" table.
+	CodexAccountMetadataTable = &schema.Table{
+		Name:       "codex_account_metadata",
+		Columns:    CodexAccountMetadataColumns,
+		PrimaryKey: []*schema.Column{CodexAccountMetadataColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "codex_account_metadata_codex_groups_account_metadata",
+				Columns:    []*schema.Column{CodexAccountMetadataColumns[9]},
+				RefColumns: []*schema.Column{CodexGroupsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "codexaccountmetadata_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{CodexAccountMetadataColumns[9]},
+			},
+			{
+				Name:    "codexaccountmetadata_sort_order_auth_name",
+				Unique:  false,
+				Columns: []*schema.Column{CodexAccountMetadataColumns[8], CodexAccountMetadataColumns[3]},
+			},
+		},
+	}
+	// CodexGroupsColumns holds the columns for the "codex_groups" table.
+	CodexGroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 100},
+		{Name: "color", Type: field.TypeString, Size: 32, Default: "#d97757"},
+		{Name: "sort_order", Type: field.TypeInt, Default: 0},
+	}
+	// CodexGroupsTable holds the schema information for the "codex_groups" table.
+	CodexGroupsTable = &schema.Table{
+		Name:       "codex_groups",
+		Columns:    CodexGroupsColumns,
+		PrimaryKey: []*schema.Column{CodexGroupsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "codexgroup_sort_order_name",
+				Unique:  false,
+				Columns: []*schema.Column{CodexGroupsColumns[5], CodexGroupsColumns[3]},
+			},
+		},
+	}
 	// ErrorPassthroughRulesColumns holds the columns for the "error_passthrough_rules" table.
 	ErrorPassthroughRulesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -1318,6 +1379,8 @@ var (
 		AccountGroupsTable,
 		AnnouncementsTable,
 		AnnouncementReadsTable,
+		CodexAccountMetadataTable,
+		CodexGroupsTable,
 		ErrorPassthroughRulesTable,
 		GroupsTable,
 		IdempotencyRecordsTable,
@@ -1364,6 +1427,13 @@ func init() {
 	AnnouncementReadsTable.ForeignKeys[1].RefTable = UsersTable
 	AnnouncementReadsTable.Annotation = &entsql.Annotation{
 		Table: "announcement_reads",
+	}
+	CodexAccountMetadataTable.ForeignKeys[0].RefTable = CodexGroupsTable
+	CodexAccountMetadataTable.Annotation = &entsql.Annotation{
+		Table: "codex_account_metadata",
+	}
+	CodexGroupsTable.Annotation = &entsql.Annotation{
+		Table: "codex_groups",
 	}
 	ErrorPassthroughRulesTable.Annotation = &entsql.Annotation{
 		Table: "error_passthrough_rules",

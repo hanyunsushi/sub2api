@@ -13,6 +13,8 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/announcement"
 	"github.com/Wei-Shaw/sub2api/ent/announcementread"
 	"github.com/Wei-Shaw/sub2api/ent/apikey"
+	"github.com/Wei-Shaw/sub2api/ent/codexaccountmetadata"
+	"github.com/Wei-Shaw/sub2api/ent/codexgroup"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/idempotencyrecord"
@@ -226,6 +228,60 @@ func (f TraverseAnnouncementRead) Traverse(ctx context.Context, q ent.Query) err
 		return f(ctx, q)
 	}
 	return fmt.Errorf("unexpected query type %T. expect *ent.AnnouncementReadQuery", q)
+}
+
+// The CodexAccountMetadataFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CodexAccountMetadataFunc func(context.Context, *ent.CodexAccountMetadataQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CodexAccountMetadataFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CodexAccountMetadataQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CodexAccountMetadataQuery", q)
+}
+
+// The TraverseCodexAccountMetadata type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCodexAccountMetadata func(context.Context, *ent.CodexAccountMetadataQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCodexAccountMetadata) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCodexAccountMetadata) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CodexAccountMetadataQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CodexAccountMetadataQuery", q)
+}
+
+// The CodexGroupFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CodexGroupFunc func(context.Context, *ent.CodexGroupQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CodexGroupFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CodexGroupQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CodexGroupQuery", q)
+}
+
+// The TraverseCodexGroup type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCodexGroup func(context.Context, *ent.CodexGroupQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCodexGroup) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCodexGroup) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CodexGroupQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CodexGroupQuery", q)
 }
 
 // The ErrorPassthroughRuleFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -808,6 +864,10 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.AnnouncementQuery, predicate.Announcement, announcement.OrderOption]{typ: ent.TypeAnnouncement, tq: q}, nil
 	case *ent.AnnouncementReadQuery:
 		return &query[*ent.AnnouncementReadQuery, predicate.AnnouncementRead, announcementread.OrderOption]{typ: ent.TypeAnnouncementRead, tq: q}, nil
+	case *ent.CodexAccountMetadataQuery:
+		return &query[*ent.CodexAccountMetadataQuery, predicate.CodexAccountMetadata, codexaccountmetadata.OrderOption]{typ: ent.TypeCodexAccountMetadata, tq: q}, nil
+	case *ent.CodexGroupQuery:
+		return &query[*ent.CodexGroupQuery, predicate.CodexGroup, codexgroup.OrderOption]{typ: ent.TypeCodexGroup, tq: q}, nil
 	case *ent.ErrorPassthroughRuleQuery:
 		return &query[*ent.ErrorPassthroughRuleQuery, predicate.ErrorPassthroughRule, errorpassthroughrule.OrderOption]{typ: ent.TypeErrorPassthroughRule, tq: q}, nil
 	case *ent.GroupQuery:

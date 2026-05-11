@@ -21,6 +21,12 @@ type Announcement func(*sql.Selector)
 // AnnouncementRead is the predicate function for announcementread builders.
 type AnnouncementRead func(*sql.Selector)
 
+// CodexAccountMetadata is the predicate function for codexaccountmetadata builders.
+type CodexAccountMetadata func(*sql.Selector)
+
+// CodexGroup is the predicate function for codexgroup builders.
+type CodexGroup func(*sql.Selector)
+
 // ErrorPassthroughRule is the predicate function for errorpassthroughrule builders.
 type ErrorPassthroughRule func(*sql.Selector)
 

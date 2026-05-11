@@ -24,6 +24,10 @@ type Tx struct {
 	Announcement *AnnouncementClient
 	// AnnouncementRead is the client for interacting with the AnnouncementRead builders.
 	AnnouncementRead *AnnouncementReadClient
+	// CodexAccountMetadata is the client for interacting with the CodexAccountMetadata builders.
+	CodexAccountMetadata *CodexAccountMetadataClient
+	// CodexGroup is the client for interacting with the CodexGroup builders.
+	CodexGroup *CodexGroupClient
 	// ErrorPassthroughRule is the client for interacting with the ErrorPassthroughRule builders.
 	ErrorPassthroughRule *ErrorPassthroughRuleClient
 	// Group is the client for interacting with the Group builders.
@@ -202,6 +206,8 @@ func (tx *Tx) init() {
 	tx.AccountGroup = NewAccountGroupClient(tx.config)
 	tx.Announcement = NewAnnouncementClient(tx.config)
 	tx.AnnouncementRead = NewAnnouncementReadClient(tx.config)
+	tx.CodexAccountMetadata = NewCodexAccountMetadataClient(tx.config)
+	tx.CodexGroup = NewCodexGroupClient(tx.config)
 	tx.ErrorPassthroughRule = NewErrorPassthroughRuleClient(tx.config)
 	tx.Group = NewGroupClient(tx.config)
 	tx.IdempotencyRecord = NewIdempotencyRecordClient(tx.config)

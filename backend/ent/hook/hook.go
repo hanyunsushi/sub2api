@@ -69,6 +69,30 @@ func (f AnnouncementReadFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnnouncementReadMutation", m)
 }
 
+// The CodexAccountMetadataFunc type is an adapter to allow the use of ordinary
+// function as CodexAccountMetadata mutator.
+type CodexAccountMetadataFunc func(context.Context, *ent.CodexAccountMetadataMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CodexAccountMetadataFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CodexAccountMetadataMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CodexAccountMetadataMutation", m)
+}
+
+// The CodexGroupFunc type is an adapter to allow the use of ordinary
+// function as CodexGroup mutator.
+type CodexGroupFunc func(context.Context, *ent.CodexGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CodexGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CodexGroupMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CodexGroupMutation", m)
+}
+
 // The ErrorPassthroughRuleFunc type is an adapter to allow the use of ordinary
 // function as ErrorPassthroughRule mutator.
 type ErrorPassthroughRuleFunc func(context.Context, *ent.ErrorPassthroughRuleMutation) (ent.Value, error)

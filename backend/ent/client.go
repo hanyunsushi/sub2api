@@ -20,6 +20,8 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/announcement"
 	"github.com/Wei-Shaw/sub2api/ent/announcementread"
 	"github.com/Wei-Shaw/sub2api/ent/apikey"
+	"github.com/Wei-Shaw/sub2api/ent/codexaccountmetadata"
+	"github.com/Wei-Shaw/sub2api/ent/codexgroup"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/idempotencyrecord"
@@ -60,6 +62,10 @@ type Client struct {
 	Announcement *AnnouncementClient
 	// AnnouncementRead is the client for interacting with the AnnouncementRead builders.
 	AnnouncementRead *AnnouncementReadClient
+	// CodexAccountMetadata is the client for interacting with the CodexAccountMetadata builders.
+	CodexAccountMetadata *CodexAccountMetadataClient
+	// CodexGroup is the client for interacting with the CodexGroup builders.
+	CodexGroup *CodexGroupClient
 	// ErrorPassthroughRule is the client for interacting with the ErrorPassthroughRule builders.
 	ErrorPassthroughRule *ErrorPassthroughRuleClient
 	// Group is the client for interacting with the Group builders.
@@ -118,6 +124,8 @@ func (c *Client) init() {
 	c.AccountGroup = NewAccountGroupClient(c.config)
 	c.Announcement = NewAnnouncementClient(c.config)
 	c.AnnouncementRead = NewAnnouncementReadClient(c.config)
+	c.CodexAccountMetadata = NewCodexAccountMetadataClient(c.config)
+	c.CodexGroup = NewCodexGroupClient(c.config)
 	c.ErrorPassthroughRule = NewErrorPassthroughRuleClient(c.config)
 	c.Group = NewGroupClient(c.config)
 	c.IdempotencyRecord = NewIdempotencyRecordClient(c.config)
@@ -236,6 +244,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AccountGroup:            NewAccountGroupClient(cfg),
 		Announcement:            NewAnnouncementClient(cfg),
 		AnnouncementRead:        NewAnnouncementReadClient(cfg),
+		CodexAccountMetadata:    NewCodexAccountMetadataClient(cfg),
+		CodexGroup:              NewCodexGroupClient(cfg),
 		ErrorPassthroughRule:    NewErrorPassthroughRuleClient(cfg),
 		Group:                   NewGroupClient(cfg),
 		IdempotencyRecord:       NewIdempotencyRecordClient(cfg),
@@ -281,6 +291,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AccountGroup:            NewAccountGroupClient(cfg),
 		Announcement:            NewAnnouncementClient(cfg),
 		AnnouncementRead:        NewAnnouncementReadClient(cfg),
+		CodexAccountMetadata:    NewCodexAccountMetadataClient(cfg),
+		CodexGroup:              NewCodexGroupClient(cfg),
 		ErrorPassthroughRule:    NewErrorPassthroughRuleClient(cfg),
 		Group:                   NewGroupClient(cfg),
 		IdempotencyRecord:       NewIdempotencyRecordClient(cfg),
@@ -332,9 +344,10 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.APIKey, c.Account, c.AccountGroup, c.Announcement, c.AnnouncementRead,
-		c.ErrorPassthroughRule, c.Group, c.IdempotencyRecord, c.PaymentAuditLog,
-		c.PaymentOrder, c.PaymentProviderInstance, c.PromoCode, c.PromoCodeUsage,
-		c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
+		c.CodexAccountMetadata, c.CodexGroup, c.ErrorPassthroughRule, c.Group,
+		c.IdempotencyRecord, c.PaymentAuditLog, c.PaymentOrder,
+		c.PaymentProviderInstance, c.PromoCode, c.PromoCodeUsage, c.Proxy,
+		c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
 		c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog, c.User,
 		c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
 		c.UserSubscription,
@@ -348,9 +361,10 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.APIKey, c.Account, c.AccountGroup, c.Announcement, c.AnnouncementRead,
-		c.ErrorPassthroughRule, c.Group, c.IdempotencyRecord, c.PaymentAuditLog,
-		c.PaymentOrder, c.PaymentProviderInstance, c.PromoCode, c.PromoCodeUsage,
-		c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
+		c.CodexAccountMetadata, c.CodexGroup, c.ErrorPassthroughRule, c.Group,
+		c.IdempotencyRecord, c.PaymentAuditLog, c.PaymentOrder,
+		c.PaymentProviderInstance, c.PromoCode, c.PromoCodeUsage, c.Proxy,
+		c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
 		c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog, c.User,
 		c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
 		c.UserSubscription,
@@ -372,6 +386,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Announcement.mutate(ctx, m)
 	case *AnnouncementReadMutation:
 		return c.AnnouncementRead.mutate(ctx, m)
+	case *CodexAccountMetadataMutation:
+		return c.CodexAccountMetadata.mutate(ctx, m)
+	case *CodexGroupMutation:
+		return c.CodexGroup.mutate(ctx, m)
 	case *ErrorPassthroughRuleMutation:
 		return c.ErrorPassthroughRule.mutate(ctx, m)
 	case *GroupMutation:
@@ -1228,6 +1246,304 @@ func (c *AnnouncementReadClient) mutate(ctx context.Context, m *AnnouncementRead
 		return (&AnnouncementReadDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AnnouncementRead mutation op: %q", m.Op())
+	}
+}
+
+// CodexAccountMetadataClient is a client for the CodexAccountMetadata schema.
+type CodexAccountMetadataClient struct {
+	config
+}
+
+// NewCodexAccountMetadataClient returns a client for the CodexAccountMetadata from the given config.
+func NewCodexAccountMetadataClient(c config) *CodexAccountMetadataClient {
+	return &CodexAccountMetadataClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `codexaccountmetadata.Hooks(f(g(h())))`.
+func (c *CodexAccountMetadataClient) Use(hooks ...Hook) {
+	c.hooks.CodexAccountMetadata = append(c.hooks.CodexAccountMetadata, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `codexaccountmetadata.Intercept(f(g(h())))`.
+func (c *CodexAccountMetadataClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CodexAccountMetadata = append(c.inters.CodexAccountMetadata, interceptors...)
+}
+
+// Create returns a builder for creating a CodexAccountMetadata entity.
+func (c *CodexAccountMetadataClient) Create() *CodexAccountMetadataCreate {
+	mutation := newCodexAccountMetadataMutation(c.config, OpCreate)
+	return &CodexAccountMetadataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CodexAccountMetadata entities.
+func (c *CodexAccountMetadataClient) CreateBulk(builders ...*CodexAccountMetadataCreate) *CodexAccountMetadataCreateBulk {
+	return &CodexAccountMetadataCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CodexAccountMetadataClient) MapCreateBulk(slice any, setFunc func(*CodexAccountMetadataCreate, int)) *CodexAccountMetadataCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CodexAccountMetadataCreateBulk{err: fmt.Errorf("calling to CodexAccountMetadataClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CodexAccountMetadataCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CodexAccountMetadataCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CodexAccountMetadata.
+func (c *CodexAccountMetadataClient) Update() *CodexAccountMetadataUpdate {
+	mutation := newCodexAccountMetadataMutation(c.config, OpUpdate)
+	return &CodexAccountMetadataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CodexAccountMetadataClient) UpdateOne(_m *CodexAccountMetadata) *CodexAccountMetadataUpdateOne {
+	mutation := newCodexAccountMetadataMutation(c.config, OpUpdateOne, withCodexAccountMetadata(_m))
+	return &CodexAccountMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CodexAccountMetadataClient) UpdateOneID(id int64) *CodexAccountMetadataUpdateOne {
+	mutation := newCodexAccountMetadataMutation(c.config, OpUpdateOne, withCodexAccountMetadataID(id))
+	return &CodexAccountMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CodexAccountMetadata.
+func (c *CodexAccountMetadataClient) Delete() *CodexAccountMetadataDelete {
+	mutation := newCodexAccountMetadataMutation(c.config, OpDelete)
+	return &CodexAccountMetadataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CodexAccountMetadataClient) DeleteOne(_m *CodexAccountMetadata) *CodexAccountMetadataDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CodexAccountMetadataClient) DeleteOneID(id int64) *CodexAccountMetadataDeleteOne {
+	builder := c.Delete().Where(codexaccountmetadata.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CodexAccountMetadataDeleteOne{builder}
+}
+
+// Query returns a query builder for CodexAccountMetadata.
+func (c *CodexAccountMetadataClient) Query() *CodexAccountMetadataQuery {
+	return &CodexAccountMetadataQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCodexAccountMetadata},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CodexAccountMetadata entity by its id.
+func (c *CodexAccountMetadataClient) Get(ctx context.Context, id int64) (*CodexAccountMetadata, error) {
+	return c.Query().Where(codexaccountmetadata.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CodexAccountMetadataClient) GetX(ctx context.Context, id int64) *CodexAccountMetadata {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGroup queries the group edge of a CodexAccountMetadata.
+func (c *CodexAccountMetadataClient) QueryGroup(_m *CodexAccountMetadata) *CodexGroupQuery {
+	query := (&CodexGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(codexaccountmetadata.Table, codexaccountmetadata.FieldID, id),
+			sqlgraph.To(codexgroup.Table, codexgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, codexaccountmetadata.GroupTable, codexaccountmetadata.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CodexAccountMetadataClient) Hooks() []Hook {
+	return c.hooks.CodexAccountMetadata
+}
+
+// Interceptors returns the client interceptors.
+func (c *CodexAccountMetadataClient) Interceptors() []Interceptor {
+	return c.inters.CodexAccountMetadata
+}
+
+func (c *CodexAccountMetadataClient) mutate(ctx context.Context, m *CodexAccountMetadataMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CodexAccountMetadataCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CodexAccountMetadataUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CodexAccountMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CodexAccountMetadataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CodexAccountMetadata mutation op: %q", m.Op())
+	}
+}
+
+// CodexGroupClient is a client for the CodexGroup schema.
+type CodexGroupClient struct {
+	config
+}
+
+// NewCodexGroupClient returns a client for the CodexGroup from the given config.
+func NewCodexGroupClient(c config) *CodexGroupClient {
+	return &CodexGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `codexgroup.Hooks(f(g(h())))`.
+func (c *CodexGroupClient) Use(hooks ...Hook) {
+	c.hooks.CodexGroup = append(c.hooks.CodexGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `codexgroup.Intercept(f(g(h())))`.
+func (c *CodexGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CodexGroup = append(c.inters.CodexGroup, interceptors...)
+}
+
+// Create returns a builder for creating a CodexGroup entity.
+func (c *CodexGroupClient) Create() *CodexGroupCreate {
+	mutation := newCodexGroupMutation(c.config, OpCreate)
+	return &CodexGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CodexGroup entities.
+func (c *CodexGroupClient) CreateBulk(builders ...*CodexGroupCreate) *CodexGroupCreateBulk {
+	return &CodexGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CodexGroupClient) MapCreateBulk(slice any, setFunc func(*CodexGroupCreate, int)) *CodexGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CodexGroupCreateBulk{err: fmt.Errorf("calling to CodexGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CodexGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CodexGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CodexGroup.
+func (c *CodexGroupClient) Update() *CodexGroupUpdate {
+	mutation := newCodexGroupMutation(c.config, OpUpdate)
+	return &CodexGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CodexGroupClient) UpdateOne(_m *CodexGroup) *CodexGroupUpdateOne {
+	mutation := newCodexGroupMutation(c.config, OpUpdateOne, withCodexGroup(_m))
+	return &CodexGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CodexGroupClient) UpdateOneID(id int64) *CodexGroupUpdateOne {
+	mutation := newCodexGroupMutation(c.config, OpUpdateOne, withCodexGroupID(id))
+	return &CodexGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CodexGroup.
+func (c *CodexGroupClient) Delete() *CodexGroupDelete {
+	mutation := newCodexGroupMutation(c.config, OpDelete)
+	return &CodexGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CodexGroupClient) DeleteOne(_m *CodexGroup) *CodexGroupDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CodexGroupClient) DeleteOneID(id int64) *CodexGroupDeleteOne {
+	builder := c.Delete().Where(codexgroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CodexGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for CodexGroup.
+func (c *CodexGroupClient) Query() *CodexGroupQuery {
+	return &CodexGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCodexGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CodexGroup entity by its id.
+func (c *CodexGroupClient) Get(ctx context.Context, id int64) (*CodexGroup, error) {
+	return c.Query().Where(codexgroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CodexGroupClient) GetX(ctx context.Context, id int64) *CodexGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccountMetadata queries the account_metadata edge of a CodexGroup.
+func (c *CodexGroupClient) QueryAccountMetadata(_m *CodexGroup) *CodexAccountMetadataQuery {
+	query := (&CodexAccountMetadataClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(codexgroup.Table, codexgroup.FieldID, id),
+			sqlgraph.To(codexaccountmetadata.Table, codexaccountmetadata.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, codexgroup.AccountMetadataTable, codexgroup.AccountMetadataColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CodexGroupClient) Hooks() []Hook {
+	return c.hooks.CodexGroup
+}
+
+// Interceptors returns the client interceptors.
+func (c *CodexGroupClient) Interceptors() []Interceptor {
+	return c.inters.CodexGroup
+}
+
+func (c *CodexGroupClient) mutate(ctx context.Context, m *CodexGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CodexGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CodexGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CodexGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CodexGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CodexGroup mutation op: %q", m.Op())
 	}
 }
 
@@ -4629,19 +4945,21 @@ func (c *UserSubscriptionClient) mutate(ctx context.Context, m *UserSubscription
 type (
 	hooks struct {
 		APIKey, Account, AccountGroup, Announcement, AnnouncementRead,
-		ErrorPassthroughRule, Group, IdempotencyRecord, PaymentAuditLog, PaymentOrder,
-		PaymentProviderInstance, PromoCode, PromoCodeUsage, Proxy, RedeemCode,
-		SecuritySecret, Setting, SubscriptionPlan, TLSFingerprintProfile,
-		UsageCleanupTask, UsageLog, User, UserAllowedGroup, UserAttributeDefinition,
-		UserAttributeValue, UserSubscription []ent.Hook
+		CodexAccountMetadata, CodexGroup, ErrorPassthroughRule, Group,
+		IdempotencyRecord, PaymentAuditLog, PaymentOrder, PaymentProviderInstance,
+		PromoCode, PromoCodeUsage, Proxy, RedeemCode, SecuritySecret, Setting,
+		SubscriptionPlan, TLSFingerprintProfile, UsageCleanupTask, UsageLog, User,
+		UserAllowedGroup, UserAttributeDefinition, UserAttributeValue,
+		UserSubscription []ent.Hook
 	}
 	inters struct {
 		APIKey, Account, AccountGroup, Announcement, AnnouncementRead,
-		ErrorPassthroughRule, Group, IdempotencyRecord, PaymentAuditLog, PaymentOrder,
-		PaymentProviderInstance, PromoCode, PromoCodeUsage, Proxy, RedeemCode,
-		SecuritySecret, Setting, SubscriptionPlan, TLSFingerprintProfile,
-		UsageCleanupTask, UsageLog, User, UserAllowedGroup, UserAttributeDefinition,
-		UserAttributeValue, UserSubscription []ent.Interceptor
+		CodexAccountMetadata, CodexGroup, ErrorPassthroughRule, Group,
+		IdempotencyRecord, PaymentAuditLog, PaymentOrder, PaymentProviderInstance,
+		PromoCode, PromoCodeUsage, Proxy, RedeemCode, SecuritySecret, Setting,
+		SubscriptionPlan, TLSFingerprintProfile, UsageCleanupTask, UsageLog, User,
+		UserAllowedGroup, UserAttributeDefinition, UserAttributeValue,
+		UserSubscription []ent.Interceptor
 	}
 )
 
