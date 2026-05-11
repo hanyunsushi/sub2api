@@ -76,18 +76,51 @@
             <section class="codex-panel">
               <div class="codex-panel-header">
                 <h2 class="codex-panel-title">{{ t('admin.codex.accounts.accountList') }}</h2>
-                <div class="flex flex-wrap items-center gap-2">
-                  <input
-                    v-model="searchQuery"
-                    class="codex-input !min-h-9 !w-56"
-                    type="search"
-                    :placeholder="t('admin.codex.accounts.search')"
-                  />
-                  <select v-model="statusFilter" class="codex-select !min-h-9 !w-36">
-                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                      {{ option.label }}
-                    </option>
-                  </select>
+                <div class="codex-list-actions">
+                  <div class="codex-list-actions__primary">
+                    <input
+                      ref="authFileInput"
+                      class="sr-only"
+                      type="file"
+                      accept="application/json,.json"
+                      @change="handleAuthFileChange"
+                    />
+                    <button
+                      type="button"
+                      class="codex-button"
+                      :disabled="uploadingAuthFile || !managementKeyDraft.trim()"
+                      @click="openAuthFilePicker"
+                    >
+                      <Icon name="upload" size="sm" />
+                      {{
+                        uploadingAuthFile
+                          ? t('admin.codex.accounts.uploadingAuthFile')
+                          : t('admin.codex.accounts.uploadAuthFile')
+                      }}
+                    </button>
+                    <button
+                      type="button"
+                      class="codex-button"
+                      :disabled="oauthLoading || !managementKeyDraft.trim()"
+                      @click="openCodexOAuth"
+                    >
+                      <Icon name="externalLink" size="sm" />
+                      {{ oauthLoading ? t('admin.codex.accounts.openingOAuth') : t('admin.codex.accounts.codexOAuth') }}
+                    </button>
+                  </div>
+                  <div class="codex-list-actions__filters">
+                    <input
+                      v-model="searchQuery"
+                      class="codex-input !min-h-9 !w-56"
+                      type="search"
+                      :placeholder="t('admin.codex.accounts.search')"
+                    />
+                    <select v-model="statusFilter" class="codex-select !min-h-9 !w-36">
+                      <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -106,6 +139,7 @@
                       <th>{{ t('admin.codex.accounts.columns.group') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.tags') }}</th>
                       <th>{{ t('admin.codex.accounts.columns.activity') }}</th>
+                      <th>{{ t('admin.codex.accounts.columns.actions') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -152,9 +186,35 @@
                           {{ formatDate(account.modifiedAt) }}
                         </div>
                       </td>
+                      <td>
+                        <button
+                          type="button"
+                          class="codex-icon-button codex-icon-button--danger"
+                          :disabled="!account.canDelete || deletingAuthName === account.name"
+                          :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
+                          :aria-label="account.canDelete
+                            ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
+                            : t('admin.codex.accounts.deleteDisabled')"
+                          @click.stop="requestDeleteAccount(account.name)"
+                        >
+                          <Icon name="trash" size="sm" />
+                        </button>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
+              </div>
+              <div v-if="operationError" class="codex-error codex-error--compact">
+                {{ operationError }}
+              </div>
+              <div v-if="oauthFallbackUrl" class="codex-inline-action">
+                <span>{{ t('admin.codex.accounts.popupBlocked') }}</span>
+                <a class="codex-link-button" :href="oauthFallbackUrl" target="_blank" rel="noopener noreferrer">
+                  {{ t('admin.codex.accounts.openOAuthLink') }}
+                </a>
+              </div>
+              <div v-if="operationNotice" class="codex-notice">
+                {{ operationNotice }}
               </div>
             </section>
           </main>
@@ -231,6 +291,41 @@
             </section>
           </aside>
         </div>
+
+        <div
+          v-if="deleteTargetAuthName"
+          class="codex-modal-backdrop"
+          role="presentation"
+          @click.self="cancelDeleteAccount"
+        >
+          <section
+            class="codex-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="codex-delete-title"
+          >
+            <h2 id="codex-delete-title" class="codex-modal-title">
+              {{ t('admin.codex.accounts.deleteAuthFile') }}
+            </h2>
+            <p class="codex-modal-copy">
+              {{ t('admin.codex.accounts.deleteConfirm', { name: deleteTargetAuthName }) }}
+            </p>
+            <div class="codex-modal-actions">
+              <button type="button" class="codex-button" @click="cancelDeleteAccount">
+                {{ t('common.cancel') }}
+              </button>
+              <button
+                type="button"
+                class="codex-button codex-button--danger"
+                :disabled="deletingAuthName === deleteTargetAuthName"
+                @click="confirmDeleteAccount"
+              >
+                <Icon name="trash" size="sm" />
+                {{ t('common.delete') }}
+              </button>
+            </div>
+          </section>
+        </div>
       </section>
     </div>
   </AppLayout>
@@ -257,7 +352,15 @@ const statusFilter = ref('all')
 const selectedAuthName = ref('')
 const savingMetadata = ref(false)
 const creatingGroup = ref(false)
+const uploadingAuthFile = ref(false)
+const oauthLoading = ref(false)
+const deletingAuthName = ref('')
+const operationError = ref('')
+const operationNotice = ref('')
+const oauthFallbackUrl = ref('')
+const deleteTargetAuthName = ref('')
 const newGroupName = ref('')
+const authFileInput = ref<HTMLInputElement | null>(null)
 
 const metadataDraft = reactive({
   displayName: '',
@@ -342,6 +445,104 @@ async function connectAndLoad(): Promise<void> {
 
 async function refreshAccounts(): Promise<void> {
   await codexStore.loadAll()
+}
+
+function syncConnectionDraft(): void {
+  codexStore.setManagementBaseUrl(baseUrlDraft.value)
+  codexStore.setManagementKey(managementKeyDraft.value)
+}
+
+function openAuthFilePicker(): void {
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  authFileInput.value?.click()
+}
+
+async function handleAuthFileChange(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  if (!file.name.toLowerCase().endsWith('.json')) {
+    operationError.value = t('admin.codex.accounts.invalidAuthFile')
+    return
+  }
+
+  syncConnectionDraft()
+  uploadingAuthFile.value = true
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  try {
+    await codexStore.uploadAuthFile(file)
+    operationNotice.value = t('admin.codex.accounts.uploadSucceeded', { name: file.name })
+    if (!selectedAuthName.value && codexStore.accounts[0]) {
+      selectedAuthName.value = codexStore.accounts[0].name
+    }
+  } catch (err) {
+    operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.uploadFailed')
+  } finally {
+    uploadingAuthFile.value = false
+  }
+}
+
+async function openCodexOAuth(): Promise<void> {
+  syncConnectionDraft()
+  oauthLoading.value = true
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  const popup = window.open('about:blank', '_blank')
+  try {
+    const url = await codexStore.getCodexAuthUrl()
+    if (popup) {
+      popup.opener = null
+      popup.location.href = url
+    } else {
+      oauthFallbackUrl.value = url
+      operationError.value = t('admin.codex.accounts.popupBlocked')
+    }
+  } catch (err) {
+    popup?.close()
+    operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.oauthFailed')
+  } finally {
+    oauthLoading.value = false
+  }
+}
+
+function requestDeleteAccount(authName: string): void {
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  deleteTargetAuthName.value = authName
+}
+
+function cancelDeleteAccount(): void {
+  if (deletingAuthName.value) return
+  deleteTargetAuthName.value = ''
+}
+
+async function confirmDeleteAccount(): Promise<void> {
+  const authName = deleteTargetAuthName.value
+  if (!authName) return
+
+  syncConnectionDraft()
+  deletingAuthName.value = authName
+  operationError.value = ''
+  operationNotice.value = ''
+  try {
+    await codexStore.deleteAuthFile(authName)
+    operationNotice.value = t('admin.codex.accounts.deleteSucceeded', { name: authName })
+    deleteTargetAuthName.value = ''
+    if (selectedAuthName.value === authName) {
+      selectedAuthName.value = codexStore.accounts[0]?.name || ''
+    }
+  } catch (err) {
+    operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.deleteFailed')
+  } finally {
+    deletingAuthName.value = ''
+  }
 }
 
 async function saveMetadata(): Promise<void> {

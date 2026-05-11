@@ -2,8 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { apiClient } from '@/api/client'
 import {
   CpaApiError,
+  deleteAuthFile,
+  getCodexAuthUrl,
   listAuthFiles,
   mapCpaAuthFileToView,
+  uploadAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
 
@@ -93,6 +96,29 @@ describe('codex CPA API adapter', () => {
     expect(localStorage.getItem('codex.managementKey')).toBeNull()
   })
 
+  it('does not send Sub2API admin token to absolute external CPA URLs', async () => {
+    localStorage.setItem('auth_token', 'sub2api-admin-token')
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ auth_files: [] }),
+    })
+
+    await listAuthFiles({
+      baseUrl: 'https://cpa.example.test/v0/management',
+      managementKey: 'secret-key',
+    })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://cpa.example.test/v0/management/auth-files',
+      expect.objectContaining({
+        headers: expect.not.objectContaining({
+          'X-Sub2API-Authorization': expect.any(String),
+        }),
+      })
+    )
+  })
+
   it('handles non-JSON CPA error responses', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
@@ -131,6 +157,69 @@ describe('codex CPA API adapter', () => {
     })
 
     await expect(listAuthFiles({ managementKey: 'secret-key' })).rejects.toBeInstanceOf(CpaApiError)
+  })
+
+  it('uploads Codex auth JSON to CPA using multipart file field', async () => {
+    const file = new File(['{"token":"secret"}'], 'codex.json', { type: 'application/json' })
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ ok: true }),
+    })
+
+    await uploadAuthFile(file, { managementKey: 'secret-key' })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/auth-files',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(FormData),
+        headers: expect.not.objectContaining({
+          'Content-Type': expect.any(String),
+        }),
+      })
+    )
+    const body = mockFetch.mock.calls[0][1].body as FormData
+    expect(body.get('file')).toBe(file)
+  })
+
+  it('deletes a CPA auth file by name', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ ok: true }),
+    })
+
+    await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/auth-files?name=folder%2Faccount+1.json',
+      expect.objectContaining({ method: 'DELETE' })
+    )
+  })
+
+  it('extracts Codex OAuth URL from CPA response defensively', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ data: { auth_url: 'https://auth.openai.com/oauth' } }),
+    })
+
+    await expect(getCodexAuthUrl({ managementKey: 'secret-key' })).resolves.toBe('https://auth.openai.com/oauth')
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/codex-auth-url?is_webui=true',
+      expect.objectContaining({ method: 'GET' })
+    )
+  })
+
+  it('rejects unsafe Codex OAuth URLs from CPA responses', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ auth_url: 'javascript:alert(1)' }),
+    })
+
+    await expect(getCodexAuthUrl({ managementKey: 'secret-key' })).rejects.toBeInstanceOf(CpaApiError)
   })
 })
 

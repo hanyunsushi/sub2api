@@ -24,6 +24,17 @@ function joinBaseAndPath(baseUrl: string, path: string): string {
   return `${base}${suffix}`
 }
 
+function shouldAttachSub2APIAdminToken(baseUrl: string): boolean {
+  const trimmed = baseUrl.trim()
+  if (!trimmed || trimmed.startsWith('/')) return true
+
+  try {
+    return new URL(trimmed, window.location.origin).origin === window.location.origin
+  } catch {
+    return false
+  }
+}
+
 async function readResponseBody(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type') || ''
   if (contentType.includes('application/json')) {
@@ -45,7 +56,7 @@ async function cpaRequest<T>(path: string, options: CpaRequestOptions & RequestI
     ...(headers as Record<string, string> | undefined),
   }
   const sub2apiToken = localStorage.getItem('auth_token')
-  if (sub2apiToken) {
+  if (sub2apiToken && shouldAttachSub2APIAdminToken(baseUrl)) {
     requestHeaders['X-Sub2API-Authorization'] = `Bearer ${sub2apiToken}`
   }
   if (managementKey) {
@@ -91,6 +102,78 @@ export async function listAuthFiles(options: CpaRequestOptions = {}): Promise<Cp
     ...options,
   })
   return extractAuthFiles(payload)
+}
+
+export async function uploadAuthFile(file: File, options: CpaRequestOptions = {}): Promise<void> {
+  const formData = new FormData()
+  formData.append('file', file)
+  await cpaRequest<unknown>('/auth-files', {
+    method: 'POST',
+    body: formData,
+    ...options,
+  })
+}
+
+export async function deleteAuthFile(name: string, options: CpaRequestOptions = {}): Promise<void> {
+  const params = new URLSearchParams({ name })
+  await cpaRequest<unknown>(`/auth-files?${params.toString()}`, {
+    method: 'DELETE',
+    ...options,
+  })
+}
+
+function extractCodexAuthUrl(payload: unknown): string {
+  if (typeof payload === 'string') {
+    const trimmed = payload.trim()
+    if (trimmed) return validateCodexAuthUrl(trimmed)
+  }
+  if (!payload || typeof payload !== 'object') {
+    throw new CpaApiError('Invalid CPA codex-auth-url response')
+  }
+
+  const record = payload as Record<string, unknown>
+  const candidates = [
+    record.auth_url,
+    record.url,
+    record.codex_auth_url,
+    record.login_url,
+    record.oauth_url,
+  ]
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) return validateCodexAuthUrl(candidate.trim())
+  }
+  if (record.data && typeof record.data === 'object') {
+    return extractCodexAuthUrl(record.data)
+  }
+  throw new CpaApiError('Invalid CPA codex-auth-url response')
+}
+
+function validateCodexAuthUrl(url: string): string {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    throw new CpaApiError('Invalid CPA codex-auth-url response')
+  }
+
+  const hostname = parsed.hostname.toLowerCase()
+  const allowedHost =
+    hostname === 'openai.com' ||
+    hostname.endsWith('.openai.com') ||
+    hostname === 'chatgpt.com' ||
+    hostname.endsWith('.chatgpt.com')
+  if (parsed.protocol !== 'https:' || !allowedHost) {
+    throw new CpaApiError('Unsafe CPA codex-auth-url response')
+  }
+  return url
+}
+
+export async function getCodexAuthUrl(options: CpaRequestOptions = {}): Promise<string> {
+  const payload = await cpaRequest<unknown>('/codex-auth-url?is_webui=true', {
+    method: 'GET',
+    ...options,
+  })
+  return extractCodexAuthUrl(payload)
 }
 
 function normalizeStatus(raw: CpaAuthFileRaw): CodexAccountStatus {

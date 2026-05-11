@@ -2,8 +2,11 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import {
   DEFAULT_CPA_MANAGEMENT_BASE,
+  deleteAuthFile as deleteCpaAuthFile,
+  getCodexAuthUrl as fetchCodexAuthUrl,
   listAuthFiles,
   mapCpaAuthFileToView,
+  uploadAuthFile as uploadCpaAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
 import type {
@@ -85,6 +88,13 @@ export const useCodexStore = defineStore('codex', () => {
     localStorage.setItem(MANAGEMENT_BASE_LOCAL_KEY, normalized)
   }
 
+  function cpaOptions() {
+    return {
+      baseUrl: managementBaseUrl.value,
+      managementKey: managementKey.value,
+    }
+  }
+
   async function loadAll(): Promise<void> {
     loading.value = true
     error.value = null
@@ -123,6 +133,28 @@ export const useCodexStore = defineStore('codex', () => {
     return updated
   }
 
+  async function uploadAuthFile(file: File): Promise<void> {
+    await uploadCpaAuthFile(file, cpaOptions())
+    await loadAll()
+  }
+
+  async function deleteAuthFile(authName: string): Promise<void> {
+    const account = accounts.value.find((item) => item.name === authName)
+    if (!account?.canDelete) {
+      throw new Error('Only CPA file accounts can be deleted')
+    }
+
+    await deleteCpaAuthFile(authName, cpaOptions())
+    if (account.metadata) {
+      await codexMetadataAPI.deleteAccountMetadata(authName)
+    }
+    await loadAll()
+  }
+
+  async function getCodexAuthUrl(): Promise<string> {
+    return fetchCodexAuthUrl(cpaOptions())
+  }
+
   return {
     managementBaseUrl,
     managementKey,
@@ -138,5 +170,8 @@ export const useCodexStore = defineStore('codex', () => {
     setManagementBaseUrl,
     loadAll,
     updateAccountMetadata,
+    uploadAuthFile,
+    deleteAuthFile,
+    getCodexAuthUrl,
   }
 })

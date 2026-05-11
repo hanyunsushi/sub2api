@@ -9,6 +9,9 @@ vi.mock('@/api/codex', async () => {
   return {
     ...actual,
     listAuthFiles: vi.fn(),
+    uploadAuthFile: vi.fn(),
+    deleteAuthFile: vi.fn(),
+    getCodexAuthUrl: vi.fn(),
   }
 })
 
@@ -124,5 +127,87 @@ describe('useCodexStore', () => {
       { display_name: 'New Label' }
     )
     expect(store.accounts[0].label).toBe('New Label')
+  })
+
+  it('uploads CPA auth file through CPA and refreshes merged accounts', async () => {
+    vi.mocked(cpaAPI.uploadAuthFile).mockResolvedValue(undefined)
+    vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([{ name: 'account1.json', status: 'ok', source: 'file' }])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const file = new File(['{}'], 'account1.json', { type: 'application/json' })
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+
+    await store.uploadAuthFile(file)
+
+    expect(cpaAPI.uploadAuthFile).toHaveBeenCalledWith(file, {
+      baseUrl: '/cpa-management',
+      managementKey: 'secret-key',
+    })
+    expect(store.accounts[0].name).toBe('account1.json')
+  })
+
+  it('deletes CPA file accounts and removes matching Sub2 metadata', async () => {
+    vi.mocked(cpaAPI.deleteAuthFile).mockResolvedValue(undefined)
+    vi.mocked(cpaAPI.listAuthFiles).mockResolvedValueOnce([
+      { name: 'account1.json', status: 'ok', source: 'file' },
+    ]).mockResolvedValueOnce([])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValueOnce([
+      {
+        id: 10,
+        auth_name: 'account1.json',
+        group_id: null,
+        display_name: 'Account One',
+        note: '',
+        local_tags: [],
+        settings: {},
+        sort_order: 0,
+        created_at: '',
+        updated_at: '',
+      },
+    ]).mockResolvedValueOnce([])
+    vi.mocked(metadataAPI.deleteAccountMetadata).mockResolvedValue(undefined)
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+    await store.loadAll()
+
+    await store.deleteAuthFile('account1.json')
+
+    expect(cpaAPI.deleteAuthFile).toHaveBeenCalledWith('account1.json', {
+      baseUrl: '/cpa-management',
+      managementKey: 'secret-key',
+    })
+    expect(metadataAPI.deleteAccountMetadata).toHaveBeenCalledWith('account1.json')
+    expect(store.accounts).toHaveLength(0)
+  })
+
+  it('does not delete runtime-only or non-file accounts from CPA', async () => {
+    vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([
+      { name: 'memory-account', status: 'ok', source: 'memory' },
+    ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+    await store.loadAll()
+
+    await expect(store.deleteAuthFile('memory-account')).rejects.toThrow('Only CPA file accounts can be deleted')
+
+    expect(cpaAPI.deleteAuthFile).not.toHaveBeenCalled()
+  })
+
+  it('returns the CPA Codex OAuth URL without persisting the management key', async () => {
+    vi.mocked(cpaAPI.getCodexAuthUrl).mockResolvedValue('https://example.com/oauth')
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+
+    await expect(store.getCodexAuthUrl()).resolves.toBe('https://example.com/oauth')
+
+    expect(cpaAPI.getCodexAuthUrl).toHaveBeenCalledWith({
+      baseUrl: '/cpa-management',
+      managementKey: 'secret-key',
+    })
+    expect(localStorage.getItem('codex.managementKey')).toBeNull()
   })
 })
