@@ -135,6 +135,41 @@ describe('codex CPA API adapter', () => {
     expect(view.statusMessage).not.toBe('[object Object]')
   })
 
+  it('maps CPA failed auth error code and text for compact cards', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'failed.json',
+      status: 'error',
+      error: {
+        code: 401,
+        message: 'Unauthorized token refresh',
+      },
+    } as any)
+
+    expect(view).toMatchObject({
+      status: 'failed',
+      statusMessage: 'Unauthorized token refresh',
+      errorCode: '401',
+      errorText: 'Unauthorized token refresh',
+    })
+  })
+
+  it('treats numeric CPA status codes as failed auth errors', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'expired.json',
+      status: 401,
+      status_message: {
+        text: 'Token expired',
+      },
+    } as any)
+
+    expect(view).toMatchObject({
+      status: 'failed',
+      statusMessage: 'Token expired',
+      errorCode: '401',
+      errorText: 'Token expired',
+    })
+  })
+
   it('treats CPA disk fallback entries without source as deletable json files', () => {
     const view = mapCpaAuthFileToView({
       name: 'fallback-account.json',
@@ -505,7 +540,13 @@ describe('codex CPA API adapter', () => {
     expect(result[0]).toMatchObject({
       status: 'error',
       status_message: 'auth refresh required',
+      last_error_code: 401,
       last_error: 'auth refresh required',
+    })
+    expect(mapCpaAuthFileToView(result[0])).toMatchObject({
+      status: 'failed',
+      errorCode: '401',
+      errorText: 'auth refresh required',
     })
     expect(result[0].status_message).not.toBe('[object Object]')
   })

@@ -40,6 +40,12 @@ export interface CpaAuthFileRaw {
   quota_text?: string
   usage?: number | string
   usage_text?: string
+  last_error_code?: number | string
+  error_code?: number | string
+  status_code?: number | string
+  statusCode?: number | string
+  http_status?: number | string
+  httpStatus?: number | string
   last_error?: string
   error_message?: string
   failure_reason?: string
@@ -71,6 +77,8 @@ export interface CodexAccountView {
   quotaRemainingPercent?: number
   quotaText?: string
   usageText?: string
+  errorCode?: string
+  errorText?: string
   lastError?: string
   lastErrorAt?: string
   success?: number

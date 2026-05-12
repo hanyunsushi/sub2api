@@ -188,7 +188,7 @@ function errorMessageFromPayload(value: unknown, fallback: string): string {
   }
   if (typeof parsed === 'object') {
     const record = parsed as Record<string, unknown>
-    for (const key of ['message', 'error', 'detail', 'reason', 'status_message', 'statusMessage']) {
+    for (const key of ['message', 'error', 'detail', 'reason', 'text', 'description', 'status_message', 'statusMessage']) {
       const message = errorMessageFromPayload(record[key], '')
       if (message) return message
     }
@@ -463,6 +463,7 @@ export async function refreshCodexQuotas(
           ...raw,
           status: 'error',
           status_message: message,
+          last_error_code: err instanceof CpaApiError ? err.status : undefined,
           last_error: message,
           last_error_at: new Date().toISOString(),
         }
@@ -530,6 +531,7 @@ function normalizeStatus(raw: CpaAuthFileRaw): CodexAccountStatus {
   if (raw.unavailable) return 'failed'
 
   const status = String(raw.status || '').toLowerCase()
+  if (/^[1-5]\d{2}$/.test(status)) return 'failed'
   if (['ok', 'ready', 'active', 'enabled', 'success'].includes(status)) return 'active'
   if (['expiring', 'expired', 'stale'].includes(status)) return 'expiring'
   if (['error', 'failed', 'unavailable', 'invalid'].includes(status)) return 'failed'
@@ -544,7 +546,18 @@ function normalizeSource(source: unknown): CodexAccountSource {
 
 function valueCandidates(raw: CpaAuthFileRaw): Record<string, unknown>[] {
   const candidates: Record<string, unknown>[] = [raw]
-  for (const key of ['account', 'account_info', 'quota', 'usage', 'billing', 'stats']) {
+  for (const key of [
+    'account',
+    'account_info',
+    'quota',
+    'usage',
+    'billing',
+    'stats',
+    'error',
+    'last_error',
+    'status_message',
+    'statusMessage',
+  ]) {
     const value = raw[key]
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       candidates.push(value as Record<string, unknown>)
@@ -618,12 +631,45 @@ function quotaRemainingPercent(raw: CpaAuthFileRaw, balanceText?: string, usageT
   return percentFromText(balanceText) ?? remainingPercentFromText(usageText)
 }
 
+function firstErrorCode(raw: CpaAuthFileRaw): string | undefined {
+  const candidates = valueCandidates(raw)
+  for (const candidate of candidates) {
+    for (const key of [
+      'last_error_code',
+      'error_code',
+      'errorCode',
+      'status_code',
+      'statusCode',
+      'http_status',
+      'httpStatus',
+      'code',
+    ]) {
+      const code = stringValue(candidate[key])
+      if (code && /^(?:[1-5]\d{2}|[A-Z0-9][A-Z0-9_-]{2,})$/i.test(code)) return code
+    }
+  }
+
+  const status = stringValue(raw.status)
+  if (status && /^[1-5]\d{2}$/.test(status)) return status
+  return undefined
+}
+
+function readableErrorText(statusMessage: string, lastError?: string): string | undefined {
+  const text = lastError || statusMessage
+  if (!text || ['error', 'failed', 'invalid', 'unavailable'].includes(text.toLowerCase())) return undefined
+  return text
+}
+
 export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
   const runtimeOnly = raw.runtime_only === true
   const jsonFileName = name.toLowerCase().endsWith('.json')
-  const statusMessage = errorMessageFromPayload(raw.status_message || raw.status, '')
+  const status = normalizeStatus(raw)
+  const statusMessagePayload = status === 'failed'
+    ? raw.status_message || raw.statusMessage || raw.last_error || raw.error_message || raw.failure_reason || raw.error || raw.status
+    : raw.status_message || raw.status
+  const statusMessage = errorMessageFromPayload(statusMessagePayload, '')
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
   const balanceText = firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text'])
   const usageText = firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status'])
@@ -634,14 +680,20 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     'failure_reason',
     'last_failure',
     'error',
+    'message',
+    'detail',
+    'reason',
+    'text',
+    'description',
   ])
+  const errorText = readableErrorText(statusMessage, lastError)
 
   return {
     key: String(raw.auth_index || raw.id || name),
     name,
     provider: String(raw.provider || 'codex'),
     label,
-    status: normalizeStatus(raw),
+    status,
     statusMessage,
     source,
     canDelete: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
@@ -665,6 +717,8 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     quotaRemainingPercent: quotaRemainingPercent(raw, balanceText, usageText),
     quotaText: firstString(raw, ['quota_text', 'quota', 'limit_text', 'rate_limit', 'plan', 'tier', 'subscription']),
     usageText,
+    errorCode: firstErrorCode(raw),
+    errorText,
     lastError: lastError && lastError !== statusMessage ? lastError : undefined,
     lastErrorAt: firstString(raw, ['last_error_at', 'error_at', 'failed_at', 'last_failed_at']),
     success: raw.success,

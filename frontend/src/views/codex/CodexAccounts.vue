@@ -166,7 +166,7 @@
                       <span
                         class="codex-status-light"
                         :class="`codex-status-light--${account.status}`"
-                        :title="account.statusMessage || statusLabel(account.status)"
+                        :title="accountErrorSummary(account) || account.statusMessage || statusLabel(account.status)"
                         :aria-label="statusLabel(account.status)"
                       ></span>
                       <button
@@ -219,6 +219,19 @@
                         {{ account.modifiedAt ? formatDate(account.modifiedAt) : '-' }}
                       </span>
                     </div>
+                  </div>
+
+                  <div
+                    v-if="account.status === 'failed' && accountErrorSummary(account)"
+                    class="codex-account-error"
+                    :title="accountErrorSummary(account)"
+                  >
+                    <span v-if="account.errorCode" class="codex-account-error__code">
+                      {{ account.errorCode }}
+                    </span>
+                    <span v-if="accountErrorText(account)" class="codex-account-error__text">
+                      {{ accountErrorText(account) }}
+                    </span>
                   </div>
 
                   <div
@@ -759,6 +772,14 @@ function quotaProgressLabel(account: CodexAccountMerged): string {
     ? t('admin.codex.accounts.balanceUnavailable')
     : `${account.quotaRemainingPercent}%`
   return `${t('admin.codex.accounts.quotaRemaining')}: ${value}`
+}
+
+function accountErrorText(account: CodexAccountMerged): string {
+  return account.errorText || account.lastError || account.statusMessage || ''
+}
+
+function accountErrorSummary(account: CodexAccountMerged): string {
+  return [account.errorCode, accountErrorText(account)].filter(Boolean).join(' ')
 }
 
 function toggleDisabledTitle(account: CodexAccountMerged): string {

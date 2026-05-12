@@ -506,6 +506,37 @@
   white-space: nowrap;
 }
 
+.codex-account-error {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(180, 69, 54, 0.18);
+  border-radius: 6px;
+  background: rgba(180, 69, 54, 0.06);
+  padding: 4px 7px;
+  color: var(--codex-danger);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.codex-account-error__code {
+  flex: 0 0 auto;
+  border-radius: 4px;
+  background: rgba(180, 69, 54, 0.12);
+  padding: 1px 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 750;
+}
+
+.codex-account-error__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .codex-tag-list {
   display: flex;
   flex-wrap: wrap;
