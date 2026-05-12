@@ -15,12 +15,12 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#edf2ff_100%)] dark:bg-[linear-gradient(135deg,#151f3f_0%,#070c1b_100%)]"
+    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#f8f9fb_0%,#f2f4ff_100%)] dark:bg-[linear-gradient(135deg,#191f45_0%,#080b1d_100%)]"
   >
     <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(21,94,239,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(122,90,248,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(139,184,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(155,138,251,0.05)_1px,transparent_1px)]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(77,107,254,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(92,125,255,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
       ></div>
     </div>
 
@@ -478,7 +478,7 @@ onMounted(() => {
 /* Terminal Window */
 .terminal-window {
   width: 420px;
-  background: linear-gradient(145deg, #151f3f 0%, #070c1b 100%);
+  background: linear-gradient(145deg, #191f45 0%, #080b1d 100%);
   border-radius: 10px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
@@ -578,13 +578,13 @@ onMounted(() => {
   font-weight: bold;
 }
 .code-cmd {
-  color: #8bb8ff;
+  color: #8aa1ff;
 }
 .code-flag {
-  color: #cbd8f5;
+  color: #c8d2ff;
 }
 .code-url {
-  color: #9b8afb;
+  color: #b7c6ff;
 }
 .code-comment {
   color: #64748b;

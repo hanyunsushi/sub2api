@@ -5,47 +5,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Dify-inspired electric blue
+        // 主色调 - Dify-inspired blue violet
         primary: {
-          50: '#eef4ff',
-          100: '#d9e8ff',
-          200: '#b8d4ff',
-          300: '#8bb8ff',
-          400: '#5a90ff',
-          500: '#155eef',
-          600: '#004eeb',
-          700: '#003ecc',
-          800: '#00359e',
-          900: '#102a56',
-          950: '#071734'
+          50: '#f5f7ff',
+          100: '#e5eaff',
+          200: '#cfd9ff',
+          300: '#b7c6ff',
+          400: '#8aa1ff',
+          500: '#5c7dff',
+          600: '#4d6bfe',
+          700: '#0033ff',
+          800: '#002cd6',
+          900: '#24386c',
+          950: '#151b3f'
         },
-        // 辅助色 - cool blue-gray surface scale
+        // 辅助色 - restrained lavender surface scale
         accent: {
-          50: '#f7f9ff',
-          100: '#edf2ff',
-          200: '#dbe5ff',
-          300: '#bfcef8',
-          400: '#93a7e8',
-          500: '#6678c7',
-          600: '#5362a4',
-          700: '#3f4b80',
-          800: '#293255',
-          900: '#171f39',
-          950: '#0b1020'
+          50: '#f8f9fb',
+          100: '#f2f4ff',
+          200: '#e5eaff',
+          300: '#d8e0ff',
+          400: '#b7c6ff',
+          500: '#7589be',
+          600: '#5365a3',
+          700: '#3e4f8a',
+          800: '#24386c',
+          900: '#191f45',
+          950: '#0d1028'
         },
         // 深色模式背景 - cool navy
         dark: {
-          50: '#f8fbff',
-          100: '#eaf0ff',
-          200: '#cbd8f5',
-          300: '#9fb2da',
-          400: '#7389bf',
-          500: '#5065a3',
-          600: '#34467c',
-          700: '#202e57',
-          800: '#151f3f',
-          900: '#0d152d',
-          950: '#070c1b'
+          50: '#f8f9fb',
+          100: '#edf0ff',
+          200: '#c8d2ff',
+          300: '#98a9f5',
+          400: '#7589be',
+          500: '#5365a3',
+          600: '#3e4f8a',
+          700: '#24386c',
+          800: '#191f45',
+          900: '#11152e',
+          950: '#080b1d'
         }
       },
       fontFamily: {
@@ -65,18 +65,18 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(21, 48, 111, 0.09)',
-        'glass-sm': '0 8px 22px rgba(21, 48, 111, 0.07)',
-        glow: '0 10px 28px rgba(21, 94, 239, 0.18)',
-        'glow-lg': '0 18px 44px rgba(122, 90, 248, 0.22)',
-        card: '0 1px 2px rgba(21, 48, 111, 0.05), 0 8px 22px rgba(21, 48, 111, 0.055)',
-        'card-hover': '0 16px 36px rgba(21, 48, 111, 0.1)',
+        glass: '0 14px 40px rgba(36, 56, 108, 0.09)',
+        'glass-sm': '0 8px 22px rgba(36, 56, 108, 0.07)',
+        glow: '0 10px 28px rgba(77, 107, 254, 0.18)',
+        'glow-lg': '0 18px 44px rgba(92, 125, 255, 0.22)',
+        card: '0 1px 2px rgba(36, 56, 108, 0.05), 0 8px 22px rgba(36, 56, 108, 0.055)',
+        'card-hover': '0 16px 36px rgba(36, 56, 108, 0.1)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #155eef 0%, #7a5af8 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #151f3f 0%, #070c1b 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #0033ff 0%, #5c7dff 58%, #8aa1ff 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #191f45 0%, #080b1d 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
@@ -118,8 +118,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(21, 94, 239, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(122, 90, 248, 0.22)' }
+          '0%': { boxShadow: '0 10px 28px rgba(77, 107, 254, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(92, 125, 255, 0.22)' }
         }
       },
       backdropBlur: {

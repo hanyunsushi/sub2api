@@ -2,14 +2,14 @@
   <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-accent-50 p-4 dark:bg-dark-950">
     <!-- Background -->
     <div
-      class="absolute inset-0 bg-[linear-gradient(180deg,#f8fbff_0%,#edf2ff_100%)] dark:bg-[linear-gradient(135deg,#151f3f_0%,#070c1b_100%)]"
+      class="absolute inset-0 bg-[linear-gradient(180deg,#f8f9fb_0%,#f2f4ff_100%)] dark:bg-[linear-gradient(135deg,#191f45_0%,#080b1d_100%)]"
     ></div>
 
     <!-- Decorative Elements -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <!-- Grid Pattern -->
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(21,94,239,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(122,90,248,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(139,184,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(155,138,251,0.05)_1px,transparent_1px)]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(77,107,254,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(92,125,255,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
       ></div>
     </div>
 
