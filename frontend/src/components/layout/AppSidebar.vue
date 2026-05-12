@@ -936,11 +936,4 @@ onMounted(() => {
   height: 1.25rem;
 }
 
-.sidebar-svg-icon :deep(svg *[stroke]) {
-  stroke: currentColor;
-}
-
-.sidebar-svg-icon :deep(svg *[fill]:not([fill='none'])) {
-  fill: currentColor;
-}
 </style>
