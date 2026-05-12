@@ -300,6 +300,12 @@
   transition: transform 140ms ease, border-color 140ms ease, color 140ms ease, background-color 140ms ease;
 }
 
+.codex-icon-button--tight {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
 .codex-icon-button:hover {
   border-color: var(--codex-accent);
   color: var(--codex-text);
@@ -318,6 +324,12 @@
   border-color: var(--codex-danger);
   background: rgba(180, 69, 54, 0.08);
   color: var(--codex-danger);
+}
+
+.codex-icon-button--success:hover:not(:disabled) {
+  border-color: var(--codex-success);
+  background: rgba(47, 125, 89, 0.08);
+  color: var(--codex-success);
 }
 
 .codex-metrics {
@@ -346,7 +358,7 @@
 
 .codex-account-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 12px;
   border-top: 1px solid var(--codex-border);
   padding: 14px;
@@ -355,9 +367,8 @@
 
 .codex-account-card {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
-  aspect-ratio: 1 / 1;
-  min-height: 220px;
+  grid-template-rows: auto auto auto;
+  min-height: 164px;
   min-width: 0;
   overflow: hidden;
   cursor: pointer;
@@ -381,46 +392,65 @@
 }
 
 .codex-account-card__top,
-.codex-account-card__body,
-.codex-account-card__footer {
-  display: flex;
+.codex-account-card__body {
   gap: 10px;
   min-width: 0;
 }
 
-.codex-account-card__top,
-.codex-account-card__footer {
+.codex-account-card__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 8px;
 }
 
-.codex-account-card__top {
-  gap: 8px;
+.codex-account-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: max-content;
 }
 
 .codex-account-card__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 9px;
 }
 
 .codex-account-card__section {
   min-width: 0;
 }
 
+.codex-account-card__row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .codex-account-card__label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0;
   color: var(--codex-muted);
   font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .codex-account-name {
+  display: -webkit-box;
   font-weight: 700;
+  font-size: clamp(13px, 2.4cqi, 15px);
   overflow-wrap: anywhere;
   line-height: 1.25;
+  overflow: hidden;
   text-wrap: pretty;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .codex-account-meta {
@@ -455,11 +485,25 @@
   font-size: 13px;
   font-weight: 750;
   color: var(--codex-text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codex-balance-meta {
   color: var(--codex-muted);
   font-size: 12px;
+}
+
+.codex-account-card__value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--codex-text);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codex-tag-list {
@@ -529,6 +573,72 @@
 .codex-status-badge--unknown {
   background: var(--codex-soft);
   color: var(--codex-muted);
+}
+
+.codex-status-light {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 999px;
+  background: var(--codex-muted);
+  box-shadow: 0 0 0 3px var(--codex-soft);
+}
+
+.codex-status-light--active {
+  background: var(--codex-success);
+  box-shadow: 0 0 0 3px rgba(47, 125, 89, 0.14);
+}
+
+.codex-status-light--expiring,
+.codex-status-light--unknown {
+  background: var(--codex-warning);
+  box-shadow: 0 0 0 3px rgba(173, 107, 31, 0.14);
+}
+
+.codex-status-light--failed,
+.codex-status-light--disabled {
+  background: var(--codex-danger);
+  box-shadow: 0 0 0 3px rgba(180, 69, 54, 0.14);
+}
+
+.codex-quota-progress {
+  position: relative;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--codex-soft);
+}
+
+.codex-quota-progress__bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--codex-accent);
+  transition: width 180ms ease, background-color 180ms ease;
+}
+
+.codex-quota-progress--healthy .codex-quota-progress__bar {
+  background: var(--codex-accent);
+}
+
+.codex-quota-progress--medium .codex-quota-progress__bar {
+  background: var(--codex-warning);
+}
+
+.codex-quota-progress--low .codex-quota-progress__bar {
+  background: var(--codex-danger);
+}
+
+.codex-quota-progress--unknown .codex-quota-progress__bar {
+  width: 100% !important;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--codex-border-strong) 0,
+    var(--codex-border-strong) 6px,
+    var(--codex-soft) 6px,
+    var(--codex-soft) 12px
+  );
 }
 
 .codex-empty,
@@ -685,6 +795,13 @@
   white-space: nowrap;
 }
 
+.codex-group-chip__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .codex-group-swatch {
   width: 10px;
   height: 10px;
@@ -694,35 +811,21 @@
 
 @container (max-width: 560px) {
   .codex-account-grid {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
   }
 
   .codex-account-card {
-    aspect-ratio: auto;
-    min-height: 196px;
-  }
-
-  .codex-account-card__body {
-    grid-template-columns: 1fr;
-  }
-
-  .codex-status-badge {
-    max-width: 58%;
+    min-height: 168px;
   }
 }
 
 @container (max-width: 420px) {
-  .codex-account-card__top,
-  .codex-account-card__footer {
-    flex-direction: column;
+  .codex-account-grid {
+    grid-template-columns: 1fr;
   }
 
-  .codex-status-badge {
-    max-width: 100%;
-  }
-
-  .codex-icon-button {
-    align-self: flex-end;
+  .codex-account-card {
+    min-height: 0;
   }
 }
 

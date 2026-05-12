@@ -13,6 +13,7 @@ vi.mock('@/api/codex', async () => {
     deleteAuthFile: vi.fn(),
     getCodexAuthUrl: vi.fn(),
     refreshCodexQuotas: vi.fn(),
+    setAuthFileDisabled: vi.fn(),
   }
 })
 
@@ -160,6 +161,7 @@ describe('useCodexStore', () => {
     expect(store.accounts[0]).toMatchObject({
       quotaText: 'Plus',
       usageText: '5h remaining 88%',
+      quotaRemainingPercent: 88,
     })
   })
 
@@ -296,6 +298,31 @@ describe('useCodexStore', () => {
     await expect(store.deleteAuthFile('memory-account')).rejects.toThrow('Only CPA file accounts can be deleted')
 
     expect(cpaAPI.deleteAuthFile).not.toHaveBeenCalled()
+  })
+
+  it('toggles CPA auth disabled state and reloads the account list', async () => {
+    vi.mocked(cpaAPI.setAuthFileDisabled).mockResolvedValue(undefined)
+    vi.mocked(cpaAPI.listAuthFiles)
+      .mockResolvedValueOnce([
+        { name: 'account1.json', status: 'ok', source: 'file' },
+      ])
+      .mockResolvedValueOnce([
+        { name: 'account1.json', status: 'ok', source: 'file', disabled: true },
+      ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+    await store.loadAll()
+
+    await store.setAuthFileDisabled('account1.json', true)
+
+    expect(cpaAPI.setAuthFileDisabled).toHaveBeenCalledWith('account1.json', true, {
+      baseUrl: '/cpa-management',
+      managementKey: 'secret-key',
+    })
+    expect(cpaAPI.listAuthFiles).toHaveBeenCalledTimes(2)
+    expect(store.accounts[0].status).toBe('disabled')
   })
 
   it('returns the CPA Codex OAuth URL without persisting the management key', async () => {

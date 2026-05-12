@@ -160,78 +160,79 @@
                 >
                   <div class="codex-account-card__top">
                     <div class="min-w-0">
-                      <div class="codex-account-name">{{ account.label }}</div>
-                      <div class="codex-account-meta">{{ account.name }}</div>
-                      <div v-if="account.email" class="codex-account-meta">{{ account.email }}</div>
+                      <div class="codex-account-name">{{ accountCardTitle(account) }}</div>
                     </div>
-                    <CodexStatusBadge
-                      :status="account.status"
-                      :message="account.statusMessage"
-                      :label="statusLabel(account.status)"
-                    />
+                    <div class="codex-account-actions">
+                      <span
+                        class="codex-status-light"
+                        :class="`codex-status-light--${account.status}`"
+                        :title="account.statusMessage || statusLabel(account.status)"
+                        :aria-label="statusLabel(account.status)"
+                      ></span>
+                      <button
+                        type="button"
+                        class="codex-icon-button codex-icon-button--tight"
+                        :class="{ 'codex-icon-button--success': account.status === 'disabled' }"
+                        :disabled="!account.canToggleDisabled || togglingAuthName === account.name"
+                        :title="toggleDisabledTitle(account)"
+                        :aria-label="toggleDisabledTitle(account)"
+                        @click.stop="toggleAccountDisabled(account)"
+                      >
+                        <Icon
+                          :name="account.status === 'disabled' ? 'play' : 'ban'"
+                          size="xs"
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        class="codex-icon-button codex-icon-button--tight codex-icon-button--danger"
+                        :disabled="!account.canDelete || deletingAuthName === account.name"
+                        :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
+                        :aria-label="account.canDelete
+                          ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
+                          : t('admin.codex.accounts.deleteDisabled')"
+                        @click.stop="requestDeleteAccount(account.name)"
+                      >
+                        <Icon name="trash" size="xs" />
+                      </button>
+                    </div>
                   </div>
 
                   <div class="codex-account-card__body">
-                    <div class="codex-account-card__section">
+                    <div class="codex-account-card__row">
                       <span class="codex-account-card__label">{{ t('admin.codex.accounts.columns.balance') }}</span>
-                      <div class="codex-balance-list">
-                        <span class="codex-balance-value">{{ accountBalanceLabel(account) }}</span>
-                        <span v-if="account.quotaText" class="codex-balance-meta">{{ account.quotaText }}</span>
-                        <span v-if="account.usageText" class="codex-balance-meta">{{ account.usageText }}</span>
-                      </div>
+                      <span class="codex-balance-value">{{ accountBalanceLabel(account) }}</span>
                     </div>
-                    <div class="codex-account-card__section">
+                    <div class="codex-account-card__row">
                       <span class="codex-account-card__label">{{ t('admin.codex.accounts.columns.group') }}</span>
                       <span v-if="account.group" class="codex-group-chip">
                         <span class="codex-group-swatch" :style="{ '--group-color': account.group.color }"></span>
-                        {{ account.group.name }}
+                        <span class="codex-group-chip__name">{{ account.group.name }}</span>
                       </span>
-                      <span v-else class="text-sm text-[var(--codex-muted)]">
+                      <span v-else class="codex-account-card__value text-[var(--codex-muted)]">
                         {{ t('admin.codex.accounts.noGroup') }}
                       </span>
                     </div>
-                  </div>
-
-                  <div v-if="account.metadata?.local_tags?.length" class="codex-tag-list">
-                    <span v-for="tag in account.metadata.local_tags" :key="tag" class="codex-tag">
-                      {{ tag }}
-                    </span>
-                  </div>
-
-                  <div class="codex-account-card__footer">
-                    <div class="min-w-0">
-                      <div class="font-mono text-xs text-[var(--codex-muted)]">
-                        {{ t('admin.codex.accounts.successFailed', { success: account.success ?? 0, failed: account.failed ?? 0 }) }}
-                      </div>
-                      <div v-if="account.modifiedAt" class="codex-account-meta">
-                        {{ formatDate(account.modifiedAt) }}
-                      </div>
-                      <div v-if="account.lastRefreshAt" class="codex-account-detail">
-                        {{ t('admin.codex.accounts.lastRefreshAt', { time: formatDate(account.lastRefreshAt) }) }}
-                      </div>
-                      <div v-if="account.statusMessage" class="codex-account-detail">
-                        {{ account.statusMessage }}
-                      </div>
-                      <div v-if="account.lastError" class="codex-account-detail codex-account-detail--danger">
-                        {{ t('admin.codex.accounts.lastError', { error: account.lastError }) }}
-                      </div>
+                    <div class="codex-account-card__row">
+                      <span class="codex-account-card__label">{{ t('admin.codex.accounts.columns.modifiedAt') }}</span>
+                      <span class="codex-account-card__value">
+                        {{ account.modifiedAt ? formatDate(account.modifiedAt) : '-' }}
+                      </span>
                     </div>
-                    <button
-                      type="button"
-                      class="codex-icon-button codex-icon-button--danger"
-                      :disabled="!account.canDelete || deletingAuthName === account.name"
-                      :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
-                      :aria-label="account.canDelete
-                        ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
-                        : t('admin.codex.accounts.deleteDisabled')"
-                      @click.stop="requestDeleteAccount(account.name)"
-                    >
-                      <Icon name="trash" size="sm" />
-                    </button>
                   </div>
-                  <div v-if="account.lastErrorAt" class="codex-account-detail">
-                    {{ formatDate(account.lastErrorAt) }}
+
+                  <div
+                    class="codex-quota-progress"
+                    :class="quotaProgressClass(account)"
+                    :title="quotaProgressLabel(account)"
+                    :aria-label="quotaProgressLabel(account)"
+                  >
+                    <span
+                      class="codex-quota-progress__bar"
+                      :style="{ width: `${quotaProgressPercent(account)}%` }"
+                    ></span>
                   </div>
+
                 </article>
               </div>
               <div v-if="operationError" class="codex-error codex-error--compact">
@@ -399,7 +400,6 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
-import CodexStatusBadge from '@/components/codex/CodexStatusBadge.vue'
 import { DEFAULT_CPA_MANAGEMENT_BASE } from '@/api/codex'
 import { createGroup as createCodexGroup } from '@/api/codexMetadata'
 import { keysAPI } from '@/api/keys'
@@ -423,6 +423,7 @@ const creatingGroup = ref(false)
 const uploadingAuthFile = ref(false)
 const oauthLoading = ref(false)
 const deletingAuthName = ref('')
+const togglingAuthName = ref('')
 const operationError = ref('')
 const operationNotice = ref('')
 const oauthFallbackUrl = ref('')
@@ -631,6 +632,25 @@ async function confirmDeleteAccount(): Promise<void> {
   }
 }
 
+async function toggleAccountDisabled(account: CodexAccountMerged): Promise<void> {
+  syncConnectionDraft()
+  togglingAuthName.value = account.name
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  const disabled = account.status !== 'disabled'
+  try {
+    await codexStore.setAuthFileDisabled(account.name, disabled)
+    operationNotice.value = disabled
+      ? t('admin.codex.accounts.disableSucceeded', { name: account.name })
+      : t('admin.codex.accounts.enableSucceeded', { name: account.name })
+  } catch (err) {
+    operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.toggleDisabledFailed')
+  } finally {
+    togglingAuthName.value = ''
+  }
+}
+
 async function saveMetadata(): Promise<void> {
   const account = selectedAccount.value
   if (!account) return
@@ -714,6 +734,38 @@ function accountBalanceLabel(account: CodexAccountMerged): string {
     return Number.isInteger(account.balance) ? String(account.balance) : account.balance.toFixed(2)
   }
   return t('admin.codex.accounts.balanceUnavailable')
+}
+
+function accountCardTitle(account: CodexAccountMerged): string {
+  const rawName = (account.name || account.label).replace(/\.json$/i, '')
+  if (!rawName) return 'codex'
+  return rawName.toLowerCase().startsWith('codex-') ? rawName : `codex-${rawName}`
+}
+
+function quotaProgressPercent(account: CodexAccountMerged): number {
+  return account.quotaRemainingPercent ?? 0
+}
+
+function quotaProgressClass(account: CodexAccountMerged): string {
+  const percent = account.quotaRemainingPercent
+  if (percent === undefined) return 'codex-quota-progress--unknown'
+  if (percent <= 20) return 'codex-quota-progress--low'
+  if (percent <= 45) return 'codex-quota-progress--medium'
+  return 'codex-quota-progress--healthy'
+}
+
+function quotaProgressLabel(account: CodexAccountMerged): string {
+  const value = account.quotaRemainingPercent === undefined
+    ? t('admin.codex.accounts.balanceUnavailable')
+    : `${account.quotaRemainingPercent}%`
+  return `${t('admin.codex.accounts.quotaRemaining')}: ${value}`
+}
+
+function toggleDisabledTitle(account: CodexAccountMerged): string {
+  if (!account.canToggleDisabled) return t('admin.codex.accounts.toggleDisabledUnavailable')
+  return account.status === 'disabled'
+    ? t('admin.codex.accounts.enableAuthFile')
+    : t('admin.codex.accounts.disableAuthFile')
 }
 
 function statusLabel(status: string): string {

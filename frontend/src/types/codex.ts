@@ -28,6 +28,14 @@ export interface CpaAuthFileRaw {
   credit_balance?: number | string
   remaining_balance?: number | string
   available_balance?: number | string
+  quota_remaining_percent?: number | string
+  remaining_percent?: number | string
+  remaining_pct?: number | string
+  available_percent?: number | string
+  available_pct?: number | string
+  quota_used_percent?: number | string
+  used_percent?: number | string
+  usage_percent?: number | string
   quota?: number | string
   quota_text?: string
   usage?: number | string
@@ -53,12 +61,14 @@ export interface CodexAccountView {
   source: CodexAccountSource
   canDelete: boolean
   canDownload: boolean
+  canToggleDisabled: boolean
   size?: number
   modifiedAt?: string
   lastRefreshAt?: string
   email?: string
   balance?: number
   balanceText?: string
+  quotaRemainingPercent?: number
   quotaText?: string
   usageText?: string
   lastError?: string

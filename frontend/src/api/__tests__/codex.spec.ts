@@ -7,6 +7,7 @@ import {
   listAuthFiles,
   mapCpaAuthFileToView,
   refreshCodexQuotas,
+  setAuthFileDisabled,
   uploadAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
@@ -98,6 +99,25 @@ describe('codex CPA API adapter', () => {
       usageText: '7d 40%',
       lastError: 'token refresh failed',
     })
+  })
+
+  it('maps remaining quota percent for card progress bars', () => {
+    expect(mapCpaAuthFileToView({
+      name: 'codex-work.json',
+      quota_remaining_percent: '88',
+    }).quotaRemainingPercent).toBe(88)
+
+    expect(mapCpaAuthFileToView({
+      name: 'codex-used.json',
+      usage: {
+        used_percent: 73.4,
+      },
+    }).quotaRemainingPercent).toBe(27)
+
+    expect(mapCpaAuthFileToView({
+      name: 'codex-text.json',
+      usage_text: '5h remaining 12%',
+    }).quotaRemainingPercent).toBe(12)
   })
 
   it('formats nested CPA error objects as readable status text', () => {
@@ -250,7 +270,7 @@ describe('codex CPA API adapter', () => {
     expect(body.get('file')).toBe(file)
   })
 
-  it('deletes a CPA auth file using CPA JSON body contract', async () => {
+  it('deletes a CPA auth file using the current CPA query contract', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
@@ -260,10 +280,56 @@ describe('codex CPA API adapter', () => {
     await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
 
     expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/auth-files?name=folder%2Faccount%201.json',
+      expect.objectContaining({
+        method: 'DELETE',
+      })
+    )
+  })
+
+  it('falls back to the legacy CPA JSON body delete contract', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ error: 'not found' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ ok: true }),
+      })
+
+    await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
+
+    expect(mockFetch).toHaveBeenLastCalledWith(
       '/cpa-management/auth-files',
       expect.objectContaining({
         method: 'DELETE',
         body: JSON.stringify({ names: ['folder/account 1.json'] }),
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      })
+    )
+  })
+
+  it('toggles CPA auth file disabled state through CPA status endpoint', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({ ok: true }),
+    })
+
+    await setAuthFileDisabled('codex-work.json', true, { managementKey: 'secret-key' })
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/auth-files/status',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ name: 'codex-work.json', disabled: true }),
         headers: expect.objectContaining({
           'Content-Type': 'application/json',
         }),

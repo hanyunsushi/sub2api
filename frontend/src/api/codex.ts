@@ -112,12 +112,38 @@ export async function uploadAuthFile(file: File, options: CpaRequestOptions = {}
 }
 
 export async function deleteAuthFile(name: string, options: CpaRequestOptions = {}): Promise<void> {
-  await cpaRequest<unknown>('/auth-files', {
-    method: 'DELETE',
+  try {
+    await cpaRequest<unknown>(`/auth-files?name=${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+      ...options,
+    })
+  } catch (err) {
+    if (err instanceof CpaApiError && [400, 404, 405].includes(err.status ?? 0)) {
+      await cpaRequest<unknown>('/auth-files', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ names: [name] }),
+        ...options,
+      })
+      return
+    }
+    throw err
+  }
+}
+
+export async function setAuthFileDisabled(
+  name: string,
+  disabled: boolean,
+  options: CpaRequestOptions = {}
+): Promise<void> {
+  await cpaRequest<unknown>('/auth-files/status', {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ names: [name] }),
+    body: JSON.stringify({ name, disabled }),
     ...options,
   })
 }
@@ -329,10 +355,14 @@ function codexUsageSummary(usage: Record<string, unknown>): string | undefined {
 }
 
 function codexPrimaryRemaining(usage: Record<string, unknown>): string | undefined {
+  const remaining = codexPrimaryRemainingPercent(usage)
+  return remaining === undefined ? undefined : `${remaining}%`
+}
+
+function codexPrimaryRemainingPercent(usage: Record<string, unknown>): number | undefined {
   const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
   if (!rateLimit || typeof rateLimit !== 'object') return undefined
-  const remaining = windowRemainingPercent(rateLimit.primary_window || rateLimit.primaryWindow)
-  return remaining === undefined ? undefined : `${remaining}%`
+  return windowRemainingPercent(rateLimit.primary_window || rateLimit.primaryWindow)
 }
 
 function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFileRaw {
@@ -350,6 +380,7 @@ function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFil
     quota_text: codexPlanLabel(planType) || firstString(raw, ['quota_text', 'quota', 'plan', 'tier', 'subscription']),
     usage_text: codexUsageSummary(usageRecord) || firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage']),
     balance_text: codexPrimaryRemaining(usageRecord) || firstString(raw, ['balance_text', 'credit_text', 'remaining_balance_text']),
+    quota_remaining_percent: codexPrimaryRemainingPercent(usageRecord),
     last_refresh: new Date().toISOString(),
     last_error: undefined,
   }
@@ -547,6 +578,46 @@ function firstNumber(raw: CpaAuthFileRaw, keys: string[]): number | undefined {
   return undefined
 }
 
+function clampPercent(value: number | undefined): number | undefined {
+  if (value === undefined) return undefined
+  return Math.max(0, Math.min(100, Math.round(value)))
+}
+
+function percentFromText(value: string | undefined): number | undefined {
+  if (!value) return undefined
+  const match = value.match(/(\d+(?:\.\d+)?)\s*%/)
+  if (!match) return undefined
+  return clampPercent(Number(match[1]))
+}
+
+function remainingPercentFromText(value: string | undefined): number | undefined {
+  if (!value) return undefined
+  const lower = value.toLowerCase()
+  if (!/(remaining|left|available|剩余|可用)/.test(lower)) return undefined
+  return percentFromText(value)
+}
+
+function quotaRemainingPercent(raw: CpaAuthFileRaw, balanceText?: string, usageText?: string): number | undefined {
+  const direct = firstNumber(raw, [
+    'quota_remaining_percent',
+    'remaining_percent',
+    'remaining_pct',
+    'remaining_quota_percent',
+    'available_percent',
+    'available_pct',
+  ])
+  if (direct !== undefined) return clampPercent(direct)
+
+  const used = firstNumber(raw, [
+    'quota_used_percent',
+    'used_percent',
+    'usage_percent',
+  ])
+  if (used !== undefined) return clampPercent(100 - used)
+
+  return percentFromText(balanceText) ?? remainingPercentFromText(usageText)
+}
+
 export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
@@ -554,6 +625,8 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const jsonFileName = name.toLowerCase().endsWith('.json')
   const statusMessage = errorMessageFromPayload(raw.status_message || raw.status, '')
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
+  const balanceText = firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text'])
+  const usageText = firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status'])
   const lastError = firstString(raw, [
     'last_error',
     'last_error_message',
@@ -573,6 +646,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     source,
     canDelete: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
     canDownload: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
+    canToggleDisabled: !!name && !runtimeOnly && source !== 'memory',
     size: typeof raw.size === 'number' ? raw.size : undefined,
     modifiedAt: raw.modtime || raw.updated_at || raw.created_at,
     lastRefreshAt: firstString(raw, ['last_refresh', 'last_checked_at', 'refreshed_at']),
@@ -587,9 +661,10 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
       'available_credits',
       'free_credits',
     ]),
-    balanceText: firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text']),
+    balanceText,
+    quotaRemainingPercent: quotaRemainingPercent(raw, balanceText, usageText),
     quotaText: firstString(raw, ['quota_text', 'quota', 'limit_text', 'rate_limit', 'plan', 'tier', 'subscription']),
-    usageText: firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status']),
+    usageText,
     lastError: lastError && lastError !== statusMessage ? lastError : undefined,
     lastErrorAt: firstString(raw, ['last_error_at', 'error_at', 'failed_at', 'last_failed_at']),
     success: raw.success,

@@ -7,6 +7,7 @@ import {
   listAuthFiles,
   mapCpaAuthFileToView,
   refreshCodexQuotas,
+  setAuthFileDisabled as setCpaAuthFileDisabled,
   uploadAuthFile as uploadCpaAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
@@ -213,6 +214,16 @@ export const useCodexStore = defineStore('codex', () => {
     lastLoadedAt.value = Date.now()
   }
 
+  async function setAuthFileDisabled(authName: string, disabled: boolean): Promise<void> {
+    const account = accounts.value.find((item) => item.name === authName)
+    if (!account?.canToggleDisabled) {
+      throw new Error('Only CPA persisted accounts can be enabled or disabled')
+    }
+
+    await setCpaAuthFileDisabled(authName, disabled, cpaOptions())
+    await loadAll()
+  }
+
   async function getCodexAuthUrl(): Promise<string> {
     return fetchCodexAuthUrl(cpaOptions())
   }
@@ -237,6 +248,7 @@ export const useCodexStore = defineStore('codex', () => {
     updateAccountMetadata,
     uploadAuthFile,
     deleteAuthFile,
+    setAuthFileDisabled,
     getCodexAuthUrl,
   }
 })
