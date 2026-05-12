@@ -5,47 +5,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Dify-inspired blue violet
+        // 主色调 - Dify official tokens
         primary: {
-          50: '#f5f7ff',
+          50: '#f8f9fb',
           100: '#e5eaff',
-          200: '#cfd9ff',
+          200: '#b7c6ff',
           300: '#b7c6ff',
           400: '#8aa1ff',
-          500: '#5c7dff',
-          600: '#4d6bfe',
-          700: '#0033ff',
-          800: '#002cd6',
-          900: '#24386c',
-          950: '#151b3f'
+          500: '#0033ff',
+          600: '#002cd6',
+          700: '#001fb8',
+          800: '#00178a',
+          900: '#00105c',
+          950: '#00082e'
         },
-        // 辅助色 - restrained lavender surface scale
+        // 辅助色 - Dify neutral and soft-blue surfaces
         accent: {
           50: '#f8f9fb',
-          100: '#f2f4ff',
+          100: '#ffffff',
           200: '#e5eaff',
-          300: '#d8e0ff',
+          300: '#b7c6ff',
           400: '#b7c6ff',
-          500: '#7589be',
-          600: '#5365a3',
-          700: '#3e4f8a',
-          800: '#24386c',
-          900: '#191f45',
-          950: '#0d1028'
+          500: '#999999',
+          600: '#666666',
+          700: '#333333',
+          800: '#191717',
+          900: '#000000',
+          950: '#000000'
         },
-        // 深色模式背景 - cool navy
+        // 深色模式背景
         dark: {
           50: '#f8f9fb',
-          100: '#edf0ff',
-          200: '#c8d2ff',
-          300: '#98a9f5',
-          400: '#7589be',
-          500: '#5365a3',
-          600: '#3e4f8a',
-          700: '#24386c',
-          800: '#191f45',
-          900: '#11152e',
-          950: '#080b1d'
+          100: '#e5eaff',
+          200: '#b7c6ff',
+          300: '#8aa1ff',
+          400: '#666666',
+          500: '#333333',
+          600: '#24386c',
+          700: '#191717',
+          800: '#111111',
+          900: '#080808',
+          950: '#000000'
         }
       },
       fontFamily: {
@@ -65,18 +65,18 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(36, 56, 108, 0.09)',
-        'glass-sm': '0 8px 22px rgba(36, 56, 108, 0.07)',
-        glow: '0 10px 28px rgba(77, 107, 254, 0.18)',
-        'glow-lg': '0 18px 44px rgba(92, 125, 255, 0.22)',
-        card: '0 1px 2px rgba(36, 56, 108, 0.05), 0 8px 22px rgba(36, 56, 108, 0.055)',
-        'card-hover': '0 16px 36px rgba(36, 56, 108, 0.1)',
+        glass: '0 14px 40px rgba(0, 51, 255, 0.08)',
+        'glass-sm': '0 8px 22px rgba(0, 51, 255, 0.06)',
+        glow: '0 10px 28px rgba(0, 51, 255, 0.18)',
+        'glow-lg': '0 18px 44px rgba(0, 51, 255, 0.22)',
+        card: '0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 22px rgba(0, 51, 255, 0.05)',
+        'card-hover': '0 16px 36px rgba(0, 51, 255, 0.1)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #0033ff 0%, #5c7dff 58%, #8aa1ff 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #191f45 0%, #080b1d 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #0033ff 0%, #2e58ff 58%, #8aa1ff 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #191717 0%, #000000 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
@@ -118,8 +118,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(77, 107, 254, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(92, 125, 255, 0.22)' }
+          '0%': { boxShadow: '0 10px 28px rgba(0, 51, 255, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(0, 51, 255, 0.22)' }
         }
       },
       backdropBlur: {

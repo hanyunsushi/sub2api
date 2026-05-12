@@ -22,7 +22,7 @@
 .driver-active-element {
   position: relative !important;
   z-index: 99999999 !important;
-  outline: 4px solid rgba(77, 107, 254, 0.2) !important;
+  outline: 4px solid rgba(0, 51, 255, 0.2) !important;
   border-radius: 4px !important;
 }
 
@@ -196,7 +196,7 @@
 }
 
 .theme-tour-popover .driver-popover-next-btn {
-  background-color: #4d6bfe !important;
+  background-color: #0033ff !important;
   color: #ffffff !important;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }

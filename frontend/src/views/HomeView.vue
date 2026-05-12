@@ -15,12 +15,12 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#f8f9fb_0%,#f2f4ff_100%)] dark:bg-[linear-gradient(135deg,#191f45_0%,#080b1d_100%)]"
+    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f8f9fb_100%)] dark:bg-[linear-gradient(135deg,#191717_0%,#000000_100%)]"
   >
     <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(77,107,254,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(92,125,255,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(229,234,255,0.95)_1px,transparent_1px),linear-gradient(90deg,rgba(229,234,255,0.95)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
       ></div>
     </div>
 
@@ -286,7 +286,7 @@
             class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-violet-500"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
             >
               <span class="text-xs font-bold text-white">C</span>
             </div>
@@ -301,7 +301,7 @@
             class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
             >
               <span class="text-xs font-bold text-white">G</span>
             </div>
@@ -316,7 +316,7 @@
             class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4285f4]"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500"
             >
               <span class="text-xs font-bold text-white">G</span>
             </div>
@@ -331,7 +331,7 @@
             class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-pink-600"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
             >
               <span class="text-xs font-bold text-white">A</span>
             </div>
@@ -478,7 +478,7 @@ onMounted(() => {
 /* Terminal Window */
 .terminal-window {
   width: 420px;
-  background: linear-gradient(145deg, #191f45 0%, #080b1d 100%);
+  background: linear-gradient(145deg, #191717 0%, #000000 100%);
   border-radius: 10px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
