@@ -5,47 +5,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Claude-inspired restrained coral orange
+        // 主色调 - Dify-inspired electric blue
         primary: {
-          50: '#faf9f5',
-          100: '#f0eee7',
-          200: '#e2dbcf',
-          300: '#d5c5b4',
-          400: '#d49a80',
-          500: '#cc785c',
-          600: '#b96850',
-          700: '#9f5642',
-          800: '#7e4436',
-          900: '#583128',
-          950: '#2b1712'
+          50: '#eef4ff',
+          100: '#d9e8ff',
+          200: '#b8d4ff',
+          300: '#8bb8ff',
+          400: '#5a90ff',
+          500: '#155eef',
+          600: '#004eeb',
+          700: '#003ecc',
+          800: '#00359e',
+          900: '#102a56',
+          950: '#071734'
         },
-        // 辅助色 - warm neutral
+        // 辅助色 - cool blue-gray surface scale
         accent: {
-          50: '#faf9f5',
-          100: '#f4f1ea',
-          200: '#e5dfd3',
-          300: '#cfc6b8',
-          400: '#aaa092',
-          500: '#80786e',
-          600: '#6f6b63',
-          700: '#4c4943',
-          800: '#2f2d29',
-          900: '#1d1c19',
-          950: '#141413'
+          50: '#f7f9ff',
+          100: '#edf2ff',
+          200: '#dbe5ff',
+          300: '#bfcef8',
+          400: '#93a7e8',
+          500: '#6678c7',
+          600: '#5362a4',
+          700: '#3f4b80',
+          800: '#293255',
+          900: '#171f39',
+          950: '#0b1020'
         },
-        // 深色模式背景 - warm charcoal
+        // 深色模式背景 - cool navy
         dark: {
-          50: '#faf7f2',
-          100: '#efe6dc',
-          200: '#d6c5b7',
-          300: '#c8b5a5',
-          400: '#b59f8e',
-          500: '#a68f7d',
-          600: '#6f5548',
-          700: '#49352e',
-          800: '#332621',
-          900: '#211a17',
-          950: '#120d0b'
+          50: '#f8fbff',
+          100: '#eaf0ff',
+          200: '#cbd8f5',
+          300: '#9fb2da',
+          400: '#7389bf',
+          500: '#5065a3',
+          600: '#34467c',
+          700: '#202e57',
+          800: '#151f3f',
+          900: '#0d152d',
+          950: '#070c1b'
         }
       },
       fontFamily: {
@@ -65,22 +65,22 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(20, 20, 19, 0.09)',
-        'glass-sm': '0 8px 22px rgba(20, 20, 19, 0.07)',
-        glow: '0 10px 28px rgba(204, 120, 92, 0.18)',
-        'glow-lg': '0 18px 44px rgba(204, 120, 92, 0.22)',
-        card: '0 1px 2px rgba(20, 20, 19, 0.05), 0 8px 22px rgba(20, 20, 19, 0.055)',
-        'card-hover': '0 16px 36px rgba(20, 20, 19, 0.09)',
+        glass: '0 14px 40px rgba(21, 48, 111, 0.09)',
+        'glass-sm': '0 8px 22px rgba(21, 48, 111, 0.07)',
+        glow: '0 10px 28px rgba(21, 94, 239, 0.18)',
+        'glow-lg': '0 18px 44px rgba(122, 90, 248, 0.22)',
+        card: '0 1px 2px rgba(21, 48, 111, 0.05), 0 8px 22px rgba(21, 48, 111, 0.055)',
+        'card-hover': '0 16px 36px rgba(21, 48, 111, 0.1)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #cc785c 0%, #9f5642 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #332621 0%, #120d0b 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #155eef 0%, #7a5af8 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #151f3f 0%, #070c1b 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
         'mesh-gradient':
-          'linear-gradient(180deg, rgba(250,249,245,0.98), rgba(244,241,234,0.72))'
+          'linear-gradient(180deg, rgba(247,249,255,0.98), rgba(237,242,255,0.72))'
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
@@ -118,8 +118,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(204, 120, 92, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(204, 120, 92, 0.24)' }
+          '0%': { boxShadow: '0 10px 28px rgba(21, 94, 239, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(122, 90, 248, 0.22)' }
         }
       },
       backdropBlur: {

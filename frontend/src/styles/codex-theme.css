@@ -1,15 +1,16 @@
 .codex-admin {
-  --codex-bg: #faf9f5;
+  --codex-bg: #f7f9ff;
   --codex-surface: #ffffff;
   --codex-surface-strong: #ffffff;
-  --codex-border: #e5dfd3;
-  --codex-border-strong: #cfc6b8;
-  --codex-text: #141413;
-  --codex-muted: #6f6b63;
-  --codex-soft: #f4f1ea;
-  --codex-accent: #cc785c;
-  --codex-accent-strong: #b96850;
-  --codex-accent-soft: #f0eee7;
+  --codex-border: #dbe5ff;
+  --codex-border-strong: #bfcef8;
+  --codex-text: #0b1020;
+  --codex-muted: #5362a4;
+  --codex-soft: #edf2ff;
+  --codex-accent: #155eef;
+  --codex-accent-strong: #003ecc;
+  --codex-accent-soft: #eef4ff;
+  --codex-violet: #7a5af8;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
@@ -18,17 +19,18 @@
 }
 
 .dark .codex-admin {
-  --codex-bg: #1f1a16;
-  --codex-surface: #29231e;
-  --codex-surface-strong: #332a23;
-  --codex-border: #4b3c31;
-  --codex-border-strong: #6f5646;
-  --codex-text: #f6eee6;
-  --codex-muted: #c3aa96;
-  --codex-soft: #3a3028;
-  --codex-accent: #e07a5f;
-  --codex-accent-strong: #f09a7e;
-  --codex-accent-soft: #4a2c23;
+  --codex-bg: #070c1b;
+  --codex-surface: #0d152d;
+  --codex-surface-strong: #111b36;
+  --codex-border: #24345f;
+  --codex-border-strong: #34467c;
+  --codex-text: #f8fbff;
+  --codex-muted: #9fb2da;
+  --codex-soft: #151f3f;
+  --codex-accent: #5a90ff;
+  --codex-accent-strong: #8bb8ff;
+  --codex-accent-soft: #102a56;
+  --codex-violet: #9b8afb;
 }
 
 .codex-shell {
@@ -36,15 +38,17 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(250, 249, 245, 0.98)),
+    radial-gradient(circle at 16% 0%, rgba(122, 90, 248, 0.1), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 249, 255, 0.98)),
     var(--codex-bg);
-  box-shadow: 0 18px 50px rgba(20, 20, 19, 0.07);
+  box-shadow: 0 18px 50px rgba(21, 48, 111, 0.08);
   overflow: hidden;
 }
 
 .dark .codex-shell {
   background:
-    linear-gradient(180deg, rgba(51, 42, 35, 0.92), rgba(31, 26, 22, 0.98)),
+    radial-gradient(circle at 16% 0%, rgba(122, 90, 248, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(21, 31, 63, 0.94), rgba(7, 12, 27, 0.98)),
     var(--codex-bg);
   box-shadow: none;
 }
@@ -83,20 +87,24 @@
   padding: 20px;
 }
 
+.codex-main {
+  container-type: inline-size;
+}
+
 .codex-side {
   border-left: 1px solid var(--codex-border);
-  background: rgba(244, 241, 234, 0.42);
+  background: rgba(237, 242, 255, 0.48);
 }
 
 .dark .codex-side {
-  background: rgba(51, 42, 35, 0.34);
+  background: rgba(21, 31, 63, 0.42);
 }
 
 .codex-panel {
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-surface);
-  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.035);
+  box-shadow: 0 1px 2px rgba(21, 48, 111, 0.04);
 }
 
 .codex-panel + .codex-panel {
@@ -215,7 +223,7 @@
 .codex-select:focus,
 .codex-textarea:focus {
   border-color: var(--codex-accent);
-  box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.18);
+  box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.16);
 }
 
 .codex-button {
@@ -231,13 +239,13 @@
   color: var(--codex-text);
   font-size: 14px;
   font-weight: 650;
-  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.04);
+  box-shadow: 0 1px 2px rgba(21, 48, 111, 0.04);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .codex-button:hover {
   border-color: var(--codex-accent);
-  box-shadow: 0 4px 12px rgba(20, 20, 19, 0.07);
+  box-shadow: 0 4px 12px rgba(21, 48, 111, 0.08);
 }
 
 .codex-button:active {
@@ -259,7 +267,7 @@
   border-color: var(--codex-accent);
   background: var(--codex-accent);
   color: #ffffff;
-  box-shadow: 0 8px 18px rgba(204, 120, 92, 0.16);
+  box-shadow: 0 8px 18px rgba(21, 94, 239, 0.18);
 }
 
 .codex-button--primary:hover {
@@ -288,7 +296,7 @@
   border-radius: var(--codex-radius);
   background: var(--codex-surface-strong);
   color: var(--codex-muted);
-  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.04);
+  box-shadow: 0 1px 2px rgba(21, 48, 111, 0.04);
   transition: transform 140ms ease, border-color 140ms ease, color 140ms ease, background-color 140ms ease;
 }
 
@@ -338,22 +346,26 @@
 
 .codex-account-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 12px;
   border-top: 1px solid var(--codex-border);
   padding: 14px;
+  container-type: inline-size;
 }
 
 .codex-account-card {
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   aspect-ratio: 1 / 1;
-  min-height: 240px;
+  min-height: 220px;
+  min-width: 0;
+  overflow: hidden;
   cursor: pointer;
-  gap: 12px;
+  gap: 10px;
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-surface-strong);
-  padding: 14px;
+  padding: clamp(10px, 2.4cqi, 14px);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
@@ -361,7 +373,7 @@
 .codex-account-card.is-selected {
   border-color: var(--codex-accent);
   background: var(--codex-accent-soft);
-  box-shadow: 0 8px 22px rgba(204, 120, 92, 0.12);
+  box-shadow: 0 8px 22px rgba(21, 94, 239, 0.12);
 }
 
 .codex-account-card:active {
@@ -373,6 +385,7 @@
 .codex-account-card__footer {
   display: flex;
   gap: 10px;
+  min-width: 0;
 }
 
 .codex-account-card__top,
@@ -381,9 +394,14 @@
   justify-content: space-between;
 }
 
+.codex-account-card__top {
+  gap: 8px;
+}
+
 .codex-account-card__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
 }
 
 .codex-account-card__section {
@@ -400,6 +418,9 @@
 
 .codex-account-name {
   font-weight: 700;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  text-wrap: pretty;
 }
 
 .codex-account-meta {
@@ -407,6 +428,8 @@
   color: var(--codex-muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .codex-account-detail {
@@ -414,6 +437,7 @@
   color: var(--codex-muted);
   font-size: 12px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .codex-account-detail--danger {
@@ -423,7 +447,7 @@
 .codex-balance-list {
   display: grid;
   gap: 4px;
-  min-width: 150px;
+  min-width: 0;
 }
 
 .codex-balance-value {
@@ -442,32 +466,46 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .codex-tag {
+  max-width: 100%;
   border-radius: 999px;
   background: var(--codex-soft);
   padding: 2px 8px;
   color: var(--codex-muted);
   font-size: 12px;
   font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codex-status-badge {
   display: inline-flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 42%;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
   padding: 4px 9px;
   background: var(--codex-soft);
   color: var(--codex-muted);
-  font-size: 12px;
+  font-size: clamp(10px, 2.8cqi, 12px);
   font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codex-status-badge__dot {
   width: 7px;
   height: 7px;
+  flex: 0 0 7px;
   border-radius: 999px;
   background: currentColor;
 }
@@ -561,7 +599,7 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-surface);
-  box-shadow: 0 24px 60px rgba(43, 33, 24, 0.22);
+  box-shadow: 0 24px 60px rgba(7, 12, 27, 0.22);
   padding: 20px;
 }
 
@@ -636,10 +674,15 @@
 
 .codex-group-chip {
   display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
   align-items: center;
   gap: 8px;
   font-size: 13px;
   font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .codex-group-swatch {
@@ -647,6 +690,40 @@
   height: 10px;
   border-radius: 999px;
   background: var(--group-color, var(--codex-accent));
+}
+
+@container (max-width: 560px) {
+  .codex-account-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  }
+
+  .codex-account-card {
+    aspect-ratio: auto;
+    min-height: 196px;
+  }
+
+  .codex-account-card__body {
+    grid-template-columns: 1fr;
+  }
+
+  .codex-status-badge {
+    max-width: 58%;
+  }
+}
+
+@container (max-width: 420px) {
+  .codex-account-card__top,
+  .codex-account-card__footer {
+    flex-direction: column;
+  }
+
+  .codex-status-badge {
+    max-width: 100%;
+  }
+
+  .codex-icon-button {
+    align-self: flex-end;
+  }
 }
 
 @media (max-width: 1024px) {

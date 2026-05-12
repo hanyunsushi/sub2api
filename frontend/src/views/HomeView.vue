@@ -15,12 +15,12 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#faf9f5_0%,#f4f1ea_100%)] dark:bg-[linear-gradient(135deg,#211a17_0%,#120d0b_100%)]"
+    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#f8fbff_0%,#edf2ff_100%)] dark:bg-[linear-gradient(135deg,#151f3f_0%,#070c1b_100%)]"
   >
     <!-- Background Decorations -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,20,19,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(20,20,19,0.035)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(255,176,136,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,176,136,0.04)_1px,transparent_1px)]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(21,94,239,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(122,90,248,0.04)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(139,184,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(155,138,251,0.05)_1px,transparent_1px)]"
       ></div>
     </div>
 
@@ -286,7 +286,7 @@
             class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500"
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-violet-500"
             >
               <span class="text-xs font-bold text-white">C</span>
             </div>
@@ -478,7 +478,7 @@ onMounted(() => {
 /* Terminal Window */
 .terminal-window {
   width: 420px;
-  background: linear-gradient(145deg, #332621 0%, #120d0b 100%);
+  background: linear-gradient(145deg, #151f3f 0%, #070c1b 100%);
   border-radius: 10px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
@@ -498,7 +498,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(51, 38, 33, 0.82);
+  background: rgba(17, 27, 54, 0.82);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -578,13 +578,13 @@ onMounted(() => {
   font-weight: bold;
 }
 .code-cmd {
-  color: #ffb088;
+  color: #8bb8ff;
 }
 .code-flag {
-  color: #d6c5b7;
+  color: #cbd8f5;
 }
 .code-url {
-  color: #ffb088;
+  color: #9b8afb;
 }
 .code-comment {
   color: #64748b;
@@ -625,8 +625,8 @@ onMounted(() => {
 :deep(.dark) .terminal-window {
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(217, 119, 87, 0.22),
-    0 18px 44px rgba(217, 119, 87, 0.10),
+    0 0 0 1px rgba(90, 144, 255, 0.22),
+    0 18px 44px rgba(122, 90, 248, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 </style>
