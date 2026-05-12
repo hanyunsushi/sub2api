@@ -24,6 +24,18 @@ type Tx struct {
 	Announcement *AnnouncementClient
 	// AnnouncementRead is the client for interacting with the AnnouncementRead builders.
 	AnnouncementRead *AnnouncementReadClient
+	// AuthIdentity is the client for interacting with the AuthIdentity builders.
+	AuthIdentity *AuthIdentityClient
+	// AuthIdentityChannel is the client for interacting with the AuthIdentityChannel builders.
+	AuthIdentityChannel *AuthIdentityChannelClient
+	// ChannelMonitor is the client for interacting with the ChannelMonitor builders.
+	ChannelMonitor *ChannelMonitorClient
+	// ChannelMonitorDailyRollup is the client for interacting with the ChannelMonitorDailyRollup builders.
+	ChannelMonitorDailyRollup *ChannelMonitorDailyRollupClient
+	// ChannelMonitorHistory is the client for interacting with the ChannelMonitorHistory builders.
+	ChannelMonitorHistory *ChannelMonitorHistoryClient
+	// ChannelMonitorRequestTemplate is the client for interacting with the ChannelMonitorRequestTemplate builders.
+	ChannelMonitorRequestTemplate *ChannelMonitorRequestTemplateClient
 	// CodexAccountMetadata is the client for interacting with the CodexAccountMetadata builders.
 	CodexAccountMetadata *CodexAccountMetadataClient
 	// CodexGroup is the client for interacting with the CodexGroup builders.
@@ -34,12 +46,16 @@ type Tx struct {
 	Group *GroupClient
 	// IdempotencyRecord is the client for interacting with the IdempotencyRecord builders.
 	IdempotencyRecord *IdempotencyRecordClient
+	// IdentityAdoptionDecision is the client for interacting with the IdentityAdoptionDecision builders.
+	IdentityAdoptionDecision *IdentityAdoptionDecisionClient
 	// PaymentAuditLog is the client for interacting with the PaymentAuditLog builders.
 	PaymentAuditLog *PaymentAuditLogClient
 	// PaymentOrder is the client for interacting with the PaymentOrder builders.
 	PaymentOrder *PaymentOrderClient
 	// PaymentProviderInstance is the client for interacting with the PaymentProviderInstance builders.
 	PaymentProviderInstance *PaymentProviderInstanceClient
+	// PendingAuthSession is the client for interacting with the PendingAuthSession builders.
+	PendingAuthSession *PendingAuthSessionClient
 	// PromoCode is the client for interacting with the PromoCode builders.
 	PromoCode *PromoCodeClient
 	// PromoCodeUsage is the client for interacting with the PromoCodeUsage builders.
@@ -206,14 +222,22 @@ func (tx *Tx) init() {
 	tx.AccountGroup = NewAccountGroupClient(tx.config)
 	tx.Announcement = NewAnnouncementClient(tx.config)
 	tx.AnnouncementRead = NewAnnouncementReadClient(tx.config)
+	tx.AuthIdentity = NewAuthIdentityClient(tx.config)
+	tx.AuthIdentityChannel = NewAuthIdentityChannelClient(tx.config)
+	tx.ChannelMonitor = NewChannelMonitorClient(tx.config)
+	tx.ChannelMonitorDailyRollup = NewChannelMonitorDailyRollupClient(tx.config)
+	tx.ChannelMonitorHistory = NewChannelMonitorHistoryClient(tx.config)
+	tx.ChannelMonitorRequestTemplate = NewChannelMonitorRequestTemplateClient(tx.config)
 	tx.CodexAccountMetadata = NewCodexAccountMetadataClient(tx.config)
 	tx.CodexGroup = NewCodexGroupClient(tx.config)
 	tx.ErrorPassthroughRule = NewErrorPassthroughRuleClient(tx.config)
 	tx.Group = NewGroupClient(tx.config)
 	tx.IdempotencyRecord = NewIdempotencyRecordClient(tx.config)
+	tx.IdentityAdoptionDecision = NewIdentityAdoptionDecisionClient(tx.config)
 	tx.PaymentAuditLog = NewPaymentAuditLogClient(tx.config)
 	tx.PaymentOrder = NewPaymentOrderClient(tx.config)
 	tx.PaymentProviderInstance = NewPaymentProviderInstanceClient(tx.config)
+	tx.PendingAuthSession = NewPendingAuthSessionClient(tx.config)
 	tx.PromoCode = NewPromoCodeClient(tx.config)
 	tx.PromoCodeUsage = NewPromoCodeUsageClient(tx.config)
 	tx.Proxy = NewProxyClient(tx.config)

@@ -302,12 +302,14 @@ func shouldBypassEmbeddedFrontend(path string) bool {
 	return strings.HasPrefix(trimmed, "/api/") ||
 		strings.HasPrefix(trimmed, "/v1/") ||
 		strings.HasPrefix(trimmed, "/v1beta/") ||
+		strings.HasPrefix(trimmed, "/backend-api/") ||
 		strings.HasPrefix(trimmed, "/antigravity/") ||
 		routes.IsCPAManagementProxyPath(trimmed) ||
 		strings.HasPrefix(trimmed, "/setup/") ||
 		trimmed == "/health" ||
 		trimmed == "/responses" ||
-		strings.HasPrefix(trimmed, "/responses/")
+		strings.HasPrefix(trimmed, "/responses/") ||
+		strings.HasPrefix(trimmed, "/images/")
 }
 
 func serveIndexHTML(c *gin.Context, fsys fs.FS) {
