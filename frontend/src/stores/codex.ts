@@ -6,6 +6,7 @@ import {
   getCodexAuthUrl as fetchCodexAuthUrl,
   listAuthFiles,
   mapCpaAuthFileToView,
+  refreshCodexQuotas,
   uploadAuthFile as uploadCpaAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
@@ -148,6 +149,30 @@ export const useCodexStore = defineStore('codex', () => {
     }
   }
 
+  async function refreshQuotaStatus(): Promise<void> {
+    loading.value = true
+    error.value = null
+    try {
+      const [cpaAccounts, codexGroups, metadataItems] = await Promise.all([
+        listAuthFiles({
+          baseUrl: managementBaseUrl.value,
+          managementKey: managementKey.value,
+        }).then((items) => refreshCodexQuotas(items, cpaOptions())),
+        codexMetadataAPI.listGroups(),
+        codexMetadataAPI.listAccountMetadata(),
+      ])
+      rawAccounts.value = cpaAccounts
+      groups.value = codexGroups
+      accountMetadata.value = metadataItems
+      lastLoadedAt.value = Date.now()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to refresh Codex quota status'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function updateAccountMetadata(
     authName: string,
     request: UpdateCodexAccountMetadataRequest
@@ -175,9 +200,17 @@ export const useCodexStore = defineStore('codex', () => {
 
     await deleteCpaAuthFile(authName, cpaOptions())
     if (account.metadata) {
-      await codexMetadataAPI.deleteAccountMetadata(authName)
+      try {
+        await codexMetadataAPI.deleteAccountMetadata(authName)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to remove Sub2 metadata'
+        error.value = `Deleted CPA auth file, but failed to remove Sub2 metadata: ${message}`
+        console.warn('[Codex] Failed to remove metadata after CPA auth deletion', err)
+      }
     }
-    await loadAll()
+    rawAccounts.value = rawAccounts.value.filter((raw) => mapCpaAuthFileToView(raw).name !== authName)
+    accountMetadata.value = accountMetadata.value.filter((item) => item.auth_name !== authName)
+    lastLoadedAt.value = Date.now()
   }
 
   async function getCodexAuthUrl(): Promise<string> {
@@ -200,6 +233,7 @@ export const useCodexStore = defineStore('codex', () => {
     setRememberConnection,
     setManagementBaseUrl,
     loadAll,
+    refreshQuotaStatus,
     updateAccountMetadata,
     uploadAuthFile,
     deleteAuthFile,

@@ -17,10 +17,7 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg shadow-card-hover',
-            'bg-white dark:bg-dark-800',
-            'border',
-            getBorderColor(toast.type)
+            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card dark:border-dark-700 dark:bg-dark-800'
           ]"
         >
           <div class="p-4">
@@ -30,7 +27,7 @@
                 <Icon
                   :name="getToastIconName(toast.type)"
                   size="md"
-                  :class="getIconColor(toast.type)"
+                  class="text-primary-600 dark:text-primary-300"
                   aria-hidden="true"
                 />
               </div>
@@ -55,7 +52,7 @@
               <!-- Close button -->
               <button
                 @click="removeToast(toast.id)"
-                class="-m-1 flex-shrink-0 rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-dark-700 dark:hover:text-gray-300"
+                class="-m-1 flex-shrink-0 rounded p-1 text-accent-500 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-dark-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-300"
                 aria-label="Close notification"
               >
                 <Icon name="x" size="sm" />
@@ -66,7 +63,7 @@
           <!-- Progress bar -->
           <div v-if="toast.duration" class="h-1 bg-gray-100 dark:bg-dark-700">
             <div
-              :class="['h-full toast-progress', getProgressBarColor(toast.type)]"
+              class="h-full toast-progress bg-primary-500"
               :style="{ animationDuration: `${toast.duration}ms` }"
             ></div>
           </div>
@@ -97,36 +94,6 @@ const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamatio
     default:
       return 'infoCircle'
   }
-}
-
-const getIconColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'text-emerald-500',
-    error: 'text-red-500',
-    warning: 'text-amber-500',
-    info: 'text-primary-500'
-  }
-  return colors[type] || colors.info
-}
-
-const getBorderColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'border-emerald-200 dark:border-emerald-800/50',
-    error: 'border-red-200 dark:border-red-800/50',
-    warning: 'border-amber-200 dark:border-amber-800/50',
-    info: 'border-primary-200 dark:border-primary-800/50'
-  }
-  return colors[type] || colors.info
-}
-
-const getProgressBarColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'bg-emerald-500',
-    error: 'bg-red-500',
-    warning: 'bg-amber-500',
-    info: 'bg-primary-500'
-  }
-  return colors[type] || colors.info
 }
 
 const removeToast = (id: string) => {

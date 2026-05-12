@@ -71,11 +71,7 @@ async function cpaRequest<T>(path: string, options: CpaRequestOptions & RequestI
   const body = await readResponseBody(response)
 
   if (!response.ok) {
-    const bodyRecord = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : null
-    const message =
-      typeof body === 'string'
-        ? body || response.statusText
-        : String(bodyRecord?.message || bodyRecord?.error || response.statusText)
+    const message = errorMessageFromPayload(body, response.statusText)
     throw new CpaApiError(message, response.status)
   }
 
@@ -116,11 +112,332 @@ export async function uploadAuthFile(file: File, options: CpaRequestOptions = {}
 }
 
 export async function deleteAuthFile(name: string, options: CpaRequestOptions = {}): Promise<void> {
-  const params = new URLSearchParams({ name })
-  await cpaRequest<unknown>(`/auth-files?${params.toString()}`, {
+  await cpaRequest<unknown>('/auth-files', {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ names: [name] }),
     ...options,
   })
+}
+
+interface CpaApiCallResponse {
+  status_code?: number
+  statusCode?: number
+  header?: Record<string, unknown>
+  headers?: Record<string, unknown>
+  body?: unknown
+  bodyText?: string
+}
+
+const CODEX_USAGE_URL = 'https://chatgpt.com/backend-api/wham/usage'
+const CODEX_USAGE_HEADERS = {
+  Authorization: 'Bearer $TOKEN$',
+  'Content-Type': 'application/json',
+  'User-Agent': 'codex_cli_rs/0.76.0 (Debian 13.0.0; x86_64) WindowsTerminal',
+}
+const CODEX_QUOTA_REFRESH_CONCURRENCY = 4
+
+function parseMaybeJSON(value: unknown): unknown {
+  if (typeof value !== 'string') return value
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  try {
+    return JSON.parse(trimmed)
+  } catch {
+    return value
+  }
+}
+
+function errorMessageFromPayload(value: unknown, fallback: string): string {
+  const parsed = parseMaybeJSON(value)
+  if (parsed instanceof Error) return parsed.message || fallback
+  if (parsed === null || parsed === undefined) return fallback
+  if (typeof parsed === 'string') return parsed.trim() || fallback
+  if (typeof parsed === 'number' || typeof parsed === 'boolean') return String(parsed)
+  if (Array.isArray(parsed)) {
+    const messages = parsed.map((item) => errorMessageFromPayload(item, '')).filter(Boolean)
+    if (messages.length) return messages.join('; ')
+  }
+  if (typeof parsed === 'object') {
+    const record = parsed as Record<string, unknown>
+    for (const key of ['message', 'error', 'detail', 'reason', 'status_message', 'statusMessage']) {
+      const message = errorMessageFromPayload(record[key], '')
+      if (message) return message
+    }
+    try {
+      const serialized = JSON.stringify(parsed)
+      return serialized && serialized !== '{}' ? serialized : fallback
+    } catch {
+      return fallback
+    }
+  }
+  return fallback
+}
+
+function stringValue(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim()) return value.trim()
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return undefined
+}
+
+function numberValue(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value)
+    if (Number.isFinite(parsed)) return parsed
+  }
+  return undefined
+}
+
+function decodeBase64URL(value: string): string | null {
+  try {
+    const padded = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=')
+    return globalThis.atob(padded)
+  } catch {
+    return null
+  }
+}
+
+function decodeJWTObject(value: unknown): Record<string, unknown> | null {
+  if (!value) return null
+  if (typeof value === 'object' && !Array.isArray(value)) return value as Record<string, unknown>
+  if (typeof value !== 'string') return null
+  const parts = value.trim().split('.')
+  if (parts.length < 2) return null
+  const decoded = decodeBase64URL(parts[1])
+  if (!decoded) return null
+  const parsed = parseMaybeJSON(decoded)
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null
+}
+
+function nestedRecord(raw: CpaAuthFileRaw, key: string): Record<string, unknown> | null {
+  const value = raw[key]
+  return value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : null
+}
+
+function codexAccountID(raw: CpaAuthFileRaw): string | undefined {
+  const metadata = nestedRecord(raw, 'metadata')
+  const attributes = nestedRecord(raw, 'attributes')
+  for (const candidate of [
+    raw.chatgpt_account_id,
+    raw.chatgptAccountId,
+    raw.account_id,
+    raw.accountId,
+    metadata?.chatgpt_account_id,
+    metadata?.chatgptAccountId,
+    metadata?.account_id,
+    metadata?.accountId,
+    attributes?.chatgpt_account_id,
+    attributes?.chatgptAccountId,
+    attributes?.account_id,
+    attributes?.accountId,
+  ]) {
+    const accountID = stringValue(candidate)
+    if (accountID) return accountID
+  }
+  for (const token of [raw.id_token, raw.idToken, metadata?.id_token, metadata?.idToken, attributes?.id_token, attributes?.idToken]) {
+    const decoded = decodeJWTObject(token)
+    const accountID = stringValue(decoded?.chatgpt_account_id || decoded?.chatgptAccountId)
+    if (accountID) return accountID
+  }
+  return undefined
+}
+
+function codexPlanType(raw: CpaAuthFileRaw, usage: Record<string, unknown>): string | undefined {
+  const metadata = nestedRecord(raw, 'metadata')
+  const attributes = nestedRecord(raw, 'attributes')
+  const idToken = decodeJWTObject(raw.id_token)
+  const metadataToken = decodeJWTObject(metadata?.id_token)
+  const candidates = [
+    usage.plan_type,
+    usage.planType,
+    raw.plan_type,
+    raw.planType,
+    idToken?.plan_type,
+    idToken?.planType,
+    metadata?.plan_type,
+    metadata?.planType,
+    metadataToken?.plan_type,
+    metadataToken?.planType,
+    attributes?.plan_type,
+    attributes?.planType,
+  ]
+  for (const candidate of candidates) {
+    const value = stringValue(candidate)?.toLowerCase()
+    if (value) return value
+  }
+  return undefined
+}
+
+function codexPlanLabel(planType: string | undefined): string | undefined {
+  if (!planType) return undefined
+  const normalized = planType.toLowerCase()
+  if (normalized === 'pro') return 'Pro 20x'
+  if (['prolite', 'pro-lite', 'pro_lite'].includes(normalized)) return 'Pro 5x'
+  if (normalized === 'plus') return 'Plus'
+  if (normalized === 'team') return 'Team'
+  if (normalized === 'free') return 'Free'
+  return planType
+}
+
+function isCodexAuthFile(raw: CpaAuthFileRaw): boolean {
+  const name = stringValue(raw.name)?.toLowerCase()
+  const typeFields = [
+    raw.provider,
+    raw.channel,
+    raw.type,
+    raw.account_type,
+    raw.accountType,
+    raw.platform,
+    raw.service,
+    raw.kind,
+  ]
+  return typeFields.some((value) => stringValue(value)?.toLowerCase().includes('codex')) || !!name?.startsWith('codex-')
+}
+
+function windowRemainingPercent(windowValue: unknown): number | undefined {
+  if (!windowValue || typeof windowValue !== 'object') return undefined
+  const record = windowValue as Record<string, unknown>
+  const used = numberValue(record.used_percent ?? record.usedPercent)
+  if (used === undefined) return undefined
+  return Math.max(0, Math.min(100, Math.round(100 - used)))
+}
+
+function limitWindowSeconds(windowValue: unknown): number | undefined {
+  if (!windowValue || typeof windowValue !== 'object') return undefined
+  const record = windowValue as Record<string, unknown>
+  return numberValue(record.limit_window_seconds ?? record.limitWindowSeconds)
+}
+
+function codexUsageSummary(usage: Record<string, unknown>): string | undefined {
+  const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
+  if (!rateLimit || typeof rateLimit !== 'object') return undefined
+
+  const rawWindows = [rateLimit.primary_window, rateLimit.primaryWindow, rateLimit.secondary_window, rateLimit.secondaryWindow]
+  const parts: string[] = []
+  for (const windowValue of rawWindows) {
+    const remaining = windowRemainingPercent(windowValue)
+    if (remaining === undefined) continue
+    const seconds = limitWindowSeconds(windowValue)
+    const label = seconds === 18000 ? '5h' : seconds === 604800 ? 'weekly' : 'quota'
+    const text = `${label} remaining ${remaining}%`
+    if (!parts.includes(text)) parts.push(text)
+  }
+  return parts.length ? parts.join(', ') : undefined
+}
+
+function codexPrimaryRemaining(usage: Record<string, unknown>): string | undefined {
+  const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
+  if (!rateLimit || typeof rateLimit !== 'object') return undefined
+  const remaining = windowRemainingPercent(rateLimit.primary_window || rateLimit.primaryWindow)
+  return remaining === undefined ? undefined : `${remaining}%`
+}
+
+function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFileRaw {
+  const usage = parseMaybeJSON(usagePayload)
+  if (!usage || typeof usage !== 'object' || Array.isArray(usage)) {
+    throw new CpaApiError('Invalid CPA Codex quota response')
+  }
+  const usageRecord = usage as Record<string, unknown>
+  const planType = codexPlanType(raw, usageRecord)
+  return {
+    ...raw,
+    status: 'ok',
+    status_message: '',
+    plan_type: planType || raw.plan_type,
+    quota_text: codexPlanLabel(planType) || firstString(raw, ['quota_text', 'quota', 'plan', 'tier', 'subscription']),
+    usage_text: codexUsageSummary(usageRecord) || firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage']),
+    balance_text: codexPrimaryRemaining(usageRecord) || firstString(raw, ['balance_text', 'credit_text', 'remaining_balance_text']),
+    last_refresh: new Date().toISOString(),
+    last_error: undefined,
+  }
+}
+
+async function cpaApiCall(request: Record<string, unknown>, options: CpaRequestOptions): Promise<CpaApiCallResponse> {
+  const response = await cpaRequest<CpaApiCallResponse>('/api-call', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    ...options,
+  })
+  const statusCode = Number(response.status_code ?? response.statusCode ?? 0)
+  if (statusCode < 200 || statusCode >= 300) {
+    const message = errorMessageFromPayload(response.body ?? response.bodyText, `HTTP ${statusCode}`)
+    throw new CpaApiError(message, statusCode)
+  }
+  return response
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length)
+  let nextIndex = 0
+  const workerCount = Math.max(1, Math.min(concurrency, items.length))
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (nextIndex < items.length) {
+        const index = nextIndex
+        nextIndex += 1
+        results[index] = await worker(items[index], index)
+      }
+    })
+  )
+  return results
+}
+
+export async function refreshCodexQuotas(
+  authFiles: CpaAuthFileRaw[],
+  options: CpaRequestOptions = {}
+): Promise<CpaAuthFileRaw[]> {
+  return mapWithConcurrency(
+    authFiles,
+    CODEX_QUOTA_REFRESH_CONCURRENCY,
+    async (raw) => {
+      if (!isCodexAuthFile(raw)) return raw
+      const authIndex = stringValue(raw.auth_index ?? raw.authIndex)
+      if (!authIndex) {
+        return {
+          ...raw,
+          status: 'error',
+          status_message: 'Auth file missing auth_index',
+          last_error: 'Auth file missing auth_index',
+          last_error_at: new Date().toISOString(),
+        }
+      }
+
+      try {
+        const headers: Record<string, string> = { ...CODEX_USAGE_HEADERS }
+        const accountID = codexAccountID(raw)
+        if (accountID) headers['Chatgpt-Account-Id'] = accountID
+        const response = await cpaApiCall(
+          {
+            authIndex,
+            method: 'GET',
+            url: CODEX_USAGE_URL,
+            header: headers,
+          },
+          options
+        )
+        return mergeCodexQuota(raw, response.body ?? response.bodyText)
+      } catch (err) {
+        const message = errorMessageFromPayload(err, 'Failed to refresh Codex quota')
+        return {
+          ...raw,
+          status: 'error',
+          status_message: message,
+          last_error: message,
+          last_error_at: new Date().toISOString(),
+        }
+      }
+    }
+  )
 }
 
 function extractCodexAuthUrl(payload: unknown): string {
@@ -235,7 +552,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const source = normalizeSource(raw.source)
   const runtimeOnly = raw.runtime_only === true
   const jsonFileName = name.toLowerCase().endsWith('.json')
-  const statusMessage = String(raw.status_message || raw.status || '')
+  const statusMessage = errorMessageFromPayload(raw.status_message || raw.status, '')
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
   const lastError = firstString(raw, [
     'last_error',

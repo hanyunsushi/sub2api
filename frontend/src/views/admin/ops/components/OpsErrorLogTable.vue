@@ -273,10 +273,10 @@ function getTypeBadge(log: OpsErrorLog): { label: string; className: string } {
     return { label: t('admin.ops.errorLog.typeRequest'), className: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30' }
   }
   if (phase === 'auth' && owner === 'client') {
-    return { label: t('admin.ops.errorLog.typeAuth'), className: 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-500/30' }
+    return { label: t('admin.ops.errorLog.typeAuth'), className: 'bg-primary-50 text-primary-700 ring-primary-600/20 dark:bg-primary-900/30 dark:text-primary-300 dark:ring-primary-500/30' }
   }
   if (phase === 'routing' && owner === 'platform') {
-    return { label: t('admin.ops.errorLog.typeRouting'), className: 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30' }
+    return { label: t('admin.ops.errorLog.typeRouting'), className: 'bg-accent-50 text-accent-800 ring-primary-600/20 dark:bg-primary-900/30 dark:text-primary-300 dark:ring-primary-500/30' }
   }
   if (phase === 'internal' && owner === 'platform') {
     return { label: t('admin.ops.errorLog.typeInternal'), className: 'bg-gray-100 text-gray-800 ring-gray-600/20 dark:bg-dark-700 dark:text-gray-200 dark:ring-dark-500/40' }
@@ -305,7 +305,7 @@ const emit = defineEmits<Emits>()
 
 function getStatusClass(code: number): string {
   if (code >= 500) return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/30'
-  if (code === 429) return 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30'
+  if (code === 429) return 'bg-accent-50 text-accent-800 ring-primary-600/20 dark:bg-primary-900/30 dark:text-primary-300 dark:ring-primary-500/30'
   if (code >= 400) return 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30'
   return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-500/30'
 }

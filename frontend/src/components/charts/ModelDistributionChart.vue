@@ -125,7 +125,7 @@
                 @click="toggleBreakdown('model', model.model)"
               >
                 <td
-                  class="max-w-[100px] truncate py-1.5 font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  class="max-w-[100px] truncate py-1.5 font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
                   :title="model.model"
                 >
                   <span class="inline-flex items-center gap-1">
@@ -140,7 +140,7 @@
                 <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatTokens(model.total_tokens) }}
                 </td>
-                <td class="py-1.5 text-right text-green-600 dark:text-green-400">
+                <td class="py-1.5 text-right text-primary-700 dark:text-primary-300">
                   ${{ formatCost(model.actual_cost) }}
                 </td>
                 <td class="py-1.5 text-right text-orange-500 dark:text-orange-400">
@@ -222,7 +222,7 @@
               <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                 {{ formatTokens(item.tokens) }}
               </td>
-              <td class="py-1.5 text-right text-green-600 dark:text-green-400">
+              <td class="py-1.5 text-right text-primary-700 dark:text-primary-300">
                 ${{ formatCost(item.actual_cost) }}
               </td>
             </tr>

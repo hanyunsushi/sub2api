@@ -148,7 +148,7 @@
         :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
         :title="sidebarCollapsed ? (isDark ? t('nav.lightMode') : t('nav.darkMode')) : undefined"
       >
-        <SunIcon v-if="isDark" class="h-5 w-5 flex-shrink-0 text-amber-500" />
+        <SunIcon v-if="isDark" class="h-5 w-5 flex-shrink-0" />
         <MoonIcon v-else class="h-5 w-5 flex-shrink-0" />
         <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{
           isDark ? t('nav.lightMode') : t('nav.darkMode')
@@ -925,7 +925,7 @@ onMounted(() => {
   pointer-events: none;
 }
 
-/* Custom SVG icon in sidebar: constrain size without overriding uploaded SVG colors */
+/* Custom SVG icon in sidebar: constrain size and inherit the active theme color. */
 .sidebar-svg-icon {
   color: currentColor;
 }
@@ -934,5 +934,13 @@ onMounted(() => {
   display: block;
   width: 1.25rem;
   height: 1.25rem;
+}
+
+.sidebar-svg-icon :deep(svg *[stroke]) {
+  stroke: currentColor;
+}
+
+.sidebar-svg-icon :deep(svg *[fill]:not([fill='none'])) {
+  fill: currentColor;
 }
 </style>

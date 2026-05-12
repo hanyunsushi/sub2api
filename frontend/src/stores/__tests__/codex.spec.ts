@@ -12,6 +12,7 @@ vi.mock('@/api/codex', async () => {
     uploadAuthFile: vi.fn(),
     deleteAuthFile: vi.fn(),
     getCodexAuthUrl: vi.fn(),
+    refreshCodexQuotas: vi.fn(),
   }
 })
 
@@ -128,6 +129,40 @@ describe('useCodexStore', () => {
     expect(store.orphanMetadata[0].auth_name).toBe('missing.json')
   })
 
+  it('refreshes CPA accounts with Codex quota status on explicit refresh', async () => {
+    vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([
+      { name: 'account1.json', label: 'Raw Label', status: 'ok', auth_index: '1' },
+    ])
+    vi.mocked(cpaAPI.refreshCodexQuotas).mockResolvedValue([
+      {
+        name: 'account1.json',
+        label: 'Raw Label',
+        status: 'ok',
+        auth_index: '1',
+        quota_text: 'Plus',
+        usage_text: '5h remaining 88%',
+      },
+    ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+
+    await store.refreshQuotaStatus()
+
+    expect(cpaAPI.refreshCodexQuotas).toHaveBeenCalledWith(
+      [{ name: 'account1.json', label: 'Raw Label', status: 'ok', auth_index: '1' }],
+      {
+        baseUrl: '/cpa-management',
+        managementKey: 'secret-key',
+      }
+    )
+    expect(store.accounts[0]).toMatchObject({
+      quotaText: 'Plus',
+      usageText: '5h remaining 88%',
+    })
+  })
+
   it('updates metadata through API and refreshes local merged state', async () => {
     vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([
       { name: 'account1.json', label: 'Raw Label', status: 'ok' },
@@ -181,7 +216,7 @@ describe('useCodexStore', () => {
     vi.mocked(cpaAPI.deleteAuthFile).mockResolvedValue(undefined)
     vi.mocked(cpaAPI.listAuthFiles).mockResolvedValueOnce([
       { name: 'account1.json', status: 'ok' },
-    ]).mockResolvedValueOnce([])
+    ])
     vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
     vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValueOnce([
       {
@@ -196,7 +231,7 @@ describe('useCodexStore', () => {
         created_at: '',
         updated_at: '',
       },
-    ]).mockResolvedValueOnce([])
+    ])
     vi.mocked(metadataAPI.deleteAccountMetadata).mockResolvedValue(undefined)
     const store = useCodexStore()
     store.setManagementKey('secret-key')
@@ -210,6 +245,42 @@ describe('useCodexStore', () => {
     })
     expect(metadataAPI.deleteAccountMetadata).toHaveBeenCalledWith('account1.json')
     expect(store.accounts).toHaveLength(0)
+    expect(cpaAPI.listAuthFiles).toHaveBeenCalledTimes(1)
+    expect(metadataAPI.listAccountMetadata).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps deleted CPA auth hidden locally when Sub2 metadata cleanup fails', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    vi.mocked(cpaAPI.deleteAuthFile).mockResolvedValue(undefined)
+    vi.mocked(cpaAPI.listAuthFiles).mockResolvedValueOnce([
+      { name: 'account1.json', status: 'ok' },
+    ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValueOnce([
+      {
+        id: 10,
+        auth_name: 'account1.json',
+        group_id: null,
+        display_name: 'Account One',
+        note: '',
+        local_tags: [],
+        settings: {},
+        sort_order: 0,
+        created_at: '',
+        updated_at: '',
+      },
+    ])
+    vi.mocked(metadataAPI.deleteAccountMetadata).mockRejectedValue(new Error('metadata unavailable'))
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+    await store.loadAll()
+
+    await store.deleteAuthFile('account1.json')
+
+    expect(store.accounts).toHaveLength(0)
+    expect(store.error).toContain('failed to remove Sub2 metadata')
+    expect(cpaAPI.listAuthFiles).toHaveBeenCalledTimes(1)
+    warnSpy.mockRestore()
   })
 
   it('does not delete runtime-only or non-file accounts from CPA', async () => {

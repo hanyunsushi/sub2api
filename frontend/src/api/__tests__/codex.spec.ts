@@ -6,6 +6,7 @@ import {
   getCodexAuthUrl,
   listAuthFiles,
   mapCpaAuthFileToView,
+  refreshCodexQuotas,
   uploadAuthFile,
 } from '@/api/codex'
 import * as codexMetadataAPI from '@/api/codexMetadata'
@@ -97,6 +98,21 @@ describe('codex CPA API adapter', () => {
       usageText: '7d 40%',
       lastError: 'token refresh failed',
     })
+  })
+
+  it('formats nested CPA error objects as readable status text', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'failed.json',
+      status: 'error',
+      status_message: {
+        error: {
+          message: 'quota refresh unauthorized',
+        },
+      },
+    } as any)
+
+    expect(view.statusMessage).toBe('quota refresh unauthorized')
+    expect(view.statusMessage).not.toBe('[object Object]')
   })
 
   it('treats CPA disk fallback entries without source as deletable json files', () => {
@@ -234,7 +250,7 @@ describe('codex CPA API adapter', () => {
     expect(body.get('file')).toBe(file)
   })
 
-  it('deletes a CPA auth file by name', async () => {
+  it('deletes a CPA auth file using CPA JSON body contract', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
@@ -244,9 +260,188 @@ describe('codex CPA API adapter', () => {
     await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
 
     expect(mockFetch).toHaveBeenCalledWith(
-      '/cpa-management/auth-files?name=folder%2Faccount+1.json',
-      expect.objectContaining({ method: 'DELETE' })
+      '/cpa-management/auth-files',
+      expect.objectContaining({
+        method: 'DELETE',
+        body: JSON.stringify({ names: ['folder/account 1.json'] }),
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      })
     )
+  })
+
+  it('refreshes Codex quota through CPA api-call and merges visible usage fields', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({
+          status_code: 200,
+          body: {
+            plan_type: 'plus',
+            rate_limit: {
+              primary_window: {
+                limit_window_seconds: 18000,
+                used_percent: 12,
+                reset_after_seconds: 600,
+              },
+              secondary_window: {
+                limit_window_seconds: 604800,
+                used_percent: 34,
+                reset_after_seconds: 86400,
+              },
+            },
+          },
+        }),
+      })
+
+    const result = await refreshCodexQuotas(
+      [
+        {
+          name: 'codex-account.json',
+          provider: 'codex',
+          auth_index: '3',
+          id_token: 'header.eyJjaGF0Z3B0X2FjY291bnRfaWQiOiJhY2N0LTEifQ.sig',
+        },
+      ],
+      { managementKey: 'secret-key' }
+    )
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/cpa-management/api-call',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"authIndex":"3"'),
+      })
+    )
+    const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body as string)
+    expect(requestBody).toMatchObject({
+      authIndex: '3',
+      method: 'GET',
+      url: 'https://chatgpt.com/backend-api/wham/usage',
+      header: expect.objectContaining({
+        Authorization: 'Bearer $TOKEN$',
+        'Chatgpt-Account-Id': 'acct-1',
+      }),
+    })
+    expect(result[0]).toMatchObject({
+      status: 'ok',
+      quota_text: 'Plus',
+      usage_text: expect.stringContaining('5h remaining 88%'),
+    })
+  })
+
+  it('refreshes Codex quota for alternate CPA type fields and top-level account id', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({
+        status_code: 200,
+        body: {
+          plan_type: 'team',
+          rate_limit: {
+            primary_window: {
+              limit_window_seconds: 604800,
+              used_percent: 25,
+            },
+          },
+        },
+      }),
+    })
+
+    const result = await refreshCodexQuotas(
+      [
+        {
+          name: 'team-account.json',
+          channel: 'codex',
+          auth_index: '7',
+          chatgpt_account_id: 'acct-top-level',
+        },
+      ],
+      { managementKey: 'secret-key' }
+    )
+
+    const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body as string)
+    expect(requestBody.header).toMatchObject({
+      'Chatgpt-Account-Id': 'acct-top-level',
+    })
+    expect(result[0]).toMatchObject({
+      status: 'ok',
+      quota_text: 'Team',
+      usage_text: 'weekly remaining 75%',
+    })
+  })
+
+  it('limits concurrent CPA api-call quota refresh requests', async () => {
+    let activeRequests = 0
+    let maxActiveRequests = 0
+    mockFetch.mockImplementation(async () => {
+      activeRequests += 1
+      maxActiveRequests = Math.max(maxActiveRequests, activeRequests)
+      await new Promise((resolve) => setTimeout(resolve, 5))
+      activeRequests -= 1
+      return {
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({
+          status_code: 200,
+          body: {
+            plan_type: 'free',
+            rate_limit: {
+              primary_window: {
+                limit_window_seconds: 604800,
+                used_percent: 10,
+              },
+            },
+          },
+        }),
+      }
+    })
+
+    const authFiles = Array.from({ length: 9 }, (_, index) => ({
+      name: `codex-${index}.json`,
+      provider: 'codex',
+      auth_index: String(index),
+    }))
+
+    await refreshCodexQuotas(authFiles, { managementKey: 'secret-key' })
+
+    expect(maxActiveRequests).toBeLessThanOrEqual(4)
+    expect(mockFetch).toHaveBeenCalledTimes(9)
+  })
+
+  it('keeps readable errors when CPA api-call returns nested error objects', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({
+        status_code: 401,
+        body: {
+          error: {
+            message: 'auth refresh required',
+          },
+        },
+      }),
+    })
+
+    const result = await refreshCodexQuotas(
+      [
+        {
+          name: 'codex-account.json',
+          provider: 'codex',
+          auth_index: '3',
+        },
+      ],
+      { managementKey: 'secret-key' }
+    )
+
+    expect(result[0]).toMatchObject({
+      status: 'error',
+      status_message: 'auth refresh required',
+      last_error: 'auth refresh required',
+    })
+    expect(result[0].status_message).not.toBe('[object Object]')
   })
 
   it('extracts Codex OAuth URL from CPA response defensively', async () => {

@@ -150,100 +150,89 @@
               <div v-else-if="!codexStore.loading && filteredAccounts.length === 0" class="codex-empty">
                 {{ t('admin.codex.accounts.empty') }}
               </div>
-              <div v-else class="codex-table-wrap">
-                <table class="codex-table">
-                  <thead>
-                    <tr>
-                      <th>{{ t('admin.codex.accounts.columns.account') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.status') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.balance') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.group') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.tags') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.activity') }}</th>
-                      <th>{{ t('admin.codex.accounts.columns.actions') }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="account in filteredAccounts"
-                      :key="account.key"
-                      :class="{ 'is-selected': account.name === selectedAuthName }"
-                      @click="selectAccount(account.name)"
+              <div v-else class="codex-account-grid">
+                <article
+                  v-for="account in filteredAccounts"
+                  :key="account.key"
+                  class="codex-account-card"
+                  :class="{ 'is-selected': account.name === selectedAuthName }"
+                  @click="selectAccount(account.name)"
+                >
+                  <div class="codex-account-card__top">
+                    <div class="min-w-0">
+                      <div class="codex-account-name">{{ account.label }}</div>
+                      <div class="codex-account-meta">{{ account.name }}</div>
+                      <div v-if="account.email" class="codex-account-meta">{{ account.email }}</div>
+                    </div>
+                    <CodexStatusBadge
+                      :status="account.status"
+                      :message="account.statusMessage"
+                      :label="statusLabel(account.status)"
+                    />
+                  </div>
+
+                  <div class="codex-account-card__body">
+                    <div class="codex-account-card__section">
+                      <span class="codex-account-card__label">{{ t('admin.codex.accounts.columns.balance') }}</span>
+                      <div class="codex-balance-list">
+                        <span class="codex-balance-value">{{ accountBalanceLabel(account) }}</span>
+                        <span v-if="account.quotaText" class="codex-balance-meta">{{ account.quotaText }}</span>
+                        <span v-if="account.usageText" class="codex-balance-meta">{{ account.usageText }}</span>
+                      </div>
+                    </div>
+                    <div class="codex-account-card__section">
+                      <span class="codex-account-card__label">{{ t('admin.codex.accounts.columns.group') }}</span>
+                      <span v-if="account.group" class="codex-group-chip">
+                        <span class="codex-group-swatch" :style="{ '--group-color': account.group.color }"></span>
+                        {{ account.group.name }}
+                      </span>
+                      <span v-else class="text-sm text-[var(--codex-muted)]">
+                        {{ t('admin.codex.accounts.noGroup') }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div v-if="account.metadata?.local_tags?.length" class="codex-tag-list">
+                    <span v-for="tag in account.metadata.local_tags" :key="tag" class="codex-tag">
+                      {{ tag }}
+                    </span>
+                  </div>
+
+                  <div class="codex-account-card__footer">
+                    <div class="min-w-0">
+                      <div class="font-mono text-xs text-[var(--codex-muted)]">
+                        {{ t('admin.codex.accounts.successFailed', { success: account.success ?? 0, failed: account.failed ?? 0 }) }}
+                      </div>
+                      <div v-if="account.modifiedAt" class="codex-account-meta">
+                        {{ formatDate(account.modifiedAt) }}
+                      </div>
+                      <div v-if="account.lastRefreshAt" class="codex-account-detail">
+                        {{ t('admin.codex.accounts.lastRefreshAt', { time: formatDate(account.lastRefreshAt) }) }}
+                      </div>
+                      <div v-if="account.statusMessage" class="codex-account-detail">
+                        {{ account.statusMessage }}
+                      </div>
+                      <div v-if="account.lastError" class="codex-account-detail codex-account-detail--danger">
+                        {{ t('admin.codex.accounts.lastError', { error: account.lastError }) }}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="codex-icon-button codex-icon-button--danger"
+                      :disabled="!account.canDelete || deletingAuthName === account.name"
+                      :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
+                      :aria-label="account.canDelete
+                        ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
+                        : t('admin.codex.accounts.deleteDisabled')"
+                      @click.stop="requestDeleteAccount(account.name)"
                     >
-                      <td>
-                        <div class="codex-account-name">{{ account.label }}</div>
-                        <div class="codex-account-meta">{{ account.name }}</div>
-                        <div v-if="account.email" class="codex-account-meta">{{ account.email }}</div>
-                      </td>
-                      <td>
-                        <CodexStatusBadge
-                          :status="account.status"
-                          :message="account.statusMessage"
-                          :label="statusLabel(account.status)"
-                        />
-                        <div v-if="account.statusMessage" class="codex-account-detail">
-                          {{ account.statusMessage }}
-                        </div>
-                      </td>
-                      <td>
-                        <div class="codex-balance-list">
-                          <span class="codex-balance-value">{{ accountBalanceLabel(account) }}</span>
-                          <span v-if="account.quotaText" class="codex-balance-meta">{{ account.quotaText }}</span>
-                          <span v-if="account.usageText" class="codex-balance-meta">{{ account.usageText }}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span v-if="account.group" class="codex-group-chip">
-                          <span class="codex-group-swatch" :style="{ '--group-color': account.group.color }"></span>
-                          {{ account.group.name }}
-                        </span>
-                        <span v-else class="text-sm text-[var(--codex-muted)]">
-                          {{ t('admin.codex.accounts.noGroup') }}
-                        </span>
-                      </td>
-                      <td>
-                        <div v-if="account.metadata?.local_tags?.length" class="codex-tag-list">
-                          <span v-for="tag in account.metadata.local_tags" :key="tag" class="codex-tag">
-                            {{ tag }}
-                          </span>
-                        </div>
-                        <span v-else class="text-sm text-[var(--codex-muted)]">-</span>
-                      </td>
-                      <td>
-                        <div class="font-mono text-xs text-[var(--codex-muted)]">
-                          {{ t('admin.codex.accounts.successFailed', { success: account.success ?? 0, failed: account.failed ?? 0 }) }}
-                        </div>
-                        <div v-if="account.modifiedAt" class="codex-account-meta">
-                          {{ formatDate(account.modifiedAt) }}
-                        </div>
-                        <div v-if="account.lastRefreshAt" class="codex-account-detail">
-                          {{ t('admin.codex.accounts.lastRefreshAt', { time: formatDate(account.lastRefreshAt) }) }}
-                        </div>
-                        <div v-if="account.lastError" class="codex-account-detail codex-account-detail--danger">
-                          {{ t('admin.codex.accounts.lastError', { error: account.lastError }) }}
-                        </div>
-                        <div v-if="account.lastErrorAt" class="codex-account-detail">
-                          {{ formatDate(account.lastErrorAt) }}
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          class="codex-button codex-button--compact codex-button--danger"
-                          :disabled="!account.canDelete || deletingAuthName === account.name"
-                          :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
-                          :aria-label="account.canDelete
-                            ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
-                            : t('admin.codex.accounts.deleteDisabled')"
-                          @click.stop="requestDeleteAccount(account.name)"
-                        >
-                          <Icon name="trash" size="sm" />
-                          <span>{{ t('admin.codex.accounts.deleteAuthAccount') }}</span>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      <Icon name="trash" size="sm" />
+                    </button>
+                  </div>
+                  <div v-if="account.lastErrorAt" class="codex-account-detail">
+                    {{ formatDate(account.lastErrorAt) }}
+                  </div>
+                </article>
               </div>
               <div v-if="operationError" class="codex-error codex-error--compact">
                 {{ operationError }}
@@ -323,11 +312,43 @@
                 </button>
               </form>
               <div v-for="group in codexStore.groups" :key="group.id" class="codex-group-row">
-                <span class="codex-group-chip">
-                  <span class="codex-group-swatch" :style="{ '--group-color': group.color }"></span>
-                  {{ group.name }}
-                </span>
-                <span class="font-mono text-xs text-[var(--codex-muted)]">#{{ group.id }}</span>
+                <div class="codex-group-row__head">
+                  <span class="codex-group-chip">
+                    <span class="codex-group-swatch" :style="{ '--group-color': group.color }"></span>
+                    {{ group.name }}
+                  </span>
+                  <span class="font-mono text-xs text-[var(--codex-muted)]">#{{ group.id }}</span>
+                </div>
+                <div class="codex-group-key-tools">
+                  <select
+                    v-model="selectedSub2GroupByCodexGroup[group.id]"
+                    class="codex-select !min-h-9"
+                    :aria-label="t('admin.codex.accounts.sub2GroupForKey')"
+                  >
+                    <option value="">{{ t('admin.codex.accounts.selectSub2Group') }}</option>
+                    <option v-for="nativeGroup in nativeGroups" :key="nativeGroup.id" :value="String(nativeGroup.id)">
+                      {{ nativeGroup.name }} · {{ nativeGroup.platform }}
+                    </option>
+                  </select>
+                  <button
+                    type="button"
+                    class="codex-button codex-button--compact"
+                    :disabled="generatingGroupKeyId === group.id || !selectedSub2GroupByCodexGroup[group.id]"
+                    @click="generateGroupApiKey(group.id)"
+                  >
+                    <Icon name="key" size="sm" />
+                    {{ generatingGroupKeyId === group.id ? t('admin.codex.accounts.generatingApiKey') : t('admin.codex.accounts.generateApiKey') }}
+                  </button>
+                  <div v-if="generatedKeys[group.id]" class="codex-generated-key">
+                    <span>{{ generatedKeys[group.id]?.key }}</span>
+                    <button type="button" class="codex-link-button" @click="copyGeneratedKey(group.id)">
+                      {{ t('common.copy') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div v-if="apiKeyOperationError" class="codex-error codex-error--compact">
+                {{ apiKeyOperationError }}
               </div>
             </section>
           </aside>
@@ -381,8 +402,12 @@ import Icon from '@/components/icons/Icon.vue'
 import CodexStatusBadge from '@/components/codex/CodexStatusBadge.vue'
 import { DEFAULT_CPA_MANAGEMENT_BASE } from '@/api/codex'
 import { createGroup as createCodexGroup } from '@/api/codexMetadata'
+import { keysAPI } from '@/api/keys'
+import { apiKeysAPI } from '@/api/admin/apiKeys'
+import { groupsAPI } from '@/api/admin/groups'
 import { useCodexStore } from '@/stores'
 import type { CodexAccountMerged } from '@/types/codex'
+import type { AdminGroup, ApiKey } from '@/types'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -404,6 +429,11 @@ const oauthFallbackUrl = ref('')
 const deleteTargetAuthName = ref('')
 const newGroupName = ref('')
 const authFileInput = ref<HTMLInputElement | null>(null)
+const nativeGroups = ref<AdminGroup[]>([])
+const selectedSub2GroupByCodexGroup = reactive<Record<number, string>>({})
+const generatedKeys = reactive<Record<number, ApiKey | undefined>>({})
+const generatingGroupKeyId = ref<number | null>(null)
+const apiKeyOperationError = ref('')
 
 const metadataDraft = reactive({
   displayName: '',
@@ -492,7 +522,7 @@ async function refreshAccounts(): Promise<void> {
   operationError.value = ''
   operationNotice.value = ''
   oauthFallbackUrl.value = ''
-  await codexStore.loadAll()
+  await codexStore.refreshQuotaStatus()
   operationNotice.value = t('admin.codex.accounts.refreshSucceeded')
 }
 
@@ -581,12 +611,18 @@ async function confirmDeleteAccount(): Promise<void> {
   deletingAuthName.value = authName
   operationError.value = ''
   operationNotice.value = ''
+  const previousFilteredNames = filteredAccounts.value.map((account) => account.name)
+  const deletedIndex = previousFilteredNames.indexOf(authName)
   try {
     await codexStore.deleteAuthFile(authName)
     operationNotice.value = t('admin.codex.accounts.deleteSucceeded', { name: authName })
     deleteTargetAuthName.value = ''
     if (selectedAuthName.value === authName) {
-      selectedAuthName.value = codexStore.accounts[0]?.name || ''
+      const remainingNames = filteredAccounts.value.map((account) => account.name)
+      selectedAuthName.value =
+        remainingNames[deletedIndex] ||
+        remainingNames[Math.max(deletedIndex - 1, 0)] ||
+        ''
     }
   } catch (err) {
     operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.deleteFailed')
@@ -632,6 +668,40 @@ async function createGroup(): Promise<void> {
   }
 }
 
+async function loadNativeGroups(): Promise<void> {
+  try {
+    nativeGroups.value = await groupsAPI.getAll()
+  } catch (err) {
+    apiKeyOperationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.loadSub2GroupsFailed')
+  }
+}
+
+async function generateGroupApiKey(codexGroupId: number): Promise<void> {
+  const codexGroup = codexStore.groups.find((group) => group.id === codexGroupId)
+  const sub2GroupId = Number(selectedSub2GroupByCodexGroup[codexGroupId])
+  if (!codexGroup || !sub2GroupId) return
+
+  generatingGroupKeyId.value = codexGroupId
+  apiKeyOperationError.value = ''
+  try {
+    const key = await keysAPI.create(`CPA:${codexGroup.id}:${codexGroup.name}`, null)
+    const updated = await apiKeysAPI.updateApiKeyGroup(key.id, sub2GroupId)
+    generatedKeys[codexGroupId] = updated.api_key || key
+    operationNotice.value = t('admin.codex.accounts.apiKeyGenerated', { name: codexGroup.name })
+  } catch (err) {
+    apiKeyOperationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.apiKeyGenerateFailed')
+  } finally {
+    generatingGroupKeyId.value = null
+  }
+}
+
+async function copyGeneratedKey(codexGroupId: number): Promise<void> {
+  const key = generatedKeys[codexGroupId]?.key
+  if (!key) return
+  await navigator.clipboard.writeText(key)
+  operationNotice.value = t('admin.codex.accounts.apiKeyCopied')
+}
+
 function formatDate(value: string): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
@@ -653,6 +723,7 @@ function statusLabel(status: string): string {
 watch(selectedAccount, applyDraftFromSelected, { immediate: true })
 
 onMounted(() => {
+  void loadNativeGroups()
   if (codexStore.managementKey) {
     void codexStore.loadAll().then(() => {
       if (!selectedAuthName.value && codexStore.accounts[0]) {
