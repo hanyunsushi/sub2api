@@ -22,10 +22,10 @@
           <td class="py-1 text-right text-gray-500 dark:text-gray-400">
             {{ formatTokens(user.total_tokens) }}
           </td>
-          <td class="py-1 text-right text-primary-700 dark:text-primary-300">
+          <td class="py-1 text-right text-gray-700 dark:text-gray-300">
             ${{ formatCost(user.actual_cost) }}
           </td>
-          <td class="py-1 text-right text-orange-500 dark:text-orange-400">
+          <td class="py-1 text-right text-gray-600 dark:text-gray-400">
             ${{ formatCost(user.account_cost) }}
           </td>
           <td class="py-1 pr-1 text-right text-gray-400 dark:text-gray-500">

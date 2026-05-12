@@ -58,7 +58,7 @@
               >
                 <td
                   class="max-w-[100px] truncate py-1.5 font-medium"
-                  :class="group.group_id > 0 ? 'text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200' : 'text-gray-900 dark:text-white'"
+                  :class="group.group_id > 0 ? 'text-gray-900 hover:text-gray-700 dark:text-white dark:hover:text-gray-200' : 'text-gray-900 dark:text-white'"
                   :title="group.group_name || String(group.group_id)"
                 >
                   <span class="inline-flex items-center gap-1">
@@ -73,10 +73,10 @@
                 <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatTokens(group.total_tokens) }}
                 </td>
-                <td class="py-1.5 text-right text-primary-700 dark:text-primary-300">
+                <td class="py-1.5 text-right text-gray-700 dark:text-gray-300">
                   ${{ formatCost(group.actual_cost) }}
                 </td>
-                <td class="py-1.5 text-right text-orange-500 dark:text-orange-400">
+                <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   ${{ formatCost(group.account_cost) }}
                 </td>
                 <td class="py-1.5 text-right text-gray-400 dark:text-gray-500">

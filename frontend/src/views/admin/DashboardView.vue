@@ -22,7 +22,7 @@
                 <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.total_api_keys }}
                 </p>
-                <p class="text-xs text-primary-700 dark:text-primary-300">
+                <p class="text-xs text-gray-600 dark:text-gray-400">
                   {{ stats.active_api_keys }} {{ t('common.active') }}
                 </p>
               </div>
@@ -43,7 +43,7 @@
                   {{ stats.total_accounts }}
                 </p>
                 <p class="text-xs">
-                  <span class="text-primary-700 dark:text-primary-300"
+                  <span class="text-gray-600 dark:text-gray-400"
                     >{{ stats.normal_accounts }} {{ t('common.active') }}</span
                   >
                   <span v-if="stats.error_accounts > 0" class="ml-1 text-red-500"
@@ -84,7 +84,7 @@
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.users') }}
                 </p>
-                <p class="text-xl font-bold text-primary-700 dark:text-primary-300">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   +{{ stats.today_new_users }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -112,13 +112,13 @@
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-primary-700 dark:text-primary-300"
+                    class="text-gray-700 dark:text-gray-300"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.today_actual_cost) }}</span
                   >
                   <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-primary-600 dark:text-primary-300"
+                    class="text-gray-600 dark:text-gray-400"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.today_account_cost) }}</span
                   >
@@ -148,13 +148,13 @@
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-primary-700 dark:text-primary-300"
+                    class="text-gray-700 dark:text-gray-300"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.total_actual_cost) }}</span
                   >
                   <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-primary-600 dark:text-primary-300"
+                    class="text-gray-600 dark:text-gray-400"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.total_account_cost) }}</span
                   >
@@ -186,7 +186,7 @@
                   <span class="text-xs text-gray-500 dark:text-gray-400">RPM</span>
                 </div>
                 <div class="flex items-baseline gap-2">
-                  <p class="text-sm font-semibold text-primary-700 dark:text-primary-300">
+                  <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     {{ formatTokens(stats.tpm) }}
                   </p>
                   <span class="text-xs text-gray-500 dark:text-gray-400">TPM</span>

@@ -279,11 +279,11 @@
   }
 
   .stat-trend-up {
-    @apply text-primary-700 dark:text-primary-300;
+    @apply text-gray-700 dark:text-gray-300;
   }
 
   .stat-trend-down {
-    @apply text-primary-800 dark:text-primary-200;
+    @apply text-gray-700 dark:text-gray-300;
   }
 
   /* ============ 表格样式 ============ */
@@ -545,14 +545,14 @@
     @apply text-accent-700 dark:text-dark-300;
     @apply transition-all duration-200;
     @apply hover:bg-primary-50 dark:hover:bg-dark-800;
-    @apply hover:text-primary-800 dark:hover:text-primary-200;
+    @apply hover:text-gray-900 dark:hover:text-white;
     padding-left: 1.0625rem;
     padding-right: 0.875rem;
   }
 
   .sidebar-link-active {
     @apply bg-primary-100/80 dark:bg-primary-900/25;
-    @apply text-primary-700 dark:text-primary-300;
+    @apply text-gray-900 dark:text-white;
     @apply hover:bg-primary-100 dark:hover:bg-primary-900/35;
   }
 
