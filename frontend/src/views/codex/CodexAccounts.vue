@@ -140,6 +140,13 @@
                         {{ option.label }}
                       </option>
                     </select>
+                    <select v-model="groupFilter" class="codex-select !min-h-9 !w-40">
+                      <option value="all">{{ t('admin.codex.accounts.allGroups') }}</option>
+                      <option value="ungrouped">{{ t('admin.codex.accounts.noGroup') }}</option>
+                      <option v-for="group in codexStore.groups" :key="group.id" :value="String(group.id)">
+                        {{ group.name }}
+                      </option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -421,6 +428,7 @@ import { groupsAPI } from '@/api/admin/groups'
 import { useCodexStore } from '@/stores'
 import type { CodexAccountMerged } from '@/types/codex'
 import type { AdminGroup, ApiKey } from '@/types'
+import { filterCodexAccounts } from './accountFilters'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -430,6 +438,7 @@ const managementKeyDraft = ref(codexStore.managementKey)
 const rememberConnectionDraft = ref(codexStore.rememberConnection)
 const searchQuery = ref('')
 const statusFilter = ref('all')
+const groupFilter = ref('all')
 const selectedAuthName = ref('')
 const savingMetadata = ref(false)
 const creatingGroup = ref(false)
@@ -469,23 +478,10 @@ const statusOptions = computed(() => [
 ])
 
 const filteredAccounts = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase()
-  return codexStore.accounts.filter((account) => {
-    const matchesStatus = statusFilter.value === 'all' || account.status === statusFilter.value
-    if (!matchesStatus) return false
-    if (!query) return true
-    const haystack = [
-      account.name,
-      account.label,
-      account.email,
-      account.group?.name,
-      account.metadata?.note,
-      ...(account.metadata?.local_tags ?? []),
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
-    return haystack.includes(query)
+  return filterCodexAccounts(codexStore.accounts, {
+    query: searchQuery.value,
+    status: statusFilter.value,
+    groupId: groupFilter.value,
   })
 })
 

@@ -1377,6 +1377,7 @@ export default {
         accountList: 'Auth accounts',
         search: 'Search auth accounts',
         allStatus: 'All status',
+        allGroups: 'All groups',
         empty: 'No CPA auth accounts found',
         noGroup: 'No group',
         metadataEditor: 'Metadata',

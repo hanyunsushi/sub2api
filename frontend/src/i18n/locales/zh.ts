@@ -1398,6 +1398,7 @@ export default {
         accountList: '认证账户列表',
         search: '搜索认证账户',
         allStatus: '全部状态',
+        allGroups: '全部分组',
         empty: '暂无 CPA 认证账户',
         noGroup: '无分组',
         metadataEditor: '元数据编辑',
