@@ -740,12 +740,14 @@ describe("admin SettingsView payment visible method controls", () => {
 });
 
 describe("admin SettingsView dark tab styles", () => {
-  it("keeps settings tab dark selectors in an unscoped global style block", () => {
+  it("keeps settings tab dark styles scoped where specificity matters and global for pseudos", () => {
     const source = readFileSync(
       resolve(__dirname, "../SettingsView.vue"),
       "utf-8",
     );
 
+    expect(source).toContain("dark:border-dark-600/70 dark:bg-dark-900/95");
+    expect(source).not.toContain("settings-tabs-shell {\n  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl");
     expect(source).toContain("<style>\n.dark .settings-tabs-shell");
     expect(source).toContain(".dark .settings-tab::before");
     expect(source).toContain(".dark .settings-tab-active");
