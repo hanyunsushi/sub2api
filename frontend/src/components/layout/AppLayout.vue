@@ -51,7 +51,7 @@ onMounted(() => {
 defineExpose({ replayTour })
 </script>
 
-<style scoped>
+<style>
 .app-layout-shell {
   background: #fbfcff;
 }
@@ -62,13 +62,13 @@ defineExpose({ replayTour })
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 255, 0.82));
 }
 
-:global(.dark) .app-layout-shell {
-  background: #050816;
+.dark .app-layout-shell {
+  background: #050712;
 }
 
-:global(.dark) .app-layout-bg {
+.dark .app-layout-bg {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 51, 255, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(5, 8, 22, 0.98), rgba(2, 3, 10, 0.98));
+    radial-gradient(circle at 18% 0%, rgba(0, 51, 255, 0.075), transparent 34%),
+    linear-gradient(180deg, rgba(5, 7, 18, 0.98), rgba(2, 4, 12, 0.99));
 }
 </style>
