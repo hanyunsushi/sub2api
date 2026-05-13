@@ -1,15 +1,16 @@
 .codex-admin {
-  --codex-bg: #f8f9fb;
+  --codex-bg: #fbfcff;
   --codex-surface: #ffffff;
   --codex-surface-strong: #ffffff;
+  --codex-surface-soft: rgba(255, 255, 255, 0.82);
   --codex-border: #e5eaff;
   --codex-border-strong: #b7c6ff;
   --codex-text: #000000;
   --codex-muted: #666666;
-  --codex-soft: #e5eaff;
+  --codex-soft: #f2f5ff;
   --codex-accent: #0033ff;
   --codex-accent-strong: #002cd6;
-  --codex-accent-soft: #e5eaff;
+  --codex-accent-soft: #f4f6ff;
   --codex-violet: #8aa1ff;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
@@ -19,17 +20,18 @@
 }
 
 .dark .codex-admin {
-  --codex-bg: #000000;
-  --codex-surface: #111111;
-  --codex-surface-strong: #191717;
+  --codex-bg: #050712;
+  --codex-surface: #0b1020;
+  --codex-surface-strong: #10172a;
+  --codex-surface-soft: rgba(11, 16, 32, 0.72);
   --codex-border: #333333;
   --codex-border-strong: #666666;
   --codex-text: #ffffff;
   --codex-muted: #999999;
-  --codex-soft: #191717;
+  --codex-soft: #151d33;
   --codex-accent: #8aa1ff;
   --codex-accent-strong: #b7c6ff;
-  --codex-accent-soft: #24386c;
+  --codex-accent-soft: #151d33;
   --codex-violet: #b7c6ff;
 }
 
@@ -38,17 +40,17 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background:
-    radial-gradient(circle at 16% 0%, rgba(0, 51, 255, 0.1), transparent 32%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 249, 251, 0.98)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 249, 251, 0.92)),
+    radial-gradient(circle at 16% 0%, rgba(0, 51, 255, 0.035), transparent 34%),
     var(--codex-bg);
-  box-shadow: 0 18px 50px rgba(0, 51, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
   overflow: hidden;
 }
 
 .dark .codex-shell {
   background:
-    radial-gradient(circle at 16% 0%, rgba(0, 51, 255, 0.18), transparent 34%),
-    linear-gradient(180deg, rgba(25, 23, 23, 0.94), rgba(0, 0, 0, 0.98)),
+    linear-gradient(180deg, rgba(5, 7, 18, 0.98), rgba(2, 4, 12, 0.98)),
+    radial-gradient(circle at 16% 0%, rgba(138, 161, 255, 0.055), transparent 34%),
     var(--codex-bg);
   box-shadow: none;
 }
@@ -59,6 +61,15 @@
   gap: 24px;
   padding: 24px;
   border-bottom: 1px solid var(--codex-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.48)),
+    radial-gradient(circle at 12% 0%, rgba(0, 51, 255, 0.025), transparent 36%);
+}
+
+.dark .codex-topbar {
+  background:
+    linear-gradient(180deg, rgba(11, 16, 32, 0.72), rgba(5, 7, 18, 0.48)),
+    radial-gradient(circle at 12% 0%, rgba(138, 161, 255, 0.035), transparent 36%);
 }
 
 .codex-title {
@@ -93,17 +104,23 @@
 
 .codex-side {
   border-left: 1px solid var(--codex-border);
-  background: rgba(248, 249, 251, 0.72);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(248, 249, 251, 0.58)),
+    radial-gradient(circle at 100% 0%, rgba(0, 51, 255, 0.018), transparent 38%);
 }
 
 .dark .codex-side {
-  background: rgba(25, 23, 23, 0.42);
+  background:
+    linear-gradient(180deg, rgba(11, 16, 32, 0.58), rgba(5, 7, 18, 0.42)),
+    radial-gradient(circle at 100% 0%, rgba(138, 161, 255, 0.03), transparent 38%);
 }
 
 .codex-panel {
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
-  background: var(--codex-surface);
+  background:
+    linear-gradient(180deg, var(--codex-surface), var(--codex-surface-soft)),
+    var(--codex-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
