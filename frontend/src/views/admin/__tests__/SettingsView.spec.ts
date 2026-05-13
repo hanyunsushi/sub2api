@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { defineComponent, h } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 
@@ -734,6 +736,22 @@ describe("admin SettingsView payment visible method controls", () => {
     expect(paymentHelpImageUpload).toBeDefined();
     expect(paymentHelpImageUpload?.attributes("data-upload-label")).toBe("上传图片");
     expect(paymentHelpImageUpload?.attributes("data-remove-label")).toBe("移除");
+  });
+});
+
+describe("admin SettingsView dark tab styles", () => {
+  it("keeps settings tab dark selectors in an unscoped global style block", () => {
+    const source = readFileSync(
+      resolve(__dirname, "../SettingsView.vue"),
+      "utf-8",
+    );
+
+    expect(source).toContain("<style>\n.dark .settings-tabs-shell");
+    expect(source).toContain(".dark .settings-tab::before");
+    expect(source).toContain(".dark .settings-tab-active");
+    expect(source).not.toContain(":global(.dark) .settings-tabs-shell");
+    expect(source).not.toContain(":global(.dark) .settings-tab::before");
+    expect(source).not.toContain(":global(.dark) .settings-tab-active");
   });
 });
 
