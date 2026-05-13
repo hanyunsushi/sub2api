@@ -12,7 +12,7 @@
           <!-- Total API Keys -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-primary-100 p-2 dark:bg-primary-900/30">
+              <div class="dashboard-stat-icon">
                 <Icon name="key" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -32,7 +32,7 @@
           <!-- Service Accounts -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-accent-100 p-2 dark:bg-primary-900/20">
+              <div class="dashboard-stat-icon">
                 <Icon name="server" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -57,7 +57,7 @@
           <!-- Today Requests -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-primary-100 p-2 dark:bg-primary-900/30">
+              <div class="dashboard-stat-icon">
                 <Icon name="chart" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -77,7 +77,7 @@
           <!-- New Users Today -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-accent-100 p-2 dark:bg-primary-900/20">
+              <div class="dashboard-stat-icon">
                 <Icon name="userPlus" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -100,7 +100,7 @@
           <!-- Today Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-primary-100 p-2 dark:bg-primary-900/30">
+              <div class="dashboard-stat-icon">
                 <Icon name="cube" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -136,7 +136,7 @@
           <!-- Total Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-accent-100 p-2 dark:bg-primary-900/20">
+              <div class="dashboard-stat-icon">
                 <Icon name="database" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -172,7 +172,7 @@
           <!-- Performance (RPM/TPM) -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-primary-100 p-2 dark:bg-primary-900/30">
+              <div class="dashboard-stat-icon">
                 <Icon name="bolt" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div class="flex-1">
@@ -198,7 +198,7 @@
           <!-- Avg Response Time -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-accent-100 p-2 dark:bg-primary-900/20">
+              <div class="dashboard-stat-icon">
                 <Icon name="clock" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
               </div>
               <div>
@@ -694,4 +694,17 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.dashboard-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 2.25rem;
+  color: #0033ff;
+}
+
+:global(.dark) .dashboard-stat-icon {
+  color: #8aa1ff;
+}
 </style>
