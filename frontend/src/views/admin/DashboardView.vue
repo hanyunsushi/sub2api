@@ -523,7 +523,8 @@ const formatNumber = (value: number): string => {
   return value.toLocaleString()
 }
 
-const formatCost = (value: number): string => {
+const formatCost = (value: number | null | undefined): string => {
+  if (value === undefined || value === null) return '0.0000'
   if (value >= 1000) {
     return (value / 1000).toFixed(2) + 'K'
   } else if (value >= 1) {
@@ -691,10 +692,10 @@ onMounted(() => {
   width: 2.25rem;
   height: 2.25rem;
   flex: 0 0 2.25rem;
-  color: #0033ff;
+  color: #002FA7;
 }
 
 :global(.dark) .dashboard-stat-icon {
-  color: #8aa1ff;
+  color: #8aa8ff;
 }
 </style>

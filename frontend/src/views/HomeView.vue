@@ -578,13 +578,13 @@ onMounted(() => {
   font-weight: bold;
 }
 .code-cmd {
-  color: #8aa1ff;
+  color: #8aa8ff;
 }
 .code-flag {
   color: #c8d2ff;
 }
 .code-url {
-  color: #b7c6ff;
+  color: #b8c9ff;
 }
 .code-comment {
   color: #64748b;

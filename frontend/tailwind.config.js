@@ -1,31 +1,40 @@
 /** @type {import('tailwindcss').Config} */
+const kleinBlueScale = {
+  50: '#f3f6ff',
+  100: '#e1e9ff',
+  200: '#b8c9ff',
+  300: '#8aa8ff',
+  400: '#4f73e6',
+  500: '#002FA7',
+  600: '#002780',
+  700: '#001f66',
+  800: '#00184d',
+  900: '#001133',
+  950: '#00091f'
+}
+
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // 主色调 - Dify official tokens
-        primary: {
-          50: '#f8f9fb',
-          100: '#e5eaff',
-          200: '#b7c6ff',
-          300: '#b7c6ff',
-          400: '#8aa1ff',
-          500: '#0033ff',
-          600: '#002cd6',
-          700: '#001fb8',
-          800: '#00178a',
-          900: '#00105c',
-          950: '#00082e'
-        },
-        // 辅助色 - Dify neutral and soft-blue surfaces
+        // 主色调 - Klein blue theme (IKB #002FA7)
+        primary: kleinBlueScale,
+        // Treat legacy blue/indigo/purple/violet utility classes as Klein blue
+        // so older component-local classes render on the same theme axis.
+        blue: kleinBlueScale,
+        indigo: kleinBlueScale,
+        purple: kleinBlueScale,
+        violet: kleinBlueScale,
+        sky: kleinBlueScale,
+        // 辅助色 - neutral and soft Klein-blue surfaces
         accent: {
           50: '#f8f9fb',
           100: '#ffffff',
-          200: '#e5eaff',
-          300: '#b7c6ff',
-          400: '#b7c6ff',
+          200: '#e1e9ff',
+          300: '#b8c9ff',
+          400: '#8aa8ff',
           500: '#999999',
           600: '#666666',
           700: '#333333',
@@ -36,9 +45,9 @@ export default {
         // 深色模式背景
         dark: {
           50: '#f8f9fb',
-          100: '#e5eaff',
-          200: '#b7c6ff',
-          300: '#8aa1ff',
+          100: '#e1e9ff',
+          200: '#b8c9ff',
+          300: '#8aa8ff',
           400: '#666666',
           500: '#333333',
           600: '#24386c',
@@ -65,17 +74,17 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(0, 51, 255, 0.08)',
-        'glass-sm': '0 8px 22px rgba(0, 51, 255, 0.06)',
-        glow: '0 10px 28px rgba(0, 51, 255, 0.18)',
-        'glow-lg': '0 18px 44px rgba(0, 51, 255, 0.22)',
-        card: '0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 22px rgba(0, 51, 255, 0.05)',
-        'card-hover': '0 16px 36px rgba(0, 51, 255, 0.1)',
+        glass: '0 14px 40px rgba(0, 47, 167, 0.08)',
+        'glass-sm': '0 8px 22px rgba(0, 47, 167, 0.06)',
+        glow: '0 10px 28px rgba(0, 47, 167, 0.18)',
+        'glow-lg': '0 18px 44px rgba(0, 47, 167, 0.22)',
+        card: '0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 22px rgba(0, 47, 167, 0.05)',
+        'card-hover': '0 16px 36px rgba(0, 47, 167, 0.1)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #0033ff 0%, #2e58ff 58%, #8aa1ff 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #0b46c5 58%, #8aa8ff 100%)',
         'gradient-dark': 'linear-gradient(135deg, #191717 0%, #000000 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
@@ -118,8 +127,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(0, 51, 255, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(0, 51, 255, 0.22)' }
+          '0%': { boxShadow: '0 10px 28px rgba(0, 47, 167, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(0, 47, 167, 0.22)' }
         }
       },
       backdropBlur: {

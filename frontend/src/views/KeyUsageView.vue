@@ -450,7 +450,7 @@ function getDateParams(): string {
 const CIRCUMFERENCE = 2 * Math.PI * 68
 const RING_GRADIENTS = [
   { from: '#14b8a6', to: '#5eead4' },
-  { from: '#6366F1', to: '#A5B4FC' },
+  { from: '#002FA7', to: '#8aa8ff' },
   { from: '#10B981', to: '#6EE7B7' },
   { from: '#F59E0B', to: '#FCD34D' },
 ]
