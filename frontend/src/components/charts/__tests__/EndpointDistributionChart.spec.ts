@@ -54,7 +54,7 @@ describe('EndpointDistributionChart', () => {
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     const colors = chartData.datasets[0].backgroundColor
 
-    expect(colors.slice(0, 5)).toEqual(['#2563eb', '#7c3aed', '#0891b2', '#0f766e', '#b7791f'])
+    expect(colors.slice(0, 5)).toEqual(['#002FA7', '#3f63d8', '#0891b2', '#0f766e', '#b7791f'])
     expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 })

@@ -3,15 +3,15 @@
   --codex-surface: #ffffff;
   --codex-surface-strong: #ffffff;
   --codex-surface-soft: rgba(255, 255, 255, 0.82);
-  --codex-border: #e5eaff;
-  --codex-border-strong: #b7c6ff;
+  --codex-border: #e1e9ff;
+  --codex-border-strong: #b8c9ff;
   --codex-text: #000000;
   --codex-muted: #666666;
   --codex-soft: #f2f5ff;
-  --codex-accent: #0033ff;
-  --codex-accent-strong: #002cd6;
+  --codex-accent: #002FA7;
+  --codex-accent-strong: #002780;
   --codex-accent-soft: #f4f6ff;
-  --codex-violet: #8aa1ff;
+  --codex-violet: #8aa8ff;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
@@ -29,10 +29,10 @@
   --codex-text: #ffffff;
   --codex-muted: #999999;
   --codex-soft: #151d33;
-  --codex-accent: #8aa1ff;
-  --codex-accent-strong: #b7c6ff;
+  --codex-accent: #8aa8ff;
+  --codex-accent-strong: #b8c9ff;
   --codex-accent-soft: #151d33;
-  --codex-violet: #b7c6ff;
+  --codex-violet: #b8c9ff;
 }
 
 .codex-shell {
@@ -41,7 +41,7 @@
   border-radius: var(--codex-radius);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 249, 251, 0.92)),
-    radial-gradient(circle at 16% 0%, rgba(0, 51, 255, 0.035), transparent 34%),
+    radial-gradient(circle at 16% 0%, rgba(0, 47, 167, 0.035), transparent 34%),
     var(--codex-bg);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
   overflow: hidden;
@@ -50,7 +50,7 @@
 .dark .codex-shell {
   background:
     linear-gradient(180deg, rgba(5, 7, 18, 0.98), rgba(2, 4, 12, 0.98)),
-    radial-gradient(circle at 16% 0%, rgba(138, 161, 255, 0.055), transparent 34%),
+    radial-gradient(circle at 16% 0%, rgba(138, 168, 255, 0.055), transparent 34%),
     var(--codex-bg);
   box-shadow: none;
 }
@@ -63,13 +63,13 @@
   border-bottom: 1px solid var(--codex-border);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.48)),
-    radial-gradient(circle at 12% 0%, rgba(0, 51, 255, 0.025), transparent 36%);
+    radial-gradient(circle at 12% 0%, rgba(0, 47, 167, 0.025), transparent 36%);
 }
 
 .dark .codex-topbar {
   background:
     linear-gradient(180deg, rgba(11, 16, 32, 0.72), rgba(5, 7, 18, 0.48)),
-    radial-gradient(circle at 12% 0%, rgba(138, 161, 255, 0.035), transparent 36%);
+    radial-gradient(circle at 12% 0%, rgba(138, 168, 255, 0.035), transparent 36%);
 }
 
 .codex-title {
@@ -106,13 +106,13 @@
   border-left: 1px solid var(--codex-border);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(248, 249, 251, 0.58)),
-    radial-gradient(circle at 100% 0%, rgba(0, 51, 255, 0.018), transparent 38%);
+    radial-gradient(circle at 100% 0%, rgba(0, 47, 167, 0.018), transparent 38%);
 }
 
 .dark .codex-side {
   background:
     linear-gradient(180deg, rgba(11, 16, 32, 0.58), rgba(5, 7, 18, 0.42)),
-    radial-gradient(circle at 100% 0%, rgba(138, 161, 255, 0.03), transparent 38%);
+    radial-gradient(circle at 100% 0%, rgba(138, 168, 255, 0.03), transparent 38%);
 }
 
 .codex-panel {
@@ -240,7 +240,7 @@
 .codex-select:focus,
 .codex-textarea:focus {
   border-color: var(--codex-accent);
-  box-shadow: 0 0 0 3px rgba(0, 51, 255, 0.16);
+  box-shadow: 0 0 0 3px rgba(0, 47, 167, 0.16);
 }
 
 .codex-button {
@@ -262,7 +262,7 @@
 
 .codex-button:hover {
   border-color: var(--codex-accent);
-  box-shadow: 0 4px 12px rgba(0, 51, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 47, 167, 0.08);
 }
 
 .codex-button:active {
@@ -284,7 +284,7 @@
   border-color: var(--codex-accent);
   background: var(--codex-accent);
   color: #ffffff;
-  box-shadow: 0 8px 18px rgba(0, 51, 255, 0.18);
+  box-shadow: 0 8px 18px rgba(0, 47, 167, 0.18);
 }
 
 .codex-button--primary:hover {
@@ -401,7 +401,7 @@
 .codex-account-card.is-selected {
   border-color: var(--codex-accent);
   background: var(--codex-accent-soft);
-  box-shadow: 0 8px 22px rgba(0, 51, 255, 0.12);
+  box-shadow: 0 8px 22px rgba(0, 47, 167, 0.12);
 }
 
 .codex-account-card:active {

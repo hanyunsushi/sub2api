@@ -58,7 +58,7 @@ defineExpose({ replayTour })
 
 .app-layout-bg {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 51, 255, 0.045), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.045), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 255, 0.82));
 }
 
@@ -68,7 +68,7 @@ defineExpose({ replayTour })
 
 .dark .app-layout-bg {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 51, 255, 0.075), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.075), transparent 34%),
     linear-gradient(180deg, rgba(5, 7, 18, 0.98), rgba(2, 4, 12, 0.99));
 }
 </style>

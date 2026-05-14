@@ -38,8 +38,8 @@ const isDarkMode = computed(() => document.documentElement.classList.contains('d
 const colors = computed(() => ({
   red: '#ef4444',
   redAlpha: '#ef444420',
-  purple: '#8b5cf6',
-  purpleAlpha: '#8b5cf620',
+  purple: '#5f7ee8',
+  purpleAlpha: '#5f7ee820',
   gray: '#9ca3af',
   grid: isDarkMode.value ? '#374151' : '#f3f4f6',
   text: isDarkMode.value ? '#9ca3af' : '#6b7280'

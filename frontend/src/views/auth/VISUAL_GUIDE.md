@@ -26,7 +26,7 @@ Both LoginView and RegisterView use the AuthLayout component, which provides:
 │                                             │
 └─────────────────────────────────────────────┘
 
-Background: Gradient (Indigo → White → Purple)
+Background: Gradient (Klein blue → White → Soft Klein blue)
 Card: White with rounded corners and shadow
 Max Width: 28rem (448px)
 Centered: Both horizontally and vertically
@@ -236,9 +236,9 @@ Centered: Both horizontally and vertically
 
 ### Primary Colors
 
-- **Indigo-600**: `#4F46E5` - Primary buttons, links, brand color
-- **Indigo-700**: `#4338CA` - Button hover state
-- **Indigo-500**: `#6366F1` - Focus ring
+- **Klein-600**: `#002FA7` - Primary buttons, links, brand color
+- **Klein-700**: `#002780` - Button hover state
+- **Klein-500**: `#002FA7` - Focus ring
 
 ### Neutral Colors
 
@@ -264,9 +264,9 @@ Centered: Both horizontally and vertically
 
 ### Background Gradient
 
-- **From**: Indigo-100 (`#E0E7FF`)
+- **From**: Klein-100 (`#e1e9ff`)
 - **Via**: White (`#FFFFFF`)
-- **To**: Purple-100 (`#F3E8FF`)
+- **To**: Soft Klein-100 (`#f3f6ff`)
 
 ## Typography
 
@@ -315,7 +315,7 @@ Centered: Both horizontally and vertically
 
 ```css
 border: 1px solid #D1D5DB (gray-300)
-focus: 2px ring #6366F1 (indigo-500)
+focus: 2px ring #002FA7 (klein-500)
 ```
 
 **Error:**
@@ -338,7 +338,7 @@ opacity: 0.6
 **Default:**
 
 ```css
-background: #4F46E5 (indigo-600)
+background: #002FA7 (klein-600)
 text: #FFFFFF (white)
 shadow: shadow-sm
 ```
@@ -346,7 +346,7 @@ shadow: shadow-sm
 **Hover:**
 
 ```css
-background: #4338CA (indigo-700)
+background: #002780 (klein-700)
 transition: colors 150ms
 ```
 
@@ -354,7 +354,7 @@ transition: colors 150ms
 
 ```css
 outline: none
-ring: 2px offset-2 #6366F1 (indigo-500)
+ring: 2px offset-2 #002FA7 (klein-500)
 ```
 
 **Disabled:**
@@ -377,14 +377,14 @@ cursor: not-allowed
 **Default:**
 
 ```css
-color: #4F46E5 (indigo-600)
+color: #002FA7 (klein-600)
 font-weight: 500 (medium)
 ```
 
 **Hover:**
 
 ```css
-color: #6366F1 (indigo-500)
+color: #002FA7 (klein-500)
 transition: colors 150ms
 ```
 

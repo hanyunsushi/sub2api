@@ -71,7 +71,7 @@ describe('TokenUsageTrend', () => {
     const chartData = JSON.parse(wrapper.find('.line-chart-data').text())
     const colors = chartData.datasets.map((dataset: { borderColor: string }) => dataset.borderColor)
 
-    expect(colors).toEqual(['#2563eb', '#7c3aed', '#0891b2', '#0f766e', '#b7791f'])
+    expect(colors).toEqual(['#002FA7', '#3f63d8', '#0891b2', '#0f766e', '#b7791f'])
     expect(new Set(colors).size).toBe(colors.length)
     expect(chartData.datasets[4].label).toBe('Cache Hit Rate')
     expect(chartData.datasets[4].borderDash).toEqual([5, 5])
