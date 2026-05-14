@@ -42,6 +42,7 @@ describe('GroupDistributionChart', () => {
       total_tokens: 1200,
       cost: 1.8,
       actual_cost: 0.1,
+      account_cost: 0.2,
     },
     {
       group_id: 2,
@@ -50,6 +51,7 @@ describe('GroupDistributionChart', () => {
       total_tokens: 600,
       cost: 0.7,
       actual_cost: 0.9,
+      account_cost: 0.4,
     },
   ]
 
@@ -80,6 +82,54 @@ describe('GroupDistributionChart', () => {
       dataset: { data: [1200, 600] },
     })
     expect(label).toBe('group-a: 1.20K (66.7%)')
+  })
+
+  it('uses a readable categorical palette for group segments', () => {
+    const wrapper = mount(GroupDistributionChart, {
+      props: {
+        groupStats: [
+          ...groupStats,
+          {
+            group_id: 3,
+            group_name: 'group-c',
+            requests: 3,
+            total_tokens: 500,
+            cost: 0.5,
+            actual_cost: 0.4,
+            account_cost: 0.45,
+          },
+          {
+            group_id: 4,
+            group_name: 'group-d',
+            requests: 2,
+            total_tokens: 400,
+            cost: 0.4,
+            actual_cost: 0.3,
+            account_cost: 0.35,
+          },
+          {
+            group_id: 5,
+            group_name: 'group-e',
+            requests: 1,
+            total_tokens: 300,
+            cost: 0.3,
+            actual_cost: 0.2,
+            account_cost: 0.25,
+          },
+        ],
+      },
+      global: {
+        stubs: {
+          LoadingSpinner: true,
+        },
+      },
+    })
+
+    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const colors = chartData.datasets[0].backgroundColor
+
+    expect(colors.slice(0, 5)).toEqual(['#2563eb', '#7c3aed', '#0891b2', '#0f766e', '#b7791f'])
+    expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
   it('uses actual_cost and reorders rows in actual cost mode', () => {

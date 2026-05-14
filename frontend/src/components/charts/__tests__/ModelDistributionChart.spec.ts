@@ -53,6 +53,7 @@ describe('ModelDistributionChart', () => {
       total_tokens: 1000,
       cost: 1.5,
       actual_cost: 0.2,
+      account_cost: 0.3,
     },
     {
       model: 'model-b',
@@ -64,6 +65,7 @@ describe('ModelDistributionChart', () => {
       total_tokens: 500,
       cost: 0.5,
       actual_cost: 1.4,
+      account_cost: 0.6,
     },
   ]
 
@@ -94,6 +96,63 @@ describe('ModelDistributionChart', () => {
       dataset: { data: [1000, 500] },
     })
     expect(label).toBe('model-a: 1.00K (66.7%)')
+  })
+
+  it('uses a readable categorical palette for model segments', () => {
+    const wrapper = mount(ModelDistributionChart, {
+      props: {
+        modelStats: [
+          ...modelStats,
+          {
+            model: 'model-c',
+            requests: 2,
+            input_tokens: 30,
+            output_tokens: 10,
+            cache_creation_tokens: 0,
+            cache_read_tokens: 0,
+            total_tokens: 300,
+            cost: 0.2,
+            actual_cost: 0.1,
+            account_cost: 0.12,
+          },
+          {
+            model: 'model-d',
+            requests: 1,
+            input_tokens: 20,
+            output_tokens: 10,
+            cache_creation_tokens: 0,
+            cache_read_tokens: 0,
+            total_tokens: 200,
+            cost: 0.1,
+            actual_cost: 0.05,
+            account_cost: 0.06,
+          },
+          {
+            model: 'model-e',
+            requests: 1,
+            input_tokens: 10,
+            output_tokens: 10,
+            cache_creation_tokens: 0,
+            cache_read_tokens: 0,
+            total_tokens: 100,
+            cost: 0.08,
+            actual_cost: 0.04,
+            account_cost: 0.05,
+          },
+        ],
+      },
+      global: {
+        stubs: {
+          LoadingSpinner: true,
+        },
+      },
+    })
+
+    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const colors = chartData.datasets[0].backgroundColor
+
+    expect(colors.slice(0, 5)).toEqual(['#2563eb', '#7c3aed', '#0891b2', '#0f766e', '#b7791f'])
+    expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
   it('uses actual_cost and reorders rows in actual cost mode', () => {
@@ -157,7 +216,7 @@ describe('ModelDistributionChart', () => {
       'Others',
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 10])
-    expect(chartData.datasets[0].backgroundColor[0]).toBe('#3b82f6')
+    expect(chartData.datasets[0].backgroundColor[0]).toBe('#2563eb')
     expect(chartData.datasets[0].backgroundColor[2]).toBe('#94a3b8')
     expect(chartData.datasets[0].backgroundColor[2]).not.toBe(chartData.datasets[0].backgroundColor[0])
 

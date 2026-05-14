@@ -140,6 +140,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserBreakdownSubTable from './UserBreakdownSubTable.vue'
 import type { EndpointStat, UserBreakdownItem } from '@/types'
 import { getUserBreakdown } from '@/api/admin/dashboard'
+import { getChartColors } from '@/utils/chartColors'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -208,21 +209,6 @@ const toggleBreakdown = async (endpoint: string) => {
   }
 }
 
-const chartColors = [
-  '#0033ff',
-  '#2e58ff',
-  '#8aa1ff',
-  '#b7c6ff',
-  '#002cd6',
-  '#e5eaff',
-  '#666666',
-  '#999999',
-  '#0033ff',
-  '#2e58ff',
-  '#8aa1ff',
-  '#b7c6ff'
-]
-
 const displayEndpointStats = computed(() => {
   const sourceStats = props.source === 'upstream'
     ? props.upstreamEndpointStats
@@ -245,7 +231,7 @@ const chartData = computed(() => {
         data: displayEndpointStats.value.map((item) =>
           props.metric === 'actual_cost' ? item.actual_cost : item.total_tokens
         ),
-        backgroundColor: chartColors.slice(0, displayEndpointStats.value.length),
+        backgroundColor: getChartColors(displayEndpointStats.value.length),
         borderWidth: 0
       }
     ]

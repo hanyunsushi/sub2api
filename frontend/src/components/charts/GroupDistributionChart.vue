@@ -115,6 +115,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserBreakdownSubTable from './UserBreakdownSubTable.vue'
 import type { GroupStat, UserBreakdownItem } from '@/types'
 import { getUserBreakdown } from '@/api/admin/dashboard'
+import { getChartColors } from '@/utils/chartColors'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -168,19 +169,6 @@ const toggleBreakdown = async (type: string, id: number | string) => {
   }
 }
 
-const chartColors = [
-  '#0033ff',
-  '#2e58ff',
-  '#8aa1ff',
-  '#b7c6ff',
-  '#002cd6',
-  '#e5eaff',
-  '#666666',
-  '#999999',
-  '#0033ff',
-  '#2e58ff'
-]
-
 const displayGroupStats = computed(() => {
   if (!props.groupStats?.length) return []
 
@@ -196,7 +184,7 @@ const chartData = computed(() => {
     datasets: [
       {
         data: displayGroupStats.value.map((g) => props.metric === 'actual_cost' ? g.actual_cost : g.total_tokens),
-        backgroundColor: chartColors.slice(0, displayGroupStats.value.length),
+        backgroundColor: getChartColors(displayGroupStats.value.length),
         borderWidth: 0
       }
     ]

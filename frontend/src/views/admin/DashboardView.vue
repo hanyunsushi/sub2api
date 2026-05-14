@@ -314,6 +314,7 @@ import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Select from '@/components/common/Select.vue'
 import ModelDistributionChart from '@/components/charts/ModelDistributionChart.vue'
 import TokenUsageTrend from '@/components/charts/TokenUsageTrend.vue'
+import { getChartColor, withChartAlpha } from '@/utils/chartColors'
 
 import {
   Chart as ChartJS,
@@ -490,22 +491,11 @@ const userTrendChartData = computed(() => {
   })
 
   const sortedDates = Array.from(allDates).sort()
-  const colors = [
-    '#0033ff',
-    '#2e58ff',
-    '#8aa1ff',
-    '#b7c6ff',
-    '#002cd6',
-    '#e5eaff',
-    '#666666',
-    '#999999'
-  ]
-
   const datasets = Array.from(userGroups.values()).map((group, idx) => ({
     label: group.name,
     data: sortedDates.map((date) => group.data.get(date) || 0),
-    borderColor: colors[idx % colors.length],
-    backgroundColor: `${colors[idx % colors.length]}20`,
+    borderColor: getChartColor(idx),
+    backgroundColor: withChartAlpha(getChartColor(idx)),
     fill: false,
     tension: 0.3
   }))

@@ -13,7 +13,7 @@ import (
 
 const (
 	cpaManagementProxyPrefix        = "/cpa-management"
-	defaultCPAManagementProxyTarget = "http://host.docker.internal:8317/v0/management"
+	defaultCPAManagementProxyTarget = "https://host.docker.internal:8317/v0/management"
 )
 
 // RegisterCPAManagementProxyRoutes proxies browser-local CPA management calls to
