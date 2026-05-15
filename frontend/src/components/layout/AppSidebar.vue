@@ -22,7 +22,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="sidebar-nav scrollbar-hide">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onMounted, ref, watch } from 'vue'
+import { computed, h, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
@@ -237,9 +237,12 @@ const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
 const isAdmin = computed(() => authStore.isAdmin)
 const isDark = ref(document.documentElement.classList.contains('dark'))
+const sidebarNavRef = ref<HTMLElement | null>(null)
 
 // Track which parent nav groups are expanded
 const expandedGroups = ref<Set<string>>(new Set())
+let preservedSidebarScrollTop = 0
+let shouldRestoreSidebarScroll = false
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
@@ -817,7 +820,25 @@ function closeMobile() {
   appStore.setMobileOpen(false)
 }
 
+function captureSidebarScroll() {
+  if (!sidebarNavRef.value) return
+  preservedSidebarScrollTop = sidebarNavRef.value.scrollTop
+  shouldRestoreSidebarScroll = true
+}
+
+function restoreSidebarScroll() {
+  if (!shouldRestoreSidebarScroll) return
+  void nextTick(() => {
+    if (sidebarNavRef.value) {
+      sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
+    }
+    shouldRestoreSidebarScroll = false
+  })
+}
+
 function handleMenuItemClick(itemPath: string) {
+  captureSidebarScroll()
+
   if (mobileOpen.value) {
     setTimeout(() => {
       appStore.setMobileOpen(false)
@@ -834,6 +855,10 @@ function handleMenuItemClick(itemPath: string) {
   const selector = pathToSelector[itemPath]
   if (selector && onboardingStore.isCurrentStep(selector)) {
     onboardingStore.nextStep(500)
+  }
+
+  if (route.path === itemPath) {
+    restoreSidebarScroll()
   }
 }
 
@@ -867,8 +892,10 @@ function toggleGroup(item: NavItem) {
  */
 function handleGroupClick(item: NavItem) {
   if (sidebarCollapsed.value) return
+  captureSidebarScroll()
   if (item.expandOnly) {
     toggleGroup(item)
+    restoreSidebarScroll()
     return
   }
   // Push to path and ensure expanded
@@ -877,6 +904,9 @@ function handleGroupClick(item: NavItem) {
   }
   if (!expandedGroups.value.has(item.path)) {
     expandedGroups.value.add(item.path)
+  }
+  if (route.path === item.path) {
+    restoreSidebarScroll()
   }
 }
 
@@ -900,6 +930,8 @@ watch(
   },
   { immediate: true }
 )
+
+watch(() => route.fullPath, restoreSidebarScroll, { flush: 'post' })
 
 onMounted(() => {
   if (isAdmin.value) {

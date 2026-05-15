@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   tone?: 'deep' | 'light'
@@ -16,11 +16,17 @@ const props = withDefaults(defineProps<{
 })
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const isDarkMode = ref(false)
 const backgroundClass = computed(() => [
   'guizang-site-background',
   `guizang-site-background--${props.tone}`
 ])
-const inkColor = computed(() => props.tone === 'light' ? '0,47,167' : '255,255,255')
+const inkColor = computed(() => {
+  if (props.tone === 'light') {
+    return isDarkMode.value ? '255,255,255' : '0,47,167'
+  }
+  return '255,255,255'
+})
 
 function drawGuizangField(canvas: HTMLCanvasElement, time: number, ink: string) {
   const rect = canvas.getBoundingClientRect()
@@ -83,10 +89,15 @@ function drawGuizangField(canvas: HTMLCanvasElement, time: number, ink: string) 
 let frameId = 0
 let resizeFrameId = 0
 let start = 0
+let themeObserver: MutationObserver | null = null
 
 onMounted(() => {
   const canvas = canvasRef.value
   if (!canvas) return
+
+  updateThemeMode()
+  themeObserver = new MutationObserver(updateThemeMode)
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
   start = performance.now()
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -110,8 +121,19 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (frameId) cancelAnimationFrame(frameId)
   if (resizeFrameId) cancelAnimationFrame(resizeFrameId)
+  themeObserver?.disconnect()
   window.removeEventListener('resize', handleResize)
 })
+
+watch(inkColor, () => {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  drawGuizangField(canvas, 1.8, inkColor.value)
+})
+
+function updateThemeMode() {
+  isDarkMode.value = document.documentElement.classList.contains('dark')
+}
 
 function handleResize() {
   const canvas = canvasRef.value

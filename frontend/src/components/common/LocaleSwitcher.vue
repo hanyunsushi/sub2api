@@ -3,7 +3,8 @@
     <button
       @click="toggleDropdown"
       :disabled="switching"
-      class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+      class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors"
+      :class="triggerClass"
       :title="currentLocale?.name"
     >
       <span class="text-base">{{ currentLocale?.flag }}</span>
@@ -11,8 +12,8 @@
       <Icon
         name="chevronDown"
         size="xs"
-        class="text-gray-400 transition-transform duration-200"
-        :class="{ 'rotate-180': isOpen }"
+        class="transition-transform duration-200"
+        :class="[chevronClass, { 'rotate-180': isOpen }]"
       />
     </button>
 
@@ -47,6 +48,12 @@ import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
 import { setLocale, availableLocales } from '@/i18n'
 
+const props = withDefaults(defineProps<{
+  tone?: 'default' | 'on-deep'
+}>(), {
+  tone: 'default'
+})
+
 const { locale } = useI18n()
 
 const isOpen = ref(false)
@@ -55,6 +62,14 @@ const switching = ref(false)
 
 const currentLocaleCode = computed(() => locale.value)
 const currentLocale = computed(() => availableLocales.find((l) => l.code === locale.value))
+const triggerClass = computed(() =>
+  props.tone === 'on-deep'
+    ? 'text-white/85 hover:bg-white/10 hover:text-white disabled:text-white/50'
+    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'
+)
+const chevronClass = computed(() =>
+  props.tone === 'on-deep' ? 'text-white/65' : 'text-gray-400'
+)
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value

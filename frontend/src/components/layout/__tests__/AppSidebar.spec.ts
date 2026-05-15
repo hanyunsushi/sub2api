@@ -30,3 +30,14 @@ describe('AppSidebar header styles', () => {
     expect(sidebarBrandBlockMatch?.[0]).not.toContain('overflow: hidden;')
   })
 })
+
+describe('AppSidebar scroll position', () => {
+  it('preserves the scroll position while route clicks update the active menu item', () => {
+    expect(componentSource).toContain('ref="sidebarNavRef"')
+    expect(componentSource).toContain('function captureSidebarScroll')
+    expect(componentSource).toContain('function restoreSidebarScroll')
+    expect(componentSource).toContain('watch(() => route.fullPath')
+    expect(componentSource).toContain('sidebarNavRef.value.scrollTop = preservedSidebarScrollTop')
+    expect(componentSource).toContain('captureSidebarScroll()')
+  })
+})

@@ -159,7 +159,7 @@
               </div>
               <div v-else class="codex-account-grid">
                 <article
-                  v-for="account in filteredAccounts"
+                  v-for="account in paginatedAccounts"
                   :key="account.key"
                   class="codex-account-card"
                   :class="{ 'is-selected': account.name === selectedAuthName }"
@@ -255,6 +255,18 @@
 
                 </article>
               </div>
+              <Pagination
+                v-if="filteredAccounts.length > CODEX_ACCOUNTS_PAGE_SIZE"
+                class="codex-pagination"
+                :total="filteredAccounts.length"
+                :page="accountPage"
+                :page-size="CODEX_ACCOUNTS_PAGE_SIZE"
+                :page-size-options="[CODEX_ACCOUNTS_PAGE_SIZE]"
+                :show-page-size-selector="false"
+                :show-jump="true"
+                @update:page="setAccountPage"
+                @update:page-size="keepFixedAccountPageSize"
+              />
               <div v-if="operationError" class="codex-error codex-error--compact">
                 {{ operationError }}
               </div>
@@ -419,6 +431,7 @@ import '@/styles/codex-theme.css'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import Pagination from '@/components/common/Pagination.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { DEFAULT_CPA_MANAGEMENT_BASE } from '@/api/codex'
 import { createGroup as createCodexGroup } from '@/api/codexMetadata'
@@ -429,6 +442,11 @@ import { useCodexStore } from '@/stores'
 import type { CodexAccountMerged } from '@/types/codex'
 import type { AdminGroup, ApiKey } from '@/types'
 import { filterCodexAccounts } from './accountFilters'
+import {
+  CODEX_ACCOUNTS_PAGE_SIZE,
+  clampAccountPage,
+  paginateCodexAccounts,
+} from './accountPagination'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -439,6 +457,7 @@ const rememberConnectionDraft = ref(codexStore.rememberConnection)
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const groupFilter = ref('all')
+const accountPage = ref(1)
 const selectedAuthName = ref('')
 const savingMetadata = ref(false)
 const creatingGroup = ref(false)
@@ -485,6 +504,8 @@ const filteredAccounts = computed(() => {
   })
 })
 
+const paginatedAccounts = computed(() => paginateCodexAccounts(filteredAccounts.value, accountPage.value))
+
 const selectedAccount = computed(() => {
   return codexStore.accounts.find((account) => account.name === selectedAuthName.value)
 })
@@ -508,6 +529,14 @@ function applyDraftFromSelected(): void {
 
 function selectAccount(authName: string): void {
   selectedAuthName.value = authName
+}
+
+function setAccountPage(page: number): void {
+  accountPage.value = clampAccountPage(page, filteredAccounts.value.length)
+}
+
+function keepFixedAccountPageSize(): void {
+  accountPage.value = clampAccountPage(accountPage.value, filteredAccounts.value.length)
 }
 
 function parseTags(value: string): string[] {
@@ -790,6 +819,18 @@ function statusLabel(status: string): string {
 }
 
 watch(selectedAccount, applyDraftFromSelected, { immediate: true })
+
+watch([searchQuery, statusFilter, groupFilter], () => {
+  accountPage.value = 1
+})
+
+watch(
+  () => filteredAccounts.value.length,
+  (total) => {
+    accountPage.value = clampAccountPage(accountPage.value, total)
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   void loadNativeGroups()

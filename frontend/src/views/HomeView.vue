@@ -23,16 +23,16 @@
     <header class="relative z-20 px-6 py-4">
       <nav class="mx-auto flex max-w-6xl items-center justify-between">
         <!-- Logo -->
-        <div class="flex items-center">
+        <router-link to="/home" class="flex items-center" aria-label="Home">
           <div class="h-10 w-10 overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-        </div>
+        </router-link>
 
         <!-- Nav Actions -->
         <div class="flex items-center gap-3">
           <!-- Language Switcher -->
-          <LocaleSwitcher />
+          <LocaleSwitcher tone="on-deep" />
 
           <!-- Doc Link -->
           <a
@@ -105,7 +105,7 @@
             >
               {{ siteName }}
             </h1>
-            <p class="mb-8 text-lg text-white/78 md:text-xl">
+            <p class="mb-8 text-lg text-white md:text-xl">
               {{ siteSubtitle }}
             </p>
 
@@ -113,7 +113,7 @@
             <div>
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
-                class="btn btn-primary px-8 py-3 text-base"
+                class="inline-flex items-center rounded-lg bg-white px-8 py-3 text-base font-semibold text-primary-600 shadow-glow transition-colors hover:bg-primary-50"
               >
                 {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
                 <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
