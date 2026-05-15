@@ -1,17 +1,6 @@
 <template>
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-accent-50 p-4 dark:bg-dark-950">
-    <!-- Background -->
-    <div
-      class="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8f9fb_100%)] dark:bg-[linear-gradient(135deg,#191717_0%,#000000_100%)]"
-    ></div>
-
-    <!-- Decorative Elements -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <!-- Grid Pattern -->
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(229,234,255,0.95)_1px,transparent_1px),linear-gradient(90deg,rgba(229,234,255,0.95)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
-      ></div>
-    </div>
+  <div class="auth-ascii-shell relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+    <GuizangAsciiBackground class="auth-ascii-background" />
 
     <!-- Content Container -->
     <div class="relative z-10 w-full max-w-md">
@@ -27,7 +16,7 @@
           <h1 class="text-gradient mb-2 text-3xl font-bold">
             {{ siteName }}
           </h1>
-          <p class="text-sm text-gray-500 dark:text-dark-400">
+          <p class="text-sm text-white/70">
             {{ siteSubtitle }}
           </p>
         </template>
@@ -39,12 +28,12 @@
       </div>
 
       <!-- Footer Links -->
-      <div class="mt-6 text-center text-sm">
+      <div class="mt-6 text-center text-sm text-white/85">
         <slot name="footer" />
       </div>
 
       <!-- Copyright -->
-      <div class="mt-8 text-center text-xs text-gray-400 dark:text-dark-500">
+      <div class="mt-8 text-center text-xs text-white/55">
         &copy; {{ currentYear }} {{ siteName }}. All rights reserved.
       </div>
     </div>
@@ -55,6 +44,7 @@
 import { computed, onMounted } from 'vue'
 import { useAppStore } from '@/stores'
 import { sanitizeUrl } from '@/utils/url'
+import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'
 
 const appStore = useAppStore()
 

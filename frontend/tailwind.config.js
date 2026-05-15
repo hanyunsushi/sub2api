@@ -1,16 +1,17 @@
 /** @type {import('tailwindcss').Config} */
+const kleinBlue = '#002FA7'
 const kleinBlueScale = {
-  50: '#f3f6ff',
-  100: '#e1e9ff',
-  200: '#b8c9ff',
-  300: '#8aa8ff',
-  400: '#4f73e6',
-  500: '#002FA7',
-  600: '#002780',
-  700: '#001f66',
-  800: '#00184d',
-  900: '#001133',
-  950: '#00091f'
+  50: '#f7f9ff',
+  100: '#eef3ff',
+  200: '#dce7ff',
+  300: '#c6d8ff',
+  400: kleinBlue,
+  500: kleinBlue,
+  600: kleinBlue,
+  700: kleinBlue,
+  800: kleinBlue,
+  900: kleinBlue,
+  950: kleinBlue
 }
 
 export default {
@@ -32,9 +33,9 @@ export default {
         accent: {
           50: '#f8f9fb',
           100: '#ffffff',
-          200: '#e1e9ff',
-          300: '#b8c9ff',
-          400: '#8aa8ff',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
           500: '#999999',
           600: '#666666',
           700: '#333333',
@@ -45,12 +46,12 @@ export default {
         // 深色模式背景
         dark: {
           50: '#f8f9fb',
-          100: '#e1e9ff',
-          200: '#b8c9ff',
-          300: '#8aa8ff',
+          100: '#e5e7eb',
+          200: '#cbd5e1',
+          300: '#94a3b8',
           400: '#666666',
           500: '#333333',
-          600: '#24386c',
+          600: '#1f2937',
           700: '#191717',
           800: '#111111',
           900: '#080808',
@@ -84,7 +85,7 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #0b46c5 58%, #8aa8ff 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #002FA7 100%)',
         'gradient-dark': 'linear-gradient(135deg, #191717 0%, #000000 100%)',
         'gradient-glass':
           'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',

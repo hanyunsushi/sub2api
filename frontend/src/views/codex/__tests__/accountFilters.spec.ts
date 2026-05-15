@@ -27,7 +27,7 @@ describe('filterCodexAccounts', () => {
       }),
       account({
         name: 'dev.json',
-        group: { id: 2, name: 'Dev', color: '#8aa8ff', sort_order: 1, created_at: '', updated_at: '' },
+        group: { id: 2, name: 'Dev', color: '#002FA7', sort_order: 1, created_at: '', updated_at: '' },
       }),
       account({ name: 'none.json' }),
     ]

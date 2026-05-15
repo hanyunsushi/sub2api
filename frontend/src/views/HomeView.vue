@@ -15,14 +15,9 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f8f9fb_100%)] dark:bg-[linear-gradient(135deg,#191717_0%,#000000_100%)]"
+    class="home-ascii-shell relative flex min-h-screen flex-col overflow-hidden"
   >
-    <!-- Background Decorations -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(229,234,255,0.95)_1px,transparent_1px),linear-gradient(90deg,rgba(229,234,255,0.95)_1px,transparent_1px)] bg-[size:56px_56px] dark:bg-[linear-gradient(rgba(138,161,255,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(183,198,255,0.05)_1px,transparent_1px)]"
-      ></div>
-    </div>
+    <GuizangAsciiBackground class="home-ascii-background" />
 
     <!-- Header -->
     <header class="relative z-20 px-6 py-4">
@@ -45,7 +40,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="rounded-lg p-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
@@ -54,7 +49,7 @@
           <!-- Theme Toggle -->
           <button
             @click="toggleTheme"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="rounded-lg p-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
           >
             <Icon v-if="isDark" name="sun" size="md" />
@@ -65,16 +60,16 @@
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
-            class="inline-flex items-center gap-1.5 rounded-full bg-gray-900 py-1 pl-1 pr-2.5 transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="inline-flex items-center gap-1.5 rounded-full bg-white py-1 pl-1 pr-2.5 text-primary-500 transition-colors hover:bg-primary-50"
           >
             <span
               class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-[10px] font-semibold text-white"
             >
               {{ userInitial }}
             </span>
-            <span class="text-xs font-medium text-white">{{ t('home.dashboard') }}</span>
+            <span class="text-xs font-medium text-primary-500">{{ t('home.dashboard') }}</span>
             <svg
-              class="h-3 w-3 text-gray-400"
+              class="h-3 w-3 text-primary-500/70"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -90,7 +85,7 @@
           <router-link
             v-else
             to="/login"
-            class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-medium text-primary-500 transition-colors hover:bg-primary-50"
           >
             {{ t('home.login') }}
           </router-link>
@@ -106,11 +101,11 @@
           <!-- Left: Text Content -->
           <div class="flex-1 text-center lg:text-left">
             <h1
-              class="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
+              class="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl"
             >
               {{ siteName }}
             </h1>
-            <p class="mb-8 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
+            <p class="mb-8 text-lg text-white/78 md:text-xl">
               {{ siteSubtitle }}
             </p>
 
@@ -272,10 +267,10 @@
 
         <!-- Supported Providers -->
         <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 class="mb-3 text-2xl font-bold text-white">
             {{ t('home.providers.title') }}
           </h2>
-          <p class="text-sm text-gray-600 dark:text-dark-400">
+          <p class="text-sm text-white/68">
             {{ t('home.providers.description') }}
           </p>
         </div>
@@ -361,11 +356,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-10 border-t border-gray-200/50 px-6 py-8 dark:border-dark-800/50">
+    <footer class="relative z-10 border-t border-white/20 px-6 py-8">
       <div
         class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
       >
-        <p class="text-sm text-gray-500 dark:text-dark-400">
+        <p class="text-sm text-white/65">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
         </p>
         <div class="flex items-center gap-4">
@@ -374,7 +369,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="text-sm text-white/65 transition-colors hover:text-white"
           >
             {{ t('home.docs') }}
           </a>
@@ -382,7 +377,7 @@
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="text-sm text-white/65 transition-colors hover:text-white"
           >
             GitHub
           </a>
@@ -396,6 +391,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
+import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 
@@ -578,13 +574,13 @@ onMounted(() => {
   font-weight: bold;
 }
 .code-cmd {
-  color: #8aa8ff;
+  color: #ffffff;
 }
 .code-flag {
   color: #c8d2ff;
 }
 .code-url {
-  color: #b8c9ff;
+  color: #dce7ff;
 }
 .code-comment {
   color: #64748b;
@@ -625,8 +621,8 @@ onMounted(() => {
 :deep(.dark) .terminal-window {
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(90, 144, 255, 0.22),
-    0 18px 44px rgba(122, 90, 248, 0.12),
+    0 0 0 1px rgba(0, 47, 167, 0.3),
+    0 18px 44px rgba(0, 47, 167, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 </style>
