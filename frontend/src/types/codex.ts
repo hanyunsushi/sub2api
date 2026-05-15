@@ -1,5 +1,15 @@
 export type CodexAccountStatus = 'active' | 'expiring' | 'failed' | 'disabled' | 'unknown'
 export type CodexAccountSource = 'file' | 'memory' | 'unknown'
+export type CodexQuotaWindowKey = '5h' | 'weekly' | 'quota'
+
+export interface CodexQuotaWindow {
+  key: CodexQuotaWindowKey
+  label: string
+  remainingPercent: number
+  limitWindowSeconds?: number
+  resetAfterSeconds?: number
+  resetAt?: string
+}
 
 export interface CpaAuthFileRaw {
   id?: string
@@ -22,6 +32,9 @@ export interface CpaAuthFileRaw {
   email?: string
   account_type?: string
   account?: string | Record<string, unknown>
+  priority?: number | string
+  sort_order?: number | string
+  sortOrder?: number | string
   balance?: number | string
   credit?: number | string
   credits?: number | string
@@ -38,6 +51,8 @@ export interface CpaAuthFileRaw {
   usage_percent?: number | string
   quota?: number | string
   quota_text?: string
+  quota_windows?: CodexQuotaWindow[]
+  quotaWindows?: CodexQuotaWindow[]
   usage?: number | string
   usage_text?: string
   last_error_code?: number | string
@@ -75,8 +90,10 @@ export interface CodexAccountView {
   balance?: number
   balanceText?: string
   quotaRemainingPercent?: number
+  quotaWindows?: CodexQuotaWindow[]
   quotaText?: string
   usageText?: string
+  cpaPriority?: number
   errorCode?: string
   errorText?: string
   lastError?: string

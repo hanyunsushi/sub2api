@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filterCodexAccounts } from '../accountFilters'
+import { filterCodexAccounts, sortCodexAccounts } from '../accountFilters'
 import type { CodexAccountMerged } from '@/types/codex'
 
 function account(partial: Partial<CodexAccountMerged>): CodexAccountMerged {
@@ -93,5 +93,47 @@ describe('filterCodexAccounts', () => {
       .toEqual(['prod-failed.json'])
     expect(filterCodexAccounts(accounts, { query: 'scratch', status: 'all', groupId: 'ungrouped' }).map((item) => item.name))
       .toEqual(['scratch.json'])
+  })
+
+  it('filters accounts by empty usage data or positive balance', () => {
+    const accounts = [
+      account({ name: 'empty.json' }),
+      account({ name: 'zero.json', quotaRemainingPercent: 0, usageText: '5h remaining 0%' }),
+      account({ name: 'weekly.json', quotaWindows: [{ key: 'weekly', label: 'weekly', remainingPercent: 22 }] }),
+      account({ name: 'cash.json', balance: 8 }),
+    ]
+
+    expect(filterCodexAccounts(accounts, {
+      query: '',
+      status: 'all',
+      groupId: 'all',
+      usageState: 'empty',
+    }).map((item) => item.name)).toEqual(['empty.json'])
+
+    expect(filterCodexAccounts(accounts, {
+      query: '',
+      status: 'all',
+      groupId: 'all',
+      usageState: 'has_balance',
+    }).map((item) => item.name)).toEqual(['weekly.json', 'cash.json'])
+  })
+})
+
+describe('sortCodexAccounts', () => {
+  it('sorts by name, CPA priority, certificate modification date, and balance', () => {
+    const accounts = [
+      account({ name: 'beta.json', cpaPriority: 20, modifiedAt: '2026-05-11T00:00:00Z', balance: 4 }),
+      account({ name: 'alpha.json', cpaPriority: 5, modifiedAt: '2026-05-12T00:00:00Z', quotaRemainingPercent: 70 }),
+      account({ name: 'gamma.json', modifiedAt: '2026-05-10T00:00:00Z', balance: 1 }),
+    ]
+
+    expect(sortCodexAccounts(accounts, { key: 'name', direction: 'asc' }).map((item) => item.name))
+      .toEqual(['alpha.json', 'beta.json', 'gamma.json'])
+    expect(sortCodexAccounts(accounts, { key: 'cpaPriority', direction: 'asc' }).map((item) => item.name))
+      .toEqual(['alpha.json', 'beta.json', 'gamma.json'])
+    expect(sortCodexAccounts(accounts, { key: 'modifiedAt', direction: 'desc' }).map((item) => item.name))
+      .toEqual(['alpha.json', 'beta.json', 'gamma.json'])
+    expect(sortCodexAccounts(accounts, { key: 'balance', direction: 'desc' }).map((item) => item.name))
+      .toEqual(['alpha.json', 'beta.json', 'gamma.json'])
   })
 })

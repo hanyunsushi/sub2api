@@ -147,6 +147,26 @@
                         {{ group.name }}
                       </option>
                     </select>
+                    <select v-model="usageStateFilter" class="codex-select !min-h-9 !w-36">
+                      <option v-for="option in usageStateOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                      </option>
+                    </select>
+                    <select v-model="sortKey" class="codex-select !min-h-9 !w-44">
+                      <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                      </option>
+                    </select>
+                    <button
+                      type="button"
+                      class="codex-button codex-button--compact"
+                      :title="sortDirectionLabel"
+                      :aria-label="sortDirectionLabel"
+                      @click="toggleSortDirection"
+                    >
+                      <Icon :name="sortDirection === 'asc' ? 'arrowUp' : 'arrowDown'" size="sm" />
+                      {{ sortDirectionText }}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -441,7 +461,13 @@ import { groupsAPI } from '@/api/admin/groups'
 import { useCodexStore } from '@/stores'
 import type { CodexAccountMerged } from '@/types/codex'
 import type { AdminGroup, ApiKey } from '@/types'
-import { filterCodexAccounts } from './accountFilters'
+import {
+  filterCodexAccounts,
+  sortCodexAccounts,
+  type CodexAccountSortDirection,
+  type CodexAccountSortKey,
+  type CodexUsageStateFilter,
+} from './accountFilters'
 import {
   CODEX_ACCOUNTS_PAGE_SIZE,
   clampAccountPage,
@@ -457,6 +483,9 @@ const rememberConnectionDraft = ref(codexStore.rememberConnection)
 const searchQuery = ref('')
 const statusFilter = ref('all')
 const groupFilter = ref('all')
+const usageStateFilter = ref<CodexUsageStateFilter>('all')
+const sortKey = ref<CodexAccountSortKey>('default')
+const sortDirection = ref<CodexAccountSortDirection>('asc')
 const accountPage = ref(1)
 const selectedAuthName = ref('')
 const savingMetadata = ref(false)
@@ -495,12 +524,39 @@ const statusOptions = computed(() => [
   { value: 'disabled', label: t('admin.codex.accounts.status.disabled') },
   { value: 'unknown', label: t('admin.codex.accounts.status.unknown') },
 ])
+const usageStateOptions = computed<Array<{ value: CodexUsageStateFilter; label: string }>>(() => [
+  { value: 'all', label: t('admin.codex.accounts.usageFilter.all') },
+  { value: 'empty', label: t('admin.codex.accounts.usageFilter.empty') },
+  { value: 'has_balance', label: t('admin.codex.accounts.usageFilter.hasBalance') },
+])
+const sortOptions = computed<Array<{ value: CodexAccountSortKey; label: string }>>(() => [
+  { value: 'default', label: t('admin.codex.accounts.sort.default') },
+  { value: 'name', label: t('admin.codex.accounts.sort.name') },
+  { value: 'cpaPriority', label: t('admin.codex.accounts.sort.cpaPriority') },
+  { value: 'modifiedAt', label: t('admin.codex.accounts.sort.modifiedAt') },
+  { value: 'balance', label: t('admin.codex.accounts.sort.balance') },
+])
+const sortDirectionText = computed(() => {
+  return sortDirection.value === 'asc'
+    ? t('admin.codex.accounts.sort.ascShort')
+    : t('admin.codex.accounts.sort.descShort')
+})
+const sortDirectionLabel = computed(() => {
+  return sortDirection.value === 'asc'
+    ? t('admin.codex.accounts.sort.asc')
+    : t('admin.codex.accounts.sort.desc')
+})
 
 const filteredAccounts = computed(() => {
-  return filterCodexAccounts(codexStore.accounts, {
+  const filtered = filterCodexAccounts(codexStore.accounts, {
     query: searchQuery.value,
     status: statusFilter.value,
     groupId: groupFilter.value,
+    usageState: usageStateFilter.value,
+  })
+  return sortCodexAccounts(filtered, {
+    key: sortKey.value,
+    direction: sortDirection.value,
   })
 })
 
@@ -537,6 +593,10 @@ function setAccountPage(page: number): void {
 
 function keepFixedAccountPageSize(): void {
   accountPage.value = clampAccountPage(accountPage.value, filteredAccounts.value.length)
+}
+
+function toggleSortDirection(): void {
+  sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
 }
 
 function parseTags(value: string): string[] {
@@ -767,11 +827,25 @@ function formatDate(value: string): string {
 }
 
 function accountBalanceLabel(account: CodexAccountMerged): string {
+  if (account.quotaWindows?.length) return quotaWindowsLabel(account)
   if (account.balanceText) return account.balanceText
   if (typeof account.balance === 'number') {
     return Number.isInteger(account.balance) ? String(account.balance) : account.balance.toFixed(2)
   }
   return t('admin.codex.accounts.balanceUnavailable')
+}
+
+function quotaWindowsLabel(account: CodexAccountMerged): string {
+  return (account.quotaWindows || [])
+    .map((window) => {
+      const labelKey = window.key === '5h'
+        ? 'fiveHour'
+        : window.key === 'weekly'
+          ? 'weekly'
+          : 'quota'
+      return t(`admin.codex.accounts.quotaWindows.${labelKey}`, { value: window.remainingPercent })
+    })
+    .join(' / ')
 }
 
 function accountCardTitle(account: CodexAccountMerged): string {
@@ -781,11 +855,14 @@ function accountCardTitle(account: CodexAccountMerged): string {
 }
 
 function quotaProgressPercent(account: CodexAccountMerged): number {
+  if (account.quotaWindows?.length) {
+    return Math.min(...account.quotaWindows.map((window) => window.remainingPercent))
+  }
   return account.quotaRemainingPercent ?? 0
 }
 
 function quotaProgressClass(account: CodexAccountMerged): string {
-  const percent = account.quotaRemainingPercent
+  const percent = account.quotaWindows?.length ? quotaProgressPercent(account) : account.quotaRemainingPercent
   if (percent === undefined) return 'codex-quota-progress--unknown'
   if (percent <= 20) return 'codex-quota-progress--low'
   if (percent <= 45) return 'codex-quota-progress--medium'
@@ -793,7 +870,9 @@ function quotaProgressClass(account: CodexAccountMerged): string {
 }
 
 function quotaProgressLabel(account: CodexAccountMerged): string {
-  const value = account.quotaRemainingPercent === undefined
+  const value = account.quotaWindows?.length
+    ? quotaWindowsLabel(account)
+    : account.quotaRemainingPercent === undefined
     ? t('admin.codex.accounts.balanceUnavailable')
     : `${account.quotaRemainingPercent}%`
   return `${t('admin.codex.accounts.quotaRemaining')}: ${value}`
@@ -820,7 +899,7 @@ function statusLabel(status: string): string {
 
 watch(selectedAccount, applyDraftFromSelected, { immediate: true })
 
-watch([searchQuery, statusFilter, groupFilter], () => {
+watch([searchQuery, statusFilter, groupFilter, usageStateFilter, sortKey, sortDirection], () => {
   accountPage.value = 1
 })
 
