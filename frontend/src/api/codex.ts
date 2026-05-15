@@ -2,6 +2,7 @@ import type {
   CodexAccountSource,
   CodexAccountStatus,
   CodexAccountView,
+  CodexQuotaWindow,
   CpaAuthFileRaw,
   CpaRequestOptions,
 } from '@/types/codex'
@@ -337,20 +338,72 @@ function limitWindowSeconds(windowValue: unknown): number | undefined {
   return numberValue(record.limit_window_seconds ?? record.limitWindowSeconds)
 }
 
-function codexUsageSummary(usage: Record<string, unknown>): string | undefined {
+function resetAfterSeconds(windowValue: unknown): number | undefined {
+  if (!windowValue || typeof windowValue !== 'object') return undefined
+  const record = windowValue as Record<string, unknown>
+  return numberValue(record.reset_after_seconds ?? record.resetAfterSeconds)
+}
+
+function resetAt(windowValue: unknown): string | undefined {
+  if (!windowValue || typeof windowValue !== 'object') return undefined
+  const record = windowValue as Record<string, unknown>
+  return stringValue(record.reset_at ?? record.resetAt)
+}
+
+function quotaWindowKey(seconds: number | undefined): CodexQuotaWindow['key'] {
+  if (seconds === 18000) return '5h'
+  if (seconds === 604800) return 'weekly'
+  return 'quota'
+}
+
+function quotaWindowLabel(key: CodexQuotaWindow['key']): string {
+  if (key === '5h') return '5h'
+  if (key === 'weekly') return 'weekly'
+  return 'quota'
+}
+
+function normalizeQuotaWindow(windowValue: unknown): CodexQuotaWindow | undefined {
+  if (!windowValue || typeof windowValue !== 'object') return undefined
+  const record = windowValue as Record<string, unknown>
+  const seconds = limitWindowSeconds(record)
+  const directRemaining = numberValue(record.remainingPercent ?? record.remaining_percent ?? record.remaining_pct)
+  const remaining = directRemaining !== undefined ? clampPercent(directRemaining) : windowRemainingPercent(record)
+  if (remaining === undefined) return undefined
+  const rawKey = stringValue(record.key)?.toLowerCase()
+  const key: CodexQuotaWindow['key'] =
+    rawKey === '5h' || rawKey === 'weekly' || rawKey === 'quota'
+      ? rawKey
+      : quotaWindowKey(seconds)
+  return {
+    key,
+    label: stringValue(record.label) || quotaWindowLabel(key),
+    remainingPercent: remaining,
+    limitWindowSeconds: seconds,
+    resetAfterSeconds: resetAfterSeconds(record),
+    resetAt: resetAt(record),
+  }
+}
+
+function codexQuotaWindows(usage: Record<string, unknown>): CodexQuotaWindow[] {
   const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
-  if (!rateLimit || typeof rateLimit !== 'object') return undefined
+  if (!rateLimit || typeof rateLimit !== 'object') return []
 
   const rawWindows = [rateLimit.primary_window, rateLimit.primaryWindow, rateLimit.secondary_window, rateLimit.secondaryWindow]
-  const parts: string[] = []
+  const windows: CodexQuotaWindow[] = []
   for (const windowValue of rawWindows) {
-    const remaining = windowRemainingPercent(windowValue)
-    if (remaining === undefined) continue
-    const seconds = limitWindowSeconds(windowValue)
-    const label = seconds === 18000 ? '5h' : seconds === 604800 ? 'weekly' : 'quota'
-    const text = `${label} remaining ${remaining}%`
-    if (!parts.includes(text)) parts.push(text)
+    const window = normalizeQuotaWindow(windowValue)
+    if (!window) continue
+    if (!windows.some((item) => item.key === window.key && item.limitWindowSeconds === window.limitWindowSeconds)) {
+      windows.push(window)
+    }
   }
+  return windows
+}
+
+function codexUsageSummary(usage: Record<string, unknown>): string | undefined {
+  const parts = codexQuotaWindows(usage).map((window) => {
+    return `${window.label} remaining ${window.remainingPercent}%`
+  })
   return parts.length ? parts.join(', ') : undefined
 }
 
@@ -360,9 +413,7 @@ function codexPrimaryRemaining(usage: Record<string, unknown>): string | undefin
 }
 
 function codexPrimaryRemainingPercent(usage: Record<string, unknown>): number | undefined {
-  const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
-  if (!rateLimit || typeof rateLimit !== 'object') return undefined
-  return windowRemainingPercent(rateLimit.primary_window || rateLimit.primaryWindow)
+  return codexQuotaWindows(usage)[0]?.remainingPercent
 }
 
 function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFileRaw {
@@ -372,6 +423,7 @@ function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFil
   }
   const usageRecord = usage as Record<string, unknown>
   const planType = codexPlanType(raw, usageRecord)
+  const quotaWindows = codexQuotaWindows(usageRecord)
   return {
     ...raw,
     status: 'ok',
@@ -380,6 +432,7 @@ function mergeCodexQuota(raw: CpaAuthFileRaw, usagePayload: unknown): CpaAuthFil
     quota_text: codexPlanLabel(planType) || firstString(raw, ['quota_text', 'quota', 'plan', 'tier', 'subscription']),
     usage_text: codexUsageSummary(usageRecord) || firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage']),
     balance_text: codexPrimaryRemaining(usageRecord) || firstString(raw, ['balance_text', 'credit_text', 'remaining_balance_text']),
+    quota_windows: quotaWindows.length ? quotaWindows : raw.quota_windows,
     quota_remaining_percent: codexPrimaryRemainingPercent(usageRecord),
     last_refresh: new Date().toISOString(),
     last_error: undefined,
@@ -553,6 +606,9 @@ function valueCandidates(raw: CpaAuthFileRaw): Record<string, unknown>[] {
     'usage',
     'billing',
     'stats',
+    'meta',
+    'metadata',
+    'attributes',
     'error',
     'last_error',
     'status_message',
@@ -631,6 +687,30 @@ function quotaRemainingPercent(raw: CpaAuthFileRaw, balanceText?: string, usageT
   return percentFromText(balanceText) ?? remainingPercentFromText(usageText)
 }
 
+function normalizeQuotaWindows(raw: CpaAuthFileRaw): CodexQuotaWindow[] {
+  const rawWindows = raw.quota_windows || raw.quotaWindows
+  if (Array.isArray(rawWindows)) {
+    return rawWindows
+      .map((window) => normalizeQuotaWindow(window))
+      .filter((window): window is CodexQuotaWindow => !!window)
+  }
+
+  const rateLimit = valueCandidates(raw)
+    .map((candidate) => candidate.rate_limit || candidate.rateLimit)
+    .find((candidate) => candidate && typeof candidate === 'object' && !Array.isArray(candidate))
+  return rateLimit ? codexQuotaWindows({ rate_limit: rateLimit }) : []
+}
+
+function cpaPriority(raw: CpaAuthFileRaw): number | undefined {
+  return firstNumber(raw, [
+    'priority',
+    'custom_priority',
+    'customPriority',
+    'sort_order',
+    'sortOrder',
+  ])
+}
+
 function firstErrorCode(raw: CpaAuthFileRaw): string | undefined {
   const candidates = valueCandidates(raw)
   for (const candidate of candidates) {
@@ -673,6 +753,9 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
   const balanceText = firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text'])
   const usageText = firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status'])
+  const quotaWindows = normalizeQuotaWindows(raw)
+  const remainingPercent = quotaRemainingPercent(raw, balanceText, usageText)
+    ?? (quotaWindows.length ? Math.min(...quotaWindows.map((window) => window.remainingPercent)) : undefined)
   const lastError = firstString(raw, [
     'last_error',
     'last_error_message',
@@ -714,9 +797,11 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
       'free_credits',
     ]),
     balanceText,
-    quotaRemainingPercent: quotaRemainingPercent(raw, balanceText, usageText),
+    quotaRemainingPercent: remainingPercent,
+    quotaWindows: quotaWindows.length ? quotaWindows : undefined,
     quotaText: firstString(raw, ['quota_text', 'quota', 'limit_text', 'rate_limit', 'plan', 'tier', 'subscription']),
     usageText,
+    cpaPriority: cpaPriority(raw),
     errorCode: firstErrorCode(raw),
     errorText,
     lastError: lastError && lastError !== statusMessage ? lastError : undefined,

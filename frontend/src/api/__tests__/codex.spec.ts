@@ -48,6 +48,7 @@ describe('codex CPA API adapter', () => {
       balance: '12.5',
       quota_text: 'Pro plan',
       usage_text: '5h 20%',
+      priority: '7',
       last_error: 'rate limit',
       last_error_at: '2026-05-10T11:00:00Z',
       success: 8,
@@ -69,6 +70,7 @@ describe('codex CPA API adapter', () => {
       balance: 12.5,
       quotaText: 'Pro plan',
       usageText: '5h 20%',
+      cpaPriority: 7,
       lastError: 'rate limit',
       lastErrorAt: '2026-05-10T11:00:00Z',
       success: 8,
@@ -430,7 +432,15 @@ describe('codex CPA API adapter', () => {
       status: 'ok',
       quota_text: 'Plus',
       usage_text: expect.stringContaining('5h remaining 88%'),
+      quota_windows: [
+        expect.objectContaining({ key: '5h', remainingPercent: 88 }),
+        expect.objectContaining({ key: 'weekly', remainingPercent: 66 }),
+      ],
     })
+    expect(mapCpaAuthFileToView(result[0]).quotaWindows).toEqual([
+      expect.objectContaining({ key: '5h', remainingPercent: 88 }),
+      expect.objectContaining({ key: 'weekly', remainingPercent: 66 }),
+    ])
   })
 
   it('refreshes Codex quota for alternate CPA type fields and top-level account id', async () => {
