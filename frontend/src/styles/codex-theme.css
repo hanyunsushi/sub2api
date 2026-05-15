@@ -112,7 +112,7 @@
 .dark .codex-side {
   background:
     linear-gradient(180deg, rgba(11, 16, 32, 0.58), rgba(5, 7, 18, 0.42)),
-    radial-gradient(circle at 100% 0%, rgba(138, 168, 255, 0.03), transparent 38%);
+    radial-gradient(circle at 100% 0%, rgba(0, 47, 167, 0.08), transparent 38%);
 }
 
 .codex-panel {
