@@ -7,7 +7,7 @@
     ]"
   >
     <!-- Logo/Brand -->
-    <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
+    <router-link to="/home" class="sidebar-header sidebar-home-link" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }" aria-label="Home">
       <!-- Custom Logo or Default Logo -->
       <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-primary-50 shadow-glow ring-1 ring-primary-200/80 dark:bg-dark-800 dark:ring-primary-800/50">
         <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
@@ -19,7 +19,7 @@
         <!-- Version Badge -->
         <VersionBadge :version="siteVersion" />
       </div>
-    </div>
+    </router-link>
 
     <!-- Navigation -->
     <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
@@ -944,6 +944,17 @@ onMounted(() => {
 .sidebar-logo {
   flex: 0 0 2.25rem;
   min-width: 2.25rem;
+}
+
+.sidebar-home-link {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sidebar-home-link:focus-visible {
+  outline: 2px solid rgb(0 47 167 / 0.68);
+  outline-offset: -2px;
 }
 
 .sidebar-header-collapsed {
