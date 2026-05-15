@@ -3,15 +3,15 @@
   --codex-surface: #ffffff;
   --codex-surface-strong: #ffffff;
   --codex-surface-soft: rgba(255, 255, 255, 0.82);
-  --codex-border: #e1e9ff;
-  --codex-border-strong: #b8c9ff;
+  --codex-border: rgba(0, 47, 167, 0.14);
+  --codex-border-strong: rgba(0, 47, 167, 0.24);
   --codex-text: #000000;
   --codex-muted: #666666;
   --codex-soft: #f2f5ff;
   --codex-accent: #002FA7;
-  --codex-accent-strong: #002780;
+  --codex-accent-strong: #002FA7;
   --codex-accent-soft: #f4f6ff;
-  --codex-violet: #8aa8ff;
+  --codex-violet: #002FA7;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
@@ -29,10 +29,10 @@
   --codex-text: #ffffff;
   --codex-muted: #999999;
   --codex-soft: #151d33;
-  --codex-accent: #8aa8ff;
-  --codex-accent-strong: #b8c9ff;
+  --codex-accent: #002FA7;
+  --codex-accent-strong: #002FA7;
   --codex-accent-soft: #151d33;
-  --codex-violet: #b8c9ff;
+  --codex-violet: #002FA7;
 }
 
 .codex-shell {
@@ -50,7 +50,7 @@
 .dark .codex-shell {
   background:
     linear-gradient(180deg, rgba(5, 7, 18, 0.98), rgba(2, 4, 12, 0.98)),
-    radial-gradient(circle at 16% 0%, rgba(138, 168, 255, 0.055), transparent 34%),
+    radial-gradient(circle at 16% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
     var(--codex-bg);
   box-shadow: none;
 }
@@ -69,7 +69,7 @@
 .dark .codex-topbar {
   background:
     linear-gradient(180deg, rgba(11, 16, 32, 0.72), rgba(5, 7, 18, 0.48)),
-    radial-gradient(circle at 12% 0%, rgba(138, 168, 255, 0.035), transparent 36%);
+    radial-gradient(circle at 12% 0%, rgba(0, 47, 167, 0.1), transparent 36%);
 }
 
 .codex-title {

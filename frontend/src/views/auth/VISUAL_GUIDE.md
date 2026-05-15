@@ -236,9 +236,7 @@ Centered: Both horizontally and vertically
 
 ### Primary Colors
 
-- **Klein-600**: `#002FA7` - Primary buttons, links, brand color
-- **Klein-700**: `#002780` - Button hover state
-- **Klein-500**: `#002FA7` - Focus ring
+- **Klein Blue**: `#002FA7` - Primary buttons, links, brand color, hover state, and focus ring
 
 ### Neutral Colors
 
@@ -264,7 +262,7 @@ Centered: Both horizontally and vertically
 
 ### Background Gradient
 
-- **From**: Klein-100 (`#e1e9ff`)
+- **From**: Soft Klein surface (`#eef3ff`)
 - **Via**: White (`#FFFFFF`)
 - **To**: Soft Klein-100 (`#f3f6ff`)
 
@@ -346,7 +344,7 @@ shadow: shadow-sm
 **Hover:**
 
 ```css
-background: #002780 (klein-700)
+background: #002FA7 (klein blue)
 transition: colors 150ms
 ```
 

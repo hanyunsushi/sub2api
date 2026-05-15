@@ -41,10 +41,21 @@ const legacyThemeColors = [
   '#0033ff',
   '#002cd6',
   '#001fb8',
+  '#001f66',
+  '#00184d',
+  '#001133',
+  '#00091f',
+  '#002780',
   '#2e58ff',
+  '#4f73e6',
   '#8aa1ff',
   '#b7c6ff',
   '#e5eaff',
+  '#8aa8ff',
+  '#b8c9ff',
+  '#0b46c5',
+  '#3f63d8',
+  '#5f7ee8',
   '#3b82f6',
   '#2563eb',
   '#1d4ed8',
@@ -79,7 +90,11 @@ describe('Klein blue theme', () => {
     const tailwindConfig = readThemeFile('tailwind.config.js')
     const chartColors = readThemeFile('src/utils/chartColors.ts')
 
-    expect(tailwindConfig).toContain(`500: '${kleinBlue}'`)
+    expect(tailwindConfig).toContain(`const kleinBlue = '${kleinBlue}'`)
+    for (const step of ['400', '500', '600', '700', '800', '900', '950']) {
+      expect(tailwindConfig).toContain(`${step}: kleinBlue`)
+    }
+    expect(tailwindConfig).toContain("'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #002FA7 100%)'")
     expect(tailwindConfig).toContain('Klein blue theme')
     expect(chartColors).toContain(`'${kleinBlue}'`)
   })

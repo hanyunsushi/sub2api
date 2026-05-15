@@ -696,6 +696,6 @@ onMounted(() => {
 }
 
 :global(.dark) .dashboard-stat-icon {
-  color: #8aa8ff;
+  color: #002FA7;
 }
 </style>
