@@ -780,6 +780,13 @@
   color: #002fa7;
 }
 
+.dark .guizang-site-background--light {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    linear-gradient(180deg, #050505, #0a0a0a);
+  color: #ffffff;
+}
+
 .guizang-site-background__canvas,
 .guizang-site-background__grid,
 .guizang-site-background__dots {
@@ -827,6 +834,23 @@
 .guizang-site-background--light .guizang-site-background__dots {
   opacity: 0.22;
   background-image: radial-gradient(rgba(0, 47, 167, 0.36) 1px, transparent 1.4px);
+}
+
+.dark .guizang-site-background--light .guizang-site-background__canvas {
+  mix-blend-mode: screen;
+  opacity: 0.42;
+}
+
+.dark .guizang-site-background--light .guizang-site-background__grid {
+  opacity: 0.24;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+.dark .guizang-site-background--light .guizang-site-background__dots {
+  opacity: 0.2;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1.4px);
 }
 
 .home-ascii-background,
@@ -888,6 +912,16 @@
 
 .home-ascii-shell {
   background: #002fa7;
+}
+
+html:has(.home-ascii-shell),
+body:has(.home-ascii-shell) {
+  scrollbar-width: none;
+}
+
+html:has(.home-ascii-shell)::-webkit-scrollbar,
+body:has(.home-ascii-shell)::-webkit-scrollbar {
+  display: none;
 }
 
 .auth-ascii-shell .card-glass {
