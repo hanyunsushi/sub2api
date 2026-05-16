@@ -41,14 +41,18 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar scroll position', () => {
-  it('preserves the scroll position while route clicks update the active menu item', () => {
+  it('preserves the scroll position across route-click render and focus updates', () => {
     expect(componentSource).toContain('ref="sidebarNavRef"')
     expect(componentSource).toContain('function captureSidebarScroll')
     expect(componentSource).toContain('function restoreSidebarScroll')
     expect(componentSource).toContain('function restoreSidebarScrollSoon')
     expect(componentSource).toContain('watch(() => route.fullPath')
     expect(componentSource).toContain('requestAnimationFrame')
+    expect(componentSource).toContain('SIDEBAR_SCROLL_RESTORE_ATTEMPTS')
+    expect(componentSource).toContain('SIDEBAR_SCROLL_RESTORE_SETTLE_MS')
+    expect(componentSource).toContain('style.scrollBehavior = \'auto\'')
     expect(componentSource).toContain('sidebarNavRef.value.scrollTop = preservedSidebarScrollTop')
     expect(componentSource).toContain('captureSidebarScroll()')
+    expect(styleSource).not.toMatch(/\\.sidebar-nav,\\n\\s*\\.modal-body/)
   })
 })

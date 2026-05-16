@@ -38,11 +38,13 @@ describe('home and auth contrast on Klein blue background', () => {
 
   it('enables smooth scrolling for document and common internal scroll containers', () => {
     const css = readFile('src/style.css')
+    const main = readFile('src/main.ts')
 
     expect(css).toContain('@media (prefers-reduced-motion: no-preference)')
     expect(css).toContain('scroll-behavior: smooth;')
     expect(css).toContain('.sidebar-nav')
     expect(css).toContain('.overflow-y-auto')
     expect(css).toContain('.overflow-auto')
+    expect(main).toContain('installSmoothWheelScrolling()')
   })
 })
