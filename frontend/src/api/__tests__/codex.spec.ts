@@ -443,6 +443,76 @@ describe('codex CPA API adapter', () => {
     ])
   })
 
+  it('keeps separate 5h and weekly quota windows from array-shaped usage payloads', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      json: async () => ({
+        status_code: 200,
+        body: {
+          plan_type: 'plus',
+          rate_limits: [
+            {
+              name: 'codex_5h',
+              window_seconds: 18000,
+              used: 25,
+              limit: 100,
+            },
+            {
+              name: 'codex_weekly',
+              window_seconds: 604800,
+              used_percent: 40,
+            },
+          ],
+        },
+      }),
+    })
+
+    const result = await refreshCodexQuotas(
+      [
+        {
+          name: 'codex-array.json',
+          provider: 'codex',
+          auth_index: '8',
+        },
+      ],
+      { managementKey: 'secret-key' }
+    )
+
+    expect(result[0]).toMatchObject({
+      quota_windows: [
+        expect.objectContaining({ key: '5h', remainingPercent: 75 }),
+        expect.objectContaining({ key: 'weekly', remainingPercent: 60 }),
+      ],
+      usage_text: '5h remaining 75%, weekly remaining 60%',
+      balance_text: '75%',
+    })
+    expect(mapCpaAuthFileToView(result[0]).quotaWindows).toEqual([
+      expect.objectContaining({ key: '5h', remainingPercent: 75 }),
+      expect.objectContaining({ key: 'weekly', remainingPercent: 60 }),
+    ])
+  })
+
+  it('maps named nested quota windows from CPA auth-file list responses', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'codex-nested.json',
+      rate_limit: {
+        five_hour: {
+          remaining_percent: 44,
+        },
+        weekly: {
+          remaining_percent: 71,
+        },
+      },
+    })
+
+    expect(view.quotaWindows).toEqual([
+      expect.objectContaining({ key: '5h', remainingPercent: 44 }),
+      expect.objectContaining({ key: 'weekly', remainingPercent: 71 }),
+    ])
+    expect(view.quotaRemainingPercent).toBe(44)
+  })
+
   it('refreshes Codex quota for alternate CPA type fields and top-level account id', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
