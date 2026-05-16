@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
@@ -243,6 +243,7 @@ const sidebarNavRef = ref<HTMLElement | null>(null)
 const expandedGroups = ref<Set<string>>(new Set())
 let preservedSidebarScrollTop = 0
 let shouldRestoreSidebarScroll = false
+let sidebarRestoreFrame = 0
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
@@ -826,14 +827,27 @@ function captureSidebarScroll() {
   shouldRestoreSidebarScroll = true
 }
 
-function restoreSidebarScroll() {
+function applySidebarScrollRestore() {
+  if (sidebarNavRef.value) {
+    sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
+  }
+}
+
+function restoreSidebarScrollSoon() {
   if (!shouldRestoreSidebarScroll) return
   void nextTick(() => {
-    if (sidebarNavRef.value) {
-      sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
-    }
-    shouldRestoreSidebarScroll = false
+    applySidebarScrollRestore()
+    if (sidebarRestoreFrame) cancelAnimationFrame(sidebarRestoreFrame)
+    sidebarRestoreFrame = requestAnimationFrame(() => {
+      sidebarRestoreFrame = 0
+      applySidebarScrollRestore()
+      shouldRestoreSidebarScroll = false
+    })
   })
+}
+
+function restoreSidebarScroll() {
+  restoreSidebarScrollSoon()
 }
 
 function handleMenuItemClick(itemPath: string) {
@@ -936,6 +950,13 @@ watch(() => route.fullPath, restoreSidebarScroll, { flush: 'post' })
 onMounted(() => {
   if (isAdmin.value) {
     adminSettingsStore.fetch()
+  }
+})
+
+onBeforeUnmount(() => {
+  if (sidebarRestoreFrame) {
+    cancelAnimationFrame(sidebarRestoreFrame)
+    sidebarRestoreFrame = 0
   }
 })
 </script>

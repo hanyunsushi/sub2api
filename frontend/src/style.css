@@ -11,6 +11,21 @@
     @apply scroll-smooth antialiased;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    html,
+    body,
+    .sidebar-nav,
+    .modal-body,
+    .dialog-body,
+    .table-wrapper,
+    .table-container,
+    .overflow-auto,
+    .overflow-y-auto,
+    .overflow-x-auto {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     @apply bg-accent-50 text-gray-950 dark:bg-dark-950 dark:text-gray-100;
     @apply min-h-screen;

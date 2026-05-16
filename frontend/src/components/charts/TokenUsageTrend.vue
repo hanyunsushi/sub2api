@@ -106,8 +106,9 @@ const chartData = computed(() => {
       {
         label: 'Cache Hit Rate',
         data: props.trendData.map((d) => {
-          const total = d.cache_read_tokens + d.cache_creation_tokens
-          return total > 0 ? (d.cache_read_tokens / total) * 100 : 0
+          // Input-side cache share, not an HTTP cache header hit rate.
+          const cacheableInput = d.input_tokens + d.cache_creation_tokens + d.cache_read_tokens
+          return cacheableInput > 0 ? (d.cache_read_tokens / cacheableInput) * 100 : 0
         }),
         borderColor: chartColors.value.cacheHitRate,
         backgroundColor: withChartAlpha(chartColors.value.cacheHitRate),

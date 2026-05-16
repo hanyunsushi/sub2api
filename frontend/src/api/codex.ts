@@ -324,18 +324,89 @@ function isCodexAuthFile(raw: CpaAuthFileRaw): boolean {
   return typeFields.some((value) => stringValue(value)?.toLowerCase().includes('codex')) || !!name?.startsWith('codex-')
 }
 
+function recordNumber(record: Record<string, unknown>, keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = numberValue(record[key])
+    if (value !== undefined) return value
+  }
+  return undefined
+}
+
+function quotaWindowKeyFromText(value: unknown): CodexQuotaWindow['key'] | undefined {
+  const raw = stringValue(value)?.toLowerCase()
+  if (!raw) return undefined
+  const normalized = raw.replace(/[\s_-]+/g, '')
+  if (
+    normalized.includes('5h') ||
+    normalized.includes('fivehour') ||
+    normalized.includes('fivehours') ||
+    normalized === 'fiveh' ||
+    normalized === 'primary' ||
+    normalized === 'primarywindow'
+  ) {
+    return '5h'
+  }
+  if (
+    normalized.includes('week') ||
+    normalized.includes('7d') ||
+    normalized === 'secondary' ||
+    normalized === 'secondarywindow'
+  ) {
+    return 'weekly'
+  }
+  if (normalized === 'quota' || normalized === 'limit') return 'quota'
+  return undefined
+}
+
 function windowRemainingPercent(windowValue: unknown): number | undefined {
   if (!windowValue || typeof windowValue !== 'object') return undefined
   const record = windowValue as Record<string, unknown>
-  const used = numberValue(record.used_percent ?? record.usedPercent)
-  if (used === undefined) return undefined
-  return Math.max(0, Math.min(100, Math.round(100 - used)))
+  const directRemaining = recordNumber(record, [
+    'remainingPercent',
+    'remaining_percent',
+    'remaining_pct',
+    'remainingPercentage',
+    'available_percent',
+    'availablePercent',
+    'available_pct',
+  ])
+  if (directRemaining !== undefined) return clampPercent(directRemaining)
+
+  const usedPercent = recordNumber(record, [
+    'used_percent',
+    'usedPercent',
+    'used_pct',
+    'usage_percent',
+    'usagePercent',
+  ])
+  if (usedPercent !== undefined) return clampPercent(100 - usedPercent)
+
+  const limit = recordNumber(record, ['limit', 'total', 'quota', 'maximum', 'max'])
+  if (limit === undefined || limit <= 0) return undefined
+
+  const used = recordNumber(record, ['used', 'usage', 'consumed'])
+  if (used !== undefined) return clampPercent(100 - (used / limit) * 100)
+
+  const remaining = recordNumber(record, ['remaining', 'available', 'left'])
+  if (remaining !== undefined) return clampPercent((remaining / limit) * 100)
+
+  return undefined
 }
 
 function limitWindowSeconds(windowValue: unknown): number | undefined {
   if (!windowValue || typeof windowValue !== 'object') return undefined
   const record = windowValue as Record<string, unknown>
-  return numberValue(record.limit_window_seconds ?? record.limitWindowSeconds)
+  return recordNumber(record, [
+    'limit_window_seconds',
+    'limitWindowSeconds',
+    'window_seconds',
+    'windowSeconds',
+    'seconds',
+    'period_seconds',
+    'periodSeconds',
+    'duration_seconds',
+    'durationSeconds',
+  ])
 }
 
 function resetAfterSeconds(windowValue: unknown): number | undefined {
@@ -350,9 +421,10 @@ function resetAt(windowValue: unknown): string | undefined {
   return stringValue(record.reset_at ?? record.resetAt)
 }
 
-function quotaWindowKey(seconds: number | undefined): CodexQuotaWindow['key'] {
+function quotaWindowKey(seconds: number | undefined, hint?: CodexQuotaWindow['key']): CodexQuotaWindow['key'] {
   if (seconds === 18000) return '5h'
   if (seconds === 604800) return 'weekly'
+  if (hint) return hint
   return 'quota'
 }
 
@@ -362,18 +434,21 @@ function quotaWindowLabel(key: CodexQuotaWindow['key']): string {
   return 'quota'
 }
 
-function normalizeQuotaWindow(windowValue: unknown): CodexQuotaWindow | undefined {
+function normalizeQuotaWindow(windowValue: unknown, keyHint?: string): CodexQuotaWindow | undefined {
   if (!windowValue || typeof windowValue !== 'object') return undefined
   const record = windowValue as Record<string, unknown>
   const seconds = limitWindowSeconds(record)
-  const directRemaining = numberValue(record.remainingPercent ?? record.remaining_percent ?? record.remaining_pct)
-  const remaining = directRemaining !== undefined ? clampPercent(directRemaining) : windowRemainingPercent(record)
+  const remaining = windowRemainingPercent(record)
   if (remaining === undefined) return undefined
-  const rawKey = stringValue(record.key)?.toLowerCase()
-  const key: CodexQuotaWindow['key'] =
-    rawKey === '5h' || rawKey === 'weekly' || rawKey === 'quota'
-      ? rawKey
-      : quotaWindowKey(seconds)
+  const keyTextHint =
+    quotaWindowKeyFromText(record.key) ||
+    quotaWindowKeyFromText(record.name) ||
+    quotaWindowKeyFromText(record.type) ||
+    quotaWindowKeyFromText(record.window) ||
+    quotaWindowKeyFromText(record.period) ||
+    quotaWindowKeyFromText(record.label) ||
+    quotaWindowKeyFromText(keyHint)
+  const key = quotaWindowKey(seconds, keyTextHint)
   return {
     key,
     label: stringValue(record.label) || quotaWindowLabel(key),
@@ -384,14 +459,72 @@ function normalizeQuotaWindow(windowValue: unknown): CodexQuotaWindow | undefine
   }
 }
 
-function codexQuotaWindows(usage: Record<string, unknown>): CodexQuotaWindow[] {
-  const rateLimit = (usage.rate_limit || usage.rateLimit) as Record<string, unknown> | undefined
-  if (!rateLimit || typeof rateLimit !== 'object') return []
+function collectQuotaWindowCandidates(source: Record<string, unknown>): Array<{ value: unknown; hint?: string }> {
+  const candidates: Array<{ value: unknown; hint?: string }> = []
+  const objectKeys = [
+    'primary_window',
+    'primaryWindow',
+    'primary',
+    'secondary_window',
+    'secondaryWindow',
+    'secondary',
+    'five_hour',
+    'fiveHour',
+    'five_h',
+    'fiveH',
+    'five_hours',
+    'fiveHours',
+    'window_5h',
+    'window5h',
+    '5h',
+    'weekly',
+    'week',
+    'weekly_window',
+    'weeklyWindow',
+    'window_weekly',
+    'windowWeekly',
+    'seven_day',
+    'sevenDay',
+  ]
+  const arrayKeys = [
+    'quota_windows',
+    'quotaWindows',
+    'rate_limits',
+    'rateLimits',
+    'windows',
+    'items',
+    'limits',
+  ]
+  const pushValue = (value: unknown, hint?: string) => {
+    if (!value) return
+    if (Array.isArray(value)) {
+      for (const item of value) candidates.push({ value: item, hint })
+      return
+    }
+    candidates.push({ value, hint })
+  }
 
-  const rawWindows = [rateLimit.primary_window, rateLimit.primaryWindow, rateLimit.secondary_window, rateLimit.secondaryWindow]
+  for (const key of objectKeys) pushValue(source[key], key)
+  for (const key of arrayKeys) pushValue(source[key], key)
+  for (const [key, value] of Object.entries(source)) {
+    if (objectKeys.includes(key) || arrayKeys.includes(key) || !quotaWindowKeyFromText(key)) continue
+    pushValue(value, key)
+  }
+  return candidates
+}
+
+function codexQuotaWindows(usage: Record<string, unknown>): CodexQuotaWindow[] {
+  const rawWindows: Array<{ value: unknown; hint?: string }> = [
+    ...collectQuotaWindowCandidates(usage),
+    ...[usage.rate_limit, usage.rateLimit]
+      .filter((value) => value && typeof value === 'object')
+      .flatMap((value) => Array.isArray(value)
+        ? value.map((item) => ({ value: item }))
+        : collectQuotaWindowCandidates(value as Record<string, unknown>)),
+  ]
   const windows: CodexQuotaWindow[] = []
-  for (const windowValue of rawWindows) {
-    const window = normalizeQuotaWindow(windowValue)
+  for (const { value, hint } of rawWindows) {
+    const window = normalizeQuotaWindow(value, hint)
     if (!window) continue
     if (!windows.some((item) => item.key === window.key && item.limitWindowSeconds === window.limitWindowSeconds)) {
       windows.push(window)

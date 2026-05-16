@@ -80,4 +80,33 @@ describe('TokenUsageTrend', () => {
     const chartOptions = JSON.parse(wrapper.find('.line-chart-options').text())
     expect(chartOptions.scales.yPercent.ticks.color).toBe('#b7791f')
   })
+
+  it('calculates cache hit rate against all input-side tokens', () => {
+    const wrapper = mount(TokenUsageTrend, {
+      props: {
+        trendData: [
+          {
+            date: '2026-05-15',
+            requests: 1,
+            input_tokens: 600,
+            output_tokens: 120,
+            cache_creation_tokens: 300,
+            cache_read_tokens: 600,
+            total_tokens: 1620,
+            cost: 0.4,
+            actual_cost: 0.2,
+          },
+        ],
+      },
+      global: {
+        stubs: {
+          LoadingSpinner: true,
+        },
+      },
+    })
+
+    const chartData = JSON.parse(wrapper.find('.line-chart-data').text())
+    expect(chartData.datasets[4].label).toBe('Cache Hit Rate')
+    expect(chartData.datasets[4].data).toEqual([40])
+  })
 })
