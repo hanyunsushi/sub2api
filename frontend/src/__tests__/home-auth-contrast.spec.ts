@@ -36,7 +36,7 @@ describe('home and auth contrast on Klein blue background', () => {
     expect(css).toContain('::-webkit-scrollbar')
   })
 
-  it('enables smooth scrolling for document and common internal scroll containers', () => {
+  it('uses declarative smooth scrolling without hijacking wheel events', () => {
     const css = readFile('src/style.css')
     const main = readFile('src/main.ts')
 
@@ -45,6 +45,7 @@ describe('home and auth contrast on Klein blue background', () => {
     expect(css).toContain('.sidebar-nav')
     expect(css).toContain('.overflow-y-auto')
     expect(css).toContain('.overflow-auto')
-    expect(main).toContain('installSmoothWheelScrolling()')
+    expect(css).toContain('overscroll-behavior')
+    expect(main).not.toContain('installSmoothWheelScrolling')
   })
 })

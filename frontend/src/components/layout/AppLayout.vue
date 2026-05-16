@@ -15,7 +15,7 @@
         <AppHeader />
 
         <!-- Main Content -->
-        <main class="p-4 md:p-6 lg:p-8">
+        <main class="app-route-page app-route-page-entering p-4 md:p-6 lg:p-8">
           <slot />
         </main>
       </div>
@@ -60,5 +60,40 @@ defineExpose({ replayTour })
 
 .dark .app-layout-shell {
   background: #050712;
+}
+
+.app-route-page {
+  transform-origin: top center;
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.app-route-page-entering {
+  animation: app-route-page-enter 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes app-route-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-route-page {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
+
+  .app-route-page-entering {
+    animation-duration: 1ms;
+  }
 }
 </style>
