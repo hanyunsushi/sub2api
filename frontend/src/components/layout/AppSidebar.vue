@@ -22,7 +22,7 @@
     </router-link>
 
     <!-- Navigation -->
-    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" @scroll="handleSidebarNavScroll">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
@@ -243,7 +243,6 @@ const sidebarNavRef = ref<HTMLElement | null>(null)
 const expandedGroups = ref<Set<string>>(new Set())
 const SIDEBAR_SCROLL_RESTORE_ATTEMPTS = 8
 const SIDEBAR_SCROLL_RESTORE_SETTLE_MS = 120
-let preservedSidebarScrollTop = 0
 let shouldRestoreSidebarScroll = false
 let sidebarRestoreFrame = 0
 let sidebarRestoreTimeout = 0
@@ -827,15 +826,20 @@ function closeMobile() {
 
 function captureSidebarScroll() {
   if (!sidebarNavRef.value) return
-  preservedSidebarScrollTop = sidebarNavRef.value.scrollTop
+  appStore.setSidebarNavScrollTop(sidebarNavRef.value.scrollTop)
   shouldRestoreSidebarScroll = true
+}
+
+function handleSidebarNavScroll() {
+  if (!sidebarNavRef.value) return
+  appStore.setSidebarNavScrollTop(sidebarNavRef.value.scrollTop)
 }
 
 function applySidebarScrollRestore() {
   if (!sidebarNavRef.value) return
   const previousScrollBehavior = sidebarNavRef.value.style.scrollBehavior
   sidebarNavRef.value.style.scrollBehavior = 'auto'
-  sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
+  sidebarNavRef.value.scrollTop = appStore.sidebarNavScrollTop
   if (previousScrollBehavior) {
     sidebarNavRef.value.style.scrollBehavior = previousScrollBehavior
   } else {
@@ -874,8 +878,9 @@ function runSidebarScrollRestorePass() {
   }, SIDEBAR_SCROLL_RESTORE_SETTLE_MS)
 }
 
-function restoreSidebarScrollSoon() {
-  if (!shouldRestoreSidebarScroll) return
+function restoreSidebarScrollSoon(force = false) {
+  if (!force && !shouldRestoreSidebarScroll) return
+  shouldRestoreSidebarScroll = true
   cancelSidebarScrollRestoreSchedule()
   sidebarRestoreAttempts = 0
   void nextTick(() => {
@@ -883,8 +888,8 @@ function restoreSidebarScrollSoon() {
   })
 }
 
-function restoreSidebarScroll() {
-  restoreSidebarScrollSoon()
+function restoreSidebarScroll(force = false) {
+  restoreSidebarScrollSoon(force)
 }
 
 function handleMenuItemClick(itemPath: string) {
@@ -982,15 +987,28 @@ watch(
   { immediate: true }
 )
 
-watch(() => route.fullPath, restoreSidebarScroll, { flush: 'post' })
+watch(() => route.fullPath, () => restoreSidebarScroll(), { flush: 'post' })
+watch(
+  () => [adminNavItems.value.length, personalNavItems.value.length, userNavItems.value.length],
+  () => {
+    if (appStore.sidebarNavScrollTop > 0) {
+      restoreSidebarScroll(true)
+    }
+  },
+  { flush: 'post' }
+)
 
 onMounted(() => {
   if (isAdmin.value) {
     adminSettingsStore.fetch()
   }
+  if (appStore.sidebarNavScrollTop > 0) {
+    restoreSidebarScroll(true)
+  }
 })
 
 onBeforeUnmount(() => {
+  captureSidebarScroll()
   cancelSidebarScrollRestoreSchedule()
 })
 </script>

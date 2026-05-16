@@ -157,6 +157,17 @@ describe('useAppStore', () => {
       store.toggleMobileSidebar()
       expect(store.mobileOpen).toBe(false)
     })
+
+    it('在路由切换导致侧边栏组件重建时保留导航滚动位置', () => {
+      const store = useAppStore()
+      expect(store.sidebarNavScrollTop).toBe(0)
+
+      store.setSidebarNavScrollTop(480)
+      expect(store.sidebarNavScrollTop).toBe(480)
+
+      store.setSidebarNavScrollTop(-20)
+      expect(store.sidebarNavScrollTop).toBe(0)
+    })
   })
 
   // --- Loading 状态 ---
@@ -238,12 +249,14 @@ describe('useAppStore', () => {
       const store = useAppStore()
 
       store.setSidebarCollapsed(true)
+      store.setSidebarNavScrollTop(360)
       store.setLoading(true)
       store.showSuccess('消息')
 
       store.reset()
 
       expect(store.sidebarCollapsed).toBe(false)
+      expect(store.sidebarNavScrollTop).toBe(0)
       expect(store.loading).toBe(false)
       expect(store.toasts).toHaveLength(0)
     })

@@ -19,6 +19,7 @@ export const useAppStore = defineStore('app', () => {
 
   const sidebarCollapsed = ref<boolean>(false)
   const mobileOpen = ref<boolean>(false)
+  const sidebarNavScrollTop = ref<number>(0)
   const loading = ref<boolean>(false)
   const toasts = ref<Toast[]>([])
 
@@ -82,6 +83,13 @@ export const useAppStore = defineStore('app', () => {
    */
   function setMobileOpen(open: boolean): void {
     mobileOpen.value = open
+  }
+
+  /**
+   * Persist sidebar nav scroll across route-level AppLayout remounts.
+   */
+  function setSidebarNavScrollTop(scrollTop: number): void {
+    sidebarNavScrollTop.value = Math.max(0, Math.round(scrollTop))
   }
 
   /**
@@ -227,6 +235,7 @@ export const useAppStore = defineStore('app', () => {
    */
   function reset(): void {
     sidebarCollapsed.value = false
+    sidebarNavScrollTop.value = 0
     loading.value = false
     loadingCount.value = 0
     toasts.value = []
@@ -407,6 +416,7 @@ export const useAppStore = defineStore('app', () => {
     // State
     sidebarCollapsed,
     mobileOpen,
+    sidebarNavScrollTop,
     loading,
     toasts,
 
@@ -438,6 +448,7 @@ export const useAppStore = defineStore('app', () => {
     setSidebarCollapsed,
     toggleMobileSidebar,
     setMobileOpen,
+    setSidebarNavScrollTop,
     setLoading,
     showToast,
     showSuccess,
