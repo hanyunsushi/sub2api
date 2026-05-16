@@ -873,22 +873,58 @@ function readableErrorText(statusMessage: string, lastError?: string): string | 
   return text
 }
 
+function depletedStatusMessagePayload(raw: CpaAuthFileRaw): unknown {
+  const payload = raw.status_message || raw.statusMessage
+  const text = errorMessageFromPayload(payload, '').toLowerCase()
+  if (!payload || ['ok', 'ready', 'active', 'enabled', 'success'].includes(text)) return ''
+  return payload
+}
+
+function isExplicitlyDepletedQuota(
+  remainingPercent: number | undefined,
+  quotaWindows: CodexQuotaWindow[],
+  balance: number | undefined
+): boolean {
+  const quotaValues = [
+    ...quotaWindows.map((window) => window.remainingPercent),
+    ...(remainingPercent === undefined ? [] : [remainingPercent]),
+    ...(balance === undefined ? [] : [balance]),
+  ]
+  if (!quotaValues.length) return false
+  return quotaValues.every((value) => value <= 0)
+}
+
 export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
   const runtimeOnly = raw.runtime_only === true
   const jsonFileName = name.toLowerCase().endsWith('.json')
-  const status = normalizeStatus(raw)
-  const statusMessagePayload = status === 'failed'
-    ? raw.status_message || raw.statusMessage || raw.last_error || raw.error_message || raw.failure_reason || raw.error || raw.status
-    : raw.status_message || raw.status
-  const statusMessage = errorMessageFromPayload(statusMessagePayload, '')
+  const baseStatus = normalizeStatus(raw)
   const label = firstString(raw, ['label', 'account', 'email', 'username', 'display_name']) || name
   const balanceText = firstString(raw, ['balance_text', 'credit_text', 'credits_text', 'remaining_balance_text'])
   const usageText = firstString(raw, ['usage_text', 'usage', 'used_text', 'recent_usage', 'usage_status'])
   const quotaWindows = normalizeQuotaWindows(raw)
   const remainingPercent = quotaRemainingPercent(raw, balanceText, usageText)
     ?? (quotaWindows.length ? Math.min(...quotaWindows.map((window) => window.remainingPercent)) : undefined)
+  const balance = firstNumber(raw, [
+    'balance',
+    'credit',
+    'credits',
+    'credit_balance',
+    'remaining_balance',
+    'available_balance',
+    'available_credits',
+    'free_credits',
+  ])
+  const quotaDepleted = isExplicitlyDepletedQuota(remainingPercent, quotaWindows, balance)
+  const depletedActiveStatus = baseStatus === 'active' && quotaDepleted
+  const status = depletedActiveStatus ? 'expiring' : baseStatus
+  const statusMessagePayload = status === 'failed'
+    ? raw.status_message || raw.statusMessage || raw.last_error || raw.error_message || raw.failure_reason || raw.error || raw.status
+    : depletedActiveStatus
+      ? depletedStatusMessagePayload(raw)
+      : raw.status_message || raw.status
+  const statusMessage = errorMessageFromPayload(statusMessagePayload, '')
   const lastError = firstString(raw, [
     'last_error',
     'last_error_message',
@@ -919,16 +955,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     modifiedAt: raw.modtime || raw.updated_at || raw.created_at,
     lastRefreshAt: firstString(raw, ['last_refresh', 'last_checked_at', 'refreshed_at']),
     email: raw.email,
-    balance: firstNumber(raw, [
-      'balance',
-      'credit',
-      'credits',
-      'credit_balance',
-      'remaining_balance',
-      'available_balance',
-      'available_credits',
-      'free_credits',
-    ]),
+    balance,
     balanceText,
     quotaRemainingPercent: remainingPercent,
     quotaWindows: quotaWindows.length ? quotaWindows : undefined,

@@ -95,11 +95,26 @@ describe('filterCodexAccounts', () => {
       .toEqual(['scratch.json'])
   })
 
-  it('filters accounts by empty usage data or positive balance', () => {
+  it('filters accounts by empty usage balance or positive balance', () => {
     const accounts = [
       account({ name: 'empty.json' }),
       account({ name: 'zero.json', quotaRemainingPercent: 0, usageText: '5h remaining 0%' }),
+      account({
+        name: 'window-zero.json',
+        quotaWindows: [
+          { key: '5h', label: '5h', remainingPercent: 0 },
+          { key: 'weekly', label: 'weekly', remainingPercent: 0 },
+        ],
+      }),
+      account({ name: 'cash-zero.json', balance: 0 }),
       account({ name: 'weekly.json', quotaWindows: [{ key: 'weekly', label: 'weekly', remainingPercent: 22 }] }),
+      account({
+        name: 'mixed-window.json',
+        quotaWindows: [
+          { key: '5h', label: '5h', remainingPercent: 0 },
+          { key: 'weekly', label: 'weekly', remainingPercent: 22 },
+        ],
+      }),
       account({ name: 'cash.json', balance: 8 }),
     ]
 
@@ -108,14 +123,14 @@ describe('filterCodexAccounts', () => {
       status: 'all',
       groupId: 'all',
       usageState: 'empty',
-    }).map((item) => item.name)).toEqual(['empty.json'])
+    }).map((item) => item.name)).toEqual(['empty.json', 'zero.json', 'window-zero.json', 'cash-zero.json'])
 
     expect(filterCodexAccounts(accounts, {
       query: '',
       status: 'all',
       groupId: 'all',
       usageState: 'has_balance',
-    }).map((item) => item.name)).toEqual(['weekly.json', 'cash.json'])
+    }).map((item) => item.name)).toEqual(['weekly.json', 'mixed-window.json', 'cash.json'])
   })
 })
 

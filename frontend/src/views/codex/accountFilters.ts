@@ -66,19 +66,10 @@ function matchesGroupFilter(account: CodexAccountMerged, groupId: string): boole
 
 function matchesUsageStateFilter(account: CodexAccountMerged, usageState: CodexUsageStateFilter): boolean {
   if (usageState === 'all') return true
-  if (usageState === 'empty') return !hasUsageData(account)
-  if (usageState === 'has_balance') return (accountBalanceSortValue(account) ?? 0) > 0
+  const hasPositiveBalance = (accountBalanceSortValue(account) ?? 0) > 0
+  if (usageState === 'empty') return !hasPositiveBalance
+  if (usageState === 'has_balance') return hasPositiveBalance
   return true
-}
-
-function hasUsageData(account: CodexAccountMerged): boolean {
-  return Boolean(
-    account.balance !== undefined ||
-    account.balanceText ||
-    account.quotaRemainingPercent !== undefined ||
-    account.usageText ||
-    account.quotaWindows?.length
-  )
 }
 
 function compareBySortKey(

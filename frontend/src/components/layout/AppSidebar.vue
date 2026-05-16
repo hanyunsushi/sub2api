@@ -241,9 +241,13 @@ const sidebarNavRef = ref<HTMLElement | null>(null)
 
 // Track which parent nav groups are expanded
 const expandedGroups = ref<Set<string>>(new Set())
+const SIDEBAR_SCROLL_RESTORE_ATTEMPTS = 8
+const SIDEBAR_SCROLL_RESTORE_SETTLE_MS = 120
 let preservedSidebarScrollTop = 0
 let shouldRestoreSidebarScroll = false
 let sidebarRestoreFrame = 0
+let sidebarRestoreTimeout = 0
+let sidebarRestoreAttempts = 0
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
@@ -828,21 +832,54 @@ function captureSidebarScroll() {
 }
 
 function applySidebarScrollRestore() {
-  if (sidebarNavRef.value) {
-    sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
+  if (!sidebarNavRef.value) return
+  const previousScrollBehavior = sidebarNavRef.value.style.scrollBehavior
+  sidebarNavRef.value.style.scrollBehavior = 'auto'
+  sidebarNavRef.value.scrollTop = preservedSidebarScrollTop
+  if (previousScrollBehavior) {
+    sidebarNavRef.value.style.scrollBehavior = previousScrollBehavior
+  } else {
+    sidebarNavRef.value.style.removeProperty('scroll-behavior')
   }
+}
+
+function cancelSidebarScrollRestoreSchedule() {
+  if (sidebarRestoreFrame) {
+    cancelAnimationFrame(sidebarRestoreFrame)
+    sidebarRestoreFrame = 0
+  }
+  if (sidebarRestoreTimeout) {
+    clearTimeout(sidebarRestoreTimeout)
+    sidebarRestoreTimeout = 0
+  }
+}
+
+function runSidebarScrollRestorePass() {
+  if (!shouldRestoreSidebarScroll) return
+  applySidebarScrollRestore()
+  sidebarRestoreAttempts += 1
+
+  if (sidebarRestoreAttempts < SIDEBAR_SCROLL_RESTORE_ATTEMPTS) {
+    sidebarRestoreFrame = requestAnimationFrame(() => {
+      sidebarRestoreFrame = 0
+      runSidebarScrollRestorePass()
+    })
+    return
+  }
+
+  sidebarRestoreTimeout = window.setTimeout(() => {
+    sidebarRestoreTimeout = 0
+    applySidebarScrollRestore()
+    shouldRestoreSidebarScroll = false
+  }, SIDEBAR_SCROLL_RESTORE_SETTLE_MS)
 }
 
 function restoreSidebarScrollSoon() {
   if (!shouldRestoreSidebarScroll) return
+  cancelSidebarScrollRestoreSchedule()
+  sidebarRestoreAttempts = 0
   void nextTick(() => {
-    applySidebarScrollRestore()
-    if (sidebarRestoreFrame) cancelAnimationFrame(sidebarRestoreFrame)
-    sidebarRestoreFrame = requestAnimationFrame(() => {
-      sidebarRestoreFrame = 0
-      applySidebarScrollRestore()
-      shouldRestoreSidebarScroll = false
-    })
+    runSidebarScrollRestorePass()
   })
 }
 
@@ -954,10 +991,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (sidebarRestoreFrame) {
-    cancelAnimationFrame(sidebarRestoreFrame)
-    sidebarRestoreFrame = 0
-  }
+  cancelSidebarScrollRestoreSchedule()
 })
 </script>
 

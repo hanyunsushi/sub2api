@@ -193,6 +193,62 @@ describe('codex CPA API adapter', () => {
     expect(mapCpaAuthFileToView({ name: 'c.json', status: 'error' }).status).toBe('failed')
   })
 
+  it('does not leave explicitly depleted CPA quota entries as active ok status', () => {
+    const zeroPercent = mapCpaAuthFileToView({
+      name: 'zero-percent.json',
+      status: 'ok',
+      quota_remaining_percent: 0,
+    })
+    expect(zeroPercent).toMatchObject({
+      status: 'expiring',
+      statusMessage: '',
+      quotaRemainingPercent: 0,
+    })
+
+    const zeroWindows = mapCpaAuthFileToView({
+      name: 'zero-windows.json',
+      status: 'ok',
+      quota_windows: [
+        { key: '5h', label: '5h', remainingPercent: 0 },
+        { key: 'weekly', label: 'weekly', remainingPercent: 0 },
+      ],
+    })
+    expect(zeroWindows).toMatchObject({
+      status: 'expiring',
+      statusMessage: '',
+      quotaRemainingPercent: 0,
+    })
+
+    const zeroBalance = mapCpaAuthFileToView({
+      name: 'zero-balance.json',
+      status: 'ok',
+      status_message: 'ok',
+      balance: 0,
+    })
+    expect(zeroBalance).toMatchObject({
+      status: 'expiring',
+      statusMessage: '',
+      balance: 0,
+    })
+  })
+
+  it('keeps ok CPA quota entries active when any quota window still has balance', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'weekly-balance.json',
+      status: 'ok',
+      quota_windows: [
+        { key: '5h', label: '5h', remainingPercent: 0 },
+        { key: 'weekly', label: 'weekly', remainingPercent: 22 },
+      ],
+    })
+
+    expect(view).toMatchObject({
+      status: 'active',
+      statusMessage: 'ok',
+      quotaRemainingPercent: 0,
+    })
+  })
+
   it('sends management key as Authorization bearer header without localStorage', async () => {
     localStorage.setItem('auth_token', 'sub2api-admin-token')
     mockFetch.mockResolvedValue({
