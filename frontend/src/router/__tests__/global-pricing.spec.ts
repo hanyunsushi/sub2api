@@ -27,9 +27,13 @@ describe('global pricing route and navigation', () => {
     expect(sidebarSource).toContain("const personalNavItems = computed((): NavItem[] => finalizeNav(buildSelfNavItems(false)))")
   })
 
-  it('shows provider icons beside provider names in the global pricing table', () => {
-    expect(viewSource).toContain("import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'")
-    expect(viewSource).toContain('<ProviderIcon :provider="item.provider || \'unknown\'" :size="14" />')
-    expect(viewSource).toContain('class="meta-pill provider-pill"')
+  it('shows independent color provider icons in the first pricing table column', () => {
+    expect(viewSource).toContain("import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'")
+    expect(viewSource).toContain("{{ t('globalPricing.columns.brand') }}")
+    expect(viewSource).toContain('<ProviderBrandIcon :provider="item.provider" :model="item.model" />')
+    expect(viewSource).toContain('brand-sticky-col brand-cell')
+    expect(viewSource).toContain('<span class="sr-only">{{ item.provider || item.model }}</span>')
+    expect(viewSource).toContain('colspan="11"')
+    expect(viewSource).not.toContain("import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'")
   })
 })
