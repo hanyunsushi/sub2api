@@ -36,7 +36,7 @@ describe('home and auth contrast on Klein blue background', () => {
     expect(css).toContain('::-webkit-scrollbar')
   })
 
-  it('uses declarative smooth scrolling without hijacking wheel events', () => {
+  it('uses inertial smooth scrolling without the old wheel hijacker', () => {
     const css = readFile('src/style.css')
     const main = readFile('src/main.ts')
 
@@ -46,6 +46,7 @@ describe('home and auth contrast on Klein blue background', () => {
     expect(css).toContain('.overflow-y-auto')
     expect(css).toContain('.overflow-auto')
     expect(css).toContain('overscroll-behavior')
+    expect(main).toContain('installInertialScrolling')
     expect(main).not.toContain('installSmoothWheelScrolling')
   })
 })

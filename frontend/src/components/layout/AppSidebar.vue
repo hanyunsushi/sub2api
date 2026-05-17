@@ -7,11 +7,13 @@
     ]"
   >
     <!-- Logo/Brand -->
-    <router-link to="/home" class="sidebar-header sidebar-home-link" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }" aria-label="Home">
+    <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
       <!-- Custom Logo or Default Logo -->
-      <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-primary-50 shadow-glow ring-1 ring-primary-200/80 dark:bg-dark-800 dark:ring-primary-800/50">
-        <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
-      </div>
+      <router-link to="/home" class="sidebar-home-link sidebar-logo-link" aria-label="Home">
+        <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-primary-50 shadow-glow ring-1 ring-primary-200/80 dark:bg-dark-800 dark:ring-primary-800/50">
+          <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+        </div>
+      </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
         <span class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
           {{ siteName }}
@@ -19,10 +21,10 @@
         <!-- Version Badge -->
         <VersionBadge :version="siteVersion" />
       </div>
-    </router-link>
+    </div>
 
     <!-- Navigation -->
-    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" @scroll="handleSidebarNavScroll">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" data-lenis-prevent @scroll="handleSidebarNavScroll">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
@@ -1025,9 +1027,19 @@ onBeforeUnmount(() => {
   text-decoration: none;
 }
 
+.sidebar-logo-link {
+  display: flex;
+  flex: 0 0 2.25rem;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
 .sidebar-home-link:focus-visible {
   outline: 2px solid rgb(0 47 167 / 0.68);
-  outline-offset: -2px;
+  outline-offset: 3px;
 }
 
 .sidebar-header-collapsed {

@@ -20,13 +20,16 @@ describe('AppSidebar custom SVG styles', () => {
 })
 
 describe('AppSidebar header styles', () => {
-  it('links the top-left brand logo to the public welcome page', () => {
-    const homeLinkMatch = componentSource.match(/<router-link[^>]*to="\/home"[^>]*>/)
+  it('links only the top-left logo to the public welcome page', () => {
+    const homeLinkMatch = componentSource.match(/<router-link[^>]*to="\/home"[^>]*>[\s\S]*?<\/router-link>/)
 
     expect(homeLinkMatch).not.toBeNull()
     expect(homeLinkMatch?.[0]).toContain('sidebar-home-link')
+    expect(homeLinkMatch?.[0]).toContain('sidebar-logo-link')
     expect(homeLinkMatch?.[0]).toContain('aria-label="Home"')
-    expect(componentSource).toContain('</router-link>')
+    expect(homeLinkMatch?.[0]).toContain('sidebar-logo')
+    expect(homeLinkMatch?.[0]).not.toContain('sidebar-brand')
+    expect(homeLinkMatch?.[0]).not.toContain('VersionBadge')
   })
 
   it('does not clip the version badge dropdown', () => {
