@@ -84,7 +84,8 @@
           <table class="global-pricing-table">
             <thead>
               <tr>
-                <th class="sticky-col w-[260px]">{{ t('globalPricing.columns.model') }}</th>
+                <th class="brand-sticky-col brand-cell w-14">{{ t('globalPricing.columns.brand') }}</th>
+                <th class="model-sticky-col w-[260px]">{{ t('globalPricing.columns.model') }}</th>
                 <th class="w-[150px]">{{ t('globalPricing.columns.provider') }}</th>
                 <th class="w-[110px]">{{ t('globalPricing.columns.mode') }}</th>
                 <th class="w-[130px]">{{ t('globalPricing.columns.input') }}</th>
@@ -99,15 +100,20 @@
 
             <tbody v-if="loading">
               <tr v-for="idx in 8" :key="idx">
-                <td v-for="cell in 10" :key="cell" :class="{ 'sticky-col': cell === 1 }">
-                  <div class="skeleton-line" :class="cell === 1 ? 'w-48' : 'w-24'"></div>
+                <td
+                  v-for="cell in 11"
+                  :key="cell"
+                  :class="[cell === 1 ? 'brand-sticky-col brand-cell' : '', cell === 2 ? 'model-sticky-col' : '']"
+                >
+                  <div v-if="cell === 1" class="skeleton-icon"></div>
+                  <div v-else class="skeleton-line" :class="cell === 2 ? 'w-48' : 'w-24'"></div>
                 </td>
               </tr>
             </tbody>
 
             <tbody v-else-if="filteredItems.length === 0">
               <tr>
-                <td colspan="10" class="py-14 text-center">
+                <td colspan="11" class="py-14 text-center">
                   <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
                   <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('globalPricing.empty') }}</p>
                 </td>
@@ -116,7 +122,11 @@
 
             <tbody v-else>
               <tr v-for="item in filteredItems" :key="item.model" class="pricing-row">
-                <td class="sticky-col">
+                <td class="brand-sticky-col brand-cell">
+                  <ProviderBrandIcon :provider="item.provider" :model="item.model" />
+                  <span class="sr-only">{{ item.provider || item.model }}</span>
+                </td>
+                <td class="model-sticky-col">
                   <div class="min-w-0">
                     <p class="truncate font-medium text-gray-900 dark:text-white" :title="item.model">
                       {{ item.model }}
@@ -127,10 +137,7 @@
                   </div>
                 </td>
                 <td>
-                  <span class="meta-pill provider-pill">
-                    <ProviderIcon :provider="item.provider || 'unknown'" :size="14" />
-                    <span>{{ item.provider || '-' }}</span>
-                  </span>
+                  <span class="meta-pill">{{ item.provider || '-' }}</span>
                 </td>
                 <td>
                   <span class="meta-pill uppercase">{{ item.mode || '-' }}</span>
@@ -186,7 +193,7 @@ import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
-import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import pricingAPI, { type GlobalPricingItem, type GlobalPricingResponse } from '@/api/pricing'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -312,15 +319,6 @@ onMounted(loadPricing)
   @apply border-gray-200 bg-gray-50 text-gray-600 dark:border-dark-700 dark:bg-dark-900/60 dark:text-gray-300;
 }
 
-.provider-pill {
-  @apply gap-1.5;
-}
-
-.provider-pill :deep(svg),
-.provider-pill :deep(span) {
-  @apply flex-shrink-0;
-}
-
 .capability-pill {
   @apply border-primary-200 bg-primary-50 text-primary-700 dark:border-primary-800/60 dark:bg-primary-900/20 dark:text-primary-300;
 }
@@ -341,11 +339,21 @@ onMounted(loadPricing)
   @apply transition-colors hover:bg-gray-50/60 dark:hover:bg-dark-900/50;
 }
 
-.sticky-col {
-  @apply sticky left-0 z-[2] bg-white shadow-[1px_0_0_rgba(226,232,240,0.9)] dark:bg-dark-800 dark:shadow-[1px_0_0_rgba(55,65,81,0.9)];
+.brand-cell {
+  @apply px-3 text-center align-middle;
 }
 
-thead .sticky-col {
+.brand-sticky-col {
+  @apply sticky left-0 z-[3] bg-white dark:bg-dark-800;
+}
+
+.model-sticky-col {
+  @apply sticky left-0 z-[2] bg-white shadow-[1px_0_0_rgba(226,232,240,0.9)] dark:bg-dark-800 dark:shadow-[1px_0_0_rgba(55,65,81,0.9)];
+  left: 3.5rem;
+}
+
+thead .brand-sticky-col,
+thead .model-sticky-col {
   @apply z-[3] bg-primary-50/95 dark:bg-dark-800/95;
 }
 
@@ -363,5 +371,9 @@ thead .sticky-col {
 
 .skeleton-line {
   @apply h-4 animate-pulse rounded bg-gray-200 dark:bg-dark-700;
+}
+
+.skeleton-icon {
+  @apply mx-auto h-7 w-7 animate-pulse rounded-md bg-gray-200 dark:bg-dark-700;
 }
 </style>

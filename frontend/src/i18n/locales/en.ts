@@ -1013,6 +1013,7 @@ export default {
       promptCachingOnly: 'Prompt caching only'
     },
     columns: {
+      brand: 'Brand',
       model: 'Model',
       provider: 'Provider',
       mode: 'Mode',

@@ -1017,6 +1017,7 @@ export default {
       promptCachingOnly: '仅缓存模型'
     },
     columns: {
+      brand: '标识',
       model: '模型',
       provider: '提供商',
       mode: '模式',
