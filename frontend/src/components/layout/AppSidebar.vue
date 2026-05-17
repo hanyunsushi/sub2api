@@ -24,7 +24,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" data-lenis-prevent @scroll="handleSidebarNavScroll">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" @scroll="handleSidebarNavScroll">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->

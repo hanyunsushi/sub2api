@@ -32,29 +32,6 @@
     overscroll-behavior-y: none;
   }
 
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-
-  html.lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-
-  html.lenis.lenis-smooth [data-lenis-prevent],
-  html.lenis.lenis-smooth .sidebar-nav,
-  html.lenis.lenis-smooth .modal-body,
-  html.lenis.lenis-smooth .dialog-body,
-  html.lenis.lenis-smooth .overflow-auto,
-  html.lenis.lenis-smooth .overflow-y-auto,
-  html.lenis.lenis-smooth .overflow-x-auto {
-    overscroll-behavior: contain;
-  }
-
-  html.lenis.lenis-stopped {
-    overflow: hidden;
-  }
-
   /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
   @supports (-moz-appearance:none) {
     * {

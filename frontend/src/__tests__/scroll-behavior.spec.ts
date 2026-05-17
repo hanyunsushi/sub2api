@@ -1,15 +1,10 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
 function readFile(path: string) {
   return readFileSync(resolve(process.cwd(), path), 'utf8')
-}
-
-function readFileIfExists(path: string) {
-  const absolutePath = resolve(process.cwd(), path)
-  return existsSync(absolutePath) ? readFileSync(absolutePath, 'utf8') : ''
 }
 
 describe('global scrolling behavior', () => {
@@ -20,16 +15,17 @@ describe('global scrolling behavior', () => {
     expect(mainSource).not.toContain("from '@/utils/smoothWheel'")
   })
 
-  it('installs GSAP-like inertial page scrolling without taking over nested scroll areas', () => {
+  it('uses native scrolling without installing Lenis on the whole document', () => {
     const mainSource = readFile('src/main.ts')
-    const inertialScrollSource = readFileIfExists('src/utils/inertialScroll.ts')
+    const styleSource = readFile('src/style.css')
+    const packageJson = readFile('package.json')
+    const lockfile = readFile('pnpm-lock.yaml')
 
-    expect(mainSource).toContain('installInertialScrolling')
-    expect(inertialScrollSource).toContain("from 'lenis'")
-    expect(inertialScrollSource).toContain('data-lenis-prevent')
-    expect(inertialScrollSource).toContain('.sidebar-nav')
-    expect(inertialScrollSource).toContain('.modal-body')
-    expect(inertialScrollSource).toContain('prefers-reduced-motion: reduce')
+    expect(mainSource).not.toContain('installInertialScrolling')
+    expect(mainSource).not.toContain('@/utils/inertialScroll')
+    expect(styleSource).not.toContain('html.lenis')
+    expect(packageJson).not.toContain('"lenis"')
+    expect(lockfile).not.toContain('lenis@')
   })
 
   it('keeps native smooth behavior as a safe fallback', () => {
