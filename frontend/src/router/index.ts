@@ -11,6 +11,7 @@ import { useNavigationLoadingState } from '@/composables/useNavigationLoading'
 import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { resolveDocumentTitle } from './title'
 import { codexRoutes } from './codex'
+import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
 
 /**
  * Route definitions with lazy loading
@@ -858,27 +859,12 @@ router.afterEach((to) => {
  * Handles dynamic import failures caused by deployment updates
  */
 router.onError((error) => {
+  navigationLoading.endNavigation()
   console.error('Router error:', error)
 
-  // Check if this is a dynamic import failure (chunk loading error)
-  const isChunkLoadError =
-    error.message?.includes('Failed to fetch dynamically imported module') ||
-    error.message?.includes('Loading chunk') ||
-    error.message?.includes('Loading CSS chunk') ||
-    error.name === 'ChunkLoadError'
-
-  if (isChunkLoadError) {
-    // Avoid infinite reload loop by checking sessionStorage
-    const reloadKey = 'chunk_reload_attempted'
-    const lastReload = sessionStorage.getItem(reloadKey)
-    const now = Date.now()
-
-    // Allow reload if never attempted or more than 10 seconds ago
-    if (!lastReload || now - parseInt(lastReload) > 10000) {
-      sessionStorage.setItem(reloadKey, now.toString())
-      console.warn('Chunk load error detected, reloading page to fetch latest version...')
-      window.location.reload()
-    } else {
+  if (isChunkLoadError(error)) {
+    console.warn('Chunk load error detected, reloading page to fetch latest version...')
+    if (!reloadAfterChunkLoadError()) {
       console.error('Chunk load error persists after reload. Please clear browser cache.')
     }
   }
