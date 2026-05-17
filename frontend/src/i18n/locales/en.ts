@@ -356,6 +356,7 @@ export default {
     groups: 'Groups',
     channels: 'Channels',
     availableChannels: 'Available Channels',
+    globalPricing: 'Global Pricing',
     subscriptions: 'Subscriptions',
     accounts: 'Accounts',
     codex: 'CPA',
@@ -986,6 +987,54 @@ export default {
       intervals: 'Tiered Pricing',
       unitPerMillion: '/ 1M tokens',
       unitPerRequest: '/ request'
+    }
+  },
+
+  // Global Pricing (user-facing)
+  globalPricing: {
+    title: 'Global Pricing',
+    description: 'Current global model pricing used by the system',
+    searchPlaceholder: 'Search models, providers or modes...',
+    loadFailed: 'Failed to load global pricing',
+    empty: 'No matching global prices',
+    dataHash: 'Data version',
+    unitPerMillion: '/ 1M tokens',
+    above1h: '1h+',
+    longContextThreshold: 'Long context threshold {count} tokens',
+    summary: {
+      totalModels: 'Global models',
+      visibleModels: 'Visible now',
+      providers: 'Providers',
+      updated: 'Updated'
+    },
+    filters: {
+      allProviders: 'All providers',
+      allModes: 'All modes',
+      promptCachingOnly: 'Prompt caching only'
+    },
+    columns: {
+      model: 'Model',
+      provider: 'Provider',
+      mode: 'Mode',
+      input: 'Input',
+      cacheWrite: 'Cache Write',
+      cacheRead: 'Cache Read',
+      output: 'Output',
+      priority: 'Priority Prices',
+      image: 'Image Prices',
+      capabilities: 'Capabilities'
+    },
+    short: {
+      input: 'Input',
+      output: 'Output',
+      cacheRead: 'Cache read',
+      perImage: 'Per image',
+      imageToken: 'Image token'
+    },
+    capabilities: {
+      promptCaching: 'Prompt caching',
+      serviceTier: 'Service tier',
+      longContext: 'Long context'
     }
   },
 
