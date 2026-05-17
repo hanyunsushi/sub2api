@@ -159,6 +159,30 @@
   gap: 8px;
 }
 
+.codex-selection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--codex-border);
+  padding: 10px 16px;
+  background: var(--codex-surface-soft);
+}
+
+.codex-selection-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--codex-text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.codex-selection-summary {
+  color: var(--codex-muted);
+  font-size: 12px;
+}
+
 .codex-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -198,6 +222,13 @@
 }
 
 .codex-checkbox {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--codex-accent);
+}
+
+.codex-selection-checkbox {
   width: 16px;
   height: 16px;
   flex: 0 0 auto;
@@ -404,6 +435,11 @@
   box-shadow: 0 8px 22px rgba(0, 47, 167, 0.12);
 }
 
+.codex-account-card.is-checked {
+  border-color: var(--codex-accent);
+  box-shadow: 0 0 0 1px rgba(0, 47, 167, 0.16), 0 8px 22px rgba(0, 47, 167, 0.10);
+}
+
 .codex-account-card:active {
   transform: translateY(1px) scale(0.995);
 }
@@ -416,10 +452,24 @@
 
 .codex-account-card__top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
+}
+
+.codex-selection-control {
+  display: inline-flex;
+  width: 24px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.codex-selection-control.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .codex-account-actions {
@@ -793,6 +843,20 @@
   color: var(--codex-muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+.codex-modal-list {
+  display: grid;
+  max-height: 150px;
+  gap: 6px;
+  overflow: auto;
+  border: 1px solid var(--codex-border);
+  border-radius: var(--codex-radius);
+  background: var(--codex-surface-soft);
+  padding: 10px;
+  color: var(--codex-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
 }
 
 .codex-modal-actions {

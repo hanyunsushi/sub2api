@@ -209,6 +209,47 @@ describe('useCodexStore', () => {
     })
   })
 
+  it('does not let raw unavailable flags overwrite a refreshed ok empty-quota account as failed', async () => {
+    vi.mocked(cpaAPI.listAuthFiles)
+      .mockResolvedValueOnce([
+        { name: 'account1.json', label: 'Raw Label', status: 'ok', auth_index: '1' },
+      ])
+      .mockResolvedValueOnce([
+        {
+          name: 'account1.json',
+          label: 'Raw Label',
+          status: 'ok',
+          status_message: 'ok',
+          unavailable: true,
+          auth_index: '1',
+        },
+      ])
+    vi.mocked(cpaAPI.refreshCodexQuotas).mockResolvedValue([
+      {
+        name: 'account1.json',
+        label: 'Raw Label',
+        status: 'ok',
+        auth_index: '1',
+        balance: 0,
+        last_refresh: '2026-05-18T08:00:00Z',
+      },
+    ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+
+    await store.refreshQuotaStatus()
+    await store.loadAll()
+
+    expect(store.accounts[0]).toMatchObject({
+      status: 'active',
+      quotaExhausted: true,
+      balance: 0,
+      lastRefreshAt: '2026-05-18T08:00:00Z',
+    })
+  })
+
   it('updates metadata through API and refreshes local merged state', async () => {
     vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([
       { name: 'account1.json', label: 'Raw Label', status: 'ok' },
