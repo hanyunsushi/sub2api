@@ -14,7 +14,6 @@ const appStore = useAppStore()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 const announcementStore = useAnnouncementStore()
-const appRouteTransitionDuration = { enter: 350, leave: 200 }
 
 /**
  * Update favicon dynamically
@@ -115,58 +114,8 @@ onMounted(async () => {
 <template>
   <NavigationProgress />
   <RouterView v-slot="{ Component, route: viewRoute }">
-    <Transition
-      :name="viewRoute.meta.requiresAuth === false ? 'route-page-none' : 'app-route-shell'"
-      mode="out-in"
-      :duration="viewRoute.meta.requiresAuth === false ? 0 : appRouteTransitionDuration"
-    >
-      <component :is="Component" :key="viewRoute.path" />
-    </Transition>
+    <component :is="Component" :key="viewRoute.path" />
   </RouterView>
   <Toast />
   <AnnouncementPopup />
 </template>
-
-<style>
-.app-route-shell-enter-active .app-route-page {
-  transition:
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.app-route-shell-leave-active .app-route-page {
-  animation: none;
-  transition:
-    opacity 0.2s cubic-bezier(0.4, 0, 1, 1),
-    transform 0.2s cubic-bezier(0.4, 0, 1, 1);
-}
-
-.app-route-shell-enter-from .app-route-page {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
-}
-
-.app-route-shell-enter-to .app-route-page,
-.app-route-shell-leave-from .app-route-page {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.app-route-shell-leave-to .app-route-page {
-  opacity: 0;
-  transform: scale(0.98);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-route-shell-enter-active .app-route-page,
-  .app-route-shell-leave-active .app-route-page {
-    transition-duration: 1ms;
-    transition-delay: 0ms;
-  }
-
-  .app-route-shell-enter-from .app-route-page,
-  .app-route-shell-leave-to .app-route-page {
-    transform: none;
-  }
-}
-</style>
