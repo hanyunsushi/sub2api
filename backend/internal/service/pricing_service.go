@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -90,6 +91,9 @@ type LiteLLMRawEntry struct {
 	CacheCreationInputTokenCostAbove1hr *float64 `json:"cache_creation_input_token_cost_above_1hr"`
 	CacheReadInputTokenCost             *float64 `json:"cache_read_input_token_cost"`
 	CacheReadInputTokenCostPriority     *float64 `json:"cache_read_input_token_cost_priority"`
+	LongContextInputTokenThreshold      *int     `json:"long_context_input_token_threshold"`
+	LongContextInputCostMultiplier      *float64 `json:"long_context_input_cost_multiplier"`
+	LongContextOutputCostMultiplier     *float64 `json:"long_context_output_cost_multiplier"`
 	SupportsServiceTier                 bool     `json:"supports_service_tier"`
 	LiteLLMProvider                     string   `json:"litellm_provider"`
 	Mode                                string   `json:"mode"`
@@ -110,6 +114,12 @@ type PricingService struct {
 	// 停止信号
 	stopCh chan struct{}
 	wg     sync.WaitGroup
+}
+
+// GlobalModelPricing is a user-visible snapshot row for the global pricing table.
+type GlobalModelPricing struct {
+	Model string
+	LiteLLMModelPricing
 }
 
 // NewPricingService 创建价格服务
@@ -371,8 +381,8 @@ func (s *PricingService) parsePricingData(body []byte) (map[string]*LiteLLMModel
 			continue
 		}
 
-		// 只保留有有效价格的条目
-		if entry.InputCostPerToken == nil && entry.OutputCostPerToken == nil {
+		// 只保留有有效价格的条目；图片模型可能只有 output_cost_per_image。
+		if !hasAnyPricingField(entry) {
 			continue
 		}
 
@@ -407,6 +417,15 @@ func (s *PricingService) parsePricingData(body []byte) (map[string]*LiteLLMModel
 		if entry.CacheReadInputTokenCostPriority != nil {
 			pricing.CacheReadInputTokenCostPriority = *entry.CacheReadInputTokenCostPriority
 		}
+		if entry.LongContextInputTokenThreshold != nil {
+			pricing.LongContextInputTokenThreshold = *entry.LongContextInputTokenThreshold
+		}
+		if entry.LongContextInputCostMultiplier != nil {
+			pricing.LongContextInputCostMultiplier = *entry.LongContextInputCostMultiplier
+		}
+		if entry.LongContextOutputCostMultiplier != nil {
+			pricing.LongContextOutputCostMultiplier = *entry.LongContextOutputCostMultiplier
+		}
 		if entry.OutputCostPerImage != nil {
 			pricing.OutputCostPerImage = *entry.OutputCostPerImage
 		}
@@ -426,6 +445,19 @@ func (s *PricingService) parsePricingData(body []byte) (map[string]*LiteLLMModel
 	}
 
 	return result, nil
+}
+
+func hasAnyPricingField(entry LiteLLMRawEntry) bool {
+	return entry.InputCostPerToken != nil ||
+		entry.InputCostPerTokenPriority != nil ||
+		entry.OutputCostPerToken != nil ||
+		entry.OutputCostPerTokenPriority != nil ||
+		entry.CacheCreationInputTokenCost != nil ||
+		entry.CacheCreationInputTokenCostAbove1hr != nil ||
+		entry.CacheReadInputTokenCost != nil ||
+		entry.CacheReadInputTokenCostPriority != nil ||
+		entry.OutputCostPerImage != nil ||
+		entry.OutputCostPerImageToken != nil
 }
 
 // loadPricingData 从本地文件加载价格数据
@@ -519,6 +551,27 @@ func (s *PricingService) validatePricingURL(raw string) (string, error) {
 		return "", fmt.Errorf("invalid pricing url: %w", err)
 	}
 	return normalized, nil
+}
+
+// ListGlobalModelPricing returns a stable copy of the loaded global pricing table.
+func (s *PricingService) ListGlobalModelPricing() []GlobalModelPricing {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	items := make([]GlobalModelPricing, 0, len(s.pricingData))
+	for model, pricing := range s.pricingData {
+		if pricing == nil {
+			continue
+		}
+		items = append(items, GlobalModelPricing{
+			Model:               model,
+			LiteLLMModelPricing: *pricing,
+		})
+	}
+	sort.Slice(items, func(i, j int) bool {
+		return strings.ToLower(items[i].Model) < strings.ToLower(items[j].Model)
+	})
+	return items
 }
 
 // GetModelPricing 获取模型价格（带模糊匹配）

@@ -233,6 +233,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/global-pricing',
+    name: 'GlobalPricing',
+    component: () => import('@/views/user/GlobalPricingView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'Global Pricing',
+      titleKey: 'globalPricing.title',
+      descriptionKey: 'globalPricing.description'
+    }
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/user/ProfileView.vue'),

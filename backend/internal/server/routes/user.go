@@ -76,6 +76,12 @@ func RegisterUserRoutes(
 			channels.GET("/available", h.AvailableChannel.List)
 		}
 
+		// 全局模型定价（非管理员接口）
+		pricing := authenticated.Group("/pricing")
+		{
+			pricing.GET("/global", h.GlobalPricing.List)
+		}
+
 		// 使用记录
 		usage := authenticated.Group("/usage")
 		{

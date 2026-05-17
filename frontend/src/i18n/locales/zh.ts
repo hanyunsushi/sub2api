@@ -356,6 +356,7 @@ export default {
     groups: '分组管理',
     channels: '渠道管理',
     availableChannels: '可用渠道',
+    globalPricing: '全局定价',
     subscriptions: '订阅管理',
     accounts: '账号管理',
     codex: 'CPA 管理',
@@ -990,6 +991,54 @@ export default {
       intervals: '阶梯定价',
       unitPerMillion: '/ 1M token',
       unitPerRequest: '/ 次'
+    }
+  },
+
+  // Global Pricing (user-facing)
+  globalPricing: {
+    title: '全局定价',
+    description: '查看当前系统使用的全局模型价格表',
+    searchPlaceholder: '搜索模型、提供商或模式...',
+    loadFailed: '加载全局定价失败',
+    empty: '暂无匹配的全局价格',
+    dataHash: '数据版本',
+    unitPerMillion: '/ 1M tokens',
+    above1h: '1h+',
+    longContextThreshold: '长上下文阈值 {count} tokens',
+    summary: {
+      totalModels: '全局模型',
+      visibleModels: '当前显示',
+      providers: '提供商',
+      updated: '更新时间'
+    },
+    filters: {
+      allProviders: '全部提供商',
+      allModes: '全部模式',
+      promptCachingOnly: '仅缓存模型'
+    },
+    columns: {
+      model: '模型',
+      provider: '提供商',
+      mode: '模式',
+      input: '输入',
+      cacheWrite: '缓存写入',
+      cacheRead: '缓存读取',
+      output: '输出',
+      priority: '优先级价格',
+      image: '图片价格',
+      capabilities: '能力'
+    },
+    short: {
+      input: '输入',
+      output: '输出',
+      cacheRead: '读缓存',
+      perImage: '每图',
+      imageToken: '图 token'
+    },
+    capabilities: {
+      promptCaching: 'Prompt 缓存',
+      serviceTier: 'Service tier',
+      longContext: '长上下文'
     }
   },
 
