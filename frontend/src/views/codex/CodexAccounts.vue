@@ -175,6 +175,39 @@
                 </div>
               </div>
 
+              <div v-if="filteredAccounts.length > 0" class="codex-selection-bar">
+                <label class="codex-selection-toggle">
+                  <input
+                    class="codex-selection-checkbox"
+                    type="checkbox"
+                    :checked="allPageDeletableSelected"
+                    :disabled="pageDeletableAccounts.length === 0 || isDeletingAuthFiles"
+                    @change="togglePageSelection"
+                  />
+                  <span>{{ t('admin.codex.accounts.selectCurrentPage') }}</span>
+                </label>
+                <span class="codex-selection-summary">
+                  {{ t('admin.codex.accounts.selectedCount', { count: selectedDeletableCount }) }}
+                </span>
+                <button
+                  type="button"
+                  class="codex-button codex-button--danger codex-button--compact"
+                  :disabled="selectedDeletableCount === 0 || isDeletingAuthFiles"
+                  @click="requestDeleteSelectedAccounts"
+                >
+                  <Icon name="trash" size="sm" />
+                  {{ t('admin.codex.accounts.deleteSelected') }}
+                </button>
+                <button
+                  type="button"
+                  class="codex-button codex-button--compact"
+                  :disabled="selectedAuthNames.length === 0 || isDeletingAuthFiles"
+                  @click="clearAccountSelection"
+                >
+                  {{ t('admin.codex.accounts.clearSelection') }}
+                </button>
+              </div>
+
               <div v-if="codexStore.error" class="codex-error">
                 {{ codexStore.error }}
               </div>
@@ -186,10 +219,28 @@
                   v-for="account in paginatedAccounts"
                   :key="account.key"
                   class="codex-account-card"
-                  :class="{ 'is-selected': account.name === selectedAuthName }"
+                  :class="{
+                    'is-selected': account.name === selectedAuthName,
+                    'is-checked': isAccountSelected(account.name),
+                  }"
                   @click="selectAccount(account.name)"
                 >
                   <div class="codex-account-card__top">
+                    <label
+                      class="codex-selection-control"
+                      :class="{ 'is-disabled': !account.canDelete }"
+                      :title="account.canDelete ? t('admin.codex.accounts.selectAuthFileNamed', { name: account.name }) : t('admin.codex.accounts.deleteDisabled')"
+                      @click.stop
+                    >
+                      <input
+                        class="codex-selection-checkbox"
+                        type="checkbox"
+                        :checked="isAccountSelected(account.name)"
+                        :disabled="!account.canDelete || isDeletingAccount(account.name)"
+                        :aria-label="account.canDelete ? t('admin.codex.accounts.selectAuthFileNamed', { name: account.name }) : t('admin.codex.accounts.deleteDisabled')"
+                        @change="toggleAccountSelection(account, $event)"
+                      />
+                    </label>
                     <div class="min-w-0">
                       <div class="codex-account-name">{{ accountCardTitle(account) }}</div>
                     </div>
@@ -220,7 +271,7 @@
                       <button
                         type="button"
                         class="codex-icon-button codex-icon-button--tight codex-icon-button--danger"
-                        :disabled="!account.canDelete || deletingAuthName === account.name"
+                        :disabled="!account.canDelete || isDeletingAccount(account.name)"
                         :title="account.canDelete ? t('admin.codex.accounts.deleteAuthFile') : t('admin.codex.accounts.deleteDisabled')"
                         :aria-label="account.canDelete
                           ? t('admin.codex.accounts.deleteAuthFileNamed', { name: account.name })
@@ -423,40 +474,48 @@
           </aside>
         </div>
 
-        <div
-          v-if="deleteTargetAuthName"
-          class="codex-modal-backdrop"
-          role="presentation"
-          @click.self="cancelDeleteAccount"
-        >
-          <section
-            class="codex-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="codex-delete-title"
+        <Teleport to="body">
+          <div
+            v-if="deleteTargetAuthNames.length"
+            class="codex-modal-backdrop"
+            role="presentation"
+            @click.self="cancelDeleteAccount"
           >
-            <h2 id="codex-delete-title" class="codex-modal-title">
-              {{ t('admin.codex.accounts.deleteAuthFile') }}
-            </h2>
-            <p class="codex-modal-copy">
-              {{ t('admin.codex.accounts.deleteConfirm', { name: deleteTargetAuthName }) }}
-            </p>
-            <div class="codex-modal-actions">
-              <button type="button" class="codex-button" @click="cancelDeleteAccount">
-                {{ t('common.cancel') }}
-              </button>
-              <button
-                type="button"
-                class="codex-button codex-button--danger"
-                :disabled="deletingAuthName === deleteTargetAuthName"
-                @click="confirmDeleteAccount"
-              >
-                <Icon name="trash" size="sm" />
-                {{ t('common.delete') }}
-              </button>
-            </div>
-          </section>
-        </div>
+            <section
+              class="codex-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="codex-delete-title"
+            >
+              <h2 id="codex-delete-title" class="codex-modal-title">
+                {{ deleteModalTitle }}
+              </h2>
+              <p class="codex-modal-copy">
+                {{ deleteModalCopy }}
+              </p>
+              <div v-if="deleteTargetCount > 1" class="codex-modal-list">
+                <span v-for="name in deleteTargetAuthNames.slice(0, 6)" :key="name">{{ name }}</span>
+                <span v-if="deleteTargetCount > 6">
+                  {{ t('admin.codex.accounts.moreSelected', { count: deleteTargetCount - 6 }) }}
+                </span>
+              </div>
+              <div class="codex-modal-actions">
+                <button type="button" class="codex-button" @click="cancelDeleteAccount">
+                  {{ t('common.cancel') }}
+                </button>
+                <button
+                  type="button"
+                  class="codex-button codex-button--danger"
+                  :disabled="isDeletingAuthFiles"
+                  @click="confirmDeleteAccounts"
+                >
+                  <Icon name="trash" size="sm" />
+                  {{ deleteModalActionText }}
+                </button>
+              </div>
+            </section>
+          </div>
+        </Teleport>
       </section>
     </div>
   </AppLayout>
@@ -490,6 +549,14 @@ import {
   paginateCodexAccounts,
 } from './accountPagination'
 import { getCodexAccountMetrics } from './accountMetrics'
+import {
+  deleteSelectionTargets,
+  isEveryPageDeletableAccountSelected,
+  pageDeletableAccounts as getPageDeletableAccounts,
+  reconcileSelectedAccountNames,
+  toggleAccountNameSelection,
+  updatePageDeletableSelection,
+} from './accountSelection'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -505,16 +572,17 @@ const sortKey = ref<CodexAccountSortKey>('default')
 const sortDirection = ref<CodexAccountSortDirection>('asc')
 const accountPage = ref(1)
 const selectedAuthName = ref('')
+const selectedAuthNames = ref<string[]>([])
 const savingMetadata = ref(false)
 const creatingGroup = ref(false)
 const uploadingAuthFile = ref(false)
 const oauthLoading = ref(false)
-const deletingAuthName = ref('')
+const deletingAuthNames = ref<string[]>([])
 const togglingAuthName = ref('')
 const operationError = ref('')
 const operationNotice = ref('')
 const oauthFallbackUrl = ref('')
-const deleteTargetAuthName = ref('')
+const deleteTargetAuthNames = ref<string[]>([])
 const newGroupName = ref('')
 const authFileInput = ref<HTMLInputElement | null>(null)
 const nativeGroups = ref<AdminGroup[]>([])
@@ -577,6 +645,29 @@ const filteredAccounts = computed(() => {
 })
 
 const paginatedAccounts = computed(() => paginateCodexAccounts(filteredAccounts.value, accountPage.value))
+const pageDeletableAccounts = computed(() => getPageDeletableAccounts(paginatedAccounts.value))
+const selectedDeletableAccounts = computed(() => deleteSelectionTargets(selectedAuthNames.value, codexStore.accounts))
+const selectedDeletableCount = computed(() => selectedDeletableAccounts.value.length)
+const allPageDeletableSelected = computed(() => {
+  return isEveryPageDeletableAccountSelected(paginatedAccounts.value, selectedAuthNames.value)
+})
+const isDeletingAuthFiles = computed(() => deletingAuthNames.value.length > 0)
+const deleteTargetCount = computed(() => deleteTargetAuthNames.value.length)
+const deleteModalTitle = computed(() => {
+  return deleteTargetCount.value === 1
+    ? t('admin.codex.accounts.deleteAuthFile')
+    : t('admin.codex.accounts.deleteSelectedTitle', { count: deleteTargetCount.value })
+})
+const deleteModalCopy = computed(() => {
+  return deleteTargetCount.value === 1
+    ? t('admin.codex.accounts.deleteConfirm', { name: deleteTargetAuthNames.value[0] })
+    : t('admin.codex.accounts.deleteSelectedConfirm', { count: deleteTargetCount.value })
+})
+const deleteModalActionText = computed(() => {
+  return deleteTargetCount.value === 1
+    ? t('common.delete')
+    : t('admin.codex.accounts.deleteSelected')
+})
 
 const selectedAccount = computed(() => {
   return codexStore.accounts.find((account) => account.name === selectedAuthName.value)
@@ -710,40 +801,100 @@ function requestDeleteAccount(authName: string): void {
   operationError.value = ''
   operationNotice.value = ''
   oauthFallbackUrl.value = ''
-  deleteTargetAuthName.value = authName
+  deleteTargetAuthNames.value = [authName]
+}
+
+function requestDeleteSelectedAccounts(): void {
+  const names = selectedDeletableAccounts.value.map((account) => account.name)
+  if (!names.length) return
+  operationError.value = ''
+  operationNotice.value = ''
+  oauthFallbackUrl.value = ''
+  deleteTargetAuthNames.value = names
 }
 
 function cancelDeleteAccount(): void {
-  if (deletingAuthName.value) return
-  deleteTargetAuthName.value = ''
+  if (isDeletingAuthFiles.value) return
+  deleteTargetAuthNames.value = []
 }
 
-async function confirmDeleteAccount(): Promise<void> {
-  const authName = deleteTargetAuthName.value
-  if (!authName) return
+function isAccountSelected(authName: string): boolean {
+  return selectedAuthNames.value.includes(authName)
+}
+
+function isDeletingAccount(authName: string): boolean {
+  return deletingAuthNames.value.includes(authName)
+}
+
+function toggleAccountSelection(account: CodexAccountMerged, event: Event): void {
+  if (!account.canDelete) return
+  const checked = (event.target as HTMLInputElement).checked
+  selectedAuthNames.value = toggleAccountNameSelection(selectedAuthNames.value, account.name, checked)
+}
+
+function togglePageSelection(event: Event): void {
+  const checked = (event.target as HTMLInputElement).checked
+  selectedAuthNames.value = updatePageDeletableSelection(selectedAuthNames.value, paginatedAccounts.value, checked)
+}
+
+function clearAccountSelection(): void {
+  selectedAuthNames.value = []
+}
+
+async function deleteSelectedAuthFiles(authNames: string[]): Promise<{ deleted: string[]; failed: string[] }> {
+  const deleted: string[] = []
+  const failed: string[] = []
+  deletingAuthNames.value = [...authNames]
+  try {
+    for (const authName of authNames) {
+      try {
+        await codexStore.deleteAuthFile(authName)
+        deleted.push(authName)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : t('admin.codex.accounts.deleteFailed')
+        failed.push(`${authName}: ${message}`)
+      }
+    }
+  } finally {
+    deletingAuthNames.value = []
+  }
+  return { deleted, failed }
+}
+
+async function confirmDeleteAccounts(): Promise<void> {
+  const authNames = [...deleteTargetAuthNames.value]
+  if (!authNames.length) return
 
   syncConnectionDraft()
-  deletingAuthName.value = authName
   operationError.value = ''
   operationNotice.value = ''
   const previousFilteredNames = filteredAccounts.value.map((account) => account.name)
-  const deletedIndex = previousFilteredNames.indexOf(authName)
-  try {
-    await codexStore.deleteAuthFile(authName)
-    operationNotice.value = t('admin.codex.accounts.deleteSucceeded', { name: authName })
-    deleteTargetAuthName.value = ''
-    if (selectedAuthName.value === authName) {
-      const remainingNames = filteredAccounts.value.map((account) => account.name)
-      selectedAuthName.value =
-        remainingNames[deletedIndex] ||
-        remainingNames[Math.max(deletedIndex - 1, 0)] ||
-        ''
-    }
-  } catch (err) {
-    operationError.value = err instanceof Error ? err.message : t('admin.codex.accounts.deleteFailed')
-  } finally {
-    deletingAuthName.value = ''
+  const deletedIndex = Math.min(...authNames.map((name) => previousFilteredNames.indexOf(name)).filter((index) => index >= 0))
+  const { deleted, failed } = await deleteSelectedAuthFiles(authNames)
+
+  if (deleted.length) {
+    selectedAuthNames.value = selectedAuthNames.value.filter((name) => !deleted.includes(name))
+    operationNotice.value = deleted.length === 1
+      ? t('admin.codex.accounts.deleteSucceeded', { name: deleted[0] })
+      : t('admin.codex.accounts.deleteSelectedSucceeded', { count: deleted.length })
   }
+
+  if (deleted.includes(selectedAuthName.value)) {
+    const remainingNames = filteredAccounts.value.map((account) => account.name)
+    const fallbackIndex = Number.isFinite(deletedIndex) ? deletedIndex : 0
+    selectedAuthName.value =
+      remainingNames[fallbackIndex] ||
+      remainingNames[Math.max(fallbackIndex - 1, 0)] ||
+      ''
+  }
+
+  if (failed.length) {
+    operationError.value = `${t('admin.codex.accounts.deleteSelectedFailed', { count: failed.length })}: ${failed.join('; ')}`
+    deleteTargetAuthNames.value = authNames.filter((name) => failed.some((item) => item.startsWith(`${name}:`)))
+    return
+  }
+
+  deleteTargetAuthNames.value = []
 }
 
 async function toggleAccountDisabled(account: CodexAccountMerged): Promise<void> {
@@ -927,6 +1078,13 @@ watch(selectedAccount, applyDraftFromSelected, { immediate: true })
 watch([searchQuery, statusFilter, groupFilter, usageStateFilter, sortKey, sortDirection], () => {
   accountPage.value = 1
 })
+
+watch(
+  () => codexStore.accounts.map((account) => account.name),
+  () => {
+    selectedAuthNames.value = reconcileSelectedAccountNames(selectedAuthNames.value, codexStore.accounts)
+  }
+)
 
 watch(
   () => filteredAccounts.value.length,

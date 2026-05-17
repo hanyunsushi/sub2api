@@ -193,6 +193,40 @@ describe('codex CPA API adapter', () => {
     expect(mapCpaAuthFileToView({ name: 'c.json', status: 'error' }).status).toBe('failed')
   })
 
+  it('keeps explicit ok CPA entries with empty quota out of failed status even when unavailable is set', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'empty-but-ok.json',
+      status: 'ok',
+      status_message: 'ok',
+      unavailable: true,
+      balance: 0,
+    })
+
+    expect(view).toMatchObject({
+      status: 'active',
+      statusMessage: '',
+      quotaExhausted: true,
+      balance: 0,
+    })
+  })
+
+  it('does not let explicit ok hide real CPA auth failure signals', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'ok-but-unauthorized.json',
+      status: 'ok',
+      status_message: 'ok',
+      unavailable: true,
+      last_error_code: 401,
+      last_error: 'Unauthorized',
+    })
+
+    expect(view).toMatchObject({
+      status: 'failed',
+      errorCode: '401',
+      errorText: 'Unauthorized',
+    })
+  })
+
   it('marks explicitly depleted CPA quota entries as active quota-exhausted accounts', () => {
     const zeroPercent = mapCpaAuthFileToView({
       name: 'zero-percent.json',

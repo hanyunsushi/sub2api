@@ -714,14 +714,55 @@ export async function getCodexAuthUrl(options: CpaRequestOptions = {}): Promise<
 
 function normalizeStatus(raw: CpaAuthFileRaw): CodexAccountStatus {
   if (raw.disabled) return 'disabled'
-  if (raw.unavailable) return 'failed'
 
   const status = String(raw.status || '').toLowerCase()
-  if (/^[1-5]\d{2}$/.test(status)) return 'failed'
-  if (['ok', 'ready', 'active', 'enabled', 'success'].includes(status)) return 'active'
+  const activeStatus = ['ok', 'ready', 'active', 'enabled', 'success'].includes(status)
+  const authFailureSignal = hasAuthFailureSignal(raw)
+  if (activeStatus && !authFailureSignal) return 'active'
+  if (authFailureSignal) return 'failed'
+
+  if (/^[4-5]\d{2}$/.test(status)) return 'failed'
+  if (activeStatus) return 'active'
   if (['expiring', 'expired', 'stale'].includes(status)) return 'expiring'
   if (['error', 'failed', 'unavailable', 'invalid'].includes(status)) return 'failed'
+  if (raw.unavailable) return 'failed'
   return 'unknown'
+}
+
+function hasAuthFailureSignal(raw: CpaAuthFileRaw): boolean {
+  for (const candidate of valueCandidates(raw)) {
+    for (const key of [
+      'last_error_code',
+      'error_code',
+      'errorCode',
+      'status_code',
+      'statusCode',
+      'http_status',
+      'httpStatus',
+      'code',
+    ]) {
+      const code = stringValue(candidate[key])
+      if (code && /^[4-5]\d{2}$/.test(code)) return true
+    }
+  }
+
+  const errorText = firstString(raw, [
+    'last_error',
+    'last_error_message',
+    'error_message',
+    'failure_reason',
+    'last_failure',
+    'error',
+    'message',
+    'detail',
+    'reason',
+    'text',
+    'description',
+  ])
+  if (!errorText) return false
+  const normalized = errorText.toLowerCase()
+  if (['ok', 'ready', 'active', 'enabled', 'success'].includes(normalized)) return false
+  return /(unauthorized|forbidden|invalid|expired|failed|failure|error|denied|refresh required|token)/i.test(errorText)
 }
 
 function normalizeSource(source: unknown): CodexAccountSource {
