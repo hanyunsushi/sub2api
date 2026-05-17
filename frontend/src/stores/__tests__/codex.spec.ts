@@ -165,6 +165,50 @@ describe('useCodexStore', () => {
     })
   })
 
+  it('keeps refreshed quota status when the account page reloads raw CPA accounts', async () => {
+    vi.mocked(cpaAPI.listAuthFiles)
+      .mockResolvedValueOnce([
+        { name: 'account1.json', label: 'Raw Label', status: 'ok', auth_index: '1' },
+      ])
+      .mockResolvedValueOnce([
+        { name: 'account1.json', label: 'Raw Label', status: 'ok', auth_index: '1' },
+      ])
+    vi.mocked(cpaAPI.refreshCodexQuotas).mockResolvedValue([
+      {
+        name: 'account1.json',
+        label: 'Raw Label',
+        status: 'ok',
+        auth_index: '1',
+        quota_windows: [
+          { key: '5h', label: '5h', remainingPercent: 0 },
+          { key: 'weekly', label: 'weekly', remainingPercent: 0 },
+        ],
+        quota_remaining_percent: 0,
+        usage_text: '5h remaining 0%, weekly remaining 0%',
+        last_refresh: '2026-05-17T12:00:00Z',
+      },
+    ])
+    vi.mocked(metadataAPI.listGroups).mockResolvedValue([])
+    vi.mocked(metadataAPI.listAccountMetadata).mockResolvedValue([])
+    const store = useCodexStore()
+    store.setManagementKey('secret-key')
+
+    await store.refreshQuotaStatus()
+    await store.loadAll()
+
+    expect(cpaAPI.listAuthFiles).toHaveBeenCalledTimes(2)
+    expect(store.accounts[0]).toMatchObject({
+      quotaExhausted: true,
+      quotaRemainingPercent: 0,
+      usageText: '5h remaining 0%, weekly remaining 0%',
+      lastRefreshAt: '2026-05-17T12:00:00Z',
+      quotaWindows: [
+        expect.objectContaining({ key: '5h', remainingPercent: 0 }),
+        expect.objectContaining({ key: 'weekly', remainingPercent: 0 }),
+      ],
+    })
+  })
+
   it('updates metadata through API and refreshes local merged state', async () => {
     vi.mocked(cpaAPI.listAuthFiles).mockResolvedValue([
       { name: 'account1.json', label: 'Raw Label', status: 'ok' },
