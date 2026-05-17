@@ -873,13 +873,6 @@ function readableErrorText(statusMessage: string, lastError?: string): string | 
   return text
 }
 
-function depletedStatusMessagePayload(raw: CpaAuthFileRaw): unknown {
-  const payload = raw.status_message || raw.statusMessage
-  const text = errorMessageFromPayload(payload, '').toLowerCase()
-  if (!payload || ['ok', 'ready', 'active', 'enabled', 'success'].includes(text)) return ''
-  return payload
-}
-
 function isExplicitlyDepletedQuota(
   remainingPercent: number | undefined,
   quotaWindows: CodexQuotaWindow[],
@@ -916,13 +909,11 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     'available_credits',
     'free_credits',
   ])
-  const quotaDepleted = isExplicitlyDepletedQuota(remainingPercent, quotaWindows, balance)
-  const depletedActiveStatus = baseStatus === 'active' && quotaDepleted
-  const status = depletedActiveStatus ? 'expiring' : baseStatus
-  const statusMessagePayload = status === 'failed'
+  const quotaExhausted = baseStatus === 'active' && isExplicitlyDepletedQuota(remainingPercent, quotaWindows, balance)
+  const statusMessagePayload = baseStatus === 'failed'
     ? raw.status_message || raw.statusMessage || raw.last_error || raw.error_message || raw.failure_reason || raw.error || raw.status
-    : depletedActiveStatus
-      ? depletedStatusMessagePayload(raw)
+    : quotaExhausted
+      ? ''
       : raw.status_message || raw.status
   const statusMessage = errorMessageFromPayload(statusMessagePayload, '')
   const lastError = firstString(raw, [
@@ -945,7 +936,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     name,
     provider: String(raw.provider || 'codex'),
     label,
-    status,
+    status: baseStatus,
     statusMessage,
     source,
     canDelete: !!name && !runtimeOnly && source !== 'memory' && (source === 'file' || jsonFileName),
@@ -959,6 +950,7 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     balanceText,
     quotaRemainingPercent: remainingPercent,
     quotaWindows: quotaWindows.length ? quotaWindows : undefined,
+    quotaExhausted,
     quotaText: firstString(raw, ['quota_text', 'quota', 'limit_text', 'rate_limit', 'plan', 'tier', 'subscription']),
     usageText,
     cpaPriority: cpaPriority(raw),

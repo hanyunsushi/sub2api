@@ -1490,6 +1490,7 @@ export default {
         successFailed: '{success} ok / {failed} failed',
         balanceUnavailable: 'Not returned by CPA',
         quotaRemaining: 'Remaining quota',
+        quotaExhaustedStatus: 'Quota limit reminder',
         quotaWindows: {
           fiveHour: '5h {value}%',
           weekly: 'Week {value}%',
@@ -1518,6 +1519,7 @@ export default {
           total: 'Total',
           active: 'Active',
           failed: 'Failed',
+          quotaExhausted: 'Quota exhausted',
           orphan: 'Orphan metadata',
         },
       },

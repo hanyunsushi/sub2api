@@ -91,6 +91,7 @@ export interface CodexAccountView {
   balanceText?: string
   quotaRemainingPercent?: number
   quotaWindows?: CodexQuotaWindow[]
+  quotaExhausted?: boolean
   quotaText?: string
   usageText?: string
   cpaPriority?: number

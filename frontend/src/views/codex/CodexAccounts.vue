@@ -66,16 +66,20 @@
 
               <div class="codex-metrics">
                 <div class="codex-metric">
-                  <span class="codex-metric-value">{{ codexStore.accounts.length }}</span>
+                  <span class="codex-metric-value">{{ accountMetrics.total }}</span>
                   <span class="codex-metric-label">{{ t('admin.codex.accounts.metrics.total') }}</span>
                 </div>
                 <div class="codex-metric">
-                  <span class="codex-metric-value">{{ activeCount }}</span>
+                  <span class="codex-metric-value">{{ accountMetrics.active }}</span>
                   <span class="codex-metric-label">{{ t('admin.codex.accounts.metrics.active') }}</span>
                 </div>
                 <div class="codex-metric">
-                  <span class="codex-metric-value">{{ failedCount }}</span>
+                  <span class="codex-metric-value">{{ accountMetrics.failed }}</span>
                   <span class="codex-metric-label">{{ t('admin.codex.accounts.metrics.failed') }}</span>
+                </div>
+                <div class="codex-metric">
+                  <span class="codex-metric-value">{{ accountMetrics.quotaExhausted }}</span>
+                  <span class="codex-metric-label">{{ t('admin.codex.accounts.metrics.quotaExhausted') }}</span>
                 </div>
                 <div class="codex-metric">
                   <span class="codex-metric-value">{{ codexStore.orphanMetadata.length }}</span>
@@ -192,9 +196,12 @@
                     <div class="codex-account-actions">
                       <span
                         class="codex-status-light"
-                        :class="`codex-status-light--${account.status}`"
-                        :title="accountErrorSummary(account) || account.statusMessage || statusLabel(account.status)"
-                        :aria-label="statusLabel(account.status)"
+                        :class="[
+                          `codex-status-light--${account.status}`,
+                          { 'codex-status-light--quota-exhausted': account.quotaExhausted },
+                        ]"
+                        :title="accountStatusTitle(account)"
+                        :aria-label="accountStatusTitle(account)"
                       ></span>
                       <button
                         type="button"
@@ -258,6 +265,15 @@
                     </span>
                     <span v-if="accountErrorText(account)" class="codex-account-error__text">
                       {{ accountErrorText(account) }}
+                    </span>
+                  </div>
+                  <div
+                    v-else-if="account.quotaExhausted"
+                    class="codex-account-warning"
+                    :title="quotaExhaustedStatusText(account)"
+                  >
+                    <span class="codex-account-error__text">
+                      {{ quotaExhaustedStatusText(account) }}
                     </span>
                   </div>
 
@@ -473,6 +489,7 @@ import {
   clampAccountPage,
   paginateCodexAccounts,
 } from './accountPagination'
+import { getCodexAccountMetrics } from './accountMetrics'
 
 const { t } = useI18n()
 const codexStore = useCodexStore()
@@ -514,8 +531,7 @@ const metadataDraft = reactive({
   note: '',
 })
 
-const activeCount = computed(() => codexStore.accounts.filter((item) => item.status === 'active').length)
-const failedCount = computed(() => codexStore.accounts.filter((item) => item.status === 'failed').length)
+const accountMetrics = computed(() => getCodexAccountMetrics(codexStore.accounts))
 const statusOptions = computed(() => [
   { value: 'all', label: t('admin.codex.accounts.allStatus') },
   { value: 'active', label: t('admin.codex.accounts.status.active') },
@@ -884,6 +900,15 @@ function accountErrorText(account: CodexAccountMerged): string {
 
 function accountErrorSummary(account: CodexAccountMerged): string {
   return [account.errorCode, accountErrorText(account)].filter(Boolean).join(' ')
+}
+
+function quotaExhaustedStatusText(account: CodexAccountMerged): string {
+  return `${t('admin.codex.accounts.quotaExhaustedStatus')} - ${quotaProgressLabel(account)}`
+}
+
+function accountStatusTitle(account: CodexAccountMerged): string {
+  if (account.quotaExhausted) return quotaExhaustedStatusText(account)
+  return accountErrorSummary(account) || account.statusMessage || statusLabel(account.status)
 }
 
 function toggleDisabledTitle(account: CodexAccountMerged): string {
