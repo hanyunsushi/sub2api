@@ -351,7 +351,7 @@
 
 .codex-metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   padding: 16px;
 }
@@ -538,6 +538,22 @@
   line-height: 1.25;
 }
 
+.codex-account-warning {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(173, 107, 31, 0.2);
+  border-radius: 6px;
+  background: rgba(173, 107, 31, 0.08);
+  padding: 4px 7px;
+  color: var(--codex-warning);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
 .codex-account-error__code {
   flex: 0 0 auto;
   border-radius: 4px;
@@ -636,6 +652,11 @@
 .codex-status-light--active {
   background: var(--codex-success);
   box-shadow: 0 0 0 3px rgba(47, 125, 89, 0.14);
+}
+
+.codex-status-light--quota-exhausted {
+  background: var(--codex-warning);
+  box-shadow: 0 0 0 3px rgba(173, 107, 31, 0.18);
 }
 
 .codex-status-light--expiring,

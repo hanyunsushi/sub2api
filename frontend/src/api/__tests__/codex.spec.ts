@@ -193,15 +193,16 @@ describe('codex CPA API adapter', () => {
     expect(mapCpaAuthFileToView({ name: 'c.json', status: 'error' }).status).toBe('failed')
   })
 
-  it('does not leave explicitly depleted CPA quota entries as active ok status', () => {
+  it('marks explicitly depleted CPA quota entries as active quota-exhausted accounts', () => {
     const zeroPercent = mapCpaAuthFileToView({
       name: 'zero-percent.json',
       status: 'ok',
       quota_remaining_percent: 0,
     })
     expect(zeroPercent).toMatchObject({
-      status: 'expiring',
+      status: 'active',
       statusMessage: '',
+      quotaExhausted: true,
       quotaRemainingPercent: 0,
     })
 
@@ -214,8 +215,9 @@ describe('codex CPA API adapter', () => {
       ],
     })
     expect(zeroWindows).toMatchObject({
-      status: 'expiring',
+      status: 'active',
       statusMessage: '',
+      quotaExhausted: true,
       quotaRemainingPercent: 0,
     })
 
@@ -226,8 +228,9 @@ describe('codex CPA API adapter', () => {
       balance: 0,
     })
     expect(zeroBalance).toMatchObject({
-      status: 'expiring',
+      status: 'active',
       statusMessage: '',
+      quotaExhausted: true,
       balance: 0,
     })
   })
@@ -245,6 +248,7 @@ describe('codex CPA API adapter', () => {
     expect(view).toMatchObject({
       status: 'active',
       statusMessage: 'ok',
+      quotaExhausted: false,
       quotaRemainingPercent: 0,
     })
   })

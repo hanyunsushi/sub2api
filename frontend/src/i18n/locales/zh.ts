@@ -1511,6 +1511,7 @@ export default {
         successFailed: '{success} 成功 / {failed} 失败',
         balanceUnavailable: 'CPA 未返回',
         quotaRemaining: '剩余额度',
+        quotaExhaustedStatus: '用量限额提醒',
         quotaWindows: {
           fiveHour: '5h {value}%',
           weekly: '周 {value}%',
@@ -1539,6 +1540,7 @@ export default {
           total: '总数',
           active: '活跃',
           failed: '失败',
+          quotaExhausted: '额度耗尽',
           orphan: '孤立元数据',
         },
       },
