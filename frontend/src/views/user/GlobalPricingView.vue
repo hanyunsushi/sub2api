@@ -127,7 +127,10 @@
                   </div>
                 </td>
                 <td>
-                  <span class="meta-pill">{{ item.provider || '-' }}</span>
+                  <span class="meta-pill provider-pill">
+                    <ProviderIcon :provider="item.provider || 'unknown'" :size="14" />
+                    <span>{{ item.provider || '-' }}</span>
+                  </span>
                 </td>
                 <td>
                   <span class="meta-pill uppercase">{{ item.mode || '-' }}</span>
@@ -183,6 +186,7 @@ import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'
 import pricingAPI, { type GlobalPricingItem, type GlobalPricingResponse } from '@/api/pricing'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -306,6 +310,15 @@ onMounted(loadPricing)
 
 .meta-pill {
   @apply border-gray-200 bg-gray-50 text-gray-600 dark:border-dark-700 dark:bg-dark-900/60 dark:text-gray-300;
+}
+
+.provider-pill {
+  @apply gap-1.5;
+}
+
+.provider-pill :deep(svg),
+.provider-pill :deep(span) {
+  @apply flex-shrink-0;
 }
 
 .capability-pill {
