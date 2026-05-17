@@ -2148,6 +2148,18 @@ func (s *SettingService) GetSiteName(ctx context.Context) string {
 	return value
 }
 
+func (s *SettingService) GetWebAppIconSettings(ctx context.Context) (siteName string, siteLogo string, err error) {
+	settings, err := s.settingRepo.GetMultiple(ctx, []string{SettingKeySiteName, SettingKeySiteLogo})
+	if err != nil {
+		return "", "", err
+	}
+	siteName = strings.TrimSpace(settings[SettingKeySiteName])
+	if siteName == "" {
+		siteName = "Sub2API"
+	}
+	return siteName, settings[SettingKeySiteLogo], nil
+}
+
 // GetDefaultConcurrency 获取默认并发量
 func (s *SettingService) GetDefaultConcurrency(ctx context.Context) int {
 	value, err := s.settingRepo.GetValue(ctx, SettingKeyDefaultConcurrency)

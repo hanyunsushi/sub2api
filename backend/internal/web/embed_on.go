@@ -6,7 +6,14 @@ import (
 	"bytes"
 	"context"
 	"embed"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"hash/fnv"
+	htmlpkg "html"
+	"image"
+	"image/color"
+	"image/png"
 	"io"
 	"io/fs"
 	"net/http"
@@ -18,6 +25,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/server/routes"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/image/draw"
 )
 
 const (
@@ -31,6 +39,18 @@ var frontendFS embed.FS
 // PublicSettingsProvider is an interface to fetch public settings
 type PublicSettingsProvider interface {
 	GetPublicSettingsForInjection(ctx context.Context) (any, error)
+	GetWebAppIconSettings(ctx context.Context) (siteName string, siteLogo string, err error)
+}
+
+type webAppIconVariant struct {
+	Size        int
+	ContentType string
+}
+
+var webAppIconPaths = map[string]webAppIconVariant{
+	"apple-touch-icon.png": {Size: 180, ContentType: "image/png"},
+	"icon-192.png":         {Size: 192, ContentType: "image/png"},
+	"icon-512.png":         {Size: 512, ContentType: "image/png"},
 }
 
 // FrontendServer serves the embedded frontend with settings injection
@@ -96,6 +116,10 @@ func (s *FrontendServer) Middleware() gin.HandlerFunc {
 		cleanPath := strings.TrimPrefix(path, "/")
 		if cleanPath == "" {
 			cleanPath = "index.html"
+		}
+
+		if s.serveDynamicWebAppAsset(c, cleanPath) {
+			return
 		}
 
 		// For index.html or SPA routes, serve with injected settings
@@ -210,6 +234,8 @@ func (s *FrontendServer) injectSettings(settingsJSON []byte) []byte {
 
 	// Replace <title> with custom site name so the browser tab shows it immediately
 	result = injectSiteTitle(result, settingsJSON)
+	result = injectAppleWebAppTitle(result, settingsJSON)
+	result = injectWebAppIconVersion(result, settingsJSON)
 
 	return result
 }
@@ -231,12 +257,192 @@ func injectSiteTitle(html, settingsJSON []byte) []byte {
 		return html
 	}
 
-	newTitle := []byte("<title>" + cfg.SiteName + " - AI API Gateway</title>")
+	newTitle := []byte("<title>" + htmlpkg.EscapeString(cfg.SiteName) + " - AI API Gateway</title>")
 	var buf bytes.Buffer
 	buf.Write(html[:titleStart])
 	buf.Write(newTitle)
 	buf.Write(html[titleEnd+len("</title>"):])
 	return buf.Bytes()
+}
+
+func injectAppleWebAppTitle(html, settingsJSON []byte) []byte {
+	var cfg struct {
+		SiteName string `json:"site_name"`
+	}
+	if err := json.Unmarshal(settingsJSON, &cfg); err != nil {
+		return html
+	}
+	siteName := strings.TrimSpace(cfg.SiteName)
+	if siteName == "" {
+		return html
+	}
+
+	meta := []byte(`<meta name="apple-mobile-web-app-title" content="Sub2API" />`)
+	replacement := []byte(`<meta name="apple-mobile-web-app-title" content="` + htmlpkg.EscapeString(siteName) + `" />`)
+	return bytes.Replace(html, meta, replacement, 1)
+}
+
+func injectWebAppIconVersion(html, settingsJSON []byte) []byte {
+	var cfg struct {
+		SiteLogo string `json:"site_logo"`
+	}
+	if err := json.Unmarshal(settingsJSON, &cfg); err != nil || strings.TrimSpace(cfg.SiteLogo) == "" {
+		return html
+	}
+
+	version := webAppIconVersion(strings.TrimSpace(cfg.SiteLogo))
+	replacements := map[string]string{
+		`href="/apple-touch-icon.png"`: `href="/apple-touch-icon.png?v=` + version + `"`,
+		`href="/site.webmanifest"`:     `href="/site.webmanifest?v=` + version + `"`,
+	}
+	result := html
+	for from, to := range replacements {
+		result = bytes.ReplaceAll(result, []byte(from), []byte(to))
+	}
+	return result
+}
+
+func webAppIconVersion(value string) string {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(value))
+	return fmt.Sprintf("%08x", h.Sum32())
+}
+
+func (s *FrontendServer) serveDynamicWebAppAsset(c *gin.Context, cleanPath string) bool {
+	if cleanPath == "site.webmanifest" {
+		s.serveDynamicManifest(c)
+		return true
+	}
+	if variant, ok := webAppIconPaths[cleanPath]; ok {
+		s.serveDynamicIcon(c, cleanPath, variant)
+		return true
+	}
+	return false
+}
+
+func (s *FrontendServer) getWebAppIconSettings(ctx context.Context) (string, string, error) {
+	if s.settings == nil {
+		return "", "", nil
+	}
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	return s.settings.GetWebAppIconSettings(ctx)
+}
+
+func (s *FrontendServer) serveDynamicManifest(c *gin.Context) {
+	siteName, siteLogo, err := s.getWebAppIconSettings(c.Request.Context())
+	if err != nil {
+		s.fileServer.ServeHTTP(c.Writer, c.Request)
+		c.Abort()
+		return
+	}
+	siteName = strings.TrimSpace(siteName)
+	if siteName == "" {
+		siteName = "Sub2API"
+	}
+	version := webAppIconVersion(siteLogo + siteName)
+	if strings.TrimSpace(siteLogo) == "" {
+		version = "static"
+	}
+
+	payload := map[string]any{
+		"name":             siteName,
+		"short_name":       siteName,
+		"start_url":        "/",
+		"display":          "standalone",
+		"background_color": "#ffffff",
+		"theme_color":      "#002FA7",
+		"icons": []map[string]string{
+			{
+				"src":     "/icon-192.png?v=" + version,
+				"sizes":   "192x192",
+				"type":    "image/png",
+				"purpose": "any",
+			},
+			{
+				"src":     "/icon-512.png?v=" + version,
+				"sizes":   "512x512",
+				"type":    "image/png",
+				"purpose": "any",
+			},
+		},
+	}
+	data, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to render manifest")
+		c.Abort()
+		return
+	}
+	c.Header("Cache-Control", "no-cache")
+	c.Data(http.StatusOK, "application/manifest+json; charset=utf-8", append(data, '\n'))
+	c.Abort()
+}
+
+func (s *FrontendServer) serveDynamicIcon(c *gin.Context, cleanPath string, variant webAppIconVariant) {
+	_, siteLogo, err := s.getWebAppIconSettings(c.Request.Context())
+	if err != nil || strings.TrimSpace(siteLogo) == "" {
+		s.fileServer.ServeHTTP(c.Writer, c.Request)
+		c.Abort()
+		return
+	}
+	icon, err := renderWebAppIcon(siteLogo, variant.Size)
+	if err != nil {
+		s.fileServer.ServeHTTP(c.Writer, c.Request)
+		c.Abort()
+		return
+	}
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Content-Disposition", `inline; filename="`+cleanPath+`"`)
+	c.Data(http.StatusOK, variant.ContentType, icon)
+	c.Abort()
+}
+
+func renderWebAppIcon(siteLogo string, size int) ([]byte, error) {
+	source, err := decodeSiteLogo(siteLogo)
+	if err != nil {
+		return nil, err
+	}
+	dst := image.NewRGBA(image.Rect(0, 0, size, size))
+	draw.Draw(dst, dst.Bounds(), image.NewUniform(color.White), image.Point{}, draw.Src)
+
+	bounds := source.Bounds()
+	side := bounds.Dx()
+	if bounds.Dy() < side {
+		side = bounds.Dy()
+	}
+	if side <= 0 {
+		return nil, fmt.Errorf("invalid logo dimensions")
+	}
+	srcRect := image.Rect(
+		bounds.Min.X+(bounds.Dx()-side)/2,
+		bounds.Min.Y+(bounds.Dy()-side)/2,
+		bounds.Min.X+(bounds.Dx()+side)/2,
+		bounds.Min.Y+(bounds.Dy()+side)/2,
+	)
+	draw.BiLinear.Scale(dst, dst.Bounds(), source, srcRect, draw.Over, nil)
+
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, dst); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func decodeSiteLogo(siteLogo string) (image.Image, error) {
+	siteLogo = strings.TrimSpace(siteLogo)
+	const prefix = "data:image/png;base64,"
+	if !strings.HasPrefix(siteLogo, prefix) {
+		return nil, fmt.Errorf("site logo is not a PNG data URL")
+	}
+	raw, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(siteLogo, prefix))
+	if err != nil {
+		return nil, err
+	}
+	img, err := png.Decode(bytes.NewReader(raw))
+	if err != nil {
+		return nil, err
+	}
+	return img, nil
 }
 
 // replaceNoncePlaceholder replaces the nonce placeholder with actual nonce value
