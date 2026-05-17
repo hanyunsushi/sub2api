@@ -235,6 +235,22 @@ describe('codex CPA API adapter', () => {
     })
   })
 
+  it('treats refreshed ok CPA entries without quota signals as active quota-exhausted accounts', () => {
+    const view = mapCpaAuthFileToView({
+      name: 'refreshed-empty.json',
+      status: 'ok',
+      status_message: 'ok',
+      last_refresh: '2026-05-17T12:00:00Z',
+    })
+
+    expect(view).toMatchObject({
+      status: 'active',
+      statusMessage: '',
+      quotaExhausted: true,
+      lastRefreshAt: '2026-05-17T12:00:00Z',
+    })
+  })
+
   it('keeps ok CPA quota entries active when any quota window still has balance', () => {
     const view = mapCpaAuthFileToView({
       name: 'weekly-balance.json',

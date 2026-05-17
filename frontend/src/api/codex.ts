@@ -887,6 +887,20 @@ function isExplicitlyDepletedQuota(
   return quotaValues.every((value) => value <= 0)
 }
 
+function hasQuotaRefreshMarker(raw: CpaAuthFileRaw): boolean {
+  return !!firstString(raw, ['last_refresh', 'last_checked_at', 'refreshed_at'])
+}
+
+function isMissingQuotaAfterRefresh(
+  raw: CpaAuthFileRaw,
+  remainingPercent: number | undefined,
+  quotaWindows: CodexQuotaWindow[],
+  balance: number | undefined
+): boolean {
+  if (!hasQuotaRefreshMarker(raw)) return false
+  return !quotaWindows.length && remainingPercent === undefined && balance === undefined
+}
+
 export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
   const name = String(raw.name || raw.auth_index || raw.id || '')
   const source = normalizeSource(raw.source)
@@ -909,7 +923,10 @@ export function mapCpaAuthFileToView(raw: CpaAuthFileRaw): CodexAccountView {
     'available_credits',
     'free_credits',
   ])
-  const quotaExhausted = baseStatus === 'active' && isExplicitlyDepletedQuota(remainingPercent, quotaWindows, balance)
+  const quotaExhausted = baseStatus === 'active' && (
+    isExplicitlyDepletedQuota(remainingPercent, quotaWindows, balance) ||
+    isMissingQuotaAfterRefresh(raw, remainingPercent, quotaWindows, balance)
+  )
   const statusMessagePayload = baseStatus === 'failed'
     ? raw.status_message || raw.statusMessage || raw.last_error || raw.error_message || raw.failure_reason || raw.error || raw.status
     : quotaExhausted
