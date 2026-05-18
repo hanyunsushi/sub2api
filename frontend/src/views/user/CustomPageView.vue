@@ -28,7 +28,7 @@
         </div>
 
         <!-- Markdown mode with TOC -->
-        <div v-else-if="isMarkdownMode" class="flex h-full overflow-hidden">
+        <div v-else-if="isMarkdownMode" class="custom-markdown-shell flex h-full overflow-hidden">
           <!-- TOC Sidebar -->
           <aside
             v-show="tocVisible"
@@ -387,6 +387,26 @@ onUnmounted(() => {
 }
 
 @media (max-width: 640px) {
+  .custom-page-layout {
+    height: auto;
+    min-height: 0;
+  }
+
+  .custom-page-layout > .card {
+    overflow: visible;
+  }
+
+  .custom-markdown-shell {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .markdown-page-content {
+    height: auto;
+    overflow: visible;
+  }
+
   .toc-sidebar {
     position: absolute;
     left: 0;
