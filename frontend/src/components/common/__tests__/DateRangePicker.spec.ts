@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 import DateRangePicker from '../DateRangePicker.vue'
 
@@ -25,6 +25,10 @@ vi.mock('vue-i18n', () => ({
     locale: ref('en')
   })
 }))
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
 
 const formatLocalDate = (date: Date): string => {
   const year = date.getFullYear()
@@ -70,13 +74,20 @@ describe('DateRangePicker', () => {
     })
 
     await wrapper.find('.date-picker-trigger').trigger('click')
-    const presetButton = wrapper.findAll('.date-picker-preset').find((node) =>
-      node.text().includes('Last 24 Hours')
-    )
-    expect(presetButton).toBeDefined()
+    await nextTick()
+    const presetButton = document.body.querySelectorAll('.date-picker-preset')
+    const last24Button = Array.from(presetButton).find((node) =>
+      node.textContent?.includes('Last 24 Hours')
+    ) as HTMLButtonElement | undefined
+    expect(last24Button).toBeDefined()
 
-    await presetButton!.trigger('click')
-    await wrapper.find('.date-picker-apply').trigger('click')
+    last24Button!.click()
+    await nextTick()
+    const applyButton = document.body.querySelector('.date-picker-apply') as HTMLButtonElement | null
+    expect(applyButton).not.toBeNull()
+
+    applyButton!.click()
+    await nextTick()
 
     const nowAfterClick = new Date()
     const yesterdayAfterClick = new Date(nowAfterClick.getTime() - 24 * 60 * 60 * 1000)
@@ -92,5 +103,36 @@ describe('DateRangePicker', () => {
         preset: 'last24Hours'
       }
     ])
+  })
+
+  it('teleports the dropdown above dashboard card stacking contexts', async () => {
+    const now = new Date()
+    const today = formatLocalDate(now)
+
+    mount(DateRangePicker, {
+      props: {
+        startDate: today,
+        endDate: today
+      },
+      global: {
+        stubs: {
+          Icon: true
+        }
+      },
+      attachTo: document.body
+    })
+
+    const trigger = document.body.querySelector('.date-picker-trigger') as HTMLButtonElement | null
+    expect(trigger).not.toBeNull()
+
+    trigger!.click()
+    await nextTick()
+
+    const dropdown = document.body.querySelector('.date-picker-dropdown-portal') as HTMLElement | null
+    expect(dropdown).not.toBeNull()
+    expect(dropdown?.closest('[data-v-app]')).toBeNull()
+    expect(dropdown?.style.position).toBe('fixed')
+    expect(dropdown?.style.zIndex).toBe('100000030')
+    expect(dropdown?.style.minWidth).toBe('320px')
   })
 })
