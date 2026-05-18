@@ -152,10 +152,15 @@ describe('admin DashboardView', () => {
 
   it('keeps the Liquid Glass treatment scoped to admin dashboard modules', () => {
     expect(dashboardSource).toContain('admin-dashboard-liquid')
+    expect(dashboardSource).toContain('.admin-dashboard-liquid::before')
     expect(dashboardSource).toContain('.admin-dashboard-liquid :deep(.card)')
-    expect(dashboardSource).toContain('backdrop-filter: blur(14px) saturate(1.15);')
-    expect(dashboardSource).toContain('-webkit-backdrop-filter: blur(14px) saturate(1.15);')
+    expect(dashboardSource).toContain('.admin-dashboard-liquid :deep(.card::after)')
+    expect(dashboardSource).toContain('backdrop-filter: blur(22px) saturate(1.28) contrast(1.04);')
+    expect(dashboardSource).toContain('-webkit-backdrop-filter: blur(22px) saturate(1.28) contrast(1.04);')
+    expect(dashboardSource).toContain('rgba(255, 255, 255, 0.76)')
+    expect(dashboardSource).toContain('rgba(0, 47, 167, 0.24)')
     expect(dashboardSource).toContain('@media (prefers-reduced-transparency: reduce)')
+    expect(dashboardSource).toContain('.admin-dashboard-liquid::before {\n    display: none;')
     expect(dashboardSource).toContain('@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))')
     expect(dashboardSource).toContain('.admin-dashboard-liquid:where(.dark *) :deep(.card)')
     expect(dashboardSource).not.toContain(':global(.dark) .admin-dashboard-liquid')
