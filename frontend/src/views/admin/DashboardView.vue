@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="space-y-6">
+    <div class="admin-dashboard-liquid space-y-6">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <LoadingSpinner />
@@ -685,6 +685,100 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.admin-dashboard-liquid {
+  --dashboard-glass-tint: rgba(0, 47, 167, 0.045);
+  --dashboard-glass-edge: rgba(0, 47, 167, 0.16);
+  --dashboard-glass-shine: rgba(255, 255, 255, 0.72);
+  --dashboard-glass-shadow: rgba(0, 47, 167, 0.08);
+}
+
+.admin-dashboard-liquid :deep(.card) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-color: rgba(0, 47, 167, 0.12);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.72)),
+    radial-gradient(circle at 16% 0%, var(--dashboard-glass-tint), transparent 34%);
+  box-shadow:
+    inset 0 1px 0 var(--dashboard-glass-shine),
+    inset 0 -1px 0 rgba(0, 47, 167, 0.045),
+    0 16px 42px -28px var(--dashboard-glass-shadow);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
+.admin-dashboard-liquid :deep(.card::before) {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.42), transparent 28%),
+    linear-gradient(300deg, transparent 64%, rgba(0, 47, 167, 0.045));
+}
+
+.admin-dashboard-liquid :deep(.card > *) {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-dashboard-liquid :deep(.card:hover) {
+  border-color: rgba(0, 47, 167, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 47, 167, 0.06),
+    0 18px 46px -28px rgba(0, 47, 167, 0.16);
+}
+
+.admin-dashboard-liquid:where(.dark *) {
+  --dashboard-glass-tint: rgba(76, 126, 255, 0.08);
+  --dashboard-glass-edge: rgba(119, 154, 255, 0.2);
+  --dashboard-glass-shine: rgba(255, 255, 255, 0.08);
+  --dashboard-glass-shadow: rgba(0, 0, 0, 0.38);
+}
+
+.admin-dashboard-liquid:where(.dark *) :deep(.card) {
+  border-color: var(--dashboard-glass-edge);
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.84), rgba(8, 13, 25, 0.7)),
+    radial-gradient(circle at 18% 0%, var(--dashboard-glass-tint), transparent 36%);
+  box-shadow:
+    inset 0 1px 0 var(--dashboard-glass-shine),
+    inset 0 -1px 0 rgba(0, 47, 167, 0.08),
+    0 18px 44px -30px var(--dashboard-glass-shadow);
+}
+
+.admin-dashboard-liquid:where(.dark *) :deep(.card::before) {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 26%),
+    linear-gradient(300deg, transparent 64%, rgba(76, 126, 255, 0.055));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .admin-dashboard-liquid :deep(.card) {
+    background: rgb(255, 255, 255);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .admin-dashboard-liquid:where(.dark *) :deep(.card) {
+    background: rgba(31, 41, 55, 0.9);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .admin-dashboard-liquid :deep(.card) {
+    background: rgb(255, 255, 255);
+  }
+
+  .admin-dashboard-liquid:where(.dark *) :deep(.card) {
+    background: rgba(31, 41, 55, 0.9);
+  }
+}
+
 .dashboard-stat-icon {
   display: flex;
   align-items: center;
@@ -695,7 +789,7 @@ onMounted(() => {
   color: #002FA7;
 }
 
-:global(.dark) .dashboard-stat-icon {
+.dashboard-stat-icon:where(.dark *) {
   color: #002FA7;
 }
 </style>

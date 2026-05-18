@@ -1,8 +1,17 @@
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 
 import type { DashboardStats } from '@/types'
 import DashboardView from '../DashboardView.vue'
+
+const dashboardSource = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../DashboardView.vue'),
+  'utf8'
+)
 
 const { getSnapshotV2, getUserUsageTrend, getUserSpendingRanking } = vi.hoisted(() => ({
   getSnapshotV2: vi.fn(),
@@ -139,5 +148,18 @@ describe('admin DashboardView', () => {
       end_date: formatLocalDate(now),
       granularity: 'hour'
     }))
+  })
+
+  it('keeps the Liquid Glass treatment scoped to admin dashboard modules', () => {
+    expect(dashboardSource).toContain('admin-dashboard-liquid')
+    expect(dashboardSource).toContain('.admin-dashboard-liquid :deep(.card)')
+    expect(dashboardSource).toContain('backdrop-filter: blur(14px) saturate(1.15);')
+    expect(dashboardSource).toContain('-webkit-backdrop-filter: blur(14px) saturate(1.15);')
+    expect(dashboardSource).toContain('@media (prefers-reduced-transparency: reduce)')
+    expect(dashboardSource).toContain('@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))')
+    expect(dashboardSource).toContain('.admin-dashboard-liquid:where(.dark *) :deep(.card)')
+    expect(dashboardSource).not.toContain(':global(.dark) .admin-dashboard-liquid')
+    expect(dashboardSource).not.toContain('.sidebar')
+    expect(dashboardSource).not.toContain('Codex')
   })
 })
