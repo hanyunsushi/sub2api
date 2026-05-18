@@ -482,6 +482,16 @@ onUnmounted(() => {
   filter: invert(0.7);
 }
 
+.dark .date-picker-dropdown-portal .date-picker-preset:hover {
+  background: rgba(30, 41, 59, 0.72);
+  color: rgb(229, 231, 235);
+}
+
+.dark .date-picker-dropdown-portal .date-picker-preset-active:hover {
+  background: rgba(0, 47, 167, 0.32);
+  color: rgb(191, 219, 254);
+}
+
 .date-picker-dropdown-portal .date-picker-separator {
   @apply flex items-center justify-center pb-1;
 }

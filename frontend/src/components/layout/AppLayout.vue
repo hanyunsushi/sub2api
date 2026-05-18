@@ -15,7 +15,10 @@
         <AppHeader />
 
         <!-- Main Content -->
-        <main class="app-route-page app-route-page-entering p-4 md:p-6 lg:p-8">
+        <main
+          :class="['app-route-page p-4 md:p-6 lg:p-8', pageEntering && 'app-route-page-entering']"
+          @animationend.self="pageEntering = false"
+        >
           <slot />
         </main>
       </div>
@@ -25,7 +28,8 @@
 
 <script setup lang="ts">
 import '@/styles/onboarding.css'
-import { computed, onMounted } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores'
 import { useAuthStore } from '@/stores/auth'
 import { useOnboardingTour } from '@/composables/useOnboardingTour'
@@ -36,8 +40,27 @@ import AppHeader from './AppHeader.vue'
 
 const appStore = useAppStore()
 const authStore = useAuthStore()
+const route = useRoute()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
+const pageEntering = ref(true)
+let routeAnimationFrame = 0
+
+const triggerPageEnter = async () => {
+  if (routeAnimationFrame) {
+    cancelAnimationFrame(routeAnimationFrame)
+  }
+  pageEntering.value = false
+  await nextTick()
+  routeAnimationFrame = requestAnimationFrame(() => {
+    pageEntering.value = true
+    routeAnimationFrame = 0
+  })
+}
+
+watch(() => route.fullPath, () => {
+  void triggerPageEnter()
+})
 
 const { replayTour } = useOnboardingTour({
   storageKey: isAdmin.value ? 'admin_guide' : 'user_guide',
@@ -48,6 +71,12 @@ const onboardingStore = useOnboardingStore()
 
 onMounted(() => {
   onboardingStore.setReplayCallback(replayTour)
+})
+
+onBeforeUnmount(() => {
+  if (routeAnimationFrame) {
+    cancelAnimationFrame(routeAnimationFrame)
+  }
 })
 
 defineExpose({ replayTour })
@@ -65,19 +94,19 @@ defineExpose({ replayTour })
 .app-route-page {
   transform-origin: top center;
   transition:
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
 .app-route-page-entering {
-  animation: app-route-page-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: app-route-page-enter 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes app-route-page-enter {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.985);
+    transform: translateY(20px) scale(0.982);
   }
 
   to {

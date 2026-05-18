@@ -290,7 +290,43 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  @apply rounded-lg border border-accent-200 bg-white px-4 py-3 dark:border-dark-700 dark:bg-dark-800;
+  --material-card-surface: rgba(255, 255, 255, 0.86);
+  --material-card-edge: rgba(255, 255, 255, 0.86);
+  --material-card-shadow: rgba(15, 23, 42, 0.1);
+  @apply rounded-lg border px-4 py-3;
+  border-color: var(--material-card-edge);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.46), transparent 44%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.04),
+    0 12px 30px -24px var(--material-card-shadow),
+    0 1px 2px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.table-wrapper {
+  --material-card-surface: rgba(255, 255, 255, 0.78);
+}
+
+.dark .summary-tile,
+.dark .table-wrapper {
+  --material-card-surface: rgba(7, 10, 17, 0.86);
+  --material-card-edge: rgba(148, 163, 184, 0.16);
+  --material-card-shadow: rgba(0, 0, 0, 0.58);
+}
+
+.dark .summary-tile {
+  background:
+    linear-gradient(180deg, rgba(12, 15, 24, 0.94), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.36),
+    0 18px 40px -28px var(--material-card-shadow),
+    0 1px 2px rgba(0, 0, 0, 0.42);
 }
 
 .summary-label {
