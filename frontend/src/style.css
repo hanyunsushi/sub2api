@@ -932,7 +932,6 @@
     linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
 }
 
-.app-layout-content .table-scroll-container,
 .app-layout-content .modal-content,
 .app-layout-content .dropdown {
   background: rgba(255, 255, 255, 0.94);
@@ -959,7 +958,6 @@
     0 1px 2px rgba(0, 0, 0, 0.42);
 }
 
-.dark .app-layout-content .table-scroll-container,
 .dark .app-layout-content .modal-content,
 .dark .app-layout-content .dropdown {
   background: rgba(5, 7, 12, 0.94);

@@ -8,6 +8,28 @@ const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..'
 const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'utf8')
 
 describe('mobile page scrolling', () => {
+  it('supports page scrolling for table pages that must not trap vertical scroll in a module', () => {
+    const source = readFile('components/layout/TablePageLayout.vue')
+    const accountsSource = readFile('views/admin/AccountsView.vue')
+
+    expect(source).toContain('scrollMode')
+    expect(source).toContain("'page'")
+    expect(source).toContain('table-page-layout--page-scroll')
+    expect(source).toContain('overflow-y: visible;')
+    expect(accountsSource).toContain('<TablePageLayout scroll-mode="page">')
+    expect(accountsSource).toContain('vertical-scroll-mode="page"')
+  })
+
+  it('lets table page cards use the global material surface instead of overriding it with plain backgrounds', () => {
+    const source = readFile('components/layout/TablePageLayout.vue')
+    const globalStyle = readFile('style.css')
+
+    expect(source).toContain('<div class="card table-scroll-container">')
+    expect(source).not.toContain('bg-white dark:bg-dark-800 rounded-lg border border-accent-200')
+    expect(globalStyle).not.toContain('.app-layout-content .table-scroll-container,')
+    expect(globalStyle).not.toContain('.dark .app-layout-content .table-scroll-container,')
+  })
+
   it('lets table pages grow naturally on mobile instead of trapping scroll in the table body', () => {
     const source = readFile('components/layout/TablePageLayout.vue')
 

@@ -42,7 +42,6 @@
 }
 
 .codex-shell {
-  min-height: calc(100dvh - 128px);
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background:
@@ -50,7 +49,6 @@
     radial-gradient(circle at 16% 0%, rgba(0, 47, 167, 0.035), transparent 34%),
     var(--codex-bg);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.04);
-  overflow: hidden;
 }
 
 .dark .codex-shell {
@@ -441,7 +439,7 @@
   grid-template-rows: auto auto auto;
   min-height: 164px;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
   cursor: pointer;
   gap: 10px;
   border: 1px solid var(--material-card-edge);
@@ -664,7 +662,7 @@
   flex-wrap: wrap;
   gap: 6px;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .codex-tag {
