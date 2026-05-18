@@ -1,8 +1,17 @@
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick, ref } from 'vue'
 
 import DateRangePicker from '../DateRangePicker.vue'
+
+const componentSource = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../DateRangePicker.vue'),
+  'utf8'
+)
 
 const messages: Record<string, string> = {
   'dates.today': 'Today',
@@ -134,5 +143,12 @@ describe('DateRangePicker', () => {
     expect(dropdown?.style.position).toBe('fixed')
     expect(dropdown?.style.zIndex).toBe('100000030')
     expect(dropdown?.style.minWidth).toBe('320px')
+  })
+
+  it('keeps teleported dark dropdown hover states readable outside dashboard scope', () => {
+    expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset:hover')
+    expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset-active:hover')
+    expect(componentSource).toContain('color: rgb(229, 231, 235);')
+    expect(componentSource).not.toContain('.admin-dashboard-liquid .date-picker-dropdown-portal')
   })
 })

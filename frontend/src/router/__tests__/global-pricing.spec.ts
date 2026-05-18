@@ -36,4 +36,13 @@ describe('global pricing route and navigation', () => {
     expect(viewSource).toContain('colspan="11"')
     expect(viewSource).not.toContain("import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'")
   })
+
+  it('uses shared material card surfaces on maintained pricing modules', () => {
+    expect(viewSource).toContain('summary-tile')
+    expect(viewSource).toContain('table-wrapper')
+    expect(viewSource).toContain('--material-card-surface')
+    expect(viewSource).toContain('backdrop-filter: blur(14px) saturate(1.08)')
+    expect(viewSource).toContain('.dark .summary-tile')
+    expect(viewSource).toContain('.dark .table-wrapper')
+  })
 })

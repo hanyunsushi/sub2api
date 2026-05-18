@@ -527,6 +527,17 @@ onUnmounted(() => {
   @apply flex-1 min-w-0 truncate text-left;
 }
 
+.dark .select-dropdown-portal .select-option:hover,
+.dark .select-dropdown-portal .select-option-focused {
+  background: rgba(30, 41, 59, 0.72);
+  color: rgb(229, 231, 235);
+}
+
+.dark .select-dropdown-portal .select-option-selected:hover {
+  background: rgba(0, 47, 167, 0.32);
+  color: rgb(191, 219, 254);
+}
+
 .select-dropdown-portal .select-empty {
   @apply px-4 py-8 text-center text-sm;
   @apply text-gray-500 dark:text-dark-400;
