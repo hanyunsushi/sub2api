@@ -422,6 +422,7 @@ describe('codex CPA API adapter', () => {
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
       json: async () => ({ ok: true }),
+      text: async () => '{"ok":true}',
     })
 
     await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
@@ -434,6 +435,17 @@ describe('codex CPA API adapter', () => {
     )
   })
 
+  it('handles empty successful CPA mutation responses', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 204,
+      headers: new Headers(),
+      text: async () => '',
+    })
+
+    await expect(deleteAuthFile('account1.json', { managementKey: 'secret-key' })).resolves.toBeUndefined()
+  })
+
   it('falls back to the legacy CPA JSON body delete contract', async () => {
     mockFetch
       .mockResolvedValueOnce({
@@ -442,11 +454,13 @@ describe('codex CPA API adapter', () => {
         statusText: 'Not Found',
         headers: new Headers({ 'content-type': 'application/json' }),
         json: async () => ({ error: 'not found' }),
+        text: async () => '{"error":"not found"}',
       })
       .mockResolvedValueOnce({
         ok: true,
         headers: new Headers({ 'content-type': 'application/json' }),
         json: async () => ({ ok: true }),
+        text: async () => '{"ok":true}',
       })
 
     await deleteAuthFile('folder/account 1.json', { managementKey: 'secret-key' })
@@ -468,6 +482,7 @@ describe('codex CPA API adapter', () => {
       ok: true,
       headers: new Headers({ 'content-type': 'application/json' }),
       json: async () => ({ ok: true }),
+      text: async () => '{"ok":true}',
     })
 
     await setAuthFileDisabled('codex-work.json', true, { managementKey: 'secret-key' })

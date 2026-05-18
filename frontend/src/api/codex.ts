@@ -37,11 +37,27 @@ function shouldAttachSub2APIAdminToken(baseUrl: string): boolean {
 }
 
 async function readResponseBody(response: Response): Promise<unknown> {
-  const contentType = response.headers.get('content-type') || ''
-  if (contentType.includes('application/json')) {
-    return response.json()
+  if (response.status === 204 || response.status === 205) {
+    return null
   }
-  return response.text()
+
+  const contentType = response.headers.get('content-type') || ''
+  if (typeof response.text !== 'function') {
+    if (contentType.includes('application/json') && typeof response.json === 'function') {
+      return response.json()
+    }
+    return null
+  }
+
+  const text = await response.text()
+  if (!text.trim()) {
+    return null
+  }
+
+  if (contentType.includes('application/json')) {
+    return parseMaybeJSON(text)
+  }
+  return text
 }
 
 async function cpaRequest<T>(path: string, options: CpaRequestOptions & RequestInit = {}): Promise<T> {
