@@ -66,7 +66,8 @@
     class="table-wrapper"
     :class="{
       'actions-expanded': actionsExpanded,
-      'is-scrollable': isScrollable
+      'is-scrollable': isScrollable,
+      'is-page-scroll': verticalScrollMode === 'page'
     }"
   >
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
@@ -148,6 +149,35 @@
             </slot>
           </td>
         </tr>
+
+        <!-- Data rows (page scroll) -->
+        <template v-else-if="verticalScrollMode === 'page'">
+          <tr
+            v-for="(row, rowIndex) in sortedData"
+            :key="resolveRowKey(row, rowIndex)"
+            :data-row-id="resolveRowKey(row, rowIndex)"
+            :data-index="rowIndex"
+            class="hover:bg-gray-50 dark:hover:bg-dark-800"
+          >
+            <td
+              v-for="(column, colIndex) in columns"
+              :key="column.key"
+              :class="[
+                'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
+                getAdaptivePaddingClass(),
+                getStickyColumnClass(column, colIndex),
+                column.class
+              ]"
+            >
+              <slot :name="`cell-${column.key}`"
+                    :row="row"
+                    :value="row[column.key]"
+                    :expanded="actionsExpanded">
+                {{ column.formatter ? column.formatter(row[column.key], row) : row[column.key] }}
+              </slot>
+            </td>
+          </tr>
+        </template>
 
         <!-- Data rows (virtual scroll) -->
         <template v-else>
@@ -357,6 +387,11 @@ interface Props {
    * will emit 'sort' events instead of performing client-side sorting.
    */
   serverSideSort?: boolean
+  /**
+   * Use normal document scrolling for vertical flow. This keeps horizontal
+   * table scrolling but avoids a nested vertical scroll container.
+   */
+  verticalScrollMode?: 'internal' | 'page'
   /** Estimated row height in px for the virtualizer (default 56) */
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */
@@ -369,8 +404,11 @@ const props = withDefaults(defineProps<Props>(), {
   stickyActionsColumn: true,
   expandableActions: true,
   defaultSortOrder: 'asc',
-  serverSideSort: false
+  serverSideSort: false,
+  verticalScrollMode: 'internal'
 })
+
+const verticalScrollMode = computed(() => props.verticalScrollMode)
 
 const sortKey = ref<string>('')
 const sortOrder = ref<'asc' | 'desc'>('asc')
@@ -574,7 +612,7 @@ const sortedData = computed(() => {
 
 // --- Virtual scrolling ---
 const rowVirtualizer = useVirtualizer(computed(() => ({
-  count: isDesktopViewport.value ? (sortedData.value?.length ?? 0) : 0,
+  count: isDesktopViewport.value && verticalScrollMode.value === 'internal' ? (sortedData.value?.length ?? 0) : 0,
   getScrollElement: () => tableWrapperRef.value,
   estimateSize: () => props.estimateRowHeight ?? 56,
   overscan: props.overscan ?? 5,
@@ -714,6 +752,12 @@ defineExpose({
   flex: 1;
   min-height: 0;
   isolation: isolate;
+}
+
+.table-wrapper.is-page-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  flex: none;
 }
 
 /* 表头容器，确保在滚动时覆盖表体内容 */

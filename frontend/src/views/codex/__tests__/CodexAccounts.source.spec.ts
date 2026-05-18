@@ -5,6 +5,13 @@ import { resolve } from 'node:path'
 const componentSource = readFileSync(resolve(__dirname, '../CodexAccounts.vue'), 'utf8')
 const codexThemeSource = readFileSync(resolve(__dirname, '../../../styles/codex-theme.css'), 'utf8')
 
+const getCssBlock = (selector: string) => {
+  const start = codexThemeSource.indexOf(`${selector} {`)
+  if (start === -1) return ''
+  const end = codexThemeSource.indexOf('\n}', start)
+  return end === -1 ? codexThemeSource.slice(start) : codexThemeSource.slice(start, end + 2)
+}
+
 describe('CodexAccounts source contracts', () => {
   it('teleports the delete confirmation dialog to body so fixed centering uses the viewport', () => {
     expect(componentSource).toContain('<Teleport to="body">')
@@ -26,5 +33,12 @@ describe('CodexAccounts source contracts', () => {
     expect(codexThemeSource).toContain('backdrop-filter: blur(14px) saturate(1.08)')
     expect(codexThemeSource).toContain('.dark .codex-panel')
     expect(codexThemeSource).toContain('.dark .codex-account-card')
+  })
+
+  it('does not add a fixed module scrollbar to the CPA account management shell', () => {
+    const shellBlock = getCssBlock('.codex-shell')
+
+    expect(shellBlock).not.toContain('overflow: hidden;')
+    expect(shellBlock).not.toContain('min-height: calc(100dvh - 128px);')
   })
 })

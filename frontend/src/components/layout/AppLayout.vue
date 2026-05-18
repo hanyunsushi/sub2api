@@ -43,7 +43,7 @@ const authStore = useAuthStore()
 const route = useRoute()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
-const pageEntering = ref(true)
+const pageEntering = ref(false)
 let routeAnimationFrame = 0
 
 const triggerPageEnter = async () => {
@@ -71,6 +71,7 @@ const onboardingStore = useOnboardingStore()
 
 onMounted(() => {
   onboardingStore.setReplayCallback(replayTour)
+  void triggerPageEnter()
 })
 
 onBeforeUnmount(() => {
