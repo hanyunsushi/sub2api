@@ -66,6 +66,8 @@ describe('Klein blue ASCII background', () => {
     expect(css).toContain('background-size: 18px 18px')
     expect(css).toContain('.app-layout-content')
     expect(css).toContain('background: #fbfcff')
+    expect(css).toContain('.dark .app-layout-content')
+    expect(css).toContain('background: #020307')
     expect(css).not.toContain('@keyframes guizang')
   })
 })

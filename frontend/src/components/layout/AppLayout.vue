@@ -59,25 +59,25 @@ defineExpose({ replayTour })
 }
 
 .dark .app-layout-shell {
-  background: #050712;
+  background: #020307;
 }
 
 .app-route-page {
   transform-origin: top center;
   transition:
-    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
 .app-route-page-entering {
-  animation: app-route-page-enter 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: app-route-page-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes app-route-page-enter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(16px) scale(0.985);
   }
 
   to {
