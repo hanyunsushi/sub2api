@@ -4,19 +4,19 @@
       <template #filters>
         <div class="flex flex-col gap-4">
           <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="summary-tile">
+            <div class="summary-tile admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.totalModels') }}</span>
               <strong class="summary-value">{{ pricing?.model_count ?? items.length }}</strong>
             </div>
-            <div class="summary-tile">
+            <div class="summary-tile admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.visibleModels') }}</span>
               <strong class="summary-value">{{ filteredItems.length }}</strong>
             </div>
-            <div class="summary-tile">
+            <div class="summary-tile admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.providers') }}</span>
               <strong class="summary-value">{{ providerOptions.length }}</strong>
             </div>
-            <div class="summary-tile">
+            <div class="summary-tile admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.updated') }}</span>
               <strong class="summary-value summary-value-small">{{ formattedLastUpdated }}</strong>
             </div>
@@ -80,7 +80,7 @@
       </template>
 
       <template #table>
-        <div class="table-wrapper">
+        <div class="table-wrapper admin-material-surface">
           <table class="global-pricing-table">
             <thead>
               <tr>
@@ -290,64 +290,52 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: rgba(255, 255, 255, 0.86);
-  --material-card-edge: rgba(255, 255, 255, 0.86);
-  --material-card-shadow: rgba(15, 23, 42, 0.1);
+  --material-card-surface: rgba(255, 255, 255, 0.44);
+  --material-card-edge: rgba(255, 255, 255, 0.62);
+  --material-card-shadow: rgba(15, 23, 42, 0.26);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.46), transparent 44%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    inset 0 -1px 0 rgba(15, 23, 42, 0.04),
-    0 12px 30px -24px var(--material-card-shadow),
-    0 1px 2px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(14px) saturate(1.08);
-  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
+  box-shadow: 0 18px 42px -34px var(--material-card-shadow);
+  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
 }
 
 .table-wrapper {
-  --material-card-surface: rgba(255, 255, 255, 0.78);
+  --material-card-surface: rgba(255, 255, 255, 0.44);
+  --material-card-edge: rgba(255, 255, 255, 0.62);
+  --material-card-shadow: rgba(15, 23, 42, 0.26);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.46), transparent 44%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 12px 30px -24px var(--material-card-shadow),
-    0 1px 2px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(14px) saturate(1.08);
-  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
+  box-shadow: 0 18px 42px -34px var(--material-card-shadow);
+  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
 }
 
 .dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: rgba(7, 10, 17, 0.86);
+  --material-card-surface: rgba(3, 5, 10, 0.68);
   --material-card-edge: rgba(148, 163, 184, 0.16);
-  --material-card-shadow: rgba(0, 0, 0, 0.58);
+  --material-card-shadow: rgba(0, 0, 0, 0.82);
 }
 
 .dark .summary-tile {
   background:
-    linear-gradient(180deg, rgba(12, 15, 24, 0.94), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.36),
-    0 18px 40px -28px var(--material-card-shadow),
-    0 1px 2px rgba(0, 0, 0, 0.42);
+    linear-gradient(180deg, rgba(13, 17, 27, 0.78), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
+  box-shadow: 0 22px 52px -36px var(--material-card-shadow);
 }
 
 .dark .table-wrapper {
   background:
-    linear-gradient(180deg, rgba(12, 15, 24, 0.94), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 18px 40px -28px var(--material-card-shadow),
-    0 1px 2px rgba(0, 0, 0, 0.42);
+    linear-gradient(180deg, rgba(13, 17, 27, 0.78), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
+  box-shadow: 0 22px 52px -36px var(--material-card-shadow);
 }
 
 .summary-label {
