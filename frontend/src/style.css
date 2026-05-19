@@ -216,13 +216,14 @@
   .glass {
     @apply border border-accent-100 dark:border-dark-700;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.045));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.82),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.05),
       0 1px 2px rgba(15, 23, 42, 0.04);
-    backdrop-filter: blur(14px) saturate(1.08);
-    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
 
   .glass-card {
@@ -231,15 +232,15 @@
     @apply shadow-card;
     @apply transition-all duration-300;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.52)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.05));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.86),
-      inset 0 -1px 0 rgba(15, 23, 42, 0.04),
-      0 12px 30px -24px rgba(15, 23, 42, 0.1),
-      0 1px 2px rgba(15, 23, 42, 0.06);
-    backdrop-filter: blur(14px) saturate(1.08);
-    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+      inset 0 1px 0 rgba(255, 255, 255, 0.96),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+      0 18px 42px -30px rgba(15, 23, 42, 0.22),
+      0 1px 2px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
 
   /* ============ 卡片样式 ============ */
@@ -249,15 +250,15 @@
     @apply shadow-card;
     @apply transition-all duration-300;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.52)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.05));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.86),
-      inset 0 -1px 0 rgba(15, 23, 42, 0.04),
-      0 12px 30px -24px rgba(15, 23, 42, 0.1),
-      0 1px 2px rgba(15, 23, 42, 0.06);
-    backdrop-filter: blur(14px) saturate(1.08);
-    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+      inset 0 1px 0 rgba(255, 255, 255, 0.96),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+      0 18px 42px -30px rgba(15, 23, 42, 0.22),
+      0 1px 2px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
 
   .card-hover {
@@ -269,15 +270,15 @@
     @apply border border-accent-100 dark:border-dark-700;
     @apply shadow-card;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.52)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.05));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.86),
-      inset 0 -1px 0 rgba(15, 23, 42, 0.04),
-      0 12px 30px -24px rgba(15, 23, 42, 0.1),
-      0 1px 2px rgba(15, 23, 42, 0.06);
-    backdrop-filter: blur(14px) saturate(1.08);
-    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+      inset 0 1px 0 rgba(255, 255, 255, 0.96),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+      0 18px 42px -30px rgba(15, 23, 42, 0.22),
+      0 1px 2px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
 
   .card-header {
@@ -931,8 +932,8 @@
 
 .app-layout-content .glass {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.8)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.045));
 }
 
 .app-layout-content .modal-content,
@@ -951,19 +952,31 @@
 .app-layout-content .codex-panel,
 .app-layout-content .codex-account-card,
 .app-layout-content .admin-material-surface,
-.app-layout-content .rounded-3xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
-.app-layout-content .rounded-2xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
-.app-layout-content .rounded-xl.bg-white:not(button):not(a):not(input):not(select):not(textarea) {
-  border-color: rgba(255, 255, 255, 0.86) !important;
+.app-layout-content :where(div, section, article).rounded-3xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-2xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-lg.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.app-layout-content :where(div, section, article).rounded-lg.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]) {
+  border-color: rgba(255, 255, 255, 0.9) !important;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%) !important;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.52)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.05)) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 12px 30px -24px rgba(15, 23, 42, 0.1),
-    0 1px 2px rgba(15, 23, 42, 0.06) !important;
-  backdrop-filter: blur(14px) saturate(1.08);
-  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+    0 18px 42px -30px rgba(15, 23, 42, 0.22),
+    0 1px 2px rgba(15, 23, 42, 0.07) !important;
+  backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+  -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+}
+
+.app-layout-content .table-scroll-container,
+.app-layout-content .table-wrapper {
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
 }
 
 .dark .glass,
@@ -976,13 +989,13 @@
 .dark .app-layout-content .card-glass {
   border-color: rgba(148, 163, 184, 0.16);
   background:
-    linear-gradient(180deg, rgba(10, 12, 18, 0.94), rgba(5, 7, 12, 0.86)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%);
+    linear-gradient(180deg, rgba(13, 17, 27, 0.78), rgba(3, 5, 10, 0.68)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.36),
-    0 18px 40px -28px rgba(0, 0, 0, 0.7),
-    0 1px 2px rgba(0, 0, 0, 0.42);
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.46),
+    0 22px 52px -32px rgba(0, 0, 0, 0.78),
+    0 1px 2px rgba(0, 0, 0, 0.46);
 }
 
 .dark .app-layout-content .card,
@@ -994,17 +1007,23 @@
 .dark .app-layout-content .codex-panel,
 .dark .app-layout-content .codex-account-card,
 .dark .app-layout-content .admin-material-surface,
-.dark .app-layout-content .rounded-3xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
-.dark .app-layout-content .rounded-2xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
-.dark .app-layout-content .rounded-xl.bg-white:not(button):not(a):not(input):not(select):not(textarea) {
+.dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-xl.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-lg.bg-white:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-xl.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]),
+.dark .app-layout-content :where(div, section, article).rounded-lg.bg-white\/90:not([class*="absolute"]):not([class*="fixed"]) {
   border-color: rgba(148, 163, 184, 0.16) !important;
   background:
-    linear-gradient(180deg, rgba(10, 12, 18, 0.94), rgba(5, 7, 12, 0.86)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%) !important;
+    linear-gradient(180deg, rgba(13, 17, 27, 0.78), rgba(3, 5, 10, 0.68)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 18px 40px -28px rgba(0, 0, 0, 0.7),
-    0 1px 2px rgba(0, 0, 0, 0.42) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.46),
+    0 22px 52px -32px rgba(0, 0, 0, 0.78),
+    0 1px 2px rgba(0, 0, 0, 0.46) !important;
 }
 
 .dark .app-layout-content .modal-content,
@@ -1020,7 +1039,15 @@
   .app-layout-content .glass,
   .app-layout-content .card,
   .app-layout-content .glass-card,
-  .app-layout-content .card-glass {
+  .app-layout-content .card-glass,
+  .app-layout-content :where(div, section, article).rounded-3xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-2xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-lg.bg-white,
+  .app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-lg.bg-white\/90 {
     background: rgb(255, 255, 255);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -1033,8 +1060,16 @@
   .dark .app-layout-content .glass,
   .dark .app-layout-content .card,
   .dark .app-layout-content .glass-card,
-  .dark .app-layout-content .card-glass {
-    background: rgb(6, 8, 13);
+  .dark .app-layout-content .card-glass,
+  .dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-lg.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-lg.bg-white\/90 {
+    background: rgb(6, 8, 13) !important;
   }
 }
 
@@ -1046,7 +1081,15 @@
   .app-layout-content .glass,
   .app-layout-content .card,
   .app-layout-content .glass-card,
-  .app-layout-content .card-glass {
+  .app-layout-content .card-glass,
+  .app-layout-content :where(div, section, article).rounded-3xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-2xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-xl.bg-white,
+  .app-layout-content :where(div, section, article).rounded-lg.bg-white,
+  .app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-xl.bg-white\/90,
+  .app-layout-content :where(div, section, article).rounded-lg.bg-white\/90 {
     background: rgb(255, 255, 255);
   }
 
@@ -1057,8 +1100,16 @@
   .dark .app-layout-content .glass,
   .dark .app-layout-content .card,
   .dark .app-layout-content .glass-card,
-  .dark .app-layout-content .card-glass {
-    background: rgb(6, 8, 13);
+  .dark .app-layout-content .card-glass,
+  .dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-xl.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-lg.bg-white,
+  .dark .app-layout-content :where(div, section, article).rounded-3xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-2xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-xl.bg-white\/90,
+  .dark .app-layout-content :where(div, section, article).rounded-lg.bg-white\/90 {
+    background: rgb(6, 8, 13) !important;
   }
 }
 
