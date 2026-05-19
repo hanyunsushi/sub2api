@@ -16,8 +16,11 @@
 
         <!-- Main Content -->
         <main
-          :class="['app-route-page p-4 md:p-6 lg:p-8', pageEntering && 'app-route-page-entering']"
-          @animationend.self="pageEntering = false"
+          :class="[
+            'app-route-page p-4 md:p-6 lg:p-8',
+            `app-route-page-${pageTransitionPhase}`
+          ]"
+          @animationend.self="settlePageTransition"
         >
           <slot />
         </main>
@@ -43,17 +46,21 @@ const authStore = useAuthStore()
 const route = useRoute()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const isAdmin = computed(() => authStore.user?.role === 'admin')
-const pageEntering = ref(false)
+const pageTransitionPhase = ref<'preparing' | 'entering' | 'settled'>('preparing')
 let routeAnimationFrame = 0
+
+const settlePageTransition = () => {
+  pageTransitionPhase.value = 'settled'
+}
 
 const triggerPageEnter = async () => {
   if (routeAnimationFrame) {
     cancelAnimationFrame(routeAnimationFrame)
   }
-  pageEntering.value = false
+  pageTransitionPhase.value = 'preparing'
   await nextTick()
   routeAnimationFrame = requestAnimationFrame(() => {
-    pageEntering.value = true
+    pageTransitionPhase.value = 'entering'
     routeAnimationFrame = 0
   })
 }
@@ -93,37 +100,88 @@ defineExpose({ replayTour })
 }
 
 .app-route-page {
+  --route-enter-duration: 0.92s;
+  --route-enter-easing: cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: top center;
-  transition:
-    opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  perspective: 1200px;
+  will-change: opacity, transform, filter;
+}
+
+.app-route-page-preparing {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0) scale(0.982);
+  filter: blur(10px) saturate(0.92);
 }
 
 .app-route-page-entering {
-  animation: app-route-page-enter 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: app-route-page-enter var(--route-enter-duration) var(--route-enter-easing) both;
+}
+
+.app-route-page-entering > *,
+.app-route-page-entering > * > * {
+  animation: app-route-page-child-enter 0.78s var(--route-enter-easing) both;
+}
+
+.app-route-page-entering > * > :nth-child(2) {
+  animation-delay: 48ms;
+}
+
+.app-route-page-entering > * > :nth-child(3) {
+  animation-delay: 84ms;
+}
+
+.app-route-page-entering > * > :nth-child(n + 4) {
+  animation-delay: 118ms;
+}
+
+.app-route-page-settled {
+  opacity: 1;
+  transform: none;
+  filter: none;
 }
 
 @keyframes app-route-page-enter {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.982);
+    transform: translate3d(0, 30px, 0) scale(0.982);
+    filter: blur(10px) saturate(0.92);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0) saturate(1);
+  }
+}
+
+@keyframes app-route-page-child-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.988);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-route-page {
-    transition-duration: 1ms;
-    transition-delay: 0ms;
+  .app-route-page-entering,
+  .app-route-page-entering > *,
+  .app-route-page-entering > * > * {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
   }
 
-  .app-route-page-entering {
-    animation-duration: 1ms;
+  .app-route-page-preparing,
+  .app-route-page-entering,
+  .app-route-page-settled {
+    opacity: 1;
+    transform: none;
+    filter: none;
   }
 }
 </style>
