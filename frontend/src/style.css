@@ -592,7 +592,10 @@
 
   .sidebar-nav {
     @apply flex-1 overflow-y-auto px-3 py-4;
+    scroll-behavior: auto;
     overscroll-behavior: contain;
+    contain: layout paint;
+    transform: translateZ(0);
   }
 
   .sidebar-link {
@@ -946,7 +949,11 @@
 .app-layout-content .table-scroll-container,
 .app-layout-content .summary-tile,
 .app-layout-content .codex-panel,
-.app-layout-content .codex-account-card {
+.app-layout-content .codex-account-card,
+.app-layout-content .admin-material-surface,
+.app-layout-content .rounded-3xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
+.app-layout-content .rounded-2xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
+.app-layout-content .rounded-xl.bg-white:not(button):not(a):not(input):not(select):not(textarea) {
   border-color: rgba(255, 255, 255, 0.86) !important;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
@@ -985,7 +992,11 @@
 .dark .app-layout-content .table-scroll-container,
 .dark .app-layout-content .summary-tile,
 .dark .app-layout-content .codex-panel,
-.dark .app-layout-content .codex-account-card {
+.dark .app-layout-content .codex-account-card,
+.dark .app-layout-content .admin-material-surface,
+.dark .app-layout-content .rounded-3xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
+.dark .app-layout-content .rounded-2xl.bg-white:not(button):not(a):not(input):not(select):not(textarea),
+.dark .app-layout-content .rounded-xl.bg-white:not(button):not(a):not(input):not(select):not(textarea) {
   border-color: rgba(148, 163, 184, 0.16) !important;
   background:
     linear-gradient(180deg, rgba(10, 12, 18, 0.94), rgba(5, 7, 12, 0.86)),

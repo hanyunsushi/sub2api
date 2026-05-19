@@ -24,7 +24,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" @scroll="handleSidebarNavScroll">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
@@ -833,11 +833,6 @@ function captureSidebarScroll() {
   latestSidebarScrollTop = sidebarNavRef.value.scrollTop
   commitSidebarScrollTop()
   shouldRestoreSidebarScroll = true
-}
-
-function handleSidebarNavScroll() {
-  if (!sidebarNavRef.value) return
-  latestSidebarScrollTop = sidebarNavRef.value.scrollTop
 }
 
 function commitSidebarScrollTop() {

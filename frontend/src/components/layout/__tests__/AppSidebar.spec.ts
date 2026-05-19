@@ -46,9 +46,7 @@ describe('AppSidebar header styles', () => {
 describe('AppSidebar scroll position', () => {
   it('preserves the scroll position across route-click render and focus updates', () => {
     expect(componentSource).toContain('ref="sidebarNavRef"')
-    expect(componentSource).toContain('@scroll="handleSidebarNavScroll"')
     expect(componentSource).toContain('function captureSidebarScroll')
-    expect(componentSource).toContain('function handleSidebarNavScroll')
     expect(componentSource).toContain('function restoreSidebarScroll')
     expect(componentSource).toContain('function restoreSidebarScrollSoon')
     expect(componentSource).toContain('watch(() => route.fullPath')
@@ -65,14 +63,12 @@ describe('AppSidebar scroll position', () => {
     expect(styleSource).not.toMatch(/\\.sidebar-nav,\\n\\s*\\.modal-body/)
   })
 
-  it('keeps all reactive store writes out of the scroll event hot path', () => {
-    const scrollHandlerMatch = componentSource.match(/function handleSidebarNavScroll\(\) \{[\s\S]*?\n\}/)
-
-    expect(scrollHandlerMatch).not.toBeNull()
-    expect(scrollHandlerMatch?.[0]).toContain('latestSidebarScrollTop = sidebarNavRef.value.scrollTop')
-    expect(scrollHandlerMatch?.[0]).not.toContain('appStore.setSidebarNavScrollTop')
+  it('does not bind a scroll handler to the sidebar navigation hot path', () => {
+    expect(componentSource).not.toContain('@scroll=')
+    expect(componentSource).not.toContain('function handleSidebarNavScroll')
     expect(componentSource).not.toContain('function scheduleSidebarScrollCommit')
     expect(componentSource).not.toContain('sidebarScrollCommitFrame')
     expect(componentSource).toContain('appStore.setSidebarNavScrollTop(latestSidebarScrollTop)')
+    expect(styleSource).toContain('contain: layout paint;')
   })
 })
