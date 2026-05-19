@@ -40,8 +40,11 @@ describe('global pricing route and navigation', () => {
   it('uses shared material card surfaces on maintained pricing modules', () => {
     expect(viewSource).toContain('summary-tile')
     expect(viewSource).toContain('table-wrapper')
+    expect(viewSource).toContain('summary-tile admin-material-surface')
+    expect(viewSource).toContain('table-wrapper admin-material-surface')
     expect(viewSource).toContain('--material-card-surface')
-    expect(viewSource).toContain('backdrop-filter: blur(14px) saturate(1.08)')
+    expect(viewSource).toContain('backdrop-filter: blur(20px) saturate(1.2) contrast(1.02)')
+    expect(viewSource).not.toContain('inset 0 -1px')
     expect(viewSource).toContain('.dark .summary-tile')
     expect(viewSource).toContain('.dark .table-wrapper')
   })

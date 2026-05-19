@@ -703,10 +703,8 @@ onMounted(() => {
     linear-gradient(180deg, rgba(255, 255, 255, 0.8), var(--dashboard-control-surface)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.62), transparent 42%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    inset 0 -1px 0 rgba(15, 23, 42, 0.06),
-    0 10px 24px -18px var(--dashboard-control-shadow),
-    0 1px 2px rgba(15, 23, 42, 0.06);
+    0 10px 24px -20px var(--dashboard-control-shadow),
+    0 1px 1px rgba(15, 23, 42, 0.04);
   backdrop-filter: blur(22px) saturate(1.18);
   -webkit-backdrop-filter: blur(22px) saturate(1.18);
 }

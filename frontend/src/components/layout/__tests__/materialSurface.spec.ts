@@ -8,6 +8,10 @@ const materialBlock = styleSource.slice(
   styleSource.indexOf('.app-layout-content .card,'),
   styleSource.indexOf('.dark .glass,')
 )
+const darkMaterialBlock = styleSource.slice(
+  styleSource.indexOf('.dark .app-layout-content .card,'),
+  styleSource.indexOf('.dark .app-layout-content .modal-content,')
+)
 
 describe('right-side material surfaces', () => {
   it('applies a visible direct material style to maintained cards without pseudo masks', () => {
@@ -27,6 +31,8 @@ describe('right-side material surfaces', () => {
     expect(materialBlock).not.toContain('.app-layout-content .card::before')
     expect(materialBlock).not.toContain('.app-layout-content .card::after')
     expect(materialBlock).not.toContain('mask-image')
+    expect(materialBlock).not.toContain('inset 0 -1px')
+    expect(darkMaterialBlock).not.toContain('inset 0 -1px')
   })
 
   it('keeps deep mode dark and provides reduced-transparency fallbacks for the same surfaces', () => {
