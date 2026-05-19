@@ -158,15 +158,16 @@ describe('admin DashboardView', () => {
     }))
   })
 
-  it('uses a single global Apple-style material card layer while keeping dashboard-only control glass scoped', () => {
+  it('uses a single dashboard material card layer while keeping control glass scoped', () => {
     expect(dashboardSource).toContain('admin-dashboard-liquid')
+    expect(dashboardSource).toContain('dashboard-card')
     expect(dashboardSource).toContain('dashboard-filter-card')
     expect(dashboardSource).toContain('dashboard-glass-control')
     expect(dashboardSource).toContain('dashboard-granularity-control')
+    expect(dashboardSource).toContain('--dashboard-card-surface: rgba(255, 255, 255, 0.82);')
     expect(dashboardSource).toContain('--dashboard-control-surface: rgba(255, 255, 255, 0.72);')
-    expect(dashboardSource).not.toContain('--dashboard-card-surface')
-    expect(dashboardSource).not.toContain('--dashboard-card-edge')
-    expect(dashboardSource).not.toContain('--dashboard-card-shadow')
+    expect(dashboardSource).toContain('.dashboard-card {')
+    expect(dashboardSource).toContain('backdrop-filter: blur(14px) saturate(1.08);')
     expect(dashboardSource).not.toContain('.admin-dashboard-liquid :deep(.card)')
     expect(dashboardSource).toContain('backdrop-filter: blur(22px) saturate(1.18);')
     expect(dashboardSource).toContain('.admin-dashboard-liquid :deep(.date-picker-trigger)')

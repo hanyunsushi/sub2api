@@ -26,8 +26,12 @@ describe('mobile page scrolling', () => {
 
     expect(source).toContain('<div class="card table-scroll-container">')
     expect(source).not.toContain('bg-white dark:bg-dark-800 rounded-lg border border-accent-200')
-    expect(globalStyle).not.toContain('.app-layout-content .table-scroll-container,')
-    expect(globalStyle).not.toContain('.dark .app-layout-content .table-scroll-container,')
+    expect(globalStyle).toContain('.app-layout-content .table-scroll-container')
+    expect(globalStyle).toContain('.dark .app-layout-content .table-scroll-container')
+    expect(globalStyle).not.toContain('.app-layout-content .table-wrapper,')
+    expect(globalStyle).not.toContain('.dark .app-layout-content .table-wrapper,')
+    expect(globalStyle).toContain('background:')
+    expect(globalStyle).toContain('!important')
   })
 
   it('lets table pages grow naturally on mobile instead of trapping scroll in the table body', () => {

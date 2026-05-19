@@ -309,6 +309,17 @@ onMounted(loadPricing)
 
 .table-wrapper {
   --material-card-surface: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--material-card-edge);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.46), transparent 44%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 12px 30px -24px var(--material-card-shadow),
+    0 1px 2px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
 }
 
 .dark .summary-tile,
@@ -325,6 +336,16 @@ onMounted(loadPricing)
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
     inset 0 -1px 0 rgba(0, 0, 0, 0.36),
+    0 18px 40px -28px var(--material-card-shadow),
+    0 1px 2px rgba(0, 0, 0, 0.42);
+}
+
+.dark .table-wrapper {
+  background:
+    linear-gradient(180deg, rgba(12, 15, 24, 0.94), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 44%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
     0 18px 40px -28px var(--material-card-shadow),
     0 1px 2px rgba(0, 0, 0, 0.42);
 }

@@ -250,7 +250,6 @@ let sidebarRestoreFrame = 0
 let sidebarRestoreTimeout = 0
 let sidebarRestoreAttempts = 0
 let latestSidebarScrollTop = appStore.sidebarNavScrollTop
-let sidebarScrollCommitFrame = 0
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
@@ -839,37 +838,14 @@ function captureSidebarScroll() {
 function handleSidebarNavScroll() {
   if (!sidebarNavRef.value) return
   latestSidebarScrollTop = sidebarNavRef.value.scrollTop
-  scheduleSidebarScrollCommit()
-}
-
-function scheduleSidebarScrollCommit() {
-  if (sidebarScrollCommitFrame) return
-  sidebarScrollCommitFrame = requestAnimationFrame(() => {
-    sidebarScrollCommitFrame = 0
-    commitSidebarScrollTop()
-  })
-}
-
-function cancelSidebarScrollCommitSchedule() {
-  if (!sidebarScrollCommitFrame) return
-  cancelAnimationFrame(sidebarScrollCommitFrame)
-  sidebarScrollCommitFrame = 0
 }
 
 function commitSidebarScrollTop() {
   appStore.setSidebarNavScrollTop(latestSidebarScrollTop)
 }
 
-function flushSidebarScrollCommit() {
-  if (sidebarScrollCommitFrame) {
-    cancelSidebarScrollCommitSchedule()
-    commitSidebarScrollTop()
-  }
-}
-
 function applySidebarScrollRestore() {
   if (!sidebarNavRef.value) return
-  flushSidebarScrollCommit()
   const previousScrollBehavior = sidebarNavRef.value.style.scrollBehavior
   sidebarNavRef.value.style.scrollBehavior = 'auto'
   latestSidebarScrollTop = appStore.sidebarNavScrollTop
@@ -1043,7 +1019,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   captureSidebarScroll()
-  cancelSidebarScrollCommitSchedule()
   cancelSidebarScrollRestoreSchedule()
 })
 </script>
