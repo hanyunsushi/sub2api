@@ -10,7 +10,7 @@
         <!-- Row 1: Core Stats -->
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- Total API Keys -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="key" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -30,7 +30,7 @@
           </div>
 
           <!-- Service Accounts -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="server" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -55,7 +55,7 @@
           </div>
 
           <!-- Today Requests -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="chart" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -75,7 +75,7 @@
           </div>
 
           <!-- New Users Today -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="userPlus" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -98,7 +98,7 @@
         <!-- Row 2: Token Stats -->
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- Today Tokens -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="cube" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -134,7 +134,7 @@
           </div>
 
           <!-- Total Tokens -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="database" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -170,7 +170,7 @@
           </div>
 
           <!-- Performance (RPM/TPM) -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="bolt" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -196,7 +196,7 @@
           </div>
 
           <!-- Avg Response Time -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
                 <Icon name="clock" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
@@ -219,7 +219,7 @@
         <!-- Charts Section -->
         <div class="space-y-6">
           <!-- Date Range Filter -->
-          <div class="card dashboard-filter-card p-4">
+          <div class="dashboard-card dashboard-filter-card p-4">
             <div class="flex flex-wrap items-center gap-4">
               <div class="flex items-center gap-2">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -273,7 +273,7 @@
           </div>
 
           <!-- User Usage Trend (Full Width) -->
-          <div class="card p-4">
+          <div class="dashboard-card p-4">
             <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
               {{ t('admin.dashboard.recentUsage') }} (Top 12)
             </h3>
@@ -690,13 +690,30 @@ onMounted(() => {
 
 <style scoped>
 .admin-dashboard-liquid {
+  --dashboard-card-surface: rgba(255, 255, 255, 0.82);
+  --dashboard-card-edge: rgba(255, 255, 255, 0.88);
+  --dashboard-card-shadow: rgba(15, 23, 42, 0.1);
   --dashboard-control-surface: rgba(255, 255, 255, 0.72);
   --dashboard-control-edge: rgba(255, 255, 255, 0.86);
   --dashboard-control-shadow: rgba(15, 23, 42, 0.12);
 }
 
-.admin-dashboard-liquid :deep(.dashboard-filter-card) {
-  background: inherit;
+.dashboard-card {
+  border: 1px solid var(--dashboard-card-edge);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), var(--dashboard-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.36), transparent 42%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 12px 30px -24px var(--dashboard-card-shadow),
+    0 1px 2px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 .admin-dashboard-liquid .dashboard-glass-control,
@@ -725,9 +742,22 @@ onMounted(() => {
 }
 
 .admin-dashboard-liquid:where(.dark *) {
+  --dashboard-card-surface: rgba(5, 7, 12, 0.86);
+  --dashboard-card-edge: rgba(148, 163, 184, 0.16);
+  --dashboard-card-shadow: rgba(0, 0, 0, 0.62);
   --dashboard-control-surface: rgba(8, 11, 18, 0.7);
   --dashboard-control-edge: rgba(255, 255, 255, 0.16);
   --dashboard-control-shadow: rgba(0, 0, 0, 0.36);
+}
+
+.admin-dashboard-liquid:where(.dark *) .dashboard-card {
+  background:
+    linear-gradient(180deg, rgba(10, 12, 18, 0.94), var(--dashboard-card-surface)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 42%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 40px -28px var(--dashboard-card-shadow),
+    0 1px 2px rgba(0, 0, 0, 0.42);
 }
 
 .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-filter-card),
@@ -741,6 +771,7 @@ onMounted(() => {
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  .dashboard-card,
   .admin-dashboard-liquid .dashboard-glass-control,
   .admin-dashboard-liquid :deep(.date-picker-trigger),
   .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
@@ -749,6 +780,7 @@ onMounted(() => {
     -webkit-backdrop-filter: none;
   }
 
+  .admin-dashboard-liquid:where(.dark *) .dashboard-card,
   .admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
   .admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
   .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
@@ -757,6 +789,7 @@ onMounted(() => {
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dashboard-card,
   .admin-dashboard-liquid .dashboard-glass-control,
   .admin-dashboard-liquid :deep(.date-picker-trigger),
   .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
