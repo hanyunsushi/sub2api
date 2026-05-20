@@ -2,6 +2,7 @@
   <div v-if="hasActiveSubscriptions" class="relative" ref="containerRef">
     <!-- Mini Progress Display -->
     <button
+      ref="triggerRef"
       @click="toggleTooltip"
       class="flex cursor-pointer items-center gap-2 rounded-lg border border-primary-200/70 bg-primary-50 px-3 py-1.5 transition-colors hover:bg-primary-100 dark:border-primary-800/50 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
       :title="t('subscriptionProgress.viewDetails')"
@@ -24,11 +25,13 @@
     </button>
 
     <!-- Hover/Click Tooltip -->
-    <transition name="dropdown">
-      <div
-        v-if="tooltipOpen"
-        class="absolute right-0 z-50 mt-2 w-[340px] overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card-hover dark:border-dark-700 dark:bg-dark-800"
-      >
+    <FloatingDropdown
+      :show="tooltipOpen"
+      :trigger-el="triggerRef"
+      placement="bottom-end"
+      :offset="8"
+      panel-class="w-[340px] overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card-hover dark:border-dark-700 dark:bg-dark-800"
+    >
         <div class="border-b border-gray-100 p-3 dark:border-dark-700">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ t('subscriptionProgress.title') }}
@@ -172,8 +175,7 @@
             {{ t('subscriptionProgress.viewAll') }}
           </router-link>
         </div>
-      </div>
-    </transition>
+    </FloatingDropdown>
   </div>
 </template>
 
@@ -181,6 +183,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import { useSubscriptionStore } from '@/stores'
 import type { UserSubscription } from '@/types'
 
@@ -189,6 +192,7 @@ const { t } = useI18n()
 const subscriptionStore = useSubscriptionStore()
 
 const containerRef = ref<HTMLElement | null>(null)
+const triggerRef = ref<HTMLElement | null>(null)
 const tooltipOpen = ref(false)
 
 // Use store data instead of local state

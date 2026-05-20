@@ -17,6 +17,7 @@
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
               <input
+                ref="filterUserInputRef"
                 v-model="filterUserKeyword"
                 type="text"
                 :placeholder="t('admin.users.searchUsers')"
@@ -35,9 +36,11 @@
               </button>
 
               <!-- User Dropdown -->
-              <div
-                v-if="showFilterUserDropdown && (filterUserResults.length > 0 || filterUserKeyword)"
-                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+              <FloatingDropdown
+                :show="showFilterUserDropdown && (filterUserResults.length > 0 || !!filterUserKeyword)"
+                :trigger-el="filterUserInputRef"
+                :match-width="true"
+                panel-class="max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
               >
                 <div
                   v-if="filterUserLoading"
@@ -61,7 +64,7 @@
                   <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
                   <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
                 </button>
-              </div>
+              </FloatingDropdown>
             </div>
 
             <!-- Filters -->
@@ -104,6 +107,7 @@
             <!-- Column Settings Dropdown -->
             <div class="relative" ref="columnDropdownRef">
               <button
+                ref="columnDropdownButtonRef"
                 @click="showColumnDropdown = !showColumnDropdown"
                 class="btn btn-secondary px-2 md:px-3"
                 :title="t('admin.users.columnSettings')"
@@ -114,9 +118,12 @@
                 <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
               </button>
               <!-- Dropdown menu -->
-              <div
-                v-if="showColumnDropdown"
-                class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+              <FloatingDropdown
+                :show="showColumnDropdown"
+                :trigger-el="columnDropdownButtonRef"
+                placement="bottom-end"
+                :offset="8"
+                panel-class="w-48 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
               >
                 <div class="p-2">
                   <!-- User column mode selection -->
@@ -150,7 +157,7 @@
                     <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
                   </button>
                 </div>
-              </div>
+              </FloatingDropdown>
             </div>
             <button
               @click="showGuideModal = true"
@@ -447,6 +454,7 @@
           <label class="input-label">{{ t('admin.subscriptions.form.user') }}</label>
           <div class="relative" data-assign-user-search>
             <input
+              ref="assignUserInputRef"
               v-model="userSearchKeyword"
               type="text"
               class="input pr-8"
@@ -463,9 +471,11 @@
               <Icon name="x" size="sm" :stroke-width="2" />
             </button>
             <!-- User Dropdown -->
-            <div
-              v-if="showUserDropdown && (userSearchResults.length > 0 || userSearchKeyword)"
-              class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+            <FloatingDropdown
+              :show="showUserDropdown && (userSearchResults.length > 0 || !!userSearchKeyword)"
+              :trigger-el="assignUserInputRef"
+              :match-width="true"
+              panel-class="max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
             >
               <div
                 v-if="userSearchLoading"
@@ -489,7 +499,7 @@
                 <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
                 <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
               </button>
-            </div>
+            </FloatingDropdown>
           </div>
         </div>
         <div>
@@ -757,6 +767,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { getRemainingDurationParts, isOneTimeDailyQuota, type RemainingDurationParts } from '@/utils/subscriptionQuota'
 
@@ -887,6 +898,7 @@ const columns = computed<Column[]>(() =>
 // Column dropdown state
 const showColumnDropdown = ref(false)
 const columnDropdownRef = ref<HTMLElement | null>(null)
+const columnDropdownButtonRef = ref<HTMLElement | null>(null)
 
 // Filter options
 const statusOptions = computed(() => [
@@ -906,6 +918,7 @@ const filterUserKeyword = ref('')
 const filterUserResults = ref<SimpleUser[]>([])
 const filterUserLoading = ref(false)
 const showFilterUserDropdown = ref(false)
+const filterUserInputRef = ref<HTMLElement | null>(null)
 const selectedFilterUser = ref<SimpleUser | null>(null)
 let filterUserSearchTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -914,6 +927,7 @@ const userSearchKeyword = ref('')
 const userSearchResults = ref<SimpleUser[]>([])
 const userSearchLoading = ref(false)
 const showUserDropdown = ref(false)
+const assignUserInputRef = ref<HTMLElement | null>(null)
 const selectedUser = ref<SimpleUser | null>(null)
 let userSearchTimeout: ReturnType<typeof setTimeout> | null = null
 

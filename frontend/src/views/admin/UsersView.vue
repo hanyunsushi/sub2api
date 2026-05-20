@@ -128,6 +128,7 @@
               <!-- Filter Settings Dropdown -->
               <div class="relative" ref="filterDropdownRef">
                 <button
+                  ref="filterDropdownButtonRef"
                   @click="showFilterDropdown = !showFilterDropdown"
                   class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.users.filterSettings')"
@@ -136,9 +137,11 @@
                   <span class="hidden md:inline">{{ t('admin.users.filterSettings') }}</span>
                 </button>
                 <!-- Dropdown menu -->
-                <div
-                  v-if="showFilterDropdown"
-                  class="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                <FloatingDropdown
+                  :show="showFilterDropdown"
+                  :trigger-el="filterDropdownButtonRef"
+                  placement="bottom-end"
+                  panel-class="w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
                   <!-- Built-in filters -->
                   <button
@@ -177,11 +180,12 @@
                       :stroke-width="2"
                     />
                   </button>
-                </div>
+                </FloatingDropdown>
               </div>
               <!-- Column Settings Dropdown -->
               <div class="relative" ref="columnDropdownRef">
                 <button
+                  ref="columnDropdownButtonRef"
                   @click="showColumnDropdown = !showColumnDropdown"
                   class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.users.columnSettings')"
@@ -192,9 +196,11 @@
                   <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
                 </button>
                 <!-- Dropdown menu -->
-                <div
-                  v-if="showColumnDropdown"
-                  class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                <FloatingDropdown
+                  :show="showColumnDropdown"
+                  :trigger-el="columnDropdownButtonRef"
+                  placement="bottom-end"
+                  panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
                   <button
                     v-for="col in toggleableColumns"
@@ -218,7 +224,7 @@
                       :stroke-width="2"
                     />
                   </button>
-                </div>
+                </FloatingDropdown>
               </div>
               <!-- Attributes Config Button -->
               <button
@@ -310,6 +316,7 @@
               <!-- 专属分组行 -->
               <span
                 v-if="getUserGroups(row).exclusive.length > 0"
+                :ref="el => setExpandedGroupTriggerRef(row.id, el)"
                 class="group/ex relative inline-flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs"
                 @click.stop="toggleExpandedGroup(row.id)"
               >
@@ -327,9 +334,11 @@
                   </div>
                 </div>
                 <!-- 点击展开分组操作菜单 -->
-                <div
-                  v-if="expandedGroupUserId === row.id"
-                  class="absolute left-0 top-full z-50 mt-1.5 min-w-[160px] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 text-xs shadow-xl dark:border-dark-600 dark:bg-dark-700"
+                <FloatingDropdown
+                  :show="expandedGroupUserId === row.id"
+                  :trigger-el="getExpandedGroupTriggerRef(row.id)"
+                  :offset="6"
+                  panel-class="min-w-[160px] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 text-xs shadow-xl dark:border-dark-600 dark:bg-dark-700"
                 >
                   <div class="border-b border-gray-100 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:border-dark-600 dark:text-dark-400">
                     {{ t('admin.users.clickToReplace') }}
@@ -343,7 +352,7 @@
                     <Icon name="swap" size="xs" class="h-3.5 w-3.5 flex-shrink-0 opacity-50" />
                     <span class="flex-1">{{ g.name }}</span>
                   </div>
-                </div>
+                </FloatingDropdown>
               </span>
               <!-- 公开分组行 -->
               <span
@@ -432,6 +441,7 @@
               <span>{{ column.label }}</span>
               <div class="usage-sort-trigger relative">
                 <button
+                  :ref="el => setUsageSortButtonRef(usageKey, el)"
                   type="button"
                   class="flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-gray-200 dark:hover:bg-dark-700"
                   :class="usageSort && usageSort.key === usageKey
@@ -462,9 +472,11 @@
                   </svg>
                 </button>
                 <!-- 弹出菜单：今日 / 近30天，点击进行三态循环切换。 -->
-                <div
-                  v-if="openUsageSortMenu === usageKey"
-                  class="absolute right-0 top-full z-50 mt-1 min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                <FloatingDropdown
+                  :show="openUsageSortMenu === usageKey"
+                  :trigger-el="getUsageSortButtonRef(usageKey)"
+                  placement="bottom-end"
+                  panel-class="min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
                   <button
                     v-for="metric in (['today', 'total'] as const)"
@@ -494,7 +506,7 @@
                   <div class="mt-1 border-t border-gray-100 px-3 py-1 text-[10px] normal-case tracking-normal text-gray-400 dark:border-dark-700 dark:text-dark-500">
                     {{ t('admin.users.sortCurrentPageOnly') }}
                   </div>
-                </div>
+                </FloatingDropdown>
               </div>
             </div>
           </template>
@@ -713,6 +725,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
@@ -732,6 +745,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import Select from '@/components/common/Select.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import UserAttributesConfigModal from '@/components/user/UserAttributesConfigModal.vue'
 import UserConcurrencyCell from '@/components/user/UserConcurrencyCell.vue'
 import PlatformUsageBreakdown from '@/components/user/PlatformUsageBreakdown.vue'
@@ -1030,6 +1044,8 @@ const showColumnDropdown = ref(false)
 // Dropdown refs for click outside detection
 const filterDropdownRef = ref<HTMLElement | null>(null)
 const columnDropdownRef = ref<HTMLElement | null>(null)
+const filterDropdownButtonRef = ref<HTMLElement | null>(null)
+const columnDropdownButtonRef = ref<HTMLElement | null>(null)
 
 // localStorage keys
 const FILTER_VALUES_KEY = 'user-filter-values'
@@ -1157,6 +1173,16 @@ const openUsageSortMenu = ref<string | null>(null)
 const toggleUsageSortMenu = (key: string) => {
   openUsageSortMenu.value = openUsageSortMenu.value === key ? null : key
 }
+const usageSortButtonRefs = ref<Record<string, HTMLElement>>({})
+const setUsageSortButtonRef = (key: string, el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLElement) {
+    usageSortButtonRefs.value[key] = el
+  } else {
+    delete usageSortButtonRefs.value[key]
+  }
+}
+const getUsageSortButtonRef = (key: string): HTMLElement | null =>
+  usageSortButtonRefs.value[key] ?? null
 
 const getUsageValue = (userId: number, key: string, metric: UsageMetric): number => {
   const stats = usageStats.value[userId]
@@ -1352,9 +1378,19 @@ const allowedGroupsUser = ref<AdminUser | null>(null)
 
 // Expanded group dropdown state (click to show exclusive groups list)
 const expandedGroupUserId = ref<number | null>(null)
+const expandedGroupTriggerRefs = ref<Record<number, HTMLElement>>({})
 const toggleExpandedGroup = (userId: number) => {
   expandedGroupUserId.value = expandedGroupUserId.value === userId ? null : userId
 }
+const setExpandedGroupTriggerRef = (userId: number, el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLElement) {
+    expandedGroupTriggerRefs.value[userId] = el
+  } else {
+    delete expandedGroupTriggerRefs.value[userId]
+  }
+}
+const getExpandedGroupTriggerRef = (userId: number): HTMLElement | null =>
+  expandedGroupTriggerRefs.value[userId] ?? null
 
 // Group replace modal state
 const showGroupReplaceModal = ref(false)

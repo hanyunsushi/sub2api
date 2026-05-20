@@ -515,6 +515,7 @@
                   <!-- Account search input -->
                   <div class="relative mt-1 rule-account-search-container">
                     <input
+                      :ref="el => setRuleAccountSearchInputRef(section.platform, ruleIndex, el)"
                       v-model="ruleAccountSearchKeyword[`${section.platform}-${ruleIndex}`]"
                       type="text"
                       class="input text-sm"
@@ -523,9 +524,11 @@
                       @focus="onRuleAccountSearchFocus(section.platform, ruleIndex)"
                     />
                     <!-- Search results dropdown -->
-                    <div
-                      v-if="showRuleAccountDropdown[`${section.platform}-${ruleIndex}`] && (ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]?.length ?? 0) > 0"
-                      class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                    <FloatingDropdown
+                      :show="showRuleAccountDropdown[`${section.platform}-${ruleIndex}`] && (ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]?.length ?? 0) > 0"
+                      :trigger-el="getRuleAccountSearchInputRef(section.platform, ruleIndex)"
+                      :match-width="true"
+                      panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                     >
                       <button
                         v-for="account in ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]"
@@ -539,7 +542,7 @@
                         <span :class="platformTextClass(account.platform)">{{ account.name }}</span>
                         <span class="ml-2 text-xs text-gray-400">#{{ account.id }}</span>
                       </button>
-                    </div>
+                    </FloatingDropdown>
                   </div>
                   <p class="mt-1 text-xs text-gray-400">
                     {{ t('admin.channels.form.ruleAccountsHint') }}
@@ -611,6 +614,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -629,6 +633,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import Toggle from '@/components/common/Toggle.vue'
@@ -962,8 +967,22 @@ interface SimpleAccount { id: number; name: string; platform: string }
 const ruleAccountSearchKeyword = ref<Record<string, string>>({})
 const ruleAccountSearchResults = ref<Record<string, SimpleAccount[]>>({})
 const showRuleAccountDropdown = ref<Record<string, boolean>>({})
+const ruleAccountSearchInputRefs = ref<Record<string, HTMLElement>>({})
 // Cache: account ID → name, populated when search results are selected
 const ruleAccountNameCache = ref<Record<number, string>>({})
+
+function setRuleAccountSearchInputRef(platform: string, ruleIndex: number, el: Element | ComponentPublicInstance | null) {
+  const key = `${platform}-${ruleIndex}`
+  if (el instanceof HTMLElement) {
+    ruleAccountSearchInputRefs.value[key] = el
+  } else {
+    delete ruleAccountSearchInputRefs.value[key]
+  }
+}
+
+function getRuleAccountSearchInputRef(platform: string, ruleIndex: number): HTMLElement | null {
+  return ruleAccountSearchInputRefs.value[`${platform}-${ruleIndex}`] ?? null
+}
 
 const ruleAccountSearchRunner = useKeyedDebouncedSearch<SimpleAccount[]>({
   delay: 300,

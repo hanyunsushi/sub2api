@@ -70,6 +70,7 @@
         <!-- User Dropdown -->
         <div v-if="user" class="relative" ref="dropdownRef">
           <button
+            ref="dropdownButtonRef"
             @click="toggleDropdown"
             class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
             aria-label="User Menu"
@@ -95,8 +96,13 @@
           </button>
 
           <!-- Dropdown Menu -->
-          <transition name="dropdown">
-            <div v-if="dropdownOpen" class="dropdown right-0 mt-2 w-56">
+          <FloatingDropdown
+            :show="dropdownOpen"
+            :trigger-el="dropdownButtonRef"
+            placement="bottom-end"
+            :offset="8"
+            panel-class="dropdown w-56"
+          >
               <!-- User Info -->
               <div class="border-b border-gray-100 px-4 py-3 dark:border-dark-700">
                 <div class="text-sm font-medium text-gray-900 dark:text-white">
@@ -204,8 +210,7 @@
                   {{ t('nav.logout') }}
                 </button>
               </div>
-            </div>
-          </transition>
+          </FloatingDropdown>
         </div>
       </div>
     </div>
@@ -221,6 +226,7 @@ import { useAdminSettingsStore } from '@/stores/adminSettings'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const router = useRouter()
@@ -234,6 +240,7 @@ const onboardingStore = useOnboardingStore()
 const user = computed(() => authStore.user)
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
+const dropdownButtonRef = ref<HTMLElement | null>(null)
 const contactInfo = computed(() => appStore.contactInfo)
 const docUrl = computed(() => appStore.docUrl)
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')

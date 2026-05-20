@@ -1,6 +1,7 @@
 <template>
   <div class="relative" ref="containerRef">
     <button
+      ref="triggerRef"
       type="button"
       @click="toggle"
       :disabled="disabled"
@@ -22,8 +23,12 @@
       </span>
     </button>
 
-    <Transition name="select-dropdown">
-      <div v-if="isOpen" class="select-dropdown">
+    <FloatingDropdown
+      :show="isOpen"
+      :trigger-el="triggerRef"
+      :match-width="true"
+      panel-class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg shadow-black/10 dark:border-dark-700 dark:bg-dark-800 dark:shadow-black/30"
+    >
         <!-- Search and Batch Test Header -->
         <div class="select-header">
           <div class="select-search">
@@ -162,8 +167,7 @@
             {{ t('common.noOptionsFound') }}
           </div>
         </div>
-      </div>
-    </Transition>
+    </FloatingDropdown>
   </div>
 </template>
 
@@ -171,6 +175,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api/admin'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import type { Proxy } from '@/types'
 
@@ -203,6 +208,7 @@ const emit = defineEmits<{
 const isOpen = ref(false)
 const searchQuery = ref('')
 const containerRef = ref<HTMLElement | null>(null)
+const triggerRef = ref<HTMLElement | null>(null)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
 // Test state

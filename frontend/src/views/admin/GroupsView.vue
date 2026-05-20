@@ -1413,6 +1413,7 @@
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
                       <input
+                        :ref="el => setAccountSearchInputRef(getCreateRuleSearchKey(rule), el)"
                         v-model="
                           accountSearchKeyword[getCreateRuleSearchKey(rule)]
                         "
@@ -1427,13 +1428,15 @@
                         @focus="onAccountSearchFocus(rule)"
                       />
                       <!-- 搜索结果下拉框 -->
-                      <div
-                        v-if="
+                      <FloatingDropdown
+                        :show="
                           showAccountDropdown[getCreateRuleSearchKey(rule)] &&
                           accountSearchResults[getCreateRuleSearchKey(rule)]
                             ?.length > 0
                         "
-                        class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                        :trigger-el="getAccountSearchInputRef(getCreateRuleSearchKey(rule))"
+                        :match-width="true"
+                        panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
                         <button
                           v-for="account in accountSearchResults[
@@ -1457,7 +1460,7 @@
                             >#{{ account.id }}</span
                           >
                         </button>
-                      </div>
+                      </FloatingDropdown>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
@@ -2593,6 +2596,7 @@
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
                       <input
+                        :ref="el => setAccountSearchInputRef(getEditRuleSearchKey(rule), el)"
                         v-model="
                           accountSearchKeyword[getEditRuleSearchKey(rule)]
                         "
@@ -2607,13 +2611,15 @@
                         @focus="onAccountSearchFocus(rule, true)"
                       />
                       <!-- 搜索结果下拉框 -->
-                      <div
-                        v-if="
+                      <FloatingDropdown
+                        :show="
                           showAccountDropdown[getEditRuleSearchKey(rule)] &&
                           accountSearchResults[getEditRuleSearchKey(rule)]
                             ?.length > 0
                         "
-                        class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                        :trigger-el="getAccountSearchInputRef(getEditRuleSearchKey(rule))"
+                        :match-width="true"
+                        panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
                         <button
                           v-for="account in accountSearchResults[
@@ -2637,7 +2643,7 @@
                             >#{{ account.id }}</span
                           >
                         </button>
-                      </div>
+                      </FloatingDropdown>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
@@ -2832,6 +2838,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
+import type { ComponentPublicInstance } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
 import { useOnboardingStore } from "@/stores/onboarding";
@@ -2846,6 +2853,7 @@ import BaseDialog from "@/components/common/BaseDialog.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import Select from "@/components/common/Select.vue";
+import FloatingDropdown from "@/components/common/FloatingDropdown.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
 import Icon from "@/components/icons/Icon.vue";
 import GroupRateMultipliersModal from "@/components/admin/group/GroupRateMultipliersModal.vue";
@@ -3193,17 +3201,31 @@ const getRuleSearchKey = (rule: ModelRoutingRule, isEdit: boolean = false) => {
 const accountSearchKeyword = ref<Record<string, string>>({});
 const accountSearchResults = ref<Record<string, SimpleAccount[]>>({});
 const showAccountDropdown = ref<Record<string, boolean>>({});
+const accountSearchInputRefs = ref<Record<string, HTMLElement>>({});
+
+const setAccountSearchInputRef = (key: string, el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLElement) {
+    accountSearchInputRefs.value[key] = el;
+  } else {
+    delete accountSearchInputRefs.value[key];
+  }
+};
+
+const getAccountSearchInputRef = (key: string): HTMLElement | null =>
+  accountSearchInputRefs.value[key] ?? null;
 
 const clearAccountSearchStateByKey = (key: string) => {
   delete accountSearchKeyword.value[key];
   delete accountSearchResults.value[key];
   delete showAccountDropdown.value[key];
+  delete accountSearchInputRefs.value[key];
 };
 
 const clearAllAccountSearchState = () => {
   accountSearchKeyword.value = {};
   accountSearchResults.value = {};
   showAccountDropdown.value = {};
+  accountSearchInputRefs.value = {};
 };
 
 const accountSearchRunner = useKeyedDebouncedSearch<SimpleAccount[]>({

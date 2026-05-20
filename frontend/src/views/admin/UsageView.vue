@@ -68,6 +68,7 @@
         <template #after-reset>
           <div class="relative" ref="columnDropdownRef">
             <button
+              ref="columnDropdownButtonRef"
               @click="showColumnDropdown = !showColumnDropdown"
               class="btn btn-secondary px-2 md:px-3"
               :title="t('admin.users.columnSettings')"
@@ -77,9 +78,11 @@
               </svg>
               <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
             </button>
-            <div
-              v-if="showColumnDropdown"
-              class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+            <FloatingDropdown
+              :show="showColumnDropdown"
+              :trigger-el="columnDropdownButtonRef"
+              placement="bottom-end"
+              panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
             >
               <button
                 v-for="col in toggleableColumns"
@@ -96,7 +99,7 @@
                   :stroke-width="2"
                 />
               </button>
-            </div>
+            </FloatingDropdown>
           </div>
         </template>
       </UsageFilters>
@@ -146,6 +149,7 @@ import UsageCleanupDialog from '@/components/admin/usage/UsageCleanupDialog.vue'
 import UserBalanceHistoryModal from '@/components/admin/user/UserBalanceHistoryModal.vue'
 import ModelDistributionChart from '@/components/charts/ModelDistributionChart.vue'; import GroupDistributionChart from '@/components/charts/GroupDistributionChart.vue'; import TokenUsageTrend from '@/components/charts/TokenUsageTrend.vue'
 import EndpointDistributionChart from '@/components/charts/EndpointDistributionChart.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import type { AdminUsageLog, TrendDataPoint, ModelStat, GroupStat, EndpointStat, AdminUser } from '@/types'; import type { AdminUsageStatsResponse, AdminUsageQueryParams } from '@/api/admin/usage'
 
@@ -588,6 +592,7 @@ const loadSavedColumns = () => {
 
 const showColumnDropdown = ref(false)
 const columnDropdownRef = ref<HTMLElement | null>(null)
+const columnDropdownButtonRef = ref<HTMLElement | null>(null)
 
 const handleColumnClickOutside = (event: MouseEvent) => {
   if (columnDropdownRef.value && !columnDropdownRef.value.contains(event.target as HTMLElement)) {
