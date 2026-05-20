@@ -24,6 +24,7 @@
         <div class="flex items-end gap-2">
           <div class="relative flex-1">
             <input
+              ref="searchInputRef"
               v-model="searchQuery"
               type="text"
               autocomplete="off"
@@ -32,9 +33,11 @@
               @input="handleSearchUsers"
               @focus="showDropdown = true"
             />
-            <div
-              v-if="showDropdown && searchResults.length > 0"
-              class="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-500 dark:bg-dark-700"
+            <FloatingDropdown
+              :show="showDropdown && searchResults.length > 0"
+              :trigger-el="searchInputRef"
+              :match-width="true"
+              panel-class="max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-500 dark:bg-dark-700"
             >
               <button
                 v-for="user in searchResults"
@@ -47,7 +50,7 @@
                 <span class="text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
                 <span v-if="user.username" class="text-xs text-gray-400">{{ user.email }}</span>
               </button>
-            </div>
+            </FloatingDropdown>
           </div>
           <div class="w-24">
             <input
@@ -247,6 +250,7 @@ import type { GroupRateMultiplierEntry } from '@/api/admin/groups'
 import type { AdminGroup, AdminUser } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Pagination from '@/components/common/Pagination.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 
@@ -272,6 +276,7 @@ const localEntries = ref<LocalEntry[]>([])
 const searchQuery = ref('')
 const searchResults = ref<AdminUser[]>([])
 const showDropdown = ref(false)
+const searchInputRef = ref<HTMLElement | null>(null)
 const selectedUser = ref<AdminUser | null>(null)
 const newRate = ref<number | null>(null)
 const currentPage = ref(1)

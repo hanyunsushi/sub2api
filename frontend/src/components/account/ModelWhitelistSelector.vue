@@ -3,6 +3,7 @@
     <!-- Multi-select Dropdown -->
     <div class="relative mb-3">
       <div
+        ref="triggerRef"
         @click="toggleDropdown"
         class="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-dark-500 dark:bg-dark-700"
       >
@@ -33,9 +34,11 @@
         </div>
       </div>
       <!-- Dropdown List -->
-      <div
-        v-if="showDropdown"
-        class="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-700"
+      <FloatingDropdown
+        :show="showDropdown"
+        :trigger-el="triggerRef"
+        :match-width="true"
+        panel-class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-700"
       >
         <div class="sticky top-0 border-b border-gray-200 bg-white p-2 dark:border-dark-600 dark:bg-dark-700">
           <input
@@ -73,7 +76,7 @@
             {{ t('admin.accounts.noMatchingModels') }}
           </div>
         </div>
-      </div>
+      </FloatingDropdown>
     </div>
 
     <!-- Quick Actions -->
@@ -133,6 +136,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { accountsAPI } from '@/api/admin/accounts'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import ModelIcon from '@/components/common/ModelIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { allModels, getModelsByPlatform } from '@/composables/useModelWhitelist'
@@ -153,6 +157,7 @@ const emit = defineEmits<{
 const appStore = useAppStore()
 
 const showDropdown = ref(false)
+const triggerRef = ref<HTMLElement | null>(null)
 const searchQuery = ref('')
 const customModel = ref('')
 const isComposing = ref(false)

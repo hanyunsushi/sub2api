@@ -3,6 +3,7 @@
     <!-- Admin: Full version badge with dropdown -->
     <template v-if="isAdmin">
       <button
+        ref="buttonRef"
         @click="toggleDropdown"
         class="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs transition-colors"
         :class="[
@@ -27,12 +28,13 @@
       </button>
 
       <!-- Dropdown -->
-      <transition name="dropdown">
-        <div
-          v-if="dropdownOpen"
-          ref="dropdownRef"
-          class="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card-hover dark:border-dark-700 dark:bg-dark-800"
-        >
+      <FloatingDropdown
+        :show="dropdownOpen"
+        :trigger-el="buttonRef"
+        placement="bottom-start"
+        :offset="8"
+        panel-class="w-64 overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card-hover dark:border-dark-700 dark:bg-dark-800"
+      >
           <!-- Header with refresh button -->
           <div
             class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-dark-700"
@@ -369,8 +371,7 @@
               </a>
             </template>
           </div>
-        </div>
-      </transition>
+      </FloatingDropdown>
     </template>
 
     <!-- Non-admin: Simple static version text -->
@@ -385,6 +386,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
 import { performUpdate, restartService } from '@/api/admin/system'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()
@@ -399,7 +401,7 @@ const appStore = useAppStore()
 const isAdmin = computed(() => authStore.isAdmin)
 
 const dropdownOpen = ref(false)
-const dropdownRef = ref<HTMLElement | null>(null)
+const buttonRef = ref<HTMLElement | null>(null)
 
 // Use store's cached version state
 const loading = computed(() => appStore.versionLoading)
@@ -515,8 +517,7 @@ async function checkServiceAndReload() {
 
 function handleClickOutside(event: MouseEvent) {
   const target = event.target as Node
-  const button = (event.target as Element).closest('button')
-  if (dropdownRef.value && !dropdownRef.value.contains(target) && !button?.contains(target)) {
+  if (!buttonRef.value?.contains(target)) {
     closeDropdown()
   }
 }

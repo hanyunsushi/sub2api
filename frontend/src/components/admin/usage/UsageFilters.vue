@@ -8,6 +8,7 @@
         <div ref="userSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('admin.usage.userFilter') }}</label>
           <input
+            ref="userInputRef"
             v-model="userKeyword"
             type="text"
             class="input pr-8"
@@ -24,9 +25,11 @@
           >
             ✕
           </button>
-          <div
-            v-if="showUserDropdown && (userResults.length > 0 || userKeyword)"
-            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
+          <FloatingDropdown
+            :show="showUserDropdown && (userResults.length > 0 || !!userKeyword)"
+            :trigger-el="userInputRef"
+            :match-width="true"
+            panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
             <button
               v-for="u in userResults"
@@ -38,13 +41,14 @@
               <span>{{ u.email }}</span>
               <span class="ml-2 text-xs text-gray-400">#{{ u.id }}</span>
             </button>
-          </div>
+          </FloatingDropdown>
         </div>
 
         <!-- API Key Search -->
         <div ref="apiKeySearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
           <input
+            ref="apiKeyInputRef"
             v-model="apiKeyKeyword"
             type="text"
             class="input pr-8"
@@ -61,9 +65,11 @@
           >
             ✕
           </button>
-          <div
-            v-if="showApiKeyDropdown && apiKeyResults.length > 0"
-            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
+          <FloatingDropdown
+            :show="showApiKeyDropdown && apiKeyResults.length > 0"
+            :trigger-el="apiKeyInputRef"
+            :match-width="true"
+            panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
             <button
               v-for="k in apiKeyResults"
@@ -75,7 +81,7 @@
               <span class="truncate">{{ k.name || `#${k.id}` }}</span>
               <span class="ml-2 text-xs text-gray-400">#{{ k.id }}</span>
             </button>
-          </div>
+          </FloatingDropdown>
         </div>
 
         <!-- Model Filter -->
@@ -88,6 +94,7 @@
         <div ref="accountSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[220px]">
           <label class="input-label">{{ t('admin.usage.account') }}</label>
           <input
+            ref="accountInputRef"
             v-model="accountKeyword"
             type="text"
             class="input pr-8"
@@ -104,9 +111,11 @@
           >
             ✕
           </button>
-          <div
-            v-if="showAccountDropdown && (accountResults.length > 0 || accountKeyword)"
-            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
+          <FloatingDropdown
+            :show="showAccountDropdown && (accountResults.length > 0 || !!accountKeyword)"
+            :trigger-el="accountInputRef"
+            :match-width="true"
+            panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
             <button
               v-for="a in accountResults"
@@ -118,7 +127,7 @@
               <span class="truncate">{{ a.name }}</span>
               <span class="ml-2 text-xs text-gray-400">#{{ a.id }}</span>
             </button>
-          </div>
+          </FloatingDropdown>
         </div>
 
         <!-- Request Type Filter -->
@@ -171,6 +180,7 @@
 import { ref, onMounted, onUnmounted, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api/admin'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Select, { type SelectOption } from '@/components/common/Select.vue'
 import type { SimpleApiKey, SimpleUser } from '@/api/admin/usage'
 
@@ -202,6 +212,9 @@ const filters = toRef(props, 'modelValue')
 const userSearchRef = ref<HTMLElement | null>(null)
 const apiKeySearchRef = ref<HTMLElement | null>(null)
 const accountSearchRef = ref<HTMLElement | null>(null)
+const userInputRef = ref<HTMLElement | null>(null)
+const apiKeyInputRef = ref<HTMLElement | null>(null)
+const accountInputRef = ref<HTMLElement | null>(null)
 
 const userKeyword = ref('')
 const userResults = ref<SimpleUser[]>([])

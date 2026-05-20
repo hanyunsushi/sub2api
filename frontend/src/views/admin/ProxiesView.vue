@@ -137,6 +137,7 @@
               <code class="code text-xs">{{ row.host }}:{{ row.port }}</code>
               <div class="relative">
                 <button
+                  :ref="el => setCopyMenuButtonRef(row.id, el)"
                   type="button"
                   class="rounded p-0.5 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
                   :title="t('admin.proxies.copyProxyUrl')"
@@ -146,9 +147,10 @@
                   <Icon name="copy" size="sm" />
                 </button>
                 <!-- 右键展开格式选择菜单 -->
-                <div
-                  v-if="copyMenuProxyId === row.id"
-                  class="absolute left-0 top-full z-50 mt-1 w-auto min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-500 dark:bg-dark-700"
+                <FloatingDropdown
+                  :show="copyMenuProxyId === row.id"
+                  :trigger-el="getCopyMenuButtonRef(row.id)"
+                  panel-class="w-auto min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-500 dark:bg-dark-700"
                 >
                   <button
                     v-for="fmt in getCopyFormats(row)"
@@ -158,7 +160,7 @@
                   >
                     <span class="truncate font-mono text-gray-600 dark:text-gray-300">{{ fmt.label }}</span>
                   </button>
-                </div>
+                </FloatingDropdown>
               </div>
             </div>
           </template>
@@ -873,6 +875,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { adminAPI } from '@/api/admin'
@@ -887,6 +890,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import ImportDataModal from '@/components/admin/proxy/ImportDataModal.vue'
 import Select from '@/components/common/Select.vue'
+import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformTypeBadge from '@/components/common/PlatformTypeBadge.vue'
 import { useClipboard } from '@/composables/useClipboard'
@@ -942,6 +946,7 @@ const editStatusOptions = computed(() => [
 const proxies = ref<Proxy[]>([])
 const visiblePasswordIds = reactive(new Set<number>())
 const copyMenuProxyId = ref<number | null>(null)
+const copyMenuButtonRefs = ref<Record<number, HTMLElement>>({})
 const loading = ref(false)
 const searchQuery = ref('')
 const filters = reactive({
@@ -1858,6 +1863,18 @@ function copyProxyUrl(row: any) {
 
 function toggleCopyMenu(id: number) {
   copyMenuProxyId.value = copyMenuProxyId.value === id ? null : id
+}
+
+function setCopyMenuButtonRef(id: number, el: Element | ComponentPublicInstance | null) {
+  if (el instanceof HTMLElement) {
+    copyMenuButtonRefs.value[id] = el
+  } else {
+    delete copyMenuButtonRefs.value[id]
+  }
+}
+
+function getCopyMenuButtonRef(id: number): HTMLElement | null {
+  return copyMenuButtonRefs.value[id] ?? null
 }
 
 function copyFormat(value: string) {
