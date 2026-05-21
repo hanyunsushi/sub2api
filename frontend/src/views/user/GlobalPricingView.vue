@@ -290,28 +290,28 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: rgba(255, 255, 255, 0.44);
-  --material-card-edge: rgba(255, 255, 255, 0.62);
-  --material-card-shadow: rgba(15, 23, 42, 0.26);
+  --material-card-surface: rgba(243, 239, 229, 0.5);
+  --material-card-edge: rgba(23, 21, 18, 0.14);
+  --material-card-shadow: rgba(23, 21, 18, 0.34);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
+    linear-gradient(180deg, rgba(255, 250, 240, 0.78), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
   box-shadow: 0 18px 42px -34px var(--material-card-shadow);
   backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
   -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
 }
 
 .table-wrapper {
-  --material-card-surface: rgba(255, 255, 255, 0.44);
-  --material-card-edge: rgba(255, 255, 255, 0.62);
-  --material-card-shadow: rgba(15, 23, 42, 0.26);
+  --material-card-surface: rgba(243, 239, 229, 0.5);
+  --material-card-edge: rgba(23, 21, 18, 0.14);
+  --material-card-shadow: rgba(23, 21, 18, 0.34);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
+    linear-gradient(180deg, rgba(255, 250, 240, 0.78), var(--material-card-surface)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
   box-shadow: 0 18px 42px -34px var(--material-card-shadow);
   backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
   -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
@@ -319,21 +319,21 @@ onMounted(loadPricing)
 
 .dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: rgba(3, 5, 10, 0.68);
+  --material-card-surface: rgba(5, 5, 5, 0.7);
   --material-card-edge: rgba(148, 163, 184, 0.16);
-  --material-card-shadow: rgba(0, 0, 0, 0.82);
+  --material-card-shadow: rgba(5, 5, 5, 0.82);
 }
 
 .dark .summary-tile {
   background:
-    linear-gradient(180deg, rgba(13, 17, 27, 0.78), var(--material-card-surface)),
+    linear-gradient(180deg, rgba(23, 21, 18, 0.78), var(--material-card-surface)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
   box-shadow: 0 22px 52px -36px var(--material-card-shadow);
 }
 
 .dark .table-wrapper {
   background:
-    linear-gradient(180deg, rgba(13, 17, 27, 0.78), var(--material-card-surface)),
+    linear-gradient(180deg, rgba(23, 21, 18, 0.78), var(--material-card-surface)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
   box-shadow: 0 22px 52px -36px var(--material-card-shadow);
 }

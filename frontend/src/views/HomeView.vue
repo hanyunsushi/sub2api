@@ -474,10 +474,10 @@ onMounted(() => {
 /* Terminal Window */
 .terminal-window {
   width: 420px;
-  background: linear-gradient(145deg, #191717 0%, #000000 100%);
+  background: linear-gradient(145deg, #171512 0%, #050505 100%);
   border-radius: 10px;
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 25px 50px -12px rgba(5, 5, 5, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -620,7 +620,7 @@ onMounted(() => {
 /* Dark mode adjustments */
 :deep(.dark) .terminal-window {
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 25px 50px -12px rgba(5, 5, 5, 0.6),
     0 0 0 1px rgba(0, 47, 167, 0.3),
     0 18px 44px rgba(0, 47, 167, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);

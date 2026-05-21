@@ -36,11 +36,11 @@ describe('right-side material surfaces', () => {
   })
 
   it('keeps deep mode dark and provides reduced-transparency fallbacks for the same surfaces', () => {
-    expect(styleSource).toContain('rgba(3, 5, 10, 0.68)')
+    expect(styleSource).toContain('rgba(5, 5, 5, 0.7)')
     expect(styleSource).toContain('@media (prefers-reduced-transparency: reduce)')
     expect(styleSource).toContain('[class~="bg-white"]')
     expect(styleSource).toContain('[class~="rounded-lg"]')
     expect(styleSource).toContain('backdrop-filter: none;')
-    expect(styleSource).toContain('background: rgb(6, 8, 13) !important;')
+    expect(styleSource).toContain('background: rgb(17, 16, 13) !important;')
   })
 })

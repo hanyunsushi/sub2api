@@ -28,14 +28,14 @@ describe('AppLayout route transition', () => {
 
   it('ships the visible route reveal from global CSS so production assets include it', () => {
     expect(styleSource).toContain('transform-origin: top center')
-    expect(styleSource).toContain('--route-enter-duration: 1.08s;')
-    expect(styleSource).toContain('will-change: opacity, transform, filter')
+    expect(styleSource).toContain('--route-enter-duration: 0.9s;')
+    expect(styleSource).toContain('will-change: opacity, transform')
     expect(styleSource).toContain('animation: app-route-page-enter var(--route-enter-duration) var(--route-enter-easing) both')
     expect(styleSource).toContain('.app-route-page-entering > *')
-    expect(styleSource).toContain('animation: app-route-page-child-enter 0.9s var(--route-enter-easing) both')
+    expect(styleSource).toContain('animation: app-route-page-child-enter 0.7s var(--route-enter-easing) both')
     expect(styleSource).toContain('@keyframes app-route-page-enter')
     expect(styleSource).toContain('@keyframes app-route-page-child-enter')
-    expect(styleSource).toContain('translate3d(0, 30px, 0) scale(0.982)')
+    expect(styleSource).toContain('translate3d(0, 26px, 0)')
     expect(styleSource).toContain('@media (prefers-reduced-motion: reduce)')
   })
 })
