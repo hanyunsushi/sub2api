@@ -690,9 +690,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-dashboard-liquid {
-  --dashboard-control-surface: rgba(255, 255, 255, 0.72);
-  --dashboard-control-edge: rgba(255, 255, 255, 0.86);
-  --dashboard-control-shadow: rgba(15, 23, 42, 0.12);
+  --dashboard-control-surface: rgba(255, 250, 240, 0.72);
+  --dashboard-control-edge: rgba(23, 21, 18, 0.14);
+  --dashboard-control-shadow: rgba(23, 21, 18, 0.16);
 }
 
 .admin-dashboard-liquid .dashboard-glass-control,
@@ -700,11 +700,11 @@ onMounted(() => {
 .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.8), var(--dashboard-control-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.62), transparent 42%);
+    linear-gradient(180deg, rgba(255, 250, 240, 0.8), var(--dashboard-control-surface)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.62), transparent 42%);
   box-shadow:
     0 10px 24px -20px var(--dashboard-control-shadow),
-    0 1px 1px rgba(15, 23, 42, 0.04);
+    0 1px 1px rgba(23, 21, 18, 0.05);
   backdrop-filter: blur(22px) saturate(1.18);
   -webkit-backdrop-filter: blur(22px) saturate(1.18);
 }
@@ -714,14 +714,14 @@ onMounted(() => {
 .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger:hover) {
   border-color: rgba(0, 47, 167, 0.18);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.74)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.7), transparent 42%);
+    linear-gradient(180deg, rgba(255, 250, 240, 0.88), rgba(243, 239, 229, 0.74)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.7), transparent 42%);
 }
 
 .admin-dashboard-liquid:where(.dark *) {
-  --dashboard-control-surface: rgba(8, 11, 18, 0.7);
+  --dashboard-control-surface: rgba(17, 16, 13, 0.72);
   --dashboard-control-edge: rgba(255, 255, 255, 0.16);
-  --dashboard-control-shadow: rgba(0, 0, 0, 0.36);
+  --dashboard-control-shadow: rgba(5, 5, 5, 0.36);
 }
 
 .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-filter-card),
@@ -730,7 +730,7 @@ onMounted(() => {
 .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
   background:
-    linear-gradient(180deg, rgba(14, 18, 28, 0.82), var(--dashboard-control-surface)),
+    linear-gradient(180deg, rgba(23, 21, 18, 0.82), var(--dashboard-control-surface)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 42%);
 }
 
@@ -738,7 +738,7 @@ onMounted(() => {
   .admin-dashboard-liquid .dashboard-glass-control,
   .admin-dashboard-liquid :deep(.date-picker-trigger),
   .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgb(255, 255, 255);
+    background: rgb(255, 250, 240);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -746,7 +746,7 @@ onMounted(() => {
   .admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
   .admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
   .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgba(6, 8, 13, 0.94);
+    background: rgba(17, 16, 13, 0.94);
   }
 }
 
@@ -754,13 +754,13 @@ onMounted(() => {
   .admin-dashboard-liquid .dashboard-glass-control,
   .admin-dashboard-liquid :deep(.date-picker-trigger),
   .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgb(255, 255, 255);
+    background: rgb(255, 250, 240);
   }
 
   .admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
   .admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
   .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgba(6, 8, 13, 0.94);
+    background: rgba(17, 16, 13, 0.94);
   }
 }
 

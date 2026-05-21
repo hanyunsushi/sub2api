@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --atelier-paper: #f3efe5;
+  --atelier-paper-2: #e9e1d2;
+  --atelier-ink: #171512;
+  --atelier-muted: #70685c;
+  --atelier-line: rgba(23, 21, 18, 0.18);
+  --atelier-line-strong: rgba(23, 21, 18, 0.36);
+  --atelier-blue: #002FA7;
+  --atelier-blue-dark: #001E6E;
+  --atelier-butter: #c79a3a;
+  --atelier-dust: #4f6a8c;
+  --atelier-white: #fffaf0;
+  --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 @layer base {
   * {
     @apply border-gray-200 dark:border-dark-700;
@@ -30,6 +45,19 @@
     @apply bg-accent-50 text-gray-950 dark:bg-dark-950 dark:text-gray-100;
     @apply min-h-screen;
     overscroll-behavior-y: none;
+    color: var(--atelier-ink);
+    background:
+      radial-gradient(circle at 14% 16%, rgba(0, 47, 167, 0.045), transparent 26rem),
+      radial-gradient(circle at 88% 8%, rgba(199, 154, 58, 0.055), transparent 24rem),
+      linear-gradient(90deg, rgba(23, 21, 18, 0.026) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(23, 21, 18, 0.02) 1px, transparent 1px),
+      var(--atelier-paper);
+    background-size: auto, auto, 32px 32px, 32px 32px, auto;
+  }
+
+  .dark body {
+    color: #f7f1e6;
+    background: #050505;
   }
 
   /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
@@ -106,7 +134,10 @@
     @apply border border-accent-200 dark:border-dark-600;
     @apply shadow-sm hover:bg-accent-50 dark:hover:bg-dark-700;
     @apply hover:border-primary-200 dark:hover:border-dark-500;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    color: var(--atelier-ink);
+    border-color: var(--atelier-line);
+    background: var(--atelier-white);
+    box-shadow: 0 1px 2px rgba(23, 21, 18, 0.05);
   }
 
   .btn-ghost {
@@ -183,6 +214,9 @@
     @apply transition-all duration-200;
     @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/25;
     @apply disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-900;
+    color: var(--atelier-ink);
+    border-color: rgba(23, 21, 18, 0.16);
+    background: color-mix(in srgb, var(--atelier-white) 86%, white);
   }
 
   .input-error {
@@ -216,9 +250,9 @@
   .glass {
     @apply border border-accent-100 dark:border-dark-700;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.44)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.045));
-    box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.26);
+      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
+      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.04));
+    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
     backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
     -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
@@ -229,9 +263,9 @@
     @apply shadow-card;
     @apply transition-all duration-300;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.44)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
-    box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.26);
+      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
+      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
+    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
     backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
     -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
@@ -243,9 +277,9 @@
     @apply shadow-card;
     @apply transition-all duration-300;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.44)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
-    box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.26);
+      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
+      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
+    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
     backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
     -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
@@ -259,9 +293,9 @@
     @apply border border-accent-100 dark:border-dark-700;
     @apply shadow-card;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.44)),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05));
-    box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.26);
+      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
+      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
+    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
     backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
     -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
@@ -398,6 +432,8 @@
     @apply shadow-card-hover;
     @apply py-1;
     @apply origin-top-right animate-scale-in;
+    border-color: rgba(23, 21, 18, 0.16);
+    background: color-mix(in srgb, var(--atelier-white) 92%, white);
   }
 
   .dropdown-item {
@@ -422,6 +458,8 @@
     @apply rounded-lg shadow-card-hover;
     @apply border border-accent-200 dark:border-dark-700;
     @apply flex flex-col;
+    border-color: rgba(23, 21, 18, 0.16);
+    background: color-mix(in srgb, var(--atelier-white) 92%, white);
   }
 
   .modal-header {
@@ -513,6 +551,7 @@
     @apply max-h-[90vh];
     @apply rounded-lg bg-white dark:bg-dark-800;
     @apply shadow-card-hover;
+    background: color-mix(in srgb, var(--atelier-white) 92%, white);
   }
 
   .dialog-header {
@@ -539,6 +578,8 @@
     @apply border border-accent-200 dark:border-dark-700;
     @apply p-4;
     @apply animate-slide-in-right;
+    border-color: rgba(23, 21, 18, 0.16);
+    background: color-mix(in srgb, var(--atelier-white) 92%, white);
   }
 
   .toast-success {
@@ -555,6 +596,25 @@
 
   .toast-info {
     @apply border-l-primary-500;
+  }
+
+  .dark .btn-secondary,
+  .dark .input,
+  .dark .dropdown,
+  .dark .modal-content,
+  .dark .dialog-container,
+  .dark .toast {
+    color: #f7f1e6;
+    border-color: rgba(233, 225, 210, 0.16);
+    background: rgba(17, 16, 13, 0.94);
+  }
+
+  .dark .input {
+    color: #f7f1e6;
+  }
+
+  .dark .dropdown-item:hover {
+    background: rgba(233, 225, 210, 0.08);
   }
 
   /* ============ 侧边栏 ============ */
@@ -809,8 +869,9 @@
 
 .guizang-site-background--light {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.045), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 255, 0.82));
+    radial-gradient(circle at 14% 16%, rgba(0, 47, 167, 0.045), transparent 26rem),
+    radial-gradient(circle at 88% 8%, rgba(199, 154, 58, 0.055), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.96), rgba(243, 239, 229, 0.88));
   color: #002fa7;
 }
 
@@ -859,15 +920,15 @@
 }
 
 .guizang-site-background--light .guizang-site-background__grid {
-  opacity: 0.36;
+  opacity: 0.3;
   background-image:
-    linear-gradient(rgba(0, 47, 167, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 47, 167, 0.12) 1px, transparent 1px);
+    linear-gradient(rgba(23, 21, 18, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.055) 1px, transparent 1px);
 }
 
 .guizang-site-background--light .guizang-site-background__dots {
-  opacity: 0.22;
-  background-image: radial-gradient(rgba(0, 47, 167, 0.36) 1px, transparent 1.4px);
+  opacity: 0.2;
+  background-image: radial-gradient(rgba(0, 47, 167, 0.22) 1px, transparent 1.4px);
 }
 
 .dark .guizang-site-background--light .guizang-site-background__canvas {
@@ -904,19 +965,19 @@
 }
 
 .app-layout-shell {
-  background: #fbfcff;
+  background: #f3efe5;
 }
 
 .dark .app-layout-shell {
-  background: #020307;
+  background: #050505;
 }
 
 .app-layout-content {
-  background: #fbfcff;
+  background: #f3efe5;
 }
 
 .dark .app-layout-content {
-  background: #020307;
+  background: #050505;
 }
 
 .app-layout-content > .relative {
@@ -925,13 +986,13 @@
 
 .app-layout-content .glass {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.24) 42%, rgba(0, 47, 167, 0.045));
+    linear-gradient(180deg, rgba(255, 250, 240, 0.8), rgba(243, 239, 229, 0.58)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.74), rgba(233, 225, 210, 0.28) 42%, rgba(0, 47, 167, 0.04));
 }
 
 .app-layout-content .modal-content,
 .app-layout-content .dropdown {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 250, 240, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -958,11 +1019,11 @@
   [class~="bg-gray-50"],
   [class~="bg-gray-50/50"]
 ):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
-  border-color: rgba(255, 255, 255, 0.62) !important;
+  border-color: rgba(23, 21, 18, 0.14) !important;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.44)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 42%, rgba(0, 47, 167, 0.05)) !important;
-  box-shadow: 0 18px 42px -34px rgba(15, 23, 42, 0.26) !important;
+    linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045)) !important;
+  box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34) !important;
   backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
 }
@@ -983,9 +1044,9 @@
 .dark .app-layout-content .card-glass {
   border-color: rgba(148, 163, 184, 0.16);
   background:
-    linear-gradient(180deg, rgba(13, 17, 27, 0.78), rgba(3, 5, 10, 0.68)),
+    linear-gradient(180deg, rgba(23, 21, 18, 0.78), rgba(5, 5, 5, 0.7)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
-  box-shadow: 0 22px 52px -36px rgba(0, 0, 0, 0.82);
+  box-shadow: 0 22px 52px -36px rgba(5, 5, 5, 0.82);
 }
 
 .dark .app-layout-content .card,
@@ -1012,28 +1073,27 @@
 ):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   border-color: rgba(148, 163, 184, 0.16) !important;
   background:
-    linear-gradient(180deg, rgba(13, 17, 27, 0.78), rgba(3, 5, 10, 0.68)),
+    linear-gradient(180deg, rgba(23, 21, 18, 0.78), rgba(5, 5, 5, 0.7)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent) !important;
-  box-shadow: 0 22px 52px -36px rgba(0, 0, 0, 0.82) !important;
+  box-shadow: 0 22px 52px -36px rgba(5, 5, 5, 0.82) !important;
 }
 
 .dark .app-layout-content .modal-content,
 .dark .app-layout-content .dropdown {
-  background: rgba(5, 7, 12, 0.94);
+  background: rgba(17, 16, 13, 0.94);
 }
 
 .app-route-page {
-  --route-enter-duration: 1.08s;
-  --route-enter-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --route-enter-duration: 0.9s;
+  --route-enter-easing: var(--atelier-ease);
   transform-origin: top center;
   perspective: 1200px;
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
 }
 
 .app-route-page-preparing {
   opacity: 0;
-  transform: translate3d(0, 30px, 0) scale(0.982);
-  filter: blur(10px) saturate(0.92);
+  transform: translate3d(0, 26px, 0);
 }
 
 .app-route-page-entering {
@@ -1042,7 +1102,7 @@
 
 .app-route-page-entering > *,
 .app-route-page-entering > * > * {
-  animation: app-route-page-child-enter 0.9s var(--route-enter-easing) both;
+  animation: app-route-page-child-enter 0.7s var(--route-enter-easing) both;
 }
 
 .app-route-page-entering > * > :nth-child(2) {
@@ -1060,34 +1120,29 @@
 .app-route-page-settled {
   opacity: 1;
   transform: none;
-  filter: none;
 }
 
 @keyframes app-route-page-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 30px, 0) scale(0.982);
-    filter: blur(10px) saturate(0.92);
+    transform: translate3d(0, 26px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0) saturate(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes app-route-page-child-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.988);
-    filter: blur(6px);
+    transform: translate3d(0, 18px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -1112,7 +1167,7 @@
     [class~="bg-gray-50"],
     [class~="bg-gray-50/50"]
   ) {
-    background: rgb(255, 255, 255);
+    background: rgb(255, 250, 240);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1137,7 +1192,7 @@
     [class~="bg-gray-50"],
     [class~="bg-gray-50/50"]
   ) {
-    background: rgb(6, 8, 13) !important;
+    background: rgb(17, 16, 13) !important;
   }
 }
 
@@ -1154,7 +1209,6 @@
   .app-route-page-settled {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 
@@ -1179,7 +1233,7 @@
     [class~="bg-gray-50"],
     [class~="bg-gray-50/50"]
   ) {
-    background: rgb(255, 255, 255);
+    background: rgb(255, 250, 240);
   }
 
   .dark .glass,
@@ -1202,7 +1256,7 @@
     [class~="bg-gray-50"],
     [class~="bg-gray-50/50"]
   ) {
-    background: rgb(6, 8, 13) !important;
+    background: rgb(17, 16, 13) !important;
   }
 }
 
@@ -1225,8 +1279,12 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .auth-ascii-shell .card-glass {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 250, 240, 0.92);
   backdrop-filter: blur(18px);
+}
+
+.dark .auth-ascii-shell .card-glass {
+  background: rgba(17, 16, 13, 0.94);
 }
 
 .auth-ascii-shell .text-gradient {
