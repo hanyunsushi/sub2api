@@ -39,7 +39,7 @@ func TestBuzzBalanceService_GetBalanceCalculatesRemainingFromBuzzBilling(t *test
 
 	require.True(t, got.Enabled)
 	require.True(t, got.Configured)
-	require.Equal(t, "CNY", got.Currency)
+	require.Equal(t, "USD", got.Currency)
 	require.InDelta(t, 100, got.Total, 0.0001)
 	require.InDelta(t, 12.34, got.Used, 0.0001)
 	require.InDelta(t, 87.66, got.Remaining, 0.0001)

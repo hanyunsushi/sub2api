@@ -348,7 +348,7 @@ const showBuzzBalanceInChip = computed(() => {
 
 const formattedBuzzBalance = computed(() => {
   if (!canShowBuzzBalance.value || !buzzBalance.value) return '未配置'
-  return `¥${buzzBalance.value.remaining.toFixed(2)}`
+  return `$${buzzBalance.value.remaining.toFixed(2)}`
 })
 
 const balanceChipClass = computed(() => {
