@@ -3575,6 +3575,92 @@
             </div>
           </div>
 
+          <!-- BuzzAI Balance Settings -->
+          <div class="card">
+            <div
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+            >
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ localText("BuzzAI 余额", "BuzzAI Balance") }}
+              </h2>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {{
+                  localText(
+                    "后端保存 BuzzAI API Key，用于右上角余额轮播和悬停展示。",
+                    "Store the BuzzAI API key server-side for the header balance carousel and hover display.",
+                  )
+                }}
+              </p>
+            </div>
+            <div class="space-y-5 p-6">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <label
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ localText("启用 BuzzAI 余额", "Enable BuzzAI balance") }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      localText(
+                        "启用后管理员顶部余额会每 7 秒在系统余额和 Buzz 余额间轮播。",
+                        "When enabled, admin header balance rotates between system and Buzz every 7 seconds.",
+                      )
+                    }}
+                  </p>
+                </div>
+                <Toggle v-model="form.buzz_balance_enabled" />
+              </div>
+
+              <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ localText("BuzzAI API Base URL", "BuzzAI API Base URL") }}
+                  </label>
+                  <input
+                    v-model="form.buzz_balance_api_base_url"
+                    type="url"
+                    class="input font-mono text-sm"
+                    placeholder="https://buzzai.cc"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ localText("BuzzAI API Key", "BuzzAI API Key") }}
+                  </label>
+                  <input
+                    v-model="form.buzz_balance_api_token"
+                    type="password"
+                    class="input font-mono text-sm"
+                    :placeholder="
+                      form.buzz_balance_api_token_configured
+                        ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                        : localText('粘贴 BuzzAI API Key', 'Paste BuzzAI API key')
+                    "
+                    autocomplete="off"
+                  />
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      form.buzz_balance_api_token_configured
+                        ? localText(
+                            "已保存密钥不会回显，前端不会收到原始 token。",
+                            "Saved key is never echoed; the frontend never receives the raw token.",
+                          )
+                        : localText(
+                            "密钥只写入后端设置，用于服务端查询余额。",
+                            "The key is stored only in backend settings for server-side balance queries.",
+                          )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Gateway Scheduling Settings -->
           <div class="card">
             <div
@@ -6750,6 +6836,7 @@ type SettingsForm = Omit<
   google_oauth_client_secret: string;
   force_email_on_third_party_signup: boolean;
   openai_advanced_scheduler_enabled: boolean;
+  buzz_balance_api_token: string;
 };
 
 const form = reactive<SettingsForm>({
@@ -6946,6 +7033,10 @@ const form = reactive<SettingsForm>({
   balance_low_notify_enabled: false,
   balance_low_notify_threshold: 0,
   balance_low_notify_recharge_url: "",
+  buzz_balance_enabled: false,
+  buzz_balance_api_base_url: "https://buzzai.cc",
+  buzz_balance_api_token: "",
+  buzz_balance_api_token_configured: false,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
   // Channel Monitor feature switch
@@ -7596,6 +7687,7 @@ async function loadSettings() {
     form.wechat_connect_open_app_secret = "";
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
+    form.buzz_balance_api_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -7878,6 +7970,9 @@ async function saveSettings() {
     // Optional URL fields: auto-clear invalid values so they don't cause backend 400 errors
     if (!isValidHttpUrl(form.frontend_url)) form.frontend_url = "";
     if (!isValidHttpUrl(form.doc_url)) form.doc_url = "";
+    if (!isValidHttpUrl(form.buzz_balance_api_base_url)) {
+      form.buzz_balance_api_base_url = "https://buzzai.cc";
+    }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -8077,6 +8172,10 @@ async function saveSettings() {
         Number(form.balance_low_notify_threshold) || 0,
       balance_low_notify_recharge_url: (form.balance_low_notify_recharge_url =
         form.balance_low_notify_recharge_url || currentOrigin),
+      buzz_balance_enabled: form.buzz_balance_enabled,
+      buzz_balance_api_base_url:
+        form.buzz_balance_api_base_url?.trim() || "https://buzzai.cc",
+      buzz_balance_api_token: form.buzz_balance_api_token || undefined,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
       account_quota_notify_emails: (
         form.account_quota_notify_emails || []
@@ -8150,6 +8249,7 @@ async function saveSettings() {
     form.wechat_connect_open_app_secret = "";
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
+    form.buzz_balance_api_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

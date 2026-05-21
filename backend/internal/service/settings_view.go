@@ -211,6 +211,12 @@ type SystemSettings struct {
 	BalanceLowNotifyThreshold   float64
 	BalanceLowNotifyRechargeURL string
 
+	// BuzzAI balance display
+	BuzzBalanceEnabled            bool
+	BuzzBalanceAPIBaseURL         string
+	BuzzBalanceAPIToken           string
+	BuzzBalanceAPITokenConfigured bool
+
 	// Account quota notification
 	AccountQuotaNotifyEnabled bool
 	AccountQuotaNotifyEmails  []NotifyEmailEntry
