@@ -47,24 +47,77 @@
         <!-- Balance Display -->
         <div
           v-if="user"
-          class="hidden items-center gap-2 rounded-xl bg-primary-50 px-3 py-1.5 dark:bg-primary-900/20 sm:flex"
+          class="relative hidden sm:block"
+          @mouseenter="openBalanceDropdown"
+          @mouseleave="scheduleCloseBalanceDropdown"
         >
-          <svg
-            class="h-4 w-4 text-primary-600 dark:text-primary-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1.5"
+          <div
+            ref="balanceChipRef"
+            data-testid="header-balance-chip"
+            class="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors"
+            :class="balanceChipClass"
+            @mouseenter="openBalanceDropdown"
+            @mouseleave="scheduleCloseBalanceDropdown"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-            />
-          </svg>
-          <span class="text-sm font-semibold text-primary-700 dark:text-primary-300">
-            ${{ user.balance?.toFixed(2) || '0.00' }}
-          </span>
+            <svg
+              class="h-4 w-4"
+              :class="balanceIconClass"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+              />
+            </svg>
+            <span
+              v-if="showBuzzBalanceInChip"
+              class="text-sm font-semibold text-yellow-700 dark:text-yellow-300"
+            >
+              Buzz {{ formattedBuzzBalance }}
+            </span>
+            <span
+              v-else
+              class="text-sm font-semibold text-primary-700 dark:text-primary-300"
+            >
+              {{ formattedSystemBalance }}
+            </span>
+          </div>
+
+          <FloatingDropdown
+            :show="balanceDropdownOpen"
+            :trigger-el="balanceChipRef"
+            placement="bottom-end"
+            :offset="8"
+            panel-class="dropdown w-64"
+          >
+            <div
+              data-testid="header-balance-dropdown"
+              class="space-y-2 p-3"
+              @mouseenter="cancelBalanceDropdownClose"
+              @mouseleave="scheduleCloseBalanceDropdown"
+            >
+              <div class="flex items-center justify-between gap-4 rounded-lg bg-primary-50 px-3 py-2 dark:bg-primary-900/20">
+                <div class="text-xs font-medium text-gray-500 dark:text-dark-300">
+                  系统余额
+                </div>
+                <div class="text-sm font-semibold text-primary-700 dark:text-primary-300">
+                  {{ formattedSystemBalance }}
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-4 rounded-lg bg-yellow-50 px-3 py-2 dark:bg-yellow-900/20">
+                <div class="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                  Buzz
+                </div>
+                <div class="text-sm font-semibold text-yellow-700 dark:text-yellow-300">
+                  {{ formattedBuzzBalance }}
+                </div>
+              </div>
+            </div>
+          </FloatingDropdown>
         </div>
 
         <!-- User Dropdown -->
@@ -218,11 +271,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
+import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -241,6 +295,13 @@ const user = computed(() => authStore.user)
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const dropdownButtonRef = ref<HTMLElement | null>(null)
+const balanceChipRef = ref<HTMLElement | null>(null)
+const balanceDropdownOpen = ref(false)
+const balanceCarouselIndex = ref(0)
+const buzzBalance = ref<BuzzBalance | null>(null)
+const buzzBalanceLoading = ref(false)
+let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
+let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
 const docUrl = computed(() => appStore.docUrl)
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
@@ -267,6 +328,41 @@ const userInitials = computed(() => {
 const displayName = computed(() => {
   if (!user.value) return ''
   return user.value.username || user.value.email?.split('@')[0] || ''
+})
+
+const formattedSystemBalance = computed(() => {
+  return `$${(user.value?.balance ?? 0).toFixed(2)}`
+})
+
+const canShowBuzzBalance = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    buzzBalance.value?.enabled &&
+    buzzBalance.value?.configured
+  )
+})
+
+const showBuzzBalanceInChip = computed(() => {
+  return canShowBuzzBalance.value && balanceCarouselIndex.value % 2 === 1
+})
+
+const formattedBuzzBalance = computed(() => {
+  if (!canShowBuzzBalance.value || !buzzBalance.value) return '未配置'
+  return `¥${buzzBalance.value.remaining.toFixed(2)}`
+})
+
+const balanceChipClass = computed(() => {
+  if (showBuzzBalanceInChip.value) {
+    return 'bg-yellow-50 dark:bg-yellow-900/20'
+  }
+  return 'bg-primary-50 dark:bg-primary-900/20'
+})
+
+const balanceIconClass = computed(() => {
+  if (showBuzzBalanceInChip.value) {
+    return 'text-yellow-600 dark:text-yellow-300'
+  }
+  return 'text-primary-600 dark:text-primary-400'
 })
 
 const pageTitle = computed(() => {
@@ -305,6 +401,60 @@ function closeDropdown() {
   dropdownOpen.value = false
 }
 
+function openBalanceDropdown() {
+  cancelBalanceDropdownClose()
+  balanceDropdownOpen.value = true
+}
+
+function closeBalanceDropdown() {
+  balanceDropdownOpen.value = false
+}
+
+function cancelBalanceDropdownClose() {
+  if (balanceDropdownCloseTimer) {
+    clearTimeout(balanceDropdownCloseTimer)
+    balanceDropdownCloseTimer = null
+  }
+}
+
+function scheduleCloseBalanceDropdown() {
+  cancelBalanceDropdownClose()
+  balanceDropdownCloseTimer = setTimeout(() => {
+    closeBalanceDropdown()
+  }, 120)
+}
+
+async function fetchBuzzBalance() {
+  if (!authStore.isAdmin || buzzBalanceLoading.value) return
+  buzzBalanceLoading.value = true
+  try {
+    buzzBalance.value = await buzzBalanceAPI.getBalance()
+  } catch (error) {
+    buzzBalance.value = null
+    console.error('Failed to fetch BuzzAI balance:', error)
+  } finally {
+    buzzBalanceLoading.value = false
+  }
+}
+
+function startBalanceCarousel() {
+  if (balanceCarouselTimer) return
+  balanceCarouselTimer = setInterval(() => {
+    if (canShowBuzzBalance.value) {
+      balanceCarouselIndex.value += 1
+    } else {
+      balanceCarouselIndex.value = 0
+    }
+  }, 7000)
+}
+
+function stopBalanceCarousel() {
+  if (balanceCarouselTimer) {
+    clearInterval(balanceCarouselTimer)
+    balanceCarouselTimer = null
+  }
+}
+
 async function handleLogout() {
   closeDropdown()
   try {
@@ -329,11 +479,24 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  void fetchBuzzBalance()
+  startBalanceCarousel()
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  stopBalanceCarousel()
+  cancelBalanceDropdownClose()
 })
+
+watch(
+  () => [authStore.isAdmin, user.value?.id],
+  () => {
+    balanceCarouselIndex.value = 0
+    buzzBalance.value = null
+    void fetchBuzzBalance()
+  }
+)
 </script>
 
 <style scoped>

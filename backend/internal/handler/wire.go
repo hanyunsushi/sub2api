@@ -40,6 +40,7 @@ func ProvideAdminHandlers(
 	paymentHandler *admin.PaymentHandler,
 	affiliateHandler *admin.AffiliateHandler,
 	codexMetadataHandler *admin.CodexMetadataHandler,
+	buzzBalanceHandler *admin.BuzzBalanceHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
 		Dashboard:              dashboardHandler,
@@ -73,6 +74,7 @@ func ProvideAdminHandlers(
 		Payment:                paymentHandler,
 		Affiliate:              affiliateHandler,
 		CodexMetadata:          codexMetadataHandler,
+		BuzzBalance:            buzzBalanceHandler,
 	}
 }
 
@@ -84,6 +86,10 @@ func ProvideSystemHandler(updateService *service.UpdateService, lockService *ser
 // ProvideSettingHandler creates SettingHandler with version from BuildInfo
 func ProvideSettingHandler(settingService *service.SettingService, buildInfo BuildInfo) *SettingHandler {
 	return NewSettingHandler(settingService, buildInfo.Version)
+}
+
+func ProvideGlobalPricingHandler(pricingService *service.PricingService) *GlobalPricingHandler {
+	return NewGlobalPricingHandler(pricingService)
 }
 
 // ProvideHandlers creates the Handlers struct
@@ -147,7 +153,7 @@ var ProviderSet = wire.NewSet(
 	NewPaymentHandler,
 	NewPaymentWebhookHandler,
 	NewAvailableChannelHandler,
-	NewGlobalPricingHandler,
+	ProvideGlobalPricingHandler,
 
 	// Admin handlers
 	admin.NewDashboardHandler,
@@ -181,6 +187,7 @@ var ProviderSet = wire.NewSet(
 	admin.NewPaymentHandler,
 	admin.NewAffiliateHandler,
 	admin.NewCodexMetadataHandler,
+	admin.NewBuzzBalanceHandler,
 
 	// AdminHandlers and Handlers constructors
 	ProvideAdminHandlers,

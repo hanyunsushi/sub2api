@@ -222,11 +222,14 @@ type SystemSettings struct {
 	PaymentAlipayForceQRCode bool `json:"payment_alipay_force_qrcode"`
 
 	// Balance low notification
-	BalanceLowNotifyEnabled     bool               `json:"balance_low_notify_enabled"`
-	BalanceLowNotifyThreshold   float64            `json:"balance_low_notify_threshold"`
-	BalanceLowNotifyRechargeURL string             `json:"balance_low_notify_recharge_url"`
-	AccountQuotaNotifyEnabled   bool               `json:"account_quota_notify_enabled"`
-	AccountQuotaNotifyEmails    []NotifyEmailEntry `json:"account_quota_notify_emails"`
+	BalanceLowNotifyEnabled       bool               `json:"balance_low_notify_enabled"`
+	BalanceLowNotifyThreshold     float64            `json:"balance_low_notify_threshold"`
+	BalanceLowNotifyRechargeURL   string             `json:"balance_low_notify_recharge_url"`
+	BuzzBalanceEnabled            bool               `json:"buzz_balance_enabled"`
+	BuzzBalanceAPIBaseURL         string             `json:"buzz_balance_api_base_url"`
+	BuzzBalanceAPITokenConfigured bool               `json:"buzz_balance_api_token_configured"`
+	AccountQuotaNotifyEnabled     bool               `json:"account_quota_notify_enabled"`
+	AccountQuotaNotifyEmails      []NotifyEmailEntry `json:"account_quota_notify_emails"`
 
 	// Channel Monitor feature switch
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`

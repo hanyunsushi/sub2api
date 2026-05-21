@@ -256,6 +256,9 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		BalanceLowNotifyEnabled:                settings.BalanceLowNotifyEnabled,
 		BalanceLowNotifyThreshold:              settings.BalanceLowNotifyThreshold,
 		BalanceLowNotifyRechargeURL:            settings.BalanceLowNotifyRechargeURL,
+		BuzzBalanceEnabled:                     settings.BuzzBalanceEnabled,
+		BuzzBalanceAPIBaseURL:                  settings.BuzzBalanceAPIBaseURL,
+		BuzzBalanceAPITokenConfigured:          settings.BuzzBalanceAPITokenConfigured,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
 		PaymentEnabled:                         paymentCfg.Enabled,
@@ -577,6 +580,9 @@ type UpdateSettingsRequest struct {
 	BalanceLowNotifyEnabled     *bool                   `json:"balance_low_notify_enabled"`
 	BalanceLowNotifyThreshold   *float64                `json:"balance_low_notify_threshold"`
 	BalanceLowNotifyRechargeURL *string                 `json:"balance_low_notify_recharge_url"`
+	BuzzBalanceEnabled          *bool                   `json:"buzz_balance_enabled"`
+	BuzzBalanceAPIBaseURL       *string                 `json:"buzz_balance_api_base_url"`
+	BuzzBalanceAPIToken         string                  `json:"buzz_balance_api_token"`
 	AccountQuotaNotifyEnabled   *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails    *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
 
@@ -1404,6 +1410,11 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			return
 		}
 	}
+	if req.BuzzBalanceAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.BuzzBalanceAPIBaseURL)
+		req.BuzzBalanceAPIBaseURL = &normalized
+	}
+	req.BuzzBalanceAPIToken = strings.TrimSpace(req.BuzzBalanceAPIToken)
 
 	// 交叉验证：如果同时设置了最低和最高版本号，最高版本号必须 >= 最低版本号
 	if req.MinClaudeCodeVersion != "" && req.MaxClaudeCodeVersion != "" {
@@ -1645,6 +1656,19 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.BalanceLowNotifyRechargeURL
 		}(),
+		BuzzBalanceEnabled: func() bool {
+			if req.BuzzBalanceEnabled != nil {
+				return *req.BuzzBalanceEnabled
+			}
+			return previousSettings.BuzzBalanceEnabled
+		}(),
+		BuzzBalanceAPIBaseURL: func() string {
+			if req.BuzzBalanceAPIBaseURL != nil {
+				return *req.BuzzBalanceAPIBaseURL
+			}
+			return previousSettings.BuzzBalanceAPIBaseURL
+		}(),
+		BuzzBalanceAPIToken: req.BuzzBalanceAPIToken,
 		AccountQuotaNotifyEnabled: func() bool {
 			if req.AccountQuotaNotifyEnabled != nil {
 				return *req.AccountQuotaNotifyEnabled
@@ -1964,6 +1988,9 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		BalanceLowNotifyEnabled:                updatedSettings.BalanceLowNotifyEnabled,
 		BalanceLowNotifyThreshold:              updatedSettings.BalanceLowNotifyThreshold,
 		BalanceLowNotifyRechargeURL:            updatedSettings.BalanceLowNotifyRechargeURL,
+		BuzzBalanceEnabled:                     updatedSettings.BuzzBalanceEnabled,
+		BuzzBalanceAPIBaseURL:                  updatedSettings.BuzzBalanceAPIBaseURL,
+		BuzzBalanceAPITokenConfigured:          updatedSettings.BuzzBalanceAPITokenConfigured,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
 		PaymentEnabled:                         updatedPaymentCfg.Enabled,
@@ -2435,6 +2462,15 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.BalanceLowNotifyRechargeURL != after.BalanceLowNotifyRechargeURL {
 		changed = append(changed, "balance_low_notify_recharge_url")
+	}
+	if before.BuzzBalanceEnabled != after.BuzzBalanceEnabled {
+		changed = append(changed, "buzz_balance_enabled")
+	}
+	if before.BuzzBalanceAPIBaseURL != after.BuzzBalanceAPIBaseURL {
+		changed = append(changed, "buzz_balance_api_base_url")
+	}
+	if req.BuzzBalanceAPIToken != "" {
+		changed = append(changed, "buzz_balance_api_token")
 	}
 	if before.AccountQuotaNotifyEnabled != after.AccountQuotaNotifyEnabled {
 		changed = append(changed, "account_quota_notify_enabled")

@@ -232,6 +232,7 @@ var (
 const (
 	defaultAuthSourceBalance     = 0
 	defaultAuthSourceConcurrency = 5
+	DefaultBuzzBalanceAPIBaseURL = "https://buzzai.cc"
 	defaultWeChatConnectMode     = "open"
 	defaultWeChatConnectScopes   = "snsapi_login"
 	defaultWeChatConnectFrontend = "/auth/wechat/callback"
@@ -1716,6 +1717,11 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyBalanceLowNotifyEnabled] = strconv.FormatBool(settings.BalanceLowNotifyEnabled)
 	updates[SettingKeyBalanceLowNotifyThreshold] = strconv.FormatFloat(settings.BalanceLowNotifyThreshold, 'f', 8, 64)
 	updates[SettingKeyBalanceLowNotifyRechargeURL] = settings.BalanceLowNotifyRechargeURL
+	updates[SettingKeyBuzzBalanceEnabled] = strconv.FormatBool(settings.BuzzBalanceEnabled)
+	updates[SettingKeyBuzzBalanceAPIBaseURL] = normalizeBuzzBalanceAPIBaseURL(settings.BuzzBalanceAPIBaseURL)
+	if strings.TrimSpace(settings.BuzzBalanceAPIToken) != "" {
+		updates[SettingKeyBuzzBalanceAPIToken] = strings.TrimSpace(settings.BuzzBalanceAPIToken)
+	}
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
 
@@ -2546,6 +2552,8 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingPaymentVisibleMethodAlipayEnabled:     "false",
 		SettingPaymentVisibleMethodWxpayEnabled:      "false",
 		openAIAdvancedSchedulerSettingKey:            "false",
+		SettingKeyBuzzBalanceEnabled:                 "false",
+		SettingKeyBuzzBalanceAPIBaseURL:              DefaultBuzzBalanceAPIBaseURL,
 	}
 
 	return s.settingRepo.SetMultiple(ctx, defaults)
@@ -3073,6 +3081,10 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		result.BalanceLowNotifyThreshold = v
 	}
 	result.BalanceLowNotifyRechargeURL = settings[SettingKeyBalanceLowNotifyRechargeURL]
+	result.BuzzBalanceEnabled = settings[SettingKeyBuzzBalanceEnabled] == "true"
+	result.BuzzBalanceAPIBaseURL = normalizeBuzzBalanceAPIBaseURL(settings[SettingKeyBuzzBalanceAPIBaseURL])
+	result.BuzzBalanceAPIToken = strings.TrimSpace(settings[SettingKeyBuzzBalanceAPIToken])
+	result.BuzzBalanceAPITokenConfigured = result.BuzzBalanceAPIToken != ""
 
 	// Account quota notification
 	result.AccountQuotaNotifyEnabled = settings[SettingKeyAccountQuotaNotifyEnabled] == "true"

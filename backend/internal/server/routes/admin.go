@@ -100,6 +100,16 @@ func RegisterAdminRoutes(
 
 		// Codex / CPA 管理
 		registerCodexMetadataRoutes(admin, h)
+
+		// BuzzAI 余额
+		registerBuzzBalanceRoutes(admin, h)
+	}
+}
+
+func registerBuzzBalanceRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	buzz := admin.Group("/buzz")
+	{
+		buzz.GET("/balance", h.Admin.BuzzBalance.GetBalance)
 	}
 }
 
