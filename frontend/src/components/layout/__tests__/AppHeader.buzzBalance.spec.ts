@@ -92,7 +92,7 @@ describe("AppHeader BuzzAI balance", () => {
     vi.mocked(buzzBalanceAPI.getBalance).mockResolvedValue({
       enabled: true,
       configured: true,
-      currency: "CNY",
+      currency: "USD",
       total: 100,
       used: 12.34,
       remaining: 87.66,
@@ -138,7 +138,7 @@ describe("AppHeader BuzzAI balance", () => {
 
     const chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("Buzz");
-    expect(chip.text()).toContain("¥87.66");
+    expect(chip.text()).toContain("$87.66");
     expect(chip.classes().join(" ")).toContain("bg-yellow");
   });
 
@@ -155,7 +155,7 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("系统余额");
     expect(dropdown.text()).toContain("$42.50");
     expect(dropdown.text()).toContain("Buzz");
-    expect(dropdown.text()).toContain("¥87.66");
+    expect(dropdown.text()).toContain("$87.66");
     expect(dropdown.find("a").exists()).toBe(false);
     expect(dropdown.find("button").exists()).toBe(false);
   });

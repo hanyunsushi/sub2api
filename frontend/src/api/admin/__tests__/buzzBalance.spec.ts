@@ -15,7 +15,7 @@ describe("admin buzz balance api", () => {
       data: {
         enabled: true,
         configured: true,
-        currency: "CNY",
+        currency: "USD",
         total: 100,
         used: 12.34,
         remaining: 87.66,

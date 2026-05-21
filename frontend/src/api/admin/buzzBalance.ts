@@ -3,7 +3,7 @@ import { apiClient } from "@/api/client";
 export interface BuzzBalance {
   enabled: boolean;
   configured: boolean;
-  currency: "CNY" | string;
+  currency: "USD" | string;
   total: number;
   used: number;
   remaining: number;

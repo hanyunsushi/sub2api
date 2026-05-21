@@ -82,7 +82,7 @@ func (s *BuzzBalanceService) GetBalance(ctx context.Context) (*BuzzBalance, erro
 	result := &BuzzBalance{
 		Enabled:    settings.Enabled,
 		Configured: settings.APIToken != "",
-		Currency:   "CNY",
+		Currency:   "USD",
 	}
 	if !settings.Enabled || settings.APIToken == "" {
 		return result, nil
