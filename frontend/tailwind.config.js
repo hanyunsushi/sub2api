@@ -62,11 +62,8 @@ export default {
       },
       fontFamily: {
         sans: [
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
+          'Inter Tight',
+          'Arial Narrow',
           'Helvetica Neue',
           'Arial',
           'PingFang SC',
@@ -74,23 +71,24 @@ export default {
           'Microsoft YaHei',
           'sans-serif'
         ],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+        serif: ['Playfair Display', 'Iowan Old Style', 'Charter', 'Georgia', 'serif'],
+        mono: ['SFMono-Regular', 'IBM Plex Mono', 'ui-monospace', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        glass: '0 14px 40px rgba(23, 21, 18, 0.09)',
-        'glass-sm': '0 8px 22px rgba(23, 21, 18, 0.07)',
+        surface: '0 12px 28px -24px rgba(23, 21, 18, 0.36)',
+        'surface-sm': '0 8px 18px -16px rgba(23, 21, 18, 0.28)',
         glow: '0 10px 28px rgba(0, 47, 167, 0.18)',
         'glow-lg': '0 18px 44px rgba(0, 47, 167, 0.22)',
-        card: '0 1px 2px rgba(23, 21, 18, 0.05), 0 8px 22px rgba(23, 21, 18, 0.08)',
-        'card-hover': '0 16px 36px rgba(23, 21, 18, 0.12)',
+        card: '0 1px 2px rgba(23, 21, 18, 0.05), 0 12px 28px -24px rgba(23, 21, 18, 0.36)',
+        'card-hover': '0 16px 34px -24px rgba(23, 21, 18, 0.42)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #002FA7 100%)',
         'gradient-dark': 'linear-gradient(135deg, #171512 0%, #050505 100%)',
-        'gradient-glass':
-          'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+        'gradient-paper':
+          'linear-gradient(180deg, #fffaf0 0%, #f3efe5 100%)',
         'mesh-gradient':
           'linear-gradient(180deg, rgba(243,239,229,0.98), rgba(233,225,210,0.72))'
       },
@@ -133,9 +131,6 @@ export default {
           '0%': { boxShadow: '0 10px 28px rgba(0, 47, 167, 0.16)' },
           '100%': { boxShadow: '0 14px 34px rgba(0, 47, 167, 0.22)' }
         }
-      },
-      backdropBlur: {
-        xs: '2px'
       },
       borderRadius: {
         '4xl': '2rem'

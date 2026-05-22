@@ -16,9 +16,9 @@
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
   --codex-radius: 8px;
-  --material-card-surface: rgba(243, 239, 229, 0.5);
+  --material-card-surface: #fffaf0;
   --material-card-edge: rgba(23, 21, 18, 0.14);
-  --material-card-shadow: rgba(23, 21, 18, 0.34);
+  --material-card-shadow: rgba(23, 21, 18, 0.36);
   color: var(--codex-text);
 }
 
@@ -36,7 +36,7 @@
   --codex-accent-strong: #002FA7;
   --codex-accent-soft: rgba(0, 47, 167, 0.16);
   --codex-violet: #002FA7;
-  --material-card-surface: rgba(5, 5, 5, 0.7);
+  --material-card-surface: #11100d;
   --material-card-edge: rgba(148, 163, 184, 0.16);
   --material-card-shadow: rgba(5, 5, 5, 0.82);
 }
@@ -123,19 +123,13 @@
 .codex-panel {
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-  box-shadow: 0 18px 42px -34px var(--material-card-shadow);
-  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  background: var(--material-card-surface);
+  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
 }
 
 .dark .codex-panel {
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
-  box-shadow: 0 22px 52px -36px var(--material-card-shadow);
+  background: var(--material-card-surface);
+  box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 
 .codex-panel + .codex-panel {
@@ -437,21 +431,15 @@
   gap: 10px;
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.76), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.68), rgba(233, 225, 210, 0.2) 42%, rgba(0, 47, 167, 0.045));
-  box-shadow: 0 16px 36px -32px var(--material-card-shadow);
-  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  background: var(--material-card-surface);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
   padding: clamp(10px, 2.4cqi, 14px);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .dark .codex-account-card {
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.76), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(0, 47, 167, 0.07) 48%, transparent);
-  box-shadow: 0 18px 44px -36px var(--material-card-shadow);
+  background: var(--material-card-surface);
+  box-shadow: 0 14px 32px -28px var(--material-card-shadow);
 }
 
 .codex-account-card:hover,

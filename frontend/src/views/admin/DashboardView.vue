@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="admin-dashboard-liquid space-y-6">
+    <div class="admin-dashboard-atelier space-y-6">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <LoadingSpinner />
@@ -234,7 +234,7 @@
               <button
                 @click="loadDashboardStats"
                 :disabled="chartsLoading"
-                class="btn btn-secondary dashboard-glass-control"
+                class="btn btn-secondary dashboard-paper-control"
               >
                 {{ t('common.refresh') }}
               </button>
@@ -689,79 +689,41 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.admin-dashboard-liquid {
-  --dashboard-control-surface: rgba(255, 250, 240, 0.72);
+.admin-dashboard-atelier {
+  --dashboard-control-surface: #fffaf0;
   --dashboard-control-edge: rgba(23, 21, 18, 0.14);
   --dashboard-control-shadow: rgba(23, 21, 18, 0.16);
 }
 
-.admin-dashboard-liquid .dashboard-glass-control,
-.admin-dashboard-liquid :deep(.date-picker-trigger),
-.admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
+.admin-dashboard-atelier .dashboard-paper-control,
+.admin-dashboard-atelier :deep(.date-picker-trigger),
+.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.8), var(--dashboard-control-surface)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.62), transparent 42%);
+  background: var(--dashboard-control-surface);
   box-shadow:
-    0 10px 24px -20px var(--dashboard-control-shadow),
+    0 8px 18px -16px var(--dashboard-control-shadow),
     0 1px 1px rgba(23, 21, 18, 0.05);
-  backdrop-filter: blur(22px) saturate(1.18);
-  -webkit-backdrop-filter: blur(22px) saturate(1.18);
 }
 
-.admin-dashboard-liquid .dashboard-glass-control:hover,
-.admin-dashboard-liquid :deep(.date-picker-trigger:hover),
-.admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger:hover) {
+.admin-dashboard-atelier .dashboard-paper-control:hover,
+.admin-dashboard-atelier :deep(.date-picker-trigger:hover),
+.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
   border-color: rgba(0, 47, 167, 0.18);
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.88), rgba(243, 239, 229, 0.74)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.7), transparent 42%);
+  background: #f3efe5;
 }
 
-.admin-dashboard-liquid:where(.dark *) {
-  --dashboard-control-surface: rgba(17, 16, 13, 0.72);
+.admin-dashboard-atelier:where(.dark *) {
+  --dashboard-control-surface: #11100d;
   --dashboard-control-edge: rgba(255, 255, 255, 0.16);
   --dashboard-control-shadow: rgba(5, 5, 5, 0.36);
 }
 
-.admin-dashboard-liquid:where(.dark *) :deep(.dashboard-filter-card),
-.admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
-.admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
-.admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
+.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card),
+.admin-dashboard-atelier:where(.dark *) .dashboard-paper-control,
+.admin-dashboard-atelier:where(.dark *) :deep(.date-picker-trigger),
+.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.82), var(--dashboard-control-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 42%);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .admin-dashboard-liquid .dashboard-glass-control,
-  .admin-dashboard-liquid :deep(.date-picker-trigger),
-  .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgb(255, 250, 240);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
-  .admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
-  .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgba(17, 16, 13, 0.94);
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .admin-dashboard-liquid .dashboard-glass-control,
-  .admin-dashboard-liquid :deep(.date-picker-trigger),
-  .admin-dashboard-liquid :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgb(255, 250, 240);
-  }
-
-  .admin-dashboard-liquid:where(.dark *) .dashboard-glass-control,
-  .admin-dashboard-liquid:where(.dark *) :deep(.date-picker-trigger),
-  .admin-dashboard-liquid:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-    background: rgba(17, 16, 13, 0.94);
-  }
+  background: var(--dashboard-control-surface);
 }
 
 .dashboard-stat-icon {

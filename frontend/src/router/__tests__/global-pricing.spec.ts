@@ -10,6 +10,8 @@ const sidebarPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../comp
 const sidebarSource = readFileSync(sidebarPath, 'utf8')
 const viewPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../views/user/GlobalPricingView.vue')
 const viewSource = readFileSync(viewPath, 'utf8')
+const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
+const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
 
 describe('global pricing route and navigation', () => {
   it('registers a user-visible authenticated global pricing route', () => {
@@ -43,7 +45,10 @@ describe('global pricing route and navigation', () => {
     expect(viewSource).toContain('summary-tile admin-material-surface')
     expect(viewSource).toContain('table-wrapper admin-material-surface')
     expect(viewSource).toContain('--material-card-surface')
-    expect(viewSource).toContain('backdrop-filter: blur(20px) saturate(1.2) contrast(1.02)')
+    expect(viewSource).toContain('--material-card-surface: #fffaf0;')
+    expect(viewSource).toContain('background: var(--material-card-surface);')
+    expect(viewSource).not.toContain(blockedBackdropFilter)
+    expect(viewSource).not.toContain(blockedWebkitBackdropFilter)
     expect(viewSource).not.toContain('inset 0 -1px')
     expect(viewSource).toContain('.dark .summary-tile')
     expect(viewSource).toContain('.dark .table-wrapper')
