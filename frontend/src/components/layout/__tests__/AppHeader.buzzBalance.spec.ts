@@ -139,7 +139,7 @@ describe("AppHeader BuzzAI balance", () => {
     const chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("Buzz");
     expect(chip.text()).toContain("$87.66");
-    expect(chip.classes().join(" ")).toContain("bg-yellow");
+    expect(chip.classes().join(" ")).toContain("balance-chip-buzz");
   });
 
   it("shows both balances in a display-only hover dropdown", async () => {

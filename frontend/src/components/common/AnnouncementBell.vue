@@ -434,12 +434,12 @@ watch(
 }
 
 .modal-fade-enter-from > div {
-  transform: scale(0.94) translateY(-12px);
+  transform: translate3d(0, -12px, 0);
   opacity: 0;
 }
 
 .modal-fade-leave-to > div {
-  transform: scale(0.96) translateY(-8px);
+  transform: translate3d(0, -8px, 0);
   opacity: 0;
 }
 

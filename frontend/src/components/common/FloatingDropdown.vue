@@ -125,12 +125,12 @@ onBeforeUnmount(() => {
 
 .floating-dropdown-enter-active,
 .floating-dropdown-leave-active {
-  transition: all 0.16s ease;
+  transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);
 }
 
 .floating-dropdown-enter-from,
 .floating-dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-4px) scale(0.98);
+  transform: translate3d(0, -8px, 0);
 }
 </style>

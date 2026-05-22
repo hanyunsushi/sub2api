@@ -10,12 +10,12 @@
     <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
       <!-- Custom Logo or Default Logo -->
       <router-link to="/home" class="sidebar-home-link sidebar-logo-link" aria-label="Home">
-        <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-primary-50 shadow-glow ring-1 ring-primary-200/80 dark:bg-dark-800 dark:ring-primary-800/50">
+        <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg">
           <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
       </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
+        <span class="sidebar-brand-title text-lg font-bold">
           {{ siteName }}
         </span>
         <!-- Version Badge -->
@@ -56,7 +56,7 @@
                 </span>
               </button>
               <!-- Children -->
-              <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="mb-1 ml-4 border-l border-accent-200 pl-2 dark:border-dark-600">
+              <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="sidebar-children mb-1 ml-4 pl-2">
                 <router-link
                   v-for="child in item.children"
                   :key="child.path"
@@ -142,7 +142,7 @@
     </nav>
 
     <!-- Bottom Section -->
-    <div class="mt-auto border-t border-gray-100 p-3 dark:border-dark-800">
+    <div class="sidebar-footer mt-auto p-3">
       <!-- Theme Toggle -->
       <button
         @click="toggleTheme"
@@ -1022,6 +1022,10 @@ onBeforeUnmount(() => {
 .sidebar-logo {
   flex: 0 0 2.25rem;
   min-width: 2.25rem;
+  background: var(--atelier-white);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--atelier-butter) 48%, transparent),
+    0 10px 22px rgba(0, 30, 110, 0.24);
 }
 
 .sidebar-home-link {
@@ -1075,6 +1079,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--sidebar-text, var(--atelier-ink));
 }
 
 .sidebar-link-collapsed {
@@ -1109,14 +1114,14 @@ onBeforeUnmount(() => {
   right: 0.75rem;
   top: 50%;
   height: 1px;
-  background: rgb(229 231 235);
+  background: var(--sidebar-line, rgba(23, 21, 18, 0.18));
   opacity: 0;
   transform: translateY(-50%);
   transition: opacity 0.18s ease;
 }
 
 .dark .sidebar-section-title::after {
-  background: rgb(55 65 81);
+  background: var(--sidebar-line, rgba(233, 225, 210, 0.14));
 }
 
 .sidebar-section-title-text-collapsed {
