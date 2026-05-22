@@ -554,12 +554,13 @@ onBeforeUnmount(() => {
   color: var(--atelier-ink);
   font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
-    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
+    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem),
+    radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem),
     linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
     linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
     var(--atelier-paper);
-  background-size: auto, auto, 32px 32px, 32px 32px, auto;
+  background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
 }
 
 .home-ascii-background {
@@ -1641,7 +1642,8 @@ onBeforeUnmount(() => {
 :global(.dark .home-ascii-shell) {
   background:
     radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.14), transparent 28rem),
-    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.08), transparent 24rem),
+    radial-gradient(circle at 82% 8%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    radial-gradient(circle at 92% 34%, rgba(199, 154, 58, 0.045), transparent 20rem),
     linear-gradient(90deg, rgba(243, 239, 229, 0.04) 1px, transparent 1px),
     linear-gradient(0deg, rgba(243, 239, 229, 0.03) 1px, transparent 1px),
     #050505;

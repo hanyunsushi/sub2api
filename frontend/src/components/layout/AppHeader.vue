@@ -514,8 +514,10 @@ watch(
 .app-header-atelier {
   border-color: var(--atelier-line);
   background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.76), rgba(243, 239, 229, 0.64)),
-    radial-gradient(circle at 82% 0%, rgba(199, 154, 58, 0.08), transparent 28rem);
+    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.86), rgba(243, 239, 229, 0.72));
+  background-size: 28px 28px, 28px 28px, auto;
   box-shadow: 0 1px 0 rgba(23, 21, 18, 0.08);
 }
 

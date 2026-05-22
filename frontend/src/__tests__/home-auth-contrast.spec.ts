@@ -69,8 +69,9 @@ describe('home and auth contrast on Atelier warm paper background', () => {
     const home = readFile('src/views/HomeView.vue')
 
     expect(home).toContain('.home-ascii-shell {')
-    expect(home).toContain('radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem)')
-    expect(home).toContain('radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem)')
+    expect(home).toContain('radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem)')
+    expect(home).toContain('radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem)')
+    expect(home).toContain('radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem)')
     expect(home).toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px)')
     expect(home).toContain('.home-site-frame::before')
     expect(home).toContain('.home-site-frame::after')

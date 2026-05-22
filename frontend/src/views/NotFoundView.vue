@@ -1,30 +1,26 @@
 <template>
   <div
-    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 px-4 dark:bg-dark-950"
+    class="not-found-atelier relative flex min-h-screen items-center justify-center overflow-hidden px-4"
   >
     <!-- Background Decoration -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary-500/10 blur-3xl"
-      ></div>
+      <div class="not-found-plate not-found-plate-blue"></div>
+      <div class="not-found-plate not-found-plate-dust"></div>
     </div>
 
     <div class="relative z-10 w-full max-w-md text-center">
       <!-- 404 Display -->
       <div class="mb-8">
         <div class="relative inline-block">
-          <span class="text-[12rem] font-bold leading-none text-gray-100 dark:text-dark-800"
+          <span class="not-found-code text-[12rem] font-bold leading-none"
             >404</span
           >
           <div class="absolute inset-0 flex items-center justify-center">
             <div
-              class="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
+              class="not-found-icon flex h-24 w-24 items-center justify-center rounded-lg"
             >
               <svg
-                class="h-12 w-12 text-white"
+                class="h-12 w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -43,10 +39,10 @@
 
       <!-- Text Content -->
       <div class="mb-8">
-        <h1 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="mb-3 text-2xl font-bold">
           {{ t('errors.pageNotFound') }}
         </h1>
-        <p class="text-gray-500 dark:text-dark-400">
+        <p class="not-found-copy">
           The page you are looking for doesn't exist or has been moved.
         </p>
       </div>
@@ -64,11 +60,11 @@
       </div>
 
       <!-- Help Link -->
-      <p class="mt-8 text-sm text-gray-400 dark:text-dark-500">
+      <p class="not-found-copy mt-8 text-sm">
         Need help?
         <a
           href="#"
-          class="text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          class="not-found-link transition-colors"
         >
           Contact support
         </a>
@@ -89,3 +85,78 @@ function goBack(): void {
   router.back()
 }
 </script>
+
+<style scoped>
+.not-found-atelier {
+  color: var(--atelier-ink);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
+    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem),
+    radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
+    var(--atelier-paper);
+  background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
+}
+
+.not-found-plate {
+  position: absolute;
+  border: 1px solid rgba(23, 21, 18, 0.18);
+  border-radius: 8px;
+  opacity: 0.9;
+}
+
+.not-found-plate-blue {
+  right: -6rem;
+  top: -5rem;
+  width: 22rem;
+  height: 18rem;
+  background: var(--atelier-blue);
+}
+
+.not-found-plate-dust {
+  left: -5rem;
+  bottom: -4rem;
+  width: 18rem;
+  height: 16rem;
+  background: var(--atelier-dust-soft);
+}
+
+.not-found-code {
+  color: color-mix(in srgb, var(--atelier-paper-2) 72%, var(--atelier-white));
+}
+
+.not-found-icon {
+  border: 1px solid var(--atelier-ink);
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+  box-shadow: 0 14px 30px -24px rgba(0, 47, 167, 0.7);
+}
+
+.not-found-copy {
+  color: var(--atelier-muted);
+}
+
+.not-found-link {
+  color: var(--atelier-blue);
+}
+
+.not-found-link:hover {
+  color: var(--atelier-blue-dark);
+}
+
+:global(.dark) .not-found-atelier {
+  color: #f7f1e6;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    linear-gradient(180deg, #050505, #0a0a0a);
+}
+
+:global(.dark) .not-found-code {
+  color: rgba(233, 225, 210, 0.1);
+}
+
+:global(.dark) .not-found-copy {
+  color: #a79f91;
+}
+</style>

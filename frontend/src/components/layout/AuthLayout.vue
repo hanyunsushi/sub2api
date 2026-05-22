@@ -81,6 +81,18 @@ onMounted(() => {
   color: var(--atelier-blue);
 }
 
+.auth-footer-link :deep(.auth-footer-copy) {
+  color: var(--atelier-muted);
+}
+
+.auth-footer-link :deep(.auth-footer-link-strong) {
+  color: var(--atelier-blue);
+}
+
+.auth-footer-link :deep(.auth-footer-link-strong:hover) {
+  color: var(--atelier-blue-dark);
+}
+
 :global(.dark) .auth-logo {
   border-color: rgba(233, 225, 210, 0.18);
   background: #11100d;
@@ -90,5 +102,13 @@ onMounted(() => {
 :global(.dark) .auth-footer-link,
 :global(.dark) .auth-copyright {
   color: rgba(243, 239, 229, 0.72);
+}
+
+:global(.dark) .auth-footer-link :deep(.auth-footer-copy) {
+  color: rgba(243, 239, 229, 0.72);
+}
+
+:global(.dark) .auth-footer-link :deep(.auth-footer-link-strong) {
+  color: #f7f1e6;
 }
 </style>
