@@ -62,6 +62,8 @@ onUnmounted(() => {
 
 .layout-section-fixed {
   @apply flex-shrink-0;
+  border-color: var(--atelier-line);
+  background: var(--atelier-surface);
 }
 
 .layout-section-scrollable {
@@ -71,6 +73,8 @@ onUnmounted(() => {
 /* 表格滚动容器 - 增强版表体滚动方案 */
 .table-scroll-container {
   @apply flex flex-col overflow-hidden h-full rounded-lg;
+  border-color: var(--atelier-line);
+  background: var(--atelier-surface);
 }
 
 .table-scroll-container :deep(.table-wrapper) {
@@ -86,7 +90,8 @@ onUnmounted(() => {
 }
 
 .table-scroll-container :deep(thead) {
-  @apply bg-primary-50/80 dark:bg-dark-800/80;
+  @apply dark:bg-dark-800/80;
+  background: var(--atelier-dust-soft);
 }
 
 .table-scroll-container :deep(tbody) {
@@ -94,11 +99,13 @@ onUnmounted(() => {
 }
 
 .table-scroll-container :deep(th) {
-  @apply px-5 py-4 text-left text-sm font-medium text-accent-700 dark:text-dark-300 border-b border-accent-200 dark:border-dark-700;
+  @apply px-5 py-4 text-left text-sm font-medium dark:text-dark-300 border-b border-accent-200 dark:border-dark-700;
+  color: var(--atelier-ink);
 }
 
 .table-scroll-container :deep(td) {
-  @apply px-5 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-accent-100 dark:border-dark-800;
+  @apply px-5 py-4 text-sm dark:text-gray-300 border-b border-accent-100 dark:border-dark-800;
+  color: var(--atelier-ink);
 }
 
 .table-page-layout--page-scroll {

@@ -1,22 +1,22 @@
 .codex-admin {
   --codex-bg: color-mix(in srgb, #f3efe5 88%, #4f6a8c);
-  --codex-surface: #fffaf0;
+  --codex-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
   --codex-surface-strong: #fffaf0;
-  --codex-surface-soft: color-mix(in srgb, #4f6a8c 12%, #fffaf0);
+  --codex-surface-soft: color-mix(in srgb, #4f6a8c 13%, #f3efe5);
   --codex-border: rgba(23, 21, 18, 0.16);
   --codex-border-strong: rgba(23, 21, 18, 0.28);
   --codex-text: #171512;
   --codex-muted: #70685c;
-  --codex-soft: #e9e1d2;
+  --codex-soft: color-mix(in srgb, #e9e1d2 72%, #f3efe5);
   --codex-accent: #002FA7;
   --codex-accent-strong: #002FA7;
-  --codex-accent-soft: rgba(0, 47, 167, 0.08);
+  --codex-accent-soft: color-mix(in srgb, #002FA7 8%, #f3efe5);
   --codex-violet: #002FA7;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
   --codex-radius: 8px;
-  --material-card-surface: #fffaf0;
+  --material-card-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
   --material-card-edge: rgba(23, 21, 18, 0.14);
   --material-card-shadow: rgba(23, 21, 18, 0.36);
   color: var(--codex-text);
@@ -45,11 +45,13 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.94), rgba(243, 239, 229, 0.82)),
-    radial-gradient(circle at 14% 0%, rgba(0, 47, 167, 0.08), transparent 34%),
-    radial-gradient(circle at 88% 0%, rgba(79, 106, 140, 0.12), transparent 30%),
+    radial-gradient(circle at 12% 0%, rgba(0, 47, 167, 0.09), transparent 34%),
+    radial-gradient(circle at 88% 0%, rgba(199, 154, 58, 0.08), transparent 30%),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
     var(--codex-bg);
-  box-shadow: 0 12px 32px rgba(23, 21, 18, 0.06);
+  background-size: auto, auto, 28px 28px, 28px 28px, auto;
+  box-shadow: 0 10px 28px -24px rgba(23, 21, 18, 0.34);
 }
 
 .dark .codex-shell {
@@ -67,8 +69,8 @@
   padding: 24px;
   border-bottom: 1px solid var(--codex-border);
   background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.52)),
-    radial-gradient(circle at 12% 0%, rgba(0, 47, 167, 0.025), transparent 36%);
+    linear-gradient(180deg, rgba(255, 250, 240, 0.58), rgba(233, 225, 210, 0.42)),
+    radial-gradient(circle at 12% 0%, rgba(0, 47, 167, 0.06), transparent 36%);
 }
 
 .dark .codex-topbar {
@@ -110,8 +112,8 @@
 .codex-side {
   border-left: 1px solid var(--codex-border);
   background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.72), rgba(243, 239, 229, 0.58)),
-    radial-gradient(circle at 100% 0%, rgba(0, 47, 167, 0.018), transparent 38%);
+    linear-gradient(180deg, rgba(233, 225, 210, 0.62), rgba(243, 239, 229, 0.48)),
+    radial-gradient(circle at 100% 0%, rgba(79, 106, 140, 0.1), transparent 38%);
 }
 
 .dark .codex-side {
@@ -124,7 +126,7 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background: var(--material-card-surface);
-  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .dark .codex-panel {
@@ -291,7 +293,7 @@
   border: 1px solid var(--codex-border-strong);
   border-radius: var(--codex-radius);
   padding: 0 14px;
-  background: var(--codex-surface-strong);
+  background: var(--codex-surface);
   color: var(--codex-text);
   font-size: 14px;
   font-weight: 650;
@@ -301,7 +303,8 @@
 
 .codex-button:hover {
   border-color: var(--codex-accent);
-  box-shadow: 0 4px 12px rgba(0, 47, 167, 0.08);
+  background: var(--codex-accent-soft);
+  box-shadow: 0 8px 18px -16px rgba(0, 47, 167, 0.52);
 }
 
 .codex-button:active {
@@ -320,10 +323,10 @@
 }
 
 .codex-button--primary {
-  border-color: var(--codex-accent);
+  border-color: #171512;
   background: var(--codex-accent);
-  color: #ffffff;
-  box-shadow: 0 8px 18px rgba(0, 47, 167, 0.18);
+  color: #fffaf0;
+  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
 }
 
 .codex-button--primary:hover {
@@ -431,7 +434,8 @@
   gap: 10px;
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
-  background: var(--material-card-surface);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, #fffaf0 74%, #f3efe5), var(--material-card-surface));
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
   padding: clamp(10px, 2.4cqi, 14px);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
@@ -446,7 +450,7 @@
 .codex-account-card.is-selected {
   border-color: var(--codex-accent);
   background: var(--codex-accent-soft);
-  box-shadow: 0 8px 22px rgba(0, 47, 167, 0.12);
+  box-shadow: 0 12px 24px -18px rgba(0, 47, 167, 0.5);
 }
 
 .codex-account-card.is-checked {
@@ -644,7 +648,8 @@
 
 .codex-tag {
   max-width: 100%;
-  border-radius: 999px;
+  border-radius: 6px;
+  border: 1px solid rgba(23, 21, 18, 0.12);
   background: var(--codex-soft);
   padding: 2px 8px;
   color: var(--codex-muted);

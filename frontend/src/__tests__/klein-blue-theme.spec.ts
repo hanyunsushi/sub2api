@@ -111,8 +111,12 @@ describe('Klein blue theme', () => {
 
     expect(globalStyle).toContain('--atelier-paper: #f3efe5;')
     expect(globalStyle).toContain('--atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);')
+    expect(globalStyle).toContain('--atelier-blue-dark: #001a6b;')
+    expect(globalStyle).toContain('--atelier-butter-dark: #8e6c1f;')
+    expect(globalStyle).toContain('--atelier-surface: color-mix(in srgb, var(--atelier-white) 68%, var(--atelier-paper));')
+    expect(globalStyle).toContain('radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem)')
     expect(codexTheme).toContain('--codex-bg: color-mix(in srgb, #f3efe5 88%, #4f6a8c);')
-    expect(codexTheme).toContain('--codex-surface-soft: color-mix(in srgb, #4f6a8c 12%, #fffaf0);')
+    expect(codexTheme).toContain('--codex-surface-soft: color-mix(in srgb, #4f6a8c 13%, #f3efe5);')
     expect(codexTheme).toContain('--codex-text: #171512;')
   })
 

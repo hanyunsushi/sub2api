@@ -440,8 +440,8 @@ onUnmounted(() => {
   @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
   @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
-  --select-surface: var(--atelier-white);
-  --select-muted-surface: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
+  --select-surface: var(--atelier-surface-strong);
+  --select-muted-surface: var(--atelier-dust-soft);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -450,7 +450,7 @@ onUnmounted(() => {
 
 .select-trigger-open {
   @apply border-primary-500 ring-2 ring-primary-500/30;
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--select-surface));
+  background: var(--atelier-blue-soft);
 }
 
 .select-trigger-error {
@@ -459,7 +459,7 @@ onUnmounted(() => {
 
 .select-trigger-disabled {
   @apply cursor-not-allowed bg-gray-100 opacity-60 dark:bg-dark-900;
-  background: color-mix(in srgb, var(--atelier-paper-2) 72%, var(--select-surface));
+  background: var(--atelier-surface-muted);
 }
 
 .select-value {
@@ -479,8 +479,8 @@ onUnmounted(() => {
   @apply border border-gray-200 dark:border-dark-700;
   @apply shadow-lg shadow-black/10 dark:shadow-black/30;
   @apply overflow-hidden;
-  --select-surface: var(--atelier-white);
-  --select-muted-surface: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
+  --select-surface: var(--atelier-surface-strong);
+  --select-muted-surface: var(--atelier-dust-soft);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -519,13 +519,13 @@ onUnmounted(() => {
 .select-dropdown-portal .select-option-selected {
   @apply bg-primary-50 dark:bg-primary-900/20;
   @apply text-primary-700 dark:text-primary-300;
-  background: color-mix(in srgb, var(--atelier-blue) 9%, var(--select-surface));
+  background: var(--atelier-blue-soft);
   color: var(--atelier-blue);
 }
 
 .select-dropdown-portal .select-option-focused {
   @apply bg-gray-100 dark:bg-dark-700;
-  background: color-mix(in srgb, var(--atelier-dust) 16%, var(--select-surface));
+  background: var(--atelier-dust-soft);
   color: var(--atelier-ink);
 }
 

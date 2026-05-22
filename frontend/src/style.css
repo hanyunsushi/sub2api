@@ -10,14 +10,19 @@
   --atelier-line: rgba(23, 21, 18, 0.18);
   --atelier-line-strong: rgba(23, 21, 18, 0.36);
   --atelier-blue: #002FA7;
-  --atelier-blue-dark: #001E6E;
+  --atelier-blue-dark: #001a6b;
   --atelier-butter: #c79a3a;
+  --atelier-butter-dark: #8e6c1f;
   --atelier-dust: #4f6a8c;
   --atelier-white: #fffaf0;
   --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 9%, var(--atelier-white));
-  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
-  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 16%, var(--atelier-white));
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 13%, var(--atelier-paper));
+  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 10%, var(--atelier-paper));
+  --atelier-surface: color-mix(in srgb, var(--atelier-white) 68%, var(--atelier-paper));
+  --atelier-surface-strong: var(--atelier-white);
+  --atelier-surface-muted: color-mix(in srgb, var(--atelier-paper-2) 72%, var(--atelier-paper));
+  --atelier-shadow: rgba(23, 21, 18, 0.32);
   --atelier-component-muted: var(--atelier-dust);
   --atelier-component-warning: var(--atelier-butter);
 }
@@ -62,11 +67,10 @@
     color: var(--atelier-ink);
     background:
       radial-gradient(circle at 12% 14%, rgba(0, 47, 167, 0.08), transparent 28rem),
-      radial-gradient(circle at 86% 10%, rgba(79, 106, 140, 0.12), transparent 24rem),
-      radial-gradient(circle at 74% 86%, rgba(199, 154, 58, 0.055), transparent 30rem),
-      linear-gradient(90deg, rgba(0, 47, 167, 0.03) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(79, 106, 140, 0.025) 1px, transparent 1px),
-      var(--atelier-white);
+      radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+      linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
+      var(--atelier-paper);
     background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
     font-family:
       'Inter Tight',
@@ -125,7 +129,8 @@
 
   /* 选中文本样式 */
   ::selection {
-    @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
+    background: rgba(0, 47, 167, 0.18);
+    color: var(--atelier-blue-dark);
   }
 
 
@@ -146,10 +151,9 @@
     @apply border border-white/20 bg-primary-500 text-white shadow-sm shadow-primary-600/20;
     @apply hover:bg-primary-600 hover:shadow-md hover:shadow-primary-600/20;
     @apply dark:bg-primary-500 dark:hover:bg-primary-400 dark:hover:text-dark-950;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.28),
-      inset 0 -1px 0 rgba(0, 47, 167, 0.18),
-      0 10px 24px rgba(0, 47, 167, 0.18);
+    border-color: var(--atelier-ink);
+    background: var(--atelier-blue);
+    box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
   }
 
   .btn-secondary {
@@ -160,8 +164,8 @@
     @apply hover:border-primary-200 dark:hover:border-dark-500;
     color: var(--atelier-ink);
     border-color: var(--atelier-line);
-    background: var(--atelier-white);
-    box-shadow: 0 1px 2px rgba(23, 21, 18, 0.05);
+    background: var(--atelier-surface);
+    box-shadow: 0 1px 0 rgba(23, 21, 18, 0.06);
   }
 
   .btn-ghost {
@@ -240,7 +244,7 @@
     @apply disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-900;
     color: var(--atelier-ink);
     border-color: rgba(23, 21, 18, 0.16);
-    background: color-mix(in srgb, var(--atelier-white) 86%, white);
+    background: var(--atelier-surface-strong);
   }
 
   .input-error {
@@ -273,8 +277,8 @@
   /* ============ 基础面板 ============ */
   .paper-surface {
     @apply border border-accent-100 dark:border-dark-700;
-    background: var(--atelier-white);
-    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
+    background: var(--atelier-surface);
+    box-shadow: 0 10px 24px -22px var(--atelier-shadow);
   }
 
   .paper-card {
@@ -282,8 +286,8 @@
     @apply border border-accent-100 dark:border-dark-700;
     @apply shadow-card;
     @apply transition-all duration-300;
-    background: var(--atelier-white);
-    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
+    background: var(--atelier-surface);
+    box-shadow: 0 10px 24px -22px var(--atelier-shadow);
   }
 
   /* ============ 卡片样式 ============ */
@@ -292,13 +296,14 @@
     @apply border border-accent-100 dark:border-dark-700/70;
     @apply shadow-card;
     @apply transition-all duration-300;
-    background: var(--atelier-white);
-    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
+    background: var(--atelier-surface);
+    box-shadow: 0 10px 24px -22px var(--atelier-shadow);
   }
 
   .card-hover {
     @apply hover:-translate-y-0.5 hover:shadow-card-hover;
     @apply hover:border-primary-200 dark:hover:border-dark-600;
+    box-shadow: 0 14px 30px -24px rgba(0, 47, 167, 0.38);
   }
 
   .card-header {
@@ -328,19 +333,23 @@
   }
 
   .stat-icon-primary {
-    @apply bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400;
+    background: var(--atelier-blue);
+    color: var(--atelier-white);
   }
 
   .stat-icon-success {
-    @apply bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300;
+    background: var(--atelier-dust-soft);
+    color: var(--atelier-blue-dark);
   }
 
   .stat-icon-warning {
-    @apply bg-accent-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300;
+    background: var(--atelier-butter-soft);
+    color: var(--atelier-butter-dark);
   }
 
   .stat-icon-danger {
-    @apply bg-primary-200 text-primary-800 dark:bg-primary-900/35 dark:text-primary-200;
+    background: color-mix(in srgb, var(--atelier-ink) 10%, var(--atelier-paper));
+    color: var(--atelier-ink);
   }
 
   .stat-value {
@@ -366,6 +375,7 @@
   /* ============ 表格样式 ============ */
   .table-container {
     @apply overflow-x-auto rounded-lg border border-accent-200 dark:border-dark-700;
+    background: var(--atelier-surface);
   }
 
   .table {
@@ -374,15 +384,17 @@
 
   .table th {
     @apply px-4 py-3 text-left font-medium;
-    @apply text-accent-700 dark:text-dark-300;
-    @apply bg-accent-50/80 dark:bg-dark-800/70;
+    @apply dark:text-dark-300;
     @apply border-b border-accent-200 dark:border-dark-700;
+    color: var(--atelier-ink);
+    background: var(--atelier-dust-soft);
   }
 
   .table td {
     @apply px-4 py-3;
-    @apply text-gray-700 dark:text-gray-300;
+    @apply dark:text-gray-300;
     @apply border-b border-accent-100 dark:border-dark-800;
+    color: var(--atelier-ink);
   }
 
   .table tr:last-child td {
@@ -391,7 +403,12 @@
 
   .table tbody tr {
     @apply transition-colors duration-150;
-    @apply hover:bg-accent-50/70 dark:hover:bg-dark-800/40;
+    @apply dark:hover:bg-dark-800/40;
+    background-color: transparent;
+  }
+
+  .table tbody tr:hover {
+    background: var(--atelier-blue-soft);
   }
 
   /* ============ 徽章样式 ============ */
@@ -401,27 +418,35 @@
   }
 
   .badge-primary {
-    @apply bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400;
+    background: var(--atelier-blue);
+    color: var(--atelier-white);
   }
 
   .badge-success {
-    @apply bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300;
+    background: var(--atelier-dust-soft);
+    color: var(--atelier-blue-dark);
   }
 
   .badge-warning {
-    @apply bg-accent-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300;
+    background: var(--atelier-butter-soft);
+    color: var(--atelier-butter-dark);
   }
 
   .badge-danger {
-    @apply bg-primary-200 text-primary-800 dark:bg-primary-900/35 dark:text-primary-200;
+    background: color-mix(in srgb, #b44536 10%, var(--atelier-paper));
+    color: #8f3328;
   }
 
   .badge-gray {
-    @apply bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-dark-300;
+    @apply dark:bg-dark-700 dark:text-dark-300;
+    background: var(--atelier-surface-muted);
+    color: var(--atelier-muted);
   }
 
   .badge-purple {
-    @apply bg-accent-100 text-accent-700 dark:bg-dark-700 dark:text-dark-200;
+    @apply dark:bg-dark-700 dark:text-dark-200;
+    background: var(--atelier-dust-soft);
+    color: var(--atelier-dust);
   }
 
   /* ============ 下拉菜单 ============ */
@@ -434,7 +459,7 @@
     @apply py-1;
     @apply origin-top-right;
     border-color: rgba(23, 21, 18, 0.16);
-    background: color-mix(in srgb, var(--atelier-white) 92%, white);
+    background: var(--atelier-surface-strong);
   }
 
   .dropdown-item {
@@ -443,6 +468,12 @@
     @apply hover:bg-accent-50 dark:hover:bg-dark-700;
     @apply cursor-pointer transition-colors;
     @apply flex items-center gap-2;
+    color: var(--atelier-ink);
+  }
+
+  .dropdown-item:hover {
+    background: var(--atelier-blue-soft);
+    color: var(--atelier-blue-dark);
   }
 
   /* ============ 模态框 ============ */
@@ -460,7 +491,7 @@
     @apply border border-accent-200 dark:border-dark-700;
     @apply flex flex-col;
     border-color: rgba(23, 21, 18, 0.16);
-    background: color-mix(in srgb, var(--atelier-white) 92%, white);
+    background: var(--atelier-surface-strong);
   }
 
   .modal-header {
@@ -552,7 +583,7 @@
     @apply max-h-[90vh];
     @apply rounded-lg bg-white dark:bg-dark-800;
     @apply shadow-card-hover;
-    background: color-mix(in srgb, var(--atelier-white) 92%, white);
+    background: var(--atelier-surface-strong);
   }
 
   .dialog-header {
@@ -580,7 +611,7 @@
     @apply p-4;
     @apply animate-slide-in-right;
     border-color: rgba(23, 21, 18, 0.16);
-    background: color-mix(in srgb, var(--atelier-white) 92%, white);
+    background: var(--atelier-surface-strong);
   }
 
   .toast-success {
@@ -630,10 +661,12 @@
     --sidebar-muted: rgba(255, 250, 240, 0.68);
     --sidebar-line: rgba(255, 250, 240, 0.18);
     --sidebar-hover: rgba(255, 250, 240, 0.12);
-    --sidebar-active-bg: var(--atelier-white);
+    --sidebar-active-bg: var(--atelier-paper);
     --sidebar-active-text: var(--atelier-blue-dark);
     --sidebar-active-border: var(--atelier-butter);
-    background: var(--sidebar-bg);
+    background:
+      linear-gradient(180deg, rgba(0, 47, 167, 0.98), rgba(0, 26, 107, 0.98)),
+      var(--sidebar-bg);
     border-right: 1px solid rgba(0, 30, 110, 0.36);
     color: var(--sidebar-text);
     box-shadow: inset -1px 0 0 rgba(255, 250, 240, 0.14), 16px 0 36px -32px rgba(0, 47, 167, 0.72);
@@ -658,6 +691,9 @@
     @apply h-16 px-6;
     @apply flex items-center gap-3;
     border-bottom: 1px solid var(--sidebar-line);
+    background:
+      radial-gradient(circle at 18% 0%, rgba(255, 250, 240, 0.16), transparent 52%),
+      rgba(0, 26, 107, 0.22);
     transition:
       padding 0.2s ease,
       gap 0.2s ease;
@@ -669,6 +705,10 @@
     overscroll-behavior: contain;
     contain: layout paint;
     transform: translateZ(0);
+    background:
+      linear-gradient(90deg, rgba(255, 250, 240, 0.045) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255, 250, 240, 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 
   .sidebar-link {
@@ -692,7 +732,9 @@
     background: var(--sidebar-active-bg);
     border-color: color-mix(in srgb, var(--sidebar-active-border) 72%, transparent);
     color: var(--sidebar-active-text);
-    box-shadow: inset 3px 0 0 var(--sidebar-active-border);
+    box-shadow:
+      inset 3px 0 0 var(--sidebar-active-border),
+      0 8px 18px -14px rgba(0, 26, 107, 0.52);
   }
 
   .sidebar .sidebar-link-active:hover {
@@ -702,6 +744,7 @@
 
   .sidebar-children {
     border-left: 1px solid color-mix(in srgb, var(--sidebar-active-border) 58%, transparent);
+    background: rgba(0, 26, 107, 0.12);
   }
 
   .sidebar-footer {
@@ -730,10 +773,12 @@
 
   .page-title {
     @apply text-2xl font-semibold text-gray-900 dark:text-white;
+    color: var(--atelier-ink);
   }
 
   .page-description {
     @apply mt-1 text-sm text-gray-500 dark:text-dark-400;
+    color: var(--atelier-muted);
   }
 
   /* ============ 空状态 ============ */
@@ -762,7 +807,13 @@
   }
 
   .skeleton {
-    @apply animate-pulse rounded bg-gray-200 dark:bg-dark-700;
+    @apply animate-pulse rounded dark:bg-dark-700;
+    background: linear-gradient(
+      90deg,
+      var(--atelier-surface-muted),
+      color-mix(in srgb, var(--atelier-white) 68%, var(--atelier-paper)),
+      var(--atelier-surface-muted)
+    );
   }
 
   /* ============ 分隔线 ============ */
@@ -773,7 +824,9 @@
   /* ============ 标签页 ============ */
   .tabs {
     @apply flex gap-1 p-1;
-    @apply rounded-lg bg-primary-100/60 dark:bg-dark-800;
+    @apply rounded-lg dark:bg-dark-800;
+    border: 1px solid var(--atelier-line);
+    background: var(--atelier-surface-muted);
   }
 
   .tab {
@@ -784,30 +837,34 @@
   }
 
   .tab-active {
-    @apply bg-white dark:bg-dark-700;
-    @apply text-gray-900 dark:text-white;
-    @apply shadow-sm;
+    @apply dark:bg-dark-700 dark:text-white;
+    background: var(--atelier-blue);
+    color: var(--atelier-white);
+    box-shadow: 0 8px 18px -16px rgba(0, 47, 167, 0.55);
   }
 
   /* ============ 进度条 ============ */
   .progress {
-    @apply h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700;
+    @apply h-2 overflow-hidden rounded-full dark:bg-dark-700;
+    background: var(--atelier-surface-muted);
   }
 
   .progress-bar {
-    @apply h-full bg-primary-500;
+    @apply h-full;
+    background: var(--atelier-blue);
     @apply transition-all duration-300;
   }
 
   /* ============ 开关 ============ */
   .switch {
     @apply relative h-6 w-11 cursor-pointer rounded-full;
-    @apply bg-gray-300 dark:bg-dark-600;
+    @apply dark:bg-dark-600;
     @apply transition-colors duration-200;
+    background: color-mix(in srgb, var(--atelier-dust) 24%, var(--atelier-paper-2));
   }
 
   .switch-active {
-    @apply bg-primary-500;
+    background: var(--atelier-blue);
   }
 
   .switch-thumb {
@@ -920,9 +977,12 @@
 
 .guizang-site-background--light {
   background:
-    radial-gradient(circle at 14% 16%, rgba(0, 47, 167, 0.045), transparent 26rem),
-    radial-gradient(circle at 88% 8%, rgba(199, 154, 58, 0.055), transparent 24rem),
-    linear-gradient(180deg, rgba(255, 250, 240, 0.96), rgba(243, 239, 229, 0.88));
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
+    var(--atelier-paper);
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
   color: #002fa7;
 }
 
@@ -1017,9 +1077,12 @@
 
 .app-layout-shell {
   background:
-    radial-gradient(circle at 8% 0%, rgba(0, 47, 167, 0.09), transparent 28rem),
-    radial-gradient(circle at 90% 8%, rgba(79, 106, 140, 0.12), transparent 26rem),
-    linear-gradient(180deg, var(--atelier-white) 0%, var(--atelier-paper) 52%, var(--atelier-paper-2) 100%);
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
+    var(--atelier-paper);
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
 }
 
 .dark .app-layout-shell {
@@ -1028,9 +1091,12 @@
 
 .app-layout-content {
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.075), transparent 26rem),
-    radial-gradient(circle at 86% 16%, rgba(79, 106, 140, 0.11), transparent 24rem),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.96) 0%, rgba(243, 239, 229, 0.88) 58%, rgba(233, 225, 210, 0.9) 100%);
+    radial-gradient(circle at 16% 0%, rgba(0, 47, 167, 0.075), transparent 26rem),
+    radial-gradient(circle at 88% 6%, rgba(199, 154, 58, 0.08), transparent 24rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.028) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.02) 1px, transparent 1px),
+    linear-gradient(180deg, var(--atelier-paper) 0%, var(--atelier-paper-2) 100%);
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
 }
 
 .dark .app-layout-content {
@@ -1042,12 +1108,12 @@
 }
 
 .app-layout-content .paper-surface {
-  background: var(--atelier-white);
+  background: var(--atelier-surface);
 }
 
 .app-layout-content .modal-content,
 .app-layout-content .dropdown {
-  background: var(--atelier-white);
+  background: var(--atelier-surface-strong);
 }
 
 .app-layout-content .card,
@@ -1072,13 +1138,13 @@
   [class~="bg-gray-50/50"]
 ):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   border-color: rgba(23, 21, 18, 0.14) !important;
-  background: var(--atelier-white) !important;
-  box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36) !important;
+  background: var(--atelier-surface) !important;
+  box-shadow: 0 10px 24px -22px var(--atelier-shadow) !important;
 }
 
 .app-layout-content .table-scroll-container,
 .app-layout-content .table-wrapper {
-  background: var(--atelier-white);
+  background: var(--atelier-surface);
 }
 
 .app-layout-content :where([class~="text-gray-900"], [class~="text-gray-800"]) {
@@ -1098,22 +1164,22 @@
 }
 
 .app-layout-content :where([class~="bg-gray-100"], [class~="bg-gray-50"], [class~="bg-gray-50/50"]) {
-  background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;
+  background: var(--atelier-surface-muted) !important;
 }
 
 .app-layout-content :where([class~="bg-primary-50"], [class~="bg-blue-50"], [class~="bg-indigo-50"], [class~="bg-purple-50"], [class~="bg-sky-50"]) {
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+  background: var(--atelier-blue-soft) !important;
 }
 
 .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select) {
   border-color: var(--atelier-line) !important;
-  background: var(--atelier-white) !important;
+  background: var(--atelier-surface-strong) !important;
   color: var(--atelier-ink) !important;
 }
 
 .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select):focus {
   border-color: var(--atelier-blue) !important;
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+  background: var(--atelier-blue-soft) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--atelier-blue) 18%, transparent) !important;
 }
 
@@ -1122,24 +1188,24 @@
 }
 
 .app-layout-content .table-wrapper :where(.table-header, .sticky-header-cell) {
-  background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;
+  background: var(--atelier-dust-soft) !important;
   color: var(--atelier-ink) !important;
 }
 
 .app-layout-content .table-wrapper :where(tbody, .table-body) {
-  background: var(--atelier-white) !important;
+  background: var(--atelier-surface) !important;
 }
 
 .app-layout-content .table-wrapper tbody tr:hover {
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+  background: var(--atelier-blue-soft) !important;
 }
 
 .app-layout-content .table-wrapper tbody .sticky-col {
-  background: var(--atelier-white) !important;
+  background: var(--atelier-surface) !important;
 }
 
 .app-layout-content .table-wrapper tbody tr:hover .sticky-col {
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+  background: var(--atelier-blue-soft) !important;
 }
 
 .dark .paper-surface,
@@ -1305,12 +1371,24 @@
   }
 }
 
-.auth-ascii-shell {
-  background: #002fa7;
+.auth-ascii-shell,
+.home-ascii-shell {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
+    var(--atelier-paper);
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
+  color: var(--atelier-ink);
 }
 
-.home-ascii-shell {
-  background: #002fa7;
+.dark .auth-ascii-shell,
+.dark .home-ascii-shell {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    linear-gradient(180deg, #050505, #0a0a0a);
+  color: #f7f1e6;
 }
 
 html:has(.home-ascii-shell),
@@ -1324,7 +1402,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .auth-ascii-shell .paper-card {
-  background: var(--atelier-white);
+  background: var(--atelier-surface);
 }
 
 .dark .auth-ascii-shell .paper-card {
@@ -1333,6 +1411,11 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 .auth-ascii-shell .text-gradient {
   background: none;
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  color: var(--atelier-blue);
+  -webkit-text-fill-color: var(--atelier-blue);
+}
+
+.dark .auth-ascii-shell .text-gradient {
+  color: #fffaf0;
+  -webkit-text-fill-color: #fffaf0;
 }

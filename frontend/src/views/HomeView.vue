@@ -24,7 +24,7 @@
       <nav class="mx-auto flex max-w-6xl items-center justify-between">
         <!-- Logo -->
         <router-link to="/home" class="flex items-center" aria-label="Home">
-          <div class="h-10 w-10 overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50">
+          <div class="home-logo h-10 w-10 overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
         </router-link>
@@ -40,7 +40,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-lg p-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+            class="home-nav-icon rounded-lg p-2 transition-colors"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
@@ -49,7 +49,7 @@
           <!-- Theme Toggle -->
           <button
             @click="toggleTheme"
-            class="rounded-lg p-2 text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+            class="home-nav-icon rounded-lg p-2 transition-colors"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
           >
             <Icon v-if="isDark" name="sun" size="md" />
@@ -101,11 +101,11 @@
           <!-- Left: Text Content -->
           <div class="flex-1 text-center lg:text-left">
             <h1
-              class="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl"
+              class="home-hero-title mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
             >
               {{ siteName }}
             </h1>
-            <p class="mb-8 text-lg text-white md:text-xl">
+            <p class="home-hero-subtitle mb-8 text-lg md:text-xl">
               {{ siteSubtitle }}
             </p>
 
@@ -113,7 +113,7 @@
             <div>
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
-                class="inline-flex items-center rounded-lg bg-white px-8 py-3 text-base font-semibold text-primary-600 shadow-glow transition-colors hover:bg-primary-50"
+                class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"
               >
                 {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
                 <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
@@ -267,10 +267,10 @@
 
         <!-- Supported Providers -->
         <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-white">
+          <h2 class="home-section-title mb-3 text-2xl font-bold">
             {{ t('home.providers.title') }}
           </h2>
-          <p class="text-sm text-white/68">
+          <p class="home-section-copy text-sm">
             {{ t('home.providers.description') }}
           </p>
         </div>
@@ -356,11 +356,11 @@
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-10 border-t border-white/20 px-6 py-8">
+    <footer class="home-footer relative z-10 px-6 py-8">
       <div
         class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
       >
-        <p class="text-sm text-white/65">
+        <p class="home-footer-text text-sm">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
         </p>
         <div class="flex items-center gap-4">
@@ -369,7 +369,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-white/65 transition-colors hover:text-white"
+            class="home-footer-link text-sm transition-colors"
           >
             {{ t('home.docs') }}
           </a>
@@ -377,7 +377,7 @@
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-white/65 transition-colors hover:text-white"
+            class="home-footer-link text-sm transition-colors"
           >
             GitHub
           </a>
@@ -465,6 +465,90 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.home-logo {
+  border: 1px solid var(--atelier-ink);
+  background: var(--atelier-paper-2);
+  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.42);
+}
+
+.home-nav-icon {
+  color: var(--atelier-muted);
+}
+
+.home-nav-icon:hover {
+  background: var(--atelier-blue-soft);
+  color: var(--atelier-blue);
+}
+
+.home-hero-title {
+  color: var(--atelier-ink);
+  letter-spacing: 0;
+}
+
+.home-hero-subtitle,
+.home-section-copy,
+.home-footer-text,
+.home-footer-link,
+.home-ascii-shell :deep(.text-gray-600),
+.home-ascii-shell :deep(.text-gray-700),
+.home-ascii-shell :deep(.text-dark-200) {
+  color: var(--atelier-muted);
+}
+
+.home-ascii-shell :deep(.text-gray-900) {
+  color: var(--atelier-ink);
+}
+
+.home-ascii-shell :deep(.bg-white\/80),
+.home-ascii-shell :deep(.bg-white\/75),
+.home-ascii-shell :deep(.bg-white\/70),
+.home-ascii-shell :deep(.bg-white\/50) {
+  background: var(--atelier-surface);
+}
+
+.home-ascii-shell :deep(.border-gray-200\/50),
+.home-ascii-shell :deep(.border-accent-200\/70),
+.home-ascii-shell :deep(.border-primary-200),
+.home-ascii-shell :deep(.border-accent-200\/60) {
+  border-color: var(--atelier-line);
+}
+
+.home-ascii-shell :deep(.ring-primary-500\/20) {
+  --tw-ring-color: rgba(0, 47, 167, 0.16);
+}
+
+.home-ascii-shell :deep(.bg-primary-100) {
+  background: var(--atelier-blue-soft);
+}
+
+.home-ascii-shell :deep(.text-primary-500),
+.home-ascii-shell :deep(.text-primary-600) {
+  color: var(--atelier-blue);
+}
+
+.home-cta {
+  border: 1px solid var(--atelier-ink);
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+}
+
+.home-cta:hover {
+  background: var(--atelier-blue-dark);
+}
+
+.home-section-title {
+  color: var(--atelier-ink);
+}
+
+.home-footer {
+  border-top: 1px dotted var(--atelier-line-strong);
+}
+
+.home-footer-link:hover {
+  color: var(--atelier-blue);
+}
+
 /* Terminal Container */
 .terminal-container {
   position: relative;
@@ -494,7 +578,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(17, 27, 54, 0.82);
+  background: rgba(23, 21, 18, 0.82);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -510,13 +594,13 @@ onMounted(() => {
 }
 
 .btn-close {
-  background: #ef4444;
+  background: #b44536;
 }
 .btn-minimize {
-  background: #eab308;
+  background: var(--atelier-butter);
 }
 .btn-maximize {
-  background: #22c55e;
+  background: var(--atelier-dust);
 }
 
 .terminal-title {
@@ -524,7 +608,7 @@ onMounted(() => {
   text-align: center;
   font-size: 12px;
   font-family: ui-monospace, monospace;
-  color: #64748b;
+  color: rgba(243, 239, 229, 0.62);
   margin-right: 52px;
 }
 
@@ -570,31 +654,31 @@ onMounted(() => {
 }
 
 .code-prompt {
-  color: #22c55e;
+  color: var(--atelier-butter);
   font-weight: bold;
 }
 .code-cmd {
   color: #ffffff;
 }
 .code-flag {
-  color: #c8d2ff;
+  color: #9fb2d2;
 }
 .code-url {
-  color: #dce7ff;
+  color: #fffaf0;
 }
 .code-comment {
-  color: #64748b;
+  color: rgba(243, 239, 229, 0.54);
   font-style: italic;
 }
 .code-success {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.15);
+  color: #fffaf0;
+  background: rgba(79, 106, 140, 0.28);
   padding: 2px 8px;
   border-radius: 4px;
   font-weight: 600;
 }
 .code-response {
-  color: #fbbf24;
+  color: #e9c96c;
 }
 
 /* Blinking Cursor */
@@ -602,7 +686,7 @@ onMounted(() => {
   display: inline-block;
   width: 8px;
   height: 16px;
-  background: #22c55e;
+  background: var(--atelier-butter);
   animation: blink 1s step-end infinite;
 }
 
@@ -624,5 +708,23 @@ onMounted(() => {
     0 0 0 1px rgba(0, 47, 167, 0.3),
     0 18px 44px rgba(0, 47, 167, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .home-logo {
+  border-color: rgba(233, 225, 210, 0.18);
+  background: #11100d;
+}
+
+:global(.dark) .home-nav-icon,
+:global(.dark) .home-hero-subtitle,
+:global(.dark) .home-section-copy,
+:global(.dark) .home-footer-text,
+:global(.dark) .home-footer-link {
+  color: rgba(243, 239, 229, 0.72);
+}
+
+:global(.dark) .home-hero-title,
+:global(.dark) .home-section-title {
+  color: #fffaf0;
 }
 </style>

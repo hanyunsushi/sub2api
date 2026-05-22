@@ -1,5 +1,5 @@
 <template>
-  <header class="paper-surface sticky top-0 z-30 border-b border-gray-200/50 dark:border-dark-700/50">
+  <header class="app-header-atelier paper-surface sticky top-0 z-30 border-b border-gray-200/50 dark:border-dark-700/50">
     <div class="flex h-16 items-center justify-between px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex items-center gap-4">
@@ -125,10 +125,10 @@
           <button
             ref="dropdownButtonRef"
             @click="toggleDropdown"
-            class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
+            class="user-menu-trigger flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
             aria-label="User Menu"
           >
-            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
+            <div class="user-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
               <img
                 v-if="avatarUrl"
                 :src="avatarUrl"
@@ -511,12 +511,31 @@ watch(
   transform: translate3d(0, -8px, 0);
 }
 
+.app-header-atelier {
+  border-color: var(--atelier-line);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.76), rgba(243, 239, 229, 0.64)),
+    radial-gradient(circle at 82% 0%, rgba(199, 154, 58, 0.08), transparent 28rem);
+  box-shadow: 0 1px 0 rgba(23, 21, 18, 0.08);
+}
+
+.user-menu-trigger:hover {
+  background: var(--atelier-blue-soft);
+}
+
+.user-avatar {
+  background: var(--atelier-blue);
+  box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.62);
+}
+
 .balance-chip-system {
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+  border: 1px solid var(--atelier-line);
+  background: var(--atelier-blue-soft);
 }
 
 .balance-chip-buzz {
-  background: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-white));
+  border: 1px solid color-mix(in srgb, var(--atelier-butter) 32%, var(--atelier-line));
+  background: var(--atelier-butter-soft);
 }
 
 .balance-row {
@@ -524,12 +543,12 @@ watch(
 }
 
 .balance-row-system {
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+  background: var(--atelier-blue-soft);
   color: var(--atelier-muted);
 }
 
 .balance-row-buzz {
-  background: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-white));
+  background: var(--atelier-butter-soft);
 }
 
 .balance-system-text {
@@ -537,7 +556,7 @@ watch(
 }
 
 .balance-buzz-text {
-  color: #8e6c1f;
+  color: var(--atelier-butter-dark);
 }
 
 .dark .balance-chip-system,
