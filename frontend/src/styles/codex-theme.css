@@ -125,12 +125,20 @@
 .codex-panel {
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
-  background: var(--material-card-surface);
+  background:
+    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
+    var(--material-card-surface);
+  background-size: 28px 28px, 28px 28px, auto;
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .dark .codex-panel {
-  background: var(--material-card-surface);
+  background:
+    linear-gradient(90deg, rgba(233, 225, 210, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(233, 225, 210, 0.03) 1px, transparent 1px),
+    var(--material-card-surface);
+  background-size: 28px 28px, 28px 28px, auto;
   box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 
@@ -435,14 +443,21 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background:
+    linear-gradient(90deg, rgba(23, 21, 18, 0.026) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.02) 1px, transparent 1px),
     linear-gradient(180deg, color-mix(in srgb, #fffaf0 74%, #f3efe5), var(--material-card-surface));
+  background-size: 28px 28px, 28px 28px, auto;
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
   padding: clamp(10px, 2.4cqi, 14px);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .dark .codex-account-card {
-  background: var(--material-card-surface);
+  background:
+    linear-gradient(90deg, rgba(233, 225, 210, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(233, 225, 210, 0.028) 1px, transparent 1px),
+    var(--material-card-surface);
+  background-size: 28px 28px, 28px 28px, auto;
   box-shadow: 0 14px 32px -28px var(--material-card-shadow);
 }
 

@@ -284,11 +284,11 @@
 
     <!-- Footer -->
     <template #footer>
-      <p class="text-white/90">
+      <p class="auth-footer-copy">
         {{ t('auth.alreadyHaveAccount') }}
         <router-link
           to="/login"
-          class="font-medium text-white underline-offset-4 transition-colors hover:text-white hover:underline"
+          class="auth-footer-link-strong font-medium underline-offset-4 transition-colors hover:underline"
         >
           {{ t('auth.signIn') }}
         </router-link>

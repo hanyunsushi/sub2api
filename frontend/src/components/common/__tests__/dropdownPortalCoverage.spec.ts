@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const read = (path: string) => readFileSync(resolve(root, path), 'utf8')
+const globalStyleSource = read('style.css')
 
 const interactiveDropdownFiles = [
   'components/common/LocaleSwitcher.vue',
@@ -40,5 +41,14 @@ describe('interactive dropdown portal coverage', () => {
     expect(sources).not.toContain('class="absolute right-0 top-full z-50')
     expect(sources).not.toContain('class="absolute right-0 z-50 mt-2')
     expect(sources).not.toContain('class="absolute z-50 mt-1 max-h-48 w-full overflow-auto')
+  })
+
+  it('forces all FloatingDropdown portals onto the global atelier material layer', () => {
+    expect(globalStyleSource).toContain(':where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
+    expect(globalStyleSource).toContain('background-size: 28px 28px, 28px 28px, auto !important;')
+    expect(globalStyleSource).toContain('z-index: 100000040;')
+    expect(globalStyleSource).toContain('.dark :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
+    expect(globalStyleSource).toContain('.floating-dropdown-portal')
+    expect(globalStyleSource).toContain('.dark :where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
   })
 })

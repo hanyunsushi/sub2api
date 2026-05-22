@@ -44,7 +44,7 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
-  it('uses a visibly distinct Klein-blue sidebar instead of inheriting the warm paper card palette', () => {
+  it('uses the editorial warm-paper sidebar and keeps Klein blue isolated to active structure', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
       styleSource.indexOf('.sidebar-header {')
@@ -55,13 +55,15 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).not.toContain('border-l border-accent-200 pl-2')
     expect(componentSource).not.toContain('mt-auto border-t border-gray-100 p-3')
     expect(componentSource).not.toContain('text-gray-900 dark:text-white')
-    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-blue);')
-    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-blue-dark);')
-    expect(sidebarBlock).toContain('--sidebar-active-bg: var(--atelier-paper);')
-    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-butter);')
-    expect(sidebarBlock).toContain('linear-gradient(180deg, rgba(0, 47, 167, 0.98), rgba(0, 26, 107, 0.98))')
+    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-paper);')
+    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-paper-2);')
+    expect(sidebarBlock).toContain('--sidebar-active-bg: color-mix(in srgb, var(--atelier-white) 82%, var(--atelier-paper));')
+    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-blue);')
+    expect(sidebarBlock).toContain('radial-gradient(circle at 20% 0%, rgba(0, 47, 167, 0.12), transparent 13rem)')
+    expect(sidebarBlock).not.toContain('linear-gradient(180deg, rgba(0, 47, 167, 0.98), rgba(0, 26, 107, 0.98))')
     expect(styleSource).toContain('.sidebar .sidebar-link-active')
     expect(styleSource).toContain('inset 3px 0 0 var(--sidebar-active-border)')
+    expect(styleSource).toContain('color-mix(in srgb, var(--atelier-butter) 58%, transparent)')
     expect(styleSource).toContain('.sidebar-children')
     expect(styleSource).toContain('.sidebar .sidebar-section-title')
   })

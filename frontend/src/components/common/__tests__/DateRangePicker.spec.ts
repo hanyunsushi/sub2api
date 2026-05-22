@@ -146,9 +146,17 @@ describe('DateRangePicker', () => {
   })
 
   it('keeps teleported dark dropdown hover states readable outside dashboard scope', () => {
+    expect(componentSource).toContain('background:')
+    expect(componentSource).toContain('var(--atelier-surface-strong) !important')
+    expect(componentSource).toContain('background-size: 28px 28px, 28px 28px, auto !important;')
+    expect(componentSource).toContain('color: var(--atelier-ink);')
+    expect(componentSource).toContain('box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.58) !important;')
     expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset:hover')
     expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset-active:hover')
-    expect(componentSource).toContain('color: rgb(229, 231, 235);')
+    expect(componentSource).toContain('color: #fffaf0;')
+    expect(componentSource).toContain('transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);')
+    expect(componentSource).toContain('transform: translate3d(0, -8px, 0);')
     expect(componentSource).not.toContain('.admin-dashboard-atelier .date-picker-dropdown-portal')
+    expect(componentSource).not.toContain('transition: all 0.2s ease')
   })
 })

@@ -696,19 +696,19 @@ onMounted(() => {
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 1)) {
-  background: var(--atelier-surface-strong);
+  --atelier-card-accent: var(--atelier-blue);
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 2)) {
-  background: var(--atelier-blue-soft);
+  --atelier-card-accent: var(--atelier-dust);
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 3)) {
-  background: var(--atelier-dust-soft);
+  --atelier-card-accent: var(--atelier-blue-dark);
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 4)) {
-  background: var(--atelier-butter-soft);
+  --atelier-card-accent: var(--atelier-butter);
 }
 
 .admin-dashboard-atelier .dashboard-paper-control,
