@@ -149,6 +149,6 @@ describe('DateRangePicker', () => {
     expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset:hover')
     expect(componentSource).toContain('.dark .date-picker-dropdown-portal .date-picker-preset-active:hover')
     expect(componentSource).toContain('color: rgb(229, 231, 235);')
-    expect(componentSource).not.toContain('.admin-dashboard-liquid .date-picker-dropdown-portal')
+    expect(componentSource).not.toContain('.admin-dashboard-atelier .date-picker-dropdown-portal')
   })
 })

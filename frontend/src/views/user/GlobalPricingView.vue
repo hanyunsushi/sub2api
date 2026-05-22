@@ -290,52 +290,40 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: rgba(243, 239, 229, 0.5);
+  --material-card-surface: #fffaf0;
   --material-card-edge: rgba(23, 21, 18, 0.14);
-  --material-card-shadow: rgba(23, 21, 18, 0.34);
+  --material-card-shadow: rgba(23, 21, 18, 0.36);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-  box-shadow: 0 18px 42px -34px var(--material-card-shadow);
-  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  background: var(--material-card-surface);
+  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
 }
 
 .table-wrapper {
-  --material-card-surface: rgba(243, 239, 229, 0.5);
+  --material-card-surface: #fffaf0;
   --material-card-edge: rgba(23, 21, 18, 0.14);
-  --material-card-shadow: rgba(23, 21, 18, 0.34);
+  --material-card-shadow: rgba(23, 21, 18, 0.36);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-  box-shadow: 0 18px 42px -34px var(--material-card-shadow);
-  backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) contrast(1.02);
+  background: var(--material-card-surface);
+  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
 }
 
 .dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: rgba(5, 5, 5, 0.7);
+  --material-card-surface: #11100d;
   --material-card-edge: rgba(148, 163, 184, 0.16);
   --material-card-shadow: rgba(5, 5, 5, 0.82);
 }
 
 .dark .summary-tile {
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
-  box-shadow: 0 22px 52px -36px var(--material-card-shadow);
+  background: var(--material-card-surface);
+  box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 
 .dark .table-wrapper {
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.78), var(--material-card-surface)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
-  box-shadow: 0 22px 52px -36px var(--material-card-shadow);
+  background: var(--material-card-surface);
+  box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 
 .summary-label {
@@ -373,7 +361,7 @@ onMounted(loadPricing)
 }
 
 .global-pricing-table th {
-  @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 bg-primary-50/95 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-accent-700 backdrop-blur-sm dark:border-dark-700 dark:bg-dark-800/95 dark:text-dark-300;
+  @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 bg-primary-50 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-accent-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
 }
 
 .global-pricing-table td {

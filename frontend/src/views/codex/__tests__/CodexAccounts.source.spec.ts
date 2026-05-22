@@ -4,6 +4,8 @@ import { resolve } from 'node:path'
 
 const componentSource = readFileSync(resolve(__dirname, '../CodexAccounts.vue'), 'utf8')
 const codexThemeSource = readFileSync(resolve(__dirname, '../../../styles/codex-theme.css'), 'utf8')
+const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
+const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
 
 const getCssBlock = (selector: string) => {
   const start = codexThemeSource.indexOf(`${selector} {`)
@@ -30,7 +32,10 @@ describe('CodexAccounts source contracts', () => {
     expect(codexThemeSource).toContain('.codex-panel')
     expect(codexThemeSource).toContain('.codex-account-card')
     expect(codexThemeSource).toContain('--material-card-surface')
-    expect(codexThemeSource).toContain('backdrop-filter: blur(20px) saturate(1.2) contrast(1.02)')
+    expect(codexThemeSource).toContain('--material-card-surface: #fffaf0;')
+    expect(codexThemeSource).toContain('background: var(--material-card-surface);')
+    expect(codexThemeSource).not.toContain(blockedBackdropFilter)
+    expect(codexThemeSource).not.toContain(blockedWebkitBackdropFilter)
     expect(codexThemeSource).not.toContain('inset 0 -1px')
     expect(codexThemeSource).toContain('.dark .codex-panel')
     expect(codexThemeSource).toContain('.dark .codex-account-card')

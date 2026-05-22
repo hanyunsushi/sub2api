@@ -162,7 +162,7 @@
         <!-- Feature Tags - Centered -->
         <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
           >
             <Icon name="swap" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -170,7 +170,7 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
           >
             <Icon name="shield" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -178,7 +178,7 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
           >
             <Icon name="chart" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -191,7 +191,7 @@
         <div class="mb-12 grid gap-6 md:grid-cols-[1.15fr_.95fr_.9fr]">
           <!-- Feature 1: Unified Gateway -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-600 shadow-sm shadow-primary-600/20 transition-transform group-hover:scale-105 dark:bg-primary-500"
@@ -208,7 +208,7 @@
 
           <!-- Feature 2: Account Pool -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 shadow-sm shadow-primary-500/20 transition-transform group-hover:scale-105"
@@ -237,7 +237,7 @@
 
           <!-- Feature 3: Billing & Quota -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-800 shadow-sm shadow-accent-800/15 transition-transform group-hover:scale-105 dark:bg-primary-700"
@@ -278,7 +278,7 @@
         <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
           <!-- Claude - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -293,7 +293,7 @@
           </div>
           <!-- GPT - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -308,7 +308,7 @@
           </div>
           <!-- Gemini - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500"
@@ -323,7 +323,7 @@
           </div>
           <!-- Antigravity - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/70"
+            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -338,7 +338,7 @@
           </div>
           <!-- More - Coming Soon -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/50"
+            class="flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 dark:border-dark-700/50 dark:bg-dark-800/50"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"

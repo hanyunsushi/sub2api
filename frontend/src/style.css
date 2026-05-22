@@ -25,6 +25,15 @@
   html {
     @apply scroll-smooth antialiased;
     overscroll-behavior-y: none;
+    font-family:
+      'Inter Tight',
+      'Arial Narrow',
+      'Helvetica Neue',
+      Arial,
+      'PingFang SC',
+      'Hiragino Sans GB',
+      'Microsoft YaHei',
+      sans-serif;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -53,6 +62,15 @@
       linear-gradient(0deg, rgba(23, 21, 18, 0.02) 1px, transparent 1px),
       var(--atelier-paper);
     background-size: auto, auto, 32px 32px, 32px 32px, auto;
+    font-family:
+      'Inter Tight',
+      'Arial Narrow',
+      'Helvetica Neue',
+      Arial,
+      'PingFang SC',
+      'Hiragino Sans GB',
+      'Microsoft YaHei',
+      sans-serif;
   }
 
   .dark body {
@@ -247,27 +265,19 @@
   }
 
   /* ============ 基础面板 ============ */
-  .glass {
+  .paper-surface {
     @apply border border-accent-100 dark:border-dark-700;
-    background:
-      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
-      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.04));
-    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
-    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
-    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    background: var(--atelier-white);
+    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
   }
 
-  .glass-card {
+  .paper-card {
     @apply rounded-lg;
     @apply border border-accent-100 dark:border-dark-700;
     @apply shadow-card;
     @apply transition-all duration-300;
-    background:
-      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
-      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
-    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
-    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    background: var(--atelier-white);
+    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
   }
 
   /* ============ 卡片样式 ============ */
@@ -276,28 +286,13 @@
     @apply border border-accent-100 dark:border-dark-700/70;
     @apply shadow-card;
     @apply transition-all duration-300;
-    background:
-      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
-      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
-    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
-    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+    background: var(--atelier-white);
+    box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36);
   }
 
   .card-hover {
     @apply hover:-translate-y-0.5 hover:shadow-card-hover;
     @apply hover:border-primary-200 dark:hover:border-dark-600;
-  }
-
-  .card-glass {
-    @apply border border-accent-100 dark:border-dark-700;
-    @apply shadow-card;
-    background:
-      linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
-      linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045));
-    box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34);
-    backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
-    -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
   }
 
   .card-header {
@@ -984,22 +979,17 @@
   min-height: 100vh;
 }
 
-.app-layout-content .glass {
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.8), rgba(243, 239, 229, 0.58)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.74), rgba(233, 225, 210, 0.28) 42%, rgba(0, 47, 167, 0.04));
+.app-layout-content .paper-surface {
+  background: var(--atelier-white);
 }
 
 .app-layout-content .modal-content,
 .app-layout-content .dropdown {
-  background: rgba(255, 250, 240, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--atelier-white);
 }
 
 .app-layout-content .card,
-.app-layout-content .glass-card,
-.app-layout-content .card-glass,
+.app-layout-content .paper-card,
 .app-layout-content .stat-card,
 .app-layout-content .table-scroll-container,
 .app-layout-content .summary-tile,
@@ -1020,38 +1010,28 @@
   [class~="bg-gray-50/50"]
 ):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   border-color: rgba(23, 21, 18, 0.14) !important;
-  background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.78), rgba(243, 239, 229, 0.5)),
-    linear-gradient(135deg, rgba(255, 250, 240, 0.72), rgba(233, 225, 210, 0.22) 42%, rgba(0, 47, 167, 0.045)) !important;
-  box-shadow: 0 18px 42px -34px rgba(23, 21, 18, 0.34) !important;
-  backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
-  -webkit-backdrop-filter: blur(20px) saturate(1.22) contrast(1.04);
+  background: var(--atelier-white) !important;
+  box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36) !important;
 }
 
 .app-layout-content .table-scroll-container,
 .app-layout-content .table-wrapper {
-  backdrop-filter: blur(16px) saturate(1.12);
-  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  background: var(--atelier-white);
 }
 
-.dark .glass,
-.dark .glass-card,
+.dark .paper-surface,
+.dark .paper-card,
 .dark .card,
-.dark .card-glass,
-.dark .app-layout-content .glass,
+.dark .app-layout-content .paper-surface,
 .dark .app-layout-content .card,
-.dark .app-layout-content .glass-card,
-.dark .app-layout-content .card-glass {
+.dark .app-layout-content .paper-card {
   border-color: rgba(148, 163, 184, 0.16);
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.78), rgba(5, 5, 5, 0.7)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent);
-  box-shadow: 0 22px 52px -36px rgba(5, 5, 5, 0.82);
+  background: #11100d;
+  box-shadow: 0 16px 34px -28px rgba(5, 5, 5, 0.82);
 }
 
 .dark .app-layout-content .card,
-.dark .app-layout-content .glass-card,
-.dark .app-layout-content .card-glass,
+.dark .app-layout-content .paper-card,
 .dark .app-layout-content .stat-card,
 .dark .app-layout-content .table-scroll-container,
 .dark .app-layout-content .summary-tile,
@@ -1072,10 +1052,8 @@
   [class~="bg-gray-50/50"]
 ):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   border-color: rgba(148, 163, 184, 0.16) !important;
-  background:
-    linear-gradient(180deg, rgba(23, 21, 18, 0.78), rgba(5, 5, 5, 0.7)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(0, 47, 167, 0.08) 48%, transparent) !important;
-  box-shadow: 0 22px 52px -36px rgba(5, 5, 5, 0.82) !important;
+  background: #11100d !important;
+  box-shadow: 0 16px 34px -28px rgba(5, 5, 5, 0.82) !important;
 }
 
 .dark .app-layout-content .modal-content,
@@ -1087,7 +1065,6 @@
   --route-enter-duration: 0.9s;
   --route-enter-easing: var(--atelier-ease);
   transform-origin: top center;
-  perspective: 1200px;
   will-change: opacity, transform;
 }
 
@@ -1103,18 +1080,27 @@
 .app-route-page-entering > *,
 .app-route-page-entering > * > * {
   animation: app-route-page-child-enter 0.7s var(--route-enter-easing) both;
+  animation-delay: var(--delay, 0ms);
 }
 
-.app-route-page-entering > * > :nth-child(2) {
+.app-route-page-entering > * > :nth-child(2),
+.app-route-page-entering :where(.card, .paper-card, .summary-tile, .codex-panel, .codex-account-card, .table-wrapper, .table-scroll-container, .admin-material-surface, .dashboard-filter-card):nth-of-type(2) {
   animation-delay: 48ms;
 }
 
-.app-route-page-entering > * > :nth-child(3) {
+.app-route-page-entering > * > :nth-child(3),
+.app-route-page-entering :where(.card, .paper-card, .summary-tile, .codex-panel, .codex-account-card, .table-wrapper, .table-scroll-container, .admin-material-surface, .dashboard-filter-card):nth-of-type(3) {
   animation-delay: 84ms;
 }
 
-.app-route-page-entering > * > :nth-child(n + 4) {
+.app-route-page-entering > * > :nth-child(n + 4),
+.app-route-page-entering :where(.card, .paper-card, .summary-tile, .codex-panel, .codex-account-card, .table-wrapper, .table-scroll-container, .admin-material-surface, .dashboard-filter-card):nth-of-type(n + 4) {
   animation-delay: 118ms;
+}
+
+.app-route-page-entering :where(.card, .paper-card, .summary-tile, .codex-panel, .codex-account-card, .table-wrapper, .table-scroll-container, .admin-material-surface, .dashboard-filter-card) {
+  animation: app-route-page-child-enter 0.7s var(--route-enter-easing) both;
+  animation-delay: var(--delay, 0ms);
 }
 
 .app-route-page-settled {
@@ -1137,62 +1123,12 @@
 @keyframes app-route-page-child-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 18px, 0);
+    transform: translate3d(0, 26px, 0);
   }
 
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass-card,
-  .card,
-  .card-glass,
-  .app-layout-content .glass,
-  .app-layout-content .card,
-  .app-layout-content .glass-card,
-  .app-layout-content .card-glass,
-  .app-layout-content :where(div, section, article):where(
-    [class~="rounded-3xl"],
-    [class~="rounded-2xl"],
-    [class~="rounded-xl"],
-    [class~="rounded-lg"]
-  ):where(
-    [class~="bg-white/95"],
-    [class~="bg-white"],
-    [class~="bg-white/90"],
-    [class~="bg-gray-50"],
-    [class~="bg-gray-50/50"]
-  ) {
-    background: rgb(255, 250, 240);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .dark .glass,
-  .dark .glass-card,
-  .dark .card,
-  .dark .card-glass,
-  .dark .app-layout-content .glass,
-  .dark .app-layout-content .card,
-  .dark .app-layout-content .glass-card,
-  .dark .app-layout-content .card-glass,
-  .dark .app-layout-content :where(div, section, article):where(
-    [class~="rounded-3xl"],
-    [class~="rounded-2xl"],
-    [class~="rounded-xl"],
-    [class~="rounded-lg"]
-  ):where(
-    [class~="bg-white/95"],
-    [class~="bg-white"],
-    [class~="bg-white/90"],
-    [class~="bg-gray-50"],
-    [class~="bg-gray-50/50"]
-  ) {
-    background: rgb(17, 16, 13) !important;
   }
 }
 
@@ -1209,54 +1145,6 @@
   .app-route-page-settled {
     opacity: 1;
     transform: none;
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass,
-  .glass-card,
-  .card,
-  .card-glass,
-  .app-layout-content .glass,
-  .app-layout-content .card,
-  .app-layout-content .glass-card,
-  .app-layout-content .card-glass,
-  .app-layout-content :where(div, section, article):where(
-    [class~="rounded-3xl"],
-    [class~="rounded-2xl"],
-    [class~="rounded-xl"],
-    [class~="rounded-lg"]
-  ):where(
-    [class~="bg-white/95"],
-    [class~="bg-white"],
-    [class~="bg-white/90"],
-    [class~="bg-gray-50"],
-    [class~="bg-gray-50/50"]
-  ) {
-    background: rgb(255, 250, 240);
-  }
-
-  .dark .glass,
-  .dark .glass-card,
-  .dark .card,
-  .dark .card-glass,
-  .dark .app-layout-content .glass,
-  .dark .app-layout-content .card,
-  .dark .app-layout-content .glass-card,
-  .dark .app-layout-content .card-glass,
-  .dark .app-layout-content :where(div, section, article):where(
-    [class~="rounded-3xl"],
-    [class~="rounded-2xl"],
-    [class~="rounded-xl"],
-    [class~="rounded-lg"]
-  ):where(
-    [class~="bg-white/95"],
-    [class~="bg-white"],
-    [class~="bg-white/90"],
-    [class~="bg-gray-50"],
-    [class~="bg-gray-50/50"]
-  ) {
-    background: rgb(17, 16, 13) !important;
   }
 }
 
@@ -1278,13 +1166,12 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   display: none;
 }
 
-.auth-ascii-shell .card-glass {
-  background: rgba(255, 250, 240, 0.92);
-  backdrop-filter: blur(18px);
+.auth-ascii-shell .paper-card {
+  background: var(--atelier-white);
 }
 
-.dark .auth-ascii-shell .card-glass {
-  background: rgba(17, 16, 13, 0.94);
+.dark .auth-ascii-shell .paper-card {
+  background: #11100d;
 }
 
 .auth-ascii-shell .text-gradient {

@@ -33,6 +33,8 @@ describe('AppLayout route transition', () => {
     expect(styleSource).toContain('animation: app-route-page-enter var(--route-enter-duration) var(--route-enter-easing) both')
     expect(styleSource).toContain('.app-route-page-entering > *')
     expect(styleSource).toContain('animation: app-route-page-child-enter 0.7s var(--route-enter-easing) both')
+    expect(styleSource).toContain('animation-delay: var(--delay, 0ms)')
+    expect(styleSource).toContain('.app-route-page-entering :where(.card, .paper-card, .summary-tile, .codex-panel, .codex-account-card, .table-wrapper, .table-scroll-container, .admin-material-surface, .dashboard-filter-card)')
     expect(styleSource).toContain('@keyframes app-route-page-enter')
     expect(styleSource).toContain('@keyframes app-route-page-child-enter')
     expect(styleSource).toContain('translate3d(0, 26px, 0)')
