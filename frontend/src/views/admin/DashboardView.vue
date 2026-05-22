@@ -690,7 +690,7 @@ onMounted(() => {
 
 <style scoped>
 .admin-dashboard-atelier {
-  --dashboard-control-surface: #fffaf0;
+  --dashboard-control-surface: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white));
   --dashboard-control-edge: rgba(23, 21, 18, 0.14);
   --dashboard-control-shadow: rgba(23, 21, 18, 0.16);
 }
@@ -709,7 +709,7 @@ onMounted(() => {
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
   border-color: rgba(0, 47, 167, 0.18);
-  background: #f3efe5;
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
 }
 
 .admin-dashboard-atelier:where(.dark *) {

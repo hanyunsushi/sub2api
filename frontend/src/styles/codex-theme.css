@@ -1,8 +1,8 @@
 .codex-admin {
-  --codex-bg: #f3efe5;
+  --codex-bg: color-mix(in srgb, #f3efe5 88%, #4f6a8c);
   --codex-surface: #fffaf0;
   --codex-surface-strong: #fffaf0;
-  --codex-surface-soft: rgba(255, 250, 240, 0.82);
+  --codex-surface-soft: color-mix(in srgb, #4f6a8c 12%, #fffaf0);
   --codex-border: rgba(23, 21, 18, 0.16);
   --codex-border-strong: rgba(23, 21, 18, 0.28);
   --codex-text: #171512;
@@ -45,9 +45,9 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background:
-    linear-gradient(180deg, rgba(255, 250, 240, 0.94), rgba(243, 239, 229, 0.84)),
-    radial-gradient(circle at 14% 0%, rgba(0, 47, 167, 0.035), transparent 34%),
-    radial-gradient(circle at 88% 0%, rgba(199, 154, 58, 0.045), transparent 30%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.94), rgba(243, 239, 229, 0.82)),
+    radial-gradient(circle at 14% 0%, rgba(0, 47, 167, 0.08), transparent 34%),
+    radial-gradient(circle at 88% 0%, rgba(79, 106, 140, 0.12), transparent 30%),
     var(--codex-bg);
   box-shadow: 0 12px 32px rgba(23, 21, 18, 0.06);
 }

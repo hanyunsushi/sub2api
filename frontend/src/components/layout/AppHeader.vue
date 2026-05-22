@@ -75,13 +75,13 @@
             </svg>
             <span
               v-if="showBuzzBalanceInChip"
-              class="text-sm font-semibold text-yellow-700 dark:text-yellow-300"
+              class="balance-buzz-text text-sm font-semibold"
             >
               Buzz {{ formattedBuzzBalance }}
             </span>
             <span
               v-else
-              class="text-sm font-semibold text-primary-700 dark:text-primary-300"
+              class="balance-system-text text-sm font-semibold"
             >
               {{ formattedSystemBalance }}
             </span>
@@ -100,19 +100,19 @@
               @mouseenter="cancelBalanceDropdownClose"
               @mouseleave="scheduleCloseBalanceDropdown"
             >
-              <div class="flex items-center justify-between gap-4 rounded-lg bg-primary-50 px-3 py-2 dark:bg-primary-900/20">
-                <div class="text-xs font-medium text-gray-500 dark:text-dark-300">
+              <div class="balance-row balance-row-system flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="text-xs font-medium">
                   系统余额
                 </div>
-                <div class="text-sm font-semibold text-primary-700 dark:text-primary-300">
+                <div class="balance-system-text text-sm font-semibold">
                   {{ formattedSystemBalance }}
                 </div>
               </div>
-              <div class="flex items-center justify-between gap-4 rounded-lg bg-yellow-50 px-3 py-2 dark:bg-yellow-900/20">
-                <div class="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+              <div class="balance-row balance-row-buzz flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-buzz-text text-xs font-medium">
                   Buzz
                 </div>
-                <div class="text-sm font-semibold text-yellow-700 dark:text-yellow-300">
+                <div class="balance-buzz-text text-sm font-semibold">
                   {{ formattedBuzzBalance }}
                 </div>
               </div>
@@ -353,16 +353,16 @@ const formattedBuzzBalance = computed(() => {
 
 const balanceChipClass = computed(() => {
   if (showBuzzBalanceInChip.value) {
-    return 'bg-yellow-50 dark:bg-yellow-900/20'
+    return 'balance-chip-buzz'
   }
-  return 'bg-primary-50 dark:bg-primary-900/20'
+  return 'balance-chip-system'
 })
 
 const balanceIconClass = computed(() => {
   if (showBuzzBalanceInChip.value) {
-    return 'text-yellow-600 dark:text-yellow-300'
+    return 'balance-buzz-text'
   }
-  return 'text-primary-600 dark:text-primary-400'
+  return 'balance-system-text'
 })
 
 const pageTitle = computed(() => {
@@ -502,12 +502,59 @@ watch(
 <style scoped>
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: all 0.2s ease;
+  transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: scale(0.95) translateY(-4px);
+  transform: translate3d(0, -8px, 0);
+}
+
+.balance-chip-system {
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+}
+
+.balance-chip-buzz {
+  background: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-white));
+}
+
+.balance-row {
+  border: 1px solid var(--atelier-line);
+}
+
+.balance-row-system {
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+  color: var(--atelier-muted);
+}
+
+.balance-row-buzz {
+  background: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-white));
+}
+
+.balance-system-text {
+  color: var(--atelier-blue);
+}
+
+.balance-buzz-text {
+  color: #8e6c1f;
+}
+
+.dark .balance-chip-system,
+.dark .balance-row-system {
+  background: rgba(0, 47, 167, 0.18);
+}
+
+.dark .balance-chip-buzz,
+.dark .balance-row-buzz {
+  background: rgba(199, 154, 58, 0.18);
+}
+
+.dark .balance-system-text {
+  color: #f7f1e6;
+}
+
+.dark .balance-buzz-text {
+  color: #e9c96c;
 }
 </style>

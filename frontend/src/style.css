@@ -15,6 +15,11 @@
   --atelier-dust: #4f6a8c;
   --atelier-white: #fffaf0;
   --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 9%, var(--atelier-white));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
+  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 16%, var(--atelier-white));
+  --atelier-component-muted: var(--atelier-dust);
+  --atelier-component-warning: var(--atelier-butter);
 }
 
 @layer base {
@@ -56,12 +61,13 @@
     overscroll-behavior-y: none;
     color: var(--atelier-ink);
     background:
-      radial-gradient(circle at 14% 16%, rgba(0, 47, 167, 0.045), transparent 26rem),
-      radial-gradient(circle at 88% 8%, rgba(199, 154, 58, 0.055), transparent 24rem),
-      linear-gradient(90deg, rgba(23, 21, 18, 0.026) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(23, 21, 18, 0.02) 1px, transparent 1px),
-      var(--atelier-paper);
-    background-size: auto, auto, 32px 32px, 32px 32px, auto;
+      radial-gradient(circle at 12% 14%, rgba(0, 47, 167, 0.08), transparent 28rem),
+      radial-gradient(circle at 86% 10%, rgba(79, 106, 140, 0.12), transparent 24rem),
+      radial-gradient(circle at 74% 86%, rgba(199, 154, 58, 0.055), transparent 30rem),
+      linear-gradient(90deg, rgba(0, 47, 167, 0.03) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(79, 106, 140, 0.025) 1px, transparent 1px),
+      var(--atelier-white);
+    background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
     font-family:
       'Inter Tight',
       'Arial Narrow',
@@ -426,7 +432,7 @@
     @apply border border-accent-200 dark:border-dark-700;
     @apply shadow-card-hover;
     @apply py-1;
-    @apply origin-top-right animate-scale-in;
+    @apply origin-top-right;
     border-color: rgba(23, 21, 18, 0.16);
     background: color-mix(in srgb, var(--atelier-white) 92%, white);
   }
@@ -487,11 +493,11 @@
   }
 
   .modal-enter-active {
-    transition: opacity 250ms ease-out;
+    transition: opacity 0.22s var(--atelier-ease);
   }
 
   .modal-leave-active {
-    transition: opacity 200ms ease-in;
+    transition: opacity 0.18s var(--atelier-ease);
   }
 
   .modal-enter-from,
@@ -500,22 +506,22 @@
   }
 
   .modal-enter-active .modal-content {
-    transition: transform 250ms ease-out, opacity 250ms ease-out;
+    transition: transform 0.22s var(--atelier-ease), opacity 0.22s var(--atelier-ease);
   }
 
   .modal-leave-active .modal-content {
-    transition: transform 200ms ease-in, opacity 200ms ease-in;
+    transition: transform 0.18s var(--atelier-ease), opacity 0.18s var(--atelier-ease);
   }
 
   .modal-enter-from .modal-content,
   .modal-leave-to .modal-content {
-    transform: scale(0.95);
+    transform: translate3d(0, 18px, 0);
     opacity: 0;
   }
 
   .modal-enter-to .modal-content,
   .modal-leave-from .modal-content {
-    transform: scale(1);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 
@@ -615,17 +621,43 @@
   /* ============ 侧边栏 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
-    @apply w-64 bg-white dark:bg-dark-900;
-    @apply border-r border-accent-200 dark:border-dark-800;
+    @apply w-64;
     @apply flex flex-col;
     @apply transition-transform duration-300;
+    --sidebar-bg: var(--atelier-blue);
+    --sidebar-bg-strong: var(--atelier-blue-dark);
+    --sidebar-text: var(--atelier-white);
+    --sidebar-muted: rgba(255, 250, 240, 0.68);
+    --sidebar-line: rgba(255, 250, 240, 0.18);
+    --sidebar-hover: rgba(255, 250, 240, 0.12);
+    --sidebar-active-bg: var(--atelier-white);
+    --sidebar-active-text: var(--atelier-blue-dark);
+    --sidebar-active-border: var(--atelier-butter);
+    background: var(--sidebar-bg);
+    border-right: 1px solid rgba(0, 30, 110, 0.36);
+    color: var(--sidebar-text);
+    box-shadow: inset -1px 0 0 rgba(255, 250, 240, 0.14), 16px 0 36px -32px rgba(0, 47, 167, 0.72);
     transition-property: width, transform;
+  }
+
+  .dark .sidebar {
+    --sidebar-bg: #050505;
+    --sidebar-bg-strong: #11100d;
+    --sidebar-text: #f7f1e6;
+    --sidebar-muted: rgba(233, 225, 210, 0.64);
+    --sidebar-line: rgba(233, 225, 210, 0.14);
+    --sidebar-hover: rgba(233, 225, 210, 0.09);
+    --sidebar-active-bg: var(--atelier-blue);
+    --sidebar-active-text: #ffffff;
+    background: var(--sidebar-bg);
+    border-right-color: rgba(233, 225, 210, 0.14);
+    box-shadow: inset -1px 0 0 rgba(233, 225, 210, 0.08);
   }
 
   .sidebar-header {
     @apply h-16 px-6;
     @apply flex items-center gap-3;
-    @apply border-b border-accent-100 dark:border-dark-800;
+    border-bottom: 1px solid var(--sidebar-line);
     transition:
       padding 0.2s ease,
       gap 0.2s ease;
@@ -643,28 +675,52 @@
     @apply flex items-center gap-3 rounded-lg py-2.5;
     @apply overflow-hidden;
     @apply text-sm font-medium;
-    @apply text-gray-900 dark:text-gray-100;
+    color: var(--sidebar-text);
     @apply transition-all duration-200;
-    @apply hover:bg-primary-600 dark:hover:bg-primary-500;
-    @apply hover:text-white dark:hover:text-white;
+    border: 1px solid transparent;
     padding-left: 1.0625rem;
     padding-right: 0.875rem;
   }
 
-  .sidebar-link-active {
-    @apply bg-primary-600 dark:bg-primary-500;
-    @apply text-white dark:text-white;
-    @apply hover:bg-primary-700 dark:hover:bg-primary-400;
+  .sidebar .sidebar-link:hover {
+    background: var(--sidebar-hover);
+    border-color: var(--sidebar-line);
+    color: var(--sidebar-text);
+  }
+
+  .sidebar .sidebar-link-active {
+    background: var(--sidebar-active-bg);
+    border-color: color-mix(in srgb, var(--sidebar-active-border) 72%, transparent);
+    color: var(--sidebar-active-text);
+    box-shadow: inset 3px 0 0 var(--sidebar-active-border);
+  }
+
+  .sidebar .sidebar-link-active:hover {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+  }
+
+  .sidebar-children {
+    border-left: 1px solid color-mix(in srgb, var(--sidebar-active-border) 58%, transparent);
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid var(--sidebar-line);
+    background: rgba(0, 30, 110, 0.16);
+  }
+
+  .dark .sidebar-footer {
+    background: rgba(255, 250, 240, 0.03);
   }
 
   .sidebar-section {
     @apply mb-6;
   }
 
-  .sidebar-section-title {
+  .sidebar .sidebar-section-title {
     @apply mb-2 px-3;
     @apply text-xs font-semibold uppercase tracking-wider;
-    @apply text-gray-700 dark:text-dark-300;
+    color: var(--sidebar-muted);
   }
 
   /* ============ 页面头部 ============ */
@@ -960,7 +1016,10 @@
 }
 
 .app-layout-shell {
-  background: #f3efe5;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(0, 47, 167, 0.09), transparent 28rem),
+    radial-gradient(circle at 90% 8%, rgba(79, 106, 140, 0.12), transparent 26rem),
+    linear-gradient(180deg, var(--atelier-white) 0%, var(--atelier-paper) 52%, var(--atelier-paper-2) 100%);
 }
 
 .dark .app-layout-shell {
@@ -968,7 +1027,10 @@
 }
 
 .app-layout-content {
-  background: #f3efe5;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.075), transparent 26rem),
+    radial-gradient(circle at 86% 16%, rgba(79, 106, 140, 0.11), transparent 24rem),
+    linear-gradient(135deg, rgba(255, 250, 240, 0.96) 0%, rgba(243, 239, 229, 0.88) 58%, rgba(233, 225, 210, 0.9) 100%);
 }
 
 .dark .app-layout-content {
@@ -1019,6 +1081,67 @@
   background: var(--atelier-white);
 }
 
+.app-layout-content :where([class~="text-gray-900"], [class~="text-gray-800"]) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content :where([class~="text-gray-700"], [class~="text-gray-600"]) {
+  color: var(--atelier-component-muted) !important;
+}
+
+.app-layout-content :where([class~="text-gray-500"], [class~="text-gray-400"]) {
+  color: color-mix(in srgb, var(--atelier-muted) 78%, var(--atelier-dust)) !important;
+}
+
+.app-layout-content :where([class~="border-gray-200"], [class~="border-gray-100"]) {
+  border-color: var(--atelier-line) !important;
+}
+
+.app-layout-content :where([class~="bg-gray-100"], [class~="bg-gray-50"], [class~="bg-gray-50/50"]) {
+  background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;
+}
+
+.app-layout-content :where([class~="bg-primary-50"], [class~="bg-blue-50"], [class~="bg-indigo-50"], [class~="bg-purple-50"], [class~="bg-sky-50"]) {
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+}
+
+.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select) {
+  border-color: var(--atelier-line) !important;
+  background: var(--atelier-white) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select):focus {
+  border-color: var(--atelier-blue) !important;
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--atelier-blue) 18%, transparent) !important;
+}
+
+.app-layout-content .table-wrapper :where(thead, tbody, tr, th, td) {
+  border-color: var(--atelier-line) !important;
+}
+
+.app-layout-content .table-wrapper :where(.table-header, .sticky-header-cell) {
+  background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-wrapper :where(tbody, .table-body) {
+  background: var(--atelier-white) !important;
+}
+
+.app-layout-content .table-wrapper tbody tr:hover {
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+}
+
+.app-layout-content .table-wrapper tbody .sticky-col {
+  background: var(--atelier-white) !important;
+}
+
+.app-layout-content .table-wrapper tbody tr:hover .sticky-col {
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;
+}
+
 .dark .paper-surface,
 .dark .paper-card,
 .dark .card,
@@ -1059,6 +1182,40 @@
 .dark .app-layout-content .modal-content,
 .dark .app-layout-content .dropdown {
   background: rgba(17, 16, 13, 0.94);
+}
+
+.dark .app-layout-content :where([class~="text-gray-900"], [class~="text-gray-800"], [class~="text-gray-700"], [class~="text-gray-600"]) {
+  color: #f7f1e6 !important;
+}
+
+.dark .app-layout-content :where([class~="text-gray-500"], [class~="text-gray-400"]) {
+  color: #a79f91 !important;
+}
+
+.dark .app-layout-content :where([class~="border-gray-200"], [class~="border-gray-100"]) {
+  border-color: rgba(233, 225, 210, 0.14) !important;
+}
+
+.dark .app-layout-content :where([class~="bg-gray-100"], [class~="bg-gray-50"], [class~="bg-gray-50/50"], [class~="bg-white"]) {
+  background: #11100d !important;
+}
+
+.dark .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select) {
+  border-color: rgba(233, 225, 210, 0.16) !important;
+  background: #11100d !important;
+  color: #f7f1e6 !important;
+}
+
+.dark .app-layout-content .table-wrapper :where(.table-header, .sticky-header-cell),
+.dark .app-layout-content .table-wrapper :where(tbody, .table-body),
+.dark .app-layout-content .table-wrapper tbody .sticky-col {
+  background: #11100d !important;
+  color: #f7f1e6 !important;
+}
+
+.dark .app-layout-content .table-wrapper tbody tr:hover,
+.dark .app-layout-content .table-wrapper tbody tr:hover .sticky-col {
+  background: rgba(0, 47, 167, 0.18) !important;
 }
 
 .app-route-page {

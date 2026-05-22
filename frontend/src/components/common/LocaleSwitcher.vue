@@ -110,12 +110,12 @@ onBeforeUnmount(() => {
 <style scoped>
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: all 0.15s ease;
+  transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: scale(0.95) translateY(-4px);
+  transform: translate3d(0, -8px, 0);
 }
 </style>

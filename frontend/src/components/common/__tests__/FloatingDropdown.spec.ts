@@ -1,7 +1,16 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import FloatingDropdown from '../FloatingDropdown.vue'
+
+const componentSource = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../FloatingDropdown.vue'),
+  'utf8'
+)
+const backdropFilterProperty = ['backdrop', 'filter'].join('-')
 
 afterEach(() => {
   document.body.innerHTML = ''
@@ -46,5 +55,12 @@ describe('FloatingDropdown', () => {
     expect(panel?.style.left).toBe('24px')
     expect(panel?.style.top).toBe('76px')
     expect(panel?.style.width).toBe('200px')
+  })
+
+  it('uses the atelier translate-opacity reveal without scale or glass effects', () => {
+    expect(componentSource).toContain('transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);')
+    expect(componentSource).toContain('transform: translate3d(0, -8px, 0);')
+    expect(componentSource).not.toContain('scale(')
+    expect(componentSource).not.toContain(backdropFilterProperty)
   })
 })

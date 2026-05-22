@@ -50,4 +50,17 @@ describe('right-side material surfaces', () => {
     expect(styleSource).toContain('[class~="rounded-lg"]')
     expect(styleSource).not.toContain('@media (prefers-reduced-transparency: reduce)')
   })
+
+  it('themes old white and gray component internals with the full atelier palette', () => {
+    expect(styleSource).toContain('--atelier-component-muted: var(--atelier-dust);')
+    expect(styleSource).toContain('--atelier-component-warning: var(--atelier-butter);')
+    expect(styleSource).toContain('.app-layout-content :where([class~="text-gray-900"], [class~="text-gray-800"])')
+    expect(styleSource).toContain('.app-layout-content :where([class~="text-gray-700"], [class~="text-gray-600"])')
+    expect(styleSource).toContain('.app-layout-content :where([class~="border-gray-200"], [class~="border-gray-100"])')
+    expect(styleSource).toContain('.app-layout-content .table-wrapper :where(thead, tbody, tr, th, td)')
+    expect(styleSource).toContain('.app-layout-content .table-wrapper :where(.table-header, .sticky-header-cell)')
+    expect(styleSource).toContain('.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select)')
+    expect(styleSource).toContain('background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;')
+    expect(styleSource).toContain('background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;')
+  })
 })

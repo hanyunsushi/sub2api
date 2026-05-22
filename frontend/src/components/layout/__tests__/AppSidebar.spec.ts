@@ -43,6 +43,28 @@ describe('AppSidebar header styles', () => {
   })
 })
 
+describe('AppSidebar atelier palette', () => {
+  it('uses a visibly distinct Klein-blue sidebar instead of inheriting the warm paper card palette', () => {
+    const sidebarBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar {'),
+      styleSource.indexOf('.sidebar-header {')
+    )
+
+    expect(componentSource).toContain('class="sidebar-children mb-1 ml-4 pl-2"')
+    expect(componentSource).toContain('class="sidebar-footer mt-auto p-3"')
+    expect(componentSource).not.toContain('border-l border-accent-200 pl-2')
+    expect(componentSource).not.toContain('mt-auto border-t border-gray-100 p-3')
+    expect(componentSource).not.toContain('text-gray-900 dark:text-white')
+    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-blue);')
+    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-blue-dark);')
+    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-butter);')
+    expect(sidebarBlock).toContain('background: var(--sidebar-bg);')
+    expect(styleSource).toContain('.sidebar .sidebar-link-active')
+    expect(styleSource).toContain('box-shadow: inset 3px 0 0 var(--sidebar-active-border);')
+    expect(styleSource).toContain('.sidebar .sidebar-section-title')
+  })
+})
+
 describe('AppSidebar scroll position', () => {
   it('preserves the scroll position across route-click render and focus updates', () => {
     expect(componentSource).toContain('ref="sidebarNavRef"')

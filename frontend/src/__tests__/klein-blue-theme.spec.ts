@@ -111,7 +111,8 @@ describe('Klein blue theme', () => {
 
     expect(globalStyle).toContain('--atelier-paper: #f3efe5;')
     expect(globalStyle).toContain('--atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);')
-    expect(codexTheme).toContain('--codex-bg: #f3efe5;')
+    expect(codexTheme).toContain('--codex-bg: color-mix(in srgb, #f3efe5 88%, #4f6a8c);')
+    expect(codexTheme).toContain('--codex-surface-soft: color-mix(in srgb, #4f6a8c 12%, #fffaf0);')
     expect(codexTheme).toContain('--codex-text: #171512;')
   })
 

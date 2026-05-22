@@ -440,10 +440,17 @@ onUnmounted(() => {
   @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
   @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
+  --select-surface: var(--atelier-white);
+  --select-muted-surface: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
+  background: var(--select-surface);
+  border-color: var(--atelier-line);
+  color: var(--atelier-ink);
+  box-shadow: 0 8px 18px -18px rgba(23, 21, 18, 0.32);
 }
 
 .select-trigger-open {
   @apply border-primary-500 ring-2 ring-primary-500/30;
+  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--select-surface));
 }
 
 .select-trigger-error {
@@ -452,6 +459,7 @@ onUnmounted(() => {
 
 .select-trigger-disabled {
   @apply cursor-not-allowed bg-gray-100 opacity-60 dark:bg-dark-900;
+  background: color-mix(in srgb, var(--atelier-paper-2) 72%, var(--select-surface));
 }
 
 .select-value {
@@ -471,12 +479,20 @@ onUnmounted(() => {
   @apply border border-gray-200 dark:border-dark-700;
   @apply shadow-lg shadow-black/10 dark:shadow-black/30;
   @apply overflow-hidden;
+  --select-surface: var(--atelier-white);
+  --select-muted-surface: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));
+  background: var(--select-surface);
+  border-color: var(--atelier-line);
+  color: var(--atelier-ink);
+  box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.52);
   pointer-events: auto !important;
 }
 
 .select-dropdown-portal .select-search {
   @apply flex items-center gap-2 px-3 py-2;
   @apply border-b border-gray-100 dark:border-dark-700;
+  border-color: var(--atelier-line);
+  background: var(--select-muted-surface);
 }
 
 .select-dropdown-portal .select-search-input {
@@ -496,16 +512,21 @@ onUnmounted(() => {
   @apply text-gray-700 dark:text-gray-300;
   @apply cursor-pointer transition-colors duration-150;
   @apply hover:bg-gray-50 dark:hover:bg-dark-700;
+  color: var(--atelier-muted);
   pointer-events: auto !important;
 }
 
 .select-dropdown-portal .select-option-selected {
   @apply bg-primary-50 dark:bg-primary-900/20;
   @apply text-primary-700 dark:text-primary-300;
+  background: color-mix(in srgb, var(--atelier-blue) 9%, var(--select-surface));
+  color: var(--atelier-blue);
 }
 
 .select-dropdown-portal .select-option-focused {
   @apply bg-gray-100 dark:bg-dark-700;
+  background: color-mix(in srgb, var(--atelier-dust) 16%, var(--select-surface));
+  color: var(--atelier-ink);
 }
 
 .select-dropdown-portal .select-option-disabled {
@@ -517,25 +538,51 @@ onUnmounted(() => {
   @apply bg-gray-50 dark:bg-dark-900;
   @apply text-[11px] font-bold uppercase tracking-wider;
   @apply text-gray-500 dark:text-gray-400;
+  background: var(--select-muted-surface);
+  color: var(--atelier-dust);
 }
 
 .select-dropdown-portal .select-option-group:hover {
   @apply bg-gray-50 dark:bg-dark-900;
+  background: var(--select-muted-surface);
 }
 
 .select-dropdown-portal .select-option-label {
   @apply flex-1 min-w-0 truncate text-left;
 }
 
+.dark .select-trigger,
+.dark .select-dropdown-portal {
+  --select-surface: #11100d;
+  --select-muted-surface: rgba(233, 225, 210, 0.08);
+  background: var(--select-surface);
+  border-color: rgba(233, 225, 210, 0.16);
+  color: #f7f1e6;
+}
+
+.dark .select-dropdown-portal .select-search {
+  border-color: rgba(233, 225, 210, 0.14);
+  background: rgba(233, 225, 210, 0.06);
+}
+
+.dark .select-dropdown-portal .select-option {
+  color: #d8cfbf;
+}
+
+.dark .select-dropdown-portal .select-option-group {
+  background: rgba(233, 225, 210, 0.06);
+  color: #a79f91;
+}
+
 .dark .select-dropdown-portal .select-option:hover,
 .dark .select-dropdown-portal .select-option-focused {
-  background: rgba(30, 41, 59, 0.72);
-  color: rgb(229, 231, 235);
+  background: rgba(0, 47, 167, 0.22);
+  color: #f7f1e6;
 }
 
 .dark .select-dropdown-portal .select-option-selected:hover {
-  background: rgba(0, 47, 167, 0.32);
-  color: rgb(191, 219, 254);
+  background: rgba(0, 47, 167, 0.34);
+  color: #ffffff;
 }
 
 .select-dropdown-portal .select-empty {
@@ -545,12 +592,12 @@ onUnmounted(() => {
 
 .select-dropdown-enter-active,
 .select-dropdown-leave-active {
-  transition: all 0.2s ease;
+  transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);
 }
 
 .select-dropdown-enter-from,
 .select-dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translate3d(0, -8px, 0);
 }
 </style>
