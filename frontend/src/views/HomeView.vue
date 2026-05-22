@@ -16,397 +16,405 @@
   <div
     v-else
     ref="revealRoot"
-    class="home-ascii-shell relative flex min-h-screen flex-col overflow-hidden"
+    class="home-ascii-shell relative min-h-screen overflow-hidden"
   >
     <GuizangAsciiBackground class="home-ascii-background" />
+    <div class="home-site-frame">
+      <div
+        class="home-topbar"
+        data-home-reveal
+        data-home-module="topbar"
+        style="--home-reveal-delay: 0ms"
+      >
+        <span>API Gateway</span>
+        <span>{{ siteName }}</span>
+        <span>IKB Edition</span>
+      </div>
 
-    <!-- Header -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
-        <!-- Logo -->
+      <header
+        class="home-masthead"
+        data-home-reveal
+        data-home-module="nav"
+        style="--home-reveal-delay: 40ms"
+      >
         <router-link to="/home" class="flex items-center" aria-label="Home">
-          <div class="home-logo h-10 w-10 overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50">
+          <span class="home-logo h-10 w-10 overflow-hidden">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
-          </div>
+          </span>
+          <span class="home-brand-name">{{ siteName }}</span>
         </router-link>
 
-        <!-- Nav Actions -->
-        <div class="flex items-center gap-3">
-          <!-- Language Switcher -->
-          <LocaleSwitcher tone="on-deep" />
+        <div class="home-masthead-meta">
+          <span>Routing</span>
+          <b>/v1</b>
+          <span>Subscriptions</span>
+        </div>
 
-          <!-- Doc Link -->
+        <div class="home-nav-actions">
+          <LocaleSwitcher tone="on-deep" />
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="home-nav-icon rounded-lg p-2 transition-colors"
+            class="home-nav-icon"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
           </a>
-
-          <!-- Theme Toggle -->
           <button
             @click="toggleTheme"
-            class="home-nav-icon rounded-lg p-2 transition-colors"
+            class="home-nav-icon"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
           >
             <Icon v-if="isDark" name="sun" size="md" />
             <Icon v-else name="moon" size="md" />
           </button>
-
-          <!-- Login / Dashboard Button -->
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
-            class="inline-flex items-center gap-1.5 rounded-full bg-white py-1 pl-1 pr-2.5 text-primary-500 transition-colors hover:bg-primary-50"
+            class="home-nav-action"
           >
-            <span
-              class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-[10px] font-semibold text-white"
-            >
-              {{ userInitial }}
-            </span>
-            <span class="text-xs font-medium text-primary-500">{{ t('home.dashboard') }}</span>
-            <svg
-              class="h-3 w-3 text-primary-500/70"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
+            <span class="home-nav-dot">{{ userInitial }}</span>
+            <span>{{ t('home.dashboard') }}</span>
           </router-link>
           <router-link
             v-else
             to="/login"
-            class="inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-medium text-primary-500 transition-colors hover:bg-primary-50"
+            class="home-nav-action"
           >
-            {{ t('home.login') }}
+            <i aria-hidden="true"></i>
+            <span>{{ t('home.login') }}</span>
           </router-link>
         </div>
-      </nav>
-    </header>
+      </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-1 px-6 py-16">
-      <div class="mx-auto max-w-6xl">
-        <!-- Hero Section - Left/Right Layout -->
-        <div class="mb-12 flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
-          <!-- Left: Text Content -->
-          <div class="flex-1 text-center lg:text-left">
-            <h1
-              class="home-hero-title mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
-              data-home-reveal
-              style="--home-reveal-delay: 80ms"
-            >
-              {{ siteName }}
-            </h1>
-            <p
-              class="home-hero-subtitle mb-8 text-lg md:text-xl"
-              data-home-reveal
-              style="--home-reveal-delay: 160ms"
-            >
-              {{ siteSubtitle }}
-            </p>
-
-            <!-- CTA Button -->
-            <div data-home-reveal style="--home-reveal-delay: 240ms">
-              <router-link
-                :to="isAuthenticated ? dashboardPath : '/login'"
-                class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"
+      <main class="home-main">
+        <section class="home-section home-hero" aria-labelledby="home-title">
+          <div class="home-hero-grid">
+            <div class="home-hero-copy">
+              <div
+                class="home-section-label"
+                data-home-reveal
+                data-home-module="hero-label"
+                style="--home-reveal-delay: 80ms"
               >
-                {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
-                <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
-              </router-link>
-            </div>
-          </div>
+                <span>I</span>
+                <span>Opening Index</span>
+              </div>
 
-          <!-- Right: Terminal Animation -->
-          <div
-            class="flex flex-1 justify-center lg:justify-end"
-            data-home-reveal
-            style="--home-reveal-delay: 280ms"
-          >
-            <div class="terminal-container">
-              <div class="terminal-window">
-                <!-- Window header -->
-                <div class="terminal-header">
-                  <div class="terminal-buttons">
-                    <span class="btn-close"></span>
-                    <span class="btn-minimize"></span>
-                    <span class="btn-maximize"></span>
-                  </div>
-                  <span class="terminal-title">terminal</span>
-                </div>
-                <!-- Terminal content -->
-                <div class="terminal-body">
-                  <div class="code-line line-1">
-                    <span class="code-prompt">$</span>
-                    <span class="code-cmd">curl</span>
-                    <span class="code-flag">-X POST</span>
-                    <span class="code-url">/v1/messages</span>
-                  </div>
-                  <div class="code-line line-2">
-                    <span class="code-comment"># Routing to upstream...</span>
-                  </div>
-                  <div class="code-line line-3">
-                    <span class="code-success">200 OK</span>
-                    <span class="code-response">{ "content": "Hello!" }</span>
-                  </div>
-                  <div class="code-line line-4">
-                    <span class="code-prompt">$</span>
-                    <span class="cursor"></span>
+              <h1
+                id="home-title"
+                class="home-hero-title home-display"
+                data-home-reveal
+                data-home-module="hero-title"
+                style="--home-reveal-delay: 140ms"
+              >
+                {{ siteName }}
+              </h1>
+
+              <div
+                class="home-hero-lead"
+                data-home-reveal
+                data-home-module="hero-lead"
+                style="--home-reveal-delay: 220ms"
+              >
+                <p class="home-hero-subtitle mb-8 text-lg md:text-xl">
+                  {{ siteSubtitle }}
+                </p>
+                <div
+                  class="home-hero-copy-note"
+                  data-home-reveal
+                  data-home-module="hero-copy"
+                  style="--home-reveal-delay: 280ms"
+                >
+                  <p class="home-body-copy">
+                    {{ t('home.features.unifiedGatewayDesc') }}
+                  </p>
+                  <div
+                    class="home-btn-row"
+                    data-home-reveal
+                    data-home-module="hero-cta"
+                    style="--home-reveal-delay: 340ms"
+                  >
+                    <router-link
+                      :to="isAuthenticated ? dashboardPath : '/login'"
+                      class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"
+                    >
+                      {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
+                      <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
+                    </router-link>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Feature Tags - Centered -->
-        <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
-          <div
-            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-            data-home-reveal
-            style="--home-reveal-delay: 340ms"
-          >
-            <Icon name="swap" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.subscriptionToApi')
-            }}</span>
-          </div>
-          <div
-            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-            data-home-reveal
-            style="--home-reveal-delay: 400ms"
-          >
-            <Icon name="shield" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.stickySession')
-            }}</span>
-          </div>
-          <div
-            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-            data-home-reveal
-            style="--home-reveal-delay: 460ms"
-          >
-            <Icon name="chart" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.realtimeBilling')
-            }}</span>
-          </div>
-        </div>
-
-        <!-- Features Grid -->
-        <div class="mb-12 grid gap-6 md:grid-cols-[1.15fr_.95fr_.9fr]">
-          <!-- Feature 1: Unified Gateway -->
-          <div
-            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
-            data-home-reveal
-            style="--home-reveal-delay: 520ms"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-600 shadow-sm shadow-primary-600/20 transition-transform group-hover:scale-105 dark:bg-primary-500"
-            >
-              <Icon name="server" size="lg" class="text-white" />
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.unifiedGateway') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.unifiedGatewayDesc') }}
-            </p>
-          </div>
-
-          <!-- Feature 2: Account Pool -->
-          <div
-            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
-            data-home-reveal
-            style="--home-reveal-delay: 580ms"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 shadow-sm shadow-primary-500/20 transition-transform group-hover:scale-105"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
+              <div
+                class="home-index-card"
+                data-home-reveal
+                data-home-module="hero-index"
+                style="--home-reveal-delay: 420ms"
+                aria-label="Home index"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-                />
-              </svg>
+                <div class="home-index-row"><b>01</b><span>{{ t('home.features.unifiedGateway') }}</span><span>/v1</span></div>
+                <div class="home-index-row"><b>02</b><span>{{ t('home.features.multiAccount') }}</span><span>Pool</span></div>
+                <div class="home-index-row"><b>03</b><span>{{ t('home.features.balanceQuota') }}</span><span>Ledger</span></div>
+                <div class="home-index-row"><b>04</b><span>{{ t('home.providers.title') }}</span><span>Matrix</span></div>
+              </div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.multiAccount') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.multiAccountDesc') }}
-            </p>
-          </div>
 
-          <!-- Feature 3: Billing & Quota -->
-          <div
-            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
-            data-home-reveal
-            style="--home-reveal-delay: 640ms"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-800 shadow-sm shadow-accent-800/15 transition-transform group-hover:scale-105 dark:bg-primary-700"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
+            <aside class="home-hero-aside">
+              <div
+                class="home-plate home-hero-plate"
+                data-home-reveal
+                data-home-module="terminal-plate"
+                style="--home-reveal-delay: 500ms"
+                data-slot="01 / Gateway console"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-                />
-              </svg>
+                <span class="home-shape home-shape-arch"></span>
+                <span class="home-shape home-shape-disk"></span>
+                <span class="home-shape home-shape-strip"></span>
+                <span class="home-shape home-shape-stem"></span>
+                <span class="home-shape home-shape-leaf"></span>
+                <div class="terminal-container">
+                  <div class="terminal-window">
+                    <div class="terminal-header">
+                      <div class="terminal-buttons">
+                        <span class="btn-close"></span>
+                        <span class="btn-minimize"></span>
+                        <span class="btn-maximize"></span>
+                      </div>
+                      <span class="terminal-title">terminal</span>
+                    </div>
+                    <div class="terminal-body">
+                      <div class="code-line line-1">
+                        <span class="code-prompt">$</span>
+                        <span class="code-cmd">curl</span>
+                        <span class="code-flag">-X POST</span>
+                        <span class="code-url">/v1/messages</span>
+                      </div>
+                      <div class="code-line line-2">
+                        <span class="code-comment"># Routing to upstream...</span>
+                      </div>
+                      <div class="code-line line-3">
+                        <span class="code-success">200 OK</span>
+                        <span class="code-response">{ "content": "Hello" }</span>
+                      </div>
+                      <div class="code-line line-4">
+                        <span class="code-prompt">$</span>
+                        <span class="cursor"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="home-rings" aria-label="Gateway metrics">
+                <div
+                  class="home-ring"
+                  data-home-reveal
+                  data-home-module="metric-ring"
+                  style="--home-reveal-delay: 580ms"
+                >
+                  <strong>/v1</strong>
+                  <span>OpenAI format</span>
+                </div>
+                <div
+                  class="home-ring"
+                  data-home-reveal
+                  data-home-module="metric-ring"
+                  style="--home-reveal-delay: 640ms"
+                >
+                  <strong>AI</strong>
+                  <span>Provider pool</span>
+                </div>
+                <div
+                  class="home-ring"
+                  data-home-reveal
+                  data-home-module="metric-ring"
+                  style="--home-reveal-delay: 700ms"
+                >
+                  <strong>$</strong>
+                  <span>Usage ledger</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="home-section home-feature-section" aria-labelledby="home-features-title">
+          <div
+            class="home-section-label"
+            data-home-reveal
+            data-home-module="feature-section-label"
+          >
+            <span>II</span>
+            <span>Capabilities</span>
+          </div>
+
+          <div class="home-feature-tags" aria-label="Feature tags">
+            <div
+              class="home-feature-tag"
+              data-home-reveal
+              data-home-module="feature-tag"
+              style="--home-reveal-delay: 80ms"
+            >
+              <Icon name="swap" size="sm" />
+              <span>{{ t('home.tags.subscriptionToApi') }}</span>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.balanceQuota') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.balanceQuotaDesc') }}
+            <div
+              class="home-feature-tag"
+              data-home-reveal
+              data-home-module="feature-tag"
+              style="--home-reveal-delay: 140ms"
+            >
+              <Icon name="shield" size="sm" />
+              <span>{{ t('home.tags.stickySession') }}</span>
+            </div>
+            <div
+              class="home-feature-tag"
+              data-home-reveal
+              data-home-module="feature-tag"
+              style="--home-reveal-delay: 200ms"
+            >
+              <Icon name="chart" size="sm" />
+              <span>{{ t('home.tags.realtimeBilling') }}</span>
+            </div>
+          </div>
+
+          <div class="home-feature-grid">
+            <article
+              class="home-feature-card home-feature-card-featured"
+              data-home-reveal
+              data-home-module="feature-card"
+              style="--home-reveal-delay: 260ms"
+            >
+              <span class="home-card-index">01</span>
+              <Icon name="server" size="lg" />
+              <h2 id="home-features-title">{{ t('home.features.unifiedGateway') }}</h2>
+              <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
+            </article>
+
+            <article
+              class="home-feature-card"
+              data-home-reveal
+              data-home-module="feature-card"
+              style="--home-reveal-delay: 340ms"
+            >
+              <span class="home-card-index">02</span>
+              <span class="home-card-glyph">A</span>
+              <h3>{{ t('home.features.multiAccount') }}</h3>
+              <p>{{ t('home.features.multiAccountDesc') }}</p>
+            </article>
+
+            <article
+              class="home-feature-card"
+              data-home-reveal
+              data-home-module="feature-card"
+              style="--home-reveal-delay: 420ms"
+            >
+              <span class="home-card-index">03</span>
+              <span class="home-card-glyph">Q</span>
+              <h3>{{ t('home.features.balanceQuota') }}</h3>
+              <p>{{ t('home.features.balanceQuotaDesc') }}</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="home-section home-provider-section" aria-labelledby="home-providers-title">
+          <div
+            class="home-section-label"
+            data-home-reveal
+            data-home-module="provider-section-label"
+          >
+            <span>III</span>
+            <span>Provider Matrix</span>
+          </div>
+
+          <div
+            class="home-provider-intro"
+            data-home-reveal
+            data-home-module="provider-intro"
+            style="--home-reveal-delay: 80ms"
+          >
+            <h2 id="home-providers-title" class="home-section-title">
+              {{ t('home.providers.title') }}
+            </h2>
+            <p class="home-section-copy">
+              {{ t('home.providers.description') }}
             </p>
           </div>
-        </div>
 
-        <!-- Supported Providers -->
-        <div
-          class="home-provider-intro mb-8 text-center"
-          data-home-reveal
-          style="--home-reveal-delay: 700ms"
-        >
-          <h2 class="home-section-title mb-3 text-2xl font-bold">
-            {{ t('home.providers.title') }}
-          </h2>
-          <p class="home-section-copy text-sm">
-            {{ t('home.providers.description') }}
-          </p>
-        </div>
+          <div class="home-provider-grid">
+            <div
+              class="home-provider-chip"
+              data-home-reveal
+              data-home-module="provider-chip"
+              style="--home-reveal-delay: 160ms"
+            >
+              <span class="home-provider-mark">C</span>
+              <span>{{ t('home.providers.claude') }}</span>
+              <b>{{ t('home.providers.supported') }}</b>
+            </div>
+            <div
+              class="home-provider-chip"
+              data-home-reveal
+              data-home-module="provider-chip"
+              style="--home-reveal-delay: 220ms"
+            >
+              <span class="home-provider-mark">G</span>
+              <span>GPT</span>
+              <b>{{ t('home.providers.supported') }}</b>
+            </div>
+            <div
+              class="home-provider-chip"
+              data-home-reveal
+              data-home-module="provider-chip"
+              style="--home-reveal-delay: 280ms"
+            >
+              <span class="home-provider-mark">G</span>
+              <span>{{ t('home.providers.gemini') }}</span>
+              <b>{{ t('home.providers.supported') }}</b>
+            </div>
+            <div
+              class="home-provider-chip"
+              data-home-reveal
+              data-home-module="provider-chip"
+              style="--home-reveal-delay: 340ms"
+            >
+              <span class="home-provider-mark">A</span>
+              <span>{{ t('home.providers.antigravity') }}</span>
+              <b>{{ t('home.providers.supported') }}</b>
+            </div>
+            <div
+              class="home-provider-chip home-provider-chip-muted"
+              data-home-reveal
+              data-home-module="provider-chip"
+              style="--home-reveal-delay: 400ms"
+            >
+              <span class="home-provider-mark">+</span>
+              <span>{{ t('home.providers.more') }}</span>
+              <b>{{ t('home.providers.soon') }}</b>
+            </div>
+          </div>
+        </section>
+      </main>
 
-        <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
-          <!-- Claude - Supported -->
-          <div
-            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
-            data-home-reveal
-            style="--home-reveal-delay: 760ms"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
-            >
-              <span class="text-xs font-bold text-white">C</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.claude') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- GPT - Supported -->
-          <div
-            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
-            data-home-reveal
-            style="--home-reveal-delay: 820ms"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">GPT</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Gemini - Supported -->
-          <div
-            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
-            data-home-reveal
-            style="--home-reveal-delay: 880ms"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.gemini') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Antigravity - Supported -->
-          <div
-            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
-            data-home-reveal
-            style="--home-reveal-delay: 940ms"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
-            >
-              <span class="text-xs font-bold text-white">A</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.antigravity') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- More - Coming Soon -->
-          <div
-            class="home-provider-chip flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 dark:border-dark-700/50 dark:bg-dark-800/50"
-            data-home-reveal
-            style="--home-reveal-delay: 1000ms"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
-            >
-              <span class="text-xs font-bold text-white">+</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.more') }}</span>
-            <span
-              class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-400"
-              >{{ t('home.providers.soon') }}</span
-            >
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="home-footer relative z-10 px-6 py-8">
-      <div
-        class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
+      <footer
+        class="home-footer"
+        data-home-reveal
+        data-home-module="footer"
+        style="--home-reveal-delay: 80ms"
       >
-        <p class="home-footer-text text-sm">
+        <p class="home-footer-text">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
         </p>
-        <div class="flex items-center gap-4">
+        <div class="home-footer-links">
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="home-footer-link text-sm transition-colors"
+            class="home-footer-link"
           >
             {{ t('home.docs') }}
           </a>
@@ -414,13 +422,13 @@
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="home-footer-link text-sm transition-colors"
+            class="home-footer-link"
           >
             GitHub
           </a>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   </div>
 </template>
 
@@ -510,7 +518,7 @@ function initHomeReveal() {
       entry.target.classList.add('is-visible')
       observer.unobserve(entry.target)
     })
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+  }, { threshold: 0.12, rootMargin: '0px 0px 18% 0px' })
 
   revealObserver = observer
   items.forEach((item) => observer.observe(item))
@@ -539,67 +547,66 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .home-ascii-shell {
+  --home-max: 1540px;
+  --home-gutter: clamp(18px, 3vw, 48px);
   position: relative;
   isolation: isolate;
+  color: var(--atelier-ink);
+  font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   background:
-    linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.94) 52.2% 100%),
-    radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.2), transparent 24rem),
-    radial-gradient(circle at 88% 58%, rgba(199, 154, 58, 0.2), transparent 21rem),
-    repeating-linear-gradient(to right, rgba(23, 21, 18, 0.12), rgba(23, 21, 18, 0.12) 2px, transparent 2px, transparent 8px),
-    linear-gradient(90deg, rgba(23, 21, 18, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.1), transparent 24rem),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
     var(--atelier-paper);
-  background-position:
-    center,
-    center,
-    center,
-    center top,
-    center,
-    center,
-    center;
-  background-size:
-    auto,
-    auto,
-    auto,
-    auto 1px,
-    32px 32px,
-    32px 32px,
-    auto;
-}
-
-.home-ascii-shell::before,
-.home-ascii-shell::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.home-ascii-shell::before {
-  background:
-    linear-gradient(90deg, transparent 0 calc(100% - 34rem), rgba(255, 250, 240, 0.18) calc(100% - 34rem) calc(100% - 33.5rem), transparent calc(100% - 33.5rem)),
-    linear-gradient(180deg, rgba(0, 47, 167, 0.08), transparent 34rem);
-}
-
-.home-ascii-shell::after {
-  background:
-    linear-gradient(180deg, transparent 0 62%, rgba(79, 106, 140, 0.12) 62.1% calc(62.1% + 1px), transparent calc(62.1% + 1px)),
-    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(199, 154, 58, 0.1) 18px 19px);
-  opacity: 0.72;
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
 }
 
 .home-ascii-background {
+  z-index: 0;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+}
+
+.home-site-frame {
+  position: relative;
   z-index: 1;
-  opacity: 0.42;
+  isolation: isolate;
+  min-height: 100vh;
+}
+
+.home-site-frame::before,
+.home-site-frame::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 1px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--atelier-line),
+    var(--atelier-line) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+}
+
+.home-site-frame::before {
+  left: var(--home-gutter);
+}
+
+.home-site-frame::after {
+  right: var(--home-gutter);
 }
 
 .home-ascii-shell [data-home-reveal] {
   opacity: 0;
   transform: translate3d(0, 26px, 0);
   transition:
-    opacity 0.9s var(--atelier-ease),
-    transform 0.9s var(--atelier-ease);
+    opacity 0.7s var(--atelier-ease),
+    transform 0.7s var(--atelier-ease);
   transition-delay: var(--home-reveal-delay, 0ms);
   will-change: opacity, transform;
 }
@@ -609,167 +616,264 @@ onBeforeUnmount(() => {
   transform: translate3d(0, 0, 0);
 }
 
+.home-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+  min-height: 38px;
+  padding: 9px var(--home-gutter);
+  border-bottom: 1px dotted var(--atelier-line-strong);
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-topbar span:nth-child(2) {
+  color: var(--atelier-ink);
+}
+
+.home-topbar span:last-child {
+  text-align: right;
+}
+
+.home-masthead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 22px;
+  padding: 22px var(--home-gutter);
+  border-bottom: 1px solid var(--atelier-line);
+}
+
 .home-logo {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-right: 12px;
   border: 1px solid var(--atelier-ink);
+  border-radius: 50%;
   background: var(--atelier-paper-2);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.42);
+}
+
+.home-brand-name {
+  min-width: 0;
+  color: var(--atelier-ink);
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 28px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.home-masthead-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-masthead-meta b {
+  color: var(--atelier-ink);
+  font-weight: 600;
+}
+
+.home-nav-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-nav-icon,
+.home-nav-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border: 1px solid var(--atelier-ink);
+  color: var(--atelier-ink);
+  background: var(--atelier-paper);
+  transition:
+    transform 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease),
+    color 260ms var(--atelier-ease),
+    box-shadow 260ms var(--atelier-ease);
 }
 
 .home-nav-icon {
-  color: var(--atelier-muted);
+  width: 38px;
+  border-radius: 50%;
 }
 
-.home-nav-icon:hover {
-  background: var(--atelier-blue-soft);
+.home-nav-action {
+  gap: 10px;
+  border-radius: 999px;
+  padding: 0 16px;
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-nav-action i,
+.home-nav-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--atelier-blue);
+  color: transparent;
+  font-size: 0;
+}
+
+.home-nav-dot {
+  width: 18px;
+  height: 18px;
+  color: var(--atelier-white);
+  font-size: 10px;
+}
+
+.home-nav-icon:hover,
+.home-nav-action:hover {
+  transform: translate3d(0, -2px, 0);
+  color: var(--atelier-white);
+  background: var(--atelier-blue);
+  box-shadow: 0 18px 36px -28px rgba(0, 47, 167, 0.8);
+}
+
+.home-main {
+  position: relative;
+}
+
+.home-section {
+  position: relative;
+  max-width: var(--home-max);
+  margin: 0 auto;
+  padding: clamp(64px, 8vw, 128px) var(--home-gutter);
+}
+
+.home-section + .home-section {
+  border-top: 1px dotted var(--atelier-line-strong);
+}
+
+.home-hero {
+  min-height: calc(100vh - 106px);
+  display: grid;
+  align-items: end;
+  padding-top: clamp(56px, 7vw, 108px);
+}
+
+.home-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(330px, 0.64fr);
+  align-items: end;
+  gap: clamp(28px, 5vw, 78px);
+}
+
+.home-hero-copy {
+  display: grid;
+  gap: clamp(28px, 4vw, 54px);
+}
+
+.home-section-label {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-section-label::after {
+  content: "";
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--atelier-line-strong),
+    var(--atelier-line-strong) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+}
+
+.home-display {
+  margin: 0;
+  color: var(--atelier-ink);
+  font-size: 152px;
+  font-weight: 760;
+  line-height: 0.86;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.home-display::after {
+  content: ".";
+  margin-left: 0.02em;
   color: var(--atelier-blue);
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-style: italic;
 }
 
 .home-hero-title {
   color: var(--atelier-ink);
-  letter-spacing: 0;
 }
 
-.home-hero-subtitle,
+.home-hero-lead {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 430px);
+  align-items: start;
+  gap: clamp(22px, 4vw, 60px);
+  max-width: 860px;
+  padding-top: 8px;
+}
+
+.home-hero-subtitle {
+  margin: 0;
+  color: var(--atelier-ink);
+  font-size: 30px;
+  font-weight: 560;
+  line-height: 1.16;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+
+.home-body-copy,
 .home-section-copy,
 .home-footer-text,
-.home-footer-link,
-.home-ascii-shell :deep(.text-gray-600),
-.home-ascii-shell :deep(.text-gray-700),
-.home-ascii-shell :deep(.text-dark-200) {
+.home-footer-link {
   color: var(--atelier-muted);
 }
 
-.home-ascii-shell :deep(.text-gray-900) {
-  color: var(--atelier-ink);
+.home-body-copy {
+  max-width: 46ch;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
 }
 
-.home-ascii-shell :deep(.bg-white\/80),
-.home-ascii-shell :deep(.bg-white\/75),
-.home-ascii-shell :deep(.bg-white\/70),
-.home-ascii-shell :deep(.bg-white\/50) {
-  background: var(--atelier-surface);
-}
-
-.home-ascii-shell :deep(.border-gray-200\/50),
-.home-ascii-shell :deep(.border-accent-200\/70),
-.home-ascii-shell :deep(.border-primary-200),
-.home-ascii-shell :deep(.border-accent-200\/60) {
-  border-color: var(--atelier-line);
-}
-
-.home-ascii-shell :deep(.ring-primary-500\/20) {
-  --tw-ring-color: rgba(0, 47, 167, 0.16);
-}
-
-.home-ascii-shell :deep(.bg-primary-100) {
-  background: var(--atelier-blue-soft);
-}
-
-.home-ascii-shell :deep(.text-primary-500),
-.home-ascii-shell :deep(.text-primary-600) {
-  color: var(--atelier-blue);
-}
-
-.home-ascii-shell .home-feature-tag,
-.home-ascii-shell .home-feature-card,
-.home-ascii-shell .home-provider-chip {
-  transition:
-    transform 260ms var(--atelier-ease),
-    border-color 260ms var(--atelier-ease),
-    background-color 260ms var(--atelier-ease),
-    box-shadow 260ms var(--atelier-ease);
-}
-
-.home-ascii-shell .home-feature-tag:nth-child(1) {
-  --home-chip-accent: var(--atelier-blue);
-}
-
-.home-ascii-shell .home-feature-tag:nth-child(2) {
-  --home-chip-accent: var(--atelier-dust);
-}
-
-.home-ascii-shell .home-feature-tag:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
-}
-
-.home-ascii-shell .home-feature-tag,
-.home-ascii-shell .home-provider-chip {
-  background:
-    linear-gradient(90deg, var(--home-chip-accent, var(--atelier-blue)) 0 4px, transparent 4px),
-    color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 10%, var(--atelier-white));
-  border-color: color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 34%, var(--atelier-line));
-  box-shadow: 0 12px 26px -22px rgba(23, 21, 18, 0.42);
-}
-
-.home-ascii-shell .home-feature-tag:hover,
-.home-ascii-shell .home-provider-chip:hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 54%, var(--atelier-line));
-  background:
-    linear-gradient(90deg, var(--home-chip-accent, var(--atelier-blue)) 0 4px, transparent 4px),
-    color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 16%, var(--atelier-white));
-  box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 46%, transparent);
-}
-
-.home-ascii-shell .home-feature-card:nth-child(1) {
-  --home-card-accent: var(--atelier-blue);
-}
-
-.home-ascii-shell .home-feature-card:nth-child(2) {
-  --home-card-accent: var(--atelier-dust);
-}
-
-.home-ascii-shell .home-feature-card:nth-child(3) {
-  --home-card-accent: var(--atelier-butter);
-}
-
-.home-ascii-shell .home-feature-card {
-  border-top: 4px solid var(--home-card-accent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--home-card-accent) 16%, var(--atelier-paper)) 0%, var(--atelier-surface) 54%, var(--atelier-white) 100%);
-  box-shadow:
-    0 16px 34px -28px rgba(23, 21, 18, 0.5),
-    inset 0 1px 0 color-mix(in srgb, var(--home-card-accent) 28%, transparent);
-}
-
-.home-ascii-shell .home-feature-card :deep(.mb-4) {
-  background: var(--home-card-accent);
-  box-shadow: 0 16px 34px -28px rgba(23, 21, 18, 0.5);
-}
-
-.home-ascii-shell .home-feature-card:hover {
-  border-color: color-mix(in srgb, var(--home-card-accent) 44%, var(--atelier-line));
-  border-top-color: var(--home-card-accent);
-  box-shadow:
-    0 22px 42px -30px color-mix(in srgb, var(--home-card-accent) 58%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--home-card-accent) 34%, transparent);
-}
-
-.home-ascii-shell .home-provider-chip:nth-child(1) {
-  --home-chip-accent: var(--atelier-blue);
-}
-
-.home-ascii-shell .home-provider-chip:nth-child(2) {
-  --home-chip-accent: var(--atelier-dust);
-}
-
-.home-ascii-shell .home-provider-chip:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
-}
-
-.home-ascii-shell .home-provider-chip:nth-child(4) {
-  --home-chip-accent: var(--atelier-blue-dark);
-}
-
-.home-ascii-shell .home-provider-chip:nth-child(5) {
-  --home-chip-accent: var(--atelier-muted);
+.home-btn-row {
+  margin-top: 22px;
 }
 
 .home-cta {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  box-shadow: 0 16px 36px -26px rgba(0, 47, 167, 0.78);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -777,68 +881,172 @@ onBeforeUnmount(() => {
 }
 
 .home-cta:hover {
-  background: var(--atelier-blue-dark);
   transform: translate3d(0, -2px, 0);
-  box-shadow: 0 18px 34px -26px rgba(0, 47, 167, 0.72);
+  background: var(--atelier-blue-dark);
+  box-shadow: 0 24px 44px -30px rgba(0, 47, 167, 0.9);
 }
 
-.home-cta:active {
-  transform: translate3d(0, 0, 0);
+.home-index-card {
+  display: grid;
+  border-top: 1px solid var(--atelier-ink);
 }
 
-.home-section-title {
-  color: var(--atelier-ink);
+.home-index-row {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px dotted var(--atelier-line-strong);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
-.home-provider-intro {
-  display: inline-grid;
-  justify-items: center;
-  padding: 0.75rem 1.25rem 1rem;
-  border-bottom: 3px solid var(--atelier-butter);
-  background:
-    linear-gradient(90deg, transparent, rgba(255, 250, 240, 0.86) 16% 84%, transparent),
-    linear-gradient(180deg, rgba(243, 239, 229, 0.7), rgba(255, 250, 240, 0.76));
+.home-index-row b {
+  color: var(--atelier-blue-dark);
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 400;
 }
 
-.home-footer {
-  border-top: 1px dotted var(--atelier-line-strong);
+.home-index-row span:last-child {
+  color: var(--atelier-muted);
 }
 
-.home-footer-link:hover {
-  color: var(--atelier-blue);
+.home-hero-aside {
+  display: grid;
+  gap: 30px;
 }
 
-/* Terminal Container */
-.terminal-container {
+.home-plate {
   position: relative;
-  display: inline-block;
+  min-height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--atelier-ink);
+  background:
+    linear-gradient(135deg, rgba(23, 21, 18, 0.06), transparent 36%),
+    radial-gradient(circle at 68% 26%, rgba(0, 47, 167, 0.22), transparent 19%),
+    var(--atelier-paper-2);
 }
 
-/* Terminal Window */
+.home-plate::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px dotted rgba(23, 21, 18, 0.42);
+  pointer-events: none;
+}
+
+.home-plate::after {
+  content: attr(data-slot);
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  z-index: 2;
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-hero-plate {
+  min-height: clamp(500px, 58vw, 710px);
+  transform: rotate(1.2deg);
+  box-shadow: 18px 18px 0 rgba(23, 21, 18, 0.08);
+}
+
+.home-shape {
+  position: absolute;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.home-shape-arch {
+  top: 12%;
+  left: 18%;
+  width: 54%;
+  aspect-ratio: 1 / 1.25;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 50% 50% 0 0;
+  background: var(--atelier-blue);
+  transform: rotate(-4deg);
+}
+
+.home-shape-disk {
+  top: 7%;
+  right: 7%;
+  width: 38%;
+  aspect-ratio: 1;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-paper));
+}
+
+.home-shape-strip {
+  top: 8%;
+  left: 10%;
+  width: 18%;
+  height: 84%;
+  background: var(--atelier-ink);
+  opacity: 0.9;
+  transform: rotate(7deg);
+}
+
+.home-shape-stem {
+  top: 10%;
+  left: 61%;
+  width: 2px;
+  height: 72%;
+  background: var(--atelier-ink);
+  transform: rotate(12deg);
+}
+
+.home-shape-leaf {
+  right: 15%;
+  bottom: 22%;
+  width: 32%;
+  aspect-ratio: 1.8 / 1;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 100% 0 100% 0;
+  background: color-mix(in srgb, var(--atelier-dust) 56%, var(--atelier-paper));
+  transform: rotate(-20deg);
+}
+
+.terminal-container {
+  position: absolute;
+  right: 8%;
+  bottom: 16%;
+  z-index: 3;
+  width: min(78%, 420px);
+  transform: rotate(-1.2deg);
+}
+
 .terminal-window {
-  width: 420px;
-  background: linear-gradient(145deg, #171512 0%, #050505 100%);
-  border-radius: 10px;
-  box-shadow:
-    0 25px 50px -12px rgba(5, 5, 5, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
-  transition: transform 0.3s ease;
+  width: 100%;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 0;
+  background: linear-gradient(145deg, #171512 0%, #050505 100%);
+  box-shadow: 16px 16px 0 rgba(0, 47, 167, 0.22);
+  transition:
+    transform 300ms var(--atelier-ease),
+    box-shadow 300ms var(--atelier-ease);
 }
 
 .terminal-window:hover {
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-4px);
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 20px 20px 0 rgba(0, 47, 167, 0.28);
 }
 
-/* Terminal Header */
 .terminal-header {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(23, 21, 18, 0.82);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 250, 240, 0.14);
+  background: rgba(23, 21, 18, 0.92);
 }
 
 .terminal-buttons {
@@ -847,43 +1055,45 @@ onBeforeUnmount(() => {
 }
 
 .terminal-buttons span {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
+  border: 1px solid rgba(255, 250, 240, 0.24);
   border-radius: 50%;
 }
 
 .btn-close {
-  background: #b44536;
+  background: var(--atelier-blue);
 }
+
 .btn-minimize {
   background: var(--atelier-butter);
 }
+
 .btn-maximize {
   background: var(--atelier-dust);
 }
 
 .terminal-title {
   flex: 1;
-  text-align: center;
-  font-size: 12px;
-  font-family: ui-monospace, monospace;
-  color: rgba(243, 239, 229, 0.62);
   margin-right: 52px;
+  color: rgba(243, 239, 229, 0.62);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 12px;
+  text-align: center;
 }
 
-/* Terminal Body */
 .terminal-body {
   padding: 20px 24px;
-  font-family: ui-monospace, 'Fira Code', monospace;
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 14px;
   line-height: 2;
 }
 
 .code-line {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
   opacity: 0;
   animation: line-appear 0.5s ease forwards;
 }
@@ -891,12 +1101,15 @@ onBeforeUnmount(() => {
 .line-1 {
   animation-delay: 0.3s;
 }
+
 .line-2 {
   animation-delay: 1s;
 }
+
 .line-3 {
   animation-delay: 1.8s;
 }
+
 .line-4 {
   animation-delay: 2.5s;
 }
@@ -914,33 +1127,38 @@ onBeforeUnmount(() => {
 
 .code-prompt {
   color: var(--atelier-butter);
-  font-weight: bold;
+  font-weight: 700;
 }
+
 .code-cmd {
   color: #ffffff;
 }
+
 .code-flag {
   color: #9fb2d2;
 }
+
 .code-url {
   color: #fffaf0;
 }
+
 .code-comment {
   color: rgba(243, 239, 229, 0.54);
   font-style: italic;
 }
+
 .code-success {
-  color: #fffaf0;
-  background: rgba(79, 106, 140, 0.28);
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 0;
+  color: #fffaf0;
+  background: rgba(79, 106, 140, 0.34);
   font-weight: 600;
 }
+
 .code-response {
   color: #e9c96c;
 }
 
-/* Blinking Cursor */
 .cursor {
   display: inline-block;
   width: 8px;
@@ -960,6 +1178,335 @@ onBeforeUnmount(() => {
   }
 }
 
+.home-rings {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.home-ring {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 18px;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 50%;
+  text-align: center;
+  background: color-mix(in srgb, var(--atelier-paper) 80%, white);
+  transition:
+    transform 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease),
+    color 260ms var(--atelier-ease);
+}
+
+.home-ring:hover {
+  transform: translate3d(0, -3px, 0);
+  color: var(--atelier-white);
+  background: var(--atelier-blue);
+}
+
+.home-ring strong {
+  display: block;
+  color: inherit;
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.home-ring span {
+  display: block;
+  margin-top: 8px;
+  color: inherit;
+  opacity: 0.78;
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-feature-section {
+  display: grid;
+  gap: clamp(28px, 4vw, 52px);
+}
+
+.home-feature-tags {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--atelier-ink);
+  border-left: 1px solid var(--atelier-ink);
+}
+
+.home-ascii-shell .home-feature-tag {
+  --home-chip-accent: var(--atelier-blue);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 74px;
+  padding: 18px 20px;
+  border-right: 1px solid var(--atelier-ink);
+  border-bottom: 1px solid var(--atelier-ink);
+  background:
+    linear-gradient(90deg, var(--home-chip-accent) 0 8px, transparent 8px),
+    color-mix(in srgb, var(--home-chip-accent) 10%, var(--atelier-paper));
+  color: var(--atelier-ink);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0;
+  transition:
+    transform 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease);
+}
+
+.home-ascii-shell .home-feature-tag:nth-child(2) {
+  --home-chip-accent: var(--atelier-dust);
+}
+
+.home-ascii-shell .home-feature-tag:nth-child(3) {
+  --home-chip-accent: var(--atelier-butter);
+}
+
+.home-ascii-shell .home-feature-tag:hover {
+  transform: translate3d(0, -2px, 0);
+  background:
+    linear-gradient(90deg, var(--home-chip-accent) 0 8px, transparent 8px),
+    color-mix(in srgb, var(--home-chip-accent) 16%, var(--atelier-paper));
+}
+
+.home-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
+  border-top: 1px solid var(--atelier-ink);
+  border-left: 1px solid var(--atelier-ink);
+}
+
+.home-ascii-shell .home-feature-card {
+  --home-card-accent: var(--atelier-dust);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  align-content: start;
+  gap: 18px;
+  min-height: 340px;
+  padding: clamp(20px, 2.5vw, 34px);
+  border-right: 1px solid var(--atelier-ink);
+  border-bottom: 1px solid var(--atelier-ink);
+  border-top: 1px solid var(--atelier-ink);
+  background: color-mix(in srgb, var(--home-card-accent) 14%, var(--atelier-paper));
+  color: var(--atelier-ink);
+  transition:
+    transform 280ms var(--atelier-ease),
+    background-color 280ms var(--atelier-ease),
+    box-shadow 280ms var(--atelier-ease);
+}
+
+.home-ascii-shell .home-feature-card:nth-child(2) {
+  --home-card-accent: var(--atelier-blue);
+}
+
+.home-ascii-shell .home-feature-card:nth-child(3) {
+  --home-card-accent: var(--atelier-butter);
+}
+
+.home-ascii-shell .home-feature-card:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+}
+
+.home-ascii-shell .home-feature-card.home-feature-card-featured {
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+}
+
+.home-card-index {
+  color: currentColor;
+  opacity: 0.72;
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.home-ascii-shell .home-feature-card svg,
+.home-card-glyph {
+  color: currentColor;
+}
+
+.home-card-glyph {
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 42px;
+  font-style: italic;
+  line-height: 1;
+}
+
+.home-ascii-shell .home-feature-card h2,
+.home-ascii-shell .home-feature-card h3 {
+  margin: 0;
+  color: currentColor;
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 34px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.home-ascii-shell .home-feature-card p {
+  max-width: 46ch;
+  margin: 0;
+  color: currentColor;
+  opacity: 0.78;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.home-provider-section {
+  display: grid;
+  gap: clamp(28px, 4vw, 52px);
+}
+
+.home-provider-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(280px, 0.55fr);
+  align-items: end;
+  gap: clamp(24px, 4vw, 58px);
+  padding-top: 18px;
+  border-top: 1px solid var(--atelier-ink);
+}
+
+.home-section-title {
+  margin: 0;
+  color: var(--atelier-ink);
+  font-size: 106px;
+  font-weight: 760;
+  line-height: 0.88;
+  letter-spacing: 0;
+}
+
+.home-section-title::after {
+  content: ".";
+  color: var(--atelier-blue);
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-style: italic;
+}
+
+.home-section-copy {
+  margin: 0;
+  max-width: 48ch;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.home-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--atelier-ink);
+  border-left: 1px solid var(--atelier-ink);
+}
+
+.home-ascii-shell .home-provider-chip {
+  --home-chip-accent: var(--atelier-blue);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  min-height: 210px;
+  padding: 20px;
+  border-right: 1px solid var(--atelier-ink);
+  border-bottom: 1px solid var(--atelier-ink);
+  background:
+    linear-gradient(180deg, var(--home-chip-accent) 0 6px, transparent 6px),
+    color-mix(in srgb, var(--home-chip-accent) 8%, var(--atelier-paper));
+  transition:
+    transform 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease),
+    box-shadow 260ms var(--atelier-ease);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(2) {
+  --home-chip-accent: var(--atelier-dust);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(3) {
+  --home-chip-accent: var(--atelier-butter);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(4) {
+  --home-chip-accent: var(--atelier-blue-dark);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(5) {
+  --home-chip-accent: var(--atelier-muted);
+}
+
+.home-ascii-shell .home-provider-chip:hover {
+  transform: translate3d(0, -3px, 0);
+  background:
+    linear-gradient(180deg, var(--home-chip-accent) 0 6px, transparent 6px),
+    color-mix(in srgb, var(--home-chip-accent) 14%, var(--atelier-paper));
+  box-shadow: 0 24px 40px -34px color-mix(in srgb, var(--home-chip-accent) 55%, transparent);
+}
+
+.home-provider-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 50%;
+  color: var(--atelier-white);
+  background: var(--home-chip-accent);
+  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-size: 22px;
+  font-style: italic;
+}
+
+.home-provider-chip span:not(.home-provider-mark) {
+  color: var(--atelier-ink);
+  font-size: 17px;
+  font-weight: 620;
+  letter-spacing: 0;
+}
+
+.home-provider-chip b {
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-provider-chip-muted {
+  opacity: 0.76;
+}
+
+.home-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: var(--home-max);
+  margin: 0 auto;
+  padding: 30px var(--home-gutter);
+  border-top: 1px dotted var(--atelier-line-strong);
+  color: var(--atelier-muted);
+  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.home-footer-text {
+  margin: 0;
+}
+
+.home-footer-links {
+  display: flex;
+  gap: 18px;
+}
+
+.home-footer-link:hover {
+  color: var(--atelier-blue);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-ascii-shell [data-home-reveal] {
     opacity: 1;
@@ -973,43 +1520,162 @@ onBeforeUnmount(() => {
   .home-feature-tag,
   .home-feature-card,
   .home-provider-chip,
+  .home-ring,
   .terminal-window {
     transition: none;
   }
 }
 
-/* Dark mode adjustments */
+@media (max-width: 1080px) {
+  .home-masthead,
+  .home-topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .home-masthead-meta,
+  .home-topbar span:last-child {
+    display: none;
+  }
+
+  .home-nav-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .home-hero-grid,
+  .home-hero-lead,
+  .home-provider-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .home-feature-grid,
+  .home-feature-tags,
+  .home-provider-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-brand-name {
+    font-size: 25px;
+  }
+
+  .home-display {
+    font-size: 104px;
+  }
+
+  .home-hero-subtitle {
+    font-size: 25px;
+  }
+
+  .home-ring strong {
+    font-size: 34px;
+  }
+
+  .home-ascii-shell .home-feature-card h2,
+  .home-ascii-shell .home-feature-card h3 {
+    font-size: 30px;
+  }
+
+  .home-section-title {
+    font-size: 76px;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-display {
+    font-size: 58px;
+  }
+
+  .home-section {
+    padding: 54px var(--home-gutter);
+  }
+
+  .home-feature-grid,
+  .home-feature-tags,
+  .home-provider-grid,
+  .home-rings {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-plate {
+    min-height: 520px;
+    transform: none;
+  }
+
+  .home-brand-name {
+    font-size: 22px;
+  }
+
+  .home-hero-subtitle {
+    font-size: 21px;
+  }
+
+  .home-body-copy,
+  .home-section-copy {
+    font-size: 15px;
+  }
+
+  .home-ring strong {
+    font-size: 30px;
+  }
+
+  .home-ascii-shell .home-feature-card h2,
+  .home-ascii-shell .home-feature-card h3 {
+    font-size: 27px;
+  }
+
+  .home-section-title {
+    font-size: 52px;
+  }
+
+  .terminal-container {
+    right: 6%;
+    bottom: 18%;
+    width: 88%;
+  }
+
+  .home-footer {
+    flex-direction: column;
+  }
+}
+
 :global(.dark .home-ascii-shell) {
   background:
-    linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.34) 52.2% 100%),
-    radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.14), transparent 24rem),
-    radial-gradient(circle at 88% 58%, rgba(199, 154, 58, 0.1), transparent 21rem),
-    linear-gradient(180deg, #050505, #0a0a0a);
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.14), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.08), transparent 24rem),
+    linear-gradient(90deg, rgba(243, 239, 229, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(243, 239, 229, 0.03) 1px, transparent 1px),
+    #050505;
+  color: #fffaf0;
 }
 
 :global(.dark .home-ascii-shell .terminal-window) {
-  box-shadow:
-    0 25px 50px -12px rgba(5, 5, 5, 0.6),
-    0 0 0 1px rgba(0, 47, 167, 0.3),
-    0 18px 44px rgba(0, 47, 167, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 16px 16px 0 rgba(0, 47, 167, 0.34);
 }
 
 :global(.dark .home-ascii-shell .home-logo) {
-  border-color: rgba(233, 225, 210, 0.18);
+  border-color: rgba(233, 225, 210, 0.32);
   background: #11100d;
 }
 
 :global(.dark .home-ascii-shell .home-nav-icon),
-:global(.dark .home-ascii-shell .home-hero-subtitle),
-:global(.dark .home-ascii-shell .home-section-copy),
-:global(.dark .home-ascii-shell .home-footer-text),
-:global(.dark .home-ascii-shell .home-footer-link) {
-  color: rgba(243, 239, 229, 0.72);
+:global(.dark .home-ascii-shell .home-nav-action),
+:global(.dark .home-ascii-shell .home-feature-card),
+:global(.dark .home-ascii-shell .home-provider-chip),
+:global(.dark .home-ascii-shell .home-ring) {
+  border-color: rgba(233, 225, 210, 0.28);
 }
 
 :global(.dark .home-ascii-shell .home-hero-title),
-:global(.dark .home-ascii-shell .home-section-title) {
+:global(.dark .home-ascii-shell .home-section-title),
+:global(.dark .home-ascii-shell .home-brand-name) {
   color: #fffaf0;
+}
+
+:global(.dark .home-ascii-shell .home-hero-subtitle),
+:global(.dark .home-ascii-shell .home-section-copy),
+:global(.dark .home-ascii-shell .home-footer-text),
+:global(.dark .home-ascii-shell .home-footer-link),
+:global(.dark .home-ascii-shell .home-body-copy) {
+  color: rgba(243, 239, 229, 0.72);
 }
 </style>
