@@ -31,6 +31,44 @@ describe('home and auth contrast on Atelier warm paper background', () => {
     expect(home).not.toContain('class="btn btn-primary px-8 py-3 text-base"')
   })
 
+  it('applies Zero Landing style reveal motion to concrete home components', () => {
+    const home = readFile('src/views/HomeView.vue')
+
+    expect((home.match(/data-home-reveal/g) ?? []).length).toBeGreaterThanOrEqual(12)
+    expect(home).toContain('class="home-feature-tag')
+    expect(home).toContain('class="home-feature-card')
+    expect(home).toContain('class="home-provider-chip')
+    expect(home).toContain('.home-ascii-shell .home-feature-tag')
+    expect(home).toContain('.home-ascii-shell .home-feature-card')
+    expect(home).toContain('.home-ascii-shell .home-provider-chip')
+    expect(home).toContain('.home-ascii-shell [data-home-reveal]')
+    expect(home).toContain('animation: home-component-reveal 0.9s var(--atelier-ease) both;')
+    expect(home).toContain('animation-delay: var(--home-reveal-delay, 0ms);')
+    expect(home).toContain('@keyframes home-component-reveal')
+    expect(home).toContain('@media (prefers-reduced-motion: reduce)')
+  })
+
+  it('adds stronger home-specific color layers beyond the warm paper base', () => {
+    const home = readFile('src/views/HomeView.vue')
+
+    expect(home).toContain('.home-ascii-shell {')
+    expect(home).toContain('linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.94) 52.2% 100%)')
+    expect(home).toContain('radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.2), transparent 24rem)')
+    expect(home).toContain('radial-gradient(circle at 88% 58%, rgba(199, 154, 58, 0.2), transparent 21rem)')
+    expect(home).toContain('repeating-linear-gradient(to right, rgba(23, 21, 18, 0.12), rgba(23, 21, 18, 0.12) 2px, transparent 2px, transparent 8px)')
+  })
+
+  it('keeps dark home overrides scoped to the home shell', () => {
+    const home = readFile('src/views/HomeView.vue')
+
+    expect(home).toContain(':global(.dark .home-ascii-shell)')
+    expect(home).toContain(':global(.dark .home-ascii-shell .terminal-window)')
+    expect(home).toContain(':global(.dark .home-ascii-shell .home-logo)')
+    expect(home).not.toContain(':global(.dark) .home-ascii-shell')
+    expect(home).not.toContain(':global(.dark) .home-logo')
+    expect(home).not.toContain(':deep(.dark) .terminal-window')
+  })
+
   it('hides the default home scrollbar without disabling the page content', () => {
     const css = readFile('src/style.css')
 
