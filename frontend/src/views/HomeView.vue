@@ -102,15 +102,21 @@
           <div class="flex-1 text-center lg:text-left">
             <h1
               class="home-hero-title mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
+              data-home-reveal
+              style="--home-reveal-delay: 80ms"
             >
               {{ siteName }}
             </h1>
-            <p class="home-hero-subtitle mb-8 text-lg md:text-xl">
+            <p
+              class="home-hero-subtitle mb-8 text-lg md:text-xl"
+              data-home-reveal
+              style="--home-reveal-delay: 160ms"
+            >
               {{ siteSubtitle }}
             </p>
 
             <!-- CTA Button -->
-            <div>
+            <div data-home-reveal style="--home-reveal-delay: 240ms">
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
                 class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"
@@ -122,7 +128,11 @@
           </div>
 
           <!-- Right: Terminal Animation -->
-          <div class="flex flex-1 justify-center lg:justify-end">
+          <div
+            class="flex flex-1 justify-center lg:justify-end"
+            data-home-reveal
+            style="--home-reveal-delay: 280ms"
+          >
             <div class="terminal-container">
               <div class="terminal-window">
                 <!-- Window header -->
@@ -162,7 +172,9 @@
         <!-- Feature Tags - Centered -->
         <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            data-home-reveal
+            style="--home-reveal-delay: 340ms"
           >
             <Icon name="swap" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -170,7 +182,9 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            data-home-reveal
+            style="--home-reveal-delay: 400ms"
           >
             <Icon name="shield" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -178,7 +192,9 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="home-feature-tag inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            data-home-reveal
+            style="--home-reveal-delay: 460ms"
           >
             <Icon name="chart" size="sm" class="text-primary-500" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -191,7 +207,9 @@
         <div class="mb-12 grid gap-6 md:grid-cols-[1.15fr_.95fr_.9fr]">
           <!-- Feature 1: Unified Gateway -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            data-home-reveal
+            style="--home-reveal-delay: 520ms"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-600 shadow-sm shadow-primary-600/20 transition-transform group-hover:scale-105 dark:bg-primary-500"
@@ -208,7 +226,9 @@
 
           <!-- Feature 2: Account Pool -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            data-home-reveal
+            style="--home-reveal-delay: 580ms"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-500 shadow-sm shadow-primary-500/20 transition-transform group-hover:scale-105"
@@ -237,7 +257,9 @@
 
           <!-- Feature 3: Billing & Quota -->
           <div
-            class="group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            class="home-feature-card group rounded-lg border border-accent-200/70 bg-white/75 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/75"
+            data-home-reveal
+            style="--home-reveal-delay: 640ms"
           >
             <div
               class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-800 shadow-sm shadow-accent-800/15 transition-transform group-hover:scale-105 dark:bg-primary-700"
@@ -266,7 +288,7 @@
         </div>
 
         <!-- Supported Providers -->
-        <div class="mb-8 text-center">
+        <div class="mb-8 text-center" data-home-reveal style="--home-reveal-delay: 700ms">
           <h2 class="home-section-title mb-3 text-2xl font-bold">
             {{ t('home.providers.title') }}
           </h2>
@@ -278,7 +300,9 @@
         <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
           <!-- Claude - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            data-home-reveal
+            style="--home-reveal-delay: 760ms"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -293,7 +317,9 @@
           </div>
           <!-- GPT - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            data-home-reveal
+            style="--home-reveal-delay: 820ms"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -308,7 +334,9 @@
           </div>
           <!-- Gemini - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            data-home-reveal
+            style="--home-reveal-delay: 880ms"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500"
@@ -323,7 +351,9 @@
           </div>
           <!-- Antigravity - Supported -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            class="home-provider-chip flex items-center gap-2 rounded-lg border border-primary-200 bg-white/70 px-5 py-3 ring-1 ring-primary-500/20 dark:border-primary-800 dark:bg-dark-800/70"
+            data-home-reveal
+            style="--home-reveal-delay: 940ms"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-400"
@@ -338,7 +368,9 @@
           </div>
           <!-- More - Coming Soon -->
           <div
-            class="flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 dark:border-dark-700/50 dark:bg-dark-800/50"
+            class="home-provider-chip flex items-center gap-2 rounded-lg border border-accent-200/60 bg-white/50 px-5 py-3 opacity-60 dark:border-dark-700/50 dark:bg-dark-800/50"
+            data-home-reveal
+            style="--home-reveal-delay: 1000ms"
           >
             <div
               class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
@@ -465,6 +497,57 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.home-ascii-shell {
+  background:
+    linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.94) 52.2% 100%),
+    radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.2), transparent 24rem),
+    radial-gradient(circle at 88% 58%, rgba(199, 154, 58, 0.2), transparent 21rem),
+    repeating-linear-gradient(to right, rgba(23, 21, 18, 0.12), rgba(23, 21, 18, 0.12) 2px, transparent 2px, transparent 8px),
+    linear-gradient(90deg, rgba(23, 21, 18, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(23, 21, 18, 0.03) 1px, transparent 1px),
+    var(--atelier-paper);
+  background-position:
+    center,
+    center,
+    center,
+    center top,
+    center,
+    center,
+    center;
+  background-size:
+    auto,
+    auto,
+    auto,
+    auto 1px,
+    32px 32px,
+    32px 32px,
+    auto;
+}
+
+.home-ascii-background {
+  opacity: 0.42;
+}
+
+.home-ascii-shell [data-home-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  animation: home-component-reveal 0.9s var(--atelier-ease) both;
+  animation-delay: var(--home-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+@keyframes home-component-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .home-logo {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-paper-2);
@@ -526,15 +609,59 @@ onMounted(() => {
   color: var(--atelier-blue);
 }
 
+.home-ascii-shell .home-feature-tag,
+.home-ascii-shell .home-feature-card,
+.home-ascii-shell .home-provider-chip {
+  transition:
+    transform 260ms var(--atelier-ease),
+    border-color 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease),
+    box-shadow 260ms var(--atelier-ease);
+}
+
+.home-ascii-shell .home-feature-tag,
+.home-ascii-shell .home-provider-chip {
+  box-shadow: 0 12px 26px -22px rgba(23, 21, 18, 0.42);
+}
+
+.home-ascii-shell .home-feature-tag:hover,
+.home-ascii-shell .home-provider-chip:hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: rgba(0, 47, 167, 0.28);
+  background: color-mix(in srgb, var(--atelier-white) 74%, var(--atelier-blue-soft));
+  box-shadow: 0 18px 34px -28px rgba(0, 47, 167, 0.5);
+}
+
+.home-ascii-shell .home-feature-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--atelier-white) 78%, var(--atelier-paper)) 0%, var(--atelier-surface) 100%);
+  box-shadow: 0 16px 34px -28px rgba(23, 21, 18, 0.5);
+}
+
+.home-ascii-shell .home-feature-card:hover {
+  border-color: rgba(0, 47, 167, 0.32);
+  box-shadow: 0 22px 42px -30px rgba(0, 47, 167, 0.54);
+}
+
 .home-cta {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
   box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  transition:
+    transform 260ms var(--atelier-ease),
+    background-color 260ms var(--atelier-ease),
+    box-shadow 260ms var(--atelier-ease);
 }
 
 .home-cta:hover {
   background: var(--atelier-blue-dark);
+  transform: translate3d(0, -2px, 0);
+  box-shadow: 0 18px 34px -26px rgba(0, 47, 167, 0.72);
+}
+
+.home-cta:active {
+  transform: translate3d(0, 0, 0);
 }
 
 .home-section-title {
@@ -701,8 +828,34 @@ onMounted(() => {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .home-ascii-shell [data-home-reveal] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    animation-delay: 0ms;
+    will-change: auto;
+  }
+
+  .home-cta,
+  .home-feature-tag,
+  .home-feature-card,
+  .home-provider-chip,
+  .terminal-window {
+    transition: none;
+  }
+}
+
 /* Dark mode adjustments */
-:deep(.dark) .terminal-window {
+:global(.dark .home-ascii-shell) {
+  background:
+    linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.34) 52.2% 100%),
+    radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.14), transparent 24rem),
+    radial-gradient(circle at 88% 58%, rgba(199, 154, 58, 0.1), transparent 21rem),
+    linear-gradient(180deg, #050505, #0a0a0a);
+}
+
+:global(.dark .home-ascii-shell .terminal-window) {
   box-shadow:
     0 25px 50px -12px rgba(5, 5, 5, 0.6),
     0 0 0 1px rgba(0, 47, 167, 0.3),
@@ -710,21 +863,21 @@ onMounted(() => {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-:global(.dark) .home-logo {
+:global(.dark .home-ascii-shell .home-logo) {
   border-color: rgba(233, 225, 210, 0.18);
   background: #11100d;
 }
 
-:global(.dark) .home-nav-icon,
-:global(.dark) .home-hero-subtitle,
-:global(.dark) .home-section-copy,
-:global(.dark) .home-footer-text,
-:global(.dark) .home-footer-link {
+:global(.dark .home-ascii-shell .home-nav-icon),
+:global(.dark .home-ascii-shell .home-hero-subtitle),
+:global(.dark .home-ascii-shell .home-section-copy),
+:global(.dark .home-ascii-shell .home-footer-text),
+:global(.dark .home-ascii-shell .home-footer-link) {
   color: rgba(243, 239, 229, 0.72);
 }
 
-:global(.dark) .home-hero-title,
-:global(.dark) .home-section-title {
+:global(.dark .home-ascii-shell .home-hero-title),
+:global(.dark .home-ascii-shell .home-section-title) {
   color: #fffaf0;
 }
 </style>
