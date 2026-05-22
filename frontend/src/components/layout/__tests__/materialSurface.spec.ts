@@ -19,8 +19,8 @@ const blockedTableBlur = ['blur', '(16px)'].join('')
 
 describe('right-side material surfaces', () => {
   it('applies a visible flat paper material style to maintained cards without pseudo masks or CSS blur', () => {
-    expect(styleSource).toContain('background: var(--atelier-white) !important;')
-    expect(styleSource).toContain('box-shadow: 0 12px 28px -24px rgba(23, 21, 18, 0.36) !important;')
+    expect(styleSource).toContain('background: var(--atelier-surface) !important;')
+    expect(styleSource).toContain('box-shadow: 0 10px 24px -22px var(--atelier-shadow) !important;')
     expect(styleSource).toContain('.app-layout-content :where(div, section, article):where(')
     expect(styleSource).toContain('[class~="rounded-lg"]')
     expect(styleSource).toContain('[class~="bg-white/95"]')
@@ -60,7 +60,10 @@ describe('right-side material surfaces', () => {
     expect(styleSource).toContain('.app-layout-content .table-wrapper :where(thead, tbody, tr, th, td)')
     expect(styleSource).toContain('.app-layout-content .table-wrapper :where(.table-header, .sticky-header-cell)')
     expect(styleSource).toContain('.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea, select)')
-    expect(styleSource).toContain('background: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white)) !important;')
-    expect(styleSource).toContain('background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white)) !important;')
+    expect(styleSource).toContain('background: var(--atelier-surface-muted) !important;')
+    expect(styleSource).toContain('background: var(--atelier-blue-soft) !important;')
+    expect(styleSource).toContain('.home-ascii-shell')
+    expect(styleSource).toContain('.auth-ascii-shell')
+    expect(styleSource).toContain('var(--atelier-paper);')
   })
 })

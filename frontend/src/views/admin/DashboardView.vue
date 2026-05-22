@@ -690,9 +690,25 @@ onMounted(() => {
 
 <style scoped>
 .admin-dashboard-atelier {
-  --dashboard-control-surface: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white));
+  --dashboard-control-surface: var(--atelier-dust-soft);
   --dashboard-control-edge: rgba(23, 21, 18, 0.14);
   --dashboard-control-shadow: rgba(23, 21, 18, 0.16);
+}
+
+.admin-dashboard-atelier :deep(.card:nth-child(4n + 1)) {
+  background: var(--atelier-surface-strong);
+}
+
+.admin-dashboard-atelier :deep(.card:nth-child(4n + 2)) {
+  background: var(--atelier-blue-soft);
+}
+
+.admin-dashboard-atelier :deep(.card:nth-child(4n + 3)) {
+  background: var(--atelier-dust-soft);
+}
+
+.admin-dashboard-atelier :deep(.card:nth-child(4n + 4)) {
+  background: var(--atelier-butter-soft);
 }
 
 .admin-dashboard-atelier .dashboard-paper-control,
@@ -709,7 +725,7 @@ onMounted(() => {
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
   border-color: rgba(0, 47, 167, 0.18);
-  background: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+  background: var(--atelier-blue-soft);
 }
 
 .admin-dashboard-atelier:where(.dark *) {
@@ -734,9 +750,14 @@ onMounted(() => {
   height: 2.25rem;
   flex: 0 0 2.25rem;
   color: #002FA7;
+  border-radius: 8px;
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+  box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.6);
 }
 
 .dashboard-stat-icon:where(.dark *) {
-  color: #002FA7;
+  background: #002FA7;
+  color: #fffaf0;
 }
 </style>

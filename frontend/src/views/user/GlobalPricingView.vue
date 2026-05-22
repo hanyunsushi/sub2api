@@ -290,23 +290,35 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: #fffaf0;
+  --material-card-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
   --material-card-edge: rgba(23, 21, 18, 0.14);
   --material-card-shadow: rgba(23, 21, 18, 0.36);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
   background: var(--material-card-surface);
-  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+}
+
+.summary-tile:nth-child(2) {
+  background: var(--atelier-blue-soft);
+}
+
+.summary-tile:nth-child(3) {
+  background: var(--atelier-dust-soft);
+}
+
+.summary-tile:nth-child(4) {
+  background: var(--atelier-butter-soft);
 }
 
 .table-wrapper {
-  --material-card-surface: #fffaf0;
+  --material-card-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
   --material-card-edge: rgba(23, 21, 18, 0.14);
   --material-card-shadow: rgba(23, 21, 18, 0.36);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
   background: var(--material-card-surface);
-  box-shadow: 0 12px 28px -24px var(--material-card-shadow);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .dark .summary-tile,
@@ -345,15 +357,24 @@ onMounted(loadPricing)
 }
 
 .hash-pill {
-  @apply border-accent-200 bg-white text-gray-500 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400;
+  @apply dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400;
+  border-color: var(--atelier-line);
+  background: var(--atelier-surface-muted);
+  color: var(--atelier-muted);
 }
 
 .meta-pill {
-  @apply border-gray-200 bg-gray-50 text-gray-600 dark:border-dark-700 dark:bg-dark-900/60 dark:text-gray-300;
+  @apply dark:border-dark-700 dark:bg-dark-900/60 dark:text-gray-300;
+  border-color: var(--atelier-line);
+  background: var(--atelier-dust-soft);
+  color: var(--atelier-dust);
 }
 
 .capability-pill {
-  @apply border-primary-200 bg-primary-50 text-primary-700 dark:border-primary-800/60 dark:bg-primary-900/20 dark:text-primary-300;
+  @apply dark:border-primary-800/60 dark:bg-primary-900/20 dark:text-primary-300;
+  border-color: color-mix(in srgb, var(--atelier-blue) 22%, var(--atelier-line));
+  background: var(--atelier-blue-soft);
+  color: var(--atelier-blue);
 }
 
 .global-pricing-table {
@@ -361,15 +382,22 @@ onMounted(loadPricing)
 }
 
 .global-pricing-table th {
-  @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 bg-primary-50 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-accent-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
+  @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
+  background: var(--atelier-dust-soft);
+  color: var(--atelier-ink);
 }
 
 .global-pricing-table td {
-  @apply whitespace-nowrap border-b border-accent-100 px-4 py-3 align-top text-gray-700 dark:border-dark-800 dark:text-gray-300;
+  @apply whitespace-nowrap border-b border-accent-100 px-4 py-3 align-top dark:border-dark-800 dark:text-gray-300;
+  color: var(--atelier-ink);
 }
 
 .pricing-row {
-  @apply transition-colors hover:bg-gray-50/60 dark:hover:bg-dark-900/50;
+  @apply transition-colors dark:hover:bg-dark-900/50;
+}
+
+.pricing-row:hover {
+  background: var(--atelier-blue-soft);
 }
 
 .brand-cell {
@@ -377,21 +405,26 @@ onMounted(loadPricing)
 }
 
 .brand-sticky-col {
-  @apply sticky left-0 z-[3] bg-white dark:bg-dark-800;
+  @apply sticky left-0 z-[3] dark:bg-dark-800;
+  background: var(--material-card-surface);
 }
 
 .model-sticky-col {
-  @apply sticky left-0 z-[2] bg-white shadow-[1px_0_0_rgba(226,232,240,0.9)] dark:bg-dark-800 dark:shadow-[1px_0_0_rgba(55,65,81,0.9)];
+  @apply sticky left-0 z-[2] dark:bg-dark-800 dark:shadow-[1px_0_0_rgba(55,65,81,0.9)];
   left: 3.5rem;
+  background: var(--material-card-surface);
+  box-shadow: 1px 0 0 var(--atelier-line);
 }
 
 thead .brand-sticky-col,
 thead .model-sticky-col {
-  @apply z-[3] bg-primary-50/95 dark:bg-dark-800/95;
+  @apply z-[3] dark:bg-dark-800/95;
+  background: var(--atelier-dust-soft);
 }
 
 .price-cell {
-  @apply font-mono text-[13px] text-gray-900 dark:text-white;
+  @apply font-mono text-[13px] dark:text-white;
+  color: var(--atelier-blue-dark);
 }
 
 .price-subline {

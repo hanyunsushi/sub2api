@@ -746,12 +746,19 @@ defineExpose({
 /* 表格横向滚动 */
 .table-wrapper {
   --select-col-width: 52px; /* 勾选列宽度：px-6 (24px*2) + checkbox (16px) */
+  --table-surface: var(--atelier-surface);
+  --table-surface-strong: var(--atelier-surface-strong);
+  --table-header-surface: var(--atelier-dust-soft);
+  --table-hover-surface: var(--atelier-blue-soft);
+  --table-edge: var(--atelier-line);
   position: relative;
   overflow-x: auto;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
   isolation: isolate;
+  border-color: var(--table-edge);
+  background: var(--table-surface);
 }
 
 .table-wrapper.is-page-scroll {
@@ -765,7 +772,8 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 200;
-  background-color: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white));
+  background-color: var(--table-header-surface);
+  box-shadow: inset 0 -1px 0 var(--table-edge);
 }
 
 .dark .table-wrapper .table-header {
@@ -783,7 +791,8 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 210; /* 必须高于所有表体内容 */
-  background-color: color-mix(in srgb, var(--atelier-dust) 8%, var(--atelier-white));
+  background-color: var(--table-header-surface);
+  color: var(--atelier-ink);
 }
 
 .dark .sticky-header-cell {
@@ -823,7 +832,7 @@ defineExpose({
 
 /* 表体 sticky 列背景 */
 tbody .sticky-col {
-  background-color: var(--atelier-white);
+  background-color: var(--table-surface);
 }
 
 .dark tbody .sticky-col {
@@ -832,7 +841,7 @@ tbody .sticky-col {
 
 /* hover 状态保持 */
 tbody tr:hover .sticky-col {
-  background-color: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-white));
+  background-color: var(--table-hover-surface);
 }
 
 .dark tbody tr:hover .sticky-col {
@@ -849,7 +858,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), transparent);
+  background: linear-gradient(to right, rgba(23, 21, 18, 0.11), transparent);
   pointer-events: none;
 }
 
@@ -862,7 +871,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), transparent);
+  background: linear-gradient(to right, rgba(23, 21, 18, 0.11), transparent);
   pointer-events: none;
 }
 
@@ -875,7 +884,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(-100%);
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.08), transparent);
+  background: linear-gradient(to left, rgba(23, 21, 18, 0.11), transparent);
   pointer-events: none;
 }
 

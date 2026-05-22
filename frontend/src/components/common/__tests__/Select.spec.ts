@@ -19,11 +19,11 @@ describe('Select portal styles', () => {
   })
 
   it('uses atelier surface tokens for trigger, portal, option states, and reveal motion', () => {
-    expect(componentSource).toContain('--select-surface: var(--atelier-white);')
-    expect(componentSource).toContain('--select-muted-surface: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-white));')
+    expect(componentSource).toContain('--select-surface: var(--atelier-surface-strong);')
+    expect(componentSource).toContain('--select-muted-surface: var(--atelier-dust-soft);')
     expect(componentSource).toContain('background: var(--select-surface);')
     expect(componentSource).toContain('border-color: var(--atelier-line);')
-    expect(componentSource).toContain('background: color-mix(in srgb, var(--atelier-blue) 9%, var(--select-surface));')
+    expect(componentSource).toContain('background: var(--atelier-blue-soft);')
     expect(componentSource).toContain('transition: opacity 0.22s var(--atelier-ease), transform 0.22s var(--atelier-ease);')
     expect(componentSource).toContain('transform: translate3d(0, -8px, 0);')
     expect(componentSource).not.toContain('transform: scale(')

@@ -7,15 +7,16 @@ import { describe, expect, it } from 'vitest'
 const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'utf8')
 
-describe('home and auth contrast on Klein blue background', () => {
-  it('uses white footer microcopy and links on login and register pages', () => {
-    const login = readFile('src/views/auth/LoginView.vue')
-    const register = readFile('src/views/auth/RegisterView.vue')
+describe('home and auth contrast on Atelier warm paper background', () => {
+  it('uses themed footer microcopy and links on auth pages', () => {
+    const authLayout = readFile('src/components/layout/AuthLayout.vue')
+    const style = readFile('src/style.css')
 
-    expect(login).toContain('class="text-white/90"')
-    expect(login).toContain('class="font-medium text-white underline-offset-4 transition-colors hover:text-white hover:underline"')
-    expect(register).toContain('class="text-white/90"')
-    expect(register).toContain('class="font-medium text-white underline-offset-4 transition-colors hover:text-white hover:underline"')
+    expect(authLayout).toContain('auth-footer-link')
+    expect(authLayout).toContain('color: var(--atelier-muted);')
+    expect(authLayout).toContain('color: var(--atelier-blue);')
+    expect(style).toContain('.auth-ascii-shell,')
+    expect(style).toContain('var(--atelier-paper);')
   })
 
   it('keeps default home header and CTA readable on the ASCII background', () => {
@@ -23,8 +24,10 @@ describe('home and auth contrast on Klein blue background', () => {
 
     expect(home).toContain('<router-link to="/home" class="flex items-center" aria-label="Home">')
     expect(home).toContain('<LocaleSwitcher tone="on-deep" />')
-    expect(home).toContain('class="mb-8 text-lg text-white md:text-xl"')
-    expect(home).toContain('bg-white px-8 py-3 text-base font-semibold text-primary-600')
+    expect(home).toContain('class="home-hero-subtitle mb-8 text-lg md:text-xl"')
+    expect(home).toContain('class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"')
+    expect(home).toContain('background: var(--atelier-blue);')
+    expect(home).toContain('color: var(--atelier-ink);')
     expect(home).not.toContain('class="btn btn-primary px-8 py-3 text-base"')
   })
 
