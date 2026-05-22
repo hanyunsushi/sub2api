@@ -15,6 +15,7 @@
   <!-- Default Home Page -->
   <div
     v-else
+    ref="revealRoot"
     class="home-ascii-shell relative flex min-h-screen flex-col overflow-hidden"
   >
     <GuizangAsciiBackground class="home-ascii-background" />
@@ -288,7 +289,11 @@
         </div>
 
         <!-- Supported Providers -->
-        <div class="mb-8 text-center" data-home-reveal style="--home-reveal-delay: 700ms">
+        <div
+          class="home-provider-intro mb-8 text-center"
+          data-home-reveal
+          style="--home-reveal-delay: 700ms"
+        >
           <h2 class="home-section-title mb-3 text-2xl font-bold">
             {{ t('home.providers.title') }}
           </h2>
@@ -420,7 +425,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, nextTick, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
 import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'
@@ -447,6 +452,8 @@ const isHomeContentUrl = computed(() => {
 
 // Theme
 const isDark = ref(document.documentElement.classList.contains('dark'))
+const revealRoot = ref<HTMLElement | null>(null)
+let revealObserver: IntersectionObserver | null = null
 
 // GitHub URL
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
@@ -483,7 +490,33 @@ function initTheme() {
   }
 }
 
-onMounted(() => {
+function showRevealItems(items: HTMLElement[]) {
+  items.forEach((item) => item.classList.add('is-visible'))
+}
+
+function initHomeReveal() {
+  const items = Array.from(revealRoot.value?.querySelectorAll<HTMLElement>('[data-home-reveal]') ?? [])
+  if (!items.length) return
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    showRevealItems(items)
+    return
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return
+      entry.target.classList.add('is-visible')
+      observer.unobserve(entry.target)
+    })
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+
+  revealObserver = observer
+  items.forEach((item) => observer.observe(item))
+}
+
+onMounted(async () => {
   initTheme()
 
   // Check auth state
@@ -493,11 +526,21 @@ onMounted(() => {
   if (!appStore.publicSettingsLoaded) {
     appStore.fetchPublicSettings()
   }
+
+  await nextTick()
+  initHomeReveal()
+})
+
+onBeforeUnmount(() => {
+  revealObserver?.disconnect()
+  revealObserver = null
 })
 </script>
 
 <style scoped>
 .home-ascii-shell {
+  position: relative;
+  isolation: isolate;
   background:
     linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.94) 52.2% 100%),
     radial-gradient(circle at 18% 24%, rgba(79, 106, 140, 0.2), transparent 24rem),
@@ -524,28 +567,46 @@ onMounted(() => {
     auto;
 }
 
+.home-ascii-shell::before,
+.home-ascii-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.home-ascii-shell::before {
+  background:
+    linear-gradient(90deg, transparent 0 calc(100% - 34rem), rgba(255, 250, 240, 0.18) calc(100% - 34rem) calc(100% - 33.5rem), transparent calc(100% - 33.5rem)),
+    linear-gradient(180deg, rgba(0, 47, 167, 0.08), transparent 34rem);
+}
+
+.home-ascii-shell::after {
+  background:
+    linear-gradient(180deg, transparent 0 62%, rgba(79, 106, 140, 0.12) 62.1% calc(62.1% + 1px), transparent calc(62.1% + 1px)),
+    repeating-linear-gradient(to bottom, transparent 0 18px, rgba(199, 154, 58, 0.1) 18px 19px);
+  opacity: 0.72;
+}
+
 .home-ascii-background {
+  z-index: 1;
   opacity: 0.42;
 }
 
 .home-ascii-shell [data-home-reveal] {
   opacity: 0;
   transform: translate3d(0, 26px, 0);
-  animation: home-component-reveal 0.9s var(--atelier-ease) both;
-  animation-delay: var(--home-reveal-delay, 0ms);
+  transition:
+    opacity 0.9s var(--atelier-ease),
+    transform 0.9s var(--atelier-ease);
+  transition-delay: var(--home-reveal-delay, 0ms);
   will-change: opacity, transform;
 }
 
-@keyframes home-component-reveal {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 26px, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+.home-ascii-shell [data-home-reveal].is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 .home-logo {
@@ -619,28 +680,89 @@ onMounted(() => {
     box-shadow 260ms var(--atelier-ease);
 }
 
+.home-ascii-shell .home-feature-tag:nth-child(1) {
+  --home-chip-accent: var(--atelier-blue);
+}
+
+.home-ascii-shell .home-feature-tag:nth-child(2) {
+  --home-chip-accent: var(--atelier-dust);
+}
+
+.home-ascii-shell .home-feature-tag:nth-child(3) {
+  --home-chip-accent: var(--atelier-butter);
+}
+
 .home-ascii-shell .home-feature-tag,
 .home-ascii-shell .home-provider-chip {
+  background:
+    linear-gradient(90deg, var(--home-chip-accent, var(--atelier-blue)) 0 4px, transparent 4px),
+    color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 10%, var(--atelier-white));
+  border-color: color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 34%, var(--atelier-line));
   box-shadow: 0 12px 26px -22px rgba(23, 21, 18, 0.42);
 }
 
 .home-ascii-shell .home-feature-tag:hover,
 .home-ascii-shell .home-provider-chip:hover {
   transform: translate3d(0, -2px, 0);
-  border-color: rgba(0, 47, 167, 0.28);
-  background: color-mix(in srgb, var(--atelier-white) 74%, var(--atelier-blue-soft));
-  box-shadow: 0 18px 34px -28px rgba(0, 47, 167, 0.5);
+  border-color: color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 54%, var(--atelier-line));
+  background:
+    linear-gradient(90deg, var(--home-chip-accent, var(--atelier-blue)) 0 4px, transparent 4px),
+    color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 16%, var(--atelier-white));
+  box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--home-chip-accent, var(--atelier-blue)) 46%, transparent);
+}
+
+.home-ascii-shell .home-feature-card:nth-child(1) {
+  --home-card-accent: var(--atelier-blue);
+}
+
+.home-ascii-shell .home-feature-card:nth-child(2) {
+  --home-card-accent: var(--atelier-dust);
+}
+
+.home-ascii-shell .home-feature-card:nth-child(3) {
+  --home-card-accent: var(--atelier-butter);
 }
 
 .home-ascii-shell .home-feature-card {
+  border-top: 4px solid var(--home-card-accent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--atelier-white) 78%, var(--atelier-paper)) 0%, var(--atelier-surface) 100%);
+    linear-gradient(180deg, color-mix(in srgb, var(--home-card-accent) 16%, var(--atelier-paper)) 0%, var(--atelier-surface) 54%, var(--atelier-white) 100%);
+  box-shadow:
+    0 16px 34px -28px rgba(23, 21, 18, 0.5),
+    inset 0 1px 0 color-mix(in srgb, var(--home-card-accent) 28%, transparent);
+}
+
+.home-ascii-shell .home-feature-card :deep(.mb-4) {
+  background: var(--home-card-accent);
   box-shadow: 0 16px 34px -28px rgba(23, 21, 18, 0.5);
 }
 
 .home-ascii-shell .home-feature-card:hover {
-  border-color: rgba(0, 47, 167, 0.32);
-  box-shadow: 0 22px 42px -30px rgba(0, 47, 167, 0.54);
+  border-color: color-mix(in srgb, var(--home-card-accent) 44%, var(--atelier-line));
+  border-top-color: var(--home-card-accent);
+  box-shadow:
+    0 22px 42px -30px color-mix(in srgb, var(--home-card-accent) 58%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--home-card-accent) 34%, transparent);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(1) {
+  --home-chip-accent: var(--atelier-blue);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(2) {
+  --home-chip-accent: var(--atelier-dust);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(3) {
+  --home-chip-accent: var(--atelier-butter);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(4) {
+  --home-chip-accent: var(--atelier-blue-dark);
+}
+
+.home-ascii-shell .home-provider-chip:nth-child(5) {
+  --home-chip-accent: var(--atelier-muted);
 }
 
 .home-cta {
@@ -666,6 +788,16 @@ onMounted(() => {
 
 .home-section-title {
   color: var(--atelier-ink);
+}
+
+.home-provider-intro {
+  display: inline-grid;
+  justify-items: center;
+  padding: 0.75rem 1.25rem 1rem;
+  border-bottom: 3px solid var(--atelier-butter);
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 250, 240, 0.86) 16% 84%, transparent),
+    linear-gradient(180deg, rgba(243, 239, 229, 0.7), rgba(255, 250, 240, 0.76));
 }
 
 .home-footer {
@@ -832,8 +964,8 @@ onMounted(() => {
   .home-ascii-shell [data-home-reveal] {
     opacity: 1;
     transform: none;
-    animation: none;
-    animation-delay: 0ms;
+    transition: none;
+    transition-delay: 0ms;
     will-change: auto;
   }
 
