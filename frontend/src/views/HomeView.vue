@@ -462,6 +462,8 @@ const isHomeContentUrl = computed(() => {
 const isDark = ref(document.documentElement.classList.contains('dark'))
 const revealRoot = ref<HTMLElement | null>(null)
 let revealObserver: IntersectionObserver | null = null
+let pendingRevealItems: HTMLElement[] = []
+let revealFrame = 0
 
 // GitHub URL
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
@@ -502,6 +504,29 @@ function showRevealItems(items: HTMLElement[]) {
   items.forEach((item) => item.classList.add('is-visible'))
 }
 
+function markHomeRevealVisible(item: HTMLElement) {
+  item.classList.add('is-visible')
+  revealObserver?.unobserve(item)
+  pendingRevealItems = pendingRevealItems.filter((pendingItem) => pendingItem !== item)
+}
+
+function revealPassedHomeItems() {
+  if (!pendingRevealItems.length) return
+  pendingRevealItems.forEach((item) => {
+    if (item.getBoundingClientRect().top <= window.innerHeight * 1.18) {
+      markHomeRevealVisible(item)
+    }
+  })
+}
+
+function scheduleRevealPassedHomeItems() {
+  if (revealFrame) return
+  revealFrame = window.requestAnimationFrame(() => {
+    revealFrame = 0
+    revealPassedHomeItems()
+  })
+}
+
 function initHomeReveal() {
   const items = Array.from(revealRoot.value?.querySelectorAll<HTMLElement>('[data-home-reveal]') ?? [])
   if (!items.length) return
@@ -512,16 +537,19 @@ function initHomeReveal() {
     return
   }
 
+  pendingRevealItems = items
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return
-      entry.target.classList.add('is-visible')
-      observer.unobserve(entry.target)
+      markHomeRevealVisible(entry.target as HTMLElement)
     })
   }, { threshold: 0.12, rootMargin: '0px 0px 18% 0px' })
 
   revealObserver = observer
   items.forEach((item) => observer.observe(item))
+  window.addEventListener('scroll', scheduleRevealPassedHomeItems, { passive: true })
+  window.addEventListener('resize', scheduleRevealPassedHomeItems)
+  scheduleRevealPassedHomeItems()
 }
 
 onMounted(async () => {
@@ -542,6 +570,13 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   revealObserver?.disconnect()
   revealObserver = null
+  pendingRevealItems = []
+  window.removeEventListener('scroll', scheduleRevealPassedHomeItems)
+  window.removeEventListener('resize', scheduleRevealPassedHomeItems)
+  if (revealFrame) {
+    window.cancelAnimationFrame(revealFrame)
+    revealFrame = 0
+  }
 })
 </script>
 
