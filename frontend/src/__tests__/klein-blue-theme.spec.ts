@@ -99,7 +99,7 @@ describe('Klein blue theme', () => {
     expect(chartColors).toContain(`'${kleinBlue}'`)
   })
 
-  it('maps the light UI surfaces to the Atelier Zero warm paper palette', () => {
+  it('maps the light UI surfaces to the Atelier Zero palette without a warm yellow wash', () => {
     const tailwindConfig = readThemeFile('tailwind.config.js')
     const globalStyle = readThemeFile('src/style.css')
     const codexTheme = readThemeFile('src/styles/codex-theme.css')
@@ -113,12 +113,27 @@ describe('Klein blue theme', () => {
     expect(globalStyle).toContain('--atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);')
     expect(globalStyle).toContain('--atelier-blue-dark: #001E6E;')
     expect(globalStyle).toContain('--atelier-butter-dark: #8e6c1f;')
-    expect(globalStyle).toContain('--atelier-surface: color-mix(in srgb, var(--atelier-white) 68%, var(--atelier-paper));')
-    expect(globalStyle).toContain('radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem)')
-    expect(globalStyle).toContain('radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem)')
-    expect(codexTheme).toContain('--codex-bg: color-mix(in srgb, #f3efe5 88%, #4f6a8c);')
-    expect(codexTheme).toContain('--codex-surface-soft: color-mix(in srgb, #4f6a8c 13%, #f3efe5);')
+    expect(globalStyle).toContain('--atelier-canvas: #eef3ff;')
+    expect(globalStyle).toContain('--atelier-surface-panel: #edf2fb;')
+    expect(globalStyle).toContain('--atelier-surface-dust: #dce6ee;')
+    expect(globalStyle).not.toContain('--atelier-surface-butter:')
+    expect(globalStyle).not.toContain('--atelier-material-1: var(--atelier-surface-panel);')
+    expect(globalStyle).not.toContain('radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem)')
+    expect(globalStyle).not.toContain('radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem)')
+    expect(globalStyle).toContain('--atelier-material-grid: none;')
+    expect(globalStyle).toContain('--atelier-component-warning: var(--atelier-dust);')
+    expect(codexTheme).toContain('--codex-bg: #eef3ff;')
+    expect(codexTheme).toContain('--codex-surface-soft: #dce6ee;')
     expect(codexTheme).toContain('--codex-text: #171512;')
+  })
+
+  it('keeps the onboarding popover from adding grid texture over the main interface', () => {
+    const onboardingStyle = readThemeFile('src/styles/onboarding.css')
+
+    expect(onboardingStyle).toContain('background: var(--atelier-surface-strong) !important;')
+    expect(onboardingStyle).not.toContain('background-size: 32px 32px, 32px 32px, auto !important;')
+    expect(onboardingStyle).not.toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px)')
+    expect(onboardingStyle).not.toContain('linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px)')
   })
 
   it('does not keep legacy blue-purple theme literals in runtime theme files', () => {
