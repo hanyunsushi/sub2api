@@ -48,6 +48,7 @@ describe('Klein blue ASCII background', () => {
 
   it('defines the auth-only canvas without warm grid layers leaking into main surfaces', () => {
     const css = readFile('src/style.css')
+    const source = readFile('src/components/common/GuizangAsciiBackground.vue')
 
     expect(css).toContain('.guizang-site-background')
     expect(css).toContain('background: #002fa7')
@@ -63,12 +64,12 @@ describe('Klein blue ASCII background', () => {
     expect(css).not.toContain('opacity: 0.42;')
     expect(css).not.toContain('opacity: 0.2;')
     expect(css).not.toContain('opacity: 0.04;')
-    expect(css).toContain('.guizang-site-background__grid')
-    expect(css).toContain('.guizang-site-background__dots')
+    expect(source).not.toContain('guizang-site-background__grid')
+    expect(source).not.toContain('guizang-site-background__dots')
+    expect(css).not.toContain('.guizang-site-background__grid')
+    expect(css).not.toContain('.guizang-site-background__dots')
     expect(css).toContain('.auth-ascii-background .guizang-site-background__canvas')
-    expect(css).toContain('.auth-ascii-background .guizang-site-background__dots')
     expect(css).not.toContain('.dark .guizang-site-background--light .guizang-site-background__canvas')
-    expect(css).not.toContain('.dark .guizang-site-background--light .guizang-site-background__dots')
     expect(css).toContain('.app-layout-content')
     expect(css).toContain('background: var(--atelier-canvas);')
     expect(css).not.toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px)')

@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const dataTableSource = readFileSync(resolve(__dirname, '../../common/DataTable.vue'), 'utf8')
 const materialSystemBlock = styleSource.slice(
   styleSource.indexOf('Atelier component material system'),
   styleSource.length
@@ -20,16 +21,16 @@ describe('right-side material surfaces', () => {
     expect(styleSource).toContain('--atelier-canvas:')
     expect(styleSource).toContain('--atelier-surface-panel:')
     expect(styleSource).toContain('--atelier-surface-cool:')
-    expect(styleSource).toContain('--atelier-canvas: #eef3ff;')
+    expect(styleSource).toContain('--atelier-canvas: #d9deee;')
     expect(styleSource).toContain('body {\n    @apply bg-accent-50 text-gray-950 dark:bg-dark-950 dark:text-gray-100;\n    @apply min-h-screen;\n    overscroll-behavior-y: none;\n    color: var(--atelier-ink);\n    background: var(--atelier-canvas);')
     expect(styleSource).toContain('.app-layout-shell {\n  background: var(--atelier-canvas);')
-    expect(styleSource).toContain('.app-layout-content {\n  background: var(--atelier-canvas);')
+    expect(styleSource).toContain('.app-layout-content {\n  background:\n    linear-gradient(180deg, var(--atelier-canvas)')
     expect(styleSource).toContain('--atelier-material-grid: none;')
     expect(styleSource).toContain('--atelier-material-grid-dark: none;')
     expect(styleSource).toContain('--atelier-material-blue-strong:')
     expect(styleSource).toContain('--atelier-material-dust-strong:')
-    expect(styleSource).toContain('--atelier-material-butter: var(--atelier-surface-dust);')
-    expect(styleSource).toContain('--atelier-material-butter-strong: var(--atelier-surface-dust);')
+    expect(styleSource).toContain('--atelier-material-butter: var(--atelier-butter-soft);')
+    expect(styleSource).toContain('--atelier-material-butter-strong: #d8bf83;')
 
     expect(materialSystemBlock).toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell)')
     expect(materialSystemBlock).toContain('.app-layout-content :where(div, section, article):where(')
@@ -63,8 +64,12 @@ describe('right-side material surfaces', () => {
     expect(materialSystemBlock).toContain('.dark :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .dropdown, .select-dropdown-portal, .date-picker-dropdown-portal, .floating-dropdown-portal, .action-menu-content, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell)')
     expect(materialSystemBlock).toContain('background: var(--atelier-card-surface, var(--atelier-material-2)) !important;')
     expect(materialSystemBlock).not.toContain('var(--atelier-material-grid-dark),')
-    expect(materialSystemBlock).toContain('color: #f7f1e6 !important;')
+    expect(materialSystemBlock).toContain('color: #fffaf0 !important;')
     expect(styleSource).not.toContain('@media (prefers-reduced-transparency: reduce)')
+    expect(dataTableSource).not.toContain('#11100d')
+    expect(dataTableSource).not.toContain('rgba(23, 21, 18')
+    expect(dataTableSource).toContain('background-color: #111827;')
+    expect(dataTableSource).toContain('rgba(17, 24, 39, 0.11)')
   })
 
   it('themes old white and gray component internals with the full atelier palette', () => {
@@ -88,8 +93,8 @@ describe('right-side material surfaces', () => {
     expect(materialSystemBlock).not.toContain('background: var(--atelier-material-butter) !important;')
     expect(styleSource).not.toContain('background: var(--atelier-butter-soft);')
     expect(styleSource).not.toContain('color: var(--atelier-butter-dark);')
-    expect(materialSystemBlock).not.toContain('var(--atelier-butter)')
-    expect(materialSystemBlock).not.toContain('var(--atelier-butter-dark)')
+    expect(materialSystemBlock).not.toContain('background: var(--atelier-material-butter) !important;')
+    expect(materialSystemBlock).not.toContain('--atelier-card-accent: var(--atelier-butter);')
     expect(styleSource).toContain('.home-ascii-shell')
     expect(styleSource).toContain('.auth-ascii-shell')
     expect(styleSource).toContain('background: var(--atelier-canvas);')
@@ -110,7 +115,7 @@ describe('right-side material surfaces', () => {
     expect(materialSystemBlock).not.toContain('--atelier-card-accent: var(--atelier-butter);')
     expect(materialSystemBlock).toContain('color: var(--atelier-dust) !important;')
     expect(materialSystemBlock).toContain('color: color-mix(in srgb, var(--atelier-dust) 78%, var(--atelier-white)) !important;')
-    expect(materialSystemBlock).not.toContain('rgba(199, 154, 58')
+    expect(materialSystemBlock).not.toContain('background: var(--atelier-material-butter) !important;')
     expect(materialSystemBlock).toContain('.app-route-page-entering :where(')
     expect(materialSystemBlock).toContain('.layout-section-scrollable')
     expect(materialSystemBlock).toContain('.codex-topbar')

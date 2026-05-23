@@ -1114,14 +1114,14 @@ onBeforeUnmount(() => {
   right: 0.75rem;
   top: 50%;
   height: 1px;
-  background: var(--sidebar-line, rgba(23, 21, 18, 0.18));
+  background: var(--sidebar-line, rgba(17, 24, 39, 0.18));
   opacity: 0;
   transform: translateY(-50%);
   transition: opacity 0.18s ease;
 }
 
 .dark .sidebar-section-title::after {
-  background: var(--sidebar-line, rgba(233, 225, 210, 0.14));
+  background: var(--sidebar-line, rgba(248, 251, 255, 0.14));
 }
 
 .sidebar-section-title-text-collapsed {

@@ -1,8 +1,6 @@
 <template>
   <div :class="backgroundClass" aria-hidden="true">
     <canvas ref="canvasRef" class="guizang-site-background__canvas"></canvas>
-    <div class="guizang-site-background__grid"></div>
-    <div class="guizang-site-background__dots"></div>
   </div>
 </template>
 

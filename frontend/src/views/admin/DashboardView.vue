@@ -691,8 +691,8 @@ onMounted(() => {
 <style scoped>
 .admin-dashboard-atelier {
   --dashboard-control-surface: var(--atelier-dust-soft);
-  --dashboard-control-edge: rgba(23, 21, 18, 0.14);
-  --dashboard-control-shadow: rgba(23, 21, 18, 0.16);
+  --dashboard-control-edge: rgba(17, 24, 39, 0.14);
+  --dashboard-control-shadow: rgba(17, 24, 39, 0.16);
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 1)) {
@@ -718,7 +718,7 @@ onMounted(() => {
   background: var(--dashboard-control-surface);
   box-shadow:
     0 8px 18px -16px var(--dashboard-control-shadow),
-    0 1px 1px rgba(23, 21, 18, 0.05);
+    0 1px 1px rgba(17, 24, 39, 0.05);
 }
 
 .admin-dashboard-atelier .dashboard-paper-control:hover,
@@ -729,7 +729,7 @@ onMounted(() => {
 }
 
 .admin-dashboard-atelier:where(.dark *) {
-  --dashboard-control-surface: #11100d;
+  --dashboard-control-surface: #111827;
   --dashboard-control-edge: rgba(255, 255, 255, 0.16);
   --dashboard-control-shadow: rgba(5, 5, 5, 0.36);
 }
@@ -758,6 +758,6 @@ onMounted(() => {
 
 .dashboard-stat-icon:where(.dark *) {
   background: #002FA7;
-  color: #fffaf0;
+  color: #f8fbff;
 }
 </style>

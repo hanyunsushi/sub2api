@@ -405,7 +405,7 @@ onUnmounted(() => {
   border-color: var(--atelier-material-edge);
   background: var(--atelier-material-1);
   color: var(--atelier-ink);
-  box-shadow: 0 8px 18px -18px rgba(23, 21, 18, 0.3);
+  box-shadow: 0 8px 18px -18px rgba(17, 24, 39, 0.3);
 }
 
 .date-picker-trigger-open {
@@ -441,7 +441,7 @@ onUnmounted(() => {
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-surface-strong) !important;
   color: var(--atelier-ink);
-  box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.58) !important;
+  box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.58) !important;
   pointer-events: auto !important;
 }
 
@@ -505,12 +505,12 @@ onUnmounted(() => {
 
 .dark .date-picker-dropdown-portal .date-picker-preset:hover {
   background: rgba(0, 47, 167, 0.24);
-  color: #fffaf0;
+  color: #f8fbff;
 }
 
 .dark .date-picker-dropdown-portal .date-picker-preset-active:hover {
   background: rgba(0, 47, 167, 0.34);
-  color: #fffaf0;
+  color: #f8fbff;
 }
 
 .date-picker-dropdown-portal .date-picker-separator {
@@ -543,26 +543,26 @@ onUnmounted(() => {
 
 .dark .date-picker-trigger,
 .dark .date-picker-dropdown-portal .date-picker-input {
-  border-color: rgba(233, 225, 210, 0.16);
-  background: #171512;
-  color: #f7f1e6;
+  border-color: rgba(248, 251, 255, 0.16);
+  background: #111827;
+  color: #f8fbff;
 }
 
 .dark .date-picker-dropdown-portal {
-  background: #11100d !important;
-  border-color: rgba(233, 225, 210, 0.16) !important;
-  color: #f7f1e6;
+  background: #111827 !important;
+  border-color: rgba(248, 251, 255, 0.16) !important;
+  color: #f8fbff;
 }
 
 .dark .date-picker-icon,
 .dark .date-picker-chevron,
 .dark .date-picker-dropdown-portal .date-picker-label,
 .dark .date-picker-dropdown-portal .date-picker-preset {
-  color: #a79f91;
+  color: #94a3b8;
 }
 
 .dark .date-picker-dropdown-portal .date-picker-presets,
 .dark .date-picker-dropdown-portal .date-picker-actions {
-  background: rgba(233, 225, 210, 0.08);
+  background: rgba(248, 251, 255, 0.08);
 }
 </style>
