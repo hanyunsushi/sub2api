@@ -91,17 +91,13 @@ function goBack(): void {
   color: var(--atelier-ink);
   background:
     radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem),
-    radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem),
-    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
-    var(--atelier-paper);
-  background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
+    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    var(--atelier-canvas);
 }
 
 .not-found-plate {
   position: absolute;
-  border: 1px solid rgba(23, 21, 18, 0.18);
+  border: 1px solid rgba(17, 24, 39, 0.18);
   border-radius: 8px;
   opacity: 0.9;
 }
@@ -123,7 +119,7 @@ function goBack(): void {
 }
 
 .not-found-code {
-  color: color-mix(in srgb, var(--atelier-paper-2) 72%, var(--atelier-white));
+  color: color-mix(in srgb, var(--atelier-surface-dust) 72%, var(--atelier-white));
 }
 
 .not-found-icon {
@@ -146,17 +142,17 @@ function goBack(): void {
 }
 
 :global(.dark) .not-found-atelier {
-  color: #f7f1e6;
+  color: #f8fbff;
   background:
     radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
     linear-gradient(180deg, #050505, #0a0a0a);
 }
 
 :global(.dark) .not-found-code {
-  color: rgba(233, 225, 210, 0.1);
+  color: rgba(248, 251, 255, 0.1);
 }
 
 :global(.dark) .not-found-copy {
-  color: #a79f91;
+  color: #94a3b8;
 }
 </style>

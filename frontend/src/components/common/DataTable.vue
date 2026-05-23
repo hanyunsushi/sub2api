@@ -777,7 +777,7 @@ defineExpose({
 }
 
 .dark .table-wrapper .table-header {
-  background-color: #11100d;
+  background-color: #111827;
 }
 
 /* 表体保持在表头下方 */
@@ -796,7 +796,7 @@ defineExpose({
 }
 
 .dark .sticky-header-cell {
-  background-color: #11100d;
+  background-color: #111827;
 }
 
 /* Sticky 列基础样式 */
@@ -836,7 +836,7 @@ tbody .sticky-col {
 }
 
 .dark tbody .sticky-col {
-  background-color: #11100d;
+  background-color: #111827;
 }
 
 /* hover 状态保持 */
@@ -858,7 +858,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(23, 21, 18, 0.11), transparent);
+  background: linear-gradient(to right, rgba(17, 24, 39, 0.11), transparent);
   pointer-events: none;
 }
 
@@ -871,7 +871,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(23, 21, 18, 0.11), transparent);
+  background: linear-gradient(to right, rgba(17, 24, 39, 0.11), transparent);
   pointer-events: none;
 }
 
@@ -884,7 +884,7 @@ tbody tr:hover .sticky-col {
   bottom: 0;
   width: 10px;
   transform: translateX(-100%);
-  background: linear-gradient(to left, rgba(23, 21, 18, 0.11), transparent);
+  background: linear-gradient(to left, rgba(17, 24, 39, 0.11), transparent);
   pointer-events: none;
 }
 

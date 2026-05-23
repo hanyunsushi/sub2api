@@ -14,7 +14,7 @@ describe('Select portal styles', () => {
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option:hover')
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option-focused')
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option-selected:hover')
-    expect(componentSource).toContain('color: #f7f1e6;')
+    expect(componentSource).toContain('color: #f8fbff;')
     expect(componentSource).not.toContain('.admin-dashboard-atelier .select-dropdown-portal')
   })
 

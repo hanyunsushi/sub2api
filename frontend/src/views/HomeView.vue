@@ -582,18 +582,21 @@ onBeforeUnmount(() => {
 .home-ascii-shell {
   --home-max: 1540px;
   --home-gutter: clamp(18px, 3vw, 48px);
+  --home-surface-paper: var(--atelier-paper);
+  --home-surface-paper-2: var(--atelier-paper-2);
   --home-surface-solid: var(--atelier-surface-cool);
   --home-surface-cool: var(--atelier-surface-cool);
   --home-surface-dust: var(--atelier-surface-dust);
   --home-surface-blue: var(--atelier-surface-blue);
+  --home-surface-butter: var(--atelier-butter-soft);
   --home-surface-ink: var(--atelier-ink);
   --home-muted-solid: #5f6874;
-  --home-muted-on-dark: #d7e1e8;
+  --home-muted-on-dark: rgba(255, 250, 240, 0.72);
   position: relative;
   isolation: isolate;
   color: var(--atelier-ink);
   font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  background: var(--atelier-canvas);
+  background: var(--home-surface-blue);
 }
 
 .home-site-frame {
@@ -601,7 +604,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   isolation: isolate;
   min-height: 100vh;
-  background: var(--atelier-canvas);
+  background: var(--home-surface-blue);
 }
 
 .home-ascii-shell [data-home-reveal] {
@@ -628,6 +631,7 @@ onBeforeUnmount(() => {
   padding: 9px var(--home-gutter);
   border-bottom: 1px dotted var(--atelier-line-strong);
   color: var(--atelier-muted);
+  background: var(--home-surface-paper-2);
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 11px;
   letter-spacing: 0;
@@ -649,6 +653,7 @@ onBeforeUnmount(() => {
   gap: 22px;
   padding: 22px var(--home-gutter);
   border-bottom: 1px solid var(--atelier-line);
+  background: var(--home-surface-paper);
 }
 
 .home-logo {
@@ -766,7 +771,19 @@ onBeforeUnmount(() => {
   border-top: 1px dotted var(--atelier-line-strong);
 }
 
+.home-feature-section {
+  max-width: none;
+  background: var(--home-surface-dust);
+}
+
+.home-provider-section {
+  max-width: none;
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+}
+
 .home-hero {
+  background: var(--home-surface-blue);
   min-height: calc(100vh - 106px);
   display: grid;
   align-items: end;
@@ -783,6 +800,11 @@ onBeforeUnmount(() => {
 .home-hero-copy {
   display: grid;
   gap: clamp(28px, 4vw, 54px);
+}
+
+.home-hero-copy-note {
+  border-top: 1px solid var(--atelier-ink);
+  padding-top: 18px;
 }
 
 .home-section-label {
@@ -848,7 +870,7 @@ onBeforeUnmount(() => {
 .home-section-copy,
 .home-footer-text,
 .home-footer-link {
-  color: var(--atelier-muted);
+  color: var(--home-muted-solid);
 }
 
 .home-body-copy {
@@ -886,6 +908,7 @@ onBeforeUnmount(() => {
 .home-index-card {
   display: grid;
   border-top: 1px solid var(--atelier-ink);
+  background: var(--home-surface-paper);
 }
 
 .home-index-row {
@@ -922,14 +945,17 @@ onBeforeUnmount(() => {
   min-height: 320px;
   overflow: hidden;
   border: 1px solid var(--atelier-ink);
-  background: var(--home-surface-solid);
+  background:
+    linear-gradient(135deg, rgba(23, 21, 18, 0.06), transparent 36%),
+    radial-gradient(circle at 68% 26%, rgba(0, 47, 167, 0.22), transparent 19%),
+    var(--home-surface-paper-2);
 }
 
 .home-plate::before {
   content: "";
   position: absolute;
   inset: 18px;
-  border: 1px solid var(--atelier-line);
+  border: 1px dotted rgba(23, 21, 18, 0.42);
   pointer-events: none;
 }
 
@@ -976,7 +1002,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 1;
   border: 1px solid var(--atelier-ink);
   border-radius: 50%;
-  background: var(--atelier-dust);
+  background: color-mix(in srgb, var(--atelier-butter) 52%, var(--home-surface-paper));
 }
 
 .home-shape-strip {
@@ -1004,7 +1030,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 1.8 / 1;
   border: 1px solid var(--atelier-ink);
   border-radius: 100% 0 100% 0;
-  background: var(--home-surface-dust);
+  background: color-mix(in srgb, var(--atelier-dust) 56%, var(--home-surface-paper));
   transform: rotate(-20deg);
 }
 
@@ -1063,7 +1089,7 @@ onBeforeUnmount(() => {
 }
 
 .btn-maximize {
-  background: var(--atelier-dust);
+  background: var(--atelier-butter);
 }
 
 .terminal-title {
@@ -1186,7 +1212,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--atelier-ink);
   border-radius: 50%;
   text-align: center;
-  background: var(--home-surface-blue);
+  background: var(--home-surface-paper);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -1197,6 +1223,14 @@ onBeforeUnmount(() => {
   transform: translate3d(0, -3px, 0);
   color: var(--atelier-white);
   background: var(--atelier-blue);
+}
+
+.home-ring:nth-child(2) {
+  background: var(--home-surface-dust);
+}
+
+.home-ring:nth-child(3) {
+  background: var(--home-surface-butter);
 }
 
 .home-ring strong {
@@ -1237,6 +1271,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-tag {
   --home-chip-accent: var(--atelier-blue);
+  --home-chip-surface: var(--home-surface-blue);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1244,7 +1279,7 @@ onBeforeUnmount(() => {
   padding: 18px 20px;
   border-right: 1px solid var(--atelier-ink);
   border-bottom: 1px solid var(--atelier-ink);
-  background: var(--home-surface-blue);
+  background: var(--home-chip-surface);
   box-shadow: inset 8px 0 0 var(--home-chip-accent);
   color: var(--atelier-ink);
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
@@ -1257,11 +1292,11 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-tag:nth-child(2) {
   --home-chip-accent: var(--atelier-dust);
-  background: var(--home-surface-dust);
+  --home-chip-surface: var(--home-surface-paper);
 }
 
 .home-ascii-shell .home-feature-tag:nth-child(3) {
-  --home-chip-accent: var(--atelier-blue-dark);
+  --home-chip-accent: var(--atelier-butter);
   background: var(--home-surface-ink);
   color: var(--atelier-white);
 }
@@ -1280,7 +1315,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-card {
   --home-card-accent: var(--atelier-dust);
-  --home-card-surface: var(--home-surface-dust);
+  --home-card-surface: var(--home-surface-paper);
   display: grid;
   grid-template-rows: auto auto auto 1fr;
   align-content: start;
@@ -1304,7 +1339,7 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-feature-card:nth-child(3) {
-  --home-card-accent: var(--atelier-dust);
+  --home-card-accent: var(--atelier-butter);
   --home-card-surface: var(--home-surface-ink);
   color: var(--atelier-white);
 }
@@ -1368,12 +1403,12 @@ onBeforeUnmount(() => {
   align-items: end;
   gap: clamp(24px, 4vw, 58px);
   padding-top: 18px;
-  border-top: 1px solid var(--atelier-ink);
+  border-top: 1px solid rgba(255, 250, 240, 0.42);
 }
 
 .home-section-title {
   margin: 0;
-  color: var(--atelier-ink);
+  color: var(--atelier-white);
   font-size: 106px;
   font-weight: 760;
   line-height: 0.88;
@@ -1382,7 +1417,7 @@ onBeforeUnmount(() => {
 
 .home-section-title::after {
   content: ".";
-  color: var(--atelier-blue);
+  color: var(--atelier-butter);
   font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
   font-style: italic;
 }
@@ -1390,6 +1425,7 @@ onBeforeUnmount(() => {
 .home-section-copy {
   margin: 0;
   max-width: 48ch;
+  color: rgba(255, 250, 240, 0.74);
   font-size: 17px;
   line-height: 1.5;
 }
@@ -1397,21 +1433,23 @@ onBeforeUnmount(() => {
 .home-provider-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  border-top: 1px solid var(--atelier-ink);
-  border-left: 1px solid var(--atelier-ink);
+  border-top: 1px solid rgba(255, 250, 240, 0.42);
+  border-left: 1px solid rgba(255, 250, 240, 0.42);
 }
 
 .home-ascii-shell .home-provider-chip {
   --home-chip-accent: var(--atelier-blue);
   --home-chip-surface: var(--home-surface-blue);
+  --home-chip-text: var(--atelier-ink);
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 16px;
   min-height: 210px;
   padding: 20px;
-  border-right: 1px solid var(--atelier-ink);
-  border-bottom: 1px solid var(--atelier-ink);
+  border-right: 1px solid rgba(255, 250, 240, 0.42);
+  border-bottom: 1px solid rgba(255, 250, 240, 0.42);
   background: var(--home-chip-surface);
+  color: var(--home-chip-text);
   box-shadow: inset 0 6px 0 var(--home-chip-accent);
   transition:
     transform 260ms var(--atelier-ease),
@@ -1421,13 +1459,13 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-chip:nth-child(2) {
   --home-chip-accent: var(--atelier-dust);
-  --home-chip-surface: var(--home-surface-dust);
+  --home-chip-surface: var(--home-surface-paper);
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(3) {
-  --home-chip-accent: var(--atelier-blue-dark);
+  --home-chip-accent: var(--atelier-butter);
   --home-chip-surface: var(--home-surface-ink);
-  color: var(--atelier-white);
+  --home-chip-text: var(--atelier-white);
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(4) {
@@ -1436,8 +1474,8 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(5) {
-  --home-chip-accent: var(--atelier-muted);
-  --home-chip-surface: var(--home-surface-dust);
+  --home-chip-accent: var(--atelier-butter);
+  --home-chip-surface: var(--home-surface-butter);
 }
 
 .home-ascii-shell .home-provider-chip:hover {
@@ -1458,6 +1496,14 @@ onBeforeUnmount(() => {
   font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
   font-size: 22px;
   font-style: italic;
+}
+
+.home-provider-section .home-section-label {
+  color: rgba(255, 250, 240, 0.72);
+}
+
+.home-provider-section .home-section-label::after {
+  background: rgba(255, 250, 240, 0.42);
 }
 
 .home-provider-chip span:not(.home-provider-mark) {
@@ -1644,13 +1690,23 @@ onBeforeUnmount(() => {
   color: #fffaf0;
 }
 
+:global(.dark .home-ascii-shell .home-site-frame) {
+  background: #050505;
+}
+
+:global(.dark .home-ascii-shell .home-topbar),
+:global(.dark .home-ascii-shell .home-masthead) {
+  border-color: rgba(255, 250, 240, 0.16);
+  background: #171512;
+}
+
 :global(.dark .home-ascii-shell .terminal-window) {
   box-shadow: 16px 16px 0 rgba(0, 47, 167, 0.34);
 }
 
 :global(.dark .home-ascii-shell .home-logo) {
-  border-color: rgba(233, 225, 210, 0.32);
-  background: #11100d;
+  border-color: rgba(255, 250, 240, 0.32);
+  background: #171512;
 }
 
 :global(.dark .home-ascii-shell .home-nav-icon),
@@ -1658,7 +1714,7 @@ onBeforeUnmount(() => {
 :global(.dark .home-ascii-shell .home-feature-card),
 :global(.dark .home-ascii-shell .home-provider-chip),
 :global(.dark .home-ascii-shell .home-ring) {
-  border-color: rgba(233, 225, 210, 0.28);
+  border-color: rgba(255, 250, 240, 0.28);
 }
 
 :global(.dark .home-ascii-shell .home-hero-title),

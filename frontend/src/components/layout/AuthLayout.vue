@@ -94,21 +94,21 @@ onMounted(() => {
 }
 
 :global(.dark) .auth-logo {
-  border-color: rgba(233, 225, 210, 0.18);
-  background: #11100d;
+  border-color: rgba(248, 251, 255, 0.18);
+  background: #111827;
 }
 
 :global(.dark) .auth-subtitle,
 :global(.dark) .auth-footer-link,
 :global(.dark) .auth-copyright {
-  color: rgba(243, 239, 229, 0.72);
+  color: rgba(248, 251, 255, 0.72);
 }
 
 :global(.dark) .auth-footer-link :deep(.auth-footer-copy) {
-  color: rgba(243, 239, 229, 0.72);
+  color: rgba(248, 251, 255, 0.72);
 }
 
 :global(.dark) .auth-footer-link :deep(.auth-footer-link-strong) {
-  color: #f7f1e6;
+  color: #f8fbff;
 }
 </style>

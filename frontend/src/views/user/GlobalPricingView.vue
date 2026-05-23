@@ -291,8 +291,8 @@ onMounted(loadPricing)
 <style scoped>
 .summary-tile {
   --material-card-surface: #e8eef8;
-  --material-card-edge: rgba(23, 21, 18, 0.14);
-  --material-card-shadow: rgba(23, 21, 18, 0.36);
+  --material-card-edge: rgba(17, 24, 39, 0.14);
+  --material-card-shadow: rgba(17, 24, 39, 0.36);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
   background: var(--material-card-surface);
@@ -313,8 +313,8 @@ onMounted(loadPricing)
 
 .table-wrapper {
   --material-card-surface: #e8eef8;
-  --material-card-edge: rgba(23, 21, 18, 0.14);
-  --material-card-shadow: rgba(23, 21, 18, 0.36);
+  --material-card-edge: rgba(17, 24, 39, 0.14);
+  --material-card-shadow: rgba(17, 24, 39, 0.36);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
   background: var(--material-card-surface);
@@ -323,7 +323,7 @@ onMounted(loadPricing)
 
 .dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: #11100d;
+  --material-card-surface: #111827;
   --material-card-edge: rgba(148, 163, 184, 0.16);
   --material-card-shadow: rgba(5, 5, 5, 0.82);
 }

@@ -171,26 +171,18 @@ onMounted(async () => {
   color: var(--atelier-ink);
   background:
     radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem),
-    radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem),
-    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
-    var(--atelier-paper);
-  background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
+    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    var(--atelier-canvas);
 }
 
 .legal-header,
 .legal-panel {
   border-color: var(--atelier-material-edge);
-  background:
-    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
-    var(--atelier-material-1);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--atelier-material-1);
 }
 
 .legal-header {
-  box-shadow: 0 1px 0 rgba(23, 21, 18, 0.08);
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
 }
 
 .legal-logo,
@@ -198,7 +190,7 @@ onMounted(async () => {
   border: 1px solid var(--atelier-material-edge);
   background: var(--atelier-material-dust);
   color: var(--atelier-blue);
-  box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
+  box-shadow: 0 10px 24px -22px rgba(17, 24, 39, 0.36);
 }
 
 .legal-login-button {
@@ -266,7 +258,7 @@ onMounted(async () => {
 
 .legal-document-content :deep(blockquote) {
   @apply my-5 border-l-4 pl-4;
-  border-color: var(--atelier-butter);
+  border-color: var(--atelier-dust);
   color: var(--atelier-muted);
 }
 
@@ -309,7 +301,7 @@ onMounted(async () => {
 }
 
 :global(.dark) .legal-page {
-  color: #f7f1e6;
+  color: #f8fbff;
   background:
     radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
     linear-gradient(180deg, #050505, #0a0a0a);
@@ -317,20 +309,17 @@ onMounted(async () => {
 
 :global(.dark) .legal-header,
 :global(.dark) .legal-panel {
-  border-color: rgba(233, 225, 210, 0.16);
-  background:
-    linear-gradient(90deg, rgba(233, 225, 210, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(233, 225, 210, 0.03) 1px, transparent 1px),
-    #11100d;
+  border-color: rgba(248, 251, 255, 0.16);
+  background: #111827;
 }
 
 :global(.dark) .legal-muted,
 :global(.dark) .legal-document-content :deep(blockquote) {
-  color: #a79f91;
+  color: #94a3b8;
 }
 
 :global(.dark) .legal-document-content :deep(p),
 :global(.dark) .legal-document-content :deep(li) {
-  color: #f7f1e6;
+  color: #f8fbff;
 }
 </style>

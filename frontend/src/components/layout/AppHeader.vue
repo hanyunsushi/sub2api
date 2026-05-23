@@ -512,9 +512,13 @@ watch(
 }
 
 .app-header-atelier {
+  --buzz-balance-yellow: #c79a3a;
+  --buzz-balance-yellow-dark: #8e6c1f;
+  --buzz-balance-yellow-soft: #efe0bf;
+  --buzz-balance-yellow-soft-dark: rgba(199, 154, 58, 0.18);
   border-color: var(--atelier-line);
   background: var(--atelier-surface-cool);
-  box-shadow: 0 1px 0 rgba(23, 21, 18, 0.08);
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
 }
 
 .user-menu-trigger:hover {
@@ -532,8 +536,8 @@ watch(
 }
 
 .balance-chip-buzz {
-  border: 1px solid color-mix(in srgb, var(--atelier-butter) 32%, var(--atelier-line));
-  background: var(--atelier-butter-soft);
+  border: 1px solid color-mix(in srgb, var(--buzz-balance-yellow) 32%, var(--atelier-line));
+  background: var(--buzz-balance-yellow-soft);
 }
 
 .balance-row {
@@ -546,7 +550,7 @@ watch(
 }
 
 .balance-row-buzz {
-  background: var(--atelier-butter-soft);
+  background: var(--buzz-balance-yellow-soft);
 }
 
 .balance-system-text {
@@ -554,7 +558,7 @@ watch(
 }
 
 .balance-buzz-text {
-  color: var(--atelier-butter-dark);
+  color: var(--buzz-balance-yellow-dark);
 }
 
 .dark .balance-chip-system,
@@ -564,11 +568,11 @@ watch(
 
 .dark .balance-chip-buzz,
 .dark .balance-row-buzz {
-  background: rgba(199, 154, 58, 0.18);
+  background: var(--buzz-balance-yellow-soft-dark);
 }
 
 .dark .balance-system-text {
-  color: #f7f1e6;
+  color: #f8fbff;
 }
 
 .dark .balance-buzz-text {
