@@ -290,16 +290,12 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
+  --material-card-surface: #e8eef8;
   --material-card-edge: rgba(23, 21, 18, 0.14);
   --material-card-shadow: rgba(23, 21, 18, 0.36);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
-  background:
-    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
-    var(--material-card-surface);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--material-card-surface);
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
@@ -312,20 +308,16 @@ onMounted(loadPricing)
 }
 
 .summary-tile:nth-child(4) {
-  --atelier-card-accent: var(--atelier-butter);
+  --atelier-card-accent: var(--atelier-dust);
 }
 
 .table-wrapper {
-  --material-card-surface: color-mix(in srgb, #fffaf0 68%, #f3efe5);
+  --material-card-surface: #e8eef8;
   --material-card-edge: rgba(23, 21, 18, 0.14);
   --material-card-shadow: rgba(23, 21, 18, 0.36);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
-  background:
-    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
-    var(--material-card-surface);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--material-card-surface);
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
@@ -337,20 +329,12 @@ onMounted(loadPricing)
 }
 
 .dark .summary-tile {
-  background:
-    linear-gradient(90deg, rgba(233, 225, 210, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(233, 225, 210, 0.03) 1px, transparent 1px),
-    var(--material-card-surface);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--material-card-surface);
   box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 
 .dark .table-wrapper {
-  background:
-    linear-gradient(90deg, rgba(233, 225, 210, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(233, 225, 210, 0.03) 1px, transparent 1px),
-    var(--material-card-surface);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--material-card-surface);
   box-shadow: 0 16px 34px -28px var(--material-card-shadow);
 }
 

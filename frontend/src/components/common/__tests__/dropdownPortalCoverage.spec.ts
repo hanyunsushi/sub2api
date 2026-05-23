@@ -45,7 +45,8 @@ describe('interactive dropdown portal coverage', () => {
 
   it('forces all FloatingDropdown portals onto the global atelier material layer', () => {
     expect(globalStyleSource).toContain(':where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
-    expect(globalStyleSource).toContain('background-size: 28px 28px, 28px 28px, auto !important;')
+    expect(globalStyleSource).toContain('background: var(--atelier-surface-strong) !important;')
+    expect(globalStyleSource).not.toContain('background-size: 28px 28px, 28px 28px, auto !important;')
     expect(globalStyleSource).toContain('z-index: 100000040;')
     expect(globalStyleSource).toContain('.dark :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
     expect(globalStyleSource).toContain('.floating-dropdown-portal')

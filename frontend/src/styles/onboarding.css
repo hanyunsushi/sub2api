@@ -30,11 +30,7 @@
 .driver-popover.theme-tour-popover {
   position: fixed !important;
   z-index: 100000000 !important;
-  background:
-    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
-    var(--atelier-surface-strong) !important;
-  background-size: 32px 32px, 32px 32px, auto !important;
+  background: var(--atelier-surface-strong) !important;
   border: 1px solid var(--atelier-material-edge) !important;
   box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.58) !important;
   border-radius: 8px !important;

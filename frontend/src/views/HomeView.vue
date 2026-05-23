@@ -18,7 +18,6 @@
     ref="revealRoot"
     class="home-ascii-shell relative min-h-screen overflow-hidden"
   >
-    <GuizangAsciiBackground class="home-ascii-background" />
     <div class="home-site-frame">
       <div
         class="home-topbar"
@@ -436,7 +435,6 @@
 import { ref, computed, nextTick, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
-import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 
@@ -584,24 +582,18 @@ onBeforeUnmount(() => {
 .home-ascii-shell {
   --home-max: 1540px;
   --home-gutter: clamp(18px, 3vw, 48px);
+  --home-surface-solid: var(--atelier-surface-cool);
+  --home-surface-cool: var(--atelier-surface-cool);
+  --home-surface-dust: var(--atelier-surface-dust);
+  --home-surface-blue: var(--atelier-surface-blue);
+  --home-surface-ink: var(--atelier-ink);
+  --home-muted-solid: #5f6874;
+  --home-muted-on-dark: #d7e1e8;
   position: relative;
   isolation: isolate;
   color: var(--atelier-ink);
   font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.08), transparent 24rem),
-    radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem),
-    linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.025) 1px, transparent 1px),
-    var(--atelier-paper);
-  background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;
-}
-
-.home-ascii-background {
-  z-index: 0;
-  opacity: 0.18;
-  mix-blend-mode: multiply;
+  background: var(--atelier-canvas);
 }
 
 .home-site-frame {
@@ -609,32 +601,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   isolation: isolate;
   min-height: 100vh;
-}
-
-.home-site-frame::before,
-.home-site-frame::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  z-index: -1;
-  width: 1px;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--atelier-line),
-    var(--atelier-line) 2px,
-    transparent 2px,
-    transparent 8px
-  );
-}
-
-.home-site-frame::before {
-  left: var(--home-gutter);
-}
-
-.home-site-frame::after {
-  right: var(--home-gutter);
+  background: var(--atelier-canvas);
 }
 
 .home-ascii-shell [data-home-reveal] {
@@ -691,7 +658,7 @@ onBeforeUnmount(() => {
   margin-right: 12px;
   border: 1px solid var(--atelier-ink);
   border-radius: 50%;
-  background: var(--atelier-paper-2);
+  background: var(--home-surface-solid);
 }
 
 .home-brand-name {
@@ -734,7 +701,7 @@ onBeforeUnmount(() => {
   min-height: 38px;
   border: 1px solid var(--atelier-ink);
   color: var(--atelier-ink);
-  background: var(--atelier-paper);
+  background: var(--home-surface-blue);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -833,13 +800,7 @@ onBeforeUnmount(() => {
 .home-section-label::after {
   content: "";
   height: 1px;
-  background: repeating-linear-gradient(
-    to right,
-    var(--atelier-line-strong),
-    var(--atelier-line-strong) 2px,
-    transparent 2px,
-    transparent 8px
-  );
+  background: var(--atelier-line-strong);
 }
 
 .home-display {
@@ -961,17 +922,14 @@ onBeforeUnmount(() => {
   min-height: 320px;
   overflow: hidden;
   border: 1px solid var(--atelier-ink);
-  background:
-    linear-gradient(135deg, rgba(23, 21, 18, 0.06), transparent 36%),
-    radial-gradient(circle at 68% 26%, rgba(0, 47, 167, 0.22), transparent 19%),
-    var(--atelier-paper-2);
+  background: var(--home-surface-solid);
 }
 
 .home-plate::before {
   content: "";
   position: absolute;
   inset: 18px;
-  border: 1px dotted rgba(23, 21, 18, 0.42);
+  border: 1px solid var(--atelier-line);
   pointer-events: none;
 }
 
@@ -997,7 +955,7 @@ onBeforeUnmount(() => {
 .home-shape {
   position: absolute;
   display: block;
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
 }
 
 .home-shape-arch {
@@ -1018,7 +976,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 1;
   border: 1px solid var(--atelier-ink);
   border-radius: 50%;
-  background: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-paper));
+  background: var(--atelier-dust);
 }
 
 .home-shape-strip {
@@ -1027,7 +985,6 @@ onBeforeUnmount(() => {
   width: 18%;
   height: 84%;
   background: var(--atelier-ink);
-  opacity: 0.9;
   transform: rotate(7deg);
 }
 
@@ -1047,7 +1004,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 1.8 / 1;
   border: 1px solid var(--atelier-ink);
   border-radius: 100% 0 100% 0;
-  background: color-mix(in srgb, var(--atelier-dust) 56%, var(--atelier-paper));
+  background: var(--home-surface-dust);
   transform: rotate(-20deg);
 }
 
@@ -1082,7 +1039,7 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 250, 240, 0.14);
-  background: rgba(23, 21, 18, 0.92);
+  background: #171512;
 }
 
 .terminal-buttons {
@@ -1102,7 +1059,7 @@ onBeforeUnmount(() => {
 }
 
 .btn-minimize {
-  background: var(--atelier-butter);
+  background: var(--atelier-dust);
 }
 
 .btn-maximize {
@@ -1112,7 +1069,7 @@ onBeforeUnmount(() => {
 .terminal-title {
   flex: 1;
   margin-right: 52px;
-  color: rgba(243, 239, 229, 0.62);
+  color: var(--home-muted-on-dark);
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 12px;
   text-align: center;
@@ -1162,7 +1119,7 @@ onBeforeUnmount(() => {
 }
 
 .code-prompt {
-  color: var(--atelier-butter);
+  color: #9fb2d2;
   font-weight: 700;
 }
 
@@ -1179,7 +1136,7 @@ onBeforeUnmount(() => {
 }
 
 .code-comment {
-  color: rgba(243, 239, 229, 0.54);
+  color: #9da9b6;
   font-style: italic;
 }
 
@@ -1187,19 +1144,19 @@ onBeforeUnmount(() => {
   padding: 2px 8px;
   border-radius: 0;
   color: #fffaf0;
-  background: rgba(79, 106, 140, 0.34);
+  background: #4f6a8c;
   font-weight: 600;
 }
 
 .code-response {
-  color: #e9c96c;
+  color: var(--home-muted-on-dark);
 }
 
 .cursor {
   display: inline-block;
   width: 8px;
   height: 16px;
-  background: var(--atelier-butter);
+  background: #9fb2d2;
   animation: blink 1s step-end infinite;
 }
 
@@ -1229,7 +1186,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--atelier-ink);
   border-radius: 50%;
   text-align: center;
-  background: color-mix(in srgb, var(--atelier-paper) 80%, white);
+  background: var(--home-surface-blue);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -1255,12 +1212,15 @@ onBeforeUnmount(() => {
 .home-ring span {
   display: block;
   margin-top: 8px;
-  color: inherit;
-  opacity: 0.78;
+  color: var(--home-muted-solid);
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 10px;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.home-ring:hover span {
+  color: var(--atelier-white);
 }
 
 .home-feature-section {
@@ -1284,9 +1244,8 @@ onBeforeUnmount(() => {
   padding: 18px 20px;
   border-right: 1px solid var(--atelier-ink);
   border-bottom: 1px solid var(--atelier-ink);
-  background:
-    linear-gradient(90deg, var(--home-chip-accent) 0 8px, transparent 8px),
-    color-mix(in srgb, var(--home-chip-accent) 10%, var(--atelier-paper));
+  background: var(--home-surface-blue);
+  box-shadow: inset 8px 0 0 var(--home-chip-accent);
   color: var(--atelier-ink);
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 12px;
@@ -1298,17 +1257,18 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-tag:nth-child(2) {
   --home-chip-accent: var(--atelier-dust);
+  background: var(--home-surface-dust);
 }
 
 .home-ascii-shell .home-feature-tag:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
+  --home-chip-accent: var(--atelier-blue-dark);
+  background: var(--home-surface-ink);
+  color: var(--atelier-white);
 }
 
 .home-ascii-shell .home-feature-tag:hover {
   transform: translate3d(0, -2px, 0);
-  background:
-    linear-gradient(90deg, var(--home-chip-accent) 0 8px, transparent 8px),
-    color-mix(in srgb, var(--home-chip-accent) 16%, var(--atelier-paper));
+  border-color: var(--home-chip-accent);
 }
 
 .home-feature-grid {
@@ -1320,6 +1280,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-card {
   --home-card-accent: var(--atelier-dust);
+  --home-card-surface: var(--home-surface-dust);
   display: grid;
   grid-template-rows: auto auto auto 1fr;
   align-content: start;
@@ -1329,7 +1290,7 @@ onBeforeUnmount(() => {
   border-right: 1px solid var(--atelier-ink);
   border-bottom: 1px solid var(--atelier-ink);
   border-top: 1px solid var(--atelier-ink);
-  background: color-mix(in srgb, var(--home-card-accent) 14%, var(--atelier-paper));
+  background: var(--home-card-surface);
   color: var(--atelier-ink);
   transition:
     transform 280ms var(--atelier-ease),
@@ -1339,10 +1300,13 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-card:nth-child(2) {
   --home-card-accent: var(--atelier-blue);
+  --home-card-surface: var(--home-surface-blue);
 }
 
 .home-ascii-shell .home-feature-card:nth-child(3) {
-  --home-card-accent: var(--atelier-butter);
+  --home-card-accent: var(--atelier-dust);
+  --home-card-surface: var(--home-surface-ink);
+  color: var(--atelier-white);
 }
 
 .home-ascii-shell .home-feature-card:hover {
@@ -1357,7 +1321,6 @@ onBeforeUnmount(() => {
 
 .home-card-index {
   color: currentColor;
-  opacity: 0.72;
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 11px;
   letter-spacing: 0;
@@ -1390,7 +1353,6 @@ onBeforeUnmount(() => {
   max-width: 46ch;
   margin: 0;
   color: currentColor;
-  opacity: 0.78;
   font-size: 15px;
   line-height: 1.55;
 }
@@ -1441,6 +1403,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-chip {
   --home-chip-accent: var(--atelier-blue);
+  --home-chip-surface: var(--home-surface-blue);
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 16px;
@@ -1448,9 +1411,8 @@ onBeforeUnmount(() => {
   padding: 20px;
   border-right: 1px solid var(--atelier-ink);
   border-bottom: 1px solid var(--atelier-ink);
-  background:
-    linear-gradient(180deg, var(--home-chip-accent) 0 6px, transparent 6px),
-    color-mix(in srgb, var(--home-chip-accent) 8%, var(--atelier-paper));
+  background: var(--home-chip-surface);
+  box-shadow: inset 0 6px 0 var(--home-chip-accent);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -1459,25 +1421,28 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-chip:nth-child(2) {
   --home-chip-accent: var(--atelier-dust);
+  --home-chip-surface: var(--home-surface-dust);
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
+  --home-chip-accent: var(--atelier-blue-dark);
+  --home-chip-surface: var(--home-surface-ink);
+  color: var(--atelier-white);
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(4) {
   --home-chip-accent: var(--atelier-blue-dark);
+  --home-chip-surface: var(--home-surface-cool);
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(5) {
   --home-chip-accent: var(--atelier-muted);
+  --home-chip-surface: var(--home-surface-dust);
 }
 
 .home-ascii-shell .home-provider-chip:hover {
   transform: translate3d(0, -3px, 0);
-  background:
-    linear-gradient(180deg, var(--home-chip-accent) 0 6px, transparent 6px),
-    color-mix(in srgb, var(--home-chip-accent) 14%, var(--atelier-paper));
+  border-color: var(--home-chip-accent);
   box-shadow: 0 24px 40px -34px color-mix(in srgb, var(--home-chip-accent) 55%, transparent);
 }
 
@@ -1496,14 +1461,14 @@ onBeforeUnmount(() => {
 }
 
 .home-provider-chip span:not(.home-provider-mark) {
-  color: var(--atelier-ink);
+  color: currentColor;
   font-size: 17px;
   font-weight: 620;
   letter-spacing: 0;
 }
 
 .home-provider-chip b {
-  color: var(--atelier-muted);
+  color: currentColor;
   font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
   font-size: 10px;
   font-weight: 500;
@@ -1512,7 +1477,7 @@ onBeforeUnmount(() => {
 }
 
 .home-provider-chip-muted {
-  opacity: 0.76;
+  color: var(--atelier-ink);
 }
 
 .home-footer {
@@ -1675,13 +1640,7 @@ onBeforeUnmount(() => {
 }
 
 :global(.dark .home-ascii-shell) {
-  background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.14), transparent 28rem),
-    radial-gradient(circle at 82% 8%, rgba(79, 106, 140, 0.1), transparent 24rem),
-    radial-gradient(circle at 92% 34%, rgba(199, 154, 58, 0.045), transparent 20rem),
-    linear-gradient(90deg, rgba(243, 239, 229, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(243, 239, 229, 0.03) 1px, transparent 1px),
-    #050505;
+  background: #050505;
   color: #fffaf0;
 }
 

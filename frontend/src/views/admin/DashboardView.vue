@@ -708,7 +708,7 @@ onMounted(() => {
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 4)) {
-  --atelier-card-accent: var(--atelier-butter);
+  --atelier-card-accent: var(--atelier-dust);
 }
 
 .admin-dashboard-atelier .dashboard-paper-control,

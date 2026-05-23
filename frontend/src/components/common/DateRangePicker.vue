@@ -439,11 +439,7 @@ onUnmounted(() => {
   @apply overflow-hidden;
   @apply min-w-[320px];
   border-color: var(--atelier-material-edge) !important;
-  background:
-    linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px),
-    var(--atelier-surface-strong) !important;
-  background-size: 28px 28px, 28px 28px, auto !important;
+  background: var(--atelier-surface-strong) !important;
   color: var(--atelier-ink);
   box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.58) !important;
   pointer-events: auto !important;
@@ -553,10 +549,7 @@ onUnmounted(() => {
 }
 
 .dark .date-picker-dropdown-portal {
-  background:
-    linear-gradient(90deg, rgba(233, 225, 210, 0.04) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(233, 225, 210, 0.03) 1px, transparent 1px),
-    #11100d !important;
+  background: #11100d !important;
   border-color: rgba(233, 225, 210, 0.16) !important;
   color: #f7f1e6;
 }
