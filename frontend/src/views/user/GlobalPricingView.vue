@@ -290,8 +290,8 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: #e8eef8;
-  --material-card-edge: rgba(17, 24, 39, 0.14);
+  --material-card-surface: var(--atelier-paper);
+  --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(17, 24, 39, 0.36);
   @apply rounded-lg border px-4 py-3;
   border-color: var(--material-card-edge);
@@ -301,19 +301,22 @@ onMounted(loadPricing)
 
 .summary-tile:nth-child(2) {
   --atelier-card-accent: var(--atelier-blue);
+  --material-card-surface: var(--atelier-material-blue);
 }
 
 .summary-tile:nth-child(3) {
   --atelier-card-accent: var(--atelier-dust);
+  --material-card-surface: var(--atelier-material-dust);
 }
 
 .summary-tile:nth-child(4) {
   --atelier-card-accent: var(--atelier-dust);
+  --material-card-surface: var(--atelier-paper);
 }
 
 .table-wrapper {
-  --material-card-surface: #e8eef8;
-  --material-card-edge: rgba(17, 24, 39, 0.14);
+  --material-card-surface: var(--atelier-paper);
+  --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(17, 24, 39, 0.36);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
