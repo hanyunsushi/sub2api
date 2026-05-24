@@ -1576,6 +1576,27 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   color: var(--atelier-blue-dark) !important;
 }
 
+.balance-chip-buzz,
+.balance-row-buzz {
+  border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-material-dust) !important;
+  color: var(--atelier-butter-dark) !important;
+}
+
+.balance-buzz-text {
+  color: var(--atelier-butter-dark) !important;
+}
+
+.dark .balance-chip-buzz,
+.dark .balance-row-buzz {
+  border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
+  background: rgba(199, 154, 58, 0.18) !important;
+}
+
+.dark .balance-buzz-text {
+  color: #e9c96c !important;
+}
+
 .empty-state > :first-child,
 .app-layout-content :where([class~="h-24"][class~="w-24"], [class~="h-20"][class~="w-20"], [class~="h-16"][class~="w-16"], [class~="h-12"][class~="w-12"], [class~="h-10"][class~="w-10"], [class~="h-8"][class~="w-8"]):where([class~="bg-gray-100"], [class~="bg-primary-100"], [class~="bg-blue-100"], [class~="bg-emerald-100"], [class~="bg-green-100"], [class~="bg-amber-100"], [class~="bg-orange-100"], [class~="bg-purple-100"]):not(.user-avatar):not(.sidebar-logo):not(.switch-thumb) {
   border: 1px solid var(--atelier-material-edge);
