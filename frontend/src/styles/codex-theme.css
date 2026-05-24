@@ -1,24 +1,24 @@
 .codex-admin {
-  --codex-bg: #eef3ff;
-  --codex-surface: #edf2fb;
-  --codex-surface-strong: #f8fbff;
-  --codex-surface-soft: #dce6ee;
-  --codex-border: rgba(17, 24, 39, 0.16);
-  --codex-border-strong: rgba(17, 24, 39, 0.28);
+  --codex-bg: var(--atelier-paper);
+  --codex-surface: var(--atelier-paper-2);
+  --codex-surface-strong: var(--atelier-surface-panel);
+  --codex-surface-soft: color-mix(in srgb, var(--atelier-dust) 16%, var(--atelier-paper));
+  --codex-border: var(--atelier-material-edge);
+  --codex-border-strong: var(--atelier-material-edge-strong);
   --codex-text: #111827;
-  --codex-muted: #5f6874;
-  --codex-soft: #e8eef8;
+  --codex-muted: var(--atelier-muted);
+  --codex-soft: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
   --codex-accent: #002FA7;
   --codex-accent-strong: #002FA7;
-  --codex-accent-soft: #dbe5fa;
+  --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
   --codex-violet: #002FA7;
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
   --codex-radius: 8px;
-  --material-card-surface: #e8eef8;
-  --material-card-edge: rgba(17, 24, 39, 0.14);
-  --material-card-shadow: rgba(17, 24, 39, 0.36);
+  --material-card-surface: var(--atelier-paper);
+  --material-card-edge: var(--atelier-material-edge);
+  --material-card-shadow: rgba(23, 21, 18, 0.34);
   color: var(--codex-text);
 }
 

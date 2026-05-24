@@ -1,10 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 const kleinBlue = '#002FA7'
 const kleinBlueScale = {
-  50: '#f7f9ff',
-  100: '#eef3ff',
-  200: '#dce7ff',
-  300: '#c6d8ff',
+  50: '#f3efe5',
+  100: '#e9e1d2',
+  200: '#d8dade',
+  300: '#bec5d7',
   400: kleinBlue,
   500: kleinBlue,
   600: kleinBlue,

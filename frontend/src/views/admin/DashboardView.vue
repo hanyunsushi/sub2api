@@ -743,21 +743,18 @@ onMounted(() => {
 }
 
 .dashboard-stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  flex: 0 0 2.25rem;
-  color: #002FA7;
-  border-radius: 8px;
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
-  box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.6);
+  background: var(--atelier-material-1);
+}
+
+.dashboard-stat-icon :deep(svg),
+.dashboard-stat-icon :deep(svg *),
+.dashboard-stat-icon :deep(path) {
+  color: currentColor !important;
+  fill: none !important;
+  stroke: currentColor !important;
 }
 
 .dashboard-stat-icon:where(.dark *) {
-  background: #002FA7;
-  color: #f8fbff;
+  color: color-mix(in srgb, var(--atelier-blue) 72%, var(--atelier-white));
 }
 </style>

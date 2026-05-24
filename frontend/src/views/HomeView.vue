@@ -584,11 +584,11 @@ onBeforeUnmount(() => {
   --home-gutter: clamp(18px, 3vw, 48px);
   --home-surface-paper: var(--atelier-paper);
   --home-surface-paper-2: var(--atelier-paper-2);
-  --home-surface-solid: var(--atelier-surface-cool);
+  --home-surface-solid: var(--atelier-canvas);
   --home-surface-cool: var(--atelier-surface-cool);
   --home-surface-dust: var(--atelier-surface-dust);
   --home-surface-blue: var(--atelier-surface-blue);
-  --home-surface-butter: var(--atelier-butter-soft);
+  --home-surface-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
   --home-surface-ink: var(--atelier-ink);
   --home-muted-solid: #5f6874;
   --home-muted-on-dark: rgba(255, 250, 240, 0.72);
@@ -596,7 +596,7 @@ onBeforeUnmount(() => {
   isolation: isolate;
   color: var(--atelier-ink);
   font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  background: var(--home-surface-blue);
+  background: var(--atelier-canvas);
 }
 
 .home-site-frame {
@@ -604,7 +604,7 @@ onBeforeUnmount(() => {
   z-index: 1;
   isolation: isolate;
   min-height: 100vh;
-  background: var(--home-surface-blue);
+  background: var(--atelier-canvas);
 }
 
 .home-ascii-shell [data-home-reveal] {
@@ -653,7 +653,7 @@ onBeforeUnmount(() => {
   gap: 22px;
   padding: 22px var(--home-gutter);
   border-bottom: 1px solid var(--atelier-line);
-  background: var(--home-surface-paper);
+  background: var(--atelier-canvas);
 }
 
 .home-logo {
@@ -706,7 +706,7 @@ onBeforeUnmount(() => {
   min-height: 38px;
   border: 1px solid var(--atelier-ink);
   color: var(--atelier-ink);
-  background: var(--home-surface-blue);
+  background: var(--home-surface-paper);
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
@@ -783,7 +783,7 @@ onBeforeUnmount(() => {
 }
 
 .home-hero {
-  background: var(--home-surface-blue);
+  background: var(--atelier-canvas);
   min-height: calc(100vh - 106px);
   display: grid;
   align-items: end;
@@ -1230,7 +1230,9 @@ onBeforeUnmount(() => {
 }
 
 .home-ring:nth-child(3) {
-  background: var(--home-surface-butter);
+  border-width: 2px;
+  border-color: var(--atelier-butter);
+  background: var(--home-surface-paper);
 }
 
 .home-ring strong {
@@ -1271,7 +1273,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-tag {
   --home-chip-accent: var(--atelier-blue);
-  --home-chip-surface: var(--home-surface-blue);
+  --home-chip-surface: var(--home-surface-paper-2);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1296,7 +1298,7 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-feature-tag:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
+  --home-chip-accent: var(--atelier-blue-dark);
   background: var(--home-surface-ink);
   color: var(--atelier-white);
 }
@@ -1335,11 +1337,11 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-feature-card:nth-child(2) {
   --home-card-accent: var(--atelier-blue);
-  --home-card-surface: var(--home-surface-blue);
+  --home-card-surface: var(--home-surface-paper-2);
 }
 
 .home-ascii-shell .home-feature-card:nth-child(3) {
-  --home-card-accent: var(--atelier-butter);
+  --home-card-accent: var(--atelier-blue-dark);
   --home-card-surface: var(--home-surface-ink);
   color: var(--atelier-white);
 }
@@ -1439,7 +1441,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-chip {
   --home-chip-accent: var(--atelier-blue);
-  --home-chip-surface: var(--home-surface-blue);
+  --home-chip-surface: var(--home-surface-paper-2);
   --home-chip-text: var(--atelier-ink);
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -1463,7 +1465,7 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(3) {
-  --home-chip-accent: var(--atelier-butter);
+  --home-chip-accent: var(--atelier-blue-dark);
   --home-chip-surface: var(--home-surface-ink);
   --home-chip-text: var(--atelier-white);
 }
@@ -1474,8 +1476,8 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-provider-chip:nth-child(5) {
-  --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: var(--home-surface-butter);
+  --home-chip-accent: var(--atelier-blue);
+  --home-chip-surface: var(--home-surface-paper);
 }
 
 .home-ascii-shell .home-provider-chip:hover {
