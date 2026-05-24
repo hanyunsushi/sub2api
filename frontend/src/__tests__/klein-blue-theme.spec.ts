@@ -154,6 +154,8 @@ describe('Klein blue theme', () => {
     expect(codexTheme).toContain('--codex-text: #111827;')
     expect(appHeader).toContain('--buzz-balance-yellow: #c79a3a;')
     expect(appHeader).toContain('--buzz-balance-yellow-dark: #8e6c1f;')
+    expect(globalStyle).toContain('.balance-buzz-text')
+    expect(globalStyle).toContain('color: var(--atelier-butter-dark) !important;')
     expect(notFoundView).not.toContain('background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;')
     expect(legalDocumentView).not.toContain('background-size: auto, auto, auto, 32px 32px, 32px 32px, auto;')
     expect(legalDocumentView).not.toContain('background-size: 28px 28px, 28px 28px, auto;')
