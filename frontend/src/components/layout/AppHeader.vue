@@ -517,8 +517,21 @@ watch(
   --buzz-balance-yellow-soft: #efe0bf;
   --buzz-balance-yellow-soft-dark: rgba(199, 154, 58, 0.18);
   border-color: var(--atelier-line);
-  background: var(--atelier-surface-cool);
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
+  background: var(--atelier-paper-2);
+  box-shadow:
+    0 1px 0 rgba(23, 21, 18, 0.08),
+    0 10px 24px -28px rgba(23, 21, 18, 0.42);
+}
+
+.app-header-atelier::after {
+  content: "";
+  position: absolute;
+  right: 1.5rem;
+  bottom: -1px;
+  left: 1.5rem;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  pointer-events: none;
 }
 
 .user-menu-trigger:hover {

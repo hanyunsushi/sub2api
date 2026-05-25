@@ -299,6 +299,14 @@ onMounted(loadPricing)
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
+.summary-tile::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-bottom: 10px;
+  background: var(--atelier-console-rule);
+}
+
 .summary-tile:nth-child(2) {
   --atelier-card-accent: var(--atelier-blue);
   --material-card-surface: var(--atelier-material-blue);
@@ -315,7 +323,7 @@ onMounted(loadPricing)
 }
 
 .table-wrapper {
-  --material-card-surface: var(--atelier-paper);
+  --material-card-surface: var(--atelier-surface-panel);
   --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(17, 24, 39, 0.36);
   border: 1px solid var(--material-card-edge);
@@ -362,7 +370,7 @@ onMounted(loadPricing)
 .hash-pill {
   @apply dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400;
   border-color: var(--atelier-line);
-  background: var(--atelier-surface-muted);
+  background: var(--atelier-paper-2);
   color: var(--atelier-muted);
 }
 
@@ -386,7 +394,7 @@ onMounted(loadPricing)
 
 .global-pricing-table th {
   @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
-  background: var(--atelier-dust-soft);
+  background: var(--atelier-paper-2);
   color: var(--atelier-ink);
 }
 
@@ -422,7 +430,7 @@ onMounted(loadPricing)
 thead .brand-sticky-col,
 thead .model-sticky-col {
   @apply z-[3] dark:bg-dark-800/95;
-  background: var(--atelier-dust-soft);
+  background: var(--atelier-paper-2);
 }
 
 .price-cell {

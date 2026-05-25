@@ -695,27 +695,35 @@ onMounted(() => {
   --dashboard-control-shadow: rgba(17, 24, 39, 0.16);
 }
 
+.admin-dashboard-atelier :deep(.card) {
+  border-radius: 8px;
+}
+
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 1)) {
   --atelier-card-accent: var(--atelier-blue);
+  --atelier-card-surface: var(--atelier-paper);
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 2)) {
   --atelier-card-accent: var(--atelier-dust);
+  --atelier-card-surface: color-mix(in srgb, var(--atelier-blue) 5%, var(--atelier-paper));
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 3)) {
   --atelier-card-accent: var(--atelier-blue-dark);
+  --atelier-card-surface: color-mix(in srgb, var(--atelier-dust) 7%, var(--atelier-paper));
 }
 
 .admin-dashboard-atelier :deep(.card:nth-child(4n + 4)) {
   --atelier-card-accent: var(--atelier-dust);
+  --atelier-card-surface: var(--atelier-paper-2);
 }
 
 .admin-dashboard-atelier .dashboard-paper-control,
 .admin-dashboard-atelier :deep(.date-picker-trigger),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
-  background: var(--dashboard-control-surface);
+  background: var(--atelier-paper-2);
   box-shadow:
     0 8px 18px -16px var(--dashboard-control-shadow),
     0 1px 1px rgba(17, 24, 39, 0.05);
