@@ -14,13 +14,14 @@ describe('Select portal styles', () => {
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option:hover')
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option-focused')
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option-selected:hover')
-    expect(componentSource).toContain('color: #f8fbff;')
+    expect(componentSource).toContain('color: var(--atelier-blue-dark);')
+    expect(componentSource).not.toContain('--select-surface: #111827;')
     expect(componentSource).not.toContain('.admin-dashboard-atelier .select-dropdown-portal')
   })
 
   it('uses atelier surface tokens for trigger, portal, option states, and reveal motion', () => {
-    expect(componentSource).toContain('--select-surface: var(--atelier-surface-strong);')
-    expect(componentSource).toContain('--select-muted-surface: var(--atelier-dust-soft);')
+    expect(componentSource).toContain('--select-surface: var(--atelier-paper-2);')
+    expect(componentSource).toContain('--select-muted-surface: var(--atelier-paper-2);')
     expect(componentSource).toContain('background: var(--select-surface);')
     expect(componentSource).toContain('border-color: var(--atelier-line);')
     expect(componentSource).toContain('background: var(--atelier-blue-soft);')

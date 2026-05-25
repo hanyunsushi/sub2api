@@ -543,26 +543,26 @@ onUnmounted(() => {
 
 .dark .date-picker-trigger,
 .dark .date-picker-dropdown-portal .date-picker-input {
-  border-color: rgba(248, 251, 255, 0.16);
-  background: #111827;
-  color: #f8fbff;
+  border-color: var(--atelier-material-edge);
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .dark .date-picker-dropdown-portal {
-  background: #111827 !important;
-  border-color: rgba(248, 251, 255, 0.16) !important;
-  color: #f8fbff;
+  background: var(--atelier-paper-2) !important;
+  border-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink);
 }
 
 .dark .date-picker-icon,
 .dark .date-picker-chevron,
 .dark .date-picker-dropdown-portal .date-picker-label,
 .dark .date-picker-dropdown-portal .date-picker-preset {
-  color: #94a3b8;
+  color: var(--atelier-muted);
 }
 
 .dark .date-picker-dropdown-portal .date-picker-presets,
 .dark .date-picker-dropdown-portal .date-picker-actions {
-  background: rgba(248, 251, 255, 0.08);
+  background: var(--atelier-paper-2);
 }
 </style>

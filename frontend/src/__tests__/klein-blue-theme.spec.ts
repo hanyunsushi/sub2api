@@ -167,7 +167,9 @@ describe('Klein blue theme', () => {
   it('keeps the onboarding popover from adding grid texture over the main interface', () => {
     const onboardingStyle = readThemeFile('src/styles/onboarding.css')
 
-    expect(onboardingStyle).toContain('background: var(--atelier-surface-strong) !important;')
+    expect(onboardingStyle).toContain('background: var(--atelier-paper-2) !important;')
+    expect(onboardingStyle).not.toContain('background: var(--atelier-surface-strong) !important;')
+    expect(onboardingStyle).not.toContain('background: #111827 !important;')
     expect(onboardingStyle).not.toContain('background-size: 32px 32px, 32px 32px, auto !important;')
     expect(onboardingStyle).not.toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.032) 1px, transparent 1px)')
     expect(onboardingStyle).not.toContain('linear-gradient(0deg, rgba(23, 21, 18, 0.024) 1px, transparent 1px)')
