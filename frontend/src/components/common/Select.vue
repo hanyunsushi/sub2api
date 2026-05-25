@@ -440,8 +440,8 @@ onUnmounted(() => {
   @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
   @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
-  --select-surface: var(--atelier-surface-strong);
-  --select-muted-surface: var(--atelier-dust-soft);
+  --select-surface: var(--atelier-paper-2);
+  --select-muted-surface: var(--atelier-paper-2);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -479,8 +479,8 @@ onUnmounted(() => {
   @apply border border-gray-200 dark:border-dark-700;
   @apply shadow-lg shadow-black/10 dark:shadow-black/30;
   @apply overflow-hidden;
-  --select-surface: var(--atelier-surface-strong);
-  --select-muted-surface: var(--atelier-dust-soft);
+  --select-surface: var(--atelier-paper-2);
+  --select-muted-surface: var(--atelier-paper-2);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -553,36 +553,36 @@ onUnmounted(() => {
 
 .dark .select-trigger,
 .dark .select-dropdown-portal {
-  --select-surface: #111827;
-  --select-muted-surface: rgba(248, 251, 255, 0.08);
+  --select-surface: var(--atelier-paper-2);
+  --select-muted-surface: var(--atelier-paper-2);
   background: var(--select-surface);
-  border-color: rgba(248, 251, 255, 0.16);
-  color: #f8fbff;
+  border-color: var(--atelier-material-edge);
+  color: var(--atelier-ink);
 }
 
 .dark .select-dropdown-portal .select-search {
-  border-color: rgba(248, 251, 255, 0.14);
-  background: rgba(248, 251, 255, 0.06);
+  border-color: var(--atelier-material-edge);
+  background: var(--select-muted-surface);
 }
 
 .dark .select-dropdown-portal .select-option {
-  color: #cbd5e1;
+  color: var(--atelier-muted);
 }
 
 .dark .select-dropdown-portal .select-option-group {
-  background: rgba(248, 251, 255, 0.06);
-  color: #94a3b8;
+  background: var(--select-muted-surface);
+  color: var(--atelier-dust);
 }
 
 .dark .select-dropdown-portal .select-option:hover,
 .dark .select-dropdown-portal .select-option-focused {
   background: rgba(0, 47, 167, 0.22);
-  color: #f8fbff;
+  color: var(--atelier-blue-dark);
 }
 
 .dark .select-dropdown-portal .select-option-selected:hover {
   background: rgba(0, 47, 167, 0.34);
-  color: #ffffff;
+  color: var(--atelier-blue-dark);
 }
 
 .select-dropdown-portal .select-empty {

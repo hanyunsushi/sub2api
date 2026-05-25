@@ -30,7 +30,7 @@
 .driver-popover.theme-tour-popover {
   position: fixed !important;
   z-index: 100000000 !important;
-  background: var(--atelier-surface-strong) !important;
+  background: var(--atelier-paper-2) !important;
   border: 1px solid var(--atelier-material-edge) !important;
   box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.58) !important;
   border-radius: 8px !important;
@@ -42,9 +42,9 @@
 }
 
 .dark .driver-popover.theme-tour-popover {
-  background: #111827 !important;
-  border-color: rgba(248, 251, 255, 0.16) !important;
-  color: #f8fbff !important;
+  background: var(--atelier-paper-2) !important;
+  border-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
 }
 
 /* 3. Header Area */
@@ -161,7 +161,7 @@
 
 .shortcut-item kbd {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace !important;
-  background-color: var(--atelier-surface-strong) !important;
+  background-color: var(--atelier-paper-2) !important;
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 4px !important;
   padding: 1px 6px !important;
@@ -174,9 +174,9 @@
   display: inline-block !important;
 }
 .dark .shortcut-item kbd {
-  background-color: #111827 !important;
-  border-color: rgba(248, 251, 255, 0.16) !important;
-  color: #f8fbff !important;
+  background-color: var(--atelier-paper-2) !important;
+  border-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
 }
 
 /* Nav Buttons */
@@ -203,26 +203,26 @@
 .theme-tour-popover .driver-popover-next-btn:hover { background-color: #002FA7 !important; }
 
 .theme-tour-popover .driver-popover-prev-btn {
-  background-color: var(--atelier-surface-strong) !important;
+  background-color: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
   border: 1px solid var(--atelier-material-edge) !important;
   box-shadow: 0 8px 18px -18px rgba(17, 24, 39, 0.32) !important;
 }
 .theme-tour-popover .driver-popover-prev-btn:hover { background-color: var(--atelier-blue-soft) !important; color: var(--atelier-blue-dark) !important; }
 .dark .theme-tour-popover .driver-popover-prev-btn {
-  background-color: #111827 !important;
-  border-color: rgba(248, 251, 255, 0.16) !important;
-  color: #f8fbff !important;
+  background-color: var(--atelier-paper-2) !important;
+  border-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
 }
 
 /* Arrows */
 .driver-popover-arrow { z-index: 100000001 !important; }
-.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--atelier-surface-strong) !important; }
-.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--atelier-surface-strong) !important; }
-.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--atelier-surface-strong) !important; }
-.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--atelier-surface-strong) !important; }
+.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--atelier-paper-2) !important; }
+.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--atelier-paper-2) !important; }
+.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--atelier-paper-2) !important; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--atelier-paper-2) !important; }
 
-.dark .driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: #111827 !important; }
-.dark .driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: #111827 !important; }
-.dark .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #111827 !important; }
-.dark .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #111827 !important; }
+.dark .driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--atelier-paper-2) !important; }
+.dark .driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--atelier-paper-2) !important; }
+.dark .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--atelier-paper-2) !important; }
+.dark .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--atelier-paper-2) !important; }
