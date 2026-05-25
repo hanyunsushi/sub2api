@@ -32,7 +32,7 @@ describe('CodexAccounts source contracts', () => {
     expect(codexThemeSource).toContain('.codex-panel')
     expect(codexThemeSource).toContain('.codex-account-card')
     expect(codexThemeSource).toContain('--material-card-surface')
-    expect(codexThemeSource).toContain('--material-card-surface: var(--atelier-paper);')
+    expect(codexThemeSource).toContain('--material-card-surface: var(--atelier-paper-2);')
     expect(codexThemeSource).toContain('--codex-bg: var(--atelier-paper);')
     expect(codexThemeSource).toContain('--codex-surface-soft: color-mix(in srgb, var(--atelier-dust) 16%, var(--atelier-paper));')
     expect(codexThemeSource).toContain('--codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));')

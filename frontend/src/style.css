@@ -27,17 +27,17 @@
   --atelier-component-warning: var(--atelier-dust);
   --atelier-red: #b44536;
   --atelier-green: #2f7d59;
-  --atelier-canvas: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-paper));
-  --atelier-surface-panel: #fffaf0;
-  --atelier-surface-cool: #e8e5dc;
+  --atelier-canvas: var(--atelier-paper);
+  --atelier-surface-panel: var(--atelier-paper-2);
+  --atelier-surface-cool: var(--atelier-paper-2);
   --atelier-surface-dust: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
   --atelier-surface-blue: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
-  --atelier-material-1: var(--atelier-paper);
-  --atelier-material-2: var(--atelier-surface-cool);
+  --atelier-material-1: var(--atelier-paper-2);
+  --atelier-material-2: var(--atelier-paper-2);
   --atelier-material-blue: var(--atelier-surface-blue);
   --atelier-material-dust: var(--atelier-surface-dust);
   --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
-  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 8%, var(--atelier-surface-panel));
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 8%, var(--atelier-paper-2));
   --atelier-material-edge: rgba(23, 21, 18, 0.18);
   --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
   --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
@@ -103,6 +103,17 @@
   .dark body {
     color: #fffaf0;
     background: #050505;
+  }
+
+  .dark body:has(.app-layout-shell) {
+    color: var(--atelier-ink);
+    background: var(--atelier-canvas);
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
+      radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
+      linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+      linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+    background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
   }
 
   .dark {
@@ -420,9 +431,9 @@
   }
 
   .dark .dashboard-stat-icon {
-    border-color: rgba(255, 250, 240, 0.2);
-    background: #171512;
-    color: color-mix(in srgb, var(--atelier-blue) 72%, var(--atelier-white));
+    border-color: var(--atelier-line);
+    background: var(--atelier-paper-2);
+    color: var(--atelier-blue);
   }
 
   .stat-value {
@@ -729,34 +740,34 @@
     @apply w-64;
     @apply flex flex-col;
     @apply transition-transform duration-300;
-    --sidebar-bg: var(--atelier-ink);
-    --sidebar-bg-strong: #050505;
-    --sidebar-text: var(--atelier-white);
-    --sidebar-muted: rgba(255, 250, 240, 0.64);
-    --sidebar-line: rgba(255, 250, 240, 0.16);
-    --sidebar-hover: rgba(255, 250, 240, 0.09);
+    --sidebar-bg: var(--atelier-paper-2);
+    --sidebar-bg-strong: var(--atelier-paper-2);
+    --sidebar-text: var(--atelier-ink);
+    --sidebar-muted: var(--atelier-muted);
+    --sidebar-line: rgba(23, 21, 18, 0.18);
+    --sidebar-hover: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-paper-2));
     --sidebar-active-bg: var(--atelier-blue);
     --sidebar-active-text: var(--atelier-white);
     --sidebar-active-border: var(--atelier-blue);
     background: var(--sidebar-bg);
-    border-right: 1px solid rgba(255, 250, 240, 0.18);
+    border-right: 1px solid var(--sidebar-line);
     color: var(--sidebar-text);
-    box-shadow: inset -1px 0 0 rgba(255, 250, 240, 0.08), 18px 0 34px -30px rgba(23, 21, 18, 0.58);
+    box-shadow: inset -1px 0 0 rgba(23, 21, 18, 0.08), 18px 0 34px -30px rgba(23, 21, 18, 0.34);
     transition-property: width, transform;
   }
 
   .dark .sidebar {
-    --sidebar-bg: #050505;
-    --sidebar-bg-strong: #171512;
-    --sidebar-text: #fffaf0;
-    --sidebar-muted: rgba(255, 250, 240, 0.64);
-    --sidebar-line: rgba(255, 250, 240, 0.14);
-    --sidebar-hover: rgba(255, 250, 240, 0.09);
+    --sidebar-bg: var(--atelier-paper-2);
+    --sidebar-bg-strong: var(--atelier-paper-2);
+    --sidebar-text: var(--atelier-ink);
+    --sidebar-muted: var(--atelier-muted);
+    --sidebar-line: rgba(23, 21, 18, 0.18);
+    --sidebar-hover: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-paper-2));
     --sidebar-active-bg: var(--atelier-blue);
-    --sidebar-active-text: #ffffff;
+    --sidebar-active-text: var(--atelier-white);
     background: var(--sidebar-bg);
-    border-right-color: rgba(255, 250, 240, 0.14);
-    box-shadow: inset -1px 0 0 rgba(255, 250, 240, 0.08);
+    border-right-color: var(--sidebar-line);
+    box-shadow: inset -1px 0 0 rgba(23, 21, 18, 0.08), 18px 0 34px -30px rgba(23, 21, 18, 0.34);
   }
 
   .sidebar-header {
@@ -792,7 +803,7 @@
   .sidebar .sidebar-link:hover {
     background: var(--sidebar-hover);
     border-color: color-mix(in srgb, var(--atelier-blue) 36%, var(--sidebar-line));
-    color: var(--sidebar-active-text);
+    color: var(--atelier-blue-dark);
   }
 
   .sidebar .sidebar-link-active {
@@ -811,16 +822,16 @@
 
   .sidebar-children {
     border-left: 1px solid color-mix(in srgb, var(--sidebar-active-border) 48%, var(--sidebar-line));
-    background: color-mix(in srgb, var(--atelier-dust) 8%, transparent);
+    background: color-mix(in srgb, var(--atelier-blue) 4%, var(--atelier-paper-2));
   }
 
   .sidebar-footer {
     border-top: 1px solid var(--sidebar-line);
-    background: color-mix(in srgb, var(--sidebar-bg-strong) 86%, transparent);
+    background: var(--sidebar-bg-strong);
   }
 
   .dark .sidebar-footer {
-    background: rgba(255, 250, 240, 0.03);
+    background: var(--sidebar-bg-strong);
   }
 
   .sidebar-section {
@@ -1104,18 +1115,43 @@
 }
 
 .dark .app-layout-shell {
-  background: #050505;
+  --atelier-surface: var(--atelier-paper);
+  --atelier-surface-strong: var(--atelier-paper-2);
+  --atelier-surface-muted: var(--atelier-paper-2);
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
+  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --atelier-material-1: var(--atelier-paper-2);
+  --atelier-material-2: var(--atelier-paper-2);
+  --atelier-material-blue: var(--atelier-surface-blue);
+  --atelier-material-dust: var(--atelier-surface-dust);
+  --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 8%, var(--atelier-paper-2));
+  --atelier-material-edge: rgba(23, 21, 18, 0.18);
+  --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
+  --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
+  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(0, 47, 167, 0.48);
+  --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
+  --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
+  --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  color: var(--atelier-ink);
+  background: var(--atelier-canvas);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
+    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+  background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
 }
 
 .app-layout-content {
-  background:
-    linear-gradient(180deg, var(--atelier-canvas) 0%, color-mix(in srgb, var(--atelier-surface-dust) 90%, transparent) 46%, color-mix(in srgb, var(--atelier-paper-2) 94%, transparent) 100%);
+  background: transparent;
   position: relative;
   isolation: isolate;
 }
 
 .dark .app-layout-content {
-  background: #050505;
+  background: transparent;
 }
 
 .app-layout-content > .relative {
@@ -1167,8 +1203,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
    Atelier component material system
    --------------------------------------------------------------------------
    A single global pass keeps Tailwind-heavy legacy components on the Downloads
-   palette without the old warm yellow wash: IKB structure, dust secondary
-   surfaces, and non-transparent component layers.
+   palette: warm paper canvas, paper-2 component layers, and IKB active states.
    ========================================================================== */
 
 .app-route-page {
@@ -1266,51 +1301,21 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell) {
-  --atelier-card-surface: var(--atelier-material-1);
+  --atelier-card-surface: var(--atelier-paper-2);
   --atelier-card-accent: var(--atelier-blue);
-  --atelier-card-rail: linear-gradient(180deg, var(--atelier-card-accent) 0 44%, color-mix(in srgb, var(--atelier-card-accent) 26%, transparent) 44% 100%);
-}
-
-:where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type(4n + 2) {
-  --atelier-card-surface: color-mix(in srgb, var(--atelier-blue) 4%, var(--atelier-material-1));
-  --atelier-card-accent: var(--atelier-blue);
-}
-
-:where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type(4n + 3) {
-  --atelier-card-surface: color-mix(in srgb, var(--atelier-dust) 6%, var(--atelier-material-1));
-  --atelier-card-accent: var(--atelier-dust);
-}
-
-:where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type(4n + 4) {
-  --atelier-card-surface: color-mix(in srgb, var(--atelier-dust) 4%, var(--atelier-material-1));
-  --atelier-card-accent: var(--atelier-dust);
 }
 
 :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell),
 .app-layout-content :where(div, section, article):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="bg-white/95"], [class~="bg-white"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   position: relative;
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-card-surface, var(--atelier-material-2)) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink);
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
 :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card) {
   overflow: hidden;
-}
-
-:where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card) > * {
-  position: relative;
-}
-
-:where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card)::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  pointer-events: none;
-  background: var(--atelier-card-rail);
-  opacity: 0.82;
 }
 
 :where(.card-header, .card-footer, .modal-header, .modal-footer, .dialog-header, .dialog-footer, .codex-panel-header, .codex-selection-bar, .codex-toolbar, .codex-account-grid, .layout-section-fixed, .settings-tabs-shell) {
@@ -1540,7 +1545,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea) {
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-surface-strong) !important;
+  background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
   box-shadow: 0 8px 18px -18px rgba(23, 21, 18, 0.3) !important;
 }
@@ -1557,7 +1562,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   z-index: 100000040;
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 8px !important;
-  background: var(--atelier-surface-strong) !important;
+  background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
   box-shadow: 0 18px 38px -30px rgba(23, 21, 18, 0.58) !important;
 }
@@ -1567,7 +1572,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.dropdown-item, .floating-dropdown-portal button, .select-option, .date-picker-preset, .action-menu-content button, .action-menu-content a, [class*="dropdown"][class*="portal"] button):hover {
-  background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-surface-panel)) !important;
+  background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2)) !important;
   color: var(--atelier-blue-dark) !important;
 }
 
@@ -1592,7 +1597,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.table-wrapper, .table-scroll-container, .table-container) {
   border: 1px solid var(--atelier-material-edge) !important;
-  background: var(--atelier-surface-panel) !important;
+  background: var(--atelier-paper-2) !important;
 }
 
 :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(th, thead),
@@ -1606,7 +1611,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(td, tbody),
 :where(.table-wrapper, .table-scroll-container) :where(.table-body, .sticky-col) {
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-surface-panel) !important;
+  background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -1669,11 +1674,12 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   color: var(--atelier-ink) !important;
 }
 
-.dark :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .dropdown, .select-dropdown-portal, .date-picker-dropdown-portal, .floating-dropdown-portal, .action-menu-content, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell),
+.dark .app-layout-shell :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell),
+.dark :where(.dropdown, .select-dropdown-portal, .date-picker-dropdown-portal, .floating-dropdown-portal, .action-menu-content),
 .dark .app-layout-content :where(div, section, article):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="bg-white/95"], [class~="bg-white"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-card-surface, var(--atelier-material-2)) !important;
-  color: #fffaf0 !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
@@ -1682,37 +1688,37 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .dark .app-layout-content :where([class~="text-gray-950"], [class~="text-gray-900"], [class~="text-gray-800"], [class~="text-gray-700"], [class~="text-gray-600"]) {
-  color: #fffaf0 !important;
+  color: var(--atelier-ink) !important;
 }
 
 .dark .app-layout-content :where([class~="text-gray-500"], [class~="text-gray-400"]) {
-  color: #a79f91 !important;
+  color: var(--atelier-muted) !important;
 }
 
 .dark :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea) {
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-surface-strong) !important;
-  color: #fffaf0 !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
 }
 
 .dark :where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"]) {
-  background: var(--atelier-surface-strong) !important;
+  background: var(--atelier-paper-2) !important;
 }
 
 .dark :where(.dropdown-item, .floating-dropdown-portal button, .select-option, .date-picker-preset, .action-menu-content button, .action-menu-content a, [class*="dropdown"][class*="portal"] button):hover {
-  background: rgba(0, 47, 167, 0.24) !important;
-  color: #fffaf0 !important;
+  background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2)) !important;
+  color: var(--atelier-blue-dark) !important;
 }
 
 .dark :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(th, thead),
 .dark :where(.table-wrapper, .table-scroll-container) :where(.table-header, .sticky-header-cell) {
-  background: rgba(255, 250, 240, 0.08) !important;
-  color: #fffaf0 !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
 }
 
 .dark :where(.table-wrapper, .table-scroll-container) :where(.table-body, .sticky-col),
 .dark :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(td, tbody) {
-  color: #fffaf0 !important;
+  color: var(--atelier-ink) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

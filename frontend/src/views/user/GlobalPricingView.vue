@@ -290,7 +290,7 @@ onMounted(loadPricing)
 
 <style scoped>
 .summary-tile {
-  --material-card-surface: var(--atelier-paper);
+  --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(17, 24, 39, 0.36);
   @apply rounded-lg border px-4 py-3;
@@ -307,23 +307,8 @@ onMounted(loadPricing)
   background: var(--atelier-console-rule);
 }
 
-.summary-tile:nth-child(2) {
-  --atelier-card-accent: var(--atelier-blue);
-  --material-card-surface: var(--atelier-material-blue);
-}
-
-.summary-tile:nth-child(3) {
-  --atelier-card-accent: var(--atelier-dust);
-  --material-card-surface: var(--atelier-material-dust);
-}
-
-.summary-tile:nth-child(4) {
-  --atelier-card-accent: var(--atelier-dust);
-  --material-card-surface: var(--atelier-paper);
-}
-
 .table-wrapper {
-  --material-card-surface: var(--atelier-surface-panel);
+  --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(17, 24, 39, 0.36);
   border: 1px solid var(--material-card-edge);
@@ -334,19 +319,19 @@ onMounted(loadPricing)
 
 .dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: #111827;
-  --material-card-edge: rgba(148, 163, 184, 0.16);
-  --material-card-shadow: rgba(5, 5, 5, 0.82);
+  --material-card-surface: var(--atelier-paper-2);
+  --material-card-edge: var(--atelier-material-edge);
+  --material-card-shadow: rgba(17, 24, 39, 0.36);
 }
 
 .dark .summary-tile {
   background: var(--material-card-surface);
-  box-shadow: 0 16px 34px -28px var(--material-card-shadow);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .dark .table-wrapper {
   background: var(--material-card-surface);
-  box-shadow: 0 16px 34px -28px var(--material-card-shadow);
+  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .summary-label {
