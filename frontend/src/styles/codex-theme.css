@@ -16,6 +16,7 @@
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
   --codex-radius: 8px;
+  --codex-module-rule: var(--atelier-console-rule);
   --material-card-surface: var(--atelier-paper);
   --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(23, 21, 18, 0.34);
@@ -58,8 +59,8 @@
   justify-content: space-between;
   gap: 24px;
   padding: 24px;
-  border-bottom: 1px solid var(--codex-border);
-  background: var(--codex-surface-strong);
+  border-bottom: 1px dotted var(--codex-border-strong);
+  background: var(--atelier-paper-2);
 }
 
 .dark .codex-topbar {
@@ -109,7 +110,7 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: inset 4px 0 0 var(--codex-accent), 0 10px 24px -22px var(--material-card-shadow);
 }
 
 .dark .codex-panel {
@@ -127,7 +128,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--codex-border);
+  border-bottom: 1px dotted var(--codex-border-strong);
 }
 
 .codex-panel-title {
@@ -418,7 +419,7 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: inset 4px 0 0 var(--codex-accent), 0 10px 24px -22px var(--material-card-shadow);
   padding: clamp(10px, 2.4cqi, 14px);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }

@@ -50,6 +50,10 @@
   --atelier-material-green: #d5dfd4;
   --atelier-material-red: #ead8d3;
   --atelier-material-active: var(--atelier-blue);
+  --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
+  --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
+  --atelier-console-grid-size: 32px 32px;
+  --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
   --atelier-module-enter-duration: 0.9s;
   --atelier-font-sans: 'Inter Tight', 'Arial Narrow', 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --atelier-font-serif: 'Playfair Display', 'Iowan Old Style', 'Charter', Georgia, serif;
@@ -87,6 +91,12 @@
     overscroll-behavior-y: none;
     color: var(--atelier-ink);
     background: var(--atelier-canvas);
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
+      radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
+      linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+      linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+    background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
     font-family: var(--atelier-font-sans);
   }
 
@@ -112,6 +122,9 @@
     --atelier-material-edge-strong: rgba(255, 250, 240, 0.28);
     --atelier-material-shadow: 0 16px 34px -28px rgba(5, 5, 5, 0.82);
     --atelier-material-shadow-hover: 0 18px 42px -30px rgba(0, 47, 167, 0.62);
+    --atelier-console-grid-line: rgba(255, 250, 240, 0.035);
+    --atelier-console-grid-line-soft: rgba(255, 250, 240, 0.025);
+    --atelier-console-rule: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
   }
 
   /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
@@ -749,7 +762,7 @@
   .sidebar-header {
     @apply h-16 px-6;
     @apply flex items-center gap-3;
-    border-bottom: 1px solid var(--sidebar-line);
+    border-bottom: 1px dotted var(--sidebar-line);
     background: var(--sidebar-bg-strong);
     transition:
       padding 0.2s ease,
@@ -818,6 +831,16 @@
     @apply mb-2 px-3;
     @apply text-xs font-semibold uppercase tracking-wider;
     color: var(--sidebar-muted);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar .sidebar-section-title::after {
+    content: "";
+    height: 1px;
+    background: repeating-linear-gradient(to right, var(--sidebar-line), var(--sidebar-line) 2px, transparent 2px, transparent 8px);
   }
 
   /* ============ 页面头部 ============ */
@@ -1072,6 +1095,12 @@
 
 .app-layout-shell {
   background: var(--atelier-canvas);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
+    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+  background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
 }
 
 .dark .app-layout-shell {
@@ -1080,7 +1109,9 @@
 
 .app-layout-content {
   background:
-    linear-gradient(180deg, var(--atelier-canvas) 0%, var(--atelier-surface-dust) 46%, var(--atelier-paper-2) 100%);
+    linear-gradient(180deg, var(--atelier-canvas) 0%, color-mix(in srgb, var(--atelier-surface-dust) 90%, transparent) 46%, color-mix(in srgb, var(--atelier-paper-2) 94%, transparent) 100%);
+  position: relative;
+  isolation: isolate;
 }
 
 .dark .app-layout-content {
@@ -1237,6 +1268,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell) {
   --atelier-card-surface: var(--atelier-material-1);
   --atelier-card-accent: var(--atelier-blue);
+  --atelier-card-rail: linear-gradient(180deg, var(--atelier-card-accent) 0 44%, color-mix(in srgb, var(--atelier-card-accent) 26%, transparent) 44% 100%);
 }
 
 :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type(4n + 2) {
@@ -1275,10 +1307,26 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 3px;
+  width: 4px;
   pointer-events: none;
-  background: var(--atelier-card-accent);
+  background: var(--atelier-card-rail);
   opacity: 0.82;
+}
+
+:where(.card-header, .card-footer, .modal-header, .modal-footer, .dialog-header, .dialog-footer, .codex-panel-header, .codex-selection-bar, .codex-toolbar, .codex-account-grid, .layout-section-fixed, .settings-tabs-shell) {
+  border-color: var(--atelier-material-edge) !important;
+  position: relative;
+}
+
+:where(.card-header, .modal-header, .dialog-header, .codex-panel-header, .layout-section-fixed, .settings-tabs-shell)::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: -1px;
+  left: 12px;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  pointer-events: none;
 }
 
 :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover {
@@ -1519,7 +1567,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.dropdown-item, .floating-dropdown-portal button, .select-option, .date-picker-preset, .action-menu-content button, .action-menu-content a, [class*="dropdown"][class*="portal"] button):hover {
-  background: var(--atelier-material-blue) !important;
+  background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-surface-panel)) !important;
   color: var(--atelier-blue-dark) !important;
 }
 
@@ -1528,6 +1576,11 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .date-picker-dropdown-portal .date-picker-actions {
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-material-2) !important;
+}
+
+.select-dropdown-portal .select-search,
+.date-picker-dropdown-portal .date-picker-actions {
+  border-top: 1px dotted var(--atelier-material-edge) !important;
 }
 
 .select-dropdown-portal .select-option-selected,
@@ -1539,18 +1592,21 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.table-wrapper, .table-scroll-container, .table-container) {
   border: 1px solid var(--atelier-material-edge) !important;
+  background: var(--atelier-surface-panel) !important;
 }
 
 :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(th, thead),
 :where(.table-wrapper, .table-scroll-container) :where(.table-header, .sticky-header-cell) {
   border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-material-dust) !important;
+  border-bottom: 1px solid var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
 }
 
 :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(td, tbody),
 :where(.table-wrapper, .table-scroll-container) :where(.table-body, .sticky-col) {
   border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-surface-panel) !important;
   color: var(--atelier-ink) !important;
 }
 
