@@ -16,6 +16,9 @@ const materialSystemBlock = styleSource.slice(
 
 describe('console atelier palette restyle', () => {
   it('keeps the app shell on the two Downloads reference colors without introducing glass effects', () => {
+    expect(styleSource).toContain('--atelier-canvas: var(--atelier-paper);')
+    expect(styleSource).toContain('--atelier-material-1: var(--atelier-paper-2);')
+    expect(styleSource).toContain('--atelier-material-2: var(--atelier-paper-2);')
     expect(styleSource).toContain('--atelier-console-grid-line: rgba(23, 21, 18, 0.035);')
     expect(styleSource).toContain('--atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);')
     expect(styleSource).toContain('--atelier-console-grid-size: 32px 32px;')
@@ -26,9 +29,10 @@ describe('console atelier palette restyle', () => {
     expect(styleSource).not.toContain('card-glass')
     expect(styleSource).not.toContain('glass-card')
     expect(styleSource).not.toContain('liquid')
+    expect(materialSystemBlock).not.toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type')
   })
 
-  it('uses specimen-style rails and dotted rules on modules while preserving existing component class hooks', () => {
+  it('uses uniform paper-2 modules and dotted rules while preserving existing component class hooks', () => {
     expect(appHeaderSource).toContain('class="app-header-atelier paper-surface sticky')
     expect(appSidebarSource).toContain('class="sidebar-link')
     expect(dashboardSource).toContain('admin-dashboard-atelier')
@@ -38,9 +42,9 @@ describe('console atelier palette restyle', () => {
     expect(codexThemeSource).toContain('.codex-panel')
     expect(codexThemeSource).toContain('.codex-account-card')
 
-    expect(materialSystemBlock).toContain('--atelier-card-rail: linear-gradient(180deg, var(--atelier-card-accent) 0 44%, color-mix(in srgb, var(--atelier-card-accent) 26%, transparent) 44% 100%);')
-    expect(materialSystemBlock).toContain('background: var(--atelier-card-rail);')
-    expect(materialSystemBlock).toContain('width: 4px;')
+    expect(materialSystemBlock).toContain('--atelier-card-surface: var(--atelier-paper-2);')
+    expect(materialSystemBlock).toContain('background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;')
+    expect(materialSystemBlock).not.toContain('--atelier-card-rail')
     expect(materialSystemBlock).toContain('background: var(--atelier-console-rule);')
     expect(styleSource).toContain('--atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);')
   })
@@ -48,8 +52,8 @@ describe('console atelier palette restyle', () => {
   it('themes console tables, inputs, and teleported menus as opaque atelier paper surfaces', () => {
     expect(materialSystemBlock).toContain('background: var(--atelier-paper-2) !important;')
     expect(materialSystemBlock).toContain('border-bottom: 1px solid var(--atelier-material-edge) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-surface-panel) !important;')
-    expect(materialSystemBlock).toContain('background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-surface-panel)) !important;')
+    expect(materialSystemBlock).toContain('background: var(--atelier-paper-2) !important;')
+    expect(materialSystemBlock).toContain('background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2)) !important;')
     expect(materialSystemBlock).toContain('border-top: 1px dotted var(--atelier-material-edge) !important;')
     expect(materialSystemBlock).toContain('.floating-dropdown-portal')
     expect(materialSystemBlock).toContain('.select-dropdown-portal')
@@ -60,7 +64,8 @@ describe('console atelier palette restyle', () => {
   it('keeps CPA/Codex panels on the same module palette without moving their layout', () => {
     expect(codexThemeSource).toContain('--codex-module-rule: var(--atelier-console-rule);')
     expect(codexThemeSource).toContain('border-bottom: 1px dotted var(--codex-border-strong);')
-    expect(codexThemeSource).toContain('box-shadow: inset 4px 0 0 var(--codex-accent), 0 10px 24px -22px var(--material-card-shadow);')
+    expect(codexThemeSource).toContain('box-shadow: 0 10px 24px -22px var(--material-card-shadow);')
+    expect(codexThemeSource).not.toContain('inset 4px 0 0 var(--codex-accent)')
     expect(codexThemeSource).not.toContain('grid-template-columns: minmax(0, 1fr) 420px;')
     expect(codexThemeSource).toContain('grid-template-columns: minmax(0, 1fr) 360px;')
   })

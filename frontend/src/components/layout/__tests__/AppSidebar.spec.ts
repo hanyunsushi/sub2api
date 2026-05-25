@@ -44,7 +44,7 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
-  it('uses the ink sidebar material from the latest Atelier guidance and keeps Klein blue isolated to active structure', () => {
+  it('uses paper-2 sidebar material from the color guidance and keeps Klein blue isolated to active structure', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
       styleSource.indexOf('.sidebar-header {')
@@ -55,13 +55,15 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).not.toContain('border-l border-accent-200 pl-2')
     expect(componentSource).not.toContain('mt-auto border-t border-gray-100 p-3')
     expect(componentSource).not.toContain('text-gray-900 dark:text-white')
-    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-ink);')
-    expect(sidebarBlock).toContain('--sidebar-bg-strong: #050505;')
-    expect(sidebarBlock).toContain('--sidebar-text: var(--atelier-white);')
-    expect(sidebarBlock).toContain('--sidebar-hover: rgba(255, 250, 240, 0.09);')
+    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-paper-2);')
+    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-paper-2);')
+    expect(sidebarBlock).toContain('--sidebar-text: var(--atelier-ink);')
+    expect(sidebarBlock).toContain('--sidebar-hover: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-paper-2));')
     expect(sidebarBlock).toContain('--sidebar-active-bg: var(--atelier-blue);')
     expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-blue);')
     expect(sidebarBlock).toContain('background: var(--sidebar-bg);')
+    expect(sidebarBlock).not.toContain('--sidebar-bg: var(--atelier-ink);')
+    expect(sidebarBlock).not.toContain('--sidebar-bg-strong: #050505;')
     expect(sidebarBlock).not.toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.04) 1px, transparent 1px)')
     expect(sidebarBlock).not.toContain('linear-gradient(180deg, rgba(0, 47, 167, 0.98), rgba(0, 26, 107, 0.98))')
     expect(styleSource).toContain('.sidebar .sidebar-link-active')

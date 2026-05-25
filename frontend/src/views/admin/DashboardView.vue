@@ -697,26 +697,13 @@ onMounted(() => {
 
 .admin-dashboard-atelier :deep(.card) {
   border-radius: 8px;
-}
-
-.admin-dashboard-atelier :deep(.card:nth-child(4n + 1)) {
   --atelier-card-accent: var(--atelier-blue);
-  --atelier-card-surface: var(--atelier-paper);
-}
-
-.admin-dashboard-atelier :deep(.card:nth-child(4n + 2)) {
-  --atelier-card-accent: var(--atelier-dust);
-  --atelier-card-surface: color-mix(in srgb, var(--atelier-blue) 5%, var(--atelier-paper));
-}
-
-.admin-dashboard-atelier :deep(.card:nth-child(4n + 3)) {
-  --atelier-card-accent: var(--atelier-blue-dark);
-  --atelier-card-surface: color-mix(in srgb, var(--atelier-dust) 7%, var(--atelier-paper));
-}
-
-.admin-dashboard-atelier :deep(.card:nth-child(4n + 4)) {
-  --atelier-card-accent: var(--atelier-dust);
   --atelier-card-surface: var(--atelier-paper-2);
+}
+
+.admin-dashboard-atelier :deep(.card)::after {
+  content: none;
+  display: none;
 }
 
 .admin-dashboard-atelier .dashboard-paper-control,
@@ -737,9 +724,9 @@ onMounted(() => {
 }
 
 .admin-dashboard-atelier:where(.dark *) {
-  --dashboard-control-surface: #111827;
-  --dashboard-control-edge: rgba(255, 255, 255, 0.16);
-  --dashboard-control-shadow: rgba(5, 5, 5, 0.36);
+  --dashboard-control-surface: var(--atelier-paper-2);
+  --dashboard-control-edge: rgba(23, 21, 18, 0.18);
+  --dashboard-control-shadow: rgba(17, 24, 39, 0.16);
 }
 
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card),
@@ -763,6 +750,6 @@ onMounted(() => {
 }
 
 .dashboard-stat-icon:where(.dark *) {
-  color: color-mix(in srgb, var(--atelier-blue) 72%, var(--atelier-white));
+  color: var(--atelier-blue);
 }
 </style>

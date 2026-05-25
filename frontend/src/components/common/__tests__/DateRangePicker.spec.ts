@@ -147,7 +147,7 @@ describe('DateRangePicker', () => {
 
   it('keeps teleported dark dropdown hover states readable outside dashboard scope', () => {
     expect(componentSource).toContain('background:')
-    expect(componentSource).toContain('var(--atelier-surface-strong) !important')
+    expect(componentSource).toContain('background: var(--atelier-paper-2) !important')
     expect(componentSource).not.toContain('background-size: 28px 28px, 28px 28px, auto !important;')
     expect(componentSource).toContain('color: var(--atelier-ink);')
     expect(componentSource).toContain('box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.58) !important;')
