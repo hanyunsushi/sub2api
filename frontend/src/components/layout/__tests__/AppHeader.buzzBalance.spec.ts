@@ -54,13 +54,16 @@ vi.mock("@/stores/adminSettings", () => ({
   }),
 }));
 
+const routeState = vi.hoisted(() => ({
+  path: "/admin/ops",
+  name: "Ops",
+  params: {},
+  meta: { title: "运维监控", description: "请求与系统运行状态" },
+}));
+
 vi.mock("vue-router", () => ({
   useRouter: () => ({ push: vi.fn() }),
-  useRoute: () => ({
-    name: "Dashboard",
-    params: {},
-    meta: { title: "Dashboard", description: "" },
-  }),
+  useRoute: () => routeState,
   RouterLink: {
     props: ["to"],
     template: "<a><slot /></a>",
@@ -158,5 +161,17 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("$87.66");
     expect(dropdown.find("a").exists()).toBe(false);
     expect(dropdown.find("button").exists()).toBe(false);
+  });
+
+  it("keeps the console route context visible in the header", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    const contextStrip = wrapper.get('[data-testid="header-context-strip"]');
+    expect(contextStrip.text()).toContain("运维监控");
+    expect(contextStrip.text()).toContain("ADMIN");
+    expect(contextStrip.text()).toContain("CONSOLE / OPS");
   });
 });
