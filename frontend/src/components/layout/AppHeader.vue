@@ -2,7 +2,7 @@
   <header class="app-header-atelier paper-surface sticky top-0 z-30 border-b border-gray-200/50 dark:border-dark-700/50">
     <div class="flex h-16 items-center justify-between px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
-      <div class="flex items-center gap-4">
+      <div class="flex min-w-0 items-center gap-4">
         <button
           @click="toggleMobileSidebar"
           class="btn-ghost btn-icon lg:hidden"
@@ -11,13 +11,22 @@
           <Icon name="menu" size="md" />
         </button>
 
-        <div class="hidden lg:block">
-          <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ pageTitle }}
-          </h1>
-          <p v-if="pageDescription" class="text-xs text-gray-500 dark:text-dark-400">
-            {{ pageDescription }}
-          </p>
+        <div
+          data-testid="header-context-strip"
+          class="app-header-context hidden min-w-0 max-w-[44vw] flex-col sm:flex lg:max-w-[520px]"
+        >
+          <div class="flex min-w-0 items-center gap-2">
+            <span class="app-header-context-dot" aria-hidden="true"></span>
+            <h1 class="truncate text-sm font-semibold text-gray-900 dark:text-white md:text-base">
+              {{ pageTitle || 'Console' }}
+            </h1>
+            <span v-if="user" class="app-header-role-chip">{{ headerRoleLabel }}</span>
+          </div>
+          <div class="app-header-meta-line flex min-w-0 items-center gap-2">
+            <span class="app-header-route-meta truncate">{{ headerRouteLabel }}</span>
+            <span v-if="pageDescription" class="hidden truncate lg:inline">{{ pageDescription }}</span>
+            <span v-if="user" class="hidden truncate xl:inline">{{ headerBalanceSummary }}</span>
+          </div>
         </div>
       </div>
 
@@ -365,6 +374,31 @@ const balanceIconClass = computed(() => {
   return 'balance-system-text'
 })
 
+const headerRoleLabel = computed(() => {
+  if (!user.value) return ''
+  return user.value.role === 'admin' ? 'ADMIN' : 'USER'
+})
+
+const headerRouteLabel = computed(() => {
+  const path = route.path || '/'
+  if (path === '/') return 'ROOT'
+  const segments = path.replace(/^\/+/, '').split('/').filter(Boolean)
+  const visibleSegments = segments[0] === 'admin' || segments[0] === 'user'
+    ? segments.slice(1)
+    : segments
+  if (!visibleSegments.length) return 'CONSOLE'
+  return `CONSOLE / ${visibleSegments.join(' / ').toUpperCase()}`
+})
+
+const headerBalanceSummary = computed(() => {
+  if (!user.value) return ''
+  const systemBalance = `SYS ${formattedSystemBalance.value}`
+  if (canShowBuzzBalance.value) {
+    return `${systemBalance} · Buzz ${formattedBuzzBalance.value}`
+  }
+  return systemBalance
+})
+
 const pageTitle = computed(() => {
   // For custom pages, use the menu item's label instead of generic "自定义页面"
   if (route.name === 'CustomPage') {
@@ -532,6 +566,48 @@ watch(
   height: 1px;
   background: var(--atelier-console-rule);
   pointer-events: none;
+}
+
+.app-header-context {
+  color: var(--atelier-ink);
+}
+
+.app-header-context-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 0.5rem;
+  border-radius: 999px;
+  background: var(--atelier-blue);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--atelier-blue) 10%, transparent);
+}
+
+.app-header-role-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.25rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: 999px;
+  padding: 0 0.45rem;
+  background: var(--atelier-paper);
+  color: var(--atelier-blue);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.app-header-meta-line {
+  margin-top: 0.125rem;
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.app-header-meta-line span + span {
+  padding-left: 0.5rem;
+  border-left: 1px dotted var(--atelier-line-strong);
 }
 
 .user-menu-trigger:hover {

@@ -1339,6 +1339,48 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
+.app-layout-content :where(.ops-metric-card, .ops-system-card) {
+  --atelier-card-accent: var(--atelier-blue);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease);
+}
+
+.app-layout-content :where(.ops-metric-card, .ops-system-card)::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 0;
+  left: 12px;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+.app-layout-content :where(.ops-metric-card, .ops-system-card):hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-card-accent) 42%, var(--atelier-material-edge)) !important;
+  background: color-mix(in srgb, var(--atelier-blue) 4%, var(--atelier-paper-2)) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.app-layout-content .ops-system-card {
+  min-height: 6rem;
+}
+
+.app-layout-content .ops-metric-card :where(button, [role="button"]):not(:disabled) {
+  color: var(--atelier-blue) !important;
+}
+
 .app-layout-content :where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"], [class~="bg-gray-200"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn-primary"]):not([class~="btn-danger"]):not([role="button"]) {
   background: var(--atelier-material-2) !important;
 }
