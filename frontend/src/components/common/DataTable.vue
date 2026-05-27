@@ -69,7 +69,7 @@
       'is-scrollable': isScrollable,
       'is-page-scroll': verticalScrollMode === 'page'
     }"
-    data-lenis-scroll
+    :data-lenis-scroll="lenisScroll ? '' : null"
   >
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
       <thead class="table-header bg-gray-50 dark:bg-dark-800">
@@ -78,6 +78,8 @@
             v-for="(column, index) in columns"
             :key="column.key"
             scope="col"
+            :data-column-key="column.key"
+            :data-column-label="column.label"
             :class="[
               'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400',
               getAdaptivePaddingClass(),
@@ -163,6 +165,8 @@
             <td
               v-for="(column, colIndex) in columns"
               :key="column.key"
+              :data-column-key="column.key"
+              :data-column-label="column.label"
               :class="[
                 'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
                 getAdaptivePaddingClass(),
@@ -198,6 +202,8 @@
             <td
               v-for="(column, colIndex) in columns"
               :key="column.key"
+              :data-column-key="column.key"
+              :data-column-label="column.label"
               :class="[
                 'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
                 getAdaptivePaddingClass(),
@@ -397,6 +403,11 @@ interface Props {
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */
   overscan?: number
+  /**
+   * Attach a nested Lenis scroller to this table. Card-style page-scroll tables
+   * should opt out so document scrolling remains the only vertical scroller.
+   */
+  lenisScroll?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -406,10 +417,12 @@ const props = withDefaults(defineProps<Props>(), {
   expandableActions: true,
   defaultSortOrder: 'asc',
   serverSideSort: false,
-  verticalScrollMode: 'internal'
+  verticalScrollMode: 'internal',
+  lenisScroll: true
 })
 
 const verticalScrollMode = computed(() => props.verticalScrollMode)
+const lenisScroll = computed(() => props.lenisScroll)
 
 const sortKey = ref<string>('')
 const sortOrder = ref<'asc' | 'desc'>('asc')

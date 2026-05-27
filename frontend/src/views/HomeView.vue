@@ -61,14 +61,6 @@
           >
             <Icon name="book" size="md" />
           </a>
-          <button
-            @click="toggleTheme"
-            class="home-nav-icon"
-            :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
-          >
-            <Icon v-if="isDark" name="sun" size="md" />
-            <Icon v-else name="moon" size="md" />
-          </button>
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
@@ -366,7 +358,9 @@
               style="--home-reveal-delay: 160ms"
             >
               <div class="home-provider-swatch" data-id="Provider 01" data-hex="/v1">
-                <span class="home-provider-mark">C</span>
+                <span class="home-provider-mark home-provider-logo-mark">
+                  <ProviderBrandIcon provider="anthropic" model="claude" />
+                </span>
               </div>
               <div class="home-provider-meta">
                 <span class="home-provider-index">01</span>
@@ -382,7 +376,9 @@
               style="--home-reveal-delay: 220ms"
             >
               <div class="home-provider-swatch" data-id="Provider 02" data-hex="GPT">
-                <span class="home-provider-mark">G</span>
+                <span class="home-provider-mark home-provider-logo-mark">
+                  <ProviderBrandIcon provider="openai" model="gpt" />
+                </span>
               </div>
               <div class="home-provider-meta">
                 <span class="home-provider-index">02</span>
@@ -398,7 +394,9 @@
               style="--home-reveal-delay: 280ms"
             >
               <div class="home-provider-swatch" data-id="Provider 03" data-hex="Gemini">
-                <span class="home-provider-mark">G</span>
+                <span class="home-provider-mark home-provider-logo-mark">
+                  <ProviderBrandIcon provider="gemini" model="gemini" />
+                </span>
               </div>
               <div class="home-provider-meta">
                 <span class="home-provider-index">03</span>
@@ -414,7 +412,9 @@
               style="--home-reveal-delay: 340ms"
             >
               <div class="home-provider-swatch" data-id="Provider 04" data-hex="AG">
-                <span class="home-provider-mark">A</span>
+                <span class="home-provider-mark home-provider-logo-mark">
+                  <ProviderBrandIcon provider="antigravity" model="antigravity" />
+                </span>
               </div>
               <div class="home-provider-meta">
                 <span class="home-provider-index">04</span>
@@ -482,6 +482,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 
 const { t } = useI18n()
 
@@ -501,8 +502,6 @@ const isHomeContentUrl = computed(() => {
   return content.startsWith('http://') || content.startsWith('https://')
 })
 
-// Theme
-const isDark = ref(document.documentElement.classList.contains('dark'))
 const revealRoot = ref<HTMLElement | null>(null)
 let revealObserver: IntersectionObserver | null = null
 let pendingRevealItems: HTMLElement[] = []
@@ -524,23 +523,10 @@ const userInitial = computed(() => {
 // Current year for footer
 const currentYear = computed(() => new Date().getFullYear())
 
-// Toggle theme
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
-
 // Initialize theme
 function initTheme() {
-  const savedTheme = localStorage.getItem('theme')
-  if (
-    savedTheme === 'dark' ||
-    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  ) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  }
+  document.documentElement.classList.remove('dark')
+  localStorage.setItem('theme', 'light')
 }
 
 function showRevealItems(items: HTMLElement[]) {
@@ -640,7 +626,7 @@ onBeforeUnmount(() => {
   position: relative;
   isolation: isolate;
   color: var(--atelier-ink);
-  font-family: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--atelier-font-sans);
   background: var(--atelier-canvas);
 }
 
@@ -677,7 +663,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px dotted var(--atelier-line-strong);
   color: var(--atelier-muted);
   background: var(--home-surface-paper-2);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -714,7 +700,7 @@ onBeforeUnmount(() => {
 .home-brand-name {
   min-width: 0;
   color: var(--atelier-ink);
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 28px;
   letter-spacing: 0;
   white-space: nowrap;
@@ -725,7 +711,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   color: var(--atelier-muted);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -768,7 +754,7 @@ onBeforeUnmount(() => {
   gap: 10px;
   border-radius: 999px;
   padding: 0 16px;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -858,7 +844,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 14px;
   color: var(--atelier-muted);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -885,7 +871,7 @@ onBeforeUnmount(() => {
   content: ".";
   margin-left: 0.02em;
   color: var(--atelier-blue);
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-style: italic;
 }
 
@@ -930,7 +916,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 12px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -960,16 +946,16 @@ onBeforeUnmount(() => {
   gap: 16px;
   padding: 14px 0;
   border-bottom: 1px dotted var(--atelier-line-strong);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 12px;
   letter-spacing: 0;
 }
 
 .home-index-row b {
   color: var(--atelier-blue-dark);
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-mono);
   font-size: 18px;
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
 }
 
@@ -1008,7 +994,7 @@ onBeforeUnmount(() => {
   bottom: 16px;
   z-index: 2;
   color: var(--atelier-muted);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1138,14 +1124,14 @@ onBeforeUnmount(() => {
   flex: 1;
   margin-right: 52px;
   color: var(--home-muted-on-dark);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 12px;
   text-align: center;
 }
 
 .terminal-body {
   padding: 20px 24px;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 14px;
   line-height: 2;
 }
@@ -1280,7 +1266,7 @@ onBeforeUnmount(() => {
 .home-ring strong {
   display: block;
   color: inherit;
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 40px;
   font-style: italic;
   font-weight: 400;
@@ -1291,7 +1277,7 @@ onBeforeUnmount(() => {
   display: block;
   margin-top: 8px;
   color: var(--home-muted-solid);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1324,7 +1310,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid var(--atelier-ink);
   background: var(--home-surface-paper-2);
   color: var(--atelier-ink);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 12px;
   letter-spacing: 0;
   transition:
@@ -1407,7 +1393,7 @@ onBeforeUnmount(() => {
 
 .home-card-index {
   color: currentColor;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
 }
@@ -1418,7 +1404,7 @@ onBeforeUnmount(() => {
 }
 
 .home-card-glyph {
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 42px;
   font-style: italic;
   line-height: 1;
@@ -1428,7 +1414,7 @@ onBeforeUnmount(() => {
 .home-ascii-shell .home-cap-card h3 {
   margin: 0;
   color: currentColor;
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 34px;
   font-style: italic;
   font-weight: 400;
@@ -1469,7 +1455,7 @@ onBeforeUnmount(() => {
 .home-section-title::after {
   content: ".";
   color: var(--atelier-butter);
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-style: italic;
 }
 
@@ -1554,7 +1540,7 @@ onBeforeUnmount(() => {
   top: 14px;
   left: 14px;
   color: color-mix(in srgb, currentColor 72%, transparent);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -1567,7 +1553,7 @@ onBeforeUnmount(() => {
   bottom: 14px;
   color: currentColor;
   opacity: 0.82;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
   letter-spacing: 0;
 }
@@ -1581,7 +1567,7 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   color: var(--atelier-white);
   background: var(--home-chip-accent);
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 38px;
   font-style: italic;
 }
@@ -1605,14 +1591,14 @@ onBeforeUnmount(() => {
 .home-provider-index {
   color: currentColor;
   opacity: 0.7;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 11px;
 }
 
 .home-provider-meta h3 {
   margin: 0;
   color: currentColor;
-  font-family: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  font-family: var(--atelier-font-serif);
   font-size: 28px;
   font-style: italic;
   font-weight: 400;
@@ -1629,7 +1615,7 @@ onBeforeUnmount(() => {
 .home-provider-status {
   align-self: end;
   color: currentColor;
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0;
@@ -1645,7 +1631,7 @@ onBeforeUnmount(() => {
   padding: 30px var(--home-gutter);
   border-top: 1px dotted var(--atelier-line-strong);
   color: var(--atelier-muted);
-  font-family: ui-monospace, "SFMono-Regular", "IBM Plex Mono", Menlo, monospace;
+  font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
   text-transform: uppercase;

@@ -39,8 +39,17 @@ describe('global scrolling behavior', () => {
   it('enables Lenis on table scroll containers instead of excluding them globally', () => {
     const dataTableSource = readFile('src/components/common/DataTable.vue')
     const mainSource = readFile('src/main.ts')
+    const accountsSource = readFile('src/views/admin/AccountsView.vue')
+    const userUsageSource = readFile('src/views/user/UsageView.vue')
+    const globalPricingSource = readFile('src/views/user/GlobalPricingView.vue')
 
-    expect(dataTableSource).toContain('data-lenis-scroll')
+    expect(dataTableSource).toContain(':data-lenis-scroll="lenisScroll ?')
+    expect(dataTableSource).toContain('lenisScroll?: boolean')
+    expect(dataTableSource).toContain('lenisScroll: true')
+    expect(accountsSource).toContain(':lenis-scroll="false"')
+    expect(userUsageSource).toContain(':lenis-scroll="false"')
+    expect(userUsageSource).toContain('vertical-scroll-mode="page"')
+    expect(globalPricingSource).toContain('scroll-mode="page"')
     expect(mainSource).toContain('new MutationObserver(scheduleNestedLenisSync)')
     expect(mainSource).toContain('syncNestedLenisPreventAttributes(wrapper)')
     expect(mainSource).toContain("wrapper.toggleAttribute('data-lenis-prevent-horizontal', hasHorizontalOverflow)")

@@ -2,26 +2,28 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="table-filter-shell flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
-          <div class="flex-1 sm:max-w-64">
-            <input
-              v-model="searchQuery"
-              type="text"
-              :placeholder="t('admin.announcements.searchAnnouncements')"
-              class="input"
-              @input="handleSearch"
+          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+            <div class="table-filter-search flex-1 sm:max-w-64">
+              <input
+                v-model="searchQuery"
+                type="text"
+                :placeholder="t('admin.announcements.searchAnnouncements')"
+                class="input"
+                @input="handleSearch"
+              />
+            </div>
+            <Select
+              v-model="filters.status"
+              :options="statusFilterOptions"
+              class="w-40"
+              @change="handleStatusChange"
             />
           </div>
-          <Select
-            v-model="filters.status"
-            :options="statusFilterOptions"
-            class="w-40"
-            @change="handleStatusChange"
-          />
 
           <!-- Right: Action buttons -->
-          <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
+          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
             <button
               @click="loadAnnouncements"
               :disabled="loading"

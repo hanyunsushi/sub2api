@@ -1,9 +1,9 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout class="global-pricing-atelier" scroll-mode="page">
       <template #filters>
-        <div class="flex flex-col gap-4">
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="global-pricing-filter-stack">
+          <div class="global-pricing-summary-row grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <div class="summary-tile admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.totalModels') }}</span>
               <strong class="summary-value">{{ pricing?.model_count ?? items.length }}</strong>
@@ -22,65 +22,67 @@
             </div>
           </div>
 
-          <div class="flex flex-col justify-between gap-4 xl:flex-row xl:items-start">
-            <div class="flex flex-1 flex-wrap items-center gap-3">
-              <div class="relative w-full sm:w-80">
-                <Icon
-                  name="search"
-                  size="md"
-                  class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
-                />
-                <input
-                  v-model="searchQuery"
-                  type="text"
-                  :placeholder="t('globalPricing.searchPlaceholder')"
-                  class="input pl-10"
-                />
+          <div class="global-pricing-filter-card">
+            <div class="global-pricing-filter-shell">
+              <div class="global-pricing-filter-left table-filter-left flex flex-1 flex-wrap items-center gap-3">
+                <div class="relative w-full sm:w-80">
+                  <Icon
+                    name="search"
+                    size="md"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                  />
+                  <input
+                    v-model="searchQuery"
+                    type="text"
+                    :placeholder="t('globalPricing.searchPlaceholder')"
+                    class="input pl-10"
+                  />
+                </div>
+
+                <select v-model="providerFilter" class="input w-full sm:w-44">
+                  <option value="">{{ t('globalPricing.filters.allProviders') }}</option>
+                  <option v-for="provider in providerOptions" :key="provider" :value="provider">
+                    {{ provider }}
+                  </option>
+                </select>
+
+                <select v-model="modeFilter" class="input w-full sm:w-40">
+                  <option value="">{{ t('globalPricing.filters.allModes') }}</option>
+                  <option v-for="mode in modeOptions" :key="mode" :value="mode">
+                    {{ mode }}
+                  </option>
+                </select>
+
+                <label class="inline-flex h-10 items-center gap-2 rounded-lg border border-accent-200 bg-white px-3 text-sm text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-300">
+                  <input
+                    v-model="promptCachingOnly"
+                    type="checkbox"
+                    class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600"
+                  />
+                  <span>{{ t('globalPricing.filters.promptCachingOnly') }}</span>
+                </label>
               </div>
 
-              <select v-model="providerFilter" class="input w-full sm:w-44">
-                <option value="">{{ t('globalPricing.filters.allProviders') }}</option>
-                <option v-for="provider in providerOptions" :key="provider" :value="provider">
-                  {{ provider }}
-                </option>
-              </select>
-
-              <select v-model="modeFilter" class="input w-full sm:w-40">
-                <option value="">{{ t('globalPricing.filters.allModes') }}</option>
-                <option v-for="mode in modeOptions" :key="mode" :value="mode">
-                  {{ mode }}
-                </option>
-              </select>
-
-              <label class="inline-flex h-10 items-center gap-2 rounded-lg border border-accent-200 bg-white px-3 text-sm text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-300">
-                <input
-                  v-model="promptCachingOnly"
-                  type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600"
-                />
-                <span>{{ t('globalPricing.filters.promptCachingOnly') }}</span>
-              </label>
-            </div>
-
-            <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 xl:w-auto">
-              <span class="hash-pill" :title="pricing?.local_hash || '-'">
-                {{ t('globalPricing.dataHash') }}: {{ pricing?.local_hash || '-' }}
-              </span>
-              <button
-                @click="loadPricing"
-                :disabled="loading"
-                class="btn btn-secondary"
-                :title="t('common.refresh', 'Refresh')"
-              >
-                <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-              </button>
+              <div class="global-pricing-filter-actions table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 xl:w-auto">
+                <span class="hash-pill" :title="pricing?.local_hash || '-'">
+                  {{ t('globalPricing.dataHash') }}: {{ pricing?.local_hash || '-' }}
+                </span>
+                <button
+                  @click="loadPricing"
+                  :disabled="loading"
+                  class="btn btn-secondary"
+                  :title="t('common.refresh', 'Refresh')"
+                >
+                  <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </template>
 
       <template #table>
-        <div class="table-wrapper admin-material-surface">
+        <div class="table-wrapper admin-material-surface global-pricing-card-frame">
           <table class="global-pricing-table">
             <thead>
               <tr>
@@ -98,7 +100,7 @@
               </tr>
             </thead>
 
-            <tbody v-if="loading">
+            <tbody v-if="loading" class="global-pricing-skeleton-body">
               <tr v-for="idx in 8" :key="idx">
                 <td
                   v-for="cell in 11"
@@ -111,7 +113,7 @@
               </tr>
             </tbody>
 
-            <tbody v-else-if="filteredItems.length === 0">
+            <tbody v-else-if="filteredItems.length === 0" class="global-pricing-empty-body">
               <tr>
                 <td colspan="11" class="py-14 text-center">
                   <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
@@ -120,13 +122,13 @@
               </tr>
             </tbody>
 
-            <tbody v-else>
+            <tbody v-else class="global-pricing-card-body">
               <tr v-for="item in filteredItems" :key="item.model" class="pricing-row">
-                <td class="brand-sticky-col brand-cell">
+                <td class="brand-sticky-col brand-cell" :data-card-label="t('globalPricing.columns.brand')">
                   <ProviderBrandIcon :provider="item.provider" :model="item.model" />
                   <span class="sr-only">{{ item.provider || item.model }}</span>
                 </td>
-                <td class="model-sticky-col">
+                <td class="model-sticky-col" :data-card-label="t('globalPricing.columns.model')">
                   <div class="min-w-0">
                     <p class="truncate font-medium text-gray-900 dark:text-white" :title="item.model">
                       {{ item.model }}
@@ -136,35 +138,35 @@
                     </p>
                   </div>
                 </td>
-                <td>
+                <td :data-card-label="t('globalPricing.columns.provider')">
                   <span class="meta-pill">{{ item.provider || '-' }}</span>
                 </td>
-                <td>
+                <td :data-card-label="t('globalPricing.columns.mode')">
                   <span class="meta-pill uppercase">{{ item.mode || '-' }}</span>
                 </td>
-                <td class="price-cell">{{ formatTokenPrice(item.input_price) }}</td>
-                <td class="price-cell">
+                <td class="price-cell" :data-card-label="t('globalPricing.columns.input')">{{ formatTokenPrice(item.input_price) }}</td>
+                <td class="price-cell" :data-card-label="t('globalPricing.columns.cacheWrite')">
                   <div>{{ formatTokenPrice(item.cache_write_price) }}</div>
                   <div v-if="item.cache_write_1h_price > 0" class="price-subline">
                     {{ t('globalPricing.above1h') }} {{ formatTokenPrice(item.cache_write_1h_price) }}
                   </div>
                 </td>
-                <td class="price-cell">{{ formatTokenPrice(item.cache_read_price) }}</td>
-                <td class="price-cell">{{ formatTokenPrice(item.output_price) }}</td>
-                <td>
+                <td class="price-cell" :data-card-label="t('globalPricing.columns.cacheRead')">{{ formatTokenPrice(item.cache_read_price) }}</td>
+                <td class="price-cell" :data-card-label="t('globalPricing.columns.output')">{{ formatTokenPrice(item.output_price) }}</td>
+                <td :data-card-label="t('globalPricing.columns.priority')">
                   <div class="compact-stack">
                     <span>{{ t('globalPricing.short.input') }} {{ formatTokenPrice(item.input_priority_price) }}</span>
                     <span>{{ t('globalPricing.short.output') }} {{ formatTokenPrice(item.output_priority_price) }}</span>
                     <span>{{ t('globalPricing.short.cacheRead') }} {{ formatTokenPrice(item.cache_read_priority_price) }}</span>
                   </div>
                 </td>
-                <td>
+                <td :data-card-label="t('globalPricing.columns.image')">
                   <div class="compact-stack">
                     <span>{{ t('globalPricing.short.perImage') }} {{ formatUnitPrice(item.image_output_price) }}</span>
                     <span>{{ t('globalPricing.short.imageToken') }} {{ formatTokenPrice(item.image_output_token_price) }}</span>
                   </div>
                 </td>
-                <td>
+                <td :data-card-label="t('globalPricing.columns.capabilities')">
                   <div class="flex flex-wrap gap-1.5">
                     <span v-if="item.supports_prompt_caching" class="capability-pill">
                       {{ t('globalPricing.capabilities.promptCaching') }}

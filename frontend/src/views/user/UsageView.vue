@@ -1,12 +1,12 @@
 <template>
   <AppLayout>
-    <TablePageLayout class="user-usage-atelier">
+    <TablePageLayout class="user-usage-atelier" scroll-mode="page">
       <template #actions>
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div class="usage-stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- Total Requests -->
-          <div class="card p-4">
+          <div class="card usage-stat-card p-4">
           <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
+            <div class="usage-stat-icon rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
               <Icon name="document" size="md" class="text-blue-600 dark:text-blue-400" />
             </div>
             <div>
@@ -24,9 +24,9 @@
         </div>
 
         <!-- Total Tokens -->
-        <div class="card p-4">
+        <div class="card usage-stat-card p-4">
           <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
+            <div class="usage-stat-icon rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
               <Icon name="cube" size="md" class="text-amber-600 dark:text-amber-400" />
             </div>
             <div>
@@ -45,9 +45,9 @@
         </div>
 
         <!-- Total Cost -->
-        <div class="card p-4">
+        <div class="card usage-stat-card p-4">
           <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
+            <div class="usage-stat-icon rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
               <Icon name="dollar" size="md" class="text-green-600 dark:text-green-400" />
             </div>
             <div class="min-w-0 flex-1">
@@ -67,9 +67,9 @@
         </div>
 
         <!-- Average Duration -->
-        <div class="card p-4">
+        <div class="card usage-stat-card p-4">
           <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
+            <div class="usage-stat-icon rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
               <Icon name="clock" size="md" class="text-purple-600 dark:text-purple-400" />
             </div>
             <div>
@@ -156,6 +156,8 @@
           :data="usageLogs"
           :loading="loading"
           :server-side-sort="true"
+          vertical-scroll-mode="page"
+          :lenis-scroll="false"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"

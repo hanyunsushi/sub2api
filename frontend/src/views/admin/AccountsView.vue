@@ -2,7 +2,7 @@
   <AppLayout>
     <TablePageLayout scroll-mode="page" class="accounts-table-page">
       <template #filters>
-        <div class="flex flex-wrap-reverse items-start justify-between gap-3">
+        <div class="accounts-filter-shell flex flex-wrap-reverse items-start justify-between gap-3">
           <AccountTableFilters
             v-model:searchQuery="params.search"
             :filters="params"
@@ -191,7 +191,7 @@
           @select-page="selectPage"
           @toggle-schedulable="handleBulkToggleSchedulable"
         />
-        <div ref="accountTableRef" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div ref="accountTableRef" class="account-card-table-frame flex min-h-fit flex-none flex-col overflow-visible">
         <DataTable
           ref="dataTableRef"
           :columns="cols"
@@ -204,6 +204,7 @@
           default-sort-order="asc"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
           vertical-scroll-mode="page"
+          :lenis-scroll="false"
           :estimate-row-height="72"
           :overscan="5"
         >
