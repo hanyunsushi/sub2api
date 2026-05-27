@@ -151,7 +151,7 @@ describe('ModelDistributionChart', () => {
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     const colors = chartData.datasets[0].backgroundColor
 
-    expect(colors.slice(0, 5)).toEqual(['#002FA7', '#0891b2', '#0f766e', '#b7791f', '#be3a5c'])
+    expect(colors.slice(0, 5)).toEqual(['#002FA7', '#001E6E', '#c79a3a', '#4f6a8c', '#171512'])
     expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
@@ -217,7 +217,7 @@ describe('ModelDistributionChart', () => {
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 10])
     expect(chartData.datasets[0].backgroundColor[0]).toBe('#002FA7')
-    expect(chartData.datasets[0].backgroundColor[2]).toBe('#94a3b8')
+    expect(chartData.datasets[0].backgroundColor[2]).toBe('#98907f')
     expect(chartData.datasets[0].backgroundColor[2]).not.toBe(chartData.datasets[0].backgroundColor[0])
 
     const rows = wrapper.findAll('tbody tr')

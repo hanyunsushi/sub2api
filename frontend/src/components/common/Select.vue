@@ -38,7 +38,7 @@
           v-if="isOpen"
           ref="dropdownRef"
           class="select-dropdown-portal"
-          :class="[instanceId]"
+          :class="[instanceId, portalClass]"
           :style="dropdownStyle"
           role="listbox"
           @click.stop
@@ -135,6 +135,7 @@ interface Props {
   labelKey?: string
   creatable?: boolean
   creatablePrefix?: string
+  portalClass?: string
 }
 
 interface Emits {
@@ -148,6 +149,7 @@ const props = withDefaults(defineProps<Props>(), {
   searchable: 'auto',
   creatable: false,
   creatablePrefix: '',
+  portalClass: '',
   valueKey: 'value',
   labelKey: 'label'
 })

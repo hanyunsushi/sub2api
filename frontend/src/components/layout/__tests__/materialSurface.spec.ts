@@ -71,9 +71,9 @@ describe('right-side material surfaces', () => {
     expect(styleSource).not.toContain('.dark .sidebar {\n    --sidebar-bg: #050505;')
     expect(styleSource).not.toContain('@media (prefers-reduced-transparency: reduce)')
     expect(dataTableSource).not.toContain('#11100d')
-    expect(dataTableSource).not.toContain('rgba(23, 21, 18')
     expect(dataTableSource).toContain('background-color: #111827;')
-    expect(dataTableSource).toContain('rgba(17, 24, 39, 0.11)')
+    expect(dataTableSource).toContain('repeating-linear-gradient(to bottom, var(--atelier-line-strong)')
+    expect(dataTableSource).toContain('scrollbar-color: var(--atelier-scrollbar) var(--atelier-scrollbar-track) !important;')
   })
 
   it('themes old white and gray component internals with the full atelier palette', () => {

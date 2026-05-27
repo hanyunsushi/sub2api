@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
     <!-- Left: Search + Filters -->
-    <div class="flex flex-1 flex-wrap items-center gap-3">
+    <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
       <div class="relative w-full sm:w-64">
         <Icon
           name="search"
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Right: Actions -->
-    <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+    <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
       <button
         @click="$emit('reload')"
         :disabled="loading"

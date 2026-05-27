@@ -15,7 +15,7 @@ describe('global scrolling behavior', () => {
     expect(mainSource).not.toContain("from '@/utils/smoothWheel'")
   })
 
-  it('uses native scrolling without installing Lenis on the whole document', () => {
+  it('uses Lenis for document smoothing without restoring the old wheel hijacker', () => {
     const mainSource = readFile('src/main.ts')
     const styleSource = readFile('src/style.css')
     const packageJson = readFile('package.json')
@@ -23,9 +23,33 @@ describe('global scrolling behavior', () => {
 
     expect(mainSource).not.toContain('installInertialScrolling')
     expect(mainSource).not.toContain('@/utils/inertialScroll')
-    expect(styleSource).not.toContain('html.lenis')
-    expect(packageJson).not.toContain('"lenis"')
-    expect(lockfile).not.toContain('lenis@')
+    expect(mainSource).toContain("import Lenis from 'lenis'")
+    expect(mainSource).toContain('autoRaf: true')
+    expect(mainSource).toContain('prevent: (node) =>')
+    expect(mainSource).toContain('allowNestedScroll: true')
+    expect(mainSource).toContain("const lenisNestedScrollSelector = '[data-lenis-scroll]'")
+    expect(mainSource).not.toContain(
+      '.table-wrapper, .table-container, .table-scroll-container, .overflow-auto, .overflow-y-auto, .overflow-x-auto'
+    )
+    expect(styleSource).toContain('html.lenis')
+    expect(packageJson).toContain('"lenis"')
+    expect(lockfile).toContain('lenis@')
+  })
+
+  it('enables Lenis on table scroll containers instead of excluding them globally', () => {
+    const dataTableSource = readFile('src/components/common/DataTable.vue')
+    const mainSource = readFile('src/main.ts')
+
+    expect(dataTableSource).toContain('data-lenis-scroll')
+    expect(mainSource).toContain('new MutationObserver(scheduleNestedLenisSync)')
+    expect(mainSource).toContain('syncNestedLenisPreventAttributes(wrapper)')
+    expect(mainSource).toContain("wrapper.toggleAttribute('data-lenis-prevent-horizontal', hasHorizontalOverflow)")
+    expect(mainSource).toContain("wrapper.toggleAttribute('data-lenis-prevent-vertical', hasVerticalOverflow)")
+    expect(mainSource).toContain('wrapper.dataset.lenisOrientation = orientation')
+    expect(mainSource).toContain('eventsTarget: wrapper')
+    expect(mainSource).toContain('orientation,')
+    expect(mainSource).toContain('gestureOrientation: orientation')
+    expect(mainSource).toContain('overscroll: false')
   })
 
   it('keeps native smooth behavior as a safe fallback', () => {

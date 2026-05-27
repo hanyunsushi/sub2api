@@ -7,12 +7,12 @@
     }"
   >
     <!-- 固定区域：操作按钮 -->
-    <div v-if="$slots.actions" class="layout-section-fixed">
+    <div v-if="$slots.actions" class="layout-section-fixed table-page-actions-section">
       <slot name="actions" />
     </div>
 
     <!-- 固定区域：搜索和过滤器 -->
-    <div v-if="$slots.filters" class="layout-section-fixed">
+    <div v-if="$slots.filters" class="layout-section-fixed table-page-filter-section">
       <slot name="filters" />
     </div>
 
@@ -24,7 +24,7 @@
     </div>
 
     <!-- 固定区域：分页器 -->
-    <div v-if="$slots.pagination" class="layout-section-fixed">
+    <div v-if="$slots.pagination" class="layout-section-fixed table-page-pagination-section">
       <slot name="pagination" />
     </div>
   </div>

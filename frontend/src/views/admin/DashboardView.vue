@@ -221,7 +221,7 @@
           <!-- Date Range Filter -->
           <div class="card dashboard-filter-card p-4">
             <div class="flex flex-wrap items-center gap-4">
-              <div class="flex items-center gap-2">
+              <div class="dashboard-filter-range flex items-center gap-2">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t('admin.dashboard.timeRange') }}:</span
                 >
@@ -234,11 +234,11 @@
               <button
                 @click="loadDashboardStats"
                 :disabled="chartsLoading"
-                class="btn btn-secondary dashboard-paper-control"
+                class="btn btn-secondary dashboard-paper-control dashboard-filter-refresh"
               >
                 {{ t('common.refresh') }}
               </button>
-              <div class="ml-auto flex items-center gap-2">
+              <div class="dashboard-filter-granularity ml-auto flex items-center gap-2">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t('admin.dashboard.granularity') }}:</span
                 >
@@ -297,7 +297,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -683,22 +683,57 @@ const loadChartData = async () => {
   ])
 }
 
+const handleDashboardFilterPointerDown = (event: PointerEvent) => {
+  const target = event.target as Element | null
+  if (!target?.closest('.dashboard-filter-card')) return
+  document.body.classList.add('dashboard-filter-menu-open')
+}
+
+const handleDashboardFilterBodyClick = (event: MouseEvent) => {
+  const target = event.target as Element | null
+  if (target?.closest('.dashboard-filter-card, .date-picker-dropdown-portal, .select-dropdown-portal')) return
+  document.body.classList.remove('dashboard-filter-menu-open')
+}
+
 onMounted(() => {
+  document.addEventListener('pointerdown', handleDashboardFilterPointerDown, true)
+  document.addEventListener('click', handleDashboardFilterBodyClick, true)
   loadDashboardStats()
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', handleDashboardFilterPointerDown, true)
+  document.removeEventListener('click', handleDashboardFilterBodyClick, true)
+  document.body.classList.remove('dashboard-filter-menu-open')
 })
 </script>
 
 <style scoped>
 .admin-dashboard-atelier {
-  --dashboard-control-surface: var(--atelier-dust-soft);
-  --dashboard-control-edge: rgba(17, 24, 39, 0.14);
-  --dashboard-control-shadow: rgba(17, 24, 39, 0.16);
+  --dashboard-control-surface: var(--atelier-paper-2);
+  --dashboard-control-edge: var(--atelier-line-strong);
+  --dashboard-control-shadow: rgba(23, 21, 18, 0.2);
+  --dashboard-module-shadow: rgba(23, 21, 18, 0.36);
+  --dashboard-module-rule: var(--atelier-console-rule);
+  --dashboard-hover-surface: var(--atelier-butter);
+  --dashboard-hover-edge: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge));
+  font-family: var(--atelier-font-sans);
 }
 
 .admin-dashboard-atelier :deep(.card) {
   border-radius: 8px;
   --atelier-card-accent: var(--atelier-blue);
   --atelier-card-surface: var(--atelier-paper-2);
+  position: relative;
+  overflow: hidden;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: 0 10px 24px -22px var(--dashboard-module-shadow);
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease);
 }
 
 .admin-dashboard-atelier :deep(.card)::after {
@@ -706,21 +741,194 @@ onMounted(() => {
   display: none;
 }
 
-.admin-dashboard-atelier .dashboard-paper-control,
-.admin-dashboard-atelier :deep(.date-picker-trigger),
-.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: var(--dashboard-control-edge);
-  background: var(--atelier-paper-2);
-  box-shadow:
-    0 8px 18px -16px var(--dashboard-control-shadow),
-    0 1px 1px rgba(17, 24, 39, 0.05);
+.admin-dashboard-atelier :deep(.card)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 1px;
+  background: var(--dashboard-module-rule);
+  opacity: 0.82;
+  pointer-events: none;
 }
 
-.admin-dashboard-atelier .dashboard-paper-control:hover,
+.admin-dashboard-atelier :deep(.card:hover) {
+  transform: translate3d(0, -2px, 0);
+  border-color: var(--dashboard-hover-edge) !important;
+  background: var(--dashboard-hover-surface) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.admin-dashboard-atelier > .grid > .card::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  bottom: 0.75rem;
+  left: 1rem;
+  display: block;
+  height: 3px;
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 42% 100% no-repeat,
+    var(--atelier-paper);
+  pointer-events: none;
+}
+
+.admin-dashboard-atelier > .grid > .card:nth-child(2n)::after {
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 58% 100% no-repeat,
+    var(--atelier-paper);
+}
+
+.admin-dashboard-atelier > .grid > .card:nth-child(3n)::after {
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 76% 100% no-repeat,
+    var(--atelier-paper);
+}
+
+.admin-dashboard-atelier :deep(.card .text-xl),
+.admin-dashboard-atelier :deep(.card .text-sm.font-semibold) {
+  color: var(--atelier-blue) !important;
+}
+
+.admin-dashboard-atelier :deep(.card .text-xl) {
+  font-family: var(--atelier-font-serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin-dashboard-atelier :deep(.card .text-xs) {
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--atelier-muted) !important;
+}
+
+.admin-dashboard-atelier :deep(.card h3) {
+  color: var(--atelier-ink) !important;
+}
+
+.admin-dashboard-atelier :deep(.card canvas) {
+  filter: saturate(0.92);
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card) {
+  border: 1px solid var(--atelier-ink) !important;
+  border-radius: 8px;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink);
+  box-shadow: none !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card)::before {
+  right: 1rem;
+  left: 1rem;
+  background: repeating-linear-gradient(to right, rgba(23, 21, 18, 0.36), rgba(23, 21, 18, 0.36) 2px, transparent 2px, transparent 8px);
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card:hover) {
+  transform: none;
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div) {
+  min-height: 3.25rem;
+  align-items: stretch;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range) {
+  margin: -1rem 0 -1rem -1rem;
+  padding: 1rem 0.75rem 1rem 1rem;
+  align-items: center;
+  align-self: stretch;
+  position: relative;
+  border-right: 0;
+  background: var(--atelier-ink);
+  color: var(--atelier-paper);
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)::after {
+  content: none;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-refresh) {
+  align-self: stretch;
+  margin: -1rem 0;
+  border-radius: 0 !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range)) {
+  color: var(--atelier-ink);
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
+  color: var(--atelier-ink) !important;
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range > span) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card:hover > div > .dashboard-filter-range > span),
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range:hover > span) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-granularity) {
+  align-self: center;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control),
+.admin-dashboard-atelier :deep(.date-picker-trigger),
+.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  font-family: var(--atelier-font-mono);
+  box-shadow: none !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control) {
+  position: relative;
+  overflow: visible;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after {
+  content: "";
+  position: absolute;
+  top: -0.125rem;
+  right: -1rem;
+  bottom: -0.125rem;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+.admin-dashboard-atelier :deep(.date-picker-trigger *),
+.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger *) {
+  color: var(--atelier-paper) !important;
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover),
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
-  border-color: rgba(0, 47, 167, 0.18);
-  background: var(--atelier-blue-soft);
+  border-color: var(--atelier-paper) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
 }
 
 .admin-dashboard-atelier:where(.dark *) {
@@ -730,7 +938,7 @@ onMounted(() => {
 }
 
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card),
-.admin-dashboard-atelier:where(.dark *) .dashboard-paper-control,
+.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card .dashboard-paper-control),
 .admin-dashboard-atelier:where(.dark *) :deep(.date-picker-trigger),
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--dashboard-control-edge);
@@ -739,6 +947,9 @@ onMounted(() => {
 
 .dashboard-stat-icon {
   background: var(--atelier-material-1);
+  border: 1px solid var(--atelier-material-edge);
+  color: var(--atelier-ink);
+  box-shadow: none;
 }
 
 .dashboard-stat-icon :deep(svg),
@@ -750,6 +961,7 @@ onMounted(() => {
 }
 
 .dashboard-stat-icon:where(.dark *) {
-  color: var(--atelier-blue);
+  color: var(--atelier-ink);
 }
+
 </style>

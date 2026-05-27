@@ -31,22 +31,24 @@ export async function listAccountMetadata(): Promise<CodexAccountMetadata[]> {
   return data
 }
 
+function encodedAuthName(authName: string): string {
+  return encodeURIComponent(authName)
+}
+
 export async function updateAccountMetadata(
   authName: string,
   request: UpdateCodexAccountMetadataRequest
 ): Promise<CodexAccountMetadata> {
-  const encoded = encodeURIComponent(authName)
   const { data } = await apiClient.put<CodexAccountMetadata>(
-    `/admin/codex/accounts/${encoded}/metadata`,
+    `/admin/codex/accounts/${encodedAuthName(authName)}/metadata`,
     request
   )
   return data
 }
 
 export async function deleteAccountMetadata(authName: string): Promise<{ message: string }> {
-  const encoded = encodeURIComponent(authName)
   const { data } = await apiClient.delete<{ message: string }>(
-    `/admin/codex/accounts/${encoded}/metadata`
+    `/admin/codex/accounts/${encodedAuthName(authName)}/metadata`
   )
   return data
 }

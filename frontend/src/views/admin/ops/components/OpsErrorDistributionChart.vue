@@ -24,10 +24,10 @@ const { t } = useI18n()
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
   blue: '#002FA7',
-  red: '#ef4444',
-  orange: '#f59e0b',
-  gray: '#9ca3af',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  butter: '#c79a3a',
+  red: '#b44536',
+  dust: '#4f6a8c',
+  text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
 
 const totalSlaErrors = computed(() =>
@@ -68,10 +68,10 @@ const categories = computed<ErrorCategory[]>(() => {
   }
 
   const out: ErrorCategory[] = []
-  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.orange })
+  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.butter })
   if (client > 0) out.push({ label: t('admin.ops.client'), count: client, color: colors.value.blue })
   if (system > 0) out.push({ label: t('admin.ops.system'), count: system, color: colors.value.red })
-  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.gray })
+  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.dust })
   return out
 })
 
@@ -100,19 +100,19 @@ const options = computed(() => ({
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-      titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563'
+      backgroundColor: isDarkMode.value ? '#171512' : '#fbf8f0',
+      titleColor: isDarkMode.value ? '#fffaf0' : '#171512',
+      bodyColor: isDarkMode.value ? '#fffaf0' : '#70685c'
     }
   }
 }))
 </script>
 
 <template>
-  <div class="flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="ops-monitor-panel ops-chart-card ops-error-distribution-card flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex items-center justify-between">
       <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="ops-icon-butter h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

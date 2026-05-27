@@ -128,7 +128,7 @@ describe('GroupDistributionChart', () => {
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     const colors = chartData.datasets[0].backgroundColor
 
-    expect(colors.slice(0, 5)).toEqual(['#002FA7', '#0891b2', '#0f766e', '#b7791f', '#be3a5c'])
+    expect(colors.slice(0, 5)).toEqual(['#002FA7', '#001E6E', '#c79a3a', '#4f6a8c', '#171512'])
     expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
