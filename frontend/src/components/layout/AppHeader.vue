@@ -25,7 +25,6 @@
           <div class="app-header-meta-line flex min-w-0 items-center gap-2">
             <span class="app-header-route-meta truncate">{{ headerRouteLabel }}</span>
             <span v-if="pageDescription" class="hidden truncate lg:inline">{{ pageDescription }}</span>
-            <span v-if="user" class="hidden truncate xl:inline">{{ headerBalanceSummary }}</span>
           </div>
         </div>
       </div>
@@ -390,15 +389,6 @@ const headerRouteLabel = computed(() => {
   return `CONSOLE / ${visibleSegments.join(' / ').toUpperCase()}`
 })
 
-const headerBalanceSummary = computed(() => {
-  if (!user.value) return ''
-  const systemBalance = `SYS ${formattedSystemBalance.value}`
-  if (canShowBuzzBalance.value) {
-    return `${systemBalance} · Buzz ${formattedBuzzBalance.value}`
-  }
-  return systemBalance
-})
-
 const pageTitle = computed(() => {
   // For custom pages, use the menu item's label instead of generic "自定义页面"
   if (route.name === 'CustomPage') {
@@ -550,18 +540,19 @@ watch(
   --buzz-balance-yellow-dark: #8e6c1f;
   --buzz-balance-yellow-soft: #efe0bf;
   --buzz-balance-yellow-soft-dark: rgba(199, 154, 58, 0.18);
-  border-color: var(--atelier-line);
-  background: var(--atelier-paper-2);
-  box-shadow:
-    0 1px 0 rgba(23, 21, 18, 0.08),
-    0 10px 24px -28px rgba(23, 21, 18, 0.42);
+  height: 4rem;
+  min-height: 4rem;
+  border: 0 !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: none !important;
+  font-family: var(--atelier-font-sans);
 }
 
 .app-header-atelier::after {
   content: "";
   position: absolute;
   right: 1.5rem;
-  bottom: -1px;
+  bottom: 0;
   left: 1.5rem;
   height: 1px;
   background: var(--atelier-console-rule);
@@ -611,7 +602,8 @@ watch(
 }
 
 .user-menu-trigger:hover {
-  background: var(--atelier-blue-soft);
+  background: var(--atelier-butter-soft);
+  color: var(--atelier-ink);
 }
 
 .user-avatar {
@@ -620,13 +612,32 @@ watch(
 }
 
 .balance-chip-system {
-  border: 1px solid var(--atelier-line);
-  background: var(--atelier-blue-soft);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .balance-chip-buzz {
-  border: 1px solid color-mix(in srgb, var(--buzz-balance-yellow) 32%, var(--atelier-line));
-  background: var(--buzz-balance-yellow-soft);
+  border: 0;
+  border-left: 1px dotted var(--atelier-line-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.balance-chip-system:hover,
+.balance-chip-buzz:hover {
+  background: var(--atelier-butter-soft);
+  color: var(--atelier-ink);
 }
 
 .balance-row {
@@ -634,37 +645,42 @@ watch(
 }
 
 .balance-row-system {
-  background: var(--atelier-blue-soft);
+  background: var(--atelier-butter-soft);
   color: var(--atelier-muted);
 }
 
 .balance-row-buzz {
-  background: var(--buzz-balance-yellow-soft);
+  background: var(--atelier-butter-soft);
 }
 
 .balance-system-text {
-  color: var(--atelier-blue);
+  color: var(--atelier-ink);
 }
 
 .balance-buzz-text {
-  color: var(--buzz-balance-yellow-dark);
+  color: var(--atelier-ink);
 }
 
 .dark .balance-chip-system,
 .dark .balance-row-system {
-  background: rgba(0, 47, 167, 0.18);
+  background: transparent;
 }
 
 .dark .balance-chip-buzz,
 .dark .balance-row-buzz {
+  background: transparent;
+}
+
+.dark .balance-chip-system:hover,
+.dark .balance-chip-buzz:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
 
 .dark .balance-system-text {
-  color: #f8fbff;
+  color: var(--atelier-ink);
 }
 
 .dark .balance-buzz-text {
-  color: #e9c96c;
+  color: var(--atelier-ink);
 }
 </style>

@@ -738,10 +738,14 @@ function syncConnectionDraft(): void {
   codexStore.setManagementKey(managementKeyDraft.value)
 }
 
-function openAuthFilePicker(): void {
+function clearOperationFeedback(): void {
   operationError.value = ''
   operationNotice.value = ''
   oauthFallbackUrl.value = ''
+}
+
+function openAuthFilePicker(): void {
+  clearOperationFeedback()
   authFileInput.value?.click()
 }
 
@@ -757,9 +761,7 @@ async function handleAuthFileChange(event: Event): Promise<void> {
 
   syncConnectionDraft()
   uploadingAuthFile.value = true
-  operationError.value = ''
-  operationNotice.value = ''
-  oauthFallbackUrl.value = ''
+  clearOperationFeedback()
   try {
     await codexStore.uploadAuthFile(file)
     operationNotice.value = t('admin.codex.accounts.uploadSucceeded', { name: file.name })
@@ -776,9 +778,7 @@ async function handleAuthFileChange(event: Event): Promise<void> {
 async function openCodexOAuth(): Promise<void> {
   syncConnectionDraft()
   oauthLoading.value = true
-  operationError.value = ''
-  operationNotice.value = ''
-  oauthFallbackUrl.value = ''
+  clearOperationFeedback()
   const popup = window.open('about:blank', '_blank')
   try {
     const url = await codexStore.getCodexAuthUrl()
@@ -798,18 +798,14 @@ async function openCodexOAuth(): Promise<void> {
 }
 
 function requestDeleteAccount(authName: string): void {
-  operationError.value = ''
-  operationNotice.value = ''
-  oauthFallbackUrl.value = ''
+  clearOperationFeedback()
   deleteTargetAuthNames.value = [authName]
 }
 
 function requestDeleteSelectedAccounts(): void {
   const names = selectedDeletableAccounts.value.map((account) => account.name)
   if (!names.length) return
-  operationError.value = ''
-  operationNotice.value = ''
-  oauthFallbackUrl.value = ''
+  clearOperationFeedback()
   deleteTargetAuthNames.value = names
 }
 
@@ -900,9 +896,7 @@ async function confirmDeleteAccounts(): Promise<void> {
 async function toggleAccountDisabled(account: CodexAccountMerged): Promise<void> {
   syncConnectionDraft()
   togglingAuthName.value = account.name
-  operationError.value = ''
-  operationNotice.value = ''
-  oauthFallbackUrl.value = ''
+  clearOperationFeedback()
   const disabled = account.status !== 'disabled'
   try {
     await codexStore.setAuthFileDisabled(account.name, disabled)

@@ -1022,10 +1022,14 @@ onBeforeUnmount(() => {
 .sidebar-logo {
   flex: 0 0 2.25rem;
   min-width: 2.25rem;
-  background: var(--atelier-surface-strong);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--atelier-blue) 30%, transparent),
-    0 10px 22px rgba(0, 30, 110, 0.24);
+  background: var(--atelier-paper-2);
+  box-shadow: none;
+  filter: none;
+}
+
+.sidebar-logo img {
+  box-shadow: none;
+  filter: none;
 }
 
 .sidebar-home-link {

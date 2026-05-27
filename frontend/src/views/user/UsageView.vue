@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout class="user-usage-atelier">
       <template #actions>
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- Total Requests -->
@@ -87,9 +87,10 @@
       </template>
 
       <template #filters>
-        <div class="card">
+        <div class="card usage-filter-card">
           <div class="px-6 py-4">
-          <div class="flex flex-wrap items-end gap-4">
+          <div class="usage-filter-shell flex flex-wrap items-end gap-4">
+            <div class="usage-filter-left flex flex-1 flex-wrap items-end gap-4">
             <!-- API Key Filter -->
             <div class="min-w-[180px]">
               <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
@@ -110,9 +111,10 @@
                 @change="onDateRangeChange"
               />
             </div>
+            </div>
 
             <!-- Actions -->
-            <div class="ml-auto flex items-center gap-3">
+            <div class="usage-filter-actions ml-auto flex items-center gap-3">
               <button @click="applyFilters" :disabled="loading" class="btn btn-secondary">
                 {{ t('common.refresh') }}
               </button>

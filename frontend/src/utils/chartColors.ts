@@ -1,27 +1,27 @@
 export const chartCategoricalColors = [
   '#002FA7',
-  '#0891b2',
-  '#0f766e',
-  '#b7791f',
-  '#be3a5c',
-  '#64748b',
+  '#001E6E',
+  '#c79a3a',
+  '#4f6a8c',
+  '#171512',
+  '#8e6c1f',
   '#2f7d59',
-  '#c05621',
-  '#b91c1c',
-  '#475569',
-  '#15803d',
-  '#a16207',
+  '#b44536',
+  '#70685c',
+  '#ddd2bd',
+  '#98907f',
+  '#d5dfd4',
 ] as const
 
 export const tokenTrendColors = {
   input: '#002FA7',
-  output: '#be3a5c',
-  cacheCreation: '#0891b2',
-  cacheRead: '#0f766e',
-  cacheHitRate: '#b7791f',
+  output: '#001E6E',
+  cacheCreation: '#c79a3a',
+  cacheRead: '#4f6a8c',
+  cacheHitRate: '#171512',
 } as const
 
-export const chartNeutralColor = '#94a3b8'
+export const chartNeutralColor = '#98907f'
 
 export const getChartColor = (index: number): string => {
   return chartCategoricalColors[index % chartCategoricalColors.length]

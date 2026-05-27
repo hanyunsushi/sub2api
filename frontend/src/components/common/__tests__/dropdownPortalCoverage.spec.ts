@@ -52,4 +52,12 @@ describe('interactive dropdown portal coverage', () => {
     expect(globalStyleSource).toContain('.floating-dropdown-portal')
     expect(globalStyleSource).toContain('.dark :where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
   })
+
+  it('keeps the locale switcher text-only in the console header', () => {
+    const localeSwitcherSource = read('components/common/LocaleSwitcher.vue')
+
+    expect(localeSwitcherSource).toContain('currentLocale?.code.toUpperCase()')
+    expect(localeSwitcherSource).not.toContain('currentLocale?.flag')
+    expect(localeSwitcherSource).not.toContain('locale.flag')
+  })
 })

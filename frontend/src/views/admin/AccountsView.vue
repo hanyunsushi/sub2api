@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <TablePageLayout scroll-mode="page">
+    <TablePageLayout scroll-mode="page" class="accounts-table-page">
       <template #filters>
         <div class="flex flex-wrap-reverse items-start justify-between gap-3">
           <AccountTableFilters

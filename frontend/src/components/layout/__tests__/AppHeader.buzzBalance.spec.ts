@@ -134,15 +134,27 @@ describe("AppHeader BuzzAI balance", () => {
     await Promise.resolve();
     await nextTick();
 
-    expect(wrapper.get('[data-testid="header-balance-chip"]').text()).toContain("$42.50");
+    let chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("$42.50");
+    expect(chip.text()).not.toContain("Buzz");
+    expect(chip.classes().join(" ")).toContain("balance-chip-system");
 
     await vi.advanceTimersByTimeAsync(7000);
     await nextTick();
 
-    const chip = wrapper.get('[data-testid="header-balance-chip"]');
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("Buzz");
     expect(chip.text()).toContain("$87.66");
+    expect(chip.text()).not.toContain("$42.50");
     expect(chip.classes().join(" ")).toContain("balance-chip-buzz");
+
+    await vi.advanceTimersByTimeAsync(7000);
+    await nextTick();
+
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("$42.50");
+    expect(chip.text()).not.toContain("Buzz");
+    expect(chip.classes().join(" ")).toContain("balance-chip-system");
   });
 
   it("shows both balances in a display-only hover dropdown", async () => {
@@ -173,5 +185,9 @@ describe("AppHeader BuzzAI balance", () => {
     expect(contextStrip.text()).toContain("运维监控");
     expect(contextStrip.text()).toContain("ADMIN");
     expect(contextStrip.text()).toContain("CONSOLE / OPS");
+    expect(contextStrip.text()).not.toContain("$42.50");
+    expect(contextStrip.text()).not.toContain("$87.66");
+    expect(contextStrip.text()).not.toContain("SYS");
+    expect(contextStrip.text()).not.toContain("Buzz");
   });
 });

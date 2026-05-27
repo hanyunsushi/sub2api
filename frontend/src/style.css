@@ -7,6 +7,7 @@
   --atelier-paper-2: #e9e1d2;
   --atelier-ink: #171512;
   --atelier-muted: #70685c;
+  --atelier-lime: #70685c;
   --atelier-line: rgba(23, 21, 18, 0.18);
   --atelier-line-strong: rgba(23, 21, 18, 0.36);
   --atelier-blue: #002FA7;
@@ -18,7 +19,7 @@
   --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
   --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
-  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --atelier-butter-soft: #c79a3a;
   --atelier-surface: var(--atelier-paper);
   --atelier-surface-strong: #fffaf0;
   --atelier-surface-muted: #e9e1d2;
@@ -41,7 +42,7 @@
   --atelier-material-edge: rgba(23, 21, 18, 0.18);
   --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
   --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
-  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(0, 47, 167, 0.48);
+  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(199, 154, 58, 0.44);
   --atelier-material-grid: none;
   --atelier-material-grid-dark: none;
   --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 22%, var(--atelier-paper));
@@ -54,10 +55,18 @@
   --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
   --atelier-console-grid-size: 32px 32px;
   --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.36), rgba(255, 250, 240, 0.36) 2px, transparent 2px, transparent 8px);
+  --atelier-scrollbar: var(--atelier-lime);
+  --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
+  --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
   --atelier-module-enter-duration: 0.9s;
-  --atelier-font-sans: 'Inter Tight', 'Arial Narrow', 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --atelier-font-serif: 'Playfair Display', 'Iowan Old Style', 'Charter', Georgia, serif;
-  --atelier-font-mono: 'SFMono-Regular', 'IBM Plex Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --sans: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --serif: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
+  --mono: "SFMono-Regular", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --atelier-font-sans: var(--sans);
+  --atelier-font-serif: var(--serif);
+  --atelier-font-mono: var(--mono);
 }
 
 @layer base {
@@ -68,6 +77,22 @@
   html {
     @apply scroll-smooth antialiased;
     overscroll-behavior-y: none;
+    font-family: var(--atelier-font-sans);
+  }
+
+  #app,
+  body,
+  button,
+  input,
+  textarea,
+  select,
+  .app-layout-shell,
+  .app-layout-content,
+  .app-route-page,
+  .dropdown,
+  .floating-dropdown-portal,
+  .select-dropdown-portal,
+  .date-picker-dropdown-portal {
     font-family: var(--atelier-font-sans);
   }
 
@@ -122,7 +147,7 @@
     --atelier-surface-muted: rgba(255, 250, 240, 0.08);
     --atelier-blue-soft: rgba(0, 47, 167, 0.18);
     --atelier-dust-soft: rgba(79, 106, 140, 0.18);
-    --atelier-butter-soft: rgba(199, 154, 58, 0.16);
+    --atelier-butter-soft: #c79a3a;
     --atelier-material-1: #171512;
     --atelier-material-2: rgba(255, 250, 240, 0.08);
     --atelier-material-blue: rgba(0, 47, 167, 0.18);
@@ -132,27 +157,30 @@
     --atelier-material-edge: rgba(255, 250, 240, 0.16);
     --atelier-material-edge-strong: rgba(255, 250, 240, 0.28);
     --atelier-material-shadow: 0 16px 34px -28px rgba(5, 5, 5, 0.82);
-    --atelier-material-shadow-hover: 0 18px 42px -30px rgba(0, 47, 167, 0.62);
+    --atelier-material-shadow-hover: 0 18px 42px -30px rgba(199, 154, 58, 0.44);
     --atelier-console-grid-line: rgba(255, 250, 240, 0.035);
     --atelier-console-grid-line-soft: rgba(255, 250, 240, 0.025);
     --atelier-console-rule: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
+    --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
+    --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.36), rgba(255, 250, 240, 0.36) 2px, transparent 2px, transparent 8px);
+    --atelier-scrollbar-track: rgba(112, 104, 92, 0.2);
   }
 
   /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
   @supports (-moz-appearance:none) {
     * {
       scrollbar-width: thin;
-      scrollbar-color: transparent transparent;
+      scrollbar-color: var(--atelier-scrollbar) var(--atelier-scrollbar-track);
     }
 
     *:hover,
     *:focus-within {
-      scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+      scrollbar-color: var(--atelier-scrollbar-hover) var(--atelier-scrollbar-track);
     }
 
     .dark *:hover,
     .dark *:focus-within {
-      scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+      scrollbar-color: var(--atelier-scrollbar-hover) var(--atelier-scrollbar-track);
     }
   }
 
@@ -161,20 +189,42 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    background: var(--atelier-scrollbar-track);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-transparent;
+    @apply rounded-full;
+    background: var(--atelier-scrollbar);
     transition: background-color 0.2s ease;
   }
 
   *:hover::-webkit-scrollbar-thumb {
-    @apply bg-gray-300/50 dark:bg-dark-600/50;
+    background: var(--atelier-scrollbar);
   }
 
   *:hover::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-dark-500;
+    background: var(--atelier-scrollbar-hover);
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
   }
 
   /* 选中文本样式 */
@@ -745,14 +795,15 @@
     --sidebar-text: var(--atelier-ink);
     --sidebar-muted: var(--atelier-muted);
     --sidebar-line: rgba(23, 21, 18, 0.18);
-    --sidebar-hover: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-paper-2));
+    --sidebar-line-strong: rgba(23, 21, 18, 0.36);
+    --sidebar-hover: var(--atelier-butter);
     --sidebar-active-bg: var(--atelier-blue);
     --sidebar-active-text: var(--atelier-white);
     --sidebar-active-border: var(--atelier-blue);
     background: var(--sidebar-bg);
-    border-right: 1px solid var(--sidebar-line);
+    border-right: 1px dotted var(--sidebar-line-strong);
     color: var(--sidebar-text);
-    box-shadow: inset -1px 0 0 rgba(23, 21, 18, 0.08), 18px 0 34px -30px rgba(23, 21, 18, 0.34);
+    box-shadow: none;
     transition-property: width, transform;
   }
 
@@ -762,18 +813,19 @@
     --sidebar-text: var(--atelier-ink);
     --sidebar-muted: var(--atelier-muted);
     --sidebar-line: rgba(23, 21, 18, 0.18);
-    --sidebar-hover: color-mix(in srgb, var(--atelier-blue) 7%, var(--atelier-paper-2));
+    --sidebar-line-strong: rgba(23, 21, 18, 0.36);
+    --sidebar-hover: var(--atelier-butter);
     --sidebar-active-bg: var(--atelier-blue);
     --sidebar-active-text: var(--atelier-white);
     background: var(--sidebar-bg);
-    border-right-color: var(--sidebar-line);
-    box-shadow: inset -1px 0 0 rgba(23, 21, 18, 0.08), 18px 0 34px -30px rgba(23, 21, 18, 0.34);
+    border-right-color: var(--sidebar-line-strong);
+    box-shadow: none;
   }
 
   .sidebar-header {
     @apply h-16 px-6;
     @apply flex items-center gap-3;
-    border-bottom: 1px dotted var(--sidebar-line);
+    border-bottom: 1px dotted var(--sidebar-line-strong);
     background: var(--sidebar-bg-strong);
     transition:
       padding 0.2s ease,
@@ -781,7 +833,7 @@
   }
 
   .sidebar-nav {
-    @apply flex-1 overflow-y-auto px-3 py-4;
+    @apply flex-1 overflow-y-auto px-6 py-4;
     scroll-behavior: auto;
     overscroll-behavior: contain;
     contain: layout paint;
@@ -790,43 +842,102 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 rounded-lg py-2.5;
+    @apply flex items-center gap-3 py-2.5;
     @apply overflow-hidden;
     @apply text-sm font-medium;
     color: var(--sidebar-text);
     @apply transition-all duration-200;
-    border: 1px solid transparent;
-    padding-left: 1.0625rem;
-    padding-right: 0.875rem;
+    position: relative;
+    min-height: 2.625rem;
+    border: 0;
+    border-bottom: 1px dotted var(--sidebar-line);
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+    font-family: var(--atelier-font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0;
   }
 
   .sidebar .sidebar-link:hover {
     background: var(--sidebar-hover);
-    border-color: color-mix(in srgb, var(--atelier-blue) 36%, var(--sidebar-line));
-    color: var(--atelier-blue-dark);
+    border-bottom-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--sidebar-line));
+    color: var(--atelier-ink);
+    padding-left: 0.375rem;
   }
 
   .sidebar .sidebar-link-active {
     background: var(--sidebar-active-bg);
-    border-color: color-mix(in srgb, var(--sidebar-active-border) 72%, transparent);
+    border-bottom-color: var(--sidebar-active-border);
     color: var(--sidebar-active-text);
-    box-shadow:
-      inset 3px 0 0 var(--sidebar-active-border),
-      0 8px 18px -14px rgba(0, 47, 167, 0.42);
+    box-shadow: none;
+    padding-left: 0.375rem;
+  }
+
+  .sidebar .sidebar-link-active :where(svg, span, .sidebar-label, .sidebar-label-flex, .sidebar-svg-icon) {
+    color: var(--sidebar-active-text);
+  }
+
+  .sidebar .sidebar-link-active::after {
+    content: "";
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-left: 0.625rem;
+    border-radius: 999px;
+    background: var(--sidebar-active-text);
+    flex: 0 0 auto;
   }
 
   .sidebar .sidebar-link-active:hover {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-active-text);
+    padding-left: 0.375rem;
+  }
+
+  .sidebar-brand .relative > button {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .sidebar-brand .relative > button:where([class~="text-amber-700"], [class~="dark:text-amber-400"]) {
+    color: var(--atelier-butter) !important;
+  }
+
+  .sidebar-brand .relative > button:where([class~="text-gray-600"], [class~="dark:text-dark-400"]) {
+    color: var(--atelier-blue-dark) !important;
+  }
+
+  .sidebar-brand .relative > button > span:first-child {
+    color: currentColor !important;
+  }
+
+  .sidebar-brand .relative > button .relative.flex.h-2.w-2 :where(span) {
+    background: var(--atelier-butter) !important;
+  }
+
+  .sidebar.w-\[72px\] .sidebar-nav {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .sidebar.w-\[72px\] .sidebar-link {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .sidebar.w-\[72px\] .sidebar-link-active::after {
+    display: none;
   }
 
   .sidebar-children {
-    border-left: 1px solid color-mix(in srgb, var(--sidebar-active-border) 48%, var(--sidebar-line));
-    background: color-mix(in srgb, var(--atelier-blue) 4%, var(--atelier-paper-2));
+    border-left: 1px dotted color-mix(in srgb, var(--sidebar-active-border) 44%, var(--sidebar-line));
+    background: transparent;
   }
 
   .sidebar-footer {
-    border-top: 1px solid var(--sidebar-line);
+    border-top: 1px dotted var(--sidebar-line-strong);
     background: var(--sidebar-bg-strong);
   }
 
@@ -839,7 +950,7 @@
   }
 
   .sidebar .sidebar-section-title {
-    @apply mb-2 px-3;
+    @apply mb-2 px-0;
     @apply text-xs font-semibold uppercase tracking-wider;
     color: var(--sidebar-muted);
     display: grid;
@@ -851,7 +962,7 @@
   .sidebar .sidebar-section-title::after {
     content: "";
     height: 1px;
-    background: repeating-linear-gradient(to right, var(--sidebar-line), var(--sidebar-line) 2px, transparent 2px, transparent 8px);
+    background: repeating-linear-gradient(to right, var(--sidebar-line-strong), var(--sidebar-line-strong) 2px, transparent 2px, transparent 8px);
   }
 
   /* ============ 页面头部 ============ */
@@ -1120,7 +1231,7 @@
   --atelier-surface-muted: var(--atelier-paper-2);
   --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
   --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
-  --atelier-butter-soft: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --atelier-butter-soft: #c79a3a;
   --atelier-material-1: var(--atelier-paper-2);
   --atelier-material-2: var(--atelier-paper-2);
   --atelier-material-blue: var(--atelier-surface-blue);
@@ -1148,6 +1259,7 @@
   background: transparent;
   position: relative;
   isolation: isolate;
+  overflow: visible !important;
 }
 
 .dark .app-layout-content {
@@ -1156,6 +1268,15 @@
 
 .app-layout-content > .relative {
   min-height: 100vh;
+}
+
+.app-header-atelier {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30;
+  height: 4rem;
+  min-height: 4rem;
+  box-sizing: border-box;
 }
 
 .auth-ascii-shell,
@@ -1323,7 +1444,18 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   position: relative;
 }
 
-:where(.card-header, .modal-header, .dialog-header, .codex-panel-header, .layout-section-fixed, .settings-tabs-shell)::before {
+:where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell, .ops-monitor-toolbar)::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 0;
+  left: 12px;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  pointer-events: none;
+}
+
+:where(.card-header, .modal-header, .dialog-header, .codex-panel-header, .layout-section-fixed, .settings-tabs-shell)::after {
   content: "";
   position: absolute;
   right: 12px;
@@ -1335,7 +1467,19 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover {
-  border-color: color-mix(in srgb, var(--atelier-card-accent) 38%, var(--atelier-material-edge)) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+.admin-dashboard-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover,
+.ops-dashboard-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover,
+.admin-usage-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover,
+.user-usage-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover {
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
@@ -1368,8 +1512,9 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 .app-layout-content :where(.ops-metric-card, .ops-system-card):hover {
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-card-accent) 42%, var(--atelier-material-edge)) !important;
-  background: color-mix(in srgb, var(--atelier-blue) 4%, var(--atelier-paper-2)) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
@@ -1379,6 +1524,349 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 .app-layout-content .ops-metric-card :where(button, [role="button"]):not(:disabled) {
   color: var(--atelier-blue) !important;
+}
+
+.ops-dashboard-atelier {
+  --ops-panel-surface: var(--atelier-paper);
+  --ops-card-surface: var(--atelier-paper-2);
+  --ops-card-edge: var(--atelier-line);
+  --ops-card-edge-strong: var(--atelier-line-strong);
+  --ops-module-shadow: rgba(23, 21, 18, 0.36);
+  --ops-card-shadow: 0 10px 24px -22px var(--ops-module-shadow);
+  --ops-ink: var(--atelier-ink);
+  --ops-muted: var(--atelier-muted);
+  --ops-line: var(--atelier-line);
+  --ops-line-strong: var(--ops-card-edge-strong);
+  --ops-rule: var(--atelier-console-rule);
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  --atelier-material-edge: var(--ops-card-edge);
+  --atelier-material-shadow: var(--ops-card-shadow);
+  color: var(--ops-ink);
+}
+
+.ops-dashboard-atelier .ops-monitor-header {
+  position: relative;
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-panel-surface) !important;
+  color: var(--ops-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+  overflow: hidden;
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease);
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-panel, .card) {
+  position: relative;
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--ops-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+  overflow: hidden;
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease);
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-header, .ops-monitor-panel, .card)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 18px;
+  left: 18px;
+  height: 1px;
+  background: var(--ops-rule);
+  pointer-events: none;
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--ops-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar {
+  border-bottom: 1px dotted var(--ops-line-strong) !important;
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--atelier-butter) !important;
+  padding: 0 !important;
+}
+
+.ops-dashboard-atelier :where(.ops-live-panel, .ops-health-score-card, .ops-realtime-panel) {
+  border-color: var(--ops-line-strong) !important;
+  background: var(--ops-card-surface) !important;
+}
+
+.ops-dashboard-atelier .ops-live-panel {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-health-score-card, .ops-realtime-panel) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.ops-dashboard-atelier .ops-health-score-card {
+  border-right: 0 !important;
+}
+
+.ops-dashboard-atelier .ops-resource-band {
+  border-top: 1px dotted var(--ops-line-strong) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 6px !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.ops-dashboard-atelier .ops-live-panel :where(.ops-metric-card, .ops-system-card),
+.ops-dashboard-atelier .ops-monitor-header :where(.ops-metric-card, .ops-system-card) {
+  background: var(--atelier-paper-2) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card)::before {
+  top: 0;
+  right: 12px;
+  left: 12px;
+  background: var(--ops-rule);
+}
+
+.ops-dashboard-atelier .ops-system-card {
+  min-height: 6rem;
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--atelier-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ops-muted) !important;
+}
+
+.ops-dashboard-atelier :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold) {
+  font-variant-numeric: tabular-nums;
+}
+
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black) {
+  font-family: var(--atelier-font-serif);
+  font-style: italic;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+  color: var(--atelier-blue) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], .font-mono) {
+  font-family: var(--atelier-font-mono) !important;
+  letter-spacing: 0.04em;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], th, label, button, .select-trigger, input) {
+  font-family: var(--atelier-font-mono) !important;
+  letter-spacing: 0.04em;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.font-bold, .font-black, td, .font-mono) {
+  font-variant-numeric: tabular-nums;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.text-primary-600, .text-primary-700, .text-primary-500) {
+  color: var(--atelier-blue) !important;
+}
+
+.ops-dashboard-atelier .ops-icon-butter,
+.ops-dashboard-atelier .ops-chart-dot-butter {
+  color: var(--atelier-butter) !important;
+  background-color: var(--atelier-butter) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card) canvas {
+  filter: saturate(0.92) contrast(1.02);
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card) :where(.rounded-lg, .rounded-xl, .rounded-2xl):where([class~="bg-gray-50"], [class~="bg-white"], [class~="bg-gray-100"]) {
+  border: 1px solid var(--ops-line) !important;
+  border-radius: 6px !important;
+  background: var(--ops-card-surface) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card) :where([class~="h-1.5"], [class~="h-2"]):where([class~="bg-gray-200"], [class~="bg-dark-700"]) {
+  height: 6px;
+  border: 1px solid var(--ops-line-strong);
+  border-radius: 0 !important;
+  background: var(--atelier-paper) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card) :where(.h-full):where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-red-500"], [class~="bg-orange-500"]) {
+  border-radius: 0 !important;
+}
+
+.ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) > :where(.mb-4, div:first-child) {
+  border-bottom: 1px dotted var(--ops-line-strong);
+  padding-bottom: 1rem;
+}
+
+.ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(table) {
+  border-collapse: collapse;
+  font-family: var(--atelier-font-mono);
+}
+
+.ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(thead, th) {
+  background: var(--ops-card-surface) !important;
+  color: var(--ops-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(td, tr) {
+  border-color: var(--ops-line) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) tbody tr:hover {
+  background: var(--atelier-butter) !important;
+  color: var(--ops-ink) !important;
+}
+
+.ops-dashboard-atelier .ops-log-card :where(.rounded-xl.border, .overflow-hidden.rounded-xl) {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 6px !important;
+  background: var(--ops-card-surface) !important;
+}
+
+.ops-dashboard-atelier .ops-log-card > .rounded-xl.border {
+  background: var(--ops-card-surface) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-panel, .ops-monitor-header) :where(.select-trigger, .input, input, select) {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 6px !important;
+  background: var(--atelier-paper) !important;
+  color: var(--ops-ink) !important;
+  box-shadow: none !important;
+}
+
+.ops-dashboard-atelier :where(.ops-monitor-panel, .ops-monitor-header) :where(button):not(:disabled):not(.btn-primary):not(.btn-danger) {
+  border-color: var(--ops-card-edge) !important;
+  color: var(--ops-ink) !important;
+}
+
+.ops-dashboard-atelier .ops-realtime-panel button:where([class~="bg-primary-500"]) {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+}
+
+.ops-dashboard-atelier .ops-realtime-panel button:where([class~="bg-primary-500"]) * {
+  color: var(--atelier-white) !important;
+}
+
+.ops-dashboard-atelier .ops-realtime-panel .h-8.w-full.overflow-hidden {
+  display: none !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-meta {
+  min-width: min(100%, 18rem);
+  padding: 1.125rem 1.35rem;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  position: relative;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-meta::after {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  right: 0;
+  bottom: 0.875rem;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-meta :where(h1, span, div) {
+  color: var(--atelier-paper) !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
+  background: var(--atelier-butter) !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-controls {
+  flex: 1 1 28rem;
+  justify-content: flex-end;
+  padding: 1.125rem 1.35rem;
+  background: var(--atelier-butter) !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-value, .select-icon, .select-icon svg) {
+  color: var(--atelier-paper) !important;
+}
+
+.ops-dashboard-atelier .ops-monitor-toolbar-controls > .hidden.h-4 {
+  background: color-mix(in srgb, var(--atelier-ink) 34%, transparent) !important;
+}
+
+.ops-dashboard-atelier .ops-toolbar-icon-button,
+.ops-dashboard-atelier .ops-toolbar-text-button {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+.ops-dashboard-atelier .ops-toolbar-icon-button:hover,
+.ops-dashboard-atelier .ops-toolbar-text-button:hover {
+  background: color-mix(in srgb, var(--atelier-ink) 8%, transparent) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.ops-dashboard-atelier .ops-toolbar-icon-button :where(svg, path),
+.ops-dashboard-atelier .ops-toolbar-text-button :where(svg, path) {
+  color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+.ops-dashboard-atelier .ops-live-grid {
+  gap: 0 !important;
+  background: var(--ops-card-surface) !important;
+}
+
+.ops-dashboard-atelier .ops-health-score-card,
+.ops-dashboard-atelier .ops-realtime-panel {
+  background: transparent !important;
+}
+
+.ops-dashboard-atelier .ops-health-score-card {
+  padding-right: 1rem;
+}
+
+.ops-dashboard-atelier .ops-realtime-panel {
+  padding-left: 1rem;
 }
 
 .app-layout-content :where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"], [class~="bg-gray-200"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn-primary"]):not([class~="btn-danger"]):not([role="button"]) {
@@ -1409,6 +1897,14 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .app-layout-content :where([class~="bg-emerald-200"], [class~="bg-emerald-300"], [class~="bg-emerald-400"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], [class~="bg-green-200"], [class~="bg-green-300"], [class~="bg-green-400"], [class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-teal-200"], [class~="bg-teal-300"], [class~="bg-teal-400"], [class~="bg-teal-500"], [class~="bg-teal-600"]) {
   background: var(--atelier-dust) !important;
   color: var(--atelier-white) !important;
+}
+
+.app-layout-content :where(.status-dot-active) {
+  background: var(--atelier-blue) !important;
+}
+
+.app-layout-content :where(.status-dot-disabled) {
+  background: var(--atelier-red) !important;
 }
 
 .app-layout-content :where([class~="bg-red-50"], [class~="bg-red-100"], [class~="bg-rose-50"], [class~="bg-rose-100"]) {
@@ -1572,9 +2068,9 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.btn-secondary, .btn-ghost, .codex-button):not(.codex-button--primary):not(.codex-button--danger):hover:not(:disabled),
 .app-layout-content :where(button, a, [role="button"]):where([class~="hover:bg-gray-50"], [class~="hover:bg-gray-100"], [class~="hover:bg-primary-50"]):hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--atelier-blue) 28%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-material-blue) !important;
-  color: var(--atelier-blue-dark) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
 }
 
 :where(.btn-danger, .codex-button--danger),
@@ -1614,8 +2110,39 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.dropdown-item, .floating-dropdown-portal button, .select-option, .date-picker-preset, .action-menu-content button, .action-menu-content a, [class*="dropdown"][class*="portal"] button):hover {
-  background: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2)) !important;
-  color: var(--atelier-blue-dark) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.select-dropdown-portal, .date-picker-dropdown-portal),
+body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-search,
+  .select-dropdown-portal .select-options,
+  .date-picker-dropdown-portal .date-picker-presets,
+  .date-picker-dropdown-portal .date-picker-actions,
+  .date-picker-dropdown-portal .date-picker-custom,
+  .date-picker-dropdown-portal .date-picker-divider
+) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-option,
+  .select-dropdown-portal .select-option-label,
+  .select-dropdown-portal .select-empty,
+  .date-picker-dropdown-portal .date-picker-preset,
+  .date-picker-dropdown-portal .date-picker-label,
+  .date-picker-dropdown-portal .date-picker-separator
+) {
+  color: var(--atelier-paper) !important;
 }
 
 .select-dropdown-portal .select-search,
@@ -1633,8 +2160,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .select-dropdown-portal .select-option-selected,
 .select-dropdown-portal .select-option-focused,
 .date-picker-dropdown-portal .date-picker-preset-active {
-  background: var(--atelier-material-blue-strong) !important;
-  color: var(--atelier-blue) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
 }
 
 :where(.table-wrapper, .table-scroll-container, .table-container) {
@@ -1660,7 +2187,1003 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
 :where(.table-wrapper, .table-scroll-container) tbody tr:hover .sticky-col,
 :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover {
-  background: var(--atelier-material-blue) !important;
+  background: color-mix(in srgb, var(--atelier-paper-2) 76%, var(--atelier-paper)) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:where(.table-wrapper, .table-scroll-container) tbody tr:hover :where(td, .sticky-col, .table-cell),
+:where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th) {
+  background: color-mix(in srgb, var(--atelier-paper-2) 76%, var(--atelier-paper)) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
+:where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover .sticky-col,
+:where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover,
+:where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover :where(td, .sticky-col, .table-cell),
+:where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th) {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:where(.pagination-shell, [aria-label="Pagination"]) {
+  font-family: var(--atelier-font-mono);
+  box-shadow: none !important;
+}
+
+:where(.pagination-shell) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:where(.pagination-shell) :where(button, input, .select-trigger) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+:where(.pagination-shell) :where(button[aria-current="page"]) {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;
+}
+
+:where(.pagination-shell) :where(button:hover:not(:disabled), button[aria-current="page"]:hover) {
+  border-color: var(--atelier-line-strong) !important;
+  background: color-mix(in srgb, var(--atelier-paper-2) 76%, var(--atelier-paper)) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.data-table-atelier :where(.table-header, .sticky-header-cell, .sticky-col),
+.table-wrapper :where(.sticky-header-cell, .sticky-col) {
+  box-shadow: none !important;
+}
+
+/* Console-wide parity for pages that do not use the dashboard/ops hooks. */
+.app-layout-content,
+.app-layout-content :where(button, input, select, textarea, table, .select-trigger, .date-picker-trigger),
+:where(.floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content) {
+  font-family: var(--atelier-font-sans);
+}
+
+.app-layout-content :where(.font-mono, code, kbd, samp, table, th, .select-trigger, .date-picker-trigger, .btn, [class*="amount"], [class*="price"], [class*="quota"], [class*="balance"], [class*="count"]) {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-layout-content .table-page-layout {
+  color: var(--atelier-ink);
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed {
+  border: 1px solid var(--atelier-material-edge) !important;
+  border-radius: 8px;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  padding: 1rem;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed + .layout-section-fixed {
+  margin-top: -0.25rem;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed::before {
+  right: 16px;
+  left: 16px;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 66%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.select-value, .select-icon, .select-icon svg, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed .relative > svg {
+  color: color-mix(in srgb, var(--atelier-paper) 76%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.btn-secondary, .btn-ghost):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed :where(.btn-secondary, .btn-ghost):hover:not(:disabled) {
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed .card {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed .card:hover {
+  transform: none;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create) {
+  position: relative;
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+  overflow: visible;
+  background-clip: padding-box !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .users-filter-create::before {
+  content: none;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create):hover:not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create) :where(svg, span) {
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section {
+  overflow: hidden;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .users-filter-shell),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-shell) {
+  min-height: 3.25rem;
+  margin: -1rem;
+  padding: 1rem;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col {
+  min-height: 3.25rem;
+  margin: -1rem;
+  padding: 0;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) {
+  align-items: stretch !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) {
+  align-self: stretch;
+  position: relative;
+  margin: -1rem 0 -1rem -1rem;
+  padding: 1rem;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left)::after,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child::after,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left)::after {
+  content: none;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left) :where(label, span, svg),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child :where(label, span, svg),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) :where(label, span, svg) {
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .justify-between, .users-filter-shell) > :not(:last-child) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .justify-between, .users-filter-shell) > :not(:last-child) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)::placeholder,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)::placeholder,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .justify-between, .users-filter-shell) > :not(:last-child) :where(.select-value, .select-icon, .select-icon svg, .date-picker-icon, .date-picker-chevron),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child :where(.select-value, .select-icon, .select-icon svg, .date-picker-icon, .date-picker-chevron),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) :where(.select-value, .select-icon, .select-icon svg, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) {
+  align-self: stretch;
+  position: relative;
+  margin: -1rem -1rem -1rem 0;
+  padding: 1rem;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child::before,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
+  border-color: var(--atelier-paper) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(svg, path, span),
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(svg, path, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-card, .usage-filter-card:hover) {
+  margin: -1rem;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .usage-filter-card > :where(div) {
+  padding: 0 !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-shell, .users-filter-shell) {
+  align-items: stretch !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left .input-label, .usage-filter-left label) {
+  color: color-mix(in srgb, var(--atelier-paper) 82%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child,
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child {
+  margin: 0;
+  padding: 1rem;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child {
+  margin: -1rem 0 -1rem -1rem;
+  padding: 1rem;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child {
+  margin: -1rem -1rem -1rem 0;
+  padding: 1rem;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .relative > svg.absolute {
+  left: 0.75rem !important;
+  z-index: 2;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--atelier-paper) 76%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .relative > svg.absolute + input.input.pl-10 {
+  padding-left: 2.5rem !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .table-filter-search {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .table-filter-search > svg {
+  left: 0.75rem !important;
+  z-index: 2;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--atelier-paper) 76%, transparent) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .table-filter-search > input.input.pl-10 {
+  padding-left: 2.5rem !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .table-filter-search > svg + input.input.pl-10 {
+  width: 100%;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section .table-filter-search > input.input.pl-10 {
+  box-sizing: border-box;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section {
+  overflow: visible;
+  background: var(--atelier-paper-2) !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .users-filter-shell) {
+  min-height: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.table-filter-left, .table-filter-actions) {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.table-filter-left, .table-filter-actions)::before,
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.table-filter-left, .table-filter-actions)::after {
+  content: none !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input, .btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  outline: none;
+  box-shadow: none !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input, .btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.select-value, .select-icon, .select-icon svg, svg, path, span) {
+  color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-actions-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
+  border-color: var(--atelier-ink) !important;
+  border-image: none !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  overflow: hidden !important;
+  background-clip: padding-box !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-actions-section :where(.select-value, .select-icon, .select-icon svg, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content :where(.settings-tab-active, [role="tab"][aria-selected="true"], button[aria-selected="true"], button[class~="bg-white"][class~="shadow"], button[class~="bg-white"][class~="shadow-sm"], button[class~="bg-primary-50"]) {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content :where(.settings-tab-active, [role="tab"][aria-selected="true"], button[aria-selected="true"], button[class~="bg-white"][class~="shadow"], button[class~="bg-white"][class~="shadow-sm"], button[class~="bg-primary-50"]) :where(svg, span) {
+  color: var(--atelier-white) !important;
+}
+
+.app-layout-content .pagination-shell :where(button[aria-current="page"]) {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;
+}
+
+.app-layout-content .pagination-shell :where(button[aria-current="page"] :where(svg, span)) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-pagination-section {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-pagination-section :where(.pagination-shell, nav[aria-label="Pagination"]) {
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-pagination-section :where(button, input, .select-trigger) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-pagination-section :where(.select-value, .select-icon, .select-icon svg, button svg, button span) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .table-page-layout > .layout-section-fixed.table-page-pagination-section :where(button[aria-current="page"]) {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;
+}
+
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]) {
+  border: 1px solid var(--atelier-material-edge) !important;
+  border-radius: 8px !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease);
+}
+
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+.app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600) {
+  color: var(--atelier-ink) !important;
+}
+
+:where(.floating-dropdown-portal, .action-menu-content, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.border-t, .border-b, .divide-y > *) {
+  border-color: var(--atelier-material-edge) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-monitor-header {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .card) {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-live-panel, .ops-metric-card, .ops-system-card) {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 6px !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-live-panel {
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-health-score-card, .ops-realtime-panel) {
+  border: 0 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-health-score-card {
+  border-right: 0 !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-realtime-panel button:where([class~="bg-primary-500"]) {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-realtime-panel button:where([class~="bg-primary-500"]) * {
+  color: var(--atelier-white) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-realtime-panel .h-8.w-full.overflow-hidden {
+  display: none !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-toolbar, .ops-resource-band) {
+  border-color: var(--atelier-line-strong) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black) {
+  font-family: var(--atelier-font-serif) !important;
+  font-style: italic !important;
+  font-weight: 600 !important;
+  color: var(--atelier-blue) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], .font-mono, th, label, button, input, .select-trigger) {
+  font-family: var(--atelier-font-mono) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover,
+.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover,
+.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
+.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
+  background-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
+.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
+.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
+.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
+  color: var(--atelier-ink) !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500,
+.app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500:hover {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-realtime-panel {
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 16px;
+  left: 16px;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  pointer-events: none;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta {
+  position: relative;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(h1, div, span, svg),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover :where(h1, div, span, svg),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta::after {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  right: 0;
+  bottom: 0.875rem;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls {
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-toolbar-icon-button,
+#app .app-layout-content .ops-dashboard-atelier .ops-toolbar-text-button,
+#app .app-layout-content .ops-dashboard-atelier .ops-toolbar-icon-button:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-toolbar-text-button:hover {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+.select-dropdown-portal.ops-toolbar-select-menu {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+.select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+.select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-option svg, .select-empty) {
+  color: var(--atelier-paper) !important;
+}
+
+.select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected) {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+.select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected) :where(.select-option-label, svg) {
+  color: var(--atelier-ink) !important;
+}
+
+body .select-dropdown-portal.ops-toolbar-select-menu,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-search,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-options {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-label,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option svg,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-empty {
+  color: var(--atelier-paper) !important;
+}
+
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover .select-option-label,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused .select-option-label,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected .select-option-label,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover svg,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused svg,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected svg {
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
+  --atelier-card-surface: var(--atelier-butter);
+  --atelier-material-2: var(--atelier-butter);
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
+  background-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+.ops-diagnosis-popover {
+  z-index: 100000200 !important;
+  overflow: visible !important;
+  border: 1px solid rgba(255, 250, 240, 0.24) !important;
+  border-radius: 12px !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: 0 18px 40px -26px rgba(23, 21, 18, 0.72) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-monitor-header > .grid, .ops-live-panel, .ops-live-grid, .ops-health-score-card),
+body:has(.ops-dashboard-atelier) :where(.ops-monitor-header, .ops-monitor-header > .grid, .ops-live-panel, .ops-live-grid, .ops-health-score-card) {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel {
+  z-index: 40 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel:has(.ops-health-score-card:hover),
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid:has(.ops-health-score-card:hover),
+body:has(.ops-dashboard-atelier) .ops-live-panel:has(.ops-health-score-card:hover),
+body:has(.ops-dashboard-atelier) .ops-live-grid:has(.ops-health-score-card:hover) {
+  z-index: 100000140 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:hover,
+body:has(.ops-dashboard-atelier) .ops-health-score-card:hover {
+  z-index: 100000160 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:hover .ops-diagnosis-popover,
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:focus-within .ops-diagnosis-popover,
+body:has(.ops-dashboard-atelier) .ops-health-score-card:hover .ops-diagnosis-popover {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  z-index: 100000240 !important;
+}
+
+.app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover > div,
+body:has(.ops-dashboard-atelier) .ops-diagnosis-popover > div,
+.ops-diagnosis-popover > div {
+  border: 1px solid rgba(255, 250, 240, 0.24) !important;
+  border-radius: 12px !important;
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: 0 18px 40px -26px rgba(23, 21, 18, 0.72) !important;
+  --atelier-card-surface: var(--atelier-ink);
+  --atelier-material-2: var(--atelier-ink);
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover *,
+body:has(.ops-dashboard-atelier) .ops-diagnosis-popover *,
+.ops-diagnosis-popover * {
+  border-color: rgba(255, 250, 240, 0.24) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover :where(svg, path),
+body:has(.ops-dashboard-atelier) .ops-diagnosis-popover :where(svg, path),
+.ops-diagnosis-popover :where(svg, path) {
+  color: var(--atelier-paper) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover :where(h4, div, span, p, svg),
+body:has(.ops-dashboard-atelier) .ops-diagnosis-popover :where(h4, div, span, p, svg),
+.ops-diagnosis-popover :where(h4, div, span, p, svg) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-presets,
+  .date-picker-dropdown-portal .date-picker-actions,
+  .date-picker-dropdown-portal .date-picker-custom,
+  .date-picker-dropdown-portal .date-picker-divider,
+  .select-dropdown-portal .select-search,
+  .select-dropdown-portal .select-options
+) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-preset,
+  .date-picker-dropdown-portal .date-picker-label,
+  .date-picker-dropdown-portal .date-picker-separator,
+  .select-dropdown-portal .select-option,
+  .select-dropdown-portal .select-option-label,
+  .select-dropdown-portal .select-option svg,
+  .select-dropdown-portal .select-empty
+) {
+  color: var(--atelier-paper) !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-icon,
+  .date-picker-dropdown-portal .date-picker-chevron,
+  .select-dropdown-portal .select-icon
+) {
+  color: var(--atelier-paper) !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-input,
+  .select-dropdown-portal .select-search-input
+) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-preset:hover,
+  .date-picker-dropdown-portal .date-picker-preset-active,
+  .select-dropdown-portal .select-option:hover,
+  .select-dropdown-portal .select-option-focused,
+  .select-dropdown-portal .select-option-selected
+) {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+body.dashboard-filter-menu-open :where(
+  .date-picker-dropdown-portal .date-picker-preset,
+  .date-picker-dropdown-portal .date-picker-preset:hover,
+  .date-picker-dropdown-portal .date-picker-preset-active,
+  .date-picker-dropdown-portal .date-picker-preset-active:hover
+) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-presets,
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset,
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:hover,
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset-active,
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset-active:hover {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal),
+body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-search,
+  .select-dropdown-portal .select-options,
+  .date-picker-dropdown-portal .date-picker-presets,
+  .date-picker-dropdown-portal .date-picker-actions,
+  .date-picker-dropdown-portal .date-picker-custom,
+  .date-picker-dropdown-portal .date-picker-divider
+) {
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-option,
+  .select-dropdown-portal .select-option-label,
+  .select-dropdown-portal .select-option svg,
+  .select-dropdown-portal .select-empty,
+  .date-picker-dropdown-portal .date-picker-preset,
+  .date-picker-dropdown-portal .date-picker-label,
+  .date-picker-dropdown-portal .date-picker-separator,
+  .date-picker-dropdown-portal .date-picker-icon,
+  .date-picker-dropdown-portal .date-picker-chevron
+) {
+  color: var(--atelier-paper) !important;
+}
+
+body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-option:hover,
+  .select-dropdown-portal .select-option-focused,
+  .select-dropdown-portal .select-option-selected,
+  .date-picker-dropdown-portal .date-picker-preset:hover,
+  .date-picker-dropdown-portal .date-picker-preset-active
+) {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
 }
 
 :where(.badge, [class*="badge"], [class*="pill"], [class*="chip"]):not(.home-provider-chip) {
@@ -1686,8 +3209,30 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   color: var(--atelier-butter-dark) !important;
 }
 
+.app-header-atelier .balance-chip-buzz,
+.app-header-atelier .balance-chip-system {
+  border: 0 !important;
+  border-left: 1px dotted var(--atelier-line-strong) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+.app-header-atelier .balance-chip-buzz:hover,
+.app-header-atelier .balance-chip-system:hover {
+  border-color: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-line-strong)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
 .balance-buzz-text {
   color: var(--atelier-butter-dark) !important;
+}
+
+.app-header-atelier .balance-buzz-text,
+.app-header-atelier .balance-system-text {
+  color: var(--atelier-ink) !important;
 }
 
 .dark .balance-chip-buzz,
@@ -1761,6 +3306,28 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .dark :where(.table-wrapper, .table-scroll-container) :where(.table-body, .sticky-col),
 .dark :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) :where(td, tbody) {
   color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+  --atelier-card-surface: var(--atelier-butter);
+  --atelier-material-2: var(--atelier-butter);
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-monitor-panel, .ops-metric-card, .ops-system-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600, svg) {
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg),
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh :where(span, svg) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -47,10 +47,10 @@ const isDarkMode = computed(() => document.documentElement.classList.contains('d
 const colors = computed(() => ({
   blue: '#002FA7',
   blueAlpha: '#002FA720',
-  green: '#10b981',
-  greenAlpha: '#10b98120',
-  grid: isDarkMode.value ? '#374151' : '#f3f4f6',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  butter: '#c79a3a',
+  butterAlpha: '#c79a3a26',
+  grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
+  text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
 
 const totalRequests = computed(() => sumNumbers(props.points.map((p) => p.request_count)))
@@ -73,8 +73,8 @@ const chartData = computed(() => {
       {
         label: t('admin.ops.tpsK'),
         data: props.points.map((p) => (p.tps ?? 0) / 1000),
-        borderColor: colors.value.green,
-        backgroundColor: colors.value.greenAlpha,
+        borderColor: colors.value.butter,
+        backgroundColor: colors.value.butterAlpha,
         fill: true,
         tension: 0.4,
         pointRadius: 0,
@@ -104,9 +104,9 @@ const options = computed(() => {
         labels: { color: c.text, usePointStyle: true, boxWidth: 6, font: { size: 10 } }
       },
       tooltip: {
-        backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-        titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-        bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563',
+        backgroundColor: isDarkMode.value ? '#171512' : '#fbf8f0',
+        titleColor: isDarkMode.value ? '#fffaf0' : '#171512',
+        bodyColor: isDarkMode.value ? '#fffaf0' : '#70685c',
         borderColor: c.grid,
         borderWidth: 1,
         padding: 10,
@@ -150,7 +150,7 @@ const options = computed(() => {
         display: true,
         position: 'right' as const,
         grid: { display: false },
-        ticks: { color: c.green, font: { size: 10 } }
+        ticks: { color: c.butter, font: { size: 10 } }
       }
     }
   }
@@ -173,7 +173,7 @@ function downloadChart() {
 </script>
 
 <template>
-  <div class="flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="ops-monitor-panel ops-chart-card ops-throughput-card flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex shrink-0 items-center justify-between">
       <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
         <svg class="h-4 w-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,7 +184,7 @@ function downloadChart() {
       </h3>
       <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
         <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-primary-500"></span>QPS</span>
-        <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-primary-500"></span>{{ t('admin.ops.tpsK') }}</span>
+        <span class="flex items-center gap-1"><span class="ops-chart-dot-butter h-2 w-2 rounded-full"></span>{{ t('admin.ops.tpsK') }}</span>
         <template v-if="!props.fullscreen">
           <button
             type="button"

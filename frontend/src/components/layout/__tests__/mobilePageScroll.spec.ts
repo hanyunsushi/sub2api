@@ -16,7 +16,8 @@ describe('mobile page scrolling', () => {
     expect(source).toContain("'page'")
     expect(source).toContain('table-page-layout--page-scroll')
     expect(source).toContain('overflow-y: visible;')
-    expect(accountsSource).toContain('<TablePageLayout scroll-mode="page">')
+    expect(accountsSource).toContain('scroll-mode="page"')
+    expect(accountsSource).toContain('class="accounts-table-page"')
     expect(accountsSource).toContain('vertical-scroll-mode="page"')
   })
 

@@ -191,7 +191,7 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(css).toContain('::-webkit-scrollbar')
   })
 
-  it('keeps native smooth scrolling without Lenis or the old wheel hijacker', () => {
+  it('keeps smooth scrolling with Lenis and without the old wheel hijacker', () => {
     const css = readFile('src/style.css')
     const main = readFile('src/main.ts')
 
@@ -201,8 +201,9 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(css).toContain('.overflow-y-auto')
     expect(css).toContain('.overflow-auto')
     expect(css).toContain('overscroll-behavior')
+    expect(css).toContain('html.lenis')
+    expect(main).toContain("import Lenis from 'lenis'")
     expect(main).not.toContain('installInertialScrolling')
-    expect(css).not.toContain('html.lenis')
     expect(main).not.toContain('installSmoothWheelScrolling')
   })
 })
