@@ -1,7 +1,20 @@
-import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
 
 import TokenUsageTrend from '../TokenUsageTrend.vue'
+import type { TrendDataPoint } from '@/types'
+
+type ChartDatasetSnapshot = {
+  label: string
+  data: number[]
+  borderColor?: string
+  borderDash?: number[]
+  yAxisID?: string
+}
+
+type ChartDataSnapshot = {
+  datasets: ChartDatasetSnapshot[]
+}
 
 const messages: Record<string, string> = {
   'admin.dashboard.tokenUsageTrend': 'Token Usage Trend',
@@ -23,12 +36,27 @@ vi.mock('vue-chartjs', () => ({
     props: ['data', 'options'],
     template: `
       <div>
-        <div class="line-chart-data">{{ JSON.stringify(data) }}</div>
+        <div class="line-chart-data chart-data">{{ JSON.stringify(data) }}</div>
         <div class="line-chart-options">{{ JSON.stringify(options) }}</div>
       </div>
     `,
   },
 }))
+
+const mountTrend = (trendData: TrendDataPoint[]) =>
+  mount(TokenUsageTrend, {
+    props: {
+      trendData,
+    },
+    global: {
+      stubs: {
+        LoadingSpinner: true,
+      },
+    },
+  })
+
+const readChartData = (wrapper: ReturnType<typeof mount>): ChartDataSnapshot =>
+  JSON.parse(wrapper.find('.line-chart-data').text()) as ChartDataSnapshot
 
 describe('TokenUsageTrend', () => {
   const trendData = [
@@ -57,19 +85,10 @@ describe('TokenUsageTrend', () => {
   ]
 
   it('uses distinct semantic colors for token lines and cache hit rate', () => {
-    const wrapper = mount(TokenUsageTrend, {
-      props: {
-        trendData,
-      },
-      global: {
-        stubs: {
-          LoadingSpinner: true,
-        },
-      },
-    })
+    const wrapper = mountTrend(trendData)
 
-    const chartData = JSON.parse(wrapper.find('.line-chart-data').text())
-    const colors = chartData.datasets.map((dataset: { borderColor: string }) => dataset.borderColor)
+    const chartData = readChartData(wrapper)
+    const colors = chartData.datasets.map((dataset) => dataset.borderColor)
 
     expect(colors).toEqual(['#002FA7', '#001E6E', '#c79a3a', '#4f6a8c', '#171512'])
     expect(new Set(colors).size).toBe(colors.length)
@@ -77,36 +96,72 @@ describe('TokenUsageTrend', () => {
     expect(chartData.datasets[4].borderDash).toEqual([5, 5])
     expect(chartData.datasets[4].yAxisID).toBe('yPercent')
 
-    const chartOptions = JSON.parse(wrapper.find('.line-chart-options').text())
+    const chartOptions = JSON.parse(wrapper.find('.line-chart-options').text()) as {
+      scales: { yPercent: { ticks: { color: string } } }
+    }
     expect(chartOptions.scales.yPercent.ticks.color).toBe('#171512')
   })
 
-  it('calculates cache hit rate against all input-side tokens', () => {
-    const wrapper = mount(TokenUsageTrend, {
-      props: {
-        trendData: [
-          {
-            date: '2026-05-15',
-            requests: 1,
-            input_tokens: 600,
-            output_tokens: 120,
-            cache_creation_tokens: 300,
-            cache_read_tokens: 600,
-            total_tokens: 1620,
-            cost: 0.4,
-            actual_cost: 0.2,
-          },
-        ],
+  it('calculates cache hit rate against all prompt tokens', () => {
+    const wrapper = mountTrend([
+      {
+        date: '2026-05-08',
+        requests: 1,
+        input_tokens: 500,
+        output_tokens: 100,
+        cache_creation_tokens: 0,
+        cache_read_tokens: 1500,
+        total_tokens: 2100,
+        cost: 0.01,
+        actual_cost: 0.005,
       },
-      global: {
-        stubs: {
-          LoadingSpinner: true,
-        },
-      },
-    })
+    ])
 
-    const chartData = JSON.parse(wrapper.find('.line-chart-data').text())
-    expect(chartData.datasets[4].label).toBe('Cache Hit Rate')
-    expect(chartData.datasets[4].data).toEqual([40])
+    const chartData = readChartData(wrapper)
+    const hitRateDataset = chartData.datasets.find((dataset) => dataset.label === 'Cache Hit Rate')
+
+    expect(hitRateDataset?.data[0]).toBe(75)
+  })
+
+  it('returns 0 hit rate when all prompt tokens are zero', () => {
+    const wrapper = mountTrend([
+      {
+        date: '2026-05-08',
+        requests: 0,
+        input_tokens: 0,
+        output_tokens: 0,
+        cache_creation_tokens: 0,
+        cache_read_tokens: 0,
+        total_tokens: 0,
+        cost: 0,
+        actual_cost: 0,
+      },
+    ])
+
+    const chartData = readChartData(wrapper)
+    const hitRateDataset = chartData.datasets.find((dataset) => dataset.label === 'Cache Hit Rate')
+
+    expect(hitRateDataset?.data[0]).toBe(0)
+  })
+
+  it('includes cache_creation_tokens in denominator for Anthropic models', () => {
+    const wrapper = mountTrend([
+      {
+        date: '2026-05-08',
+        requests: 1,
+        input_tokens: 200,
+        output_tokens: 50,
+        cache_creation_tokens: 300,
+        cache_read_tokens: 500,
+        total_tokens: 1050,
+        cost: 0.02,
+        actual_cost: 0.01,
+      },
+    ])
+
+    const chartData = readChartData(wrapper)
+    const hitRateDataset = chartData.datasets.find((dataset) => dataset.label === 'Cache Hit Rate')
+
+    expect(hitRateDataset?.data[0]).toBe(50)
   })
 })
