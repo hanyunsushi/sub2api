@@ -57,6 +57,8 @@
   --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
   --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
   --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.36), rgba(255, 250, 240, 0.36) 2px, transparent 2px, transparent 8px);
+  --atelier-filter-stitch-horizontal: var(--atelier-console-rule);
+  --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
   --atelier-scrollbar: var(--atelier-lime);
   --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
   --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
@@ -4845,6 +4847,15 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected .pl
   --platform-icon-color: var(--atelier-dust);
 }
 
+.platform-icon,
+.platform-icon :where(path, circle, rect, polygon) {
+  color: var(--platform-icon-color, currentColor) !important;
+  fill: currentColor !important;
+  stroke: none !important;
+  filter: none !important;
+  -webkit-text-fill-color: var(--platform-icon-color, currentColor) !important;
+}
+
 body:has(.table-page-layout) .date-picker-dropdown-portal,
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
   border-color: rgba(255, 250, 240, 0.32) !important;
@@ -5149,6 +5160,155 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
   stroke: currentColor !important;
+}
+
+/* Alert and log panels are data regions; keep row hover, not panel hover. */
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card):hover {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, svg) {
+  color: inherit !important;
+}
+
+/* Non-dashboard/ops filter bars are unified ink blocks with perimeter stitching. */
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
+#app .app-layout-content .user-keys-atelier > .table-page-filter-section,
+#app .app-layout-content .user-usage-atelier > .table-page-filter-section,
+#app .app-layout-content .global-pricing-filter-card,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section::after,
+#app .app-layout-content .user-keys-atelier > .table-page-filter-section::after,
+#app .app-layout-content .user-usage-atelier > .table-page-filter-section::after,
+#app .app-layout-content .global-pricing-filter-card::after,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap::after,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card::after,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card::after,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  background:
+    var(--atelier-filter-stitch-horizontal) top left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat,
+    var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat;
+  pointer-events: none;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell),
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  .usage-filter-card,
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  .usage-filter-card > .usage-filter-shell,
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section,
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > .accounts-filter-shell,
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,
+#app .app-layout-content .user-keys-atelier > .table-page-filter-section,
+#app .app-layout-content .user-keys-atelier .keys-filter-shell,
+#app .app-layout-content .user-keys-atelier .keys-filter-actions,
+#app .app-layout-content .user-usage-atelier > .table-page-filter-section,
+#app .app-layout-content .user-usage-atelier .usage-filter-card,
+#app .app-layout-content .user-usage-atelier .usage-filter-shell,
+#app .app-layout-content .user-usage-atelier .usage-filter-actions,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-shell,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+#app .app-layout-content .global-pricing-filter-card,
+#app .app-layout-content .global-pricing-filter-shell,
+#app .app-layout-content .global-pricing-filter-actions {
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before,
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)::before,
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions::before,
+#app .app-layout-content .user-keys-atelier .keys-filter-actions::before,
+#app .app-layout-content .global-pricing-filter-actions::before,
+#app .app-layout-content .user-usage-atelier .usage-filter-actions::before,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before {
+  content: none !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .keys-filter-actions, .global-pricing-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
+#app .app-layout-content .user-keys-atelier .keys-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled),
+#app .app-layout-content .user-usage-atelier .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
+#app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button, .hash-pill):not(:disabled) {
+  border-color: rgba(255, 250, 240, 0.42) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .keys-filter-actions, .global-pricing-filter-actions)
+  :where(svg, path, span),
+#app .app-layout-content .user-keys-atelier .keys-filter-actions :where(svg, path, span),
+#app .app-layout-content .user-usage-atelier .usage-filter-actions :where(svg, path, span),
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(svg, path, span),
+#app .app-layout-content .global-pricing-filter-actions :where(svg, path, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-row {
+  display: grid !important;
+  grid-template-columns: 2rem minmax(5rem, 1fr) 2.4rem auto;
+  align-items: center;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-track {
+  width: 100% !important;
+  min-width: 5rem;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-stats-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-label,
+#app .app-layout-content .accounts-table-page .usage-progress-percent {
+  width: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

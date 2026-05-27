@@ -80,7 +80,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['ollama'],
-    { iconModel: 'ollama', label: 'OL', background: '#F8FAFC', color: '#334155', border: '#CBD5E1' },
+    { iconModel: 'ollama', label: 'OL', background: '#EEF8F3', color: '#2F7D59', border: '#A7D9BF' },
   ],
   [
     ['cloudflare'],
@@ -108,15 +108,15 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['jina'],
-    { iconModel: 'jina', label: 'JI', background: '#F8FAFC', color: '#334155', border: '#CBD5E1' },
+    { iconModel: 'jina', label: 'JI', background: '#FFF1F6', color: '#D9487D', border: '#F9B4CC' },
   ],
   [
     ['midjourney'],
-    { iconModel: 'midjourney', label: 'MJ', background: '#F8FAFC', color: '#334155', border: '#CBD5E1' },
+    { iconModel: 'midjourney', label: 'MJ', background: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' },
   ],
   [
     ['suno'],
-    { iconModel: 'suno', label: 'SU', background: '#F8FAFC', color: '#334155', border: '#CBD5E1' },
+    { iconModel: 'suno', label: 'SU', background: '#FFF4ED', color: '#FF5A1F', border: '#FDBA74' },
   ],
   [
     ['360', 'ai360'],

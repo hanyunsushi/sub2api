@@ -828,6 +828,22 @@ onBeforeUnmount(() => {
   background: repeating-linear-gradient(to right, rgba(23, 21, 18, 0.36), rgba(23, 21, 18, 0.36) 2px, transparent 2px, transparent 8px);
 }
 
+.admin-dashboard-atelier :deep(.dashboard-filter-card)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  height: auto;
+  border-radius: inherit;
+  background:
+    var(--atelier-filter-stitch-horizontal) top left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat,
+    var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat;
+  pointer-events: none;
+}
+
 .admin-dashboard-atelier :deep(.dashboard-filter-card:hover) {
   transform: none;
   border-color: var(--atelier-ink) !important;
