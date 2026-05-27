@@ -1202,19 +1202,6 @@
   opacity: 0;
 }
 
-.auth-ascii-background .guizang-site-background__canvas {
-  mix-blend-mode: screen;
-  opacity: 0.92;
-}
-
-.auth-ascii-background {
-  position: absolute;
-}
-
-.auth-ascii-background {
-  z-index: 0;
-}
-
 .app-layout-shell {
   background: var(--atelier-canvas);
   background-image:
@@ -3227,6 +3214,16 @@ body:has(.table-page-layout) :where(
   background: transparent !important;
 }
 
+#app .app-layout-content .accounts-table-page .table-wrapper tbody.table-body {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  background: transparent !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody.table-body > tr + tr {
+  border-top-color: var(--atelier-material-edge) !important;
+}
+
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3272,6 +3269,28 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="usage"] {
   grid-column: 1 / -1;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex {
+  border-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-primary-500 {
+  background: var(--atelier-blue) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-gray-200 {
+  background: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex > span {
+  background: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-primary-500 > span {
+  background: var(--atelier-paper-2) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] {
@@ -4169,10 +4188,6 @@ body:has(.table-page-layout) :where(
   background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto !important;
 }
 
-.auth-ascii-shell .auth-ascii-background {
-  opacity: 0.42;
-}
-
 .auth-ascii-shell > .relative.z-10 {
   max-width: 31rem !important;
 }
@@ -4791,6 +4806,43 @@ body:has(.table-page-layout) :where(
 ) {
   background: var(--atelier-butter) !important;
   color: var(--atelier-ink) !important;
+}
+
+.select-dropdown-portal .platform-icon,
+.select-dropdown-portal .select-option:hover .platform-icon,
+.select-dropdown-portal .select-option-focused .platform-icon,
+.select-dropdown-portal .select-option-selected .platform-icon,
+body:has(.table-page-layout) .select-dropdown-portal .platform-icon,
+body.dashboard-filter-menu-open .select-dropdown-portal .platform-icon,
+body .select-dropdown-portal.ops-toolbar-select-menu .platform-icon,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover .platform-icon,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused .platform-icon,
+body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected .platform-icon {
+  color: var(--platform-icon-color, currentColor) !important;
+  fill: currentColor !important;
+  stroke: none !important;
+  filter: none !important;
+  -webkit-text-fill-color: var(--platform-icon-color, currentColor) !important;
+}
+
+.platform-icon--anthropic {
+  --platform-icon-color: #d97706;
+}
+
+.platform-icon--openai {
+  --platform-icon-color: #10a37f;
+}
+
+.platform-icon--gemini {
+  --platform-icon-color: #4285f4;
+}
+
+.platform-icon--antigravity {
+  --platform-icon-color: #7c3aed;
+}
+
+.platform-icon--default {
+  --platform-icon-color: var(--atelier-dust);
 }
 
 body:has(.table-page-layout) .date-picker-dropdown-portal,

@@ -8,18 +8,21 @@ const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'utf8')
 
 describe('home and auth contrast on Atelier structured color surfaces', () => {
-  it('uses themed footer microcopy and links on auth pages', () => {
+  it('uses static themed footer microcopy and links on auth pages', () => {
     const authLayout = readFile('src/components/layout/AuthLayout.vue')
     const style = readFile('src/style.css')
 
     expect(authLayout).toContain('auth-footer-link')
     expect(authLayout).toContain('color: var(--atelier-muted);')
     expect(authLayout).toContain('color: var(--atelier-blue);')
+    expect(authLayout).not.toContain("import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'")
+    expect(authLayout).not.toContain('<GuizangAsciiBackground tone="light" class="auth-ascii-background" />')
     expect(style).toContain('.auth-ascii-shell,')
     expect(style).toContain('.auth-ascii-shell .paper-card')
     expect(style).toContain('.auth-ascii-shell .text-gradient')
     expect(style).toContain('--atelier-canvas:')
     expect(style).toContain('--atelier-surface-panel:')
+    expect(style).not.toContain('.auth-ascii-background')
   })
 
   it('keeps default home header and CTA readable on the ASCII background', () => {
