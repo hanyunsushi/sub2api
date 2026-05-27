@@ -61,9 +61,9 @@
   --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
   --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
   --atelier-module-enter-duration: 0.9s;
-  --sans: "Inter Tight", "Arial Narrow", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --serif: "Playfair Display", "Iowan Old Style", "Charter", Georgia, serif;
-  --mono: "SFMono-Regular", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --serif: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --mono: "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -1667,8 +1667,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black) {
-  font-family: var(--atelier-font-serif);
-  font-style: italic;
+  font-family: var(--atelier-font-mono);
+  font-style: normal;
   font-weight: 600 !important;
   letter-spacing: 0;
   color: var(--atelier-blue) !important;
@@ -2661,7 +2661,7 @@ body:has(.table-page-layout) :where(
   box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;
 }
 
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]) {
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]) {
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 8px !important;
   background: var(--atelier-paper-2) !important;
@@ -2674,7 +2674,7 @@ body:has(.table-page-layout) :where(
     box-shadow 0.26s var(--atelier-ease);
 }
 
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
   transform: translate3d(0, -2px, 0);
   border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
   background: var(--atelier-paper-2) !important;
@@ -2682,18 +2682,1628 @@ body:has(.table-page-layout) :where(
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
-.app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+.app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
   border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
   background: var(--atelier-butter) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600) {
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600) {
   color: var(--atelier-ink) !important;
 }
 
 :where(.floating-dropdown-portal, .action-menu-content, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.border-t, .border-b, .divide-y > *) {
   border-color: var(--atelier-material-edge) !important;
+}
+
+/* Current visual iteration: precise split filters, account cards, and settings tabs. */
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section {
+  overflow: hidden !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell) {
+  gap: 0 !important;
+  align-items: stretch !important;
+  margin: -1rem !important;
+  padding: 0 !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left) {
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) {
+  align-self: stretch !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions) {
+  justify-content: flex-end !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left)
+  :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left)
+  :where(label, span, svg, .select-value, .select-icon, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left)
+  :where(input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
+  border-color: var(--atelier-paper) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(svg, path, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-search, .relative) > svg.absolute {
+  left: 0.75rem !important;
+  z-index: 2;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--atelier-paper) 76%, transparent) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-search, .relative) > input.input.pl-10,
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  .table-filter-left .relative > input.input.pl-10 {
+  box-sizing: border-box;
+  padding-left: 2.5rem !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left) .pointer-events-none.absolute {
+  z-index: 2;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left) .pointer-events-none.absolute + input.input.pl-10 {
+  padding-left: 2.5rem !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  .usage-filter-card {
+  margin: -1rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  .usage-filter-card > .usage-filter-shell {
+  margin: 0 !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card {
+  overflow: hidden !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div {
+  gap: 0 !important;
+  align-items: stretch !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range {
+  margin: -1rem 0 -1rem -1rem !important;
+  padding: 1rem 0.75rem 1rem 1rem !important;
+  background: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {
+  position: relative;
+  align-self: stretch !important;
+  margin: -1rem 0 !important;
+  border-color: var(--atelier-ink) !important;
+  border-radius: 0 !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh::after {
+  content: "";
+  position: absolute;
+  top: 0.875rem !important;
+  right: 0 !important;
+  bottom: 0.875rem !important;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert) !important;
+  pointer-events: none;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-granularity {
+  align-self: stretch !important;
+  margin-left: 0 !important;
+  padding-left: 1rem !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-range :where(span, svg),
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-refresh,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-refresh :where(span, svg),
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card {
+  overflow: hidden !important;
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell {
+  gap: 0 !important;
+  align-items: stretch !important;
+  margin: -1rem !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range {
+  align-self: stretch !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:hover,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:focus-visible,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger-open {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
+  position: relative !important;
+  align-self: stretch !important;
+  margin-left: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger:hover,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger-open {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger :where(.select-value, .select-icon, svg, path, span) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap {
+  overflow: hidden;
+  border: 1px solid var(--atelier-ink);
+  border-radius: 8px;
+  background: var(--atelier-butter);
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-card {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 !important;
+  align-items: stretch !important;
+  min-height: 3.25rem;
+  margin: 0 !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left {
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions {
+  align-self: stretch !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(.select-trigger, input.input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(input.input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(svg, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+@media (max-width: 1024px) {
+  #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-shell {
+    grid-template-columns: 1fr;
+  }
+
+  #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before {
+    top: 0;
+    right: 0.875rem;
+    bottom: auto;
+    left: 0.875rem;
+    width: auto;
+    height: 1px;
+    background: var(--atelier-console-rule);
+  }
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section {
+  overflow: hidden !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > .accounts-filter-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 !important;
+  align-items: stretch !important;
+  margin: -1rem !important;
+  padding: 0 !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-left {
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions {
+  align-self: stretch !important;
+  position: relative !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions::before {
+  content: "" !important;
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > .accounts-filter-shell {
+    grid-template-columns: 1fr;
+  }
+
+  #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions::before {
+    top: 0;
+    right: 0.875rem;
+    bottom: auto;
+    left: 0.875rem;
+    width: auto;
+    height: 1px;
+    background: var(--atelier-console-rule);
+  }
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
+  .table-filter-left :where(.select-trigger, .input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
+  .table-filter-left :where(span, svg, .select-value, .select-icon) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
+  .table-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
+  .table-filter-actions :where(svg, span) {
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-bulk-actions-bar {
+  margin-bottom: 0 !important;
+  border: 1px solid var(--atelier-material-edge) !important;
+  border-bottom: 0 !important;
+  border-radius: 8px 8px 0 0 !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-scroll-container {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-bulk-actions-bar + .account-card-table-frame .table-wrapper {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+#app .app-layout-content .accounts-table-page .layout-section-scrollable,
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .account-card-table-frame,
+#app .app-layout-content .accounts-table-page .table-wrapper.is-page-scroll {
+  flex: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow-y: visible !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  overflow: visible !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  padding: 0.65rem !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper thead {
+  display: none;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 0.65rem;
+  background: transparent !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+  gap: 0.45rem 0.62rem;
+  position: relative;
+  min-width: 0;
+  overflow: clip;
+  border-radius: 8px;
+  border: 1px solid var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
+  padding: 0.72rem;
+  transition: transform 0.22s var(--atelier-ease), box-shadow 0.22s var(--atelier-ease);
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  transform: translate3d(0, -2px, 0);
+  background: var(--atelier-paper-2) !important;
+  box-shadow: 0 16px 34px -26px rgba(23, 21, 18, 0.44);
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td {
+  position: relative;
+  min-width: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  white-space: normal !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"] {
+  grid-column: 1 / -1;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] {
+  grid-column: span 2;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="usage"] {
+  grid-column: 1 / -1;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] {
+  position: absolute !important;
+  top: 0.72rem;
+  right: 0.72rem;
+  left: auto !important;
+  z-index: 2;
+  display: inline-flex !important;
+  width: max-content !important;
+  justify-content: flex-end;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"] {
+  padding-right: 3rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px dotted var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"] {
+  margin-top: 0.05rem;
+  padding-top: 0.5rem !important;
+  border-top: 1px dotted var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] > div {
+  gap: 0.2rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] :where(.gap-1, [class~="gap-1.5"], .gap-2) {
+  gap: 0.2rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] :where(span, div) {
+  line-height: 1.05rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="expires_at"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] > div {
+  gap: 0.18rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="expires_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="notes"] :where(span, div) {
+  line-height: 1.1rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td::before {
+  content: attr(data-column-label);
+  display: block;
+  margin-bottom: 0.22rem;
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"]::before {
+  content: none;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col {
+  position: static !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col::before,
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col::after {
+  content: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] > div {
+  justify-content: flex-start;
+  gap: 0.25rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] button {
+  padding: 0.25rem !important;
+  border-radius: 6px !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] svg {
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] span {
+  font-size: 0.625rem !important;
+  line-height: 1rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] > div {
+  gap: 0.05rem !important;
+  line-height: 1.15;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:first-child {
+  line-height: 1.15;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:last-child {
+  max-width: 100% !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-bar {
+  min-width: 0;
+  line-height: 1.1;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-window-stats {
+  margin-bottom: 0.12rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-stats-row {
+  gap: 0.25rem !important;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-stat {
+  padding: 0.08rem 0.3rem !important;
+  font-size: 0.5rem !important;
+  line-height: 0.85rem !important;
+  border-radius: 4px !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-row {
+  gap: 0.25rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-label,
+#app .app-layout-content .accounts-table-page .usage-progress-percent {
+  width: 1.75rem !important;
+  font-size: 0.56rem !important;
+  line-height: 0.95rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-reset {
+  font-size: 0.56rem !important;
+  line-height: 0.95rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-track {
+  width: 2.25rem !important;
+  height: 0.25rem !important;
+  background: var(--atelier-white) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--safe {
+  background: var(--atelier-green) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--warning {
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--danger {
+  background: var(--atelier-red) !important;
+}
+
+@media (max-width: 640px) {
+  #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+    grid-template-columns: 1fr;
+  }
+}
+
+#app .app-layout-content .settings-tabs-shell {
+  border-radius: 8px !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+#app .app-layout-content .settings-tab {
+  border-radius: 6px !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .settings-tab::before {
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .settings-tab:hover,
+#app .app-layout-content .settings-tab:focus-visible {
+  border-color: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-material-edge)) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .settings-tab:hover::before,
+#app .app-layout-content .settings-tab:focus-visible::before {
+  opacity: 1 !important;
+}
+
+#app .app-layout-content .settings-tab:hover .settings-tab-icon,
+#app .app-layout-content .settings-tab:focus-visible .settings-tab-icon {
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .settings-tab-active,
+#app .app-layout-content .settings-tab-active:hover,
+#app .app-layout-content .settings-tab-active:focus-visible {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .settings-tab-active::before {
+  opacity: 0 !important;
+}
+
+#app .app-layout-content .settings-tab-active::after {
+  background: var(--atelier-white) !important;
+}
+
+#app .app-layout-content .settings-tab-active .settings-tab-icon,
+#app .app-layout-content .settings-tab-active:hover .settings-tab-icon,
+#app .app-layout-content .settings-tab-active:focus-visible .settings-tab-icon {
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+}
+
+#app .app-layout-content .settings-tab-active :where(.settings-tab-label, svg, path) {
+  color: var(--atelier-white) !important;
+  stroke: currentColor !important;
+}
+
+/* Current visual iteration: user account filters, pricing cards, and public auth polish. */
+#app .app-layout-content .user-keys-atelier > .table-page-filter-section {
+  overflow: hidden !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, auto);
+  gap: 0 !important;
+  align-items: stretch !important;
+  min-height: 3.25rem;
+  margin: -1rem !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-left {
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-actions {
+  align-self: stretch !important;
+  position: relative !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-actions::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-left :where(.select-trigger, input.input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-left :where(label, span, svg, .select-value, .select-icon) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-left :where(input.input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list {
+  justify-content: flex-end;
+  max-width: min(42rem, 100%);
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list > div {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(span, code, button, a, svg, path) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(code) {
+  text-decoration-color: color-mix(in srgb, var(--atelier-paper) 60%, transparent) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-popover-item,
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-popover-item:hover,
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-default-badge,
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip,
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip-arrow {
+  border-color: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  background-image: none !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+  ring-color: transparent !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip {
+  outline: 1px solid rgba(255, 250, 240, 0.32) !important;
+  outline-offset: -1px !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list :where(.endpoint-popover-item, .endpoint-tooltip) :where(span, p, code, button, a, svg, path) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-code {
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-page-actions :where(.btn-secondary, .btn-primary):not(:disabled) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section::before,
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section::after {
+  content: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section .card {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section .card:hover {
+  transform: translate3d(0, -2px, 0) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card {
+  --atelier-card-accent: var(--atelier-blue);
+  --atelier-card-surface: var(--atelier-paper-2);
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36) !important;
+  transition:
+    transform 0.26s var(--atelier-ease),
+    border-color 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease),
+    background-color 0.26s var(--atelier-ease);
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  left: 1rem;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  opacity: 0.82;
+  pointer-events: none;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  bottom: 0.75rem;
+  left: 1rem;
+  display: block;
+  height: 3px;
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 42% 100% no-repeat,
+    var(--atelier-paper);
+  pointer-events: none;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:nth-child(2n)::after {
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 58% 100% no-repeat,
+    var(--atelier-paper);
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:nth-child(3n)::after {
+  background:
+    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 76% 100% no-repeat,
+    var(--atelier-paper);
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover {
+  transform: translate3d(0, -2px, 0) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon {
+  background: var(--atelier-material-1) !important;
+  border: 1px solid var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(svg, svg *, path),
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-blue-600, .text-amber-600, .text-green-600, .text-purple-600) {
+  color: currentColor !important;
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card :where(.text-xl) {
+  color: var(--atelier-blue) !important;
+  font-family: var(--atelier-font-mono) !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card :where(.text-xs) {
+  color: var(--atelier-muted) !important;
+  font-family: var(--atelier-font-mono) !important;
+  font-size: 0.625rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover :where(.text-xl, .text-xs, svg, path) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-filter-section {
+  overflow: hidden !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-card {
+  margin: -1rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-card > div {
+  padding: 0 !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 !important;
+  align-items: stretch !important;
+  min-height: 3.25rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-left {
+  align-self: stretch !important;
+  position: relative !important;
+  z-index: 0;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--atelier-ink) !important;
+  pointer-events: none;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-actions {
+  align-self: stretch !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-actions::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-left :where(.select-trigger, .date-picker-trigger, input.input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-left :where(label, span, svg, .select-value, .select-icon, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .usage-filter-actions :where(svg, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-usage-atelier .layout-section-scrollable,
+#app .app-layout-content .user-usage-atelier .table-wrapper.is-page-scroll {
+  flex: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+#app .app-layout-content .user-usage-atelier .layout-section-scrollable {
+  overflow: visible !important;
+}
+
+#app .app-layout-content .user-usage-atelier .table-scroll-container {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .table-scroll-container:hover {
+  --atelier-card-surface: var(--atelier-paper-2);
+  --atelier-material-2: var(--atelier-paper-2);
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .table-wrapper.is-page-scroll {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-color: var(--atelier-scrollbar) var(--atelier-scrollbar-track) !important;
+}
+
+#app .app-layout-content .global-pricing-atelier {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+#app .app-layout-content .global-pricing-atelier > .table-page-filter-section {
+  overflow: visible !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#app .app-layout-content .global-pricing-atelier > .table-page-filter-section::before,
+#app .app-layout-content .global-pricing-atelier > .table-page-filter-section::after {
+  content: none !important;
+}
+
+#app .app-layout-content .global-pricing-filter-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+#app .app-layout-content .global-pricing-summary-row {
+  min-height: auto;
+}
+
+#app .app-layout-content .global-pricing-summary-row .summary-tile {
+  min-height: 5.5rem;
+  background: var(--atelier-paper-2) !important;
+}
+
+#app .app-layout-content .global-pricing-summary-row .summary-tile:hover {
+  transform: translate3d(0, -2px, 0) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-card {
+  overflow: hidden;
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 8px;
+  background: var(--atelier-butter);
+  box-shadow: var(--atelier-material-shadow);
+}
+
+#app .app-layout-content .global-pricing-filter-shell {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 !important;
+  align-items: stretch !important;
+  min-height: 3.25rem;
+  background: var(--atelier-butter);
+}
+
+#app .app-layout-content .global-pricing-filter-left {
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-actions {
+  align-self: stretch !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-actions::before {
+  content: "";
+  position: absolute;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  left: 0;
+  width: 1px;
+  background: var(--atelier-console-rule-vertical-invert);
+  pointer-events: none;
+}
+
+#app .app-layout-content .global-pricing-filter-left :where(.input, select, label) {
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-left :where(input.input, select.input) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .global-pricing-filter-left :where(input.input)::placeholder {
+  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-left :where(svg, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .global-pricing-filter-left label:has(input[type="checkbox"]) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
+}
+
+#app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .global-pricing-filter-actions :where(.hash-pill) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .global-pricing-filter-actions :where(svg, span) {
+  color: var(--atelier-paper) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .layout-section-scrollable,
+#app .app-layout-content .global-pricing-atelier .table-scroll-container,
+#app .app-layout-content .global-pricing-atelier .global-pricing-card-frame {
+  flex: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .table-scroll-container {
+  background: var(--atelier-paper-2) !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame {
+  padding: 0.9rem !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .global-pricing-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border-collapse: separate;
+}
+
+#app .app-layout-content .global-pricing-card-frame thead {
+  display: none;
+}
+
+#app .app-layout-content .global-pricing-card-frame .global-pricing-card-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 0.9rem;
+  background: transparent !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 0.78rem 1rem;
+  position: relative;
+  min-width: 0;
+  overflow: clip;
+  padding: 0.95rem;
+  border: 1px solid var(--atelier-material-edge) !important;
+  border-radius: 8px;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
+  transition:
+    transform 0.22s var(--atelier-ease),
+    box-shadow 0.22s var(--atelier-ease),
+    border-color 0.22s var(--atelier-ease);
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row:hover {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: 0 16px 34px -26px rgba(23, 21, 18, 0.44);
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td {
+  position: relative;
+  min-width: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  white-space: normal !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td::before {
+  content: attr(data-card-label);
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.brand-cell,
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.model-sticky-col,
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td:last-child {
+  grid-column: 1 / -1;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.brand-cell {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.brand-cell::before {
+  content: none;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.model-sticky-col {
+  padding-bottom: 0.75rem !important;
+  border-bottom: 1px dotted var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .pricing-row > td.model-sticky-col::before {
+  content: none;
+}
+
+#app .app-layout-content .global-pricing-card-frame .brand-sticky-col,
+#app .app-layout-content .global-pricing-card-frame .model-sticky-col {
+  position: static !important;
+  left: auto !important;
+  z-index: auto !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .provider-brand-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+#app .app-layout-content .global-pricing-card-frame .price-cell {
+  color: var(--atelier-blue-dark) !important;
+}
+
+#app .app-layout-content .global-pricing-card-frame .global-pricing-skeleton-body,
+#app .app-layout-content .global-pricing-card-frame .global-pricing-empty-body {
+  display: table-row-group;
+}
+
+.auth-ascii-shell {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
+    radial-gradient(circle at 84% 10%, rgba(199, 154, 58, 0.10), transparent 24rem),
+    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px),
+    var(--atelier-paper) !important;
+  background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto !important;
+}
+
+.auth-ascii-shell .auth-ascii-background {
+  opacity: 0.42;
+}
+
+.auth-ascii-shell > .relative.z-10 {
+  max-width: 31rem !important;
+}
+
+.auth-ascii-shell .auth-logo {
+  border-radius: 50% !important;
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell .text-gradient {
+  background: none !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  font-family: var(--atelier-font-serif) !important;
+  font-style: italic;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+.auth-ascii-shell .paper-card {
+  overflow: hidden;
+  border-color: var(--atelier-material-edge) !important;
+  border-radius: 8px !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
+}
+
+.auth-ascii-shell .paper-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 12px;
+  left: 12px;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  pointer-events: none;
+}
+
+.auth-ascii-shell h2 {
+  color: var(--atelier-ink) !important;
+  font-family: var(--atelier-font-serif) !important;
+  font-style: italic;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+.auth-ascii-shell p,
+.auth-ascii-shell label {
+  color: var(--atelier-muted) !important;
+}
+
+.auth-ascii-shell .input {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell .input:focus {
+  border-color: var(--atelier-blue) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-blue) 22%, transparent) !important;
+}
+
+.auth-ascii-shell .btn-primary {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell .btn-primary:hover:not(:disabled) {
+  background: var(--atelier-blue-dark) !important;
+  color: var(--atelier-white) !important;
+}
+
+.auth-ascii-shell :where(.text-primary-600, .text-primary-500, a) {
+  color: var(--atelier-blue) !important;
+}
+
+.home-ascii-shell .home-provider-logo-mark {
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-style: normal !important;
+}
+
+.home-ascii-shell .home-provider-logo-mark .provider-brand-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.home-ascii-shell .home-provider-logo-mark .provider-brand-icon svg {
+  width: 1.95rem;
+  height: 1.95rem;
+}
+
+@media (max-width: 1024px) {
+  #app .app-layout-content .user-keys-atelier .keys-filter-shell,
+  #app .app-layout-content .user-usage-atelier .usage-filter-shell,
+  #app .app-layout-content .global-pricing-filter-shell {
+    grid-template-columns: 1fr;
+  }
+
+  #app .app-layout-content .user-keys-atelier .keys-filter-actions::before,
+  #app .app-layout-content .user-usage-atelier .usage-filter-actions::before,
+  #app .app-layout-content .global-pricing-filter-actions::before {
+    top: 0;
+    right: 0.875rem;
+    bottom: auto;
+    left: 0.875rem;
+    width: auto;
+    height: 1px;
+    background: var(--atelier-console-rule);
+  }
+
+  #app .app-layout-content .user-keys-atelier .keys-filter-actions,
+  #app .app-layout-content .user-usage-atelier .usage-filter-actions,
+  #app .app-layout-content .global-pricing-filter-actions {
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 640px) {
+  #app .app-layout-content .global-pricing-card-frame .pricing-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .app-layout-content .ops-dashboard-atelier .ops-monitor-header {
@@ -2766,8 +4376,8 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black) {
-  font-family: var(--atelier-font-serif) !important;
-  font-style: italic !important;
+  font-family: var(--atelier-font-mono) !important;
+  font-style: normal !important;
   font-weight: 600 !important;
   color: var(--atelier-blue) !important;
 }
@@ -2862,18 +4472,15 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta,
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta,
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta,
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(h1, div, span, svg),
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover :where(h1, div, span, svg),
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg),
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg) {
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg) {
   color: var(--atelier-paper) !important;
   -webkit-text-fill-color: var(--atelier-paper) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400),
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400),
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
   background: var(--atelier-butter) !important;
 }
 
@@ -3186,6 +4793,41 @@ body:has(.table-page-layout) :where(
   color: var(--atelier-ink) !important;
 }
 
+body:has(.table-page-layout) .date-picker-dropdown-portal,
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
+  border-color: rgba(255, 250, 240, 0.32) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input) {
+  border-color: rgba(255, 250, 240, 0.78) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible) {
+  border-color: var(--atelier-paper) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.2) !important;
+}
+
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover) {
+  border-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
 :where(.badge, [class*="badge"], [class*="pill"], [class*="chip"]):not(.home-provider-chip) {
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-material-dust) !important;
@@ -3246,7 +4888,7 @@ body:has(.table-page-layout) :where(
 }
 
 .empty-state > :first-child,
-.app-layout-content :where([class~="h-24"][class~="w-24"], [class~="h-20"][class~="w-20"], [class~="h-16"][class~="w-16"], [class~="h-12"][class~="w-12"], [class~="h-10"][class~="w-10"], [class~="h-8"][class~="w-8"]):where([class~="bg-gray-100"], [class~="bg-primary-100"], [class~="bg-blue-100"], [class~="bg-emerald-100"], [class~="bg-green-100"], [class~="bg-amber-100"], [class~="bg-orange-100"], [class~="bg-purple-100"]):not(.user-avatar):not(.sidebar-logo):not(.switch-thumb) {
+.app-layout-content :where([class~="h-24"][class~="w-24"], [class~="h-20"][class~="w-20"], [class~="h-16"][class~="w-16"], [class~="h-12"][class~="w-12"], [class~="h-10"][class~="w-10"], [class~="h-8"][class~="w-8"]):where([class~="bg-gray-100"], [class~="bg-primary-100"], [class~="bg-blue-100"], [class~="bg-emerald-100"], [class~="bg-green-100"], [class~="bg-amber-100"], [class~="bg-orange-100"], [class~="bg-purple-100"]):not(.usage-stat-icon):not(.user-avatar):not(.sidebar-logo):not(.switch-thumb) {
   border: 1px solid var(--atelier-material-edge);
   background: var(--atelier-material-dust) !important;
   color: var(--atelier-blue) !important;
@@ -3323,11 +4965,138 @@ body:has(.table-page-layout) :where(
   color: var(--atelier-ink) !important;
 }
 
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card, .ops-health-score-card, .ops-realtime-panel):not(:hover) {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card):not(:hover) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
+  color: var(--atelier-blue) !important;
+  -webkit-text-fill-color: var(--atelier-blue) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-health-score-card:not(:hover) :where(.text-3xl, .text-4xl, .text-5xl, .font-black, .font-bold, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
+  color: var(--atelier-red) !important;
+  -webkit-text-fill-color: var(--atelier-red) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card) :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"]) {
+  border: 1px solid color-mix(in srgb, var(--atelier-ink) 26%, transparent) !important;
+  background: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"]) {
+  border-color: color-mix(in srgb, var(--atelier-ink) 42%, transparent) !important;
+  background: rgba(255, 250, 240, 0.72) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg),
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh,
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh :where(span, svg) {
   color: var(--atelier-paper) !important;
   -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal,
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal,
+body:has(.user-usage-atelier) .date-picker-dropdown-portal,
+body:has(.table-page-layout) .date-picker-dropdown-portal,
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
+  border-color: rgba(255, 250, 240, 0.32) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input) {
+  border-color: rgba(255, 250, 240, 0.78) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible) {
+  border-color: var(--atelier-paper) !important;
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.2) !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-input::-webkit-calendar-picker-indicator),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input::-webkit-calendar-picker-indicator),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input::-webkit-calendar-picker-indicator),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input::-webkit-calendar-picker-indicator) {
+  filter: invert(1) opacity(0.86) !important;
+}
+
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover),
+body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover) {
+  border-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover,
+#app .app-layout-content .global-pricing-atelier .global-pricing-summary-row .summary-tile:hover {
+  --atelier-card-surface: var(--atelier-butter);
+  --atelier-material-2: var(--atelier-butter);
+  transform: translate3d(0, -2px, 0) !important;
+  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  background-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow-hover) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover :where(.text-xl, .text-xs, .text-gray-400, .text-gray-500, .text-green-600, .text-orange-500, svg, path),
+#app .app-layout-content .global-pricing-atelier .global-pricing-summary-row .summary-tile:hover :where(.summary-label, .summary-value, span, strong) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

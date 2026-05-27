@@ -793,8 +793,8 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.card .text-xl) {
-  font-family: var(--atelier-font-serif);
-  font-style: italic;
+  font-family: var(--atelier-font-mono);
+  font-style: normal;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
