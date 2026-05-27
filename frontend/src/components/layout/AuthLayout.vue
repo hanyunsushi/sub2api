@@ -1,7 +1,5 @@
 <template>
   <div class="auth-ascii-shell relative flex min-h-screen items-center justify-center overflow-hidden p-4">
-    <GuizangAsciiBackground class="auth-ascii-background" />
-
     <!-- Content Container -->
     <div class="relative z-10 w-full max-w-md">
       <!-- Logo/Brand -->
@@ -44,7 +42,6 @@
 import { computed, onMounted } from 'vue'
 import { useAppStore } from '@/stores'
 import { sanitizeUrl } from '@/utils/url'
-import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'
 
 const appStore = useAppStore()
 

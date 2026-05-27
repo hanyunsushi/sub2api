@@ -31,7 +31,7 @@ describe('Klein blue ASCII background', () => {
     expect(source).toContain('cancelAnimationFrame')
   })
 
-  it('keeps the animated background out of the public home page and right-side app content area', () => {
+  it('keeps the animated background out of the public home, auth page, and right-side app content area', () => {
     const home = readFile('src/views/HomeView.vue')
     const authLayout = readFile('src/components/layout/AuthLayout.vue')
     const appLayout = readFile('src/components/layout/AppLayout.vue')
@@ -39,14 +39,14 @@ describe('Klein blue ASCII background', () => {
     expect(home).not.toContain("import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'")
     expect(home).not.toContain('<GuizangAsciiBackground class="home-ascii-background" />')
     expect(home).not.toContain('<GuizangAsciiBackground tone="light" class="home-ascii-background" />')
-    expect(authLayout).toContain("import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'")
-    expect(authLayout).toContain('<GuizangAsciiBackground class="auth-ascii-background" />')
+    expect(authLayout).not.toContain("import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'")
+    expect(authLayout).not.toContain('<GuizangAsciiBackground tone="light" class="auth-ascii-background" />')
     expect(appLayout).not.toContain("import GuizangAsciiBackground from '@/components/common/GuizangAsciiBackground.vue'")
     expect(appLayout).not.toContain('<GuizangAsciiBackground tone="light" class="app-layout-ascii-background" />')
     expect(appLayout).toContain('app-layout-content')
   })
 
-  it('defines the auth-only canvas without warm grid layers leaking into main surfaces', () => {
+  it('keeps the reusable canvas implementation dormant without auth-specific wave hooks', () => {
     const css = readFile('src/style.css')
     const source = readFile('src/components/common/GuizangAsciiBackground.vue')
 
@@ -57,19 +57,17 @@ describe('Klein blue ASCII background', () => {
     expect(css).toContain('.dark .guizang-site-background--light')
     expect(css).toContain('background: #050505')
     expect(css).toContain('.guizang-site-background__canvas')
-    expect(css).toContain('mix-blend-mode: screen')
+    expect(css).not.toContain('mix-blend-mode: screen')
     expect(css).toContain('.guizang-site-background--light .guizang-site-background__canvas')
     expect(css).toContain('mix-blend-mode: normal')
     expect(css).not.toContain('mix-blend-mode: multiply')
-    expect(css).toContain('.auth-ascii-shell .auth-ascii-background')
-    expect(css).toContain('opacity: 0.42;')
+    expect(css).not.toContain('.auth-ascii-background')
     expect(css).not.toContain('opacity: 0.2;')
     expect(css).not.toContain('opacity: 0.04;')
     expect(source).not.toContain('guizang-site-background__grid')
     expect(source).not.toContain('guizang-site-background__dots')
     expect(css).not.toContain('.guizang-site-background__grid')
     expect(css).not.toContain('.guizang-site-background__dots')
-    expect(css).toContain('.auth-ascii-background .guizang-site-background__canvas')
     expect(css).not.toContain('.dark .guizang-site-background--light .guizang-site-background__canvas')
     expect(css).toContain('.app-layout-content')
     expect(css).toContain('background: var(--atelier-canvas);')
