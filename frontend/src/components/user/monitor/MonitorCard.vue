@@ -1,14 +1,14 @@
 <template>
   <button
     type="button"
-    class="group text-left p-5 rounded-2xl min-h-[280px] w-full bg-white/70 border border-gray-200/80 shadow-card dark:bg-dark-800/60 dark:border-dark-700/70 hover:-translate-y-1 hover:shadow-card-hover dark:hover:border-primary-500/30 hover:border-gray-300 transition-all duration-300 ease-out flex flex-col"
+    class="monitor-channel-card group text-left p-5 rounded-2xl min-h-[280px] w-full bg-white/70 border border-gray-200/80 shadow-card dark:bg-dark-800/60 dark:border-dark-700/70 hover:-translate-y-1 hover:shadow-card-hover dark:hover:border-primary-500/30 hover:border-gray-300 transition-all duration-300 ease-out flex flex-col"
     @click="emit('click')"
   >
     <!-- Header: icon + name/model + status chip -->
     <div class="flex items-start gap-3">
       <span
         class="w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
-        :class="[providerGradient(item.provider), providerTintClass]"
+        :class="[providerGradient(item.provider), providerTintClass, monitorProviderClass(item.provider)]"
       >
         <ProviderIcon :provider="item.provider" :size="20" />
       </span>
@@ -18,8 +18,8 @@
         </div>
         <div class="mt-0.5 flex items-center gap-1.5 min-w-0">
           <span
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium flex-shrink-0"
-            :class="providerBadgeClass(item.provider)"
+            class="monitor-provider-badge inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium flex-shrink-0"
+            :class="[providerBadgeClass(item.provider), monitorProviderClass(item.provider)]"
           >
             {{ providerLabel(item.provider) }}
           </span>
@@ -35,8 +35,8 @@
         </div>
       </div>
       <span
-        class="px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0"
-        :class="statusBadgeClass(item.primary_status)"
+        class="monitor-status-badge px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0"
+        :class="[statusBadgeClass(item.primary_status), monitorStatusClass(item.primary_status)]"
       >
         {{ statusLabel(item.primary_status) }}
       </span>
@@ -76,6 +76,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { UserMonitorView } from '@/api/channelMonitor'
+import type { MonitorStatus } from '@/api/admin/channelMonitor'
 import {
   useChannelMonitorFormat,
   providerGradient,
@@ -114,6 +115,34 @@ const {
 const providerTintClass = computed(() =>
   PROVIDER_TINT[props.item.provider] ?? 'text-gray-500 dark:text-gray-300'
 )
+
+function monitorProviderClass(provider: string): string {
+  switch (provider) {
+    case 'openai':
+      return 'monitor-provider-openai'
+    case 'anthropic':
+      return 'monitor-provider-anthropic'
+    case 'gemini':
+      return 'monitor-provider-gemini'
+    default:
+      return 'monitor-provider-default'
+  }
+}
+
+function monitorStatusClass(status: MonitorStatus | ''): string {
+  switch (status) {
+    case 'operational':
+      return 'monitor-status-operational'
+    case 'degraded':
+      return 'monitor-status-degraded'
+    case 'failed':
+      return 'monitor-status-failed'
+    case 'error':
+      return 'monitor-status-error'
+    default:
+      return 'monitor-status-unknown'
+  }
+}
 
 const availabilityLabel = computed(() => {
   const win = t(`channelStatus.windowTab.${props.window}`)

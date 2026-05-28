@@ -5311,6 +5311,87 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   width: auto !important;
 }
 
+#app .app-layout-content .monitor-channel-card .monitor-provider-openai {
+  --monitor-provider-color: #10a37f;
+  --monitor-provider-surface: color-mix(in srgb, #10a37f 14%, var(--atelier-paper));
+  --monitor-provider-edge: color-mix(in srgb, #10a37f 38%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-anthropic {
+  --monitor-provider-color: #d97706;
+  --monitor-provider-surface: color-mix(in srgb, #d97706 14%, var(--atelier-paper));
+  --monitor-provider-edge: color-mix(in srgb, #d97706 38%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-gemini {
+  --monitor-provider-color: #4285f4;
+  --monitor-provider-surface: color-mix(in srgb, #4285f4 14%, var(--atelier-paper));
+  --monitor-provider-edge: color-mix(in srgb, #4285f4 38%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-default {
+  --monitor-provider-color: var(--atelier-blue);
+  --monitor-provider-surface: var(--atelier-material-blue);
+  --monitor-provider-edge: var(--atelier-material-edge);
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-operational {
+  --monitor-status-color: #10a37f;
+  --monitor-status-surface: color-mix(in srgb, #10a37f 14%, var(--atelier-paper));
+  --monitor-status-edge: color-mix(in srgb, #10a37f 36%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-degraded {
+  --monitor-status-color: var(--atelier-butter);
+  --monitor-status-surface: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --monitor-status-edge: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-failed,
+#app .app-layout-content .monitor-channel-card .monitor-status-error {
+  --monitor-status-color: var(--atelier-red);
+  --monitor-status-surface: color-mix(in srgb, var(--atelier-red) 14%, var(--atelier-paper));
+  --monitor-status-edge: color-mix(in srgb, var(--atelier-red) 38%, var(--atelier-material-edge));
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-unknown {
+  --monitor-status-color: var(--atelier-dust);
+  --monitor-status-surface: var(--atelier-material-dust);
+  --monitor-status-edge: var(--atelier-material-edge);
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-badge {
+  border: 1px solid var(--monitor-provider-edge) !important;
+  background: var(--monitor-provider-surface) !important;
+  color: var(--monitor-provider-color) !important;
+  -webkit-text-fill-color: var(--monitor-provider-color) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-badge {
+  border: 1px solid var(--monitor-status-edge) !important;
+  background: var(--monitor-status-surface) !important;
+  color: var(--monitor-status-color) !important;
+  -webkit-text-fill-color: var(--monitor-status-color) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .platform-icon {
+  color: var(--platform-icon-color, var(--monitor-provider-color, currentColor)) !important;
+  fill: currentColor !important;
+  -webkit-text-fill-color: var(--platform-icon-color, var(--monitor-provider-color, currentColor)) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-badge:hover,
+#app .app-layout-content .monitor-channel-card:hover .monitor-provider-badge {
+  color: var(--monitor-provider-color) !important;
+  -webkit-text-fill-color: var(--monitor-provider-color) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-status-badge:hover,
+#app .app-layout-content .monitor-channel-card:hover .monitor-status-badge {
+  color: var(--monitor-status-color) !important;
+  -webkit-text-fill-color: var(--monitor-status-color) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-route-page-entering,
   .app-route-page-entering > *,
