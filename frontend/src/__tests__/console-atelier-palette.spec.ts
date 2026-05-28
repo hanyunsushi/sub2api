@@ -48,10 +48,35 @@ const opsSystemLogSource = readFileSync(resolve(__dirname, '../views/admin/ops/c
 const codexThemeSource = readFileSync(resolve(__dirname, '../styles/codex-theme.css'), 'utf8')
 const globalPricingSource = readFileSync(resolve(__dirname, '../views/user/GlobalPricingView.vue'), 'utf8')
 const indexHtmlSource = readFileSync(resolve(__dirname, '../../index.html'), 'utf8')
+const tailwindConfigSource = readFileSync(resolve(__dirname, '../../tailwind.config.js'), 'utf8')
 const materialSystemBlock = styleSource.slice(
   styleSource.indexOf('Atelier component material system'),
   styleSource.length
 )
+
+const cssBlock = (source: string, selector: string) => {
+  const selectorIndex = source.indexOf(`${selector} {`)
+  expect(selectorIndex).toBeGreaterThan(-1)
+
+  const openBraceIndex = source.indexOf('{', selectorIndex)
+  expect(openBraceIndex).toBeGreaterThan(-1)
+
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') {
+      depth += 1
+    }
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) {
+        return source.slice(openBraceIndex + 1, index)
+      }
+    }
+  }
+
+  throw new Error(`CSS block not closed for ${selector}`)
+}
 
 describe('console atelier palette restyle', () => {
   it('keeps the app shell on the two Downloads reference colors without introducing glass effects', () => {
@@ -63,11 +88,17 @@ describe('console atelier palette restyle', () => {
     expect(styleSource).toContain('--atelier-console-grid-size: 32px 32px;')
     expect(styleSource).toContain('--atelier-butter: #c79a3a;')
     expect(styleSource).toContain('--atelier-butter-soft: #c79a3a;')
-    expect(styleSource).toContain('--sans: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans"')
-    expect(styleSource).toContain('--serif: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans"')
-    expect(styleSource).toContain('--mono: "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC"')
-    expect(indexHtmlSource).toContain('family=Inter+Tight:wght@400;500;600')
-    expect(indexHtmlSource).toContain('family=IBM+Plex+Mono:wght@400;500')
+    expect(styleSource).toContain('--sans: "Source Serif 4", "Noto Serif SC"')
+    expect(styleSource).toContain('--serif: "Newsreader", "Noto Serif SC", "Source Serif 4"')
+    expect(styleSource).toContain('--mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Fixed SC"')
+    expect(indexHtmlSource).toContain('family=Newsreader:opsz,wght@6..72,400..700')
+    expect(indexHtmlSource).toContain('family=Source+Serif+4:opsz,wght@8..60,400..700')
+    expect(indexHtmlSource).toContain('family=Noto+Serif+SC:wght@400;500;600;700')
+    expect(indexHtmlSource).toContain('family=IBM+Plex+Mono:wght@400;500;600')
+    expect(tailwindConfigSource).toContain("'Source Serif 4'")
+    expect(tailwindConfigSource).toContain("'Noto Serif SC'")
+    expect(tailwindConfigSource).toContain("'Newsreader'")
+    expect(tailwindConfigSource).not.toContain("'Inter Tight'")
     expect(styleSource).toContain('#app,')
     expect(styleSource).toContain('.date-picker-dropdown-portal {')
     expect(styleSource).toContain('radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem)')
@@ -112,12 +143,12 @@ describe('console atelier palette restyle', () => {
     expect(dashboardSource).toContain('dashboard-filter-granularity ml-auto flex items-center gap-2')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)::after')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover > div > .dashboard-filter-range > span)')
+    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
+    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover > div > .dashboard-filter-range > span)')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range))')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
-    expect(styleSource).toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg)')
-    expect(styleSource).toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh')
+    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
+    expect(styleSource).not.toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg)')
+    expect(styleSource).not.toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh')
     expect(dashboardSource).toContain('background: var(--atelier-butter) !important;')
     expect(dashboardSource).toContain('background: var(--atelier-ink) !important;')
     expect(dashboardSource).toContain('color: var(--atelier-paper) !important;')
@@ -399,9 +430,11 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('> :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)')
     expect(materialSystemBlock).toContain('> :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before')
     expect(materialSystemBlock).toContain('Current visual iteration: precise split filters, account cards, and settings tabs.')
-    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh::after')
-    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {\n  position: relative;\n  align-self: stretch !important;\n  margin: -1rem 0 !important;\n  border-color: var(--atelier-ink) !important;\n  outline: 1px solid rgba(255, 250, 240, 0.42) !important;')
-    expect(materialSystemBlock).toContain('right: 0 !important;')
+    expect(materialSystemBlock).not.toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh::after')
+    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {\n  align-self: center !important;\n  margin: 0 !important;')
+    expect(materialSystemBlock).toContain('border-color: rgba(255, 250, 240, 0.28) !important;\n  outline: none !important;\n  outline-offset: 0 !important;')
+    expect(materialSystemBlock).not.toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {\n  align-self: center !important;\n  margin: 0 !important;\n  border-color: var(--atelier-ink) !important;\n  outline: 1px solid rgba(255, 250, 240, 0.42) !important;')
+    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card,\n#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover {\n  transform: none !important;')
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-time-filter-card')
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-time-filter-granularity::before')
     expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before')
@@ -460,7 +493,11 @@ describe('console atelier palette restyle', () => {
 
     expect(settingsSource).toContain('settings-tab-icon')
     expect(materialSystemBlock).toContain('.app-layout-content .settings-tab::before')
-    expect(materialSystemBlock).toContain('background: var(--atelier-butter) !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab')).toContain('overflow: hidden !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('inset: 0 !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('border-radius: inherit !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('background: var(--atelier-butter) !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab:hover,\n#app .app-layout-content .settings-tab:focus-visible')).toContain('background: var(--atelier-butter) !important;')
     expect(materialSystemBlock).toContain('.app-layout-content .settings-tab-active .settings-tab-icon')
     expect(materialSystemBlock).toContain('background: var(--atelier-blue) !important;')
   })
@@ -470,6 +507,7 @@ describe('console atelier palette restyle', () => {
     expect(userKeysSource).toContain('keys-filter-shell')
     expect(userKeysSource).toContain('keys-filter-left')
     expect(userKeysSource).toContain('keys-filter-actions')
+    expect(materialSystemBlock).toContain('.user-keys-atelier > .table-page-actions-section {\n  background: var(--atelier-paper-2) !important;')
     expect(endpointPopoverSource).toContain('endpoint-popover-list')
     expect(endpointPopoverSource).toContain('endpoint-popover-item')
     expect(endpointPopoverSource).toContain('endpoint-default-badge')
@@ -536,7 +574,17 @@ describe('console atelier palette restyle', () => {
     expect(homeSource).not.toContain('toggleTheme')
     expect(keyUsageSource).not.toContain('toggleTheme')
     expect(styleSource).toContain('.auth-ascii-shell .paper-card')
+    expect(homeSource).toContain('.home-ascii-shell .home-cap-card-featured {\n  background: var(--atelier-blue);')
+    expect(homeSource).not.toContain('.home-ascii-shell .home-cap-card-featured {\n  grid-column: span 2;')
+    expect(homeSource).toContain('.home-ascii-shell .home-provider-specimen-featured {\n  --home-chip-accent: var(--atelier-blue-dark);')
+    expect(homeSource).not.toContain('.home-ascii-shell .home-provider-specimen-featured {\n  grid-column: span 6;')
     expect(styleSource).toContain('.home-ascii-shell .home-provider-logo-mark .provider-brand-icon')
+    expect(styleSource).toContain('.home-ascii-shell .home-provider-logo-mark {\n  background: transparent !important;')
+    expect(styleSource).toContain('border: 0 !important;\n  border-radius: 0 !important;')
+    expect(styleSource).not.toContain('.home-ascii-shell .home-provider-logo-mark {\n  background: var(--atelier-paper)')
+    expect(opsErrorDistributionSource).toContain('ops-error-icon')
+    expect(opsErrorTrendSource).toContain('ops-error-icon')
+    expect(styleSource).toContain('.ops-dashboard-atelier .ops-error-icon {\n  color: var(--atelier-ink) !important;')
   })
 
   it('keeps CPA/Codex panels on the same module palette without moving their layout', () => {

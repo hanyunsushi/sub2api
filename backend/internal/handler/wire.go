@@ -41,6 +41,7 @@ func ProvideAdminHandlers(
 	affiliateHandler *admin.AffiliateHandler,
 	codexMetadataHandler *admin.CodexMetadataHandler,
 	buzzBalanceHandler *admin.BuzzBalanceHandler,
+	tcdmxSubscriptionHandler *admin.TCDMXSubscriptionHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
 		Dashboard:              dashboardHandler,
@@ -75,6 +76,7 @@ func ProvideAdminHandlers(
 		Affiliate:              affiliateHandler,
 		CodexMetadata:          codexMetadataHandler,
 		BuzzBalance:            buzzBalanceHandler,
+		TCDMXSubscription:      tcdmxSubscriptionHandler,
 	}
 }
 
@@ -197,6 +199,7 @@ var ProviderSet = wire.NewSet(
 	admin.NewAffiliateHandler,
 	admin.NewCodexMetadataHandler,
 	admin.NewBuzzBalanceHandler,
+	admin.NewTCDMXSubscriptionHandler,
 
 	// AdminHandlers and Handlers constructors
 	ProvideAdminHandlers,

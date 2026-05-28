@@ -844,16 +844,9 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.admin-dashboard-atelier :deep(.dashboard-filter-card:hover) {
-  transform: none;
-  border-color: var(--atelier-ink) !important;
-  background: var(--atelier-butter) !important;
-  box-shadow: none !important;
-}
-
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div) {
   min-height: 3.25rem;
-  align-items: stretch;
+  align-items: center;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range) {
@@ -872,9 +865,8 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-refresh) {
-  align-self: stretch;
-  margin: -1rem 0;
-  border-radius: 0 !important;
+  align-self: center;
+  margin: 0;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range)) {
@@ -898,7 +890,6 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
 }
 
-.admin-dashboard-atelier :deep(.dashboard-filter-card:hover > div > .dashboard-filter-range > span),
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range:hover > span) {
   color: var(--atelier-paper) !important;
   -webkit-text-fill-color: var(--atelier-paper) !important;
@@ -921,17 +912,6 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control) {
   position: relative;
   overflow: visible;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after {
-  content: "";
-  position: absolute;
-  top: -0.125rem;
-  right: -1rem;
-  bottom: -0.125rem;
-  width: 1px;
-  background: var(--atelier-console-rule-vertical-invert);
-  pointer-events: none;
 }
 
 .admin-dashboard-atelier :deep(.date-picker-trigger *),

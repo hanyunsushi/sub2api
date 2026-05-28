@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,13 +21,16 @@ type BuzzBalanceSettings struct {
 }
 
 type BuzzBalance struct {
-	Enabled     bool      `json:"enabled"`
-	Configured  bool      `json:"configured"`
-	Currency    string    `json:"currency"`
-	Total       float64   `json:"total"`
-	Used        float64   `json:"used"`
-	Remaining   float64   `json:"remaining"`
-	RefreshedAt time.Time `json:"refreshed_at,omitempty"`
+	Enabled       bool       `json:"enabled"`
+	Configured    bool       `json:"configured"`
+	Currency      string     `json:"currency"`
+	SiteURL       string     `json:"site_url"`
+	Total         float64    `json:"total"`
+	Used          float64    `json:"used"`
+	Remaining     float64    `json:"remaining"`
+	ExpiresAt     *time.Time `json:"expires_at,omitempty"`
+	DaysRemaining *int       `json:"days_remaining,omitempty"`
+	RefreshedAt   time.Time  `json:"refreshed_at,omitempty"`
 }
 
 type BuzzBalanceService struct {
@@ -83,13 +88,17 @@ func (s *BuzzBalanceService) GetBalance(ctx context.Context) (*BuzzBalance, erro
 		Enabled:    settings.Enabled,
 		Configured: settings.APIToken != "",
 		Currency:   "USD",
+		SiteURL:    settings.APIBaseURL + "/dashboard/billing",
 	}
 	if !settings.Enabled || settings.APIToken == "" {
 		return result, nil
 	}
 
 	var subscription struct {
-		SoftLimitUSD float64 `json:"soft_limit_usd"`
+		SoftLimitUSD     float64         `json:"soft_limit_usd"`
+		ExpiresAt        json.RawMessage `json:"expires_at"`
+		CurrentPeriodEnd json.RawMessage `json:"current_period_end"`
+		RenewsAt         json.RawMessage `json:"renews_at"`
 	}
 	if err := s.getJSON(ctx, settings, "/v1/dashboard/billing/subscription", &subscription); err != nil {
 		return nil, err
@@ -105,6 +114,8 @@ func (s *BuzzBalanceService) GetBalance(ctx context.Context) (*BuzzBalance, erro
 	result.Total = subscription.SoftLimitUSD
 	result.Used = usage.TotalUsage / 100
 	result.Remaining = result.Total - result.Used
+	result.ExpiresAt = firstExternalTime(subscription.ExpiresAt, subscription.CurrentPeriodEnd, subscription.RenewsAt)
+	result.DaysRemaining = daysRemainingFromNow(result.ExpiresAt)
 	result.RefreshedAt = time.Now().UTC()
 	return result, nil
 }
@@ -120,6 +131,67 @@ func (s *BuzzBalanceService) getJSON(ctx context.Context, settings BuzzBalanceSe
 	}
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
 		return infraerrors.ServiceUnavailable("BUZZ_BALANCE_UPSTREAM_ERROR", "BuzzAI balance API returned an error")
+	}
+	return nil
+}
+
+func firstExternalTime(values ...json.RawMessage) *time.Time {
+	for _, raw := range values {
+		if parsed := parseExternalTimeRaw(raw); parsed != nil {
+			return parsed
+		}
+	}
+	return nil
+}
+
+func parseExternalTimeRaw(raw json.RawMessage) *time.Time {
+	text := strings.TrimSpace(string(raw))
+	if text == "" || text == "null" {
+		return nil
+	}
+	var str string
+	if err := json.Unmarshal(raw, &str); err == nil {
+		return parseExternalTimeString(str)
+	}
+	var number json.Number
+	if err := json.Unmarshal(raw, &number); err == nil {
+		value, err := strconv.ParseFloat(number.String(), 64)
+		if err != nil {
+			return nil
+		}
+		if value > 1e12 {
+			value = value / 1000
+		}
+		seconds := int64(value)
+		if seconds <= 0 {
+			return nil
+		}
+		parsed := time.Unix(seconds, 0).UTC()
+		return &parsed
+	}
+	return nil
+}
+
+func parseExternalTimeString(value string) *time.Time {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return nil
+	}
+	if parsed, err := time.Parse(time.RFC3339, trimmed); err == nil {
+		return &parsed
+	}
+	if parsed, err := time.Parse("2006-01-02", trimmed); err == nil {
+		return &parsed
+	}
+	if number, err := strconv.ParseFloat(trimmed, 64); err == nil {
+		if number > 1e12 {
+			number = number / 1000
+		}
+		seconds := int64(number)
+		if seconds > 0 {
+			parsed := time.Unix(seconds, 0).UTC()
+			return &parsed
+		}
 	}
 	return nil
 }

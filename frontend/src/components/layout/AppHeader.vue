@@ -88,6 +88,12 @@
               Buzz {{ formattedBuzzBalance }}
             </span>
             <span
+              v-else-if="showTCDMXSubscriptionInChip"
+              class="balance-tcdmx-text text-sm font-semibold"
+            >
+              TCDMX {{ formattedTCDMXBalance }}
+            </span>
+            <span
               v-else
               class="balance-system-text text-sm font-semibold"
             >
@@ -120,8 +126,26 @@
                 <div class="balance-buzz-text text-xs font-medium">
                   Buzz
                 </div>
-                <div class="balance-buzz-text text-sm font-semibold">
-                  {{ formattedBuzzBalance }}
+                <div class="text-right">
+                  <div class="balance-buzz-text text-sm font-semibold">
+                    {{ formattedBuzzBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedBuzzExpiry }}
+                  </div>
+                </div>
+              </div>
+              <div class="balance-row balance-row-tcdmx flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-tcdmx-text text-xs font-medium">
+                  TCDMX
+                </div>
+                <div class="text-right">
+                  <div class="balance-tcdmx-text text-sm font-semibold">
+                    {{ formattedTCDMXBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedTCDMXExpiry }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -285,6 +309,7 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
+import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -307,7 +332,9 @@ const balanceChipRef = ref<HTMLElement | null>(null)
 const balanceDropdownOpen = ref(false)
 const balanceCarouselIndex = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
+const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 const buzzBalanceLoading = ref(false)
+const tcdmxSubscriptionLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
@@ -350,8 +377,29 @@ const canShowBuzzBalance = computed(() => {
   )
 })
 
+const canShowTCDMXSubscription = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    tcdmxSubscription.value?.enabled &&
+    tcdmxSubscription.value?.configured
+  )
+})
+
+const balanceSlotCount = computed(() => {
+  return 1 + (canShowBuzzBalance.value ? 1 : 0) + (canShowTCDMXSubscription.value ? 1 : 0)
+})
+
+const currentBalanceSlot = computed(() => {
+  return balanceCarouselIndex.value % balanceSlotCount.value
+})
+
 const showBuzzBalanceInChip = computed(() => {
-  return canShowBuzzBalance.value && balanceCarouselIndex.value % 2 === 1
+  return canShowBuzzBalance.value && currentBalanceSlot.value === 1
+})
+
+const showTCDMXSubscriptionInChip = computed(() => {
+  if (!canShowTCDMXSubscription.value) return false
+  return currentBalanceSlot.value === (canShowBuzzBalance.value ? 2 : 1)
 })
 
 const formattedBuzzBalance = computed(() => {
@@ -359,9 +407,34 @@ const formattedBuzzBalance = computed(() => {
   return `$${buzzBalance.value.remaining.toFixed(2)}`
 })
 
+const formattedBuzzExpiry = computed(() => {
+  if (!canShowBuzzBalance.value || !buzzBalance.value) return '期限未配置'
+  return formatExternalExpiry(buzzBalance.value.expires_at)
+})
+
+const formattedTCDMXBalance = computed(() => {
+  if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '未配置'
+  const remaining = tcdmxSubscription.value.remaining_usd
+  const total = tcdmxSubscription.value.total_limit_usd
+  if (typeof remaining === 'number' && typeof total === 'number') {
+    return `$${remaining.toFixed(2)} / $${total.toFixed(2)}`
+  }
+  if (typeof total === 'number') return `限额 $${total.toFixed(2)}`
+  if (tcdmxSubscription.value.active_count > 0) return `${tcdmxSubscription.value.active_count} 个订阅`
+  return '无有效订阅'
+})
+
+const formattedTCDMXExpiry = computed(() => {
+  if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '期限未配置'
+  return formatExternalExpiry(tcdmxSubscription.value.expires_at)
+})
+
 const balanceChipClass = computed(() => {
   if (showBuzzBalanceInChip.value) {
     return 'balance-chip-buzz'
+  }
+  if (showTCDMXSubscriptionInChip.value) {
+    return 'balance-chip-tcdmx'
   }
   return 'balance-chip-system'
 })
@@ -369,6 +442,9 @@ const balanceChipClass = computed(() => {
 const balanceIconClass = computed(() => {
   if (showBuzzBalanceInChip.value) {
     return 'balance-buzz-text'
+  }
+  if (showTCDMXSubscriptionInChip.value) {
+    return 'balance-tcdmx-text'
   }
   return 'balance-system-text'
 })
@@ -461,10 +537,30 @@ async function fetchBuzzBalance() {
   }
 }
 
+async function fetchTCDMXSubscription() {
+  if (!authStore.isAdmin || tcdmxSubscriptionLoading.value) return
+  tcdmxSubscriptionLoading.value = true
+  try {
+    tcdmxSubscription.value = await tcdmxSubscriptionAPI.getStatus()
+  } catch (error) {
+    tcdmxSubscription.value = null
+    console.error('Failed to fetch TCDMX subscription:', error)
+  } finally {
+    tcdmxSubscriptionLoading.value = false
+  }
+}
+
+function formatExternalExpiry(value?: string | null) {
+  if (!value) return '长期'
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return '长期'
+  return `期限 ${parsed.toISOString().slice(0, 10)}`
+}
+
 function startBalanceCarousel() {
   if (balanceCarouselTimer) return
   balanceCarouselTimer = setInterval(() => {
-    if (canShowBuzzBalance.value) {
+    if (balanceSlotCount.value > 1) {
       balanceCarouselIndex.value += 1
     } else {
       balanceCarouselIndex.value = 0
@@ -504,6 +600,7 @@ function handleClickOutside(event: MouseEvent) {
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   void fetchBuzzBalance()
+  void fetchTCDMXSubscription()
   startBalanceCarousel()
 })
 
@@ -518,7 +615,9 @@ watch(
   () => {
     balanceCarouselIndex.value = 0
     buzzBalance.value = null
+    tcdmxSubscription.value = null
     void fetchBuzzBalance()
+    void fetchTCDMXSubscription()
   }
 )
 </script>
@@ -622,7 +721,8 @@ watch(
   text-transform: uppercase;
 }
 
-.balance-chip-buzz {
+.balance-chip-buzz,
+.balance-chip-tcdmx {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
   border-radius: 0;
@@ -635,7 +735,8 @@ watch(
 }
 
 .balance-chip-system:hover,
-.balance-chip-buzz:hover {
+.balance-chip-buzz:hover,
+.balance-chip-tcdmx:hover {
   background: var(--atelier-butter-soft);
   color: var(--atelier-ink);
 }
@@ -649,7 +750,8 @@ watch(
   color: var(--atelier-muted);
 }
 
-.balance-row-buzz {
+.balance-row-buzz,
+.balance-row-tcdmx {
   background: var(--atelier-butter-soft);
 }
 
@@ -657,8 +759,14 @@ watch(
   color: var(--atelier-ink);
 }
 
-.balance-buzz-text {
+.balance-buzz-text,
+.balance-tcdmx-text {
   color: var(--atelier-ink);
+}
+
+.balance-expiry-text {
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
 }
 
 .dark .balance-chip-system,
@@ -667,12 +775,15 @@ watch(
 }
 
 .dark .balance-chip-buzz,
-.dark .balance-row-buzz {
+.dark .balance-chip-tcdmx,
+.dark .balance-row-buzz,
+.dark .balance-row-tcdmx {
   background: transparent;
 }
 
 .dark .balance-chip-system:hover,
-.dark .balance-chip-buzz:hover {
+.dark .balance-chip-buzz:hover,
+.dark .balance-chip-tcdmx:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
 
@@ -680,7 +791,8 @@ watch(
   color: var(--atelier-ink);
 }
 
-.dark .balance-buzz-text {
+.dark .balance-buzz-text,
+.dark .balance-tcdmx-text {
   color: var(--atelier-ink);
 }
 </style>

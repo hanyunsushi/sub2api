@@ -1370,7 +1370,6 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-cap-card-featured {
-  grid-column: span 2;
   background: var(--atelier-blue);
   color: var(--atelier-white);
 }
@@ -1500,7 +1499,6 @@ onBeforeUnmount(() => {
   --home-chip-accent: var(--atelier-blue-dark);
   --home-chip-surface: var(--atelier-blue);
   --home-chip-text: var(--atelier-white);
-  grid-column: span 6;
 }
 
 .home-ascii-shell .home-provider-specimen-ink {

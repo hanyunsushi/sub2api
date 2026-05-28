@@ -268,6 +268,9 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		BuzzBalanceEnabled:                     settings.BuzzBalanceEnabled,
 		BuzzBalanceAPIBaseURL:                  settings.BuzzBalanceAPIBaseURL,
 		BuzzBalanceAPITokenConfigured:          settings.BuzzBalanceAPITokenConfigured,
+		TCDMXSubscriptionEnabled:               settings.TCDMXSubscriptionEnabled,
+		TCDMXSubscriptionAPIBaseURL:            settings.TCDMXSubscriptionAPIBaseURL,
+		TCDMXSubscriptionAPITokenConfigured:    settings.TCDMXSubscriptionAPITokenConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -604,6 +607,9 @@ type UpdateSettingsRequest struct {
 	BuzzBalanceEnabled              *bool                   `json:"buzz_balance_enabled"`
 	BuzzBalanceAPIBaseURL           *string                 `json:"buzz_balance_api_base_url"`
 	BuzzBalanceAPIToken             string                  `json:"buzz_balance_api_token"`
+	TCDMXSubscriptionEnabled        *bool                   `json:"tcdmx_subscription_enabled"`
+	TCDMXSubscriptionAPIBaseURL     *string                 `json:"tcdmx_subscription_api_base_url"`
+	TCDMXSubscriptionAPIToken       string                  `json:"tcdmx_subscription_api_token"`
 	SubscriptionExpiryNotifyEnabled *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled       *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails        *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
@@ -1449,6 +1455,11 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		req.BuzzBalanceAPIBaseURL = &normalized
 	}
 	req.BuzzBalanceAPIToken = strings.TrimSpace(req.BuzzBalanceAPIToken)
+	if req.TCDMXSubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.TCDMXSubscriptionAPIBaseURL)
+		req.TCDMXSubscriptionAPIBaseURL = &normalized
+	}
+	req.TCDMXSubscriptionAPIToken = strings.TrimSpace(req.TCDMXSubscriptionAPIToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1727,6 +1738,19 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			return previousSettings.BuzzBalanceAPIBaseURL
 		}(),
 		BuzzBalanceAPIToken: req.BuzzBalanceAPIToken,
+		TCDMXSubscriptionEnabled: func() bool {
+			if req.TCDMXSubscriptionEnabled != nil {
+				return *req.TCDMXSubscriptionEnabled
+			}
+			return previousSettings.TCDMXSubscriptionEnabled
+		}(),
+		TCDMXSubscriptionAPIBaseURL: func() string {
+			if req.TCDMXSubscriptionAPIBaseURL != nil {
+				return *req.TCDMXSubscriptionAPIBaseURL
+			}
+			return previousSettings.TCDMXSubscriptionAPIBaseURL
+		}(),
+		TCDMXSubscriptionAPIToken: req.TCDMXSubscriptionAPIToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2066,6 +2090,9 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		BuzzBalanceEnabled:                     updatedSettings.BuzzBalanceEnabled,
 		BuzzBalanceAPIBaseURL:                  updatedSettings.BuzzBalanceAPIBaseURL,
 		BuzzBalanceAPITokenConfigured:          updatedSettings.BuzzBalanceAPITokenConfigured,
+		TCDMXSubscriptionEnabled:               updatedSettings.TCDMXSubscriptionEnabled,
+		TCDMXSubscriptionAPIBaseURL:            updatedSettings.TCDMXSubscriptionAPIBaseURL,
+		TCDMXSubscriptionAPITokenConfigured:    updatedSettings.TCDMXSubscriptionAPITokenConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2560,6 +2587,15 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.BuzzBalanceAPIToken != "" {
 		changed = append(changed, "buzz_balance_api_token")
+	}
+	if before.TCDMXSubscriptionEnabled != after.TCDMXSubscriptionEnabled {
+		changed = append(changed, "tcdmx_subscription_enabled")
+	}
+	if before.TCDMXSubscriptionAPIBaseURL != after.TCDMXSubscriptionAPIBaseURL {
+		changed = append(changed, "tcdmx_subscription_api_base_url")
+	}
+	if req.TCDMXSubscriptionAPIToken != "" {
+		changed = append(changed, "tcdmx_subscription_api_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

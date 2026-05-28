@@ -38,6 +38,7 @@ type AdminHandlers struct {
 	Affiliate              *admin.AffiliateHandler
 	CodexMetadata          *admin.CodexMetadataHandler
 	BuzzBalance            *admin.BuzzBalanceHandler
+	TCDMXSubscription      *admin.TCDMXSubscriptionHandler
 }
 
 // Handlers contains all HTTP handlers

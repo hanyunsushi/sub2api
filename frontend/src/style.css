@@ -66,9 +66,9 @@
   --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
   --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
   --atelier-module-enter-duration: 0.9s;
-  --sans: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
-  --serif: "Inter Tight", "HarmonyOS Sans SC", "HarmonyOS Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
-  --mono: "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --sans: "Source Serif 4", "Noto Serif SC", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
+  --serif: "Newsreader", "Noto Serif SC", "Source Serif 4", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
+  --mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", ui-monospace, Menlo, monospace;
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -1690,6 +1690,11 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   background-color: var(--atelier-butter) !important;
 }
 
+.ops-dashboard-atelier .ops-error-icon {
+  color: var(--atelier-ink) !important;
+  background-color: transparent !important;
+}
+
 .ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card) canvas {
   filter: saturate(0.92) contrast(1.02);
 }
@@ -2836,8 +2841,8 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div {
-  gap: 0 !important;
-  align-items: stretch !important;
+  gap: 1rem !important;
+  align-items: center !important;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range {
@@ -2847,26 +2852,13 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {
-  position: relative;
-  align-self: stretch !important;
-  margin: -1rem 0 !important;
-  border-color: var(--atelier-ink) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
-  outline-offset: -2px !important;
-  border-radius: 0 !important;
+  align-self: center !important;
+  margin: 0 !important;
+  border-color: rgba(255, 250, 240, 0.28) !important;
+  outline: none !important;
+  outline-offset: 0 !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
-}
-
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh::after {
-  content: "";
-  position: absolute;
-  top: 0.875rem !important;
-  right: 0 !important;
-  bottom: 0.875rem !important;
-  width: 1px;
-  background: var(--atelier-console-rule-vertical-invert) !important;
-  pointer-events: none;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-granularity {
@@ -2876,12 +2868,17 @@ body:has(.table-page-layout) :where(
   background: var(--atelier-butter) !important;
 }
 
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-range :where(span, svg),
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-refresh,
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover > div > .dashboard-filter-refresh :where(span, svg),
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg) {
   color: var(--atelier-paper) !important;
   -webkit-text-fill-color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover {
+  transform: none !important;
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-butter) !important;
+  box-shadow: none !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-card {
@@ -3493,16 +3490,20 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .settings-tab {
   border-radius: 6px !important;
+  overflow: hidden !important;
   color: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content .settings-tab::before {
+  inset: 0 !important;
+  border-radius: inherit !important;
   background: var(--atelier-butter) !important;
 }
 
 #app .app-layout-content .settings-tab:hover,
 #app .app-layout-content .settings-tab:focus-visible {
-  border-color: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-material-edge)) !important;
+  border-color: var(--atelier-butter) !important;
+  background: var(--atelier-butter) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3550,6 +3551,11 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .user-keys-atelier > .table-page-filter-section {
   overflow: hidden !important;
   background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .user-keys-atelier > .table-page-actions-section {
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content .user-keys-atelier .keys-filter-shell {
@@ -4287,7 +4293,11 @@ body:has(.table-page-layout) :where(
 }
 
 .home-ascii-shell .home-provider-logo-mark {
-  background: var(--atelier-paper) !important;
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
   color: var(--atelier-ink) !important;
   font-family: var(--atelier-font-sans) !important;
   font-style: normal !important;
@@ -4922,13 +4932,16 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .balance-chip-buzz,
-.balance-row-buzz {
+.balance-chip-tcdmx,
+.balance-row-buzz,
+.balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
   background: var(--atelier-material-dust) !important;
   color: var(--atelier-butter-dark) !important;
 }
 
 .app-header-atelier .balance-chip-buzz,
+.app-header-atelier .balance-chip-tcdmx,
 .app-header-atelier .balance-chip-system {
   border: 0 !important;
   border-left: 1px dotted var(--atelier-line-strong) !important;
@@ -4939,28 +4952,34 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .app-header-atelier .balance-chip-buzz:hover,
+.app-header-atelier .balance-chip-tcdmx:hover,
 .app-header-atelier .balance-chip-system:hover {
   border-color: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-line-strong)) !important;
   background: var(--atelier-butter) !important;
   color: var(--atelier-ink) !important;
 }
 
-.balance-buzz-text {
+.balance-buzz-text,
+.balance-tcdmx-text {
   color: var(--atelier-butter-dark) !important;
 }
 
 .app-header-atelier .balance-buzz-text,
+.app-header-atelier .balance-tcdmx-text,
 .app-header-atelier .balance-system-text {
   color: var(--atelier-ink) !important;
 }
 
 .dark .balance-chip-buzz,
-.dark .balance-row-buzz {
+.dark .balance-chip-tcdmx,
+.dark .balance-row-buzz,
+.dark .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
   background: rgba(199, 154, 58, 0.18) !important;
 }
 
-.dark .balance-buzz-text {
+.dark .balance-buzz-text,
+.dark .balance-tcdmx-text {
   color: #e9c96c !important;
 }
 
@@ -5088,13 +5107,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
-}
-
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg),
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh,
-#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh :where(span, svg) {
-  color: var(--atelier-paper) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
 }
 
 body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal,

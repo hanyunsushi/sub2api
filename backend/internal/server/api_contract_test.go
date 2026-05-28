@@ -417,6 +417,27 @@ func TestAPIContracts(t *testing.T) {
 						"updated_at": "2025-01-02T03:04:05Z"
 					}
 				]
+				}`,
+		},
+		{
+			name:       "GET /api/v1/admin/tcdmx/subscription disabled",
+			method:     http.MethodGet,
+			path:       "/api/v1/admin/tcdmx/subscription",
+			wantStatus: http.StatusOK,
+			wantJSON: `{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"provider": "tcdmx",
+					"enabled": false,
+					"configured": false,
+					"currency": "USD",
+					"site_url": "https://tcdmx.com/subscriptions",
+					"used_usd": 0,
+					"active_count": 0,
+					"subscriptions": null,
+					"refreshed_at": "0001-01-01T00:00:00Z"
+				}
 			}`,
 		},
 		{
@@ -872,10 +893,16 @@ func TestAPIContracts(t *testing.T) {
 					"balance_low_notify_enabled": false,
 					"account_quota_notify_enabled": false,
 					"subscription_expiry_notify_enabled": true,
-					"balance_low_notify_threshold": 0,
-					"balance_low_notify_recharge_url": "",
-					"account_quota_notify_emails": [],
-					"channel_monitor_enabled": true,
+						"balance_low_notify_threshold": 0,
+						"balance_low_notify_recharge_url": "",
+						"buzz_balance_enabled": false,
+						"buzz_balance_api_base_url": "https://buzzai.cc",
+						"buzz_balance_api_token_configured": false,
+						"tcdmx_subscription_enabled": false,
+						"tcdmx_subscription_api_base_url": "https://tcdmx.com",
+						"tcdmx_subscription_api_token_configured": false,
+						"account_quota_notify_emails": [],
+						"channel_monitor_enabled": true,
 					"channel_monitor_default_interval_seconds": 60,
 					"available_channels_enabled": false,
 					"risk_control_enabled": false,
@@ -1106,10 +1133,16 @@ func TestAPIContracts(t *testing.T) {
 					"balance_low_notify_enabled": false,
 					"account_quota_notify_enabled": false,
 					"subscription_expiry_notify_enabled": true,
-					"balance_low_notify_threshold": 0,
-					"balance_low_notify_recharge_url": "",
-					"account_quota_notify_emails": [],
-					"channel_monitor_enabled": true,
+						"balance_low_notify_threshold": 0,
+						"balance_low_notify_recharge_url": "",
+						"buzz_balance_enabled": false,
+						"buzz_balance_api_base_url": "https://buzzai.cc",
+						"buzz_balance_api_token_configured": false,
+						"tcdmx_subscription_enabled": false,
+						"tcdmx_subscription_api_base_url": "https://tcdmx.com",
+						"tcdmx_subscription_api_token_configured": false,
+						"account_quota_notify_emails": [],
+						"channel_monitor_enabled": true,
 					"channel_monitor_default_interval_seconds": 60,
 					"available_channels_enabled": false,
 					"risk_control_enabled": false,
@@ -1280,6 +1313,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	usageHandler := handler.NewUsageHandler(usageService, apiKeyService)
 	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil)
 	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	adminTCDMXSubscriptionHandler := adminhandler.NewTCDMXSubscriptionHandler(service.NewTCDMXSubscriptionService(settingService))
 
 	jwtAuth := func(c *gin.Context) {
 		c.Set(string(middleware.ContextKeyUser), middleware.AuthSubject{
@@ -1329,6 +1363,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	v1Admin.Use(adminAuth)
 	v1Admin.GET("/settings", adminSettingHandler.GetSettings)
 	v1Admin.POST("/accounts/bulk-update", adminAccountHandler.BulkUpdate)
+	v1Admin.GET("/tcdmx/subscription", adminTCDMXSubscriptionHandler.GetStatus)
 
 	return &contractDeps{
 		now:         now,
