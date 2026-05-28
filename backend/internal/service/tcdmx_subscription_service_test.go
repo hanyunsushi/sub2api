@@ -55,7 +55,7 @@ func TestTCDMXSubscriptionService_GetStatusAggregatesActiveSubscriptions(t *test
 	require.True(t, got.Enabled)
 	require.True(t, got.Configured)
 	require.Equal(t, "tcdmx", got.Provider)
-	require.Equal(t, server.URL+"/subscriptions", got.SiteURL)
+	require.Equal(t, server.URL, got.SiteURL)
 	require.Equal(t, 1, got.ActiveCount)
 	require.NotNil(t, got.TotalLimitUSD)
 	require.InDelta(t, 100, *got.TotalLimitUSD, 0.0001)

@@ -88,7 +88,7 @@ func (s *BuzzBalanceService) GetBalance(ctx context.Context) (*BuzzBalance, erro
 		Enabled:    settings.Enabled,
 		Configured: settings.APIToken != "",
 		Currency:   "USD",
-		SiteURL:    settings.APIBaseURL + "/dashboard/billing",
+		SiteURL:    settings.APIBaseURL,
 	}
 	if !settings.Enabled || settings.APIToken == "" {
 		return result, nil

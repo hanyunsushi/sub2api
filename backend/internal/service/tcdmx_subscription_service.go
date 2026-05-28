@@ -108,7 +108,7 @@ func (s *TCDMXSubscriptionService) GetStatus(ctx context.Context) (*TCDMXSubscri
 		Enabled:    settings.Enabled,
 		Configured: settings.APIToken != "",
 		Currency:   "USD",
-		SiteURL:    settings.APIBaseURL + "/subscriptions",
+		SiteURL:    settings.APIBaseURL,
 	}
 	if !settings.Enabled || settings.APIToken == "" {
 		return result, nil

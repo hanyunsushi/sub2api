@@ -800,7 +800,7 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.card .text-xs) {
-  font-family: var(--atelier-font-mono);
+  font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.08em;
   color: var(--atelier-muted) !important;
@@ -875,7 +875,7 @@ onBeforeUnmount(() => {
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
   color: var(--atelier-ink) !important;
-  font-family: var(--atelier-font-mono);
+  font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -884,7 +884,7 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range > span) {
   color: var(--atelier-paper) !important;
   -webkit-text-fill-color: var(--atelier-paper) !important;
-  font-family: var(--atelier-font-mono);
+  font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -905,7 +905,7 @@ onBeforeUnmount(() => {
   border-color: rgba(255, 250, 240, 0.28) !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
-  font-family: var(--atelier-font-mono);
+  font-family: var(--atelier-font-sans);
   box-shadow: none !important;
 }
 

@@ -68,7 +68,7 @@
   --atelier-module-enter-duration: 0.9s;
   --sans: "Source Serif 4", "Noto Serif SC", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
   --serif: "Newsreader", "Noto Serif SC", "Source Serif 4", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
-  --mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", ui-monospace, Menlo, monospace;
+  --mono: "IBM Plex Mono", "Noto Serif SC", "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", ui-monospace, Menlo, monospace;
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -859,7 +859,7 @@
     border-radius: 0;
     padding-left: 0;
     padding-right: 0;
-    font-family: var(--atelier-font-mono);
+    font-family: var(--atelier-font-sans);
     font-size: 0.75rem;
     letter-spacing: 0;
   }
@@ -1271,6 +1271,143 @@
   box-sizing: border-box;
 }
 
+.ai-search-box {
+  color: var(--atelier-ink);
+}
+
+.ai-search-form,
+.ai-search-mobile-form {
+  height: 2.25rem;
+  min-width: 12rem;
+  border-left: 1px dotted var(--atelier-line-strong);
+  padding-left: 0.75rem;
+}
+
+.ai-search-mobile-form {
+  min-width: 0;
+  border-left: 0;
+  border-bottom: 1px dotted var(--atelier-line-strong);
+  padding: 0 0 0.75rem;
+}
+
+.ai-search-input {
+  width: 10.5rem;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--atelier-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.ai-search-input::placeholder {
+  color: var(--atelier-muted);
+  opacity: 1;
+}
+
+.ai-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.ai-search-icon,
+.ai-search-clear,
+.ai-search-mobile-trigger {
+  color: var(--atelier-muted);
+}
+
+.ai-search-clear,
+.ai-search-mobile-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  transition: color 0.18s var(--atelier-ease), background 0.18s var(--atelier-ease);
+}
+
+.ai-search-clear {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.ai-search-mobile-trigger {
+  height: 2.25rem;
+  width: 2.25rem;
+  border-left: 1px dotted var(--atelier-line-strong);
+}
+
+.ai-search-clear:hover,
+.ai-search-mobile-trigger:hover {
+  background: var(--atelier-butter);
+  color: var(--atelier-ink);
+}
+
+.ai-search-panel {
+  width: min(24rem, calc(100vw - 1.5rem));
+  padding: 0 !important;
+}
+
+.ai-search-panel-content {
+  padding: 0.75rem;
+}
+
+.ai-search-state {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--atelier-muted);
+  font-size: 0.875rem;
+}
+
+.ai-search-error {
+  color: #8f2f1c;
+}
+
+.ai-search-results {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.ai-search-result {
+  display: grid;
+  gap: 0.25rem;
+  border-left: 1px dotted var(--atelier-line-strong);
+  padding: 0.625rem 0.75rem;
+  color: var(--atelier-ink);
+  text-decoration: none;
+  transition: background 0.18s var(--atelier-ease), border-color 0.18s var(--atelier-ease);
+}
+
+.ai-search-result:hover {
+  border-color: var(--atelier-butter);
+  background: var(--atelier-material-dust);
+}
+
+.ai-search-result-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.ai-search-result-snippet {
+  color: var(--atelier-muted);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+.ai-search-result-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--atelier-butter-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1rem;
+}
+
 .auth-ascii-shell,
 .home-ascii-shell {
   background: var(--atelier-canvas);
@@ -1647,7 +1784,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--atelier-font-mono);
+  font-family: var(--atelier-font-sans);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1666,14 +1803,22 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   color: var(--atelier-blue) !important;
 }
 
-.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], .font-mono) {
-  font-family: var(--atelier-font-mono) !important;
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\]) {
+  font-family: var(--atelier-font-sans) !important;
   letter-spacing: 0.04em;
 }
 
-.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], th, label, button, .select-trigger, input) {
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.font-mono) {
   font-family: var(--atelier-font-mono) !important;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], th, label, button, .select-trigger, input) {
+  font-family: var(--atelier-font-sans) !important;
   letter-spacing: 0.04em;
+}
+
+.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.font-mono, td) {
+  font-family: var(--atelier-font-mono) !important;
 }
 
 .ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.font-bold, .font-black, td, .font-mono) {
@@ -3407,8 +3552,9 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] > div {
-  gap: 0.05rem !important;
+  gap: 0.5rem !important;
   line-height: 1.15;
+  min-width: 0;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:first-child {
@@ -3417,6 +3563,35 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:last-child {
   max-width: 100% !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-provider-logo {
+  align-items: center;
+  background: rgba(255, 250, 240, 0.72);
+  border: 1px solid rgba(23, 21, 18, 0.16);
+  border-radius: 0.375rem;
+  display: inline-flex;
+  flex: 0 0 1.75rem;
+  height: 1.75rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 1.75rem;
+}
+
+#app .app-layout-content .accounts-table-page .account-provider-logo-img {
+  display: block;
+  height: 1.15rem;
+  max-width: 1.15rem;
+  object-fit: contain;
+  width: 1.15rem;
+}
+
+#app .app-layout-content .accounts-table-page .account-provider-logo-fallback {
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-bar {
@@ -3489,15 +3664,22 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .settings-tab {
-  border-radius: 6px !important;
+  border-radius: 0 !important;
   overflow: hidden !important;
+  background-clip: border-box !important;
   color: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content .settings-tab::before {
   inset: 0 !important;
-  border-radius: inherit !important;
+  z-index: 0 !important;
+  border-radius: 0 !important;
   background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .settings-tab > :where(.settings-tab-icon, .settings-tab-label) {
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 #app .app-layout-content .settings-tab:hover,
@@ -3505,6 +3687,7 @@ body:has(.table-page-layout) :where(
   border-color: var(--atelier-butter) !important;
   background: var(--atelier-butter) !important;
   color: var(--atelier-ink) !important;
+  box-shadow: none !important;
 }
 
 #app .app-layout-content .settings-tab:hover::before,
@@ -3538,7 +3721,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .settings-tab-active .settings-tab-icon,
 #app .app-layout-content .settings-tab-active:hover .settings-tab-icon,
 #app .app-layout-content .settings-tab-active:focus-visible .settings-tab-icon {
-  background: var(--atelier-blue) !important;
+  background: transparent !important;
   color: var(--atelier-white) !important;
 }
 
@@ -4276,6 +4459,42 @@ body:has(.table-page-layout) :where(
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-blue) 22%, transparent) !important;
 }
 
+.auth-agreement-locked-field {
+  cursor: not-allowed;
+  outline: none;
+}
+
+.auth-agreement-locked-field::after {
+  content: attr(data-agreement-hint);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.55rem);
+  z-index: 30;
+  max-width: min(20rem, calc(100vw - 2rem));
+  transform: translate3d(-50%, 0.25rem, 0);
+  border: 1px solid rgba(23, 21, 18, 0.26);
+  border-radius: 0.5rem;
+  background: var(--atelier-ink);
+  color: var(--atelier-paper);
+  box-shadow: 0 14px 30px -24px rgba(23, 21, 18, 0.55);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  opacity: 0;
+  padding: 0.45rem 0.65rem;
+  pointer-events: none;
+  text-align: center;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+  white-space: nowrap;
+}
+
+.auth-agreement-locked-field:hover::after,
+.auth-agreement-locked-field:focus-visible::after {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0);
+}
+
 .auth-ascii-shell .btn-primary {
   border-color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
@@ -4423,7 +4642,12 @@ body:has(.table-page-layout) :where(
   color: var(--atelier-blue) !important;
 }
 
-.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], .font-mono, th, label, button, input, .select-trigger) {
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(.text-xs, .text-\[10px\], .text-\[11px\], th, label, button, input, .select-trigger) {
+  font-family: var(--atelier-font-sans) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card) :where(.font-mono) {
   font-family: var(--atelier-font-mono) !important;
   font-variant-numeric: tabular-nums;
 }
