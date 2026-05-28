@@ -331,6 +331,50 @@ describe('EditAccountModal', () => {
     expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('codex_image_generation_bridge_enabled')
   })
 
+  it('persists a custom account logo URL in account extra metadata', async () => {
+    const account = buildAccount()
+    account.extra = {
+      logo_url: 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png'
+    }
+    updateAccountMock.mockReset()
+    checkMixedChannelRiskMock.mockReset()
+    checkMixedChannelRiskMock.mockResolvedValue({ has_risk: false })
+    updateAccountMock.mockResolvedValue(account)
+
+    const wrapper = mountModal(account)
+
+    const input = wrapper.get('[data-testid="account-logo-url-input"]')
+    expect((input.element as HTMLInputElement).value).toBe('https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png')
+
+    await input.setValue('https://cdn.example.com/custom-provider.png')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+
+    expect(updateAccountMock).toHaveBeenCalledTimes(1)
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra?.logo_url).toBe('https://cdn.example.com/custom-provider.png')
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra?.custom_logo_url).toBe('https://cdn.example.com/custom-provider.png')
+  })
+
+  it('clears custom account logo metadata when the URL is emptied', async () => {
+    const account = buildAccount()
+    account.extra = {
+      logo_url: 'https://cdn.example.com/custom-provider.png',
+      custom_logo_url: 'https://cdn.example.com/custom-provider.png'
+    }
+    updateAccountMock.mockReset()
+    checkMixedChannelRiskMock.mockReset()
+    checkMixedChannelRiskMock.mockResolvedValue({ has_risk: false })
+    updateAccountMock.mockResolvedValue(account)
+
+    const wrapper = mountModal(account)
+
+    await wrapper.get('[data-testid="account-logo-url-input"]').setValue('')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+
+    expect(updateAccountMock).toHaveBeenCalledTimes(1)
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('logo_url')
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('custom_logo_url')
+  })
+
   it('allows saving apikey account when backend redacted api_key but credentials_status reports it exists', async () => {
     // 新前端 + 新后端：响应已脱敏，credentials 里没有 api_key，credentials_status.has_api_key=true
     const account = buildAccount()

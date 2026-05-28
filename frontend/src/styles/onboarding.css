@@ -160,7 +160,7 @@
 .dark .shortcut-item { color: #94a3b8 !important; }
 
 .shortcut-item kbd {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace !important;
+  font-family: var(--atelier-font-mono) !important;
   background-color: var(--atelier-paper-2) !important;
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 4px !important;

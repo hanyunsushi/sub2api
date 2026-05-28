@@ -18,8 +18,17 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('account-external-quota-link')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedBalance')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedExpiry')
+    expect(source).toContain("localText('前往官网', 'Official site')")
     expect(source).toContain("return localText('长期', 'Long-term')")
     expect(source).not.toContain("return localText('未返回', 'Not returned')")
+    expect(source).not.toContain("localText('打开', 'Open')")
+  })
+
+  it('uses external provider base URLs instead of provider subpages for account card links', () => {
+    expect(source).toContain("const defaultBuzzURL = 'https://buzzai.cc'")
+    expect(source).toContain("const defaultTCDMXURL = 'https://tcdmx.com'")
+    expect(source).not.toContain("https://buzzai.cc/dashboard/billing")
+    expect(source).not.toContain("https://tcdmx.com/subscriptions")
   })
 
   it('only shows provider quota cards after that provider summary is enabled and configured', () => {
@@ -31,5 +40,16 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('tcdmxSubscription.value?.configured')
     expect(source).toContain("if (provider === 'tcdmx' && canShowTCDMXExternalQuota())")
     expect(source).toContain("if (provider === 'buzz' && canShowBuzzExternalQuota())")
+  })
+
+  it('renders a provider logo before each account card name and supports custom logo URLs', () => {
+    expect(source).toContain('data-testid="account-provider-logo"')
+    expect(source).toContain('getAccountLogo(row)')
+    expect(source).toContain('getAccountLogoAlt(row)')
+    expect(source).toContain('account-provider-logo-img')
+    expect(source).toContain('account-provider-logo-fallback')
+    expect(source).toContain('custom_logo_url')
+    expect(source).toContain('logo_url')
+    expect(source).toContain('https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/')
   })
 })

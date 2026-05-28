@@ -432,7 +432,7 @@ func TestAPIContracts(t *testing.T) {
 					"enabled": false,
 					"configured": false,
 					"currency": "USD",
-					"site_url": "https://tcdmx.com/subscriptions",
+					"site_url": "https://tcdmx.com",
 					"used_usd": 0,
 					"active_count": 0,
 					"subscriptions": null,

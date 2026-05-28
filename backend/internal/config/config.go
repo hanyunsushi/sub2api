@@ -91,6 +91,7 @@ type Config struct {
 	RunMode                 string                        `mapstructure:"run_mode" yaml:"run_mode"`
 	Timezone                string                        `mapstructure:"timezone"` // e.g. "Asia/Shanghai", "UTC"
 	Gemini                  GeminiConfig                  `mapstructure:"gemini"`
+	CloudflareAI            CloudflareAIConfig            `mapstructure:"cloudflare_ai"`
 	Update                  UpdateConfig                  `mapstructure:"update"`
 	Idempotency             IdempotencyConfig             `mapstructure:"idempotency"`
 }
@@ -130,6 +131,14 @@ type LogSamplingConfig struct {
 type GeminiConfig struct {
 	OAuth GeminiOAuthConfig `mapstructure:"oauth"`
 	Quota GeminiQuotaConfig `mapstructure:"quota"`
+}
+
+type CloudflareAIConfig struct {
+	AccountID                 string `mapstructure:"account_id"`
+	AISearchInstanceID        string `mapstructure:"ai_search_instance_id"`
+	AISearchAPIToken          string `mapstructure:"ai_search_api_token"`
+	AISearchAPIBaseURL        string `mapstructure:"ai_search_api_base_url"`
+	AISearchPublicEndpointURL string `mapstructure:"ai_search_public_endpoint_url"`
 }
 
 type GeminiOAuthConfig struct {
@@ -1389,6 +1398,11 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 	cfg.LinuxDo.UserInfoEmailPath = strings.TrimSpace(cfg.LinuxDo.UserInfoEmailPath)
 	cfg.LinuxDo.UserInfoIDPath = strings.TrimSpace(cfg.LinuxDo.UserInfoIDPath)
 	cfg.LinuxDo.UserInfoUsernamePath = strings.TrimSpace(cfg.LinuxDo.UserInfoUsernamePath)
+	cfg.CloudflareAI.AccountID = strings.TrimSpace(cfg.CloudflareAI.AccountID)
+	cfg.CloudflareAI.AISearchInstanceID = strings.TrimSpace(cfg.CloudflareAI.AISearchInstanceID)
+	cfg.CloudflareAI.AISearchAPIToken = strings.TrimSpace(cfg.CloudflareAI.AISearchAPIToken)
+	cfg.CloudflareAI.AISearchAPIBaseURL = strings.TrimRight(strings.TrimSpace(cfg.CloudflareAI.AISearchAPIBaseURL), "/")
+	cfg.CloudflareAI.AISearchPublicEndpointURL = strings.TrimSpace(cfg.CloudflareAI.AISearchPublicEndpointURL)
 	applyLegacyWeChatConnectEnvCompatibility(&cfg.WeChat)
 	normalizeWeChatConnectConfig(&cfg.WeChat)
 	cfg.OIDC.ProviderName = strings.TrimSpace(cfg.OIDC.ProviderName)
@@ -1918,6 +1932,13 @@ func setDefaults() {
 	viper.SetDefault("gemini.oauth.client_secret", "")
 	viper.SetDefault("gemini.oauth.scopes", "")
 	viper.SetDefault("gemini.quota.policy", "")
+
+	// Cloudflare AI Search - API token is optional when public endpoint URL is configured
+	viper.SetDefault("cloudflare_ai.account_id", "")
+	viper.SetDefault("cloudflare_ai.ai_search_instance_id", "ai-search")
+	viper.SetDefault("cloudflare_ai.ai_search_api_token", "")
+	viper.SetDefault("cloudflare_ai.ai_search_api_base_url", "https://api.cloudflare.com/client/v4")
+	viper.SetDefault("cloudflare_ai.ai_search_public_endpoint_url", "https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/search")
 
 	// Subscription Maintenance (bounded queue + worker pool)
 	viper.SetDefault("subscription_maintenance.worker_count", 2)

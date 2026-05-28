@@ -25,6 +25,19 @@
         ></textarea>
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
+      <div>
+        <label class="input-label">{{ t('admin.accounts.logoUrl', '账号 Logo URL') }}</label>
+        <input
+          v-model="accountLogoUrl"
+          type="url"
+          class="input"
+          data-testid="account-logo-url-input"
+          placeholder="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png"
+        />
+        <p class="input-hint">
+          {{ t('admin.accounts.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则按账号来源自动匹配。') }}
+        </p>
+      </div>
 
       <!-- API Key fields (only for apikey type) -->
       <div v-if="account.type === 'apikey'" class="space-y-4">
@@ -2636,6 +2649,7 @@ const form = reactive({
   group_ids: [] as number[],
   expires_at: null as number | null
 })
+const accountLogoUrl = ref('')
 
 const statusOptions = computed(() => {
   const options = [
@@ -2704,6 +2718,11 @@ const syncFormFromAccount = (newAccount: Account | null) => {
     : 'active'
   form.group_ids = newAccount.group_ids || []
   form.expires_at = newAccount.expires_at ?? null
+  accountLogoUrl.value = typeof newAccount.extra?.custom_logo_url === 'string'
+    ? newAccount.extra.custom_logo_url
+    : typeof newAccount.extra?.logo_url === 'string'
+      ? newAccount.extra.logo_url
+      : ''
 
   // Load intercept warmup requests setting (applies to all account types)
   const credentials = newAccount.credentials as Record<string, unknown> | undefined
@@ -3382,6 +3401,25 @@ const ensureAntigravityMixedChannelConfirmed = async (onConfirm: () => Promise<v
 const formatDateTimeLocal = formatDateTimeLocalInput
 const parseDateTimeLocal = parseDateTimeLocalInput
 
+const applyAccountLogoMetadata = (updatePayload: Record<string, unknown>) => {
+  const currentExtra =
+    updatePayload.extra && typeof updatePayload.extra === 'object'
+      ? (updatePayload.extra as Record<string, unknown>)
+      : ((props.account?.extra as Record<string, unknown>) || {})
+  const newExtra: Record<string, unknown> = {
+    ...currentExtra
+  }
+  const normalizedLogoUrl = accountLogoUrl.value.trim()
+  if (normalizedLogoUrl) {
+    newExtra.logo_url = normalizedLogoUrl
+    newExtra.custom_logo_url = normalizedLogoUrl
+  } else {
+    delete newExtra.logo_url
+    delete newExtra.custom_logo_url
+  }
+  updatePayload.extra = newExtra
+}
+
 // Methods
 const handleClose = () => {
   antigravityMixedChannelConfirmed.value = false
@@ -3935,6 +3973,8 @@ const handleSubmit = async () => {
       writeQuotaNotifyToExtra(newExtra, 'update')
       updatePayload.extra = newExtra
     }
+
+    applyAccountLogoMetadata(updatePayload)
 
     const canContinue = await ensureAntigravityMixedChannelConfirmed(async () => {
       await submitUpdateAccount(accountID, updatePayload)

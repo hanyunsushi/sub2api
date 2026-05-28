@@ -17,7 +17,13 @@
           <label for="email" class="input-label">
             {{ t('auth.emailLabel') }}
           </label>
-          <div class="relative">
+          <div
+            class="relative"
+            :class="{ 'auth-agreement-locked-field': agreementInputLocked }"
+            :data-agreement-hint="agreementInputLocked ? agreementInputHint : undefined"
+            :tabindex="agreementInputLocked ? 0 : undefined"
+            :title="agreementInputLocked ? agreementInputHint : undefined"
+          >
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
@@ -41,7 +47,13 @@
           <label for="password" class="input-label">
             {{ t('auth.passwordLabel') }}
           </label>
-          <div class="relative">
+          <div
+            class="relative"
+            :class="{ 'auth-agreement-locked-field': agreementInputLocked }"
+            :data-agreement-hint="agreementInputLocked ? agreementInputHint : undefined"
+            :tabindex="agreementInputLocked ? 0 : undefined"
+            :title="agreementInputLocked ? agreementInputHint : undefined"
+          >
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
@@ -280,6 +292,14 @@ const validationToastMessage = computed(
 
 const agreementGateActive = computed(
   () => loginAgreementEnabled.value && !agreementAccepted.value
+)
+
+const agreementInputLocked = computed(
+  () => agreementGateActive.value && loginAgreementMode.value === 'checkbox'
+)
+
+const agreementInputHint = computed(
+  () => '请先勾选下方使用协议后再输入。'
 )
 
 const authActionDisabled = computed(

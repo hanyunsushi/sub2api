@@ -71,8 +71,27 @@ export default {
           'Georgia',
           'serif'
         ],
-        serif: ['Newsreader', 'Noto Serif SC', 'Source Serif 4', 'Songti SC', 'STSong', 'SimSun', 'ui-serif', 'Georgia', 'serif'],
-        mono: ['IBM Plex Mono', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+        serif: [
+          'Newsreader',
+          'Noto Serif SC',
+          'Source Serif 4',
+          'Songti SC',
+          'STSong',
+          'SimSun',
+          'ui-serif',
+          'Georgia',
+          'serif'
+        ],
+        mono: [
+          'IBM Plex Mono',
+          'Noto Serif SC',
+          'SFMono-Regular',
+          'ui-monospace',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          'monospace'
+        ]
       },
       boxShadow: {
         surface: '0 12px 28px -24px rgba(23, 21, 18, 0.36)',

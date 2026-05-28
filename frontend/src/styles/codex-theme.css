@@ -1,4 +1,5 @@
 .codex-admin {
+  --codex-font-mono: var(--atelier-font-mono);
   --codex-bg: var(--atelier-paper);
   --codex-surface: var(--atelier-paper-2);
   --codex-surface-strong: var(--atelier-surface-panel);
@@ -389,7 +390,7 @@
 
 .codex-metric-value {
   display: block;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-size: 24px;
   font-weight: 750;
 }
@@ -524,7 +525,7 @@
 .codex-account-meta {
   margin-top: 3px;
   color: var(--codex-muted);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-size: 12px;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -549,7 +550,7 @@
 }
 
 .codex-balance-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-size: 13px;
   font-weight: 750;
   color: var(--codex-text);
@@ -610,7 +611,7 @@
   border-radius: 4px;
   background: rgba(180, 69, 54, 0.12);
   padding: 1px 5px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-weight: 750;
 }
 
@@ -809,7 +810,7 @@
   background: var(--codex-surface-soft);
   padding: 10px;
   color: var(--codex-text);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-size: 12px;
 }
 
@@ -857,7 +858,7 @@
   background: var(--codex-soft);
   padding: 8px;
   color: var(--codex-text);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--codex-font-mono);
   font-size: 11px;
 }
 

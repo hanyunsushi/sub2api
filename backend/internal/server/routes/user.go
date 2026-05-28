@@ -84,6 +84,12 @@ func RegisterUserRoutes(
 			pricing.GET("/global", h.GlobalPricing.List)
 		}
 
+		// AI Search（用户可见，后端代理 Cloudflare，避免前端暴露 Cloudflare 密钥）
+		aiSearch := authenticated.Group("/ai-search")
+		{
+			aiSearch.POST("/search", h.AISearch.Search)
+		}
+
 		// 使用记录
 		usage := authenticated.Group("/usage")
 		{

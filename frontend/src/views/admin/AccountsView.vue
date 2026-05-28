@@ -221,40 +221,57 @@
             <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
           </template>
           <template #cell-name="{ row, value }">
-            <div class="flex flex-col">
-              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
-              <span
-                v-if="row.extra?.email_address || row.extra?.email || row.credentials?.email"
-                class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
-                :title="String(row.extra?.email_address || row.extra?.email || row.credentials?.email)"
-              >
-                {{ row.extra?.email_address || row.extra?.email || row.credentials?.email }}
-              </span>
+            <div class="flex min-w-0 items-start gap-2">
               <div
-                v-if="getAccountExternalQuota(row)"
-                data-testid="account-external-quota"
-                class="mt-2 grid gap-1 rounded-md border border-gray-200/80 bg-white/50 px-2 py-1.5 text-[11px] leading-4 text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-300"
+                data-testid="account-provider-logo"
+                class="account-provider-logo"
+                :title="getAccountLogoAlt(row)"
               >
-                <div class="flex items-center justify-between gap-2">
-                  <span class="font-semibold text-gray-700 dark:text-gray-200">
-                    {{ getAccountExternalQuota(row)?.label }}
-                  </span>
-                  <a
-                    class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
-                    :href="getAccountExternalQuota(row)?.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {{ localText('打开', 'Open') }}
-                  </a>
-                </div>
-                <div class="flex items-center justify-between gap-2">
-                  <span>{{ localText('余额', 'Balance') }}</span>
-                  <span class="font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
-                </div>
-                <div class="flex items-center justify-between gap-2">
-                  <span>{{ localText('期限', 'Expiry') }}</span>
-                  <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
+                <img
+                  v-if="getAccountLogo(row)"
+                  class="account-provider-logo-img"
+                  :src="getAccountLogo(row) || undefined"
+                  :alt="getAccountLogoAlt(row)"
+                  loading="lazy"
+                  @error="handleAccountLogoError(row)"
+                />
+                <span v-else class="account-provider-logo-fallback">{{ getAccountLogoFallback(row) }}</span>
+              </div>
+              <div class="flex min-w-0 flex-1 flex-col">
+                <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+                <span
+                  v-if="row.extra?.email_address || row.extra?.email || row.credentials?.email"
+                  class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
+                  :title="String(row.extra?.email_address || row.extra?.email || row.credentials?.email)"
+                >
+                  {{ row.extra?.email_address || row.extra?.email || row.credentials?.email }}
+                </span>
+                <div
+                  v-if="getAccountExternalQuota(row)"
+                  data-testid="account-external-quota"
+                  class="mt-2 grid gap-1 rounded-md border border-gray-200/80 bg-white/50 px-2 py-1.5 text-[11px] leading-4 text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-300"
+                >
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-semibold text-gray-700 dark:text-gray-200">
+                      {{ getAccountExternalQuota(row)?.label }}
+                    </span>
+                    <a
+                      class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
+                      :href="getAccountExternalQuota(row)?.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {{ localText('前往官网', 'Official site') }}
+                    </a>
+                  </div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span>{{ localText('余额', 'Balance') }}</span>
+                    <span class="font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
+                  </div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span>{{ localText('期限', 'Expiry') }}</span>
+                    <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -598,6 +615,7 @@ const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
+const logoErrorAccountIds = ref<Set<number>>(new Set())
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -724,8 +742,8 @@ interface AccountExternalQuota {
   formattedExpiry: string
 }
 
-const defaultBuzzURL = 'https://buzzai.cc/dashboard/billing'
-const defaultTCDMXURL = 'https://tcdmx.com/subscriptions'
+const defaultBuzzURL = 'https://buzzai.cc'
+const defaultTCDMXURL = 'https://tcdmx.com'
 
 const formatExternalAmount = (value?: number | null) => {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
@@ -807,6 +825,68 @@ const getAccountExternalQuota = (account: Account): AccountExternalQuota | null 
   if (provider === 'tcdmx' && canShowTCDMXExternalQuota()) return buildTCDMXExternalQuota()
   if (provider === 'buzz' && canShowBuzzExternalQuota()) return buildBuzzExternalQuota()
   return null
+}
+
+const lobeIconBaseURL = 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/'
+const lobeIconSlugByToken: Array<[RegExp, string]> = [
+  [/\b(anthropic|claude)\b/, 'claude-color'],
+  [/\b(openai|chatgpt|gpt)\b/, 'openai'],
+  [/\b(gemini|google|vertex|aistudio)\b/, 'gemini-color'],
+  [/\b(deepseek)\b/, 'deepseek-color'],
+  [/\b(mistral)\b/, 'mistral-color'],
+  [/\b(openrouter)\b/, 'openrouter'],
+  [/\b(perplexity)\b/, 'perplexity-color'],
+  [/\b(qwen|tongyi|alibaba)\b/, 'qwen-color'],
+  [/\b(moonshot|kimi)\b/, 'moonshot'],
+  [/\b(grok|xai)\b/, 'xai'],
+  [/\b(buzz|buzzai)\b/, 'openai'],
+  [/\b(tcdmx|mimo)\b/, 'openai']
+]
+
+const buildAccountLogoSearchText = (account: Account) => {
+  const credentials = account.credentials ?? {}
+  const extra = account.extra ?? {}
+  return [
+    account.name,
+    account.notes,
+    account.platform,
+    account.type,
+    account.custom_base_url,
+    credentials.base_url,
+    credentials.api_base_url,
+    credentials.endpoint,
+    extra.custom_base_url,
+    extra.external_provider
+  ]
+    .filter((part): part is string => typeof part === 'string' && part.trim() !== '')
+    .join(' ')
+    .toLowerCase()
+}
+
+const getAccountLogo = (account: Account) => {
+  if (logoErrorAccountIds.value.has(account.id)) return null
+  const extra = account.extra ?? {}
+  const customLogoURL = typeof extra.custom_logo_url === 'string'
+    ? extra.custom_logo_url.trim()
+    : typeof extra.logo_url === 'string'
+      ? extra.logo_url.trim()
+      : ''
+  if (customLogoURL) return customLogoURL
+
+  const text = buildAccountLogoSearchText(account)
+  const match = lobeIconSlugByToken.find(([pattern]) => pattern.test(text))
+  return match ? `${lobeIconBaseURL}${match[1]}.png` : null
+}
+
+const getAccountLogoAlt = (account: Account) => `${account.name || account.platform} logo`
+
+const getAccountLogoFallback = (account: Account) => {
+  const source = String(account.name || account.platform || '?').trim()
+  return (source.match(/[A-Za-z0-9]/)?.[0] || source.charAt(0) || '?').toUpperCase()
+}
+
+const handleAccountLogoError = (account: Account) => {
+  logoErrorAccountIds.value = new Set([...logoErrorAccountIds.value, account.id])
 }
 
 const fetchExternalQuotaSummaries = async () => {

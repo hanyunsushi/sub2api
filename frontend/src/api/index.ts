@@ -19,6 +19,7 @@ export { userGroupsAPI } from './groups'
 export { userChannelsAPI } from './channels'
 export { pricingAPI } from './pricing'
 export { totpAPI } from './totp'
+export { aiSearchAPI } from './aiSearch'
 export { default as announcementsAPI } from './announcements'
 export { channelMonitorUserAPI } from './channelMonitor'
 

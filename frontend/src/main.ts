@@ -6,6 +6,7 @@ import router from './router'
 import i18n, { initI18n } from './i18n'
 import { useAppStore } from '@/stores/app'
 import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
+import './assets/fonts/local-fonts.css'
 import './style.css'
 
 const lenisNestedScrollSelector = '[data-lenis-scroll]'

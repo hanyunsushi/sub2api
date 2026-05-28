@@ -3846,7 +3846,7 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("TCDMX API Key", "TCDMX API Key") }}
+                      {{ localText("TCDMX 订阅访问 Token", "TCDMX subscription access token") }}
                     </label>
                     <input
                       v-model="form.tcdmx_subscription_api_token"
@@ -3855,7 +3855,7 @@
                       :placeholder="
                         form.tcdmx_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 TCDMX API Key', 'Paste TCDMX API key')
+                          : localText('粘贴可访问 TCDMX 订阅接口的 Token', 'Paste a token that can access TCDMX subscription APIs')
                       "
                       autocomplete="off"
                     />
@@ -3863,12 +3863,12 @@
                       {{
                         form.tcdmx_subscription_api_token_configured
                           ? localText(
-                              "已保存密钥不会回显，前端只拿到额度摘要。",
-                              "Saved key is never echoed; the frontend receives only the quota summary.",
+                              "已保存 Token 不会回显，前端只拿到额度摘要。",
+                              "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "密钥只写入后端设置，用于服务端查询 TCDMX 订阅。",
-                              "The key is stored only in backend settings for server-side TCDMX subscription queries.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 TCDMX 订阅接口的 Token。",
+                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access TCDMX subscription APIs.",
                             )
                       }}
                     </p>

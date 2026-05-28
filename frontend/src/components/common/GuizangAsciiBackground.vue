@@ -52,7 +52,7 @@ function drawGuizangField(canvas: HTMLCanvasElement, time: number, ink: string) 
   const rows = Math.ceil(rect.height / cell)
   const chars = "   ...:::---+++***ooo0011"
 
-  context.font = `500 ${fontSize}px "JetBrains Mono", "DM Mono", ui-monospace, monospace`
+  context.font = `500 ${fontSize}px "IBM Plex Mono", ui-monospace, monospace`
   context.textBaseline = 'top'
 
   for (let row = 0; row < rows; row += 1) {
