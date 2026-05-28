@@ -55,10 +55,13 @@
   --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
   --atelier-console-grid-size: 32px 32px;
   --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-invert: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.42), rgba(255, 250, 240, 0.42) 2px, transparent 2px, transparent 8px);
   --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
   --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.36), rgba(255, 250, 240, 0.36) 2px, transparent 2px, transparent 8px);
   --atelier-filter-stitch-horizontal: var(--atelier-console-rule);
   --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
+  --atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);
+  --atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);
   --atelier-scrollbar: var(--atelier-lime);
   --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
   --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
@@ -1575,7 +1578,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   pointer-events: none;
 }
 
-.ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
   transform: translate3d(0, -2px, 0);
   border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
   background: var(--atelier-butter) !important;
@@ -2848,6 +2851,8 @@ body:has(.table-page-layout) :where(
   align-self: stretch !important;
   margin: -1rem 0 !important;
   border-color: var(--atelier-ink) !important;
+  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline-offset: -2px !important;
   border-radius: 0 !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
@@ -2882,7 +2887,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-card {
   overflow: hidden !important;
   border-color: var(--atelier-ink) !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ink) !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
 }
@@ -4372,14 +4377,14 @@ body:has(.table-page-layout) :where(
   border-right: 0 !important;
 }
 
-.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+.app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
   border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
   background: var(--atelier-butter) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
-.app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-metric-card, .ops-system-card):hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
+.app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
   color: var(--atelier-ink) !important;
 }
 
@@ -5022,7 +5027,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: var(--atelier-ink) !important;
 }
 
-#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-monitor-panel, .ops-metric-card, .ops-system-card):hover {
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover {
   --atelier-card-surface: var(--atelier-butter);
   --atelier-material-2: var(--atelier-butter);
   transform: translate3d(0, -2px, 0);
@@ -5033,7 +5038,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
-#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-monitor-panel, .ops-metric-card, .ops-system-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600, svg) {
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600, svg) {
   color: var(--atelier-ink) !important;
 }
 
@@ -5187,6 +5192,22 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: inherit !important;
 }
 
+/* Ops chart and live diagnostic panels are data regions; keep metric hover only. */
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, svg) {
+  color: inherit !important;
+}
+
 /* Non-dashboard/ops filter bars are unified ink blocks with perimeter stitching. */
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
 #app .app-layout-content .user-keys-atelier > .table-page-filter-section,
@@ -5214,10 +5235,10 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   z-index: 4;
   border-radius: inherit;
   background:
-    var(--atelier-filter-stitch-horizontal) top left / 100% 1px no-repeat,
-    var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat,
-    var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat,
-    var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat;
+    var(--atelier-filter-stitch-horizontal-invert) top left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-horizontal-invert) bottom left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-vertical-invert) top left / 1px 100% no-repeat,
+    var(--atelier-filter-stitch-vertical-invert) top right / 1px 100% no-repeat;
   pointer-events: none;
 }
 
@@ -5291,6 +5312,12 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
+  background: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {
