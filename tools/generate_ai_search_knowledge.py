@@ -35,9 +35,20 @@ def first_match(source: str, pattern: str, fallback: str) -> str:
     return groups[0] if groups else match.group(0)
 
 
+def markdown_section(source: str, heading: str) -> str:
+    start = source.find(heading)
+    if start < 0:
+        return ""
+    next_heading = source.find("\n## ", start + len(heading))
+    if next_heading < 0:
+        return source[start:]
+    return source[start:next_heading]
+
+
 def build_markdown(source: str) -> str:
-    backup_time = first_match(source, r"每天\s+`?([0-9]{1,2}:[0-9]{2})`?", "03:00")
-    retention_days = first_match(source, r"(?:保留策略为|下对象)\s*([0-9]+)\s*天", "30")
+    r2_source = markdown_section(source, "## R2 灾备状态") or source
+    backup_time = first_match(r2_source, r"每天\s+`?([0-9]{1,2}:[0-9]{2})`?", "03:00")
+    retention_days = first_match(r2_source, r"(?:保留策略为|下对象)\s*([0-9]+)\s*天", "30")
 
     lines: list[str] = [
         "# Sub2API 用户知识库",
