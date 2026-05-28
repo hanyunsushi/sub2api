@@ -33,6 +33,21 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         self.assertNotIn("Secret Access Key", markdown)
         self.assertNotIn("codex/production-running", markdown)
 
+    def test_uses_r2_backup_time_not_ai_search_sync_time(self):
+        source = """
+        ## R2 灾备状态
+        每天 `03:00` 自动备份，保留策略为 30 天。
+
+        ## Cloudflare AI Search 状态
+        每日同步由 Codex 自动化执行，计划每天 03:20。
+        AI Search 搜索框放在公告铃左边。
+        """
+
+        markdown = generator.build_markdown(source)
+
+        self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
+        self.assertNotIn("每天 03:20 自动生成 PostgreSQL 备份", markdown)
+
 
 if __name__ == "__main__":
     unittest.main()
