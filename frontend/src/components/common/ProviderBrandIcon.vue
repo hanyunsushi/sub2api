@@ -10,11 +10,19 @@
     }"
   >
     <ModelIcon
-      v-if="brand.iconModel"
+      v-if="!brand.iconUrl && brand.iconModel"
       :model="brand.iconModel"
       size="18px"
       aria-hidden="true"
     />
+    <img
+      v-else-if="brand.iconUrl"
+      class="provider-brand-image"
+      :src="brand.iconUrl"
+      alt=""
+      loading="lazy"
+      aria-hidden="true"
+    >
     <span v-else class="provider-brand-tile" aria-hidden="true">
       {{ brand.label }}
     </span>
@@ -47,6 +55,10 @@ const title = computed(() => props.provider || props.model || 'Provider')
 
 .provider-brand-icon :deep(svg path) {
   fill: currentColor !important;
+}
+
+.provider-brand-image {
+  @apply h-5 w-5 flex-shrink-0 object-contain;
 }
 
 .provider-brand-tile {

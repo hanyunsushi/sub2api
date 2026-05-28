@@ -38,6 +38,7 @@ var aiSearchKnowledgeCronParser = cron.NewParser(cron.Minute | cron.Hour | cron.
 
 type AISearchKnowledgeSyncService struct {
 	cfg        *config.Config
+	configSvc  *AISearchConfigService
 	httpClient *http.Client
 
 	mu     sync.Mutex
@@ -45,17 +46,22 @@ type AISearchKnowledgeSyncService struct {
 	done   chan struct{}
 }
 
-func NewAISearchKnowledgeSyncService(cfg *config.Config) *AISearchKnowledgeSyncService {
+func NewAISearchKnowledgeSyncService(cfg *config.Config, configSvc ...*AISearchConfigService) *AISearchKnowledgeSyncService {
+	var aiSearchConfigSvc *AISearchConfigService
+	if len(configSvc) > 0 {
+		aiSearchConfigSvc = configSvc[0]
+	}
 	return &AISearchKnowledgeSyncService{
-		cfg: cfg,
+		cfg:       cfg,
+		configSvc: aiSearchConfigSvc,
 		httpClient: &http.Client{
 			Timeout: aiSearchKnowledgeSyncRequestTimeout,
 		},
 	}
 }
 
-func ProvideAISearchKnowledgeSyncService(cfg *config.Config) *AISearchKnowledgeSyncService {
-	svc := NewAISearchKnowledgeSyncService(cfg)
+func ProvideAISearchKnowledgeSyncService(cfg *config.Config, configSvc *AISearchConfigService) *AISearchKnowledgeSyncService {
+	svc := NewAISearchKnowledgeSyncService(cfg, configSvc)
 	svc.Start()
 	return svc
 }
@@ -99,6 +105,14 @@ func (s *AISearchKnowledgeSyncService) Stop() {
 	case <-time.After(aiSearchKnowledgeSyncShutdownTimeout):
 		logger.LegacyPrintf("service.ai_search_sync", "[AISearchSync] stop timed out")
 	}
+}
+
+func (s *AISearchKnowledgeSyncService) Restart() {
+	if s == nil {
+		return
+	}
+	s.Stop()
+	s.Start()
 }
 
 func (s *AISearchKnowledgeSyncService) loop(ctx context.Context, schedule cron.Schedule) {
@@ -192,20 +206,20 @@ func (s *AISearchKnowledgeSyncService) settings() aiSearchKnowledgeSyncSettings 
 	if s == nil || s.cfg == nil {
 		return aiSearchKnowledgeSyncSettings{}
 	}
-	cf := s.cfg.CloudflareAI
+	cf := aiSearchConfigForService(s.cfg, s.configSvc)
 	settings := aiSearchKnowledgeSyncSettings{
-		enabled:               cf.AISearchSyncEnabled,
+		enabled:               cf.SyncEnabled,
 		accountID:             strings.TrimSpace(cf.AccountID),
-		token:                 strings.TrimSpace(cf.AISearchAPIToken),
-		instanceID:            firstNonBlank(cf.AISearchInstanceID, defaultAISearchInstanceID),
-		namespace:             firstNonBlank(cf.AISearchNamespace, defaultAISearchNamespace),
-		itemKey:               firstNonBlank(cf.AISearchItemKey, defaultAISearchItemKey),
-		baseURL:               firstNonBlank(strings.TrimRight(cf.AISearchAPIBaseURL, "/"), defaultAISearchAPIBaseURL),
-		cronSpec:              firstNonBlank(cf.AISearchSyncCron, defaultAISearchSyncCron),
-		sourcePath:            firstNonBlank(cf.AISearchSyncSourcePath, defaultAISearchSyncSourcePath),
-		knowledgePath:         firstNonBlank(cf.AISearchSyncKnowledgePath, defaultAISearchSyncKnowledgePath),
-		waitForCompletion:     cf.AISearchSyncWaitForCompletion,
-		deleteLegacySeedItems: cf.AISearchSyncDeleteLegacySeedItems,
+		token:                 strings.TrimSpace(cf.APIToken),
+		instanceID:            firstNonBlank(cf.InstanceID, defaultAISearchInstanceID),
+		namespace:             firstNonBlank(cf.Namespace, defaultAISearchNamespace),
+		itemKey:               firstNonBlank(cf.ItemKey, defaultAISearchItemKey),
+		baseURL:               firstNonBlank(strings.TrimRight(cf.APIBaseURL, "/"), defaultAISearchAPIBaseURL),
+		cronSpec:              firstNonBlank(cf.SyncCron, defaultAISearchSyncCron),
+		sourcePath:            firstNonBlank(cf.SyncSourcePath, defaultAISearchSyncSourcePath),
+		knowledgePath:         firstNonBlank(cf.SyncKnowledgePath, defaultAISearchSyncKnowledgePath),
+		waitForCompletion:     cf.SyncWaitForCompletion,
+		deleteLegacySeedItems: cf.SyncDeleteLegacySeedItems,
 	}
 	return settings
 }

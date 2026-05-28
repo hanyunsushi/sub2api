@@ -44,6 +44,25 @@ export interface TestS3Response {
   message: string
 }
 
+export interface AISearchBackendConfig {
+  account_id: string
+  api_token?: string
+  api_token_configured?: boolean
+  api_base_url: string
+  public_endpoint_url: string
+  public_chat_endpoint_url: string
+  public_origin: string
+  instance_id: string
+  namespace: string
+  item_key: string
+  sync_enabled: boolean
+  sync_cron: string
+  sync_source_path: string
+  sync_knowledge_path: string
+  sync_wait_for_completion: boolean
+  sync_delete_legacy_seed_items: boolean
+}
+
 // S3 Config
 export async function getS3Config(): Promise<BackupS3Config> {
   const { data } = await apiClient.get<BackupS3Config>('/admin/backups/s3-config')
@@ -57,6 +76,27 @@ export async function updateS3Config(config: BackupS3Config): Promise<BackupS3Co
 
 export async function testS3Connection(config: BackupS3Config): Promise<TestS3Response> {
   const { data } = await apiClient.post<TestS3Response>('/admin/backups/s3-config/test', config)
+  return data
+}
+
+// AI Search Config
+export async function getAISearchConfig(): Promise<AISearchBackendConfig> {
+  const { data } = await apiClient.get<AISearchBackendConfig>('/admin/backups/ai-search-config')
+  return data
+}
+
+export async function updateAISearchConfig(config: AISearchBackendConfig): Promise<AISearchBackendConfig> {
+  const { data } = await apiClient.put<AISearchBackendConfig>('/admin/backups/ai-search-config', config)
+  return data
+}
+
+export async function testAISearchConfig(config: AISearchBackendConfig): Promise<TestS3Response> {
+  const { data } = await apiClient.post<TestS3Response>('/admin/backups/ai-search-config/test', config)
+  return data
+}
+
+export async function syncAISearchKnowledge(): Promise<TestS3Response> {
+  const { data } = await apiClient.post<TestS3Response>('/admin/backups/ai-search-sync')
   return data
 }
 
@@ -106,6 +146,10 @@ export const backupAPI = {
   getS3Config,
   updateS3Config,
   testS3Connection,
+  getAISearchConfig,
+  updateAISearchConfig,
+  testAISearchConfig,
+  syncAISearchKnowledge,
   getSchedule,
   updateSchedule,
   createBackup,

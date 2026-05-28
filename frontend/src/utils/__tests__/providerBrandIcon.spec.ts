@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { providerBrandInfo, providerBrandModel } from '../providerBrandIcon'
+import {
+  aiLogoPresets,
+  aiLogoUrlForProvider,
+  providerBrandInfo,
+  providerBrandModel
+} from '../providerBrandIcon'
 
 describe('provider brand icon resolution', () => {
   it('uses provider-first seeds for stable color brand icons', () => {
@@ -9,6 +14,20 @@ describe('provider brand icon resolution', () => {
     expect(providerBrandModel('gemini', 'gemini-2.5-pro')).toBe('gemini')
     expect(providerBrandModel('deepseek', 'deepseek-chat')).toBe('deepseek')
     expect(providerBrandModel('volcengine', 'doubao-seed-1-6')).toBe('doubao')
+  })
+
+  it('resolves shared AI logo CDN images for picker and pricing icons', () => {
+    expect(aiLogoPresets.length).toBeGreaterThan(16)
+    expect(aiLogoPresets[0]).toMatchObject({
+      id: 'openai',
+      label: 'OpenAI',
+      url: 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png'
+    })
+    expect(aiLogoUrlForProvider('openai', 'gpt-5.5')).toBe(aiLogoPresets[0].url)
+    expect(aiLogoUrlForProvider('anthropic', 'claude-sonnet-4-5')).toContain('/anthropic.png')
+    expect(aiLogoUrlForProvider('gemini', 'gemini-2.5-pro')).toContain('/gemini.png')
+    expect(aiLogoUrlForProvider('dashscope', 'qwen-max')).toContain('/qwen.png')
+    expect(providerBrandInfo('openrouter')?.iconUrl).toContain('/openrouter.png')
   })
 
   it('covers common LiteLLM and vendor aliases with recognizable icon seeds', () => {

@@ -116,7 +116,7 @@ describe('AppHeader AI Search placement', () => {
           Icon: { template: '<span />' },
           LocaleSwitcher: { template: '<div />' },
           SubscriptionProgressMini: { template: '<div />' },
-          AISearchBox: { template: '<div data-testid="ai-search-box">ask ai</div>' },
+          AISearchBox: { template: '<div data-testid="ai-search-box">Ask AI</div>' },
           AnnouncementBell: { template: '<div data-testid="announcement-bell" />' },
           FloatingDropdown: {
             props: ['show', 'triggerEl', 'panelClass'],
@@ -132,7 +132,7 @@ describe('AppHeader AI Search placement', () => {
     const bell = wrapper.get('[data-testid="announcement-bell"]').element
     expect(aiSearch.compareDocumentPosition(bell) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(aiSearch.nextElementSibling).toBe(bell)
-    expect(wrapper.text()).toContain('ask ai')
+    expect(wrapper.text()).toContain('Ask AI')
     expect(wrapper.text()).not.toContain('help')
   })
 })

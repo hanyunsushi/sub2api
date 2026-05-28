@@ -42,7 +42,7 @@
   --atelier-material-edge: rgba(23, 21, 18, 0.18);
   --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
   --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
-  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(199, 154, 58, 0.44);
+  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(23, 21, 18, 0.28);
   --atelier-material-grid: none;
   --atelier-material-grid-dark: none;
   --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 22%, var(--atelier-paper));
@@ -51,6 +51,8 @@
   --atelier-material-green: #d5dfd4;
   --atelier-material-red: #ead8d3;
   --atelier-material-active: var(--atelier-blue);
+  --atelier-ui-hover-surface: color-mix(in srgb, var(--atelier-white) 42%, var(--atelier-paper-2));
+  --atelier-filter-action-surface: var(--atelier-ink);
   --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
   --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
   --atelier-console-grid-size: 32px 32px;
@@ -162,7 +164,9 @@
     --atelier-material-edge: rgba(255, 250, 240, 0.16);
     --atelier-material-edge-strong: rgba(255, 250, 240, 0.28);
     --atelier-material-shadow: 0 16px 34px -28px rgba(5, 5, 5, 0.82);
-    --atelier-material-shadow-hover: 0 18px 42px -30px rgba(199, 154, 58, 0.44);
+    --atelier-material-shadow-hover: 0 18px 42px -30px rgba(255, 250, 240, 0.2);
+    --atelier-ui-hover-surface: rgba(255, 250, 240, 0.12);
+    --atelier-filter-action-surface: var(--atelier-ink);
     --atelier-console-grid-line: rgba(255, 250, 240, 0.035);
     --atelier-console-grid-line-soft: rgba(255, 250, 240, 0.025);
     --atelier-console-rule: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
@@ -1260,9 +1264,9 @@
   min-width: 12rem;
   border: 1px solid rgba(23, 21, 18, 0.18);
   border-radius: 0.375rem;
-  background: rgba(255, 250, 240, 0.82);
+  background: transparent;
   padding: 0 0.625rem;
-  box-shadow: inset 0 0 0 1px rgba(255, 250, 240, 0.62);
+  box-shadow: none;
 }
 
 .ai-search-mobile-form {
@@ -1321,7 +1325,7 @@
 
 .ai-search-clear:hover,
 .ai-search-mobile-trigger:hover {
-  background: var(--atelier-butter);
+  background: var(--atelier-ui-hover-surface, var(--atelier-paper-2));
   color: var(--atelier-ink);
 }
 
@@ -1355,7 +1359,7 @@
 .ai-search-answer {
   border: 1px solid rgba(23, 21, 18, 0.14);
   border-radius: 0.375rem;
-  background: rgba(255, 250, 240, 0.72);
+  background: var(--atelier-paper);
   color: var(--atelier-ink);
   font-size: 0.875rem;
   font-weight: 600;
@@ -1380,7 +1384,7 @@
 }
 
 .ai-search-result:hover {
-  border-color: var(--atelier-butter);
+  border-color: var(--atelier-line-strong);
   background: var(--atelier-material-dust);
 }
 
@@ -1400,7 +1404,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--atelier-butter-dark);
+  color: var(--atelier-blue-dark);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1rem;
@@ -1409,6 +1413,7 @@
 .logo-picker {
   align-items: flex-start;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -1664,8 +1669,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .ops-dashboard-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover,
 .admin-usage-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover,
 .user-usage-atelier :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):hover {
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -1699,8 +1704,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 .app-layout-content :where(.ops-metric-card, .ops-system-card):hover {
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -1775,8 +1780,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--ops-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -1788,7 +1793,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   border: 1px solid var(--ops-card-edge) !important;
   border-radius: 8px;
   overflow: hidden;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-filter-action-surface) !important;
   padding: 0 !important;
 }
 
@@ -1890,7 +1895,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .ops-dashboard-atelier .ops-icon-butter,
 .ops-dashboard-atelier .ops-chart-dot-butter {
   color: var(--atelier-butter) !important;
-  background-color: var(--atelier-butter) !important;
+  background-color: var(--atelier-ui-hover-surface) !important;
 }
 
 .ops-dashboard-atelier .ops-error-icon {
@@ -1941,7 +1946,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) tbody tr:hover {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--ops-ink) !important;
 }
 
@@ -2006,14 +2011,14 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 .ops-dashboard-atelier .ops-monitor-toolbar-controls {
   flex: 1 1 28rem;
   justify-content: flex-end;
   padding: 1.125rem 1.35rem;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-filter-action-surface) !important;
 }
 
 .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger) {
@@ -2268,8 +2273,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.btn-secondary, .btn-ghost, .codex-button):not(.codex-button--primary):not(.codex-button--danger):hover:not(:disabled),
 .app-layout-content :where(button, a, [role="button"]):where([class~="hover:bg-gray-50"], [class~="hover:bg-gray-100"], [class~="hover:bg-primary-50"]):hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2310,7 +2315,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.dropdown-item, .floating-dropdown-portal button, .select-option, .date-picker-preset, .action-menu-content button, .action-menu-content a, [class*="dropdown"][class*="portal"] button):hover {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2360,7 +2365,7 @@ body:has(.table-page-layout) :where(
 .select-dropdown-portal .select-option-selected,
 .select-dropdown-portal .select-option-focused,
 .date-picker-dropdown-portal .date-picker-preset-active {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2402,7 +2407,7 @@ body:has(.table-page-layout) :where(
 :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover,
 :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover :where(td, .sticky-col, .table-cell),
 :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2460,7 +2465,7 @@ body:has(.table-page-layout) :where(
 .app-layout-content .table-page-layout > .layout-section-fixed {
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 8px;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   padding: 1rem;
   box-shadow: var(--atelier-material-shadow) !important;
@@ -2514,13 +2519,13 @@ body:has(.table-page-layout) :where(
 
 .app-layout-content .table-page-layout > .layout-section-fixed .card {
   border-color: var(--atelier-ink) !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed .card:hover {
   transform: none;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
 }
 
@@ -2575,7 +2580,7 @@ body:has(.table-page-layout) :where(
   min-height: 3.25rem;
   margin: -1rem;
   padding: 0;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2637,7 +2642,7 @@ body:has(.table-page-layout) :where(
   position: relative;
   margin: -1rem -1rem -1rem 0;
   padding: 1rem;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2680,7 +2685,7 @@ body:has(.table-page-layout) :where(
   margin: -1rem;
   border: 0 !important;
   border-radius: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -2713,7 +2718,7 @@ body:has(.table-page-layout) :where(
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child {
   margin: -1rem -1rem -1rem 0;
   padding: 1rem;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2800,7 +2805,7 @@ body:has(.table-page-layout) :where(
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-actions-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
   border-color: var(--atelier-ink) !important;
   border-image: none !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   overflow: hidden !important;
   background-clip: padding-box !important;
@@ -2883,8 +2888,8 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
 
@@ -2907,7 +2912,7 @@ body:has(.table-page-layout) :where(
   align-items: stretch !important;
   margin: -1rem !important;
   padding: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -2928,7 +2933,7 @@ body:has(.table-page-layout) :where(
   position: relative !important;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3030,7 +3035,7 @@ body:has(.table-page-layout) :where(
   margin: -1rem !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
 }
 
@@ -3068,7 +3073,7 @@ body:has(.table-page-layout) :where(
   align-self: stretch !important;
   margin-left: 0 !important;
   padding-left: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg) {
@@ -3080,7 +3085,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover {
   transform: none !important;
   border-color: var(--atelier-ink) !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ink) !important;
   box-shadow: none !important;
 }
 
@@ -3133,7 +3138,7 @@ body:has(.table-page-layout) :where(
   align-self: stretch !important;
   margin-left: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before {
@@ -3173,7 +3178,7 @@ body:has(.table-page-layout) :where(
   overflow: hidden;
   border: 1px solid var(--atelier-ink);
   border-radius: 8px;
-  background: var(--atelier-butter);
+  background: var(--atelier-ui-hover-surface);
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-card {
@@ -3192,7 +3197,7 @@ body:has(.table-page-layout) :where(
   align-items: stretch !important;
   min-height: 3.25rem;
   margin: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left {
@@ -3208,7 +3213,7 @@ body:has(.table-page-layout) :where(
   position: relative !important;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3277,7 +3282,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section {
   overflow: hidden !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > .accounts-filter-shell {
@@ -3287,7 +3292,7 @@ body:has(.table-page-layout) :where(
   align-items: stretch !important;
   margin: -1rem !important;
   padding: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-left {
@@ -3304,7 +3309,7 @@ body:has(.table-page-layout) :where(
   width: auto !important;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3701,7 +3706,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--warning {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--danger {
@@ -3732,7 +3737,7 @@ body:has(.table-page-layout) :where(
   inset: 0 !important;
   z-index: 0 !important;
   border-radius: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .settings-tab > :where(.settings-tab-icon, .settings-tab-label) {
@@ -3742,8 +3747,8 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .settings-tab:hover,
 #app .app-layout-content .settings-tab:focus-visible {
-  border-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
 }
@@ -3755,7 +3760,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .settings-tab:hover .settings-tab-icon,
 #app .app-layout-content .settings-tab:focus-visible .settings-tab-icon {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3791,7 +3796,7 @@ body:has(.table-page-layout) :where(
 /* Current visual iteration: user account filters, pricing cards, and public auth polish. */
 #app .app-layout-content .user-keys-atelier > .table-page-filter-section {
   overflow: hidden !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .user-keys-atelier > .table-page-actions-section {
@@ -3806,7 +3811,7 @@ body:has(.table-page-layout) :where(
   align-items: stretch !important;
   min-height: 3.25rem;
   margin: -1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .user-keys-atelier .keys-filter-left {
@@ -3826,7 +3831,7 @@ body:has(.table-page-layout) :where(
   min-width: 0;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -3940,8 +3945,8 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .user-usage-atelier > .table-page-actions-section .card:hover {
   transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -4003,8 +4008,8 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover {
   transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -4048,14 +4053,14 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .user-usage-atelier > .table-page-filter-section {
   overflow: hidden !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .user-usage-atelier .usage-filter-card {
   margin: -1rem !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
 }
 
@@ -4071,7 +4076,7 @@ body:has(.table-page-layout) :where(
   min-height: 3.25rem;
   margin: 0 !important;
   padding: 0 !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .user-usage-atelier .usage-filter-left {
@@ -4098,7 +4103,7 @@ body:has(.table-page-layout) :where(
   position: relative !important;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -4210,8 +4215,8 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .global-pricing-summary-row .summary-tile:hover {
   transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -4220,7 +4225,7 @@ body:has(.table-page-layout) :where(
   overflow: hidden;
   border: 1px solid var(--atelier-material-edge);
   border-radius: 8px;
-  background: var(--atelier-butter);
+  background: var(--atelier-ui-hover-surface);
   box-shadow: var(--atelier-material-shadow);
 }
 
@@ -4230,7 +4235,7 @@ body:has(.table-page-layout) :where(
   gap: 0 !important;
   align-items: stretch !important;
   min-height: 3.25rem;
-  background: var(--atelier-butter);
+  background: var(--atelier-ui-hover-surface);
 }
 
 #app .app-layout-content .global-pricing-filter-left {
@@ -4246,7 +4251,7 @@ body:has(.table-page-layout) :where(
   position: relative !important;
   margin: 0 !important;
   padding: 1rem !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -4367,7 +4372,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .global-pricing-card-frame .pricing-row:hover {
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
   background: var(--atelier-paper-2) !important;
   box-shadow: 0 16px 34px -26px rgba(23, 21, 18, 0.44);
 }
@@ -4665,8 +4670,8 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -4715,9 +4720,9 @@ body:has(.table-page-layout) :where(
 .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
 .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
-  background-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
+  background-color: var(--atelier-ui-hover-surface) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -4772,7 +4777,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
   border: 1px solid var(--ops-card-edge) !important;
   border-radius: 8px !important;
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-filter-action-surface) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar::before {
@@ -4804,7 +4809,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400),
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(.bg-primary-500, .bg-gray-400) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta::after {
@@ -4819,7 +4824,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-filter-action-surface) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
@@ -4859,7 +4864,7 @@ body:has(.table-page-layout) :where(
 }
 
 .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -4885,7 +4890,7 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-empty {
 body .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover,
 body .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused,
 body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -4902,12 +4907,12 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected svg
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
-  --atelier-card-surface: var(--atelier-butter);
-  --atelier-material-2: var(--atelier-butter);
+  --atelier-card-surface: var(--atelier-ui-hover-surface);
+  --atelier-material-2: var(--atelier-ui-hover-surface);
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--ops-card-edge)) !important;
-  background-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
+  background-color: var(--atelier-ui-hover-surface) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -5051,7 +5056,7 @@ body.dashboard-filter-menu-open :where(
   .select-dropdown-portal .select-option-focused,
   .select-dropdown-portal .select-option-selected
 ) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -5112,7 +5117,7 @@ body:has(.table-page-layout) :where(
   .date-picker-dropdown-portal .date-picker-preset:hover,
   .date-picker-dropdown-portal .date-picker-preset-active
 ) {
-  background: var(--atelier-butter) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
@@ -5146,7 +5151,7 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected .pl
 }
 
 .platform-icon--antigravity {
-  --platform-icon-color: #7c3aed;
+  --platform-icon-color: var(--atelier-blue);
 }
 
 .platform-icon--default {
@@ -5191,8 +5196,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-in
 }
 
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover) {
-  border-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
 }
@@ -5213,13 +5218,114 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: var(--atelier-blue-dark) !important;
 }
 
+.semantic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--semantic-badge-edge, var(--atelier-material-edge)) !important;
+  background: var(--semantic-badge-surface, var(--atelier-material-dust)) !important;
+  color: var(--semantic-badge-ink, var(--atelier-blue-dark)) !important;
+  -webkit-text-fill-color: var(--semantic-badge-ink, var(--atelier-blue-dark)) !important;
+}
+
+.semantic-badge--success {
+  --semantic-badge-edge: color-mix(in srgb, var(--atelier-green) 42%, var(--atelier-material-edge));
+  --semantic-badge-surface: color-mix(in srgb, var(--atelier-green) 16%, var(--atelier-paper));
+  --semantic-badge-ink: #236346;
+}
+
+.semantic-badge--warning {
+  --semantic-badge-edge: color-mix(in srgb, #a16207 42%, var(--atelier-material-edge));
+  --semantic-badge-surface: #efe2bf;
+  --semantic-badge-ink: #7a4d05;
+}
+
+.semantic-badge--danger {
+  --semantic-badge-edge: color-mix(in srgb, var(--atelier-red) 46%, var(--atelier-material-edge));
+  --semantic-badge-surface: color-mix(in srgb, var(--atelier-red) 14%, var(--atelier-paper));
+  --semantic-badge-ink: #8f2f1c;
+}
+
+.semantic-badge--info {
+  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 38%, var(--atelier-material-edge));
+  --semantic-badge-surface: var(--atelier-material-blue);
+  --semantic-badge-ink: var(--atelier-blue-dark);
+}
+
+.semantic-badge--primary {
+  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 42%, var(--atelier-material-edge));
+  --semantic-badge-surface: color-mix(in srgb, var(--atelier-blue) 14%, var(--atelier-paper));
+  --semantic-badge-ink: var(--atelier-blue-dark);
+}
+
+.semantic-badge--neutral {
+  --semantic-badge-edge: var(--atelier-material-edge);
+  --semantic-badge-surface: var(--atelier-material-dust);
+  --semantic-badge-ink: var(--atelier-muted);
+}
+
+.semantic-badge--provider-openai {
+  --semantic-badge-edge: color-mix(in srgb, #10a37f 46%, var(--atelier-material-edge));
+  --semantic-badge-surface: color-mix(in srgb, #10a37f 16%, var(--atelier-paper));
+  --semantic-badge-ink: #087f5b;
+}
+
+.semantic-badge--provider-anthropic {
+  --semantic-badge-edge: color-mix(in srgb, #c05621 46%, var(--atelier-material-edge));
+  --semantic-badge-surface: #f2dfc8;
+  --semantic-badge-ink: #9a4318;
+}
+
+.semantic-badge--provider-gemini {
+  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 42%, var(--atelier-material-edge));
+  --semantic-badge-surface: color-mix(in srgb, var(--atelier-blue) 13%, var(--atelier-paper));
+  --semantic-badge-ink: var(--atelier-blue-dark);
+}
+
+.dark .semantic-badge--success {
+  --semantic-badge-surface: rgba(47, 125, 89, 0.2);
+  --semantic-badge-ink: #a7e4c1;
+}
+
+.dark .semantic-badge--warning {
+  --semantic-badge-surface: rgba(161, 98, 7, 0.22);
+  --semantic-badge-ink: #efd08a;
+}
+
+.dark .semantic-badge--danger {
+  --semantic-badge-surface: rgba(180, 69, 54, 0.22);
+  --semantic-badge-ink: #f0b3a7;
+}
+
+.dark .semantic-badge--info,
+.dark .semantic-badge--primary,
+.dark .semantic-badge--provider-gemini {
+  --semantic-badge-surface: rgba(37, 99, 235, 0.22);
+  --semantic-badge-ink: #b8cdfb;
+}
+
+.dark .semantic-badge--neutral {
+  --semantic-badge-surface: rgba(255, 250, 240, 0.1);
+  --semantic-badge-ink: rgba(255, 250, 240, 0.72);
+}
+
+.dark .semantic-badge--provider-openai {
+  --semantic-badge-surface: rgba(16, 163, 127, 0.22);
+  --semantic-badge-ink: #a8e8d6;
+}
+
+.dark .semantic-badge--provider-anthropic {
+  --semantic-badge-surface: rgba(192, 86, 33, 0.22);
+  --semantic-badge-ink: #f2c2a5;
+}
+
 .balance-chip-buzz,
 .balance-chip-tcdmx,
 .balance-row-buzz,
 .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
   background: var(--atelier-material-dust) !important;
-  color: var(--atelier-butter-dark) !important;
+  color: var(--atelier-dust) !important;
 }
 
 .app-header-atelier .balance-chip-buzz,
@@ -5236,14 +5342,14 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .app-header-atelier .balance-chip-buzz:hover,
 .app-header-atelier .balance-chip-tcdmx:hover,
 .app-header-atelier .balance-chip-system:hover {
-  border-color: color-mix(in srgb, var(--atelier-butter) 52%, var(--atelier-line-strong)) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 28%, var(--atelier-line-strong)) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
 }
 
 .balance-buzz-text,
 .balance-tcdmx-text {
-  color: var(--atelier-butter-dark) !important;
+  color: var(--atelier-dust) !important;
 }
 
 .app-header-atelier .balance-buzz-text,
@@ -5329,12 +5435,12 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 #app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover {
-  --atelier-card-surface: var(--atelier-butter);
-  --atelier-material-2: var(--atelier-butter);
+  --atelier-card-surface: var(--atelier-ui-hover-surface);
+  --atelier-material-2: var(--atelier-ui-hover-surface);
   transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background-color: var(--atelier-ui-hover-surface) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }
@@ -5445,20 +5551,20 @@ body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-pic
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover),
 body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover),
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover) {
-  border-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover,
 #app .app-layout-content .global-pricing-atelier .global-pricing-summary-row .summary-tile:hover {
-  --atelier-card-surface: var(--atelier-butter);
-  --atelier-material-2: var(--atelier-butter);
+  --atelier-card-surface: var(--atelier-ui-hover-surface);
+  --atelier-material-2: var(--atelier-ui-hover-surface);
   transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge)) !important;
-  background-color: var(--atelier-butter) !important;
-  background: var(--atelier-butter) !important;
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  background-color: var(--atelier-ui-hover-surface) !important;
+  background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow-hover) !important;
 }

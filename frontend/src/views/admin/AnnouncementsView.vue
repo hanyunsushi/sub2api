@@ -65,14 +65,7 @@
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'active'
-                  ? 'badge-success'
-                  : value === 'draft'
-                    ? 'badge-gray'
-                    : 'badge-warning'
-              ]"
+              :class="announcementStatusBadgeClass(value)"
             >
               {{ statusLabel(value) }}
             </span>
@@ -80,12 +73,7 @@
 
           <template #cell-notify_mode="{ row }">
             <span
-              :class="[
-                'badge',
-                row.notify_mode === 'popup'
-                  ? 'badge-warning'
-                  : 'badge-gray'
-              ]"
+              :class="announcementNotifyBadgeClass(row.notify_mode)"
             >
               {{ row.notify_mode === 'popup' ? t('admin.announcements.notifyModeLabels.popup') : t('admin.announcements.notifyModeLabels.silent') }}
             </span>
@@ -325,6 +313,22 @@ const statusLabel = (status: string) => {
   if (status === 'archived') return t('admin.announcements.statusLabels.archived')
   return status
 }
+
+const announcementStatusBadgeClass = (status: string) => [
+  'badge',
+  'semantic-badge',
+  status === 'active'
+    ? 'semantic-badge--success'
+    : status === 'archived'
+      ? 'semantic-badge--neutral'
+      : 'semantic-badge--warning'
+]
+
+const announcementNotifyBadgeClass = (notifyMode: string) => [
+  'badge',
+  'semantic-badge',
+  notifyMode === 'popup' ? 'semantic-badge--info' : 'semantic-badge--neutral'
+]
 
 const targetingSummary = (targeting: AnnouncementTargeting) => {
   const anyOf = targeting?.any_of ?? []

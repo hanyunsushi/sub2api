@@ -117,14 +117,7 @@
 
           <template #cell-type="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'balance'
-                  ? 'badge-success'
-                  : value === 'subscription'
-                    ? 'badge-warning'
-                    : 'badge-primary'
-              ]"
+              :class="redeemTypeBadgeClass(value)"
             >
               {{ t('admin.redeem.types.' + value) }}
             </span>
@@ -145,14 +138,7 @@
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'unused'
-                  ? 'badge-success'
-                  : value === 'used'
-                    ? 'badge-gray'
-                    : 'badge-danger'
-              ]"
+              :class="redeemStatusBadgeClass(value)"
             >
               {{ t('admin.redeem.status.' + value) }}
             </span>
@@ -755,6 +741,26 @@ const filterStatusOptions = computed(() => [
   { value: 'expired', label: t('admin.redeem.status.expired') },
   { value: 'disabled', label: t('admin.redeem.status.disabled') }
 ])
+
+const redeemTypeBadgeClass = (value: string) => [
+  'badge semantic-badge',
+  value === 'balance'
+    ? 'semantic-badge--success'
+    : value === 'subscription'
+      ? 'semantic-badge--warning'
+      : value === 'invitation'
+        ? 'semantic-badge--info'
+        : 'semantic-badge--primary'
+]
+
+const redeemStatusBadgeClass = (value: string) => [
+  'badge semantic-badge',
+  value === 'unused'
+    ? 'semantic-badge--success'
+    : value === 'used'
+      ? 'semantic-badge--neutral'
+      : 'semantic-badge--danger'
+]
 
 const batchStatusOptions = computed(() => [
   { value: 'unused', label: t('admin.redeem.status.unused') },

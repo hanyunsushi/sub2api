@@ -15,8 +15,8 @@
         v-model="query"
         class="ai-search-input"
         type="search"
-        placeholder="ask ai"
-        aria-label="ask ai"
+        placeholder="Ask AI"
+        aria-label="Ask AI"
         autocomplete="off"
         @focus="openPanel"
         @keydown.esc.prevent="closePanel"
@@ -25,8 +25,8 @@
         v-if="query"
         class="ai-search-clear"
         type="button"
-        aria-label="clear ask ai"
-        title="clear ask ai"
+        aria-label="clear Ask AI"
+        title="clear Ask AI"
         @click="clearSearch"
       >
         <Icon name="x" size="xs" />
@@ -37,8 +37,8 @@
       ref="mobileButtonRef"
       class="ai-search-mobile-trigger sm:hidden"
       type="button"
-      aria-label="ask ai"
-      title="ask ai"
+      aria-label="Ask AI"
+      title="Ask AI"
       @click="toggleMobileSearch"
     >
       <Icon name="search" size="sm" />
@@ -64,8 +64,8 @@
             v-model="query"
             class="ai-search-input"
             type="search"
-            placeholder="ask ai"
-            aria-label="ask ai"
+            placeholder="Ask AI"
+            aria-label="Ask AI"
             autocomplete="off"
             @keydown.esc.prevent="closePanel"
           >
@@ -109,7 +109,7 @@
         </div>
 
         <div v-else class="ai-search-state">
-          ask ai
+          Ask AI
         </div>
       </div>
     </FloatingDropdown>
@@ -159,7 +159,7 @@ function toggleMobileSearch() {
 }
 
 function clearSearch() {
-  query.value = ''
+  query.value = String()
   answer.value = ''
   results.value = []
   hasSearched.value = false
@@ -172,6 +172,7 @@ async function submitSearch() {
   if (!trimmed || loading.value) return
 
   const requestID = ++searchRequestID
+  query.value = ''
   loading.value = true
   hasSearched.value = true
   errorMessage.value = ''

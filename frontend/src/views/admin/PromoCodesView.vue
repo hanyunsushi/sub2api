@@ -90,10 +90,7 @@
 
           <template #cell-status="{ value, row }">
             <span
-              :class="[
-                'badge',
-                getStatusClass(value, row)
-              ]"
+              :class="getStatusClass(value, row)"
             >
               {{ getStatusLabel(value, row) }}
             </span>
@@ -492,12 +489,14 @@ const columns = computed<Column[]>(() => [
 // Helpers
 const getStatusClass = (status: string, row: PromoCode) => {
   if (row.expires_at && new Date(row.expires_at) < new Date()) {
-    return 'badge-danger'
+    return 'semantic-badge semantic-badge--danger'
   }
   if (row.max_uses > 0 && row.used_count >= row.max_uses) {
-    return 'badge-gray'
+    return 'semantic-badge semantic-badge--neutral'
   }
-  return status === 'active' ? 'badge-success' : 'badge-gray'
+  return status === 'active'
+    ? 'semantic-badge semantic-badge--success'
+    : 'semantic-badge semantic-badge--neutral'
 }
 
 const getStatusLabel = (status: string, row: PromoCode) => {
