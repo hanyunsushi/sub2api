@@ -10,7 +10,9 @@
 # Documentation
 *.md
 !deploy/DOCKER.md
-docs/
+docs/*
+!docs/ai-search/
+!docs/ai-search/**
 
 # IDE
 .idea/
