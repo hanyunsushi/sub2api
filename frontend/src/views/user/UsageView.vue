@@ -157,7 +157,6 @@
           :loading="loading"
           :server-side-sort="true"
           vertical-scroll-mode="page"
-          :lenis-scroll="false"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"

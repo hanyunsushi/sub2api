@@ -12,6 +12,7 @@ export interface AISearchResult {
 export interface AISearchResponse {
   query: string
   configured: boolean
+  answer?: string
   results: AISearchResult[]
 }
 

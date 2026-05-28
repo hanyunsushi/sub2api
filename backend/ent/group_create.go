@@ -91,6 +91,20 @@ func (_c *GroupCreate) SetNillableDescription(v *string) *GroupCreate {
 	return _c
 }
 
+// SetLogoURL sets the "logo_url" field.
+func (_c *GroupCreate) SetLogoURL(v string) *GroupCreate {
+	_c.mutation.SetLogoURL(v)
+	return _c
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableLogoURL(v *string) *GroupCreate {
+	if v != nil {
+		_c.SetLogoURL(*v)
+	}
+	return _c
+}
+
 // SetRateMultiplier sets the "rate_multiplier" field.
 func (_c *GroupCreate) SetRateMultiplier(v float64) *GroupCreate {
 	_c.mutation.SetRateMultiplier(v)
@@ -636,6 +650,10 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		v := group.DefaultLogoURL
+		_c.mutation.SetLogoURL(v)
+	}
 	if _, ok := _c.mutation.RateMultiplier(); !ok {
 		v := group.DefaultRateMultiplier
 		_c.mutation.SetRateMultiplier(v)
@@ -738,6 +756,9 @@ func (_c *GroupCreate) check() error {
 		if err := group.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Group.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		return &ValidationError{Name: "logo_url", err: errors.New(`ent: missing required field "Group.logo_url"`)}
 	}
 	if _, ok := _c.mutation.RateMultiplier(); !ok {
 		return &ValidationError{Name: "rate_multiplier", err: errors.New(`ent: missing required field "Group.rate_multiplier"`)}
@@ -868,6 +889,10 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(group.FieldDescription, field.TypeString, value)
 		_node.Description = &value
+	}
+	if value, ok := _c.mutation.LogoURL(); ok {
+		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
+		_node.LogoURL = value
 	}
 	if value, ok := _c.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)
@@ -1202,6 +1227,18 @@ func (u *GroupUpsert) UpdateDescription() *GroupUpsert {
 // ClearDescription clears the value of the "description" field.
 func (u *GroupUpsert) ClearDescription() *GroupUpsert {
 	u.SetNull(group.FieldDescription)
+	return u
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *GroupUpsert) SetLogoURL(v string) *GroupUpsert {
+	u.Set(group.FieldLogoURL, v)
+	return u
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateLogoURL() *GroupUpsert {
+	u.SetExcluded(group.FieldLogoURL)
 	return u
 }
 
@@ -1809,6 +1846,20 @@ func (u *GroupUpsertOne) UpdateDescription() *GroupUpsertOne {
 func (u *GroupUpsertOne) ClearDescription() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *GroupUpsertOne) SetLogoURL(v string) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateLogoURL() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 
@@ -2664,6 +2715,20 @@ func (u *GroupUpsertBulk) UpdateDescription() *GroupUpsertBulk {
 func (u *GroupUpsertBulk) ClearDescription() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *GroupUpsertBulk) SetLogoURL(v string) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateLogoURL() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 

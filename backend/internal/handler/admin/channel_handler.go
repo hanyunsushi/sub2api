@@ -29,6 +29,7 @@ func NewChannelHandler(channelService *service.ChannelService, billingService *s
 
 type createChannelRequest struct {
 	Name                       string                           `json:"name" binding:"required,max=100"`
+	LogoURL                    string                           `json:"logo_url" binding:"omitempty,max=2048"`
 	Description                string                           `json:"description"`
 	GroupIDs                   []int64                          `json:"group_ids"`
 	ModelPricing               []channelModelPricingRequest     `json:"model_pricing"`
@@ -43,6 +44,7 @@ type createChannelRequest struct {
 
 type updateChannelRequest struct {
 	Name                       string                            `json:"name" binding:"omitempty,max=100"`
+	LogoURL                    *string                           `json:"logo_url" binding:"omitempty,max=2048"`
 	Description                *string                           `json:"description"`
 	Status                     string                            `json:"status" binding:"omitempty,oneof=active disabled"`
 	GroupIDs                   *[]int64                          `json:"group_ids"`
@@ -91,6 +93,7 @@ type accountStatsPricingRuleRequest struct {
 type channelResponse struct {
 	ID                         int64                             `json:"id"`
 	Name                       string                            `json:"name"`
+	LogoURL                    string                            `json:"logo_url"`
 	Description                string                            `json:"description"`
 	Status                     string                            `json:"status"`
 	BillingModelSource         string                            `json:"billing_model_source"`
@@ -148,6 +151,7 @@ func channelToResponse(ch *service.Channel) *channelResponse {
 	resp := &channelResponse{
 		ID:             ch.ID,
 		Name:           ch.Name,
+		LogoURL:        ch.LogoURL,
 		Description:    ch.Description,
 		Status:         ch.Status,
 		RestrictModels: ch.RestrictModels,
@@ -374,6 +378,7 @@ func (h *ChannelHandler) Create(c *gin.Context) {
 
 	channel, err := h.channelService.Create(c.Request.Context(), &service.CreateChannelInput{
 		Name:                       req.Name,
+		LogoURL:                    req.LogoURL,
 		Description:                req.Description,
 		GroupIDs:                   req.GroupIDs,
 		ModelPricing:               pricing,
@@ -410,6 +415,7 @@ func (h *ChannelHandler) Update(c *gin.Context) {
 
 	input := &service.UpdateChannelInput{
 		Name:                       req.Name,
+		LogoURL:                    req.LogoURL,
 		Description:                req.Description,
 		Status:                     req.Status,
 		GroupIDs:                   req.GroupIDs,

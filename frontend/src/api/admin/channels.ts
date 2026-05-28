@@ -46,6 +46,7 @@ export interface AccountStatsPricingRule {
 export interface Channel {
   id: number
   name: string
+  logo_url?: string
   description: string
   status: ChannelStatus
   billing_model_source: BillingModelSource
@@ -62,6 +63,7 @@ export interface Channel {
 
 export interface CreateChannelRequest {
   name: string
+  logo_url?: string
   description?: string
   group_ids?: number[]
   model_pricing?: ChannelModelPricing[]
@@ -75,6 +77,7 @@ export interface CreateChannelRequest {
 
 export interface UpdateChannelRequest {
   name?: string
+  logo_url?: string
   description?: string
   status?: string
   group_ids?: number[]

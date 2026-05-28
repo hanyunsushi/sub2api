@@ -69,7 +69,6 @@
       'is-scrollable': isScrollable,
       'is-page-scroll': verticalScrollMode === 'page'
     }"
-    :data-lenis-scroll="lenisScroll ? '' : null"
   >
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
       <thead class="table-header bg-gray-50 dark:bg-dark-800">
@@ -403,11 +402,6 @@ interface Props {
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */
   overscan?: number
-  /**
-   * Attach a nested Lenis scroller to this table. Card-style page-scroll tables
-   * should opt out so document scrolling remains the only vertical scroller.
-   */
-  lenisScroll?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -417,12 +411,10 @@ const props = withDefaults(defineProps<Props>(), {
   expandableActions: true,
   defaultSortOrder: 'asc',
   serverSideSort: false,
-  verticalScrollMode: 'internal',
-  lenisScroll: true
+  verticalScrollMode: 'internal'
 })
 
 const verticalScrollMode = computed(() => props.verticalScrollMode)
-const lenisScroll = computed(() => props.lenisScroll)
 
 const sortKey = ref<string>('')
 const sortOrder = ref<'asc' | 'desc'>('asc')

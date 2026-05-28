@@ -15,8 +15,8 @@
         v-model="query"
         class="ai-search-input"
         type="search"
-        placeholder="AI Search"
-        aria-label="AI Search"
+        placeholder="ask ai"
+        aria-label="ask ai"
         autocomplete="off"
         @focus="openPanel"
         @keydown.esc.prevent="closePanel"
@@ -25,8 +25,8 @@
         v-if="query"
         class="ai-search-clear"
         type="button"
-        aria-label="Clear AI Search"
-        title="Clear AI Search"
+        aria-label="clear ask ai"
+        title="clear ask ai"
         @click="clearSearch"
       >
         <Icon name="x" size="xs" />
@@ -37,8 +37,8 @@
       ref="mobileButtonRef"
       class="ai-search-mobile-trigger sm:hidden"
       type="button"
-      aria-label="AI Search"
-      title="AI Search"
+      aria-label="ask ai"
+      title="ask ai"
       @click="toggleMobileSearch"
     >
       <Icon name="search" size="sm" />
@@ -64,8 +64,8 @@
             v-model="query"
             class="ai-search-input"
             type="search"
-            placeholder="AI Search"
-            aria-label="AI Search"
+            placeholder="ask ai"
+            aria-label="ask ai"
             autocomplete="off"
             @keydown.esc.prevent="closePanel"
           >
@@ -80,30 +80,36 @@
           {{ errorMessage }}
         </div>
 
-        <div v-else-if="hasSearched && results.length === 0" class="ai-search-state">
+        <div v-else-if="hasSearched && !answer && results.length === 0" class="ai-search-state">
           No results
         </div>
 
-        <div v-else-if="results.length > 0" class="ai-search-results">
-          <a
-            v-for="result in results"
-            :key="result.id"
-            class="ai-search-result"
-            :href="result.url || '#'"
-            :aria-disabled="!result.url"
-            @click="handleResultClick($event, result.url)"
-          >
-            <span class="ai-search-result-title">{{ result.title || 'AI Search' }}</span>
-            <span class="ai-search-result-snippet">{{ result.snippet }}</span>
-            <span class="ai-search-result-source">
-              {{ result.source }}
-              <Icon v-if="result.url" name="externalLink" size="xs" aria-hidden="true" />
-            </span>
-          </a>
+        <div v-else-if="answer || results.length > 0" class="ai-search-results">
+          <div v-if="answer" class="ai-search-answer">
+            {{ answer }}
+          </div>
+
+          <div v-if="results.length > 0" class="ai-search-sources">
+            <a
+              v-for="result in results"
+              :key="result.id"
+              class="ai-search-result"
+              :href="result.url || '#'"
+              :aria-disabled="!result.url"
+              @click="handleResultClick($event, result.url)"
+            >
+              <span class="ai-search-result-title">{{ result.title || 'AI Search' }}</span>
+              <span class="ai-search-result-snippet">{{ result.snippet }}</span>
+              <span class="ai-search-result-source">
+                {{ result.source }}
+                <Icon v-if="result.url" name="externalLink" size="xs" aria-hidden="true" />
+              </span>
+            </a>
+          </div>
         </div>
 
         <div v-else class="ai-search-state">
-          AI Search
+          ask ai
         </div>
       </div>
     </FloatingDropdown>
@@ -121,6 +127,7 @@ const desktopInputRef = ref<HTMLInputElement | null>(null)
 const mobileButtonRef = ref<HTMLElement | null>(null)
 const mobileInputRef = ref<HTMLInputElement | null>(null)
 const query = ref('')
+const answer = ref('')
 const results = ref<AISearchResult[]>([])
 const panelOpen = ref(false)
 const mobileMode = ref(false)
@@ -153,6 +160,7 @@ function toggleMobileSearch() {
 
 function clearSearch() {
   query.value = ''
+  answer.value = ''
   results.value = []
   hasSearched.value = false
   errorMessage.value = ''
@@ -172,6 +180,7 @@ async function submitSearch() {
   try {
     const response = await aiSearchAPI.search(trimmed)
     if (requestID !== searchRequestID) return
+    answer.value = response.answer || ''
     results.value = response.results || []
     if (!response.configured) {
       errorMessage.value = 'AI Search unavailable'
@@ -182,6 +191,7 @@ async function submitSearch() {
     errorMessage.value = apiError.reason === 'AI_SEARCH_NOT_CONFIGURED'
       ? 'AI Search unavailable'
       : apiError.message || 'AI Search failed'
+    answer.value = ''
     results.value = []
   } finally {
     if (requestID === searchRequestID) {

@@ -41,6 +41,9 @@ func (APIKey) Fields() []ent.Field {
 		field.String("name").
 			MaxLen(100).
 			NotEmpty(),
+		field.String("logo_url").
+			Default("").
+			SchemaType(map[string]string{dialect.Postgres: "text"}),
 		field.Int64("group_id").
 			Optional().
 			Nillable(),

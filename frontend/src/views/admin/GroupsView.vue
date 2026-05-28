@@ -90,10 +90,20 @@
           default-sort-order="asc"
           @sort="handleSort"
         >
-          <template #cell-name="{ value }">
-            <span class="font-medium text-gray-900 dark:text-white">{{
-              value
-            }}</span>
+          <template #cell-name="{ value, row }">
+            <span class="entity-name-with-logo">
+              <img
+                v-if="row.logo_url"
+                :src="row.logo_url"
+                alt=""
+                class="entity-logo"
+                loading="lazy"
+              />
+              <Icon v-else name="grid" size="sm" class="entity-logo-fallback" />
+              <span class="font-medium text-gray-900 dark:text-white">{{
+                value
+              }}</span>
+            </span>
           </template>
 
           <template #cell-platform="{ value }">
@@ -370,6 +380,11 @@
             data-tour="group-form-name"
           />
         </div>
+        <LogoPicker
+          v-model="createForm.logo_url"
+          :label="t('admin.groups.form.logoUrl', 'Logo URL')"
+          :hint="t('admin.groups.form.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则显示默认分组图标。')"
+        />
         <div>
           <label class="input-label">{{
             t("admin.groups.form.description")
@@ -1659,6 +1674,11 @@
             data-tour="edit-group-form-name"
           />
         </div>
+        <LogoPicker
+          v-model="editForm.logo_url"
+          :label="t('admin.groups.form.logoUrl', 'Logo URL')"
+          :hint="t('admin.groups.form.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则显示默认分组图标。')"
+        />
         <div>
           <label class="input-label">{{
             t("admin.groups.form.description")
@@ -3060,6 +3080,7 @@ import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import Select from "@/components/common/Select.vue";
 import FloatingDropdown from "@/components/common/FloatingDropdown.vue";
+import LogoPicker from "@/components/common/LogoPicker.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
 import Icon from "@/components/icons/Icon.vue";
 import GroupRateMultipliersModal from "@/components/admin/group/GroupRateMultipliersModal.vue";
@@ -3333,6 +3354,7 @@ const editModelsListSelectedCount = computed(
 
 const createForm = reactive({
   name: "",
+  logo_url: "",
   description: "",
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
@@ -3677,6 +3699,7 @@ const convertApiFormatToRoutingRules = async (
 
 const editForm = reactive({
   name: "",
+  logo_url: "",
   description: "",
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
@@ -3930,6 +3953,7 @@ const closeCreateModal = () => {
   });
   clearAllAccountSearchState();
   createForm.name = "";
+  createForm.logo_url = "";
   createForm.description = "";
   createForm.platform = "anthropic";
   createForm.rate_multiplier = 1.0;
@@ -4055,6 +4079,7 @@ const handleCreateGroup = async () => {
 const handleEdit = async (group: AdminGroup) => {
   editingGroup.value = group;
   editForm.name = group.name;
+  editForm.logo_url = group.logo_url || "";
   editForm.description = group.description || "";
   editForm.platform = group.platform;
   editForm.rate_multiplier = group.rate_multiplier;

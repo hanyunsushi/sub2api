@@ -65,9 +65,13 @@ export async function create(
   ipBlacklist?: string[],
   quota?: number,
   expiresInDays?: number,
-  rateLimitData?: { rate_limit_5h?: number; rate_limit_1d?: number; rate_limit_7d?: number }
+  rateLimitData?: { rate_limit_5h?: number; rate_limit_1d?: number; rate_limit_7d?: number },
+  logoUrl?: string
 ): Promise<ApiKey> {
   const payload: CreateApiKeyRequest = { name }
+  if (logoUrl?.trim()) {
+    payload.logo_url = logoUrl.trim()
+  }
   if (groupId !== undefined) {
     payload.group_id = groupId
   }

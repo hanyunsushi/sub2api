@@ -466,7 +466,7 @@ describe('console atelier palette restyle', () => {
   it('keeps the latest filter split, account cards, quota bars, and settings nav palette hooks', () => {
     expect(accountsSource).toContain('accounts-filter-shell flex flex-wrap-reverse')
     expect(accountsSource).toContain('account-card-table-frame flex min-h-fit flex-none flex-col overflow-visible')
-    expect(accountsSource).toContain(':lenis-scroll="false"')
+    expect(accountsSource).not.toContain('lenis-scroll')
     expect(adminUsageSource).toContain('usage-record-filter-wrap')
     expect(materialSystemBlock).toContain('> :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)')
     expect(materialSystemBlock).toContain('> :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before')
@@ -583,7 +583,7 @@ describe('console atelier palette restyle', () => {
     expect(userUsageSource.match(/card usage-stat-card p-4/g)?.length).toBe(4)
     expect(userUsageSource.match(/usage-stat-icon rounded-lg/g)?.length).toBe(4)
     expect(userUsageSource).toContain('vertical-scroll-mode="page"')
-    expect(userUsageSource).toContain(':lenis-scroll="false"')
+    expect(userUsageSource).not.toContain('lenis-scroll')
     expect(materialSystemBlock).toContain('.user-usage-atelier > .table-page-actions-section')
     expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card')
     expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card::before')

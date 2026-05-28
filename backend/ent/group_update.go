@@ -96,6 +96,20 @@ func (_u *GroupUpdate) ClearDescription() *GroupUpdate {
 	return _u
 }
 
+// SetLogoURL sets the "logo_url" field.
+func (_u *GroupUpdate) SetLogoURL(v string) *GroupUpdate {
+	_u.mutation.SetLogoURL(v)
+	return _u
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableLogoURL(v *string) *GroupUpdate {
+	if v != nil {
+		_u.SetLogoURL(*v)
+	}
+	return _u
+}
+
 // SetRateMultiplier sets the "rate_multiplier" field.
 func (_u *GroupUpdate) SetRateMultiplier(v float64) *GroupUpdate {
 	_u.mutation.ResetRateMultiplier()
@@ -974,6 +988,9 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(group.FieldDescription, field.TypeString)
 	}
+	if value, ok := _u.mutation.LogoURL(); ok {
+		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
+	}
 	if value, ok := _u.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)
 	}
@@ -1506,6 +1523,20 @@ func (_u *GroupUpdateOne) SetNillableDescription(v *string) *GroupUpdateOne {
 // ClearDescription clears the value of the "description" field.
 func (_u *GroupUpdateOne) ClearDescription() *GroupUpdateOne {
 	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (_u *GroupUpdateOne) SetLogoURL(v string) *GroupUpdateOne {
+	_u.mutation.SetLogoURL(v)
+	return _u
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableLogoURL(v *string) *GroupUpdateOne {
+	if v != nil {
+		_u.SetLogoURL(*v)
+	}
 	return _u
 }
 
@@ -2416,6 +2447,9 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(group.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.LogoURL(); ok {
+		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)

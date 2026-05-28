@@ -98,6 +98,7 @@ func provideCleanup(
 	backupSvc *service.BackupService,
 	paymentOrderExpiry *service.PaymentOrderExpiryService,
 	channelMonitorRunner *service.ChannelMonitorRunner,
+	aiSearchKnowledgeSync *service.AISearchKnowledgeSyncService,
 ) func() {
 	return func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -125,6 +126,12 @@ func provideCleanup(
 			{"OpsSystemLogSink", func() error {
 				if opsSystemLogSink != nil {
 					opsSystemLogSink.Stop()
+				}
+				return nil
+			}},
+			{"AISearchKnowledgeSyncService", func() error {
+				if aiSearchKnowledgeSync != nil {
+					aiSearchKnowledgeSync.Stop()
 				}
 				return nil
 			}},

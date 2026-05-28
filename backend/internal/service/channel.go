@@ -35,6 +35,7 @@ const (
 type Channel struct {
 	ID                 int64
 	Name               string
+	LogoURL            string
 	Description        string
 	Status             string
 	BillingModelSource string         // "requested", "upstream", or "channel_mapped"

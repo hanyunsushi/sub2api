@@ -13,6 +13,7 @@ type GroupModelsListConfig = domain.GroupModelsListConfig
 type Group struct {
 	ID             int64
 	Name           string
+	LogoURL        string
 	Description    string
 	Platform       string
 	RateMultiplier float64
