@@ -3193,7 +3193,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper {
-  padding: 0.65rem !important;
+  padding: 0.5rem !important;
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -3211,8 +3211,8 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 0.5rem;
   background: transparent !important;
 }
 
@@ -3230,15 +3230,15 @@ body:has(.table-page-layout) :where(
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
-  gap: 0.45rem 0.62rem;
+  gap: 0.34rem 0.5rem;
   position: relative;
   min-width: 0;
   overflow: clip;
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1px solid var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
   box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
-  padding: 0.72rem;
+  padding: 0.56rem;
   transition: transform 0.22s var(--atelier-ease), box-shadow 0.22s var(--atelier-ease);
 }
 
@@ -3297,24 +3297,32 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] {
   position: absolute !important;
-  top: 0.72rem;
-  right: 0.72rem;
+  top: 0.56rem;
+  right: 0.56rem;
   left: auto !important;
-  z-index: 2;
+  z-index: 60;
   display: inline-flex !important;
   width: max-content !important;
   justify-content: flex-end;
+  pointer-events: auto !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] input[type="checkbox"] {
+  position: relative;
+  z-index: 61;
+  cursor: pointer;
+  pointer-events: auto !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"] {
-  padding-right: 3rem !important;
-  padding-bottom: 0.5rem !important;
+  padding-right: 2rem !important;
+  padding-bottom: 0.36rem !important;
   border-bottom: 1px dotted var(--atelier-material-edge) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"] {
   margin-top: 0.05rem;
-  padding-top: 0.5rem !important;
+  padding-top: 0.36rem !important;
   border-top: 1px dotted var(--atelier-material-edge) !important;
 }
 
@@ -3368,6 +3376,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper .sticky-col {
   position: static !important;
+  z-index: auto !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper .sticky-col::before,
