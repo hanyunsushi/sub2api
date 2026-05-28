@@ -219,6 +219,12 @@ type SystemSettings struct {
 	BuzzBalanceAPIToken           string
 	BuzzBalanceAPITokenConfigured bool
 
+	// TCDMX subscription display
+	TCDMXSubscriptionEnabled            bool
+	TCDMXSubscriptionAPIBaseURL         string
+	TCDMXSubscriptionAPIToken           string
+	TCDMXSubscriptionAPITokenConfigured bool
+
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

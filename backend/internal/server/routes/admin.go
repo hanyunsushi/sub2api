@@ -103,6 +103,9 @@ func RegisterAdminRoutes(
 
 		// BuzzAI 余额
 		registerBuzzBalanceRoutes(admin, h)
+
+		// TCDMX 订阅额度
+		registerTCDMXSubscriptionRoutes(admin, h)
 	}
 }
 
@@ -110,6 +113,13 @@ func registerBuzzBalanceRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 	buzz := admin.Group("/buzz")
 	{
 		buzz.GET("/balance", h.Admin.BuzzBalance.GetBalance)
+	}
+}
+
+func registerTCDMXSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	tcdmx := admin.Group("/tcdmx")
+	{
+		tcdmx.GET("/subscription", h.Admin.TCDMXSubscription.GetStatus)
 	}
 }
 

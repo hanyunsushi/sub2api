@@ -3730,7 +3730,7 @@
               class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ localText("BuzzAI 余额", "BuzzAI Balance") }}
+                {{ localText("外部订阅", "External subscriptions") }}
               </h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{
@@ -3805,6 +3805,74 @@
                           )
                     }}
                   </p>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                  <div>
+                    <label
+                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("启用 TCDMX 订阅额度", "Enable TCDMX subscription quota") }}
+                    </label>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "启用后服务端读取 TCDMX 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
+                          "When enabled, the server reads TCDMX quota and expiry for the balance panel and matching account cards.",
+                        )
+                      }}
+                    </p>
+                  </div>
+                  <Toggle v-model="form.tcdmx_subscription_enabled" />
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("TCDMX API Base URL", "TCDMX API Base URL") }}
+                    </label>
+                    <input
+                      v-model="form.tcdmx_subscription_api_base_url"
+                      type="url"
+                      class="input font-mono text-sm"
+                      placeholder="https://tcdmx.com"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("TCDMX API Key", "TCDMX API Key") }}
+                    </label>
+                    <input
+                      v-model="form.tcdmx_subscription_api_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.tcdmx_subscription_api_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴 TCDMX API Key', 'Paste TCDMX API key')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.tcdmx_subscription_api_token_configured
+                          ? localText(
+                              "已保存密钥不会回显，前端只拿到额度摘要。",
+                              "Saved key is never echoed; the frontend receives only the quota summary.",
+                            )
+                          : localText(
+                              "密钥只写入后端设置，用于服务端查询 TCDMX 订阅。",
+                              "The key is stored only in backend settings for server-side TCDMX subscription queries.",
+                            )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -7052,6 +7120,7 @@ type SettingsForm = Omit<
   force_email_on_third_party_signup: boolean;
   openai_advanced_scheduler_enabled: boolean;
   buzz_balance_api_token: string;
+  tcdmx_subscription_api_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7257,6 +7326,10 @@ const form = reactive<SettingsForm>({
   buzz_balance_api_base_url: "https://buzzai.cc",
   buzz_balance_api_token: "",
   buzz_balance_api_token_configured: false,
+  tcdmx_subscription_enabled: false,
+  tcdmx_subscription_api_base_url: "https://tcdmx.com",
+  tcdmx_subscription_api_token: "",
+  tcdmx_subscription_api_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -7910,6 +7983,7 @@ async function loadSettings() {
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
     form.buzz_balance_api_token = "";
+    form.tcdmx_subscription_api_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -8195,6 +8269,9 @@ async function saveSettings() {
     if (!isValidHttpUrl(form.buzz_balance_api_base_url)) {
       form.buzz_balance_api_base_url = "https://buzzai.cc";
     }
+    if (!isValidHttpUrl(form.tcdmx_subscription_api_base_url)) {
+      form.tcdmx_subscription_api_base_url = "https://tcdmx.com";
+    }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -8401,6 +8478,11 @@ async function saveSettings() {
       buzz_balance_api_base_url:
         form.buzz_balance_api_base_url?.trim() || "https://buzzai.cc",
       buzz_balance_api_token: form.buzz_balance_api_token || undefined,
+      tcdmx_subscription_enabled: form.tcdmx_subscription_enabled,
+      tcdmx_subscription_api_base_url:
+        form.tcdmx_subscription_api_base_url?.trim() || "https://tcdmx.com",
+      tcdmx_subscription_api_token:
+        form.tcdmx_subscription_api_token || undefined,
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -8479,6 +8561,7 @@ async function saveSettings() {
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
     form.buzz_balance_api_token = "";
+    form.tcdmx_subscription_api_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

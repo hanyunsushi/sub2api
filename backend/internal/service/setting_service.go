@@ -271,25 +271,26 @@ var (
 )
 
 const (
-	defaultAuthSourceBalance     = 0
-	defaultAuthSourceConcurrency = 5
-	DefaultBuzzBalanceAPIBaseURL = "https://buzzai.cc"
-	defaultWeChatConnectMode     = "open"
-	defaultWeChatConnectScopes   = "snsapi_login"
-	defaultWeChatConnectFrontend = "/auth/wechat/callback"
-	defaultGitHubOAuthAuthorize  = "https://github.com/login/oauth/authorize"
-	defaultGitHubOAuthToken      = "https://github.com/login/oauth/access_token"
-	defaultGitHubOAuthUserInfo   = "https://api.github.com/user"
-	defaultGitHubOAuthEmails     = "https://api.github.com/user/emails"
-	defaultGitHubOAuthScopes     = "read:user user:email"
-	defaultGitHubOAuthFrontend   = "/auth/oauth/callback"
-	defaultGoogleOAuthAuthorize  = "https://accounts.google.com/o/oauth2/v2/auth"
-	defaultGoogleOAuthToken      = "https://oauth2.googleapis.com/token"
-	defaultGoogleOAuthUserInfo   = "https://openidconnect.googleapis.com/v1/userinfo"
-	defaultGoogleOAuthScopes     = "openid email profile"
-	defaultGoogleOAuthFrontend   = "/auth/oauth/callback"
-	defaultLoginAgreementMode    = "modal"
-	defaultLoginAgreementDate    = "2026-03-31"
+	defaultAuthSourceBalance           = 0
+	defaultAuthSourceConcurrency       = 5
+	DefaultBuzzBalanceAPIBaseURL       = "https://buzzai.cc"
+	DefaultTCDMXSubscriptionAPIBaseURL = "https://tcdmx.com"
+	defaultWeChatConnectMode           = "open"
+	defaultWeChatConnectScopes         = "snsapi_login"
+	defaultWeChatConnectFrontend       = "/auth/wechat/callback"
+	defaultGitHubOAuthAuthorize        = "https://github.com/login/oauth/authorize"
+	defaultGitHubOAuthToken            = "https://github.com/login/oauth/access_token"
+	defaultGitHubOAuthUserInfo         = "https://api.github.com/user"
+	defaultGitHubOAuthEmails           = "https://api.github.com/user/emails"
+	defaultGitHubOAuthScopes           = "read:user user:email"
+	defaultGitHubOAuthFrontend         = "/auth/oauth/callback"
+	defaultGoogleOAuthAuthorize        = "https://accounts.google.com/o/oauth2/v2/auth"
+	defaultGoogleOAuthToken            = "https://oauth2.googleapis.com/token"
+	defaultGoogleOAuthUserInfo         = "https://openidconnect.googleapis.com/v1/userinfo"
+	defaultGoogleOAuthScopes           = "openid email profile"
+	defaultGoogleOAuthFrontend         = "/auth/oauth/callback"
+	defaultLoginAgreementMode          = "modal"
+	defaultLoginAgreementDate          = "2026-03-31"
 )
 
 func normalizeLoginAgreementMode(raw string) string {
@@ -1832,6 +1833,11 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.BuzzBalanceAPIToken) != "" {
 		updates[SettingKeyBuzzBalanceAPIToken] = strings.TrimSpace(settings.BuzzBalanceAPIToken)
 	}
+	updates[SettingKeyTCDMXSubscriptionEnabled] = strconv.FormatBool(settings.TCDMXSubscriptionEnabled)
+	updates[SettingKeyTCDMXSubscriptionAPIBaseURL] = normalizeTCDMXSubscriptionAPIBaseURL(settings.TCDMXSubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.TCDMXSubscriptionAPIToken) != "" {
+		updates[SettingKeyTCDMXSubscriptionAPIToken] = strings.TrimSpace(settings.TCDMXSubscriptionAPIToken)
+	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -2738,6 +2744,8 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		openAIAdvancedSchedulerSettingKey:            "false",
 		SettingKeyBuzzBalanceEnabled:                 "false",
 		SettingKeyBuzzBalanceAPIBaseURL:              DefaultBuzzBalanceAPIBaseURL,
+		SettingKeyTCDMXSubscriptionEnabled:           "false",
+		SettingKeyTCDMXSubscriptionAPIBaseURL:        DefaultTCDMXSubscriptionAPIBaseURL,
 	}
 
 	return s.settingRepo.SetMultiple(ctx, defaults)
@@ -3277,6 +3285,10 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.BuzzBalanceAPIBaseURL = normalizeBuzzBalanceAPIBaseURL(settings[SettingKeyBuzzBalanceAPIBaseURL])
 	result.BuzzBalanceAPIToken = strings.TrimSpace(settings[SettingKeyBuzzBalanceAPIToken])
 	result.BuzzBalanceAPITokenConfigured = result.BuzzBalanceAPIToken != ""
+	result.TCDMXSubscriptionEnabled = settings[SettingKeyTCDMXSubscriptionEnabled] == "true"
+	result.TCDMXSubscriptionAPIBaseURL = normalizeTCDMXSubscriptionAPIBaseURL(settings[SettingKeyTCDMXSubscriptionAPIBaseURL])
+	result.TCDMXSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionAPIToken])
+	result.TCDMXSubscriptionAPITokenConfigured = result.TCDMXSubscriptionAPIToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

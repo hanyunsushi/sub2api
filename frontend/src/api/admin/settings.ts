@@ -607,6 +607,9 @@ export interface SystemSettings {
   buzz_balance_enabled: boolean;
   buzz_balance_api_base_url: string;
   buzz_balance_api_token_configured: boolean;
+  tcdmx_subscription_enabled: boolean;
+  tcdmx_subscription_api_base_url: string;
+  tcdmx_subscription_api_token_configured: boolean;
   subscription_expiry_notify_enabled: boolean;
   account_quota_notify_enabled: boolean;
   account_quota_notify_emails: NotifyEmailEntry[];
@@ -839,6 +842,9 @@ export interface UpdateSettingsRequest {
   buzz_balance_enabled?: boolean;
   buzz_balance_api_base_url?: string;
   buzz_balance_api_token?: string;
+  tcdmx_subscription_enabled?: boolean;
+  tcdmx_subscription_api_base_url?: string;
+  tcdmx_subscription_api_token?: string;
   subscription_expiry_notify_enabled?: boolean;
   account_quota_notify_enabled?: boolean;
   account_quota_notify_emails?: NotifyEmailEntry[];

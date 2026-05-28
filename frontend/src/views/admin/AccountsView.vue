@@ -230,6 +230,33 @@
               >
                 {{ row.extra?.email_address || row.extra?.email || row.credentials?.email }}
               </span>
+              <div
+                v-if="getAccountExternalQuota(row)"
+                data-testid="account-external-quota"
+                class="mt-2 grid gap-1 rounded-md border border-gray-200/80 bg-white/50 px-2 py-1.5 text-[11px] leading-4 text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-300"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-semibold text-gray-700 dark:text-gray-200">
+                    {{ getAccountExternalQuota(row)?.label }}
+                  </span>
+                  <a
+                    class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
+                    :href="getAccountExternalQuota(row)?.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ localText('打开', 'Open') }}
+                  </a>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ localText('余额', 'Balance') }}</span>
+                  <span class="font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ localText('期限', 'Expiry') }}</span>
+                  <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
+                </div>
+              </div>
             </div>
           </template>
           <template #cell-notes="{ value }">
@@ -394,6 +421,8 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
+import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
+import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
@@ -427,9 +456,11 @@ import { buildOpenAIUsageRefreshKey } from '@/utils/accountUsageRefresh'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import type { Account, AccountPlatform, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel } from '@/types'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const appStore = useAppStore()
 const authStore = useAuthStore()
+
+const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? zh : en
 
 const proxies = ref<AccountProxy[]>([])
 const groups = ref<AdminGroup[]>([])
@@ -565,6 +596,8 @@ const todayStatsError = ref<string | null>(null)
 const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
+const buzzBalance = ref<BuzzBalance | null>(null)
+const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -681,6 +714,118 @@ const saveAutoRefreshToStorage = () => {
     )
   } catch (e) {
     console.error('Failed to save auto refresh settings:', e)
+  }
+}
+
+interface AccountExternalQuota {
+  label: string
+  url: string
+  formattedBalance: string
+  formattedExpiry: string
+}
+
+const defaultBuzzURL = 'https://buzzai.cc/dashboard/billing'
+const defaultTCDMXURL = 'https://tcdmx.com/subscriptions'
+
+const formatExternalAmount = (value?: number | null) => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  return `$${value.toFixed(2)}`
+}
+
+const formatExternalDate = (value?: string | null) => {
+  if (!value) return localText('长期', 'Long-term')
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return localText('长期', 'Long-term')
+  return parsed.toISOString().slice(0, 10)
+}
+
+const buildExternalSearchText = (account: Account) => {
+  const credentials = account.credentials ?? {}
+  const extra = account.extra ?? {}
+  const parts = [
+    account.name,
+    account.notes,
+    account.platform,
+    account.type,
+    credentials.base_url,
+    credentials.api_base_url,
+    credentials.endpoint,
+    extra.custom_base_url,
+    extra.external_provider,
+    account.custom_base_url
+  ]
+  return parts
+    .filter((part): part is string => typeof part === 'string' && part.trim() !== '')
+    .join(' ')
+    .toLowerCase()
+}
+
+const getAccountExternalProvider = (account: Account): 'buzz' | 'tcdmx' | null => {
+  const text = buildExternalSearchText(account)
+  if (text.includes('tcdmx.com') || text.includes('tcdmx')) return 'tcdmx'
+  if (text.includes('buzzai.cc') || text.includes('buzzai') || /\bbuzz\b/.test(text)) return 'buzz'
+  return null
+}
+
+const buildBuzzExternalQuota = (): AccountExternalQuota => {
+  const total = formatExternalAmount(buzzBalance.value?.total)
+  const remaining = formatExternalAmount(buzzBalance.value?.remaining)
+  return {
+    label: 'Buzz',
+    url: buzzBalance.value?.site_url || defaultBuzzURL,
+    formattedBalance: remaining && total ? `${remaining} / ${total}` : remaining || localText('未配置', 'Not configured'),
+    formattedExpiry: formatExternalDate(buzzBalance.value?.expires_at)
+  }
+}
+
+const buildTCDMXExternalQuota = (): AccountExternalQuota => {
+  const total = formatExternalAmount(tcdmxSubscription.value?.total_limit_usd)
+  const remaining = formatExternalAmount(tcdmxSubscription.value?.remaining_usd)
+  const activeCount = tcdmxSubscription.value?.active_count ?? 0
+  return {
+    label: 'TCDMX',
+    url: tcdmxSubscription.value?.site_url || defaultTCDMXURL,
+    formattedBalance: remaining && total
+      ? `${remaining} / ${total}`
+      : total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
+    formattedExpiry: formatExternalDate(tcdmxSubscription.value?.expires_at)
+  }
+}
+
+const canShowBuzzExternalQuota = () => Boolean(
+  buzzBalance.value?.enabled &&
+  buzzBalance.value?.configured
+)
+
+const canShowTCDMXExternalQuota = () => Boolean(
+  tcdmxSubscription.value?.enabled &&
+  tcdmxSubscription.value?.configured
+)
+
+const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
+  const provider = getAccountExternalProvider(account)
+  if (provider === 'tcdmx' && canShowTCDMXExternalQuota()) return buildTCDMXExternalQuota()
+  if (provider === 'buzz' && canShowBuzzExternalQuota()) return buildBuzzExternalQuota()
+  return null
+}
+
+const fetchExternalQuotaSummaries = async () => {
+  if (!authStore.isAdmin) return
+  const [buzzResult, tcdmxResult] = await Promise.allSettled([
+    buzzBalanceAPI.getBalance(),
+    tcdmxSubscriptionAPI.getStatus()
+  ])
+  if (buzzResult.status === 'fulfilled') {
+    buzzBalance.value = buzzResult.value
+  } else {
+    buzzBalance.value = null
+    console.error('Failed to load BuzzAI quota summary:', buzzResult.reason)
+  }
+  if (tcdmxResult.status === 'fulfilled') {
+    tcdmxSubscription.value = tcdmxResult.value
+  } else {
+    tcdmxSubscription.value = null
+    console.error('Failed to load TCDMX quota summary:', tcdmxResult.reason)
   }
 }
 
@@ -975,7 +1120,7 @@ const refreshAccountsIncrementally = async () => {
 }
 
 const handleManualRefresh = async () => {
-  await load()
+  await Promise.all([load(), fetchExternalQuotaSummaries()])
   // Force usage cells to refetch /usage on explicit user refresh.
   usageManualRefreshToken.value += 1
 }
@@ -1664,6 +1809,9 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(async () => {
   load()
+  fetchExternalQuotaSummaries().catch((error) => {
+    console.error('Failed to load external quota summaries:', error)
+  })
   try {
     const [p, g] = await Promise.all([adminAPI.proxies.getAll(), adminAPI.groups.getAll()])
     proxies.value = p
