@@ -139,6 +139,7 @@ type CloudflareAIConfig struct {
 	AISearchAPIToken          string `mapstructure:"ai_search_api_token"`
 	AISearchAPIBaseURL        string `mapstructure:"ai_search_api_base_url"`
 	AISearchPublicEndpointURL string `mapstructure:"ai_search_public_endpoint_url"`
+	AISearchPublicOrigin      string `mapstructure:"ai_search_public_origin"`
 }
 
 type GeminiOAuthConfig struct {
@@ -1403,6 +1404,7 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 	cfg.CloudflareAI.AISearchAPIToken = strings.TrimSpace(cfg.CloudflareAI.AISearchAPIToken)
 	cfg.CloudflareAI.AISearchAPIBaseURL = strings.TrimRight(strings.TrimSpace(cfg.CloudflareAI.AISearchAPIBaseURL), "/")
 	cfg.CloudflareAI.AISearchPublicEndpointURL = strings.TrimSpace(cfg.CloudflareAI.AISearchPublicEndpointURL)
+	cfg.CloudflareAI.AISearchPublicOrigin = strings.TrimRight(strings.TrimSpace(cfg.CloudflareAI.AISearchPublicOrigin), "/")
 	applyLegacyWeChatConnectEnvCompatibility(&cfg.WeChat)
 	normalizeWeChatConnectConfig(&cfg.WeChat)
 	cfg.OIDC.ProviderName = strings.TrimSpace(cfg.OIDC.ProviderName)
@@ -1939,6 +1941,7 @@ func setDefaults() {
 	viper.SetDefault("cloudflare_ai.ai_search_api_token", "")
 	viper.SetDefault("cloudflare_ai.ai_search_api_base_url", "https://api.cloudflare.com/client/v4")
 	viper.SetDefault("cloudflare_ai.ai_search_public_endpoint_url", "https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/search")
+	viper.SetDefault("cloudflare_ai.ai_search_public_origin", "https://sub2api.creeperxco.cn")
 
 	// Subscription Maintenance (bounded queue + worker pool)
 	viper.SetDefault("subscription_maintenance.worker_count", 2)

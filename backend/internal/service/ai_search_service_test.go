@@ -14,11 +14,13 @@ import (
 func TestAISearchService_SearchUsesCloudflareInstanceAPI(t *testing.T) {
 	var requestedPath string
 	var authHeader string
+	var originHeader string
 	var body map[string]any
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPath = r.URL.Path
 		authHeader = r.Header.Get("Authorization")
+		originHeader = r.Header.Get("Origin")
 		require.Equal(t, http.MethodPost, r.Method)
 		require.Equal(t, "application/json", r.Header.Get("Content-Type"))
 		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
@@ -61,6 +63,7 @@ func TestAISearchService_SearchUsesCloudflareInstanceAPI(t *testing.T) {
 
 	require.Equal(t, "/accounts/test-account/ai-search/instances/ai-search/search", requestedPath)
 	require.Equal(t, "Bearer cf-secret", authHeader)
+	require.Empty(t, originHeader)
 	require.Equal(t, "如何配置密钥", body["query"])
 	options := body["ai_search_options"].(map[string]any)
 	retrieval := options["retrieval"].(map[string]any)
@@ -83,11 +86,15 @@ func TestAISearchService_SearchUsesCloudflareInstanceAPI(t *testing.T) {
 func TestAISearchService_SearchFallsBackToPublicEndpoint(t *testing.T) {
 	var requestedPath string
 	var authHeader string
+	var originHeader string
+	var refererHeader string
 	var body map[string]any
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPath = r.URL.Path
 		authHeader = r.Header.Get("Authorization")
+		originHeader = r.Header.Get("Origin")
+		refererHeader = r.Header.Get("Referer")
 		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		_, _ = w.Write([]byte(`{
 			"success": true,
@@ -103,6 +110,7 @@ func TestAISearchService_SearchFallsBackToPublicEndpoint(t *testing.T) {
 		CloudflareAI: config.CloudflareAIConfig{
 			AISearchInstanceID:        "ai-search",
 			AISearchPublicEndpointURL: server.URL + "/search",
+			AISearchPublicOrigin:      "https://sub2api.creeperxco.cn/",
 		},
 	})
 
@@ -111,6 +119,8 @@ func TestAISearchService_SearchFallsBackToPublicEndpoint(t *testing.T) {
 
 	require.Equal(t, "/search", requestedPath)
 	require.Empty(t, authHeader)
+	require.Equal(t, "https://sub2api.creeperxco.cn", originHeader)
+	require.Equal(t, "https://sub2api.creeperxco.cn/", refererHeader)
 	require.Equal(t, "FAQ", body["query"])
 	require.Equal(t, "FAQ", got.Query)
 	require.Empty(t, got.Results)

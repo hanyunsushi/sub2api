@@ -71,6 +71,9 @@ func (s *AISearchService) Search(ctx context.Context, query string) (*AISearchRe
 		SetSuccessResult(&upstream)
 	if settings.token != "" {
 		request.SetBearerAuthToken(settings.token)
+	} else if settings.origin != "" {
+		request.SetHeader("Origin", settings.origin)
+		request.SetHeader("Referer", settings.origin+"/")
 	}
 	resp, err := request.Post(settings.endpoint)
 	if err != nil {
@@ -93,6 +96,7 @@ func (s *AISearchService) Search(ctx context.Context, query string) (*AISearchRe
 type aiSearchSettings struct {
 	endpoint string
 	token    string
+	origin   string
 }
 
 func (s *AISearchService) settings() aiSearchSettings {
@@ -120,7 +124,10 @@ func (s *AISearchService) settings() aiSearchSettings {
 
 	publicEndpoint := strings.TrimSpace(cf.AISearchPublicEndpointURL)
 	if publicEndpoint != "" {
-		return aiSearchSettings{endpoint: publicEndpoint}
+		return aiSearchSettings{
+			endpoint: publicEndpoint,
+			origin:   strings.TrimRight(strings.TrimSpace(cf.AISearchPublicOrigin), "/"),
+		}
 	}
 	return aiSearchSettings{}
 }
