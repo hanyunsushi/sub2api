@@ -87,7 +87,15 @@
           </template>
 
           <template #cell-name="{ value, row }">
-            <div class="flex items-center gap-1.5">
+            <div class="entity-name-with-logo">
+              <img
+                v-if="row.logo_url"
+                :src="row.logo_url"
+                alt=""
+                class="entity-logo"
+                loading="lazy"
+              />
+              <Icon v-else name="key" size="sm" class="entity-logo-fallback" />
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <Icon
                 v-if="row.ip_whitelist?.length > 0 || row.ip_blacklist?.length > 0"
@@ -405,6 +413,12 @@
             data-tour="key-form-name"
           />
         </div>
+
+        <LogoPicker
+          v-model="formData.logo_url"
+          :label="t('keys.logoUrlLabel', 'Logo URL')"
+          :hint="t('keys.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则显示默认密钥图标。')"
+        />
 
         <div>
           <label class="input-label">{{ t('keys.groupLabel') }}</label>
@@ -1065,6 +1079,7 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 	import EmptyState from '@/components/common/EmptyState.vue'
 	import Select from '@/components/common/Select.vue'
 	import SearchInput from '@/components/common/SearchInput.vue'
+	import LogoPicker from '@/components/common/LogoPicker.vue'
 	import Icon from '@/components/icons/Icon.vue'
 	import UseKeyModal from '@/components/keys/UseKeyModal.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
@@ -1172,6 +1187,7 @@ const setGroupButtonRef = (keyId: number, el: Element | ComponentPublicInstance 
 
 const formData = ref({
   name: '',
+  logo_url: '',
   group_id: null as number | null,
   status: 'active' as 'active' | 'inactive',
   use_custom_key: false,
@@ -1395,6 +1411,7 @@ const editKey = (key: ApiKey) => {
   const hasExpiration = !!key.expires_at
   formData.value = {
     name: key.name,
+    logo_url: key.logo_url || '',
     group_id: key.group_id,
     status: key.status === 'quota_exhausted' || key.status === 'expired' ? 'inactive' : key.status,
     use_custom_key: false,
@@ -1546,6 +1563,7 @@ const handleSubmit = async () => {
     if (showEditModal.value && selectedKey.value) {
       await keysAPI.update(selectedKey.value.id, {
         name: formData.value.name,
+        logo_url: formData.value.logo_url.trim(),
         group_id: formData.value.group_id,
         status: formData.value.status,
         ip_whitelist: ipWhitelist,
@@ -1567,7 +1585,8 @@ const handleSubmit = async () => {
         ipBlacklist,
         quota,
         expiresInDays,
-        rateLimitData
+        rateLimitData,
+        formData.value.logo_url
       )
       appStore.showSuccess(t('keys.keyCreatedSuccess'))
       // Only advance tour if active, on submit step, and creation succeeded
@@ -1612,6 +1631,7 @@ const closeModals = () => {
   selectedKey.value = null
   formData.value = {
     name: '',
+    logo_url: '',
     group_id: null,
     status: 'active',
     use_custom_key: false,

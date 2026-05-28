@@ -26,6 +26,7 @@ const (
 type AISearchResponse struct {
 	Query      string           `json:"query"`
 	Configured bool             `json:"configured"`
+	Answer     string           `json:"answer,omitempty"`
 	Results    []AISearchResult `json:"results"`
 }
 
@@ -64,39 +65,124 @@ func (s *AISearchService) Search(ctx context.Context, query string) (*AISearchRe
 		return nil, infraerrors.ServiceUnavailable("AI_SEARCH_NOT_CONFIGURED", "AI Search is not configured")
 	}
 
-	var upstream aiSearchUpstreamResponse
-	request := s.client.R().
-		SetContext(ctx).
-		SetBody(aiSearchRequestBody(query)).
-		SetSuccessResult(&upstream)
-	if settings.token != "" {
-		request.SetBearerAuthToken(settings.token)
-	} else if settings.origin != "" {
-		request.SetHeader("Origin", settings.origin)
-		request.SetHeader("Referer", settings.origin+"/")
+	if settings.privateConfigured() {
+		if response, err := s.searchWithChatCompletion(ctx, settings, query); err == nil {
+			return response, nil
+		}
+		if response, err := s.searchChunks(ctx, settings.searchEndpoint, settings.token, "", query); err == nil {
+			return response, nil
+		}
 	}
-	resp, err := request.Post(settings.endpoint)
-	if err != nil {
-		return nil, infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "failed to query AI Search")
+
+	if settings.publicChatEndpoint != "" {
+		if response, err := s.searchPublicChatCompletion(ctx, settings, query); err == nil {
+			return response, nil
+		}
 	}
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return nil, infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "AI Search returned an error")
+
+	return s.searchChunks(ctx, settings.publicEndpoint, "", settings.origin, query)
+}
+
+func (s *AISearchService) searchWithChatCompletion(ctx context.Context, settings aiSearchSettings, query string) (*AISearchResponse, error) {
+	var upstream aiSearchChatUpstreamResponse
+	if err := s.postAISearch(ctx, settings.chatEndpoint, settings.token, "", aiSearchChatRequestBody(query), &upstream); err != nil {
+		return nil, err
 	}
-	if !upstream.Success {
-		return nil, infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "AI Search returned an error")
+	chunks := upstream.chunks()
+	answer := compactAISearchSnippet(upstream.answer(), 1200)
+	if shouldUseAISearchEvidenceAnswer(answer, chunks) {
+		answer = answerFromAISearchEvidence(chunks)
 	}
 
 	return &AISearchResponse{
-		Query:      firstNonBlank(upstream.Result.SearchQuery, query),
+		Query:      firstNonBlank(upstream.searchQuery(), query),
 		Configured: true,
-		Results:    normalizeAISearchChunks(upstream.Result.Chunks),
+		Answer:     answer,
+		Results:    normalizeAISearchChunks(chunks),
 	}, nil
 }
 
+func (s *AISearchService) searchPublicChatCompletion(ctx context.Context, settings aiSearchSettings, query string) (*AISearchResponse, error) {
+	var upstream aiSearchChatUpstreamResponse
+	if err := s.postAISearch(ctx, settings.publicChatEndpoint, "", settings.origin, aiSearchChatRequestBody(query), &upstream); err != nil {
+		return nil, err
+	}
+	chunks := upstream.chunks()
+	answer := compactAISearchSnippet(upstream.answer(), 1200)
+	if shouldUseAISearchEvidenceAnswer(answer, chunks) {
+		answer = answerFromAISearchEvidence(chunks)
+	}
+
+	return &AISearchResponse{
+		Query:      firstNonBlank(upstream.searchQuery(), query),
+		Configured: true,
+		Answer:     answer,
+		Results:    normalizeAISearchChunks(chunks),
+	}, nil
+}
+
+func (s *AISearchService) searchChunks(ctx context.Context, endpoint, token, origin, query string) (*AISearchResponse, error) {
+	var upstream aiSearchUpstreamResponse
+	if err := s.postAISearch(ctx, endpoint, token, origin, aiSearchRequestBody(query), &upstream); err != nil {
+		return nil, err
+	}
+
+	return &AISearchResponse{
+		Query:      firstNonBlank(upstream.searchQuery(), query),
+		Configured: true,
+		Answer:     answerFromAISearchEvidence(upstream.chunks()),
+		Results:    normalizeAISearchChunks(upstream.chunks()),
+	}, nil
+}
+
+func (s *AISearchService) postAISearch(ctx context.Context, endpoint, token, origin string, body map[string]any, result any) error {
+	request := s.client.R().
+		SetContext(ctx).
+		SetBody(body).
+		SetSuccessResult(result)
+	if token != "" {
+		request.SetBearerAuthToken(token)
+	} else if origin != "" {
+		request.SetHeader("Origin", origin)
+		request.SetHeader("Referer", origin+"/")
+	}
+	resp, err := request.Post(endpoint)
+	if err != nil {
+		return infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "failed to query AI Search")
+	}
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "AI Search returned an error")
+	}
+	if success, ok := aiSearchSuccess(result); ok && !success {
+		return infraerrors.ServiceUnavailable("AI_SEARCH_UPSTREAM_ERROR", "AI Search returned an error")
+	}
+	return nil
+}
+
+func aiSearchSuccess(result any) (bool, bool) {
+	switch typed := result.(type) {
+	case *aiSearchUpstreamResponse:
+		if typed.Success == nil {
+			return true, false
+		}
+		return *typed.Success, true
+	case *aiSearchChatUpstreamResponse:
+		if typed.Success == nil {
+			return true, false
+		}
+		return *typed.Success, true
+	default:
+		return false, false
+	}
+}
+
 type aiSearchSettings struct {
-	endpoint string
-	token    string
-	origin   string
+	chatEndpoint       string
+	searchEndpoint     string
+	publicEndpoint     string
+	publicChatEndpoint string
+	token              string
+	origin             string
 }
 
 func (s *AISearchService) settings() aiSearchSettings {
@@ -107,6 +193,9 @@ func (s *AISearchService) settings() aiSearchSettings {
 	cf := s.cfg.CloudflareAI
 	token := strings.TrimSpace(cf.AISearchAPIToken)
 	accountID := strings.TrimSpace(cf.AccountID)
+	publicEndpoint := strings.TrimSpace(cf.AISearchPublicEndpointURL)
+	publicChatEndpoint := strings.TrimSpace(cf.AISearchPublicChatEndpointURL)
+	origin := strings.TrimRight(strings.TrimSpace(cf.AISearchPublicOrigin), "/")
 	instanceID := strings.TrimSpace(cf.AISearchInstanceID)
 	if instanceID == "" {
 		instanceID = defaultAISearchInstanceID
@@ -116,46 +205,139 @@ func (s *AISearchService) settings() aiSearchSettings {
 		baseURL = defaultAISearchAPIBaseURL
 	}
 	if token != "" && accountID != "" {
+		basePath := fmt.Sprintf("%s/accounts/%s/ai-search/instances/%s", baseURL, url.PathEscape(accountID), url.PathEscape(instanceID))
 		return aiSearchSettings{
-			endpoint: fmt.Sprintf("%s/accounts/%s/ai-search/instances/%s/search", baseURL, url.PathEscape(accountID), url.PathEscape(instanceID)),
-			token:    token,
+			chatEndpoint:       basePath + "/chat/completions",
+			searchEndpoint:     basePath + "/search",
+			publicEndpoint:     publicEndpoint,
+			publicChatEndpoint: publicChatEndpoint,
+			token:              token,
+			origin:             origin,
 		}
 	}
 
-	publicEndpoint := strings.TrimSpace(cf.AISearchPublicEndpointURL)
 	if publicEndpoint != "" {
 		return aiSearchSettings{
-			endpoint: publicEndpoint,
-			origin:   strings.TrimRight(strings.TrimSpace(cf.AISearchPublicOrigin), "/"),
+			publicEndpoint:     publicEndpoint,
+			publicChatEndpoint: publicChatEndpoint,
+			origin:             origin,
 		}
 	}
 	return aiSearchSettings{}
 }
 
 func (s aiSearchSettings) configured() bool {
-	return strings.TrimSpace(s.endpoint) != ""
+	return s.privateConfigured() || strings.TrimSpace(s.publicEndpoint) != ""
+}
+
+func (s aiSearchSettings) privateConfigured() bool {
+	return strings.TrimSpace(s.token) != "" &&
+		strings.TrimSpace(s.chatEndpoint) != "" &&
+		strings.TrimSpace(s.searchEndpoint) != ""
 }
 
 func aiSearchRequestBody(query string) map[string]any {
 	return map[string]any{
-		"query": query,
-		"ai_search_options": map[string]any{
-			"retrieval": map[string]any{
-				"retrieval_type":     "hybrid",
-				"max_num_results":    defaultAISearchMaxResults,
-				"match_threshold":    defaultAISearchMatchThreshold,
-				"keyword_match_mode": "or",
+		"query":             query,
+		"ai_search_options": aiSearchOptions(),
+	}
+}
+
+func aiSearchChatRequestBody(query string) map[string]any {
+	return map[string]any{
+		"messages": []map[string]string{
+			{
+				"role":    "system",
+				"content": "你是 Sub2API 网站内的 ask ai 助手。请优先依据检索到的知识块回答，直接给出结论；如果知识块里有明确时间、数字、范围或步骤，必须使用这些具体信息。不要编造知识块之外的事实；如果确实没有相关知识，再说明当前知识库没有收录。",
 			},
+			{
+				"role":    "user",
+				"content": query,
+			},
+		},
+		"stream":            false,
+		"ai_search_options": aiSearchOptions(),
+	}
+}
+
+func aiSearchOptions() map[string]any {
+	return map[string]any{
+		"retrieval": map[string]any{
+			"retrieval_type":     "hybrid",
+			"max_num_results":    defaultAISearchMaxResults,
+			"match_threshold":    defaultAISearchMatchThreshold,
+			"keyword_match_mode": "or",
 		},
 	}
 }
 
 type aiSearchUpstreamResponse struct {
-	Success bool `json:"success"`
-	Result  struct {
-		SearchQuery string          `json:"search_query"`
-		Chunks      []aiSearchChunk `json:"chunks"`
-	} `json:"result"`
+	Success     *bool                `json:"success"`
+	SearchQuery string               `json:"search_query"`
+	Chunks      []aiSearchChunk      `json:"chunks"`
+	Result      aiSearchSearchResult `json:"result"`
+}
+
+type aiSearchChatUpstreamResponse struct {
+	Success     *bool                `json:"success"`
+	SearchQuery string               `json:"search_query"`
+	Chunks      []aiSearchChunk      `json:"chunks"`
+	Choices     []aiSearchChatChoice `json:"choices"`
+	Result      aiSearchChatResult   `json:"result"`
+}
+
+type aiSearchSearchResult struct {
+	SearchQuery string          `json:"search_query"`
+	Chunks      []aiSearchChunk `json:"chunks"`
+}
+
+type aiSearchChatResult struct {
+	SearchQuery string               `json:"search_query"`
+	Chunks      []aiSearchChunk      `json:"chunks"`
+	Choices     []aiSearchChatChoice `json:"choices"`
+}
+
+type aiSearchChatChoice struct {
+	Message struct {
+		Content string `json:"content"`
+	} `json:"message"`
+}
+
+func (r aiSearchUpstreamResponse) searchQuery() string {
+	return firstNonBlank(r.SearchQuery, r.Result.SearchQuery)
+}
+
+func (r aiSearchUpstreamResponse) chunks() []aiSearchChunk {
+	if len(r.Chunks) > 0 {
+		return r.Chunks
+	}
+	return r.Result.Chunks
+}
+
+func (r aiSearchChatUpstreamResponse) searchQuery() string {
+	return firstNonBlank(r.SearchQuery, r.Result.SearchQuery)
+}
+
+func (r aiSearchChatUpstreamResponse) answer() string {
+	choices := r.choices()
+	if len(choices) == 0 {
+		return ""
+	}
+	return strings.TrimSpace(choices[0].Message.Content)
+}
+
+func (r aiSearchChatUpstreamResponse) chunks() []aiSearchChunk {
+	if len(r.Chunks) > 0 {
+		return r.Chunks
+	}
+	return r.Result.Chunks
+}
+
+func (r aiSearchChatUpstreamResponse) choices() []aiSearchChatChoice {
+	if len(r.Choices) > 0 {
+		return r.Choices
+	}
+	return r.Result.Choices
 }
 
 type aiSearchChunk struct {
@@ -183,6 +365,80 @@ func normalizeAISearchChunks(chunks []aiSearchChunk) []AISearchResult {
 		})
 	}
 	return results
+}
+
+func shouldUseAISearchEvidenceAnswer(answer string, chunks []aiSearchChunk) bool {
+	if len(chunks) == 0 {
+		return false
+	}
+	answer = strings.TrimSpace(answer)
+	if answer == "" {
+		return true
+	}
+	lower := strings.ToLower(answer)
+	denialMarkers := []string{
+		"没有收录",
+		"未收录",
+		"没有找到",
+		"未找到",
+		"没有相关",
+		"无法找到",
+		"无法回答",
+		"不清楚",
+		"不知道",
+		"not in the knowledge",
+		"no relevant",
+		"not found",
+		"cannot answer",
+		"can't answer",
+		"do not know",
+		"don't know",
+	}
+	for _, marker := range denialMarkers {
+		if strings.Contains(lower, marker) {
+			return true
+		}
+	}
+	return false
+}
+
+func answerFromAISearchEvidence(chunks []aiSearchChunk) string {
+	if len(chunks) == 0 {
+		return ""
+	}
+	best := chunks[0]
+	for _, chunk := range chunks[1:] {
+		if chunk.Score > best.Score {
+			best = chunk
+		}
+	}
+	text := cleanAISearchEvidenceText(best.Text)
+	if text == "" {
+		return ""
+	}
+	return compactAISearchSnippet("根据知识库，"+text, 1200)
+}
+
+func cleanAISearchEvidenceText(text string) string {
+	lines := strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
+	cleaned := make([]string, 0, len(lines))
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		line = strings.TrimLeft(line, "-*• ")
+		line = strings.ReplaceAll(line, "`", "")
+		line = strings.ReplaceAll(line, "**", "")
+		line = strings.ReplaceAll(line, "__", "")
+		if line != "" {
+			cleaned = append(cleaned, line)
+		}
+	}
+	if len(cleaned) == 0 {
+		return compactAISearchSnippet(strings.ReplaceAll(strings.TrimSpace(text), "`", ""), 600)
+	}
+	return compactAISearchSnippet(strings.Join(cleaned, " "), 600)
 }
 
 func aiSearchResultTitle(source string, metadata map[string]any) string {

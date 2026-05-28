@@ -22,6 +22,7 @@ func (s *aiSearchHandlerServiceStub) Search(_ context.Context, query string) (*s
 	return &service.AISearchResponse{
 		Query:      query,
 		Configured: true,
+		Answer:     "AI Search 会先生成回答，再附带来源。",
 		Results: []service.AISearchResult{{
 			ID:      "chunk-1",
 			Title:   "AI Search",
@@ -56,6 +57,7 @@ func TestAISearchHandler_SearchTrimsAndReturnsResults(t *testing.T) {
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &envelope))
 	require.Equal(t, 0, envelope.Code)
 	require.Equal(t, "AI Search", envelope.Data.Query)
+	require.Equal(t, "AI Search 会先生成回答，再附带来源。", envelope.Data.Answer)
 	require.Len(t, envelope.Data.Results, 1)
 	require.Equal(t, "AI Search", envelope.Data.Results[0].Title)
 }

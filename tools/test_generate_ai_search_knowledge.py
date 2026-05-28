@@ -25,7 +25,9 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         markdown = generator.build_markdown(source)
 
         self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
-        self.assertIn("右上角有 `AI Search` 搜索框", markdown)
+        self.assertIn("右上角有常驻的 `ask ai` 搜索框", markdown)
+        self.assertIn("每 3 天按用户版知识文档重新上传一次", markdown)
+        self.assertIn("后端会根据最高相关知识块生成简短回答", markdown)
         self.assertIn("管理员后台提供 Codex/CPA 账号管理能力", markdown)
         self.assertEqual([], generator.validate_public_markdown(markdown))
         self.assertNotIn("/Users/hinaw", markdown)
@@ -39,7 +41,7 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         每天 `03:00` 自动备份，保留策略为 30 天。
 
         ## Cloudflare AI Search 状态
-        每日同步由 Codex 自动化执行，计划每天 03:20。
+        旧方案每日同步由 Codex 自动化执行，计划每天 03:20。
         AI Search 搜索框放在公告铃左边。
         """
 
@@ -47,6 +49,7 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
 
         self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
         self.assertNotIn("每天 03:20 自动生成 PostgreSQL 备份", markdown)
+        self.assertIn("每 3 天按用户版知识文档重新上传一次", markdown)
 
 
 if __name__ == "__main__":

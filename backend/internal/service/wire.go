@@ -528,6 +528,7 @@ var ProviderSet = wire.NewSet(
 	NewBuzzBalanceService,
 	NewTCDMXSubscriptionService,
 	NewAISearchService,
+	ProvideAISearchKnowledgeSyncService,
 	ProvidePaymentConfigService,
 	ProvidePaymentService,
 	ProvidePaymentOrderExpiryService,

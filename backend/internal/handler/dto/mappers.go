@@ -82,6 +82,7 @@ func APIKeyFromService(k *service.APIKey) *APIKey {
 		UserID:        k.UserID,
 		Key:           k.Key,
 		Name:          k.Name,
+		LogoURL:       k.LogoURL,
 		GroupID:       k.GroupID,
 		Status:        k.Status,
 		IPWhitelist:   k.IPWhitelist,
@@ -168,6 +169,7 @@ func groupFromServiceBase(g *service.Group) Group {
 	return Group{
 		ID:                              g.ID,
 		Name:                            g.Name,
+		LogoURL:                         g.LogoURL,
 		Description:                     g.Description,
 		Platform:                        g.Platform,
 		RateMultiplier:                  g.RateMultiplier,

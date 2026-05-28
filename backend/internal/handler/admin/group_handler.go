@@ -83,6 +83,7 @@ func NewGroupHandler(adminService service.AdminService, dashboardService *servic
 // CreateGroupRequest represents create group request
 type CreateGroupRequest struct {
 	Name             string             `json:"name" binding:"required"`
+	LogoURL          string             `json:"logo_url" binding:"omitempty,max=2048"`
 	Description      string             `json:"description"`
 	Platform         string             `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity"`
 	RateMultiplier   float64            `json:"rate_multiplier"`
@@ -123,6 +124,7 @@ type CreateGroupRequest struct {
 // UpdateGroupRequest represents update group request
 type UpdateGroupRequest struct {
 	Name             string             `json:"name"`
+	LogoURL          *string            `json:"logo_url" binding:"omitempty,max=2048"`
 	Description      string             `json:"description"`
 	Platform         string             `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity"`
 	RateMultiplier   *float64           `json:"rate_multiplier"`
@@ -273,6 +275,7 @@ func (h *GroupHandler) Create(c *gin.Context) {
 
 	group, err := h.adminService.CreateGroup(c.Request.Context(), &service.CreateGroupInput{
 		Name:                            req.Name,
+		LogoURL:                         req.LogoURL,
 		Description:                     req.Description,
 		Platform:                        req.Platform,
 		RateMultiplier:                  req.RateMultiplier,
@@ -328,6 +331,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 
 	group, err := h.adminService.UpdateGroup(c.Request.Context(), groupID, &service.UpdateGroupInput{
 		Name:                            req.Name,
+		LogoURL:                         req.LogoURL,
 		Description:                     req.Description,
 		Platform:                        req.Platform,
 		RateMultiplier:                  req.RateMultiplier,

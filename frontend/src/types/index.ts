@@ -498,6 +498,7 @@ export interface OpenAIMessagesDispatchModelConfig {
 export interface Group {
   id: number
   name: string
+  logo_url?: string
   description: string | null
   platform: GroupPlatform
   rate_multiplier: number
@@ -564,6 +565,7 @@ export interface ApiKey {
   user_id: number
   key: string
   name: string
+  logo_url?: string
   group_id: number | null
   status: 'active' | 'inactive' | 'quota_exhausted' | 'expired'
   ip_whitelist: string[]
@@ -591,6 +593,7 @@ export interface ApiKey {
 
 export interface CreateApiKeyRequest {
   name: string
+  logo_url?: string
   group_id?: number | null
   custom_key?: string // Optional custom API Key
   ip_whitelist?: string[]
@@ -604,6 +607,7 @@ export interface CreateApiKeyRequest {
 
 export interface UpdateApiKeyRequest {
   name?: string
+  logo_url?: string
   group_id?: number | null
   status?: 'active' | 'inactive'
   ip_whitelist?: string[]
@@ -619,6 +623,7 @@ export interface UpdateApiKeyRequest {
 
 export interface CreateGroupRequest {
   name: string
+  logo_url?: string
   description?: string | null
   platform?: GroupPlatform
   rate_multiplier?: number
@@ -653,6 +658,7 @@ export interface CreateGroupRequest {
 
 export interface UpdateGroupRequest {
   name?: string
+  logo_url?: string
   description?: string | null
   platform?: GroupPlatform
   rate_multiplier?: number

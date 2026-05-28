@@ -25,19 +25,12 @@
         ></textarea>
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
-      <div>
-        <label class="input-label">{{ t('admin.accounts.logoUrl', '账号 Logo URL') }}</label>
-        <input
-          v-model="accountLogoUrl"
-          type="url"
-          class="input"
-          data-testid="account-logo-url-input"
-          placeholder="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png"
-        />
-        <p class="input-hint">
-          {{ t('admin.accounts.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则按账号来源自动匹配。') }}
-        </p>
-      </div>
+      <LogoPicker
+        v-model="accountLogoUrl"
+        :label="t('admin.accounts.logoUrl', '账号 Logo URL')"
+        :hint="t('admin.accounts.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则按账号来源自动匹配。')"
+        input-test-id="account-logo-url-input"
+      />
 
       <!-- API Key fields (only for apikey type) -->
       <div v-if="account.type === 'apikey'" class="space-y-4">
@@ -2266,6 +2259,7 @@ import Icon from '@/components/icons/Icon.vue'
 import ProxySelector from '@/components/common/ProxySelector.vue'
 import ProxyAdBanner from '@/components/common/ProxyAdBanner.vue'
 import GroupSelector from '@/components/common/GroupSelector.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import ModelWhitelistSelector from '@/components/account/ModelWhitelistSelector.vue'
 import QuotaLimitCard from '@/components/account/QuotaLimitCard.vue'
 import { applyInterceptWarmup } from '@/components/account/credentialsBuilder'

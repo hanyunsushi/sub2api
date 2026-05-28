@@ -57,8 +57,18 @@
           default-sort-order="desc"
           @sort="handleSort"
         >
-          <template #cell-name="{ value }">
-            <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+          <template #cell-name="{ row, value }">
+            <span class="entity-name-with-logo">
+              <img
+                v-if="row.logo_url"
+                :src="row.logo_url"
+                alt=""
+                class="entity-logo"
+                loading="lazy"
+              />
+              <Icon v-else name="globe" size="sm" class="entity-logo-fallback" />
+              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+            </span>
           </template>
 
           <template #cell-description="{ value }">
@@ -186,6 +196,13 @@
                 :placeholder="t('admin.channels.form.namePlaceholder', 'Enter channel name')"
               />
             </div>
+
+            <!-- Description -->
+            <LogoPicker
+              v-model="form.logo_url"
+              :label="t('admin.channels.form.logoUrl', 'Logo URL')"
+              :hint="t('admin.channels.form.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则只显示默认图标。')"
+            />
 
             <!-- Description -->
             <div>
@@ -649,6 +666,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import Toggle from '@/components/common/Toggle.vue'
@@ -754,6 +772,7 @@ const allChannelsForConflict = ref<Channel[]>([])
 // Form data
 const form = reactive({
   name: '',
+  logo_url: '',
   description: '',
   status: 'active',
   restrict_models: false,
@@ -1325,6 +1344,7 @@ function handleSort(key: string, order: 'asc' | 'desc') {
 // ── Dialog ──
 function resetForm() {
   form.name = ''
+  form.logo_url = ''
   form.description = ''
   form.status = 'active'
   form.restrict_models = false
@@ -1347,6 +1367,7 @@ async function openCreateDialog() {
 async function openEditDialog(channel: Channel) {
   editingChannel.value = channel
   form.name = channel.name
+  form.logo_url = channel.logo_url || ''
   form.description = channel.description || ''
   form.status = channel.status
   form.restrict_models = channel.restrict_models || false
@@ -1536,6 +1557,7 @@ async function handleSubmit() {
     if (editingChannel.value) {
       const req: UpdateChannelRequest = {
         name: form.name.trim(),
+        logo_url: form.logo_url.trim(),
         description: form.description.trim() || undefined,
         status: form.status,
         group_ids,
@@ -1552,6 +1574,7 @@ async function handleSubmit() {
     } else {
       const req: CreateChannelRequest = {
         name: form.name.trim(),
+        logo_url: form.logo_url.trim() || undefined,
         description: form.description.trim() || undefined,
         group_ids,
         model_pricing,

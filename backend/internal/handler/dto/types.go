@@ -52,6 +52,7 @@ type APIKey struct {
 	UserID      int64      `json:"user_id"`
 	Key         string     `json:"key"`
 	Name        string     `json:"name"`
+	LogoURL     string     `json:"logo_url"`
 	GroupID     *int64     `json:"group_id"`
 	Status      string     `json:"status"`
 	IPWhitelist []string   `json:"ip_whitelist"`
@@ -84,6 +85,7 @@ type APIKey struct {
 type Group struct {
 	ID             int64   `json:"id"`
 	Name           string  `json:"name"`
+	LogoURL        string  `json:"logo_url"`
 	Description    string  `json:"description"`
 	Platform       string  `json:"platform"`
 	RateMultiplier float64 `json:"rate_multiplier"`

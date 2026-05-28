@@ -85,6 +85,20 @@ func (_c *APIKeyCreate) SetName(v string) *APIKeyCreate {
 	return _c
 }
 
+// SetLogoURL sets the "logo_url" field.
+func (_c *APIKeyCreate) SetLogoURL(v string) *APIKeyCreate {
+	_c.mutation.SetLogoURL(v)
+	return _c
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableLogoURL(v *string) *APIKeyCreate {
+	if v != nil {
+		_c.SetLogoURL(*v)
+	}
+	return _c
+}
+
 // SetGroupID sets the "group_id" field.
 func (_c *APIKeyCreate) SetGroupID(v int64) *APIKeyCreate {
 	_c.mutation.SetGroupID(v)
@@ -383,6 +397,10 @@ func (_c *APIKeyCreate) defaults() error {
 		v := apikey.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		v := apikey.DefaultLogoURL
+		_c.mutation.SetLogoURL(v)
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := apikey.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -448,6 +466,9 @@ func (_c *APIKeyCreate) check() error {
 		if err := apikey.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "APIKey.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		return &ValidationError{Name: "logo_url", err: errors.New(`ent: missing required field "APIKey.logo_url"`)}
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "APIKey.status"`)}
@@ -530,6 +551,10 @@ func (_c *APIKeyCreate) createSpec() (*APIKey, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(apikey.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := _c.mutation.LogoURL(); ok {
+		_spec.SetField(apikey.FieldLogoURL, field.TypeString, value)
+		_node.LogoURL = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(apikey.FieldStatus, field.TypeString, value)
@@ -760,6 +785,18 @@ func (u *APIKeyUpsert) SetName(v string) *APIKeyUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *APIKeyUpsert) UpdateName() *APIKeyUpsert {
 	u.SetExcluded(apikey.FieldName)
+	return u
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *APIKeyUpsert) SetLogoURL(v string) *APIKeyUpsert {
+	u.Set(apikey.FieldLogoURL, v)
+	return u
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateLogoURL() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldLogoURL)
 	return u
 }
 
@@ -1182,6 +1219,20 @@ func (u *APIKeyUpsertOne) SetName(v string) *APIKeyUpsertOne {
 func (u *APIKeyUpsertOne) UpdateName() *APIKeyUpsertOne {
 	return u.Update(func(s *APIKeyUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *APIKeyUpsertOne) SetLogoURL(v string) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateLogoURL() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 
@@ -1820,6 +1871,20 @@ func (u *APIKeyUpsertBulk) SetName(v string) *APIKeyUpsertBulk {
 func (u *APIKeyUpsertBulk) UpdateName() *APIKeyUpsertBulk {
 	return u.Update(func(s *APIKeyUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *APIKeyUpsertBulk) SetLogoURL(v string) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateLogoURL() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 

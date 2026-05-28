@@ -189,6 +189,7 @@ type AdminBoundAuthIdentityChannel struct {
 
 type CreateGroupInput struct {
 	Name             string
+	LogoURL          string
 	Description      string
 	Platform         string
 	RateMultiplier   float64
@@ -229,6 +230,7 @@ type CreateGroupInput struct {
 
 type UpdateGroupInput struct {
 	Name             string
+	LogoURL          *string
 	Description      string
 	Platform         string
 	RateMultiplier   *float64 // 使用指针以支持设置为0
@@ -1752,6 +1754,7 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 
 	group := &Group{
 		Name:                            input.Name,
+		LogoURL:                         strings.TrimSpace(input.LogoURL),
 		Description:                     input.Description,
 		Platform:                        platform,
 		RateMultiplier:                  input.RateMultiplier,
@@ -1911,6 +1914,9 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 
 	if input.Name != "" {
 		group.Name = input.Name
+	}
+	if input.LogoURL != nil {
+		group.LogoURL = strings.TrimSpace(*input.LogoURL)
 	}
 	if input.Description != "" {
 		group.Description = input.Description

@@ -211,6 +211,7 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 		UserID:      apiKey.UserID,
 		GroupID:     apiKey.GroupID,
 		Name:        apiKey.Name,
+		LogoURL:     apiKey.LogoURL,
 		Status:      apiKey.Status,
 		IPWhitelist: apiKey.IPWhitelist,
 		IPBlacklist: apiKey.IPBlacklist,
@@ -249,6 +250,7 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 		snapshot.Group = &APIKeyAuthGroupSnapshot{
 			ID:                              apiKey.Group.ID,
 			Name:                            apiKey.Group.Name,
+			LogoURL:                         apiKey.Group.LogoURL,
 			Platform:                        apiKey.Group.Platform,
 			Status:                          apiKey.Group.Status,
 			SubscriptionType:                apiKey.Group.SubscriptionType,
@@ -289,6 +291,7 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 		GroupID:     snapshot.GroupID,
 		Key:         key,
 		Name:        snapshot.Name,
+		LogoURL:     snapshot.LogoURL,
 		Status:      snapshot.Status,
 		IPWhitelist: snapshot.IPWhitelist,
 		IPBlacklist: snapshot.IPBlacklist,
@@ -319,6 +322,7 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 		apiKey.Group = &Group{
 			ID:                              snapshot.Group.ID,
 			Name:                            snapshot.Group.Name,
+			LogoURL:                         snapshot.Group.LogoURL,
 			Platform:                        snapshot.Group.Platform,
 			Status:                          snapshot.Group.Status,
 			Hydrated:                        true,

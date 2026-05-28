@@ -681,6 +681,7 @@ func (s *ChannelService) Create(ctx context.Context, input *CreateChannelInput) 
 
 	channel := &Channel{
 		Name:                       input.Name,
+		LogoURL:                    strings.TrimSpace(input.LogoURL),
 		Description:                input.Description,
 		Status:                     StatusActive,
 		BillingModelSource:         input.BillingModelSource,
@@ -779,6 +780,9 @@ func (s *ChannelService) applyUpdateInput(ctx context.Context, channel *Channel,
 	}
 	if input.Description != nil {
 		channel.Description = *input.Description
+	}
+	if input.LogoURL != nil {
+		channel.LogoURL = strings.TrimSpace(*input.LogoURL)
 	}
 	if input.Status != "" {
 		channel.Status = input.Status
@@ -981,6 +985,7 @@ func detectConflicts(entries []modelEntry, platform, errCode, label string) erro
 // CreateChannelInput 创建渠道输入
 type CreateChannelInput struct {
 	Name                       string
+	LogoURL                    string
 	Description                string
 	GroupIDs                   []int64
 	ModelPricing               []ChannelModelPricing
@@ -996,6 +1001,7 @@ type CreateChannelInput struct {
 // UpdateChannelInput 更新渠道输入
 type UpdateChannelInput struct {
 	Name                       string
+	LogoURL                    *string
 	Description                *string
 	Status                     string
 	GroupIDs                   *[]int64

@@ -204,7 +204,6 @@
           default-sort-order="asc"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
           vertical-scroll-mode="page"
-          :lenis-scroll="false"
           :estimate-row-height="72"
           :overscan="5"
         >
