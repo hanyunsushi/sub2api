@@ -715,8 +715,8 @@ onBeforeUnmount(() => {
   --dashboard-control-shadow: rgba(23, 21, 18, 0.2);
   --dashboard-module-shadow: rgba(23, 21, 18, 0.36);
   --dashboard-module-rule: var(--atelier-console-rule);
-  --dashboard-hover-surface: var(--atelier-butter);
-  --dashboard-hover-edge: color-mix(in srgb, var(--atelier-butter) 48%, var(--atelier-material-edge));
+  --dashboard-hover-surface: var(--atelier-ui-hover-surface);
+  --dashboard-hover-edge: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge));
   font-family: var(--atelier-font-sans);
 }
 
@@ -817,8 +817,8 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card) {
   border: 1px solid var(--atelier-ink) !important;
   border-radius: 8px;
-  background: var(--atelier-butter) !important;
-  color: var(--atelier-ink);
+  background: var(--atelier-ink) !important;
+  color: var(--atelier-paper);
   box-shadow: none !important;
 }
 
@@ -870,11 +870,11 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range)) {
-  color: var(--atelier-ink);
+  color: var(--atelier-paper);
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
-  color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
   font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
@@ -897,6 +897,7 @@ onBeforeUnmount(() => {
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-granularity) {
   align-self: center;
+  background: var(--atelier-ink) !important;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control),

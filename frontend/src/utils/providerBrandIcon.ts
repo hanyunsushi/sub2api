@@ -1,21 +1,58 @@
 export interface ProviderBrandInfo {
   label: string
   iconModel: string | null
+  iconUrl?: string
   background: string
   color: string
   border: string
+}
+
+export interface AILogoPreset {
+  id: string
+  label: string
+  url: string
 }
 
 type ProviderBrandPreset = Omit<ProviderBrandInfo, 'label'> & {
   label?: string
 }
 
+const aiLogoCDNBase = 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light'
+
+export const aiLogoPresets: AILogoPreset[] = [
+  { id: 'openai', label: 'OpenAI', url: `${aiLogoCDNBase}/openai.png` },
+  { id: 'anthropic', label: 'Anthropic', url: `${aiLogoCDNBase}/anthropic.png` },
+  { id: 'claude', label: 'Claude', url: `${aiLogoCDNBase}/claude.png` },
+  { id: 'gemini', label: 'Gemini', url: `${aiLogoCDNBase}/gemini.png` },
+  { id: 'google', label: 'Google', url: `${aiLogoCDNBase}/google.png` },
+  { id: 'deepseek', label: 'DeepSeek', url: `${aiLogoCDNBase}/deepseek.png` },
+  { id: 'doubao', label: 'Doubao', url: `${aiLogoCDNBase}/doubao.png` },
+  { id: 'openrouter', label: 'OpenRouter', url: `${aiLogoCDNBase}/openrouter.png` },
+  { id: 'mistral', label: 'Mistral', url: `${aiLogoCDNBase}/mistral.png` },
+  { id: 'qwen', label: 'Qwen', url: `${aiLogoCDNBase}/qwen.png` },
+  { id: 'cohere', label: 'Cohere', url: `${aiLogoCDNBase}/cohere.png` },
+  { id: 'perplexity', label: 'Perplexity', url: `${aiLogoCDNBase}/perplexity.png` },
+  { id: 'moonshot', label: 'Moonshot', url: `${aiLogoCDNBase}/moonshot.png` },
+  { id: 'zhipu', label: 'Zhipu', url: `${aiLogoCDNBase}/zhipu.png` },
+  { id: 'grok', label: 'Grok', url: `${aiLogoCDNBase}/grok.png` },
+  { id: 'cloudflare', label: 'Cloudflare', url: `${aiLogoCDNBase}/cloudflare.png` },
+  { id: 'baidu', label: 'Baidu', url: `${aiLogoCDNBase}/baidu.png` },
+  { id: 'spark', label: 'Spark', url: `${aiLogoCDNBase}/spark.png` },
+  { id: 'tencent', label: 'Tencent', url: `${aiLogoCDNBase}/tencent.png` },
+  { id: 'minimax', label: 'MiniMax', url: `${aiLogoCDNBase}/minimax.png` },
+  { id: 'jina', label: 'Jina', url: `${aiLogoCDNBase}/jina.png` },
+  { id: 'midjourney', label: 'Midjourney', url: `${aiLogoCDNBase}/midjourney.png` },
+  { id: 'suno', label: 'Suno', url: `${aiLogoCDNBase}/suno.png` },
+  { id: 'dify', label: 'Dify', url: `${aiLogoCDNBase}/dify.png` },
+  { id: 'coze', label: 'Coze', url: `${aiLogoCDNBase}/coze.png` },
+]
+
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
-  { background: '#EFF6FF', color: '#2563EB', border: '#BFDBFE' },
+  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   { background: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
   { background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
-  { background: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' },
+  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   { background: '#F0FDFA', color: '#0F766E', border: '#99F6E4' },
   { background: '#FEFCE8', color: '#A16207', border: '#FEF08A' },
   { background: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
@@ -24,7 +61,7 @@ const fallbackPalettes = [
 const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   [
     ['text-completion-openai', 'openai', 'azure-openai'],
-    { iconModel: 'gpt', label: 'AI', background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
+    { iconModel: 'gpt', label: 'AI', iconUrl: `${aiLogoCDNBase}/openai.png`, background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
   ],
   [
     ['anthropic', 'claude'],
@@ -32,7 +69,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['gemini', 'google-ai-studio'],
-    { iconModel: 'gemini', label: 'G', background: '#EAF2FF', color: '#2563EB', border: '#B7D4FF' },
+    { iconModel: 'gemini', label: 'G', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   ],
   [
     ['antigravity'],
@@ -112,7 +149,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['midjourney'],
-    { iconModel: 'midjourney', label: 'MJ', background: '#F5F3FF', color: '#7C3AED', border: '#DDD6FE' },
+    { iconModel: 'midjourney', label: 'MJ', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   ],
   [
     ['suno'],
@@ -211,6 +248,11 @@ function findPreset(value: string, presets: Array<[string[], ProviderBrandPreset
   return null
 }
 
+function findLogoPreset(value: string): AILogoPreset | null {
+  if (!value) return null
+  return aiLogoPresets.find((preset) => value.includes(preset.id)) || null
+}
+
 function fallbackLabel(value: string): string {
   const parts = value.split(/[^a-z0-9]+/).filter(Boolean)
   if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
@@ -231,10 +273,25 @@ function toInfo(preset: ProviderBrandPreset, labelSource: string): ProviderBrand
   return {
     label: preset.label || fallbackLabel(labelSource),
     iconModel: preset.iconModel,
+    iconUrl: preset.iconUrl || findLogoPreset(labelSource)?.url,
     background: preset.background,
     color: preset.color,
     border: preset.border,
   }
+}
+
+export function aiLogoUrlForProvider(provider?: string | null, model?: string | null): string {
+  const normalizedProvider = normalize(provider)
+  const normalizedModel = normalize(model)
+  const providerPreset = findPreset(normalizedProvider, providerBrandMap)
+  const modelPreset = findPreset(normalizedModel, modelBrandMap)
+  const iconModel = providerPreset?.iconModel || modelPreset?.iconModel || ''
+  return (
+    findLogoPreset(normalizedProvider)?.url ||
+    findLogoPreset(normalizedModel)?.url ||
+    findLogoPreset(normalize(iconModel))?.url ||
+    ''
+  )
 }
 
 export function providerBrandInfo(provider?: string | null, model?: string | null): ProviderBrandInfo {
@@ -246,7 +303,11 @@ export function providerBrandInfo(provider?: string | null, model?: string | nul
   const modelPreset = findPreset(normalizedModel, modelBrandMap)
   if (modelPreset) {
     return toInfo(
-      { ...modelPreset, iconModel: normalizedModel || modelPreset.iconModel },
+      {
+        ...modelPreset,
+        iconModel: normalizedModel || modelPreset.iconModel,
+        iconUrl: aiLogoUrlForProvider(normalizedProvider, normalizedModel),
+      },
       normalizedModel,
     )
   }
@@ -256,6 +317,7 @@ export function providerBrandInfo(provider?: string | null, model?: string | nul
   return {
     label: fallbackLabel(labelSource),
     iconModel: null,
+    iconUrl: aiLogoUrlForProvider(normalizedProvider, normalizedModel),
     ...palette,
   }
 }

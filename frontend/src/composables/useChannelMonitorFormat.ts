@@ -22,7 +22,7 @@ import {
   STATUS_ERROR,
 } from '@/constants/channelMonitor'
 
-const NEUTRAL_BADGE = 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-300'
+const NEUTRAL_BADGE = 'semantic-badge semantic-badge--neutral'
 
 /** Availability HSL hue multiplier: 0%=red(0) / 50%=yellow(60) / 100%=green(120). */
 const HSL_HUE_PER_PERCENT = 1.2
@@ -45,12 +45,13 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+        return 'semantic-badge semantic-badge--success'
       case STATUS_DEGRADED:
-        return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+        return 'semantic-badge semantic-badge--warning'
       case STATUS_FAILED:
-        return 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
+        return 'semantic-badge semantic-badge--danger'
       case STATUS_ERROR:
+        return 'semantic-badge semantic-badge--danger'
       default:
         return NEUTRAL_BADGE
     }
@@ -66,11 +67,11 @@ export function useChannelMonitorFormat() {
   function providerBadgeClass(p: Provider | string): string {
     switch (p) {
       case PROVIDER_OPENAI:
-        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+        return 'semantic-badge semantic-badge--provider-openai'
       case PROVIDER_ANTHROPIC:
-        return 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
+        return 'semantic-badge semantic-badge--provider-anthropic'
       case PROVIDER_GEMINI:
-        return 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+        return 'semantic-badge semantic-badge--provider-gemini'
       default:
         return NEUTRAL_BADGE
     }

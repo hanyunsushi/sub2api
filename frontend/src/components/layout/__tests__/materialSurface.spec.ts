@@ -97,6 +97,7 @@ describe('right-side material surfaces', () => {
     expect(materialSystemBlock).not.toContain('background: var(--atelier-material-butter) !important;')
     expect(styleSource).not.toContain('background: var(--atelier-butter-soft);')
     expect(styleSource).not.toContain('color: var(--atelier-butter-dark);')
+    expect(styleSource).not.toContain('color: var(--atelier-butter-dark) !important;')
     expect(materialSystemBlock).not.toContain('background: var(--atelier-material-butter) !important;')
     expect(materialSystemBlock).not.toContain('--atelier-card-accent: var(--atelier-butter);')
     expect(styleSource).toContain('.home-ascii-shell')

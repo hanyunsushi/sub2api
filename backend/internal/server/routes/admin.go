@@ -508,6 +508,12 @@ func registerBackupRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		backup.PUT("/s3-config", h.Admin.Backup.UpdateS3Config)
 		backup.POST("/s3-config/test", h.Admin.Backup.TestS3Connection)
 
+		// Cloudflare AI Search 后端配置
+		backup.GET("/ai-search-config", h.Admin.Backup.GetAISearchConfig)
+		backup.PUT("/ai-search-config", h.Admin.Backup.UpdateAISearchConfig)
+		backup.POST("/ai-search-config/test", h.Admin.Backup.TestAISearchConfig)
+		backup.POST("/ai-search-sync", h.Admin.Backup.SyncAISearchKnowledge)
+
 		// 定时备份配置
 		backup.GET("/schedule", h.Admin.Backup.GetSchedule)
 		backup.PUT("/schedule", h.Admin.Backup.UpdateSchedule)

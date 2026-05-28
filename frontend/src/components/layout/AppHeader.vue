@@ -705,7 +705,7 @@ watch(
 }
 
 .user-menu-trigger:hover {
-  background: var(--atelier-butter-soft);
+  background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
 }
 
@@ -741,7 +741,7 @@ watch(
 .balance-chip-system:hover,
 .balance-chip-buzz:hover,
 .balance-chip-tcdmx:hover {
-  background: var(--atelier-butter-soft);
+  background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
 }
 

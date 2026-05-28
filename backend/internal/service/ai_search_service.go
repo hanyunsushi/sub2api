@@ -40,13 +40,19 @@ type AISearchResult struct {
 }
 
 type AISearchService struct {
-	cfg    *config.Config
-	client *req.Client
+	cfg       *config.Config
+	configSvc *AISearchConfigService
+	client    *req.Client
 }
 
-func NewAISearchService(cfg *config.Config) *AISearchService {
+func NewAISearchService(cfg *config.Config, configSvc ...*AISearchConfigService) *AISearchService {
+	var aiSearchConfigSvc *AISearchConfigService
+	if len(configSvc) > 0 {
+		aiSearchConfigSvc = configSvc[0]
+	}
 	return &AISearchService{
-		cfg: cfg,
+		cfg:       cfg,
+		configSvc: aiSearchConfigSvc,
 		client: req.C().
 			SetTimeout(12*time.Second).
 			SetCommonHeader("Accept", "application/json").
@@ -61,6 +67,18 @@ func (s *AISearchService) Search(ctx context.Context, query string) (*AISearchRe
 	}
 
 	settings := s.settings()
+	return s.searchWithSettings(ctx, settings, query)
+}
+
+func (s *AISearchService) SearchWithConfig(ctx context.Context, query string, cfg AISearchBackendConfig) (*AISearchResponse, error) {
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return nil, infraerrors.BadRequest("AI_SEARCH_QUERY_REQUIRED", "AI Search query is required")
+	}
+	return s.searchWithSettings(ctx, aiSearchSettingsFromConfig(normalizeAISearchBackendConfig(&cfg)), query)
+}
+
+func (s *AISearchService) searchWithSettings(ctx context.Context, settings aiSearchSettings, query string) (*AISearchResponse, error) {
 	if !settings.configured() {
 		return nil, infraerrors.ServiceUnavailable("AI_SEARCH_NOT_CONFIGURED", "AI Search is not configured")
 	}
@@ -190,20 +208,21 @@ func (s *AISearchService) settings() aiSearchSettings {
 		return aiSearchSettings{}
 	}
 
-	cf := s.cfg.CloudflareAI
-	token := strings.TrimSpace(cf.AISearchAPIToken)
+	cf := aiSearchConfigForService(s.cfg, s.configSvc)
+	return aiSearchSettingsFromConfig(&cf)
+}
+
+func aiSearchSettingsFromConfig(cf *AISearchBackendConfig) aiSearchSettings {
+	if cf == nil {
+		return aiSearchSettings{}
+	}
+	token := strings.TrimSpace(cf.APIToken)
 	accountID := strings.TrimSpace(cf.AccountID)
-	publicEndpoint := strings.TrimSpace(cf.AISearchPublicEndpointURL)
-	publicChatEndpoint := strings.TrimSpace(cf.AISearchPublicChatEndpointURL)
-	origin := strings.TrimRight(strings.TrimSpace(cf.AISearchPublicOrigin), "/")
-	instanceID := strings.TrimSpace(cf.AISearchInstanceID)
-	if instanceID == "" {
-		instanceID = defaultAISearchInstanceID
-	}
-	baseURL := strings.TrimRight(strings.TrimSpace(cf.AISearchAPIBaseURL), "/")
-	if baseURL == "" {
-		baseURL = defaultAISearchAPIBaseURL
-	}
+	publicEndpoint := strings.TrimSpace(cf.PublicEndpointURL)
+	publicChatEndpoint := strings.TrimSpace(cf.PublicChatEndpointURL)
+	origin := strings.TrimRight(strings.TrimSpace(cf.PublicOrigin), "/")
+	instanceID := firstNonBlank(cf.InstanceID, defaultAISearchInstanceID)
+	baseURL := firstNonBlank(strings.TrimRight(strings.TrimSpace(cf.APIBaseURL), "/"), defaultAISearchAPIBaseURL)
 	if token != "" && accountID != "" {
 		basePath := fmt.Sprintf("%s/accounts/%s/ai-search/instances/%s", baseURL, url.PathEscape(accountID), url.PathEscape(instanceID))
 		return aiSearchSettings{
@@ -224,6 +243,13 @@ func (s *AISearchService) settings() aiSearchSettings {
 		}
 	}
 	return aiSearchSettings{}
+}
+
+func aiSearchConfigForService(cfg *config.Config, configSvc *AISearchConfigService) AISearchBackendConfig {
+	if configSvc != nil {
+		return configSvc.ResolveConfig(context.Background())
+	}
+	return *NewAISearchConfigService(nil, cfg, nil).defaults()
 }
 
 func (s aiSearchSettings) configured() bool {

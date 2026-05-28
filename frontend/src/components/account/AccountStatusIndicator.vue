@@ -2,13 +2,13 @@
   <div class="flex items-center gap-2">
     <!-- Rate Limit Display (429) - Two-line layout -->
     <div v-if="isRateLimited" class="flex flex-col items-center gap-1">
-      <span class="badge text-xs badge-warning">{{ t('admin.accounts.status.rateLimited') }}</span>
+      <span class="badge semantic-badge semantic-badge--warning text-xs">{{ t('admin.accounts.status.rateLimited') }}</span>
       <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ rateLimitResumeText }}</span>
     </div>
 
     <!-- Overload Display (529) - Two-line layout -->
     <div v-else-if="isOverloaded" class="flex flex-col items-center gap-1">
-      <span class="badge text-xs badge-danger">{{ t('admin.accounts.status.overloaded') }}</span>
+      <span class="badge semantic-badge semantic-badge--danger text-xs">{{ t('admin.accounts.status.overloaded') }}</span>
       <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ overloadCountdown }}</span>
     </div>
 
@@ -314,21 +314,23 @@ const overloadCountdown = computed(() => {
 // Computed: status badge class
 const statusClass = computed(() => {
   if (hasError.value) {
-    return 'badge-danger'
+    return 'semantic-badge semantic-badge--danger'
   }
   if (isTempUnschedulable.value) {
-    return 'badge-warning'
+    return 'semantic-badge semantic-badge--warning'
   }
   if (props.account.status !== 'active') {
-    return props.account.status === 'error' ? 'badge-danger' : 'badge-gray'
+    return props.account.status === 'error'
+      ? 'semantic-badge semantic-badge--danger'
+      : 'semantic-badge semantic-badge--neutral'
   }
   if (isQuotaExceeded.value) {
-    return 'badge-warning'
+    return 'semantic-badge semantic-badge--warning'
   }
   if (!props.account.schedulable) {
-    return 'badge-gray'
+    return 'semantic-badge semantic-badge--neutral'
   }
-  return 'badge-success'
+  return 'semantic-badge semantic-badge--success'
 })
 
 // Computed: status text

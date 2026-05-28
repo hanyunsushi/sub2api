@@ -125,7 +125,8 @@
             <tbody v-else class="global-pricing-card-body">
               <tr v-for="item in filteredItems" :key="item.model" class="pricing-row">
                 <td class="brand-sticky-col brand-cell" :data-card-label="t('globalPricing.columns.brand')">
-                  <ProviderBrandIcon :provider="item.provider" :model="item.model" />
+                <!-- uses shared AI logo CDN images -->
+                <ProviderBrandIcon :provider="item.provider" :model="item.model" />
                   <span class="sr-only">{{ item.provider || item.model }}</span>
                 </td>
                 <td class="model-sticky-col" :data-card-label="t('globalPricing.columns.model')">

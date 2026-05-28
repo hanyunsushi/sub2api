@@ -54,6 +54,97 @@
         </div>
       </div>
 
+      <!-- Cloudflare AI Search Config -->
+      <div class="card p-6">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white">
+              {{ t('admin.backup.aiSearch.title') }}
+            </h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {{ t('admin.backup.aiSearch.description') }}
+              <span v-if="apiTokenConfigured" class="ml-2 semantic-badge semantic-badge--success">
+                {{ t('admin.backup.aiSearch.tokenConfigured') }}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.accountId') }}</label>
+            <input v-model="aiSearchForm.account_id" class="input w-full" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.apiToken') }}</label>
+            <input v-model="aiSearchForm.api_token" type="password" class="input w-full" :placeholder="apiTokenConfigured ? t('admin.backup.aiSearch.secretConfigured') : ''" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.instanceId') }}</label>
+            <input v-model="aiSearchForm.instance_id" class="input w-full" placeholder="ai-search" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.namespace') }}</label>
+            <input v-model="aiSearchForm.namespace" class="input w-full" placeholder="default" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.itemKey') }}</label>
+            <input v-model="aiSearchForm.item_key" class="input w-full" placeholder="sub2api-user-knowledge.md" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.apiBaseUrl') }}</label>
+            <input v-model="aiSearchForm.api_base_url" class="input w-full" placeholder="https://api.cloudflare.com/client/v4" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.publicEndpointUrl') }}</label>
+            <input v-model="aiSearchForm.public_endpoint_url" class="input w-full" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.publicChatEndpointUrl') }}</label>
+            <input v-model="aiSearchForm.public_chat_endpoint_url" class="input w-full" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.publicOrigin') }}</label>
+            <input v-model="aiSearchForm.public_origin" class="input w-full" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.syncCron') }}</label>
+            <input v-model="aiSearchForm.sync_cron" class="input w-full" placeholder="20 3 */3 * *" />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.backup.aiSearch.syncCronHint') }}</p>
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.syncSourcePath') }}</label>
+            <input v-model="aiSearchForm.sync_source_path" class="input w-full" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.syncKnowledgePath') }}</label>
+            <input v-model="aiSearchForm.sync_knowledge_path" class="input w-full" />
+          </div>
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input v-model="aiSearchForm.sync_enabled" type="checkbox" />
+            <span>{{ t('admin.backup.aiSearch.syncEnabled') }}</span>
+          </label>
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input v-model="aiSearchForm.sync_wait_for_completion" type="checkbox" />
+            <span>{{ t('admin.backup.aiSearch.waitForCompletion') }}</span>
+          </label>
+          <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 md:col-span-2">
+            <input v-model="aiSearchForm.sync_delete_legacy_seed_items" type="checkbox" />
+            <span>{{ t('admin.backup.aiSearch.deleteLegacyItems') }}</span>
+          </label>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button type="button" class="btn btn-secondary btn-sm" :disabled="testingAISearch" @click="testAISearchConfig">
+            {{ testingAISearch ? t('common.loading') : t('admin.backup.aiSearch.testConnection') }}
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" :disabled="syncingAISearch" @click="syncAISearchKnowledge">
+            {{ syncingAISearch ? t('common.loading') : t('admin.backup.aiSearch.syncNow') }}
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" :disabled="savingAISearch" @click="saveAISearchConfig">
+            {{ savingAISearch ? t('common.loading') : t('common.save') }}
+          </button>
+        </div>
+      </div>
+
       <!-- Schedule Config -->
       <div class="card p-6">
         <div class="mb-4">
@@ -283,7 +374,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api'
 import { useAppStore } from '@/stores'
-import type { BackupS3Config, BackupScheduleConfig, BackupRecord } from '@/api/admin/backup'
+import type { AISearchBackendConfig, BackupS3Config, BackupScheduleConfig, BackupRecord } from '@/api/admin/backup'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -301,6 +392,29 @@ const s3Form = ref<BackupS3Config>({
 const s3SecretConfigured = ref(false)
 const savingS3 = ref(false)
 const testingS3 = ref(false)
+
+// AI Search config
+const aiSearchForm = ref<AISearchBackendConfig>({
+  account_id: '',
+  api_token: '',
+  api_base_url: 'https://api.cloudflare.com/client/v4',
+  public_endpoint_url: '',
+  public_chat_endpoint_url: '',
+  public_origin: '',
+  instance_id: 'ai-search',
+  namespace: 'default',
+  item_key: 'sub2api-user-knowledge.md',
+  sync_enabled: true,
+  sync_cron: '20 3 */3 * *',
+  sync_source_path: '/app/resources/ai-search/sub2api-codex-custom-plan.md',
+  sync_knowledge_path: '/app/resources/ai-search/sub2api-user-knowledge.md',
+  sync_wait_for_completion: true,
+  sync_delete_legacy_seed_items: true,
+})
+const apiTokenConfigured = ref(false)
+const savingAISearch = ref(false)
+const testingAISearch = ref(false)
+const syncingAISearch = ref(false)
 
 // Schedule config
 const scheduleForm = ref<BackupScheduleConfig>({
@@ -482,6 +596,74 @@ async function testS3() {
   }
 }
 
+async function loadAISearchConfig() {
+  try {
+    const cfg = await adminAPI.backup.getAISearchConfig()
+    apiTokenConfigured.value = Boolean(cfg.api_token_configured)
+    aiSearchForm.value = {
+      account_id: cfg.account_id || '',
+      api_token: '',
+      api_base_url: cfg.api_base_url || 'https://api.cloudflare.com/client/v4',
+      public_endpoint_url: cfg.public_endpoint_url || '',
+      public_chat_endpoint_url: cfg.public_chat_endpoint_url || '',
+      public_origin: cfg.public_origin || '',
+      instance_id: cfg.instance_id || 'ai-search',
+      namespace: cfg.namespace || 'default',
+      item_key: cfg.item_key || 'sub2api-user-knowledge.md',
+      sync_enabled: cfg.sync_enabled,
+      sync_cron: cfg.sync_cron || '20 3 */3 * *',
+      sync_source_path: cfg.sync_source_path || '/app/resources/ai-search/sub2api-codex-custom-plan.md',
+      sync_knowledge_path: cfg.sync_knowledge_path || '/app/resources/ai-search/sub2api-user-knowledge.md',
+      sync_wait_for_completion: cfg.sync_wait_for_completion,
+      sync_delete_legacy_seed_items: cfg.sync_delete_legacy_seed_items,
+    }
+  } catch (error) {
+    appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
+  }
+}
+
+async function saveAISearchConfig() {
+  savingAISearch.value = true
+  try {
+    await adminAPI.backup.updateAISearchConfig(aiSearchForm.value)
+    appStore.showSuccess(t('admin.backup.aiSearch.saved'))
+    await loadAISearchConfig()
+  } catch (error) {
+    appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
+  } finally {
+    savingAISearch.value = false
+  }
+}
+
+async function testAISearchConfig() {
+  testingAISearch.value = true
+  try {
+    const result = await adminAPI.backup.testAISearchConfig(aiSearchForm.value)
+    if (result.ok) {
+      appStore.showSuccess(result.message || t('admin.backup.aiSearch.testSuccess'))
+    } else {
+      appStore.showError(result.message || t('admin.backup.aiSearch.testFailed'))
+    }
+    await loadAISearchConfig()
+  } catch (error) {
+    appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
+  } finally {
+    testingAISearch.value = false
+  }
+}
+
+async function syncAISearchKnowledge() {
+  syncingAISearch.value = true
+  try {
+    const result = await adminAPI.backup.syncAISearchKnowledge()
+    appStore.showSuccess(result.message || t('admin.backup.aiSearch.syncStarted'))
+  } catch (error) {
+    appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
+  } finally {
+    syncingAISearch.value = false
+  }
+}
+
 async function loadSchedule() {
   try {
     const cfg = await adminAPI.backup.getSchedule()
@@ -605,7 +787,7 @@ function formatDate(value?: string): string {
 
 onMounted(async () => {
   document.addEventListener('visibilitychange', handleVisibilityChange)
-  await Promise.all([loadS3Config(), loadSchedule(), loadBackups()])
+  await Promise.all([loadS3Config(), loadAISearchConfig(), loadSchedule(), loadBackups()])
 
   // 如果有正在 running 的备份，恢复轮询
   const runningBackup = backups.value.find(r => r.status === 'running')

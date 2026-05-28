@@ -306,7 +306,7 @@
           </template>
 
           <template #cell-role="{ value }">
-            <span :class="['badge', value === 'admin' ? 'badge-purple' : 'badge-gray']">
+            <span :class="userRoleBadgeClass(value)">
               {{ t('admin.users.roles.' + value) }}
             </span>
           </template>
@@ -555,13 +555,7 @@
 
           <template #cell-status="{ value }">
             <div class="flex items-center gap-1.5">
-              <span
-                :class="[
-                  'inline-block h-2 w-2 rounded-full',
-                  value === 'active' ? 'status-dot-active' : 'status-dot-disabled'
-                ]"
-              ></span>
-              <span class="text-sm text-gray-700 dark:text-gray-300">
+              <span :class="userStatusBadgeClass(value)">
                 {{ value === 'active' ? t('common.active') : t('admin.users.disabled') }}
               </span>
             </div>
@@ -834,6 +828,18 @@ const getAttributeValue = (userId: number, attrId: number): string => {
 
   return value
 }
+
+const userRoleBadgeClass = (role: string) => [
+  'badge',
+  'semantic-badge',
+  role === 'admin' ? 'semantic-badge--info' : 'semantic-badge--neutral'
+]
+
+const userStatusBadgeClass = (status: string) => [
+  'badge',
+  'semantic-badge',
+  status === 'active' ? 'semantic-badge--success' : 'semantic-badge--danger'
+]
 
 // All possible columns (for column settings)
 const allColumns = computed<Column[]>(() => [
