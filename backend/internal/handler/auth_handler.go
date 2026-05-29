@@ -714,6 +714,7 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	}
 	h.consumePendingOAuthSessionOnLogout(c)
 	clearOAuthLogoutCookies(c)
+	middleware2.ClearAISearchPublicProxyAccessTokenCookie(c.Writer, isRequestHTTPS(c))
 
 	response.Success(c, LogoutResponse{
 		Message: "Logged out successfully",
