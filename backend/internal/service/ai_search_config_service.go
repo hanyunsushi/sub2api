@@ -32,6 +32,13 @@ type AISearchBackendConfig struct {
 	SyncDeleteLegacySeedItems bool   `json:"sync_delete_legacy_seed_items"`
 }
 
+type AISearchSnippetConfig struct {
+	Configured bool   `json:"configured"`
+	APIURL     string `json:"api_url"`
+	InstanceID string `json:"instance_id"`
+	Namespace  string `json:"namespace"`
+}
+
 type aiSearchBackendConfigRecord struct {
 	AccountID                 string `json:"account_id"`
 	APIToken                  string `json:"api_token,omitempty"`
@@ -137,6 +144,18 @@ func (s *AISearchConfigService) MergeWithStoredSecret(ctx context.Context, cfg A
 	return *normalized
 }
 
+func (s *AISearchConfigService) GetPublicSnippetConfig(ctx context.Context) (*AISearchSnippetConfig, error) {
+	resolvedConfig := s.ResolveConfig(ctx)
+	resolved := normalizeAISearchBackendConfig(&resolvedConfig)
+	apiURL := publicAISearchBaseURL(resolved.PublicEndpointURL, resolved.PublicChatEndpointURL)
+	return &AISearchSnippetConfig{
+		Configured: apiURL != "",
+		APIURL:     apiURL,
+		InstanceID: resolved.InstanceID,
+		Namespace:  resolved.Namespace,
+	}, nil
+}
+
 func (s *AISearchConfigService) ApplyRuntimeConfig(cfg AISearchBackendConfig) {
 	if s == nil || s.cfg == nil {
 		return
@@ -157,6 +176,25 @@ func (s *AISearchConfigService) ApplyRuntimeConfig(cfg AISearchBackendConfig) {
 	s.cfg.CloudflareAI.AISearchSyncKnowledgePath = normalized.SyncKnowledgePath
 	s.cfg.CloudflareAI.AISearchSyncWaitForCompletion = normalized.SyncWaitForCompletion
 	s.cfg.CloudflareAI.AISearchSyncDeleteLegacySeedItems = normalized.SyncDeleteLegacySeedItems
+}
+
+func publicAISearchBaseURL(endpoints ...string) string {
+	for _, endpoint := range endpoints {
+		raw := strings.TrimSpace(endpoint)
+		if raw == "" {
+			continue
+		}
+		raw = strings.TrimRight(raw, "/")
+		switch {
+		case strings.HasSuffix(raw, "/chat/completions"):
+			return strings.TrimSuffix(raw, "/chat/completions")
+		case strings.HasSuffix(raw, "/search"):
+			return strings.TrimSuffix(raw, "/search")
+		default:
+			return raw
+		}
+	}
+	return ""
 }
 
 func (s *AISearchConfigService) defaults() *AISearchBackendConfig {

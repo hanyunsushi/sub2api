@@ -103,8 +103,8 @@ func ProvideGlobalPricingHandler(pricingService *service.PricingService) *Global
 	return NewGlobalPricingHandler(pricingService)
 }
 
-func ProvideAISearchHandler(aiSearchService *service.AISearchService) *AISearchHandler {
-	return NewAISearchHandler(aiSearchService)
+func ProvideAISearchHandler(aiSearchService *service.AISearchService, aiSearchConfigService *service.AISearchConfigService) *AISearchHandler {
+	return NewAISearchHandler(aiSearchService, aiSearchConfigService)
 }
 
 // ProvideHandlers creates the Handlers struct
