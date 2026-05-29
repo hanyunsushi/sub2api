@@ -86,7 +86,7 @@
               placeholder="Ask AI"
               theme="auto"
               hide-branding="true"
-              chat-query-rewrite="true"
+              chat-query-rewrite='{"enabled":true}'
             />
             <div v-else class="ai-search-state ai-search-error">
               AI Search unavailable
