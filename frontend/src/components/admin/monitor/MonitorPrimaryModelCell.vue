@@ -1,5 +1,6 @@
 <template>
   <div class="flex items-center gap-2">
+    <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" />
     <span class="text-sm text-gray-900 dark:text-gray-100">{{ row.primary_model }}</span>
     <HelpTooltip>
       <template #trigger>
@@ -60,6 +61,7 @@
 import { useI18n } from 'vue-i18n'
 import type { ChannelMonitor } from '@/api/admin/channelMonitor'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 
 defineProps<{

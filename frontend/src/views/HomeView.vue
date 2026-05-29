@@ -483,6 +483,7 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t } = useI18n()
 
@@ -525,8 +526,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 // Initialize theme
 function initTheme() {
-  document.documentElement.classList.remove('dark')
-  localStorage.setItem('theme', 'light')
+  initAppearanceTheme()
 }
 
 function showRevealItems(items: HTMLElement[]) {

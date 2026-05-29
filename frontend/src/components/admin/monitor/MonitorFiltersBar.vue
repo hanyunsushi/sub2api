@@ -23,7 +23,30 @@
         :placeholder="t('admin.channelMonitor.allProviders')"
         class="w-44"
         @change="$emit('reload')"
-      />
+      >
+        <template #selected="{ option }">
+          <span class="flex min-w-0 items-center gap-2">
+            <ProviderBrandIcon
+              v-if="option?.value"
+              :provider="String(option.value)"
+              :model="String(option.value)"
+              class="!h-5 !w-5 !rounded"
+            />
+            <span class="truncate">{{ option?.label ?? t('admin.channelMonitor.allProviders') }}</span>
+          </span>
+        </template>
+        <template #option="{ option }">
+          <span class="flex min-w-0 items-center gap-2">
+            <ProviderBrandIcon
+              v-if="option.value"
+              :provider="String(option.value)"
+              :model="String(option.value)"
+              class="!h-5 !w-5 !rounded"
+            />
+            <span class="select-option-label">{{ option.label }}</span>
+          </span>
+        </template>
+      </Select>
 
       <Select
         v-model="enabled"
@@ -65,6 +88,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Provider } from '@/api/admin/channelMonitor'
 import Select from '@/components/common/Select.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import {
   PROVIDER_OPENAI,

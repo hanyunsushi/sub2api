@@ -14,10 +14,11 @@
           type="button"
           role="tab"
           :aria-selected="activeProvider === tab.value"
-          class="px-4 py-2 text-sm font-medium transition-colors"
+          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors"
           :class="tabClass(tab.value)"
           @click="activeProvider = tab.value"
         >
+          <ProviderBrandIcon :provider="tab.value" :model="tab.value" />
           {{ tab.label }}
           <span
             v-if="countByProvider[tab.value] > 0"
@@ -135,10 +136,11 @@
             v-for="opt in providerTabs"
             :key="opt.value"
             type="button"
-            class="rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
+            class="inline-flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="form.provider = opt.value"
           >
+            <ProviderBrandIcon :provider="opt.value" :model="opt.value" />
             {{ opt.label }}
           </button>
         </div>
@@ -240,6 +242,7 @@ import type {
 import type { ChannelMonitorTemplate } from '@/api/admin/channelMonitorTemplate'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import MonitorAdvancedRequestConfig from '@/components/admin/monitor/MonitorAdvancedRequestConfig.vue'
 import MonitorTemplateApplyPickerDialog from '@/components/admin/monitor/MonitorTemplateApplyPickerDialog.vue'

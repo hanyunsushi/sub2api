@@ -27,13 +27,17 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
         self.assertIn("右上角有常驻的 `ask ai` 搜索框", markdown)
         self.assertIn("每 3 天按用户版知识文档重新上传一次", markdown)
-        self.assertIn("后端会根据最高相关知识块生成简短回答", markdown)
+        self.assertIn("官方 search bar 组件展示相关结果和来源片段", markdown)
         self.assertIn("管理员后台提供 Codex/CPA 账号管理能力", markdown)
         self.assertEqual([], generator.validate_public_markdown(markdown))
         self.assertNotIn("/Users/hinaw", markdown)
         self.assertNotIn("sha256:", markdown)
         self.assertNotIn("Secret Access Key", markdown)
         self.assertNotIn("codex/production-running", markdown)
+        self.assertNotIn("本机路径", markdown)
+        self.assertNotIn("提交记录", markdown)
+        self.assertNotIn("镜像信息", markdown)
+        self.assertNotIn("部署命令", markdown)
 
     def test_uses_r2_backup_time_not_ai_search_sync_time(self):
         source = """

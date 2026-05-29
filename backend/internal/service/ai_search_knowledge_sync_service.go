@@ -286,7 +286,7 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 		"# Sub2API 用户知识库",
 		"",
 		"本文件由 Sub2API canonical 运维文档生成，只保留适合用户和管理员搜索的产品知识、FAQ 和操作说明。",
-		"本文件故意不包含本机路径、提交记录、镜像信息、部署命令、访问凭据或其他开发运维细节。",
+		"本文件面向网页搜索和问答场景，只描述用户可见功能、数据范围和常见问题。",
 		"",
 	}
 
@@ -298,7 +298,7 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 			"浏览器只请求 Sub2API 后端接口，后端再查询 Cloudflare AI Search；Cloudflare 凭据不会暴露给前端。",
 			"实例名称使用 `ai-search`，界面文案使用 `ask ai`，不使用 Help 作为名称。",
 			"知识库由 Sub2API 后端通过 Cloudflare API 每 3 天按用户版知识文档重新上传一次；同步前会删除同名旧索引和遗留临时索引，避免过期内容混入搜索。",
-			"登录用户的搜索会优先使用 Cloudflare AI Search 的 chat completions 生成自然语言回答，并附带来源知识块；如果上游回答接口不可用或回答与命中知识块矛盾，后端会根据最高相关知识块生成简短回答。",
+			"登录用户的搜索使用 Cloudflare 官方 search bar 组件展示相关结果和来源片段；它不是聊天弹窗，不会把结果包装成多轮自然语言回答。",
 			"",
 		)
 	}
