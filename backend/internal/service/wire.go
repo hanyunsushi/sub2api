@@ -438,6 +438,13 @@ func ProvideAPIKeyService(
 	return svc
 }
 
+// ProvideAISearchService wires the runtime AI Search service with the persisted
+// Cloudflare configuration provider. Tests can still call NewAISearchService
+// without a config service when they only need environment-based settings.
+func ProvideAISearchService(cfg *config.Config, aiSearchConfigService *AISearchConfigService) *AISearchService {
+	return NewAISearchService(cfg, aiSearchConfigService)
+}
+
 // ProviderSet is the Wire provider set for all services
 var ProviderSet = wire.NewSet(
 	// Core services
@@ -528,7 +535,7 @@ var ProviderSet = wire.NewSet(
 	NewBuzzBalanceService,
 	NewTCDMXSubscriptionService,
 	NewAISearchConfigService,
-	NewAISearchService,
+	ProvideAISearchService,
 	ProvideAISearchKnowledgeSyncService,
 	ProvidePaymentConfigService,
 	ProvidePaymentService,
