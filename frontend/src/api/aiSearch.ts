@@ -16,7 +16,19 @@ export interface AISearchResponse {
   results: AISearchResult[]
 }
 
+export interface AISearchSnippetConfig {
+  configured: boolean
+  api_url: string
+  instance_id: string
+  namespace: string
+}
+
 export const aiSearchAPI = {
+  async getSnippetConfig(): Promise<AISearchSnippetConfig> {
+    const { data } = await apiClient.get<AISearchSnippetConfig>('/ai-search/snippet-config')
+    return data
+  },
+
   async search(query: string): Promise<AISearchResponse> {
     const trimmed = query.trim()
     const { data } = await apiClient.post<AISearchResponse>('/ai-search/search', { query: trimmed })

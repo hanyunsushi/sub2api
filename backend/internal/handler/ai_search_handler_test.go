@@ -17,6 +17,10 @@ type aiSearchHandlerServiceStub struct {
 	query string
 }
 
+type aiSearchConfigServiceStub struct {
+	config *service.AISearchSnippetConfig
+}
+
 func (s *aiSearchHandlerServiceStub) Search(_ context.Context, query string) (*service.AISearchResponse, error) {
 	s.query = query
 	return &service.AISearchResponse{
@@ -31,6 +35,10 @@ func (s *aiSearchHandlerServiceStub) Search(_ context.Context, query string) (*s
 			Score:   0.8,
 		}},
 	}, nil
+}
+
+func (s *aiSearchConfigServiceStub) GetPublicSnippetConfig(_ context.Context) (*service.AISearchSnippetConfig, error) {
+	return s.config, nil
 }
 
 func TestAISearchHandler_SearchTrimsAndReturnsResults(t *testing.T) {
@@ -76,4 +84,28 @@ func TestAISearchHandler_SearchRejectsBlankQuery(t *testing.T) {
 
 	require.Equal(t, http.StatusBadRequest, rec.Code)
 	require.Contains(t, rec.Body.String(), "AI_SEARCH_QUERY_REQUIRED")
+}
+
+func TestAISearchHandler_SnippetConfigReturnsPublicEndpointWithoutSecret(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h := NewAISearchHandler(&aiSearchHandlerServiceStub{}, &aiSearchConfigServiceStub{
+		config: &service.AISearchSnippetConfig{
+			Configured: true,
+			APIURL:     "https://public.example.com",
+			InstanceID: "ai-search",
+			Namespace:  "default",
+		},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/ai-search/snippet-config", nil)
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Request = req
+
+	h.SnippetConfig(c)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Contains(t, rec.Body.String(), `"api_url":"https://public.example.com"`)
+	require.NotContains(t, rec.Body.String(), "api_token")
+	require.NotContains(t, rec.Body.String(), "account_id")
 }

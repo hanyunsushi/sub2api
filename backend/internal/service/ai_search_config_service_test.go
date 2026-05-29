@@ -111,6 +111,35 @@ func TestAISearchConfigService_MergeWithStoredSecretUsesStoredTokenWhenBlank(t *
 	require.Equal(t, "stored-token", merged.APIToken)
 }
 
+func TestAISearchConfigService_GetPublicSnippetConfigReturnsBaseEndpointOnly(t *testing.T) {
+	repo := newAISearchConfigTestSettingRepo()
+	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
+	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
+		AccountID:             "stored-account",
+		APIToken:              "stored-token",
+		PublicEndpointURL:     "https://public.example.com/search",
+		PublicChatEndpointURL: "https://public.example.com/chat/completions",
+		PublicOrigin:          "https://sub2api.example.com",
+		InstanceID:            "ai-search",
+		Namespace:             "default",
+		ItemKey:               "sub2api-user-knowledge.md",
+	})
+	require.NoError(t, err)
+
+	snippet, err := svc.GetPublicSnippetConfig(context.Background())
+	require.NoError(t, err)
+	require.True(t, snippet.Configured)
+	require.Equal(t, "https://public.example.com", snippet.APIURL)
+	require.Equal(t, "ai-search", snippet.InstanceID)
+	require.Equal(t, "default", snippet.Namespace)
+
+	encoded, err := json.Marshal(snippet)
+	require.NoError(t, err)
+	require.NotContains(t, string(encoded), "stored-token")
+	require.NotContains(t, string(encoded), "account_id")
+	require.NotContains(t, string(encoded), "api_token")
+}
+
 func TestAISearchServicesUseDBConfigOverEnvironmentDefaults(t *testing.T) {
 	repo := newAISearchConfigTestSettingRepo()
 	configSvc := NewAISearchConfigService(repo, &config.Config{

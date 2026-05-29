@@ -14,12 +14,21 @@ type aiSearchService interface {
 	Search(ctx context.Context, query string) (*service.AISearchResponse, error)
 }
 
-type AISearchHandler struct {
-	service aiSearchService
+type aiSearchConfigService interface {
+	GetPublicSnippetConfig(ctx context.Context) (*service.AISearchSnippetConfig, error)
 }
 
-func NewAISearchHandler(service aiSearchService) *AISearchHandler {
-	return &AISearchHandler{service: service}
+type AISearchHandler struct {
+	service   aiSearchService
+	configSvc aiSearchConfigService
+}
+
+func NewAISearchHandler(service aiSearchService, configSvc ...aiSearchConfigService) *AISearchHandler {
+	h := &AISearchHandler{service: service}
+	if len(configSvc) > 0 {
+		h.configSvc = configSvc[0]
+	}
+	return h
 }
 
 type aiSearchRequest struct {
@@ -48,4 +57,17 @@ func (h *AISearchHandler) Search(c *gin.Context) {
 		return
 	}
 	response.Success(c, result)
+}
+
+func (h *AISearchHandler) SnippetConfig(c *gin.Context) {
+	if h.configSvc == nil {
+		response.Success(c, &service.AISearchSnippetConfig{Configured: false})
+		return
+	}
+	cfg, err := h.configSvc.GetPublicSnippetConfig(c.Request.Context())
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, cfg)
 }
