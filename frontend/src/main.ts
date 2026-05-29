@@ -5,17 +5,13 @@ import router from './router'
 import i18n, { initI18n } from './i18n'
 import { useAppStore } from '@/stores/app'
 import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
+import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 import './assets/fonts/local-fonts.css'
 import './style.css'
 
-function initThemeClass() {
-  localStorage.setItem('theme', 'light')
-  document.documentElement.classList.remove('dark')
-}
-
 async function bootstrap() {
   // Apply theme class globally before app mount to keep all routes consistent.
-  initThemeClass()
+  initAppearanceTheme()
 
   const app = createApp(App)
   const pinia = createPinia()

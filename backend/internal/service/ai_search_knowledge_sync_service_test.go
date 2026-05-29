@@ -160,8 +160,13 @@ CPA Codex Buzz TCDMX
 	require.NoError(t, svc.SyncOnce(context.Background()))
 	require.Contains(t, uploadedContent, "右上角有常驻的 `ask ai` 搜索框")
 	require.Contains(t, uploadedContent, "每 3 天按用户版知识文档重新上传一次")
+	require.Contains(t, uploadedContent, "官方 search bar 组件展示相关结果和来源片段")
 	require.NotContains(t, uploadedContent, "/Users/hinaw")
 	require.NotContains(t, uploadedContent, "sha256:")
+	require.NotContains(t, uploadedContent, "本机路径")
+	require.NotContains(t, uploadedContent, "提交记录")
+	require.NotContains(t, uploadedContent, "镜像信息")
+	require.NotContains(t, uploadedContent, "部署命令")
 }
 
 func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMissing(t *testing.T) {

@@ -483,6 +483,12 @@ onUnmounted(() => {
   @apply overflow-hidden;
   --select-surface: var(--atelier-paper-2);
   --select-muted-surface: var(--atelier-paper-2);
+  --select-option-text: var(--atelier-muted);
+  --select-option-hover-surface: var(--atelier-ui-hover-surface);
+  --select-option-hover-text: var(--atelier-ink);
+  --select-option-focused-surface: var(--atelier-ui-hover-surface);
+  --select-option-selected-surface: var(--atelier-blue);
+  --select-option-selected-text: var(--atelier-white);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -514,21 +520,43 @@ onUnmounted(() => {
   @apply text-gray-700 dark:text-gray-300;
   @apply cursor-pointer transition-colors duration-150;
   @apply hover:bg-gray-50 dark:hover:bg-dark-700;
-  color: var(--atelier-muted);
+  color: var(--select-option-text);
   pointer-events: auto !important;
 }
 
 .select-dropdown-portal .select-option-selected {
   @apply bg-primary-50 dark:bg-primary-900/20;
   @apply text-primary-700 dark:text-primary-300;
-  background: var(--atelier-blue-soft);
-  color: var(--atelier-blue);
+  background: var(--select-option-selected-surface);
+  color: var(--select-option-selected-text);
 }
 
 .select-dropdown-portal .select-option-focused {
   @apply bg-gray-100 dark:bg-dark-700;
-  background: var(--atelier-dust-soft);
-  color: var(--atelier-ink);
+  background: var(--select-option-focused-surface);
+  color: var(--select-option-hover-text);
+}
+
+.select-dropdown-portal .select-option:hover {
+  background: var(--select-option-hover-surface);
+  color: var(--select-option-hover-text);
+}
+
+.select-dropdown-portal .select-option-selected.select-option-focused,
+.select-dropdown-portal .select-option-selected:hover {
+  background: var(--select-option-selected-surface);
+  color: var(--select-option-selected-text);
+}
+
+.select-dropdown-portal .select-option-selected :where(.select-option-label, svg),
+.select-dropdown-portal .select-option-selected.select-option-focused :where(.select-option-label, svg),
+.select-dropdown-portal .select-option-selected:hover :where(.select-option-label, svg) {
+  color: var(--select-option-selected-text);
+}
+
+.select-dropdown-portal .select-option-focused :where(.select-option-label, svg),
+.select-dropdown-portal .select-option:hover :where(.select-option-label, svg) {
+  color: var(--select-option-hover-text);
 }
 
 .select-dropdown-portal .select-option-disabled {
@@ -557,6 +585,12 @@ onUnmounted(() => {
 .dark .select-dropdown-portal {
   --select-surface: var(--atelier-paper-2);
   --select-muted-surface: var(--atelier-paper-2);
+  --select-option-text: var(--atelier-muted);
+  --select-option-hover-surface: var(--atelier-ui-hover-surface);
+  --select-option-hover-text: var(--atelier-ink);
+  --select-option-focused-surface: var(--atelier-ui-hover-surface);
+  --select-option-selected-surface: var(--atelier-blue);
+  --select-option-selected-text: var(--atelier-white);
   background: var(--select-surface);
   border-color: var(--atelier-material-edge);
   color: var(--atelier-ink);
@@ -578,13 +612,13 @@ onUnmounted(() => {
 
 .dark .select-dropdown-portal .select-option:hover,
 .dark .select-dropdown-portal .select-option-focused {
-  background: rgba(0, 47, 167, 0.22);
-  color: var(--atelier-blue-dark);
+  background: var(--select-option-hover-surface);
+  color: var(--select-option-hover-text);
 }
 
 .dark .select-dropdown-portal .select-option-selected:hover {
-  background: rgba(0, 47, 167, 0.34);
-  color: var(--atelier-blue-dark);
+  background: var(--select-option-selected-surface);
+  color: var(--select-option-selected-text);
 }
 
 .select-dropdown-portal .select-empty {

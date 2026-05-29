@@ -414,6 +414,7 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
@@ -889,8 +890,7 @@ async function queryKey() {
 // ==================== Lifecycle ====================
 
 function initTheme() {
-  document.documentElement.classList.remove('dark')
-  localStorage.setItem('theme', 'light')
+  initAppearanceTheme()
 }
 
 function formatResetTime(resetAt: string | null | undefined): string {

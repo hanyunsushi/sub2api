@@ -54,6 +54,7 @@
             class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             @click.stop="toggle(m.id)"
           />
+          <ProviderBrandIcon :provider="m.provider" :model="m.provider" />
           <span class="font-medium text-gray-900 dark:text-white">{{ m.name }}</span>
           <span class="text-xs text-gray-400">{{ m.provider }}</span>
           <span v-if="m.provider === 'openai'" class="text-xs text-gray-400">{{ m.api_mode }}</span>
@@ -94,6 +95,7 @@ import { extractApiErrorMessage } from '@/utils/apiError'
 import { adminAPI } from '@/api/admin'
 import type { AssociatedMonitorBrief } from '@/api/admin/channelMonitorTemplate'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 
 const props = defineProps<{
   show: boolean
