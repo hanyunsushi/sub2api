@@ -11,6 +11,7 @@ import (
 
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
+	servermiddleware "github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -79,6 +80,7 @@ func (h *AISearchHandler) SnippetConfig(c *gin.Context) {
 		response.ErrorFrom(c, err)
 		return
 	}
+	setAISearchPublicProxyAccessTokenCookie(c)
 	response.Success(c, cfg)
 }
 
@@ -192,4 +194,34 @@ func copyAndFlushAISearchPublicProxyStream(w gin.ResponseWriter, body io.Reader)
 			return
 		}
 	}
+}
+
+func setAISearchPublicProxyAccessTokenCookie(c *gin.Context) {
+	const bearerPrefix = "Bearer "
+
+	authHeader := strings.TrimSpace(c.GetHeader("Authorization"))
+	if !strings.HasPrefix(strings.ToLower(authHeader), strings.ToLower(bearerPrefix)) {
+		return
+	}
+	token := strings.TrimSpace(authHeader[len(bearerPrefix):])
+	if token == "" || strings.ContainsAny(token, " \t\r\n") {
+		return
+	}
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     servermiddleware.AISearchPublicProxyAccessTokenCookieName,
+		Value:    token,
+		Path:     servermiddleware.AISearchPublicProxyAccessTokenCookiePath,
+		MaxAge:   servermiddleware.AISearchPublicProxyAccessTokenCookieMaxAgeSec,
+		HttpOnly: true,
+		Secure:   isAISearchRequestHTTPS(c),
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func isAISearchRequestHTTPS(c *gin.Context) bool {
+	if c.Request.TLS != nil {
+		return true
+	}
+	return strings.EqualFold(strings.TrimSpace(c.GetHeader("X-Forwarded-Proto")), "https")
 }

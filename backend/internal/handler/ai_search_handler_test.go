@@ -116,6 +116,34 @@ func TestAISearchHandler_SnippetConfigReturnsPublicEndpointWithoutSecret(t *test
 	require.NotContains(t, rec.Body.String(), "account_id")
 }
 
+func TestAISearchHandler_SnippetConfigSetsScopedAuthCookieFromBearerToken(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h := NewAISearchHandler(&aiSearchHandlerServiceStub{}, &aiSearchConfigServiceStub{
+		config: &service.AISearchSnippetConfig{
+			Configured: true,
+			APIURL:     "/api/v1/ai-search/public",
+			InstanceID: "ai-search",
+			Namespace:  "default",
+		},
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/ai-search/snippet-config", nil)
+	req.Header.Set("Authorization", "Bearer access-token-value")
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Request = req
+
+	h.SnippetConfig(c)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	cookie := findAISearchCookie(rec.Result().Cookies(), "ai_search_access_token")
+	require.NotNil(t, cookie)
+	require.Equal(t, "/api/v1/ai-search/public", cookie.Path)
+	require.Equal(t, 600, cookie.MaxAge)
+	require.True(t, cookie.HttpOnly)
+	require.Equal(t, "access-token-value", cookie.Value)
+}
+
 func TestAISearchHandler_PublicProxyForwardsWithConfiguredOrigin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -191,4 +219,13 @@ func TestAISearchHandler_PublicProxyRejectsUnsupportedPath(t *testing.T) {
 
 	require.Equal(t, http.StatusNotFound, rec.Code)
 	require.Contains(t, rec.Body.String(), "AI_SEARCH_PUBLIC_PROXY_PATH_NOT_FOUND")
+}
+
+func findAISearchCookie(cookies []*http.Cookie, name string) *http.Cookie {
+	for _, cookie := range cookies {
+		if cookie.Name == name {
+			return cookie
+		}
+	}
+	return nil
 }

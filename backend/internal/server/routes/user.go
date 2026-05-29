@@ -89,7 +89,14 @@ func RegisterUserRoutes(
 		{
 			aiSearch.GET("/snippet-config", h.AISearch.SnippetConfig)
 			aiSearch.POST("/search", h.AISearch.Search)
-			aiSearch.POST("/public/*path", h.AISearch.PublicProxy)
+		}
+
+		aiSearchPublicProxy := v1.Group("/ai-search/public")
+		aiSearchPublicProxy.Use(middleware.AISearchPublicProxyCookieAuth())
+		aiSearchPublicProxy.Use(gin.HandlerFunc(jwtAuth))
+		aiSearchPublicProxy.Use(middleware.BackendModeUserGuard(settingService))
+		{
+			aiSearchPublicProxy.POST("/*path", h.AISearch.PublicProxy)
 		}
 
 		// 使用记录

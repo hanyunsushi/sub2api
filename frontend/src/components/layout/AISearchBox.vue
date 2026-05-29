@@ -121,10 +121,11 @@ const snippetConfig = ref<AISearchSnippetConfig>({
   namespace: '',
 })
 
-function openDialog() {
+async function openDialog() {
   dialogOpen.value = true
   const submittedQuery = query.value.trim()
   query.value = ''
+  await getSnippetConfig()
   nextTick(() => {
     if (submittedQuery) {
       void chatPageRef.value?.sendMessage?.(submittedQuery)
