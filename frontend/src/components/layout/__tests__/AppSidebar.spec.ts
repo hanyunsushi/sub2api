@@ -83,6 +83,15 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar-children')
     expect(styleSource).toContain('.sidebar .sidebar-section-title')
   })
+
+  it('uses a smaller dedicated font size for the two channel-management children', () => {
+    expect(componentSource).toContain("'sidebar-channel-child-link': item.path === '/admin/channels'")
+    expect(componentSource).toContain("{ path: '/admin/channels/pricing', label: t('nav.channelPricing')")
+    expect(componentSource).toContain("{ path: '/admin/channels/monitor', label: t('nav.channelMonitor')")
+    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link')
+    expect(styleSource).toContain('font-size: 0.75rem;')
+    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link :where(svg, .sidebar-svg-icon)')
+  })
 })
 
 describe('AppSidebar scroll position', () => {

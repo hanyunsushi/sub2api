@@ -62,7 +62,10 @@
                   :key="child.path"
                   :to="child.path"
                   class="sidebar-link mb-0.5 py-1.5 text-sm"
-                  :class="{ 'sidebar-link-active': route.path === child.path }"
+                  :class="{
+                    'sidebar-link-active': route.path === child.path,
+                    'sidebar-channel-child-link': item.path === '/admin/channels'
+                  }"
                   @click="handleMenuItemClick(child.path)"
                 >
                   <component :is="child.icon" class="h-4 w-4 flex-shrink-0" />

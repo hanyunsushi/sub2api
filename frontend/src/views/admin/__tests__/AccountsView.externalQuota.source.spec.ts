@@ -50,6 +50,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('account-provider-logo-fallback')
     expect(source).toContain('custom_logo_url')
     expect(source).toContain('logo_url')
-    expect(source).toContain('https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/')
+    expect(source).toContain("import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'")
+    expect(source).toContain('aiLogoUrlForProvider(')
   })
 })

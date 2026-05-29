@@ -10,7 +10,7 @@
         class="w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
         :class="[providerGradient(item.provider), providerTintClass, monitorProviderClass(item.provider)]"
       >
-        <ProviderIcon :provider="item.provider" :size="20" />
+        <ProviderBrandIcon :provider="item.provider" :model="item.primary_model" />
       </span>
       <div class="flex-1 min-w-0">
         <div class="text-base font-semibold truncate text-gray-900 dark:text-gray-100">
@@ -81,7 +81,7 @@ import {
   useChannelMonitorFormat,
   providerGradient,
 } from '@/composables/useChannelMonitorFormat'
-import ProviderIcon from './ProviderIcon.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
 import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
 import MonitorTimeline from './MonitorTimeline.vue'

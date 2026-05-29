@@ -36,6 +36,41 @@ describe('AI Search box source contract', () => {
     )
   })
 
+  it('opens a centered modal dialog instead of the old dropdown panel', () => {
+    expect(componentSource).toContain('<Teleport to="body">')
+    expect(componentSource).toContain('role="dialog"')
+    expect(componentSource).toContain('aria-modal="true"')
+    expect(componentSource).toContain('tabindex="-1"')
+    expect(componentSource).toContain('@keydown.esc.prevent="closeDialog"')
+    expect(componentSource).toContain('data-testid="ai-search-dialog"')
+    expect(componentSource).toContain('class="ai-search-dialog-backdrop"')
+    expect(componentSource).toContain('class="ai-search-dialog"')
+    expect(componentSource).not.toContain('FloatingDropdown')
+    expect(componentSource).not.toContain('ai-search-panel')
+
+    const backdropBlock = cssBlock(styleSource, '.ai-search-dialog-backdrop')
+    const dialogBlock = cssBlock(styleSource, '.ai-search-dialog')
+    expect(backdropBlock).toContain('position: fixed;')
+    expect(backdropBlock).toContain('place-items: center;')
+    expect(dialogBlock).toContain('width: min(42rem, calc(100vw - 2rem));')
+    expect(dialogBlock).toContain('max-height: min(78vh, 42rem);')
+  })
+
+  it('stores and renders recent chat records in the dialog', () => {
+    expect(componentSource).toContain('AI_SEARCH_HISTORY_KEY')
+    expect(componentSource).toContain('MAX_AI_SEARCH_HISTORY')
+    expect(componentSource).toContain('recentChats')
+    expect(componentSource).toContain('loadRecentChats')
+    expect(componentSource).toContain('persistRecentChats')
+    expect(componentSource).toContain('pushRecentChat')
+    expect(componentSource).toContain('restoreChat')
+    expect(componentSource).toContain('data-testid="ai-search-history"')
+    expect(componentSource).toContain('Recent chats')
+    expect(componentSource).toContain('chat.question')
+    expect(componentSource).toContain('chat.answer')
+    expect(componentSource).toContain('localStorage')
+  })
+
   it('keeps the idle search input transparent and avoids butter hover highlights', () => {
     const formBlock = cssBlock(styleSource, '.ai-search-form,\n.ai-search-mobile-form')
     const hoverBlock = cssBlock(styleSource, '.ai-search-clear:hover,\n.ai-search-mobile-trigger:hover')
