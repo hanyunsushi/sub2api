@@ -26,9 +26,12 @@
           </template>
 
           <template #cell-provider="{ row }">
-            <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium semantic-badge" :class="providerBadgeClass(row.provider)">
-              {{ providerLabel(row.provider) }}
-            </span>
+            <div class="flex items-center gap-2">
+              <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" />
+              <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium semantic-badge" :class="providerBadgeClass(row.provider)">
+                {{ providerLabel(row.provider) }}
+              </span>
+            </div>
           </template>
 
           <template #cell-primary_model="{ row }">
@@ -132,6 +135,7 @@ import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import MonitorFiltersBar from '@/components/admin/monitor/MonitorFiltersBar.vue'

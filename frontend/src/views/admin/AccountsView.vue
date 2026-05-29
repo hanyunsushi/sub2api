@@ -470,6 +470,7 @@ import ErrorPassthroughRulesModal from '@/components/admin/ErrorPassthroughRules
 import TLSFingerprintProfilesModal from '@/components/admin/TLSFingerprintProfilesModal.vue'
 import { buildOpenAIUsageRefreshKey } from '@/utils/accountUsageRefresh'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
+import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'
 import type { Account, AccountPlatform, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel } from '@/types'
 
 const { t, locale } = useI18n()
@@ -826,22 +827,6 @@ const getAccountExternalQuota = (account: Account): AccountExternalQuota | null 
   return null
 }
 
-const lobeIconBaseURL = 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/'
-const lobeIconSlugByToken: Array<[RegExp, string]> = [
-  [/\b(anthropic|claude)\b/, 'claude-color'],
-  [/\b(openai|chatgpt|gpt)\b/, 'openai'],
-  [/\b(gemini|google|vertex|aistudio)\b/, 'gemini-color'],
-  [/\b(deepseek)\b/, 'deepseek-color'],
-  [/\b(mistral)\b/, 'mistral-color'],
-  [/\b(openrouter)\b/, 'openrouter'],
-  [/\b(perplexity)\b/, 'perplexity-color'],
-  [/\b(qwen|tongyi|alibaba)\b/, 'qwen-color'],
-  [/\b(moonshot|kimi)\b/, 'moonshot'],
-  [/\b(grok|xai)\b/, 'xai'],
-  [/\b(buzz|buzzai)\b/, 'openai'],
-  [/\b(tcdmx|mimo)\b/, 'openai']
-]
-
 const buildAccountLogoSearchText = (account: Account) => {
   const credentials = account.credentials ?? {}
   const extra = account.extra ?? {}
@@ -873,8 +858,7 @@ const getAccountLogo = (account: Account) => {
   if (customLogoURL) return customLogoURL
 
   const text = buildAccountLogoSearchText(account)
-  const match = lobeIconSlugByToken.find(([pattern]) => pattern.test(text))
-  return match ? `${lobeIconBaseURL}${match[1]}.png` : null
+  return aiLogoUrlForProvider(text, account.name || account.platform) || null
 }
 
 const getAccountLogoAlt = (account: Account) => `${account.name || account.platform} logo`

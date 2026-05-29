@@ -334,7 +334,7 @@ describe('EditAccountModal', () => {
   it('persists a custom account logo URL in account extra metadata', async () => {
     const account = buildAccount()
     account.extra = {
-      logo_url: 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png'
+      logo_url: 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light/openai.png'
     }
     updateAccountMock.mockReset()
     checkMixedChannelRiskMock.mockReset()
@@ -344,7 +344,7 @@ describe('EditAccountModal', () => {
     const wrapper = mountModal(account)
 
     const input = wrapper.get('[data-testid="account-logo-url-input"]')
-    expect((input.element as HTMLInputElement).value).toBe('https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png')
+    expect((input.element as HTMLInputElement).value).toBe('https://unpkg.com/@lobehub/icons-static-png@1.91.0/light/openai.png')
 
     await input.setValue('https://cdn.example.com/custom-provider.png')
     await wrapper.get('form#edit-account-form').trigger('submit.prevent')

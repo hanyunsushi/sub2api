@@ -17,35 +17,103 @@ type ProviderBrandPreset = Omit<ProviderBrandInfo, 'label'> & {
   label?: string
 }
 
-const aiLogoCDNBase = 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light'
+const aiLogoCDNBase = 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light'
+const aiLogoUrl = (slug: string) => `${aiLogoCDNBase}/${slug}.png`
 
-export const aiLogoPresets: AILogoPreset[] = [
-  { id: 'openai', label: 'OpenAI', url: `${aiLogoCDNBase}/openai.png` },
-  { id: 'anthropic', label: 'Anthropic', url: `${aiLogoCDNBase}/anthropic.png` },
-  { id: 'claude', label: 'Claude', url: `${aiLogoCDNBase}/claude.png` },
-  { id: 'gemini', label: 'Gemini', url: `${aiLogoCDNBase}/gemini.png` },
-  { id: 'google', label: 'Google', url: `${aiLogoCDNBase}/google.png` },
-  { id: 'deepseek', label: 'DeepSeek', url: `${aiLogoCDNBase}/deepseek.png` },
-  { id: 'doubao', label: 'Doubao', url: `${aiLogoCDNBase}/doubao.png` },
-  { id: 'openrouter', label: 'OpenRouter', url: `${aiLogoCDNBase}/openrouter.png` },
-  { id: 'mistral', label: 'Mistral', url: `${aiLogoCDNBase}/mistral.png` },
-  { id: 'qwen', label: 'Qwen', url: `${aiLogoCDNBase}/qwen.png` },
-  { id: 'cohere', label: 'Cohere', url: `${aiLogoCDNBase}/cohere.png` },
-  { id: 'perplexity', label: 'Perplexity', url: `${aiLogoCDNBase}/perplexity.png` },
-  { id: 'moonshot', label: 'Moonshot', url: `${aiLogoCDNBase}/moonshot.png` },
-  { id: 'zhipu', label: 'Zhipu', url: `${aiLogoCDNBase}/zhipu.png` },
-  { id: 'grok', label: 'Grok', url: `${aiLogoCDNBase}/grok.png` },
-  { id: 'cloudflare', label: 'Cloudflare', url: `${aiLogoCDNBase}/cloudflare.png` },
-  { id: 'baidu', label: 'Baidu', url: `${aiLogoCDNBase}/baidu.png` },
-  { id: 'spark', label: 'Spark', url: `${aiLogoCDNBase}/spark.png` },
-  { id: 'tencent', label: 'Tencent', url: `${aiLogoCDNBase}/tencent.png` },
-  { id: 'minimax', label: 'MiniMax', url: `${aiLogoCDNBase}/minimax.png` },
-  { id: 'jina', label: 'Jina', url: `${aiLogoCDNBase}/jina.png` },
-  { id: 'midjourney', label: 'Midjourney', url: `${aiLogoCDNBase}/midjourney.png` },
-  { id: 'suno', label: 'Suno', url: `${aiLogoCDNBase}/suno.png` },
-  { id: 'dify', label: 'Dify', url: `${aiLogoCDNBase}/dify.png` },
-  { id: 'coze', label: 'Coze', url: `${aiLogoCDNBase}/coze.png` },
+const aiLogoPresetSources = [
+  { id: 'openai', label: 'OpenAI', slug: 'openai' },
+  { id: 'claude', label: 'Claude', slug: 'claude-color', aliases: ['anthropic', 'claudeapi'] },
+  { id: 'anthropic', label: 'Anthropic', slug: 'anthropic' },
+  { id: 'gemini', label: 'Gemini', slug: 'gemini-color', aliases: ['google-ai-studio', 'aistudio'] },
+  { id: 'google', label: 'Google', slug: 'google-color' },
+  { id: 'geminicli', label: 'Gemini CLI', slug: 'geminicli-color', aliases: ['gemini-cli'] },
+  { id: 'claudecode', label: 'Claude Code', slug: 'claudecode-color', aliases: ['claude-code', 'claude-code-router'] },
+  { id: 'codex', label: 'Codex', slug: 'codex-color' },
+  { id: 'bailian', label: 'Bailian', slug: 'bailian-color' },
+  { id: 'deepseek', label: 'DeepSeek', slug: 'deepseek-color' },
+  { id: 'doubao', label: 'Doubao', slug: 'doubao-color' },
+  { id: 'volcengine', label: 'Volcengine', slug: 'volcengine-color', aliases: ['volc'] },
+  { id: 'qwen', label: 'Qwen', slug: 'qwen-color', aliases: ['dashscope', 'tongyi'] },
+  { id: 'alibaba', label: 'Alibaba', slug: 'alibaba-color' },
+  { id: 'alibabacloud', label: 'Alibaba Cloud', slug: 'alibabacloud-color', aliases: ['aliyun'] },
+  { id: 'tencentcloud', label: 'Tencent Cloud', slug: 'tencentcloud-color' },
+  { id: 'huawei', label: 'Huawei', slug: 'huawei-color' },
+  { id: 'baichuan', label: 'Baichuan', slug: 'baichuan-color' },
+  { id: 'stepfun', label: 'StepFun', slug: 'stepfun-color' },
+  { id: 'kimi', label: 'Kimi', slug: 'kimi-color' },
+  { id: 'moonshot', label: 'Moonshot', slug: 'moonshot' },
+  { id: 'yi', label: '01.AI Yi', slug: 'yi-color', aliases: ['01ai', 'lingyiwanwu'] },
+  { id: 'zhipu', label: 'Zhipu', slug: 'zhipu-color', aliases: ['glm', 'chatglm'] },
+  { id: 'baidu', label: 'Baidu', slug: 'baidu-color', aliases: ['ernie', 'wenxin'] },
+  { id: 'spark', label: 'Spark', slug: 'spark-color', aliases: ['iflytek', 'xinghuo'] },
+  { id: 'hunyuan', label: 'Hunyuan', slug: 'hunyuan-color', aliases: ['tencent'] },
+  { id: 'minimax', label: 'MiniMax', slug: 'minimax-color', aliases: ['abab'] },
+  { id: 'ai360', label: '360 AI', slug: 'ai360-color', aliases: ['360'] },
+  { id: 'siliconcloud', label: 'SiliconCloud', slug: 'siliconcloud-color' },
+  { id: 'modelscope', label: 'ModelScope', slug: 'modelscope-color' },
+  { id: 'openrouter', label: 'OpenRouter', slug: 'openrouter' },
+  { id: 'mistral', label: 'Mistral', slug: 'mistral-color', aliases: ['mixtral', 'codestral'] },
+  { id: 'cohere', label: 'Cohere', slug: 'cohere-color', aliases: ['command', 'commanda'] },
+  { id: 'perplexity', label: 'Perplexity', slug: 'perplexity-color', aliases: ['pplx'] },
+  { id: 'grok', label: 'Grok', slug: 'grok' },
+  { id: 'xai', label: 'xAI', slug: 'xai' },
+  { id: 'cloudflare', label: 'Cloudflare', slug: 'cloudflare-color' },
+  { id: 'meta', label: 'Meta', slug: 'meta-color', aliases: ['llama'] },
+  { id: 'aws', label: 'AWS', slug: 'aws-color' },
+  { id: 'bedrock', label: 'Bedrock', slug: 'bedrock-color' },
+  { id: 'azure', label: 'Azure', slug: 'azure-color' },
+  { id: 'azureai', label: 'Azure AI', slug: 'azureai-color', aliases: ['azure-ai'] },
+  { id: 'vertexai', label: 'Vertex AI', slug: 'vertexai-color', aliases: ['vertex', 'vertex-ai', 'vertex_ai'] },
+  { id: 'groq', label: 'Groq', slug: 'groq' },
+  { id: 'together', label: 'Together AI', slug: 'together-color' },
+  { id: 'fireworks', label: 'Fireworks', slug: 'fireworks-color' },
+  { id: 'huggingface', label: 'Hugging Face', slug: 'huggingface-color', aliases: ['hugging-face'] },
+  { id: 'replicate', label: 'Replicate', slug: 'replicate' },
+  { id: 'voyage', label: 'Voyage AI', slug: 'voyage-color' },
+  { id: 'ai21', label: 'AI21', slug: 'ai21' },
+  { id: 'nvidia', label: 'NVIDIA', slug: 'nvidia-color' },
+  { id: 'cerebras', label: 'Cerebras', slug: 'cerebras-color' },
+  { id: 'deepinfra', label: 'DeepInfra', slug: 'deepinfra-color' },
+  { id: 'novita', label: 'Novita', slug: 'novita-color' },
+  { id: 'ollama', label: 'Ollama', slug: 'ollama' },
+  { id: 'openwebui', label: 'Open WebUI', slug: 'openwebui' },
+  { id: 'newapi', label: 'New API', slug: 'newapi-color', aliases: ['new-api'] },
+  { id: 'aihubmix', label: 'AIHubMix', slug: 'aihubmix-color' },
+  { id: 'cursor', label: 'Cursor', slug: 'cursor' },
+  { id: 'copilot', label: 'Copilot', slug: 'copilot-color' },
+  { id: 'github', label: 'GitHub', slug: 'github' },
+  { id: 'v0', label: 'v0', slug: 'v0' },
+  { id: 'vercel', label: 'Vercel', slug: 'vercel' },
+  { id: 'windsurf', label: 'Windsurf', slug: 'windsurf' },
+  { id: 'trae', label: 'Trae', slug: 'trae-color' },
+  { id: 'jina', label: 'Jina', slug: 'jina' },
+  { id: 'midjourney', label: 'Midjourney', slug: 'midjourney' },
+  { id: 'suno', label: 'Suno', slug: 'suno' },
+  { id: 'dify', label: 'Dify', slug: 'dify-color' },
+  { id: 'coze', label: 'Coze', slug: 'coze' },
+  { id: 'fastgpt', label: 'FastGPT', slug: 'fastgpt-color' },
+  { id: 'langchain', label: 'LangChain', slug: 'langchain-color' },
+  { id: 'llamaindex', label: 'LlamaIndex', slug: 'llamaindex-color' },
+  { id: 'poe', label: 'Poe', slug: 'poe-color' },
+  { id: 'phind', label: 'Phind', slug: 'phind' },
+  { id: 'exa', label: 'Exa', slug: 'exa-color' },
+  { id: 'dalle', label: 'DALL-E', slug: 'dalle-color', aliases: ['dall-e'] },
+  { id: 'elevenlabs', label: 'ElevenLabs', slug: 'elevenlabs' },
+  { id: 'stability', label: 'Stability AI', slug: 'stability-color' },
+  { id: 'flux', label: 'FLUX', slug: 'flux' },
+  { id: 'fal', label: 'fal', slug: 'fal-color' },
+  { id: 'runway', label: 'Runway', slug: 'runway' },
+  { id: 'kling', label: 'Kling', slug: 'kling-color' },
+  { id: 'hailuo', label: 'Hailuo', slug: 'hailuo-color' },
+  { id: 'pika', label: 'Pika', slug: 'pika' },
+  { id: 'luma', label: 'Luma', slug: 'luma-color' },
 ]
+
+export const aiLogoPresets: AILogoPreset[] = aiLogoPresetSources.map((preset) => ({
+  id: preset.id,
+  label: preset.label,
+  url: aiLogoUrl(preset.slug),
+}))
 
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
@@ -61,7 +129,7 @@ const fallbackPalettes = [
 const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   [
     ['text-completion-openai', 'openai', 'azure-openai'],
-    { iconModel: 'gpt', label: 'AI', iconUrl: `${aiLogoCDNBase}/openai.png`, background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
+    { iconModel: 'gpt', label: 'AI', iconUrl: aiLogoUrl('openai'), background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
   ],
   [
     ['anthropic', 'claude'],
@@ -250,7 +318,22 @@ function findPreset(value: string, presets: Array<[string[], ProviderBrandPreset
 
 function findLogoPreset(value: string): AILogoPreset | null {
   if (!value) return null
-  return aiLogoPresets.find((preset) => value.includes(preset.id)) || null
+  let source: (typeof aiLogoPresetSources)[number] | null = null
+  let bestMatchLength = 0
+  for (const preset of aiLogoPresetSources) {
+    const keys = [preset.id, ...(preset.aliases ?? [])]
+    const matchLength = keys.reduce((best, key) => (value.includes(key) ? Math.max(best, key.length) : best), 0)
+    if (matchLength > bestMatchLength) {
+      source = preset
+      bestMatchLength = matchLength
+    }
+  }
+  if (!source) return null
+  return {
+    id: source.id,
+    label: source.label,
+    url: aiLogoUrl(source.slug),
+  }
 }
 
 function fallbackLabel(value: string): string {

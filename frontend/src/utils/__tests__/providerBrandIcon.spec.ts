@@ -17,16 +17,23 @@ describe('provider brand icon resolution', () => {
   })
 
   it('resolves shared AI logo CDN images for picker and pricing icons', () => {
-    expect(aiLogoPresets.length).toBeGreaterThan(16)
+    expect(aiLogoPresets.length).toBeGreaterThan(60)
     expect(aiLogoPresets[0]).toMatchObject({
       id: 'openai',
       label: 'OpenAI',
-      url: 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png'
+      url: 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light/openai.png'
     })
+    expect(aiLogoPresets.some((preset) => preset.id === 'bailian' && preset.url.endsWith('/bailian-color.png'))).toBe(true)
+    expect(aiLogoPresets.some((preset) => preset.id === 'claudecode' && preset.url.endsWith('/claudecode-color.png'))).toBe(true)
+    expect(aiLogoPresets.some((preset) => preset.id === 'cursor' && preset.url.endsWith('/cursor.png'))).toBe(true)
     expect(aiLogoUrlForProvider('openai', 'gpt-5.5')).toBe(aiLogoPresets[0].url)
-    expect(aiLogoUrlForProvider('anthropic', 'claude-sonnet-4-5')).toContain('/anthropic.png')
-    expect(aiLogoUrlForProvider('gemini', 'gemini-2.5-pro')).toContain('/gemini.png')
-    expect(aiLogoUrlForProvider('dashscope', 'qwen-max')).toContain('/qwen.png')
+    expect(aiLogoUrlForProvider('anthropic', 'claude-sonnet-4-5')).toContain('/claude-color.png')
+    expect(aiLogoUrlForProvider('gemini', 'gemini-2.5-pro')).toContain('/gemini-color.png')
+    expect(aiLogoUrlForProvider('dashscope', 'qwen-max')).toContain('/qwen-color.png')
+    expect(aiLogoUrlForProvider('bailian', 'qwen-max')).toContain('/bailian-color.png')
+    expect(aiLogoUrlForProvider('claude-code-router', 'claude-sonnet-4-5')).toContain('/claudecode-color.png')
+    expect(aiLogoUrlForProvider('cursor', 'claude-sonnet-4-5')).toContain('/cursor.png')
+    expect(aiLogoUrlForProvider('gemini-cli', 'gemini-2.5-pro')).toContain('/geminicli-color.png')
     expect(providerBrandInfo('openrouter')?.iconUrl).toContain('/openrouter.png')
   })
 

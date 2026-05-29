@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   label: '',
   hint: '',
-  placeholder: 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png',
+  placeholder: 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light/openai.png',
   inputTestId: undefined
 })
 
