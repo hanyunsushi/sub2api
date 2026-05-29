@@ -111,7 +111,7 @@ func TestAISearchConfigService_MergeWithStoredSecretUsesStoredTokenWhenBlank(t *
 	require.Equal(t, "stored-token", merged.APIToken)
 }
 
-func TestAISearchConfigService_GetPublicSnippetConfigReturnsBaseEndpointOnly(t *testing.T) {
+func TestAISearchConfigService_GetPublicSnippetConfigReturnsSameOriginProxy(t *testing.T) {
 	repo := newAISearchConfigTestSettingRepo()
 	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
 	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
@@ -129,7 +129,7 @@ func TestAISearchConfigService_GetPublicSnippetConfigReturnsBaseEndpointOnly(t *
 	snippet, err := svc.GetPublicSnippetConfig(context.Background())
 	require.NoError(t, err)
 	require.True(t, snippet.Configured)
-	require.Equal(t, "https://public.example.com", snippet.APIURL)
+	require.Equal(t, "/api/v1/ai-search/public", snippet.APIURL)
 	require.Equal(t, "ai-search", snippet.InstanceID)
 	require.Equal(t, "default", snippet.Namespace)
 
@@ -138,6 +138,26 @@ func TestAISearchConfigService_GetPublicSnippetConfigReturnsBaseEndpointOnly(t *
 	require.NotContains(t, string(encoded), "stored-token")
 	require.NotContains(t, string(encoded), "account_id")
 	require.NotContains(t, string(encoded), "api_token")
+}
+
+func TestAISearchConfigService_GetPublicProxyConfigReturnsCloudflareBase(t *testing.T) {
+	repo := newAISearchConfigTestSettingRepo()
+	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
+	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
+		PublicEndpointURL:     "https://public.example.com/search",
+		PublicChatEndpointURL: "https://public.example.com/chat/completions",
+		PublicOrigin:          "https://sub2api.example.com/",
+		InstanceID:            "ai-search",
+		Namespace:             "default",
+		ItemKey:               "sub2api-user-knowledge.md",
+	})
+	require.NoError(t, err)
+
+	proxy, err := svc.GetPublicProxyConfig(context.Background())
+	require.NoError(t, err)
+	require.True(t, proxy.Configured)
+	require.Equal(t, "https://public.example.com", proxy.BaseURL)
+	require.Equal(t, "https://sub2api.example.com", proxy.Origin)
 }
 
 func TestAISearchServicesUseDBConfigOverEnvironmentDefaults(t *testing.T) {

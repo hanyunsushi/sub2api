@@ -11,7 +11,10 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 )
 
-const settingKeyCloudflareAISearchConfig = "cloudflare_ai_search_config"
+const (
+	settingKeyCloudflareAISearchConfig = "cloudflare_ai_search_config"
+	aiSearchPublicProxyAPIURL          = "/api/v1/ai-search/public"
+)
 
 type AISearchBackendConfig struct {
 	AccountID                 string `json:"account_id"`
@@ -37,6 +40,12 @@ type AISearchSnippetConfig struct {
 	APIURL     string `json:"api_url"`
 	InstanceID string `json:"instance_id"`
 	Namespace  string `json:"namespace"`
+}
+
+type AISearchPublicProxyConfig struct {
+	Configured bool
+	BaseURL    string
+	Origin     string
 }
 
 type aiSearchBackendConfigRecord struct {
@@ -150,9 +159,25 @@ func (s *AISearchConfigService) GetPublicSnippetConfig(ctx context.Context) (*AI
 	apiURL := publicAISearchBaseURL(resolved.PublicEndpointURL, resolved.PublicChatEndpointURL)
 	return &AISearchSnippetConfig{
 		Configured: apiURL != "",
-		APIURL:     apiURL,
+		APIURL: func() string {
+			if apiURL == "" {
+				return ""
+			}
+			return aiSearchPublicProxyAPIURL
+		}(),
 		InstanceID: resolved.InstanceID,
 		Namespace:  resolved.Namespace,
+	}, nil
+}
+
+func (s *AISearchConfigService) GetPublicProxyConfig(ctx context.Context) (*AISearchPublicProxyConfig, error) {
+	resolvedConfig := s.ResolveConfig(ctx)
+	resolved := normalizeAISearchBackendConfig(&resolvedConfig)
+	baseURL := publicAISearchBaseURL(resolved.PublicEndpointURL, resolved.PublicChatEndpointURL)
+	return &AISearchPublicProxyConfig{
+		Configured: baseURL != "",
+		BaseURL:    baseURL,
+		Origin:     resolved.PublicOrigin,
 	}, nil
 }
 

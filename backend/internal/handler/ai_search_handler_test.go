@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,6 +20,7 @@ type aiSearchHandlerServiceStub struct {
 
 type aiSearchConfigServiceStub struct {
 	config *service.AISearchSnippetConfig
+	proxy  *service.AISearchPublicProxyConfig
 }
 
 func (s *aiSearchHandlerServiceStub) Search(_ context.Context, query string) (*service.AISearchResponse, error) {
@@ -39,6 +41,10 @@ func (s *aiSearchHandlerServiceStub) Search(_ context.Context, query string) (*s
 
 func (s *aiSearchConfigServiceStub) GetPublicSnippetConfig(_ context.Context) (*service.AISearchSnippetConfig, error) {
 	return s.config, nil
+}
+
+func (s *aiSearchConfigServiceStub) GetPublicProxyConfig(_ context.Context) (*service.AISearchPublicProxyConfig, error) {
+	return s.proxy, nil
 }
 
 func TestAISearchHandler_SearchTrimsAndReturnsResults(t *testing.T) {
@@ -91,7 +97,7 @@ func TestAISearchHandler_SnippetConfigReturnsPublicEndpointWithoutSecret(t *test
 	h := NewAISearchHandler(&aiSearchHandlerServiceStub{}, &aiSearchConfigServiceStub{
 		config: &service.AISearchSnippetConfig{
 			Configured: true,
-			APIURL:     "https://public.example.com",
+			APIURL:     "/api/v1/ai-search/public",
 			InstanceID: "ai-search",
 			Namespace:  "default",
 		},
@@ -105,7 +111,84 @@ func TestAISearchHandler_SnippetConfigReturnsPublicEndpointWithoutSecret(t *test
 	h.SnippetConfig(c)
 
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Contains(t, rec.Body.String(), `"api_url":"https://public.example.com"`)
+	require.Contains(t, rec.Body.String(), `"api_url":"/api/v1/ai-search/public"`)
 	require.NotContains(t, rec.Body.String(), "api_token")
 	require.NotContains(t, rec.Body.String(), "account_id")
+}
+
+func TestAISearchHandler_PublicProxyForwardsWithConfiguredOrigin(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	var gotPath string
+	var gotOrigin string
+	var gotReferer string
+	var gotSource string
+	var gotBody string
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath = r.URL.Path
+		gotOrigin = r.Header.Get("Origin")
+		gotReferer = r.Header.Get("Referer")
+		gotSource = r.Header.Get("cf-ai-search-source")
+		body, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		gotBody = string(body)
+
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("X-Should-Not-Leak", "secret")
+		w.WriteHeader(http.StatusAccepted)
+		_, _ = w.Write([]byte("data: ok\n\n"))
+	}))
+	defer upstream.Close()
+
+	h := NewAISearchHandler(&aiSearchHandlerServiceStub{}, &aiSearchConfigServiceStub{
+		proxy: &service.AISearchPublicProxyConfig{
+			Configured: true,
+			BaseURL:    upstream.URL,
+			Origin:     "https://sub2api.example.com",
+		},
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/ai-search/public/chat/completions", bytes.NewBufferString(`{"stream":true}`))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "text/event-stream")
+	req.Header.Set("cf-ai-search-source", "snippet-chat-completions")
+	req.Header.Set("Origin", "http://127.0.0.1:8080")
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Request = req
+	c.Params = gin.Params{{Key: "path", Value: "/chat/completions"}}
+
+	h.PublicProxy(c)
+
+	require.Equal(t, http.StatusAccepted, rec.Code)
+	require.Equal(t, "/chat/completions", gotPath)
+	require.Equal(t, "https://sub2api.example.com", gotOrigin)
+	require.Equal(t, "https://sub2api.example.com/", gotReferer)
+	require.Equal(t, "snippet-chat-completions", gotSource)
+	require.Equal(t, `{"stream":true}`, gotBody)
+	require.Equal(t, "text/event-stream", rec.Header().Get("Content-Type"))
+	require.Empty(t, rec.Header().Get("X-Should-Not-Leak"))
+	require.Equal(t, "data: ok\n\n", rec.Body.String())
+}
+
+func TestAISearchHandler_PublicProxyRejectsUnsupportedPath(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h := NewAISearchHandler(&aiSearchHandlerServiceStub{}, &aiSearchConfigServiceStub{
+		proxy: &service.AISearchPublicProxyConfig{
+			Configured: true,
+			BaseURL:    "https://public.example.com",
+			Origin:     "https://sub2api.example.com",
+		},
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/ai-search/public/admin", bytes.NewBufferString(`{}`))
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Request = req
+	c.Params = gin.Params{{Key: "path", Value: "/admin"}}
+
+	h.PublicProxy(c)
+
+	require.Equal(t, http.StatusNotFound, rec.Code)
+	require.Contains(t, rec.Body.String(), "AI_SEARCH_PUBLIC_PROXY_PATH_NOT_FOUND")
 }

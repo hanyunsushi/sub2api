@@ -63,6 +63,8 @@ describe('AI Search box source contract', () => {
     expect(componentSource).toContain('ref="chatPageRef"')
     expect(componentSource).toContain('sendMessage')
     expect(componentSource).toContain('getSnippetConfig')
+    expect(componentSource).toContain('chat-query-rewrite=\'{"enabled":true}\'')
+    expect(componentSource).not.toContain('chat-query-rewrite="true"')
     expect(componentSource).not.toContain('aiSearchAPI.search')
     expect(componentSource).not.toContain('AI_SEARCH_HISTORY_KEY')
     expect(componentSource).not.toContain('sub2api.aiSearch.recentChats')
