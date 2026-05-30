@@ -16,7 +16,7 @@ describe('Select portal styles', () => {
     expect(componentSource).toContain('.dark .select-dropdown-portal .select-option-selected:hover')
     expect(componentSource).toContain('--select-option-text: var(--atelier-muted);')
     expect(componentSource).toContain('--select-option-hover-text: var(--atelier-ink);')
-    expect(componentSource).toContain('--select-option-selected-text: var(--atelier-white);')
+    expect(componentSource).toContain('--select-option-selected-text: var(--atelier-ink);')
     expect(componentSource).toContain('color: var(--select-option-hover-text);')
     expect(componentSource).not.toContain('--select-surface: #111827;')
     expect(componentSource).not.toContain('color: var(--atelier-blue-dark);')
@@ -26,7 +26,7 @@ describe('Select portal styles', () => {
   it('uses atelier surface tokens for trigger, portal, option states, and reveal motion', () => {
     expect(componentSource).toContain('--select-surface: var(--atelier-paper-2);')
     expect(componentSource).toContain('--select-muted-surface: var(--atelier-paper-2);')
-    expect(componentSource).toContain('--select-option-selected-surface: var(--atelier-blue);')
+    expect(componentSource).toContain('--select-option-selected-surface: var(--atelier-ui-hover-surface);')
     expect(componentSource).toContain('--select-option-focused-surface: var(--atelier-ui-hover-surface);')
     expect(componentSource).toContain('background: var(--select-surface);')
     expect(componentSource).toContain('border-color: var(--atelier-line);')

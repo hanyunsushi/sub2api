@@ -24,6 +24,7 @@ export interface MonitorTimelinePoint {
 export interface UserMonitorView {
   id: number
   name: string
+  logo_url: string
   provider: Provider
   group_name: string
   primary_model: string
@@ -52,6 +53,7 @@ export interface UserMonitorModelDetail {
 export interface UserMonitorDetail {
   id: number
   name: string
+  logo_url: string
   provider: Provider
   group_name: string
   models: UserMonitorModelDetail[]

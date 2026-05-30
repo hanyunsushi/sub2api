@@ -10,6 +10,9 @@ const filtersBarSource = readFileSync(resolve(__dirname, '../components/admin/mo
 const monitorFormDialogSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorFormDialog.vue'), 'utf8')
 const templateManagerSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorTemplateManagerDialog.vue'), 'utf8')
 const templateApplyPickerSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorTemplateApplyPickerDialog.vue'), 'utf8')
+const adminMonitorApiSource = readFileSync(resolve(__dirname, '../api/admin/channelMonitor.ts'), 'utf8')
+const userMonitorApiSource = readFileSync(resolve(__dirname, '../api/channelMonitor.ts'), 'utf8')
+const providerBrandIconSource = readFileSync(resolve(__dirname, '../components/common/ProviderBrandIcon.vue'), 'utf8')
 
 describe('channel monitor AI logo contract', () => {
   it('uses the shared AI logo resolver on admin and user channel monitor surfaces', () => {
@@ -45,5 +48,26 @@ describe('channel monitor AI logo contract', () => {
     expect(templateApplyPickerSource).toContain(':model="m.provider"')
     expect(userMonitorCardSource).not.toContain("import ProviderIcon from './ProviderIcon.vue'")
     expect(monitorFormDialogSource).not.toContain("import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'")
+  })
+
+  it('persists custom AI logo URLs and exposes the shared logo picker in monitor editing', () => {
+    expect(adminMonitorApiSource).toContain('logo_url: string')
+    expect(adminMonitorApiSource).toContain('logo_url?: string')
+    expect(userMonitorApiSource).toContain('logo_url: string')
+    expect(providerBrandIconSource).toContain('logoUrl?: string | null')
+    expect(providerBrandIconSource).toContain('props.logoUrl?.trim()')
+
+    expect(monitorFormDialogSource).toContain("import LogoPicker from '@/components/common/LogoPicker.vue'")
+    expect(monitorFormDialogSource).toContain('<LogoPicker')
+    expect(monitorFormDialogSource).toContain('v-model="form.logo_url"')
+    expect(monitorFormDialogSource).toContain('input-test-id="channel-monitor-logo-url"')
+    expect(monitorFormDialogSource).toContain('logo_url: string')
+    expect(monitorFormDialogSource).toContain("form.logo_url = m.logo_url || ''")
+    expect(monitorFormDialogSource).toContain('logo_url: form.logo_url.trim()')
+    expect(monitorFormDialogSource).toContain(':logo-url="form.logo_url"')
+
+    expect(adminMonitorSource).toContain(':logo-url="row.logo_url"')
+    expect(primaryModelCellSource).toContain(':logo-url="row.logo_url"')
+    expect(userMonitorCardSource).toContain(':logo-url="item.logo_url"')
   })
 })

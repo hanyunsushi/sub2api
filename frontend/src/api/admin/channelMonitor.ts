@@ -13,6 +13,7 @@ export type APIMode = 'chat_completions' | 'responses'
 export interface ChannelMonitor {
   id: number
   name: string
+  logo_url: string
   provider: Provider
   api_mode: APIMode
   endpoint: string
@@ -71,6 +72,7 @@ export interface ListResponse {
 
 export interface CreateParams {
   name: string
+  logo_url?: string
   provider: Provider
   api_mode?: APIMode
   endpoint: string

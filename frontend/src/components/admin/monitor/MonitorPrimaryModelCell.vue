@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center gap-2">
-    <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" />
+    <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
     <span class="text-sm text-gray-900 dark:text-gray-100">{{ row.primary_model }}</span>
     <HelpTooltip>
       <template #trigger>

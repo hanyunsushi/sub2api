@@ -1298,16 +1298,87 @@
 }
 
 .ai-search-box {
+  position: relative;
   width: clamp(13rem, 24vw, 22rem);
   min-width: 0;
   color: var(--atelier-ink);
+}
+
+.ai-search-manual-form {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.25rem;
+  width: 100%;
+  border: 1px solid rgba(23, 21, 18, 0.18);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--atelier-ink);
+  padding: 0 0.25rem 0 0.625rem;
+}
+
+.ai-search-manual-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: 0 0 auto;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  color: var(--atelier-muted);
+}
+
+.ai-search-manual-icon::after {
+  content: "";
+  position: absolute;
+  width: 0.375rem;
+  height: 2px;
+  margin-left: 0.58rem;
+  margin-top: 0.55rem;
+  border-radius: 999px;
+  background: currentColor;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.ai-search-manual-input {
+  min-width: 0;
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-sans);
+  font-size: 0.875rem;
+  font-weight: 650;
+  outline: 0;
+}
+
+.ai-search-manual-input::placeholder {
+  color: var(--atelier-muted);
+}
+
+.ai-search-manual-input::-webkit-search-decoration,
+.ai-search-manual-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.ai-search-manual-submit {
+  flex: 0 0 auto;
+  height: 1.75rem;
+  border-radius: 0.3125rem;
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+  padding: 0 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1;
 }
 
 .ai-search-official-bar {
   display: block;
   width: 100%;
   min-width: 0;
-  --search-snippet-background: transparent;
+  --search-snippet-background: var(--atelier-paper);
   --search-snippet-surface: var(--atelier-paper-2);
   --search-snippet-text-color: var(--atelier-ink);
   --search-snippet-text-secondary: var(--atelier-muted);
@@ -1335,6 +1406,16 @@
   --search-snippet-shadow-md: 0 18px 38px -30px rgba(17, 24, 39, 0.52);
   --search-snippet-result-item-shadow: none;
   --search-snippet-z-dropdown: 100000025;
+}
+
+.ai-search-box.ai-search-has-query .ai-search-official-bar,
+.ai-search-official-bar {
+  position: absolute;
+  inset: 0 auto auto 0;
+}
+
+.ai-search-official-bar {
+  z-index: 1;
 }
 
 .ai-search-unavailable {
@@ -2301,8 +2382,8 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .date-picker-dropdown-portal {
   --date-picker-plain-text: var(--atelier-ink);
   --date-picker-muted-text: var(--atelier-muted);
-  --date-picker-active-surface: var(--atelier-blue);
-  --date-picker-active-text: var(--atelier-white);
+  --date-picker-active-surface: var(--atelier-ui-hover-surface);
+  --date-picker-active-text: var(--atelier-ink);
   --date-picker-hover-surface: var(--atelier-ui-hover-surface);
   --date-picker-hover-text: var(--atelier-ink);
 }
@@ -2378,14 +2459,14 @@ body:has(.table-page-layout) :where(
 .select-dropdown-portal .select-option-selected,
 .select-dropdown-portal .select-option-selected.select-option-focused,
 .select-dropdown-portal .select-option-selected:hover {
-  background: var(--select-option-selected-surface, var(--atelier-blue)) !important;
-  color: var(--select-option-selected-text, var(--atelier-white)) !important;
+  background: var(--select-option-selected-surface, var(--atelier-ui-hover-surface)) !important;
+  color: var(--select-option-selected-text, var(--atelier-ink)) !important;
 }
 
 .select-dropdown-portal .select-option-selected :where(.select-option-label, svg),
 .select-dropdown-portal .select-option-selected.select-option-focused :where(.select-option-label, svg),
 .select-dropdown-portal .select-option-selected:hover :where(.select-option-label, svg) {
-  color: var(--select-option-selected-text, var(--atelier-white)) !important;
+  color: var(--select-option-selected-text, var(--atelier-ink)) !important;
 }
 
 :where(.table-wrapper, .table-scroll-container, .table-container) {
@@ -4869,8 +4950,8 @@ body:has(.table-page-layout) :where(
   --select-menu-plain-text: var(--atelier-paper);
   --select-menu-active-surface: var(--atelier-ui-hover-surface);
   --select-menu-active-text: var(--atelier-ink);
-  --select-menu-selected-surface: var(--atelier-blue);
-  --select-menu-selected-text: var(--atelier-white);
+  --select-menu-selected-surface: var(--atelier-ui-hover-surface);
+  --select-menu-selected-text: var(--atelier-ink);
   border-color: rgba(255, 250, 240, 0.28) !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
@@ -4911,8 +4992,8 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-options {
   --select-menu-plain-text: var(--atelier-paper);
   --select-menu-active-surface: var(--atelier-ui-hover-surface);
   --select-menu-active-text: var(--atelier-ink);
-  --select-menu-selected-surface: var(--atelier-blue);
-  --select-menu-selected-text: var(--atelier-white);
+  --select-menu-selected-surface: var(--atelier-ui-hover-surface);
+  --select-menu-selected-text: var(--atelier-ink);
   border-color: rgba(255, 250, 240, 0.28) !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
@@ -5048,14 +5129,14 @@ body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dro
   --select-menu-plain-text: var(--atelier-paper);
   --select-menu-active-surface: var(--atelier-ui-hover-surface);
   --select-menu-active-text: var(--atelier-ink);
-  --select-menu-selected-surface: var(--atelier-blue);
-  --select-menu-selected-text: var(--atelier-white);
+  --select-menu-selected-surface: var(--atelier-ui-hover-surface);
+  --select-menu-selected-text: var(--atelier-ink);
   --date-picker-plain-text: var(--atelier-paper);
   --date-picker-muted-text: var(--atelier-paper);
   --date-picker-hover-surface: var(--atelier-ui-hover-surface);
   --date-picker-hover-text: var(--atelier-ink);
-  --date-picker-active-surface: var(--atelier-blue);
-  --date-picker-active-text: var(--atelier-white);
+  --date-picker-active-surface: var(--atelier-ui-hover-surface);
+  --date-picker-active-text: var(--atelier-ink);
   border-color: rgba(255, 250, 240, 0.28) !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;
@@ -5200,14 +5281,14 @@ body:has(.table-page-layout) :where(
   --select-menu-plain-text: var(--atelier-paper);
   --select-menu-active-surface: var(--atelier-ui-hover-surface);
   --select-menu-active-text: var(--atelier-ink);
-  --select-menu-selected-surface: var(--atelier-blue);
-  --select-menu-selected-text: var(--atelier-white);
+  --select-menu-selected-surface: var(--atelier-ui-hover-surface);
+  --select-menu-selected-text: var(--atelier-ink);
   --date-picker-plain-text: var(--atelier-paper);
   --date-picker-muted-text: var(--atelier-paper);
   --date-picker-hover-surface: var(--atelier-ui-hover-surface);
   --date-picker-hover-text: var(--atelier-ink);
-  --date-picker-active-surface: var(--atelier-blue);
-  --date-picker-active-text: var(--atelier-white);
+  --date-picker-active-surface: var(--atelier-ui-hover-surface);
+  --date-picker-active-text: var(--atelier-ink);
   border-color: rgba(255, 250, 240, 0.28) !important;
   background: var(--atelier-ink) !important;
   color: var(--atelier-paper) !important;

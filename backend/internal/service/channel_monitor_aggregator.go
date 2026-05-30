@@ -151,6 +151,7 @@ func (s *ChannelMonitorService) GetUserDetail(ctx context.Context, id int64) (*U
 	return &UserMonitorDetail{
 		ID:        m.ID,
 		Name:      m.Name,
+		LogoURL:   m.LogoURL,
 		Provider:  m.Provider,
 		GroupName: m.GroupName,
 		Models:    models,
@@ -231,6 +232,7 @@ func buildUserViewFromSummary(
 	view := &UserMonitorView{
 		ID:               m.ID,
 		Name:             m.Name,
+		LogoURL:          m.LogoURL,
 		Provider:         m.Provider,
 		GroupName:        m.GroupName,
 		PrimaryModel:     m.PrimaryModel,

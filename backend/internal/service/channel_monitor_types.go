@@ -30,6 +30,7 @@ const (
 type ChannelMonitor struct {
 	ID              int64
 	Name            string
+	LogoURL         string
 	Provider        string
 	APIMode         string
 	Endpoint        string
@@ -67,6 +68,7 @@ type ChannelMonitorListParams struct {
 // ChannelMonitorCreateParams 创建参数。
 type ChannelMonitorCreateParams struct {
 	Name             string
+	LogoURL          string
 	Provider         string
 	APIMode          string
 	Endpoint         string
@@ -86,6 +88,7 @@ type ChannelMonitorCreateParams struct {
 // ChannelMonitorUpdateParams 更新参数（指针字段表示"未提供则不更新"）。
 type ChannelMonitorUpdateParams struct {
 	Name            *string
+	LogoURL         *string
 	Provider        *string
 	APIMode         *string
 	Endpoint        *string
@@ -119,6 +122,7 @@ type CheckResult struct {
 type UserMonitorView struct {
 	ID                   int64
 	Name                 string
+	LogoURL              string
 	Provider             string
 	GroupName            string
 	PrimaryModel         string
@@ -149,6 +153,7 @@ type ExtraModelStatus struct {
 type UserMonitorDetail struct {
 	ID        int64
 	Name      string
+	LogoURL   string
 	Provider  string
 	GroupName string
 	Models    []ModelDetail

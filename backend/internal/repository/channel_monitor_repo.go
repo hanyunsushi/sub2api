@@ -36,6 +36,7 @@ func (r *channelMonitorRepository) Create(ctx context.Context, m *service.Channe
 	client := clientFromContext(ctx, r.client)
 	builder := client.ChannelMonitor.Create().
 		SetName(m.Name).
+		SetLogoURL(m.LogoURL).
 		SetProvider(channelmonitor.Provider(m.Provider)).
 		SetAPIMode(defaultAPIModeRepo(m.APIMode)).
 		SetEndpoint(m.Endpoint).
@@ -79,6 +80,7 @@ func (r *channelMonitorRepository) Update(ctx context.Context, m *service.Channe
 	client := clientFromContext(ctx, r.client)
 	updater := client.ChannelMonitor.UpdateOneID(m.ID).
 		SetName(m.Name).
+		SetLogoURL(m.LogoURL).
 		SetProvider(channelmonitor.Provider(m.Provider)).
 		SetAPIMode(defaultAPIModeRepo(m.APIMode)).
 		SetEndpoint(m.Endpoint).
@@ -709,6 +711,7 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 	out := &service.ChannelMonitor{
 		ID:               row.ID,
 		Name:             row.Name,
+		LogoURL:          row.LogoURL,
 		Provider:         string(row.Provider),
 		APIMode:          defaultAPIModeRepo(row.APIMode),
 		Endpoint:         row.Endpoint,

@@ -27,7 +27,7 @@
 
           <template #cell-provider="{ row }">
             <div class="flex items-center gap-2">
-              <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" />
+              <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
               <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium semantic-badge" :class="providerBadgeClass(row.provider)">
                 {{ providerLabel(row.provider) }}
               </span>
