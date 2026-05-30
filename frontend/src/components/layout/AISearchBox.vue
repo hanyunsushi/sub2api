@@ -64,9 +64,9 @@ type SearchBarSnippetElement = HTMLElement & {
   inputElement?: HTMLInputElement | null
   searchButton?: HTMLButtonElement | null
   performSearch?: (query: string) => Promise<void>
-  handleInputChange?: EventListener | null
-  handleInputKeydownEnter?: EventListener | null
-  handleSearchButtonClick?: EventListener | null
+  handleInputChange?: Parameters<HTMLElement['removeEventListener']>[1] | null
+  handleInputKeydownEnter?: Parameters<HTMLElement['removeEventListener']>[1] | null
+  handleSearchButtonClick?: Parameters<HTMLElement['removeEventListener']>[1] | null
 }
 
 const snippetConfig = ref<AISearchSnippetConfig>({
