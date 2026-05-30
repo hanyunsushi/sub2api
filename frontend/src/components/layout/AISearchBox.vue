@@ -1,55 +1,64 @@
 <template>
-  <div
-    class="ai-search-box"
-    :class="{ 'ai-search-has-query': submittedQuery }"
-    data-testid="ai-search-box"
-    role="search"
-    aria-label="Ask AI"
-    title="Ask AI"
-    @focusin="refreshSnippetConfig"
-    @pointerdown="refreshSnippetConfig"
-  >
-    <form
-      v-if="snippetConfig.configured"
-      class="ai-search-manual-form"
-      @submit.prevent="handleManualAsk"
+  <div class="ai-search-box" data-testid="ai-search-box">
+    <button
+      type="button"
+      class="ai-search-trigger"
+      data-testid="ai-search-trigger"
+      role="search"
+      aria-label="Ask AI"
+      title="Ask AI"
+      :aria-expanded="open"
+      @click="openPanel"
     >
-      <span class="ai-search-manual-icon" aria-hidden="true"></span>
-      <input
-        v-model="manualSearchInput"
-        type="search"
-        class="ai-search-manual-input"
-        placeholder="Ask AI"
-        aria-label="Ask AI"
-        autocomplete="off"
-        @keydown.enter.prevent="handleManualAsk"
-      />
-      <button type="submit" class="ai-search-manual-submit">
-        Ask
-      </button>
-    </form>
-    <search-bar-snippet
-      v-if="snippetConfig.configured"
-      :key="submittedQuery"
-      ref="searchBarRef"
-      class="ai-search-official-bar"
-      data-testid="ai-search-official-bar"
-      :api-url="snippetConfig.api_url"
-      placeholder="Ask AI"
-      theme="light"
-      hide-branding="true"
-      hide-thumbnails="true"
-      show-url="true"
-      show-date="true"
-      max-results="10"
-      max-render-results="5"
-      debounce-ms="250"
-      disable-analytics="false"
-      :translations.prop="searchTranslations"
-    />
-    <div v-else class="ai-search-unavailable">
-      Ask AI
-    </div>
+      <span class="ai-search-trigger-icon" aria-hidden="true"></span>
+      <span class="ai-search-trigger-label">Ask AI</span>
+    </button>
+
+    <Teleport to="body">
+      <div
+        v-if="open"
+        class="ai-search-overlay"
+        data-testid="ai-search-overlay"
+        @pointerdown.self="closePanel"
+      >
+        <div
+          ref="panelRef"
+          class="ai-search-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ask AI"
+        >
+          <header class="ai-search-panel-head">
+            <span class="ai-search-panel-title">Ask AI</span>
+            <button
+              type="button"
+              class="ai-search-panel-close"
+              aria-label="Close"
+              title="Close"
+              @click="closePanel"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </header>
+          <div class="ai-search-panel-body">
+            <chat-page-snippet
+              v-if="snippetConfig.configured"
+              ref="chatRef"
+              class="ai-search-chat"
+              data-testid="ai-search-chat"
+              :api-url="snippetConfig.api_url"
+              placeholder="Ask AI"
+              theme="light"
+              hide-branding="true"
+              :translations.prop="chatTranslations"
+            />
+            <div v-else class="ai-search-unavailable">
+              Ask AI is not configured yet.
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -60,42 +69,29 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Translations } from '@cloudflare/ai-search-snippet'
 import aiSearchAPI, { type AISearchSnippetConfig } from '@/api/aiSearch'
 
-type SearchBarSnippetElement = HTMLElement & {
-  inputElement?: HTMLInputElement | null
-  searchButton?: HTMLButtonElement | null
-  performSearch?: (query: string) => Promise<void>
-  handleInputChange?: Parameters<HTMLElement['removeEventListener']>[1] | null
-  handleInputKeydownEnter?: Parameters<HTMLElement['removeEventListener']>[1] | null
-  handleSearchButtonClick?: Parameters<HTMLElement['removeEventListener']>[1] | null
-}
-
 const snippetConfig = ref<AISearchSnippetConfig>({
   configured: false,
   api_url: '',
   instance_id: '',
   namespace: '',
 })
-const manualSearchInput = ref('')
-const submittedQuery = ref('')
-const searchBarRef = ref<SearchBarSnippetElement | null>(null)
+const open = ref(false)
+const panelRef = ref<HTMLElement | null>(null)
+const chatRef = ref<HTMLElement | null>(null)
 
-const searchTranslations: Translations = {
-  placeholder: 'Ask AI',
-  searchButtonLabel: 'Ask',
-  searchInputAriaLabel: 'Ask AI',
+const chatTranslations: Translations = {
+  chatPlaceholder: 'Ask AI',
+  newChatButton: 'New chat',
   emptyStateTitle: 'Ask AI',
-  emptyStateDescription: 'Enter a question to search the knowledge base',
-  noResultsTitle: 'No results',
-  noResultsDescription: 'No results found for "{query}"',
-  loadingMessages: ['Searching knowledge base...', 'Finding matching docs...'],
+  emptyStateDescription: 'Ask a question about this platform and get an answer with sources.',
+  loadingMessages: ['Thinking...', 'Searching knowledge base...'],
 }
 
 let refreshPromise: Promise<void> | null = null
 let lastRefreshAt = 0
 let refreshTimer: ReturnType<typeof setInterval> | null = null
-let stripFrame: number | null = null
 
-function emptySnippetConfig() {
+function emptySnippetConfig(): AISearchSnippetConfig {
   return {
     configured: false,
     api_url: '',
@@ -106,100 +102,59 @@ function emptySnippetConfig() {
 
 async function getSnippetConfig() {
   try {
-    const config = await aiSearchAPI.getSnippetConfig()
-    snippetConfig.value = config
+    snippetConfig.value = await aiSearchAPI.getSnippetConfig()
   } catch {
     snippetConfig.value = emptySnippetConfig()
   }
 }
 
-function refreshSnippetConfig() {
+function refreshSnippetConfig(force = false) {
   const now = Date.now()
-  if (refreshPromise || now - lastRefreshAt < 30_000) return
+  if (refreshPromise) return
+  if (!force && now - lastRefreshAt < 30_000) return
   lastRefreshAt = now
   refreshPromise = getSnippetConfig().finally(() => {
     refreshPromise = null
   })
 }
 
-function resolveOfficialInput(snippet: SearchBarSnippetElement | null) {
-  return snippet?.inputElement
-    || snippet?.shadowRoot?.querySelector<HTMLInputElement>('.search-input')
-    || null
-}
-
-function resolveOfficialButton(snippet: SearchBarSnippetElement | null) {
-  return snippet?.searchButton
-    || snippet?.shadowRoot?.querySelector<HTMLButtonElement>('.search-submit-button')
-    || null
-}
-
-function stripOfficialAutoSearchListeners() {
-  stripFrame = null
-  const snippet = searchBarRef.value
-  const inputElement = resolveOfficialInput(snippet)
-  const buttonElement = resolveOfficialButton(snippet)
-  if (inputElement) {
-    if (snippet?.handleInputChange) {
-      inputElement.removeEventListener('input', snippet.handleInputChange)
-    }
-    if (snippet?.handleInputKeydownEnter) {
-      inputElement.removeEventListener('keydown', snippet.handleInputKeydownEnter)
-    }
-  }
-  if (buttonElement && snippet?.handleSearchButtonClick) {
-    buttonElement.removeEventListener('click', snippet.handleSearchButtonClick)
-    buttonElement.addEventListener('click', handleManualAsk)
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && open.value) {
+    closePanel()
   }
 }
 
-function scheduleStripOfficialAutoSearchListeners() {
-  if (stripFrame !== null) {
-    cancelAnimationFrame(stripFrame)
-  }
-  stripFrame = requestAnimationFrame(stripOfficialAutoSearchListeners)
+function openPanel() {
+  open.value = true
+  refreshSnippetConfig(true)
 }
 
-async function handleManualAsk() {
-  const query = manualSearchInput.value.trim()
-  if (!query) return
-  submittedQuery.value = query
-  await nextTick()
-  const snippet = searchBarRef.value
-  const inputElement = resolveOfficialInput(snippet)
-  if (inputElement) {
-    inputElement.value = query
-  }
-  stripOfficialAutoSearchListeners()
-  if (snippet?.performSearch) {
-    await snippet.performSearch(query)
-  } else {
-    resolveOfficialButton(snippet)?.click()
-  }
-  manualSearchInput.value = ''
+function closePanel() {
+  open.value = false
 }
 
 onMounted(() => {
-  refreshSnippetConfig()
-  refreshTimer = setInterval(refreshSnippetConfig, 8 * 60 * 1000)
-  scheduleStripOfficialAutoSearchListeners()
+  refreshSnippetConfig(true)
+  refreshTimer = setInterval(() => refreshSnippetConfig(), 8 * 60 * 1000)
+  document.addEventListener('keydown', handleKeydown)
 })
 
 onBeforeUnmount(() => {
-  if (stripFrame !== null) {
-    cancelAnimationFrame(stripFrame)
-    stripFrame = null
-  }
   if (refreshTimer) {
     clearInterval(refreshTimer)
     refreshTimer = null
   }
+  document.removeEventListener('keydown', handleKeydown)
 })
 
-watch(
-  () => [snippetConfig.value.configured, snippetConfig.value.api_url, submittedQuery.value],
-  () => {
-    nextTick(scheduleStripOfficialAutoSearchListeners)
-  },
-)
+watch(open, (value) => {
+  if (typeof document !== 'undefined') {
+    document.body.classList.toggle('ai-search-locked', value)
+  }
+  if (value) {
+    nextTick(() => {
+      panelRef.value?.focus?.()
+    })
+  }
+})
 </script>
