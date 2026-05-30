@@ -83,3 +83,35 @@ func TestChatChunkToResponses_MimoShapedStream(t *testing.T) {
 	}
 	assert.Equal(t, "Hi!", strings.Join(textDeltas, ""))
 }
+
+// codex requires response.content_part.added before output_text deltas and
+// content_part.done at the end; without them it renders nothing.
+func TestChatChunkToResponses_EmitsContentPartEvents(t *testing.T) {
+	state := NewChatCompletionsToResponsesStreamState("mimo-v2.5")
+	var types []string
+	for _, c := range []*ChatCompletionsChunk{
+		{ID: "x", Choices: []ChatChunkChoice{{Delta: ChatDelta{Content: strptr("Hi")}}}},
+	} {
+		for _, e := range ChatCompletionsChunkToResponsesEvents(c, state) {
+			types = append(types, e.Type)
+		}
+	}
+	for _, e := range FinalizeChatCompletionsResponsesStream(state) {
+		types = append(types, e.Type)
+	}
+	assert.Contains(t, types, "response.content_part.added")
+	assert.Contains(t, types, "response.content_part.done")
+	// content_part.added must come before the first output_text.delta
+	iAdded, iDelta := -1, -1
+	for i, ty := range types {
+		if ty == "response.content_part.added" && iAdded < 0 {
+			iAdded = i
+		}
+		if ty == "response.output_text.delta" && iDelta < 0 {
+			iDelta = i
+		}
+	}
+	assert.GreaterOrEqual(t, iDelta, 0)
+	assert.GreaterOrEqual(t, iAdded, 0)
+	assert.Less(t, iAdded, iDelta, "content_part.added must precede output_text.delta")
+}
