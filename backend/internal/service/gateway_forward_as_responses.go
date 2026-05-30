@@ -87,6 +87,35 @@ func (s *GatewayService) ForwardAsResponses(
 		return nil, fmt.Errorf("marshal anthropic request: %w", err)
 	}
 
+	// TEMP-DEBUG2: capture inbound input item types and converted message roles
+	// to diagnose multi-turn blank output. Logs structure only, not full text.
+	{
+		var probe struct {
+			Input []map[string]json.RawMessage `json:"input"`
+		}
+		_ = json.Unmarshal(body, &probe)
+		var itemTypes []string
+		for _, it := range probe.Input {
+			t := strings.Trim(string(it["type"]), `"`)
+			r := strings.Trim(string(it["role"]), `"`)
+			if t == "" {
+				t = "role:" + r
+			}
+			itemTypes = append(itemTypes, t)
+		}
+		var msgRoles []string
+		for _, m := range anthropicReq.Messages {
+			msgRoles = append(msgRoles, m.Role)
+		}
+		logger.L().Info("TEMPDEBUG2 multiturn structure",
+			zap.Int("input_items", len(probe.Input)),
+			zap.Strings("input_item_types", itemTypes),
+			zap.Int("anthropic_messages", len(anthropicReq.Messages)),
+			zap.Strings("anthropic_msg_roles", msgRoles),
+			zap.Bool("has_system", len(anthropicReq.System) > 0),
+		)
+	}
+
 	// 6. Apply Claude Code mimicry for OAuth accounts (non-Claude-Code endpoints).
 	// OpenAI Responses 协议进来的请求永远不是 Claude Code 客户端，所以对 OAuth 账号
 	// 必须完整执行 /v1/messages 主路径上的伪装链路（system 重写 + normalize + metadata 注入），
