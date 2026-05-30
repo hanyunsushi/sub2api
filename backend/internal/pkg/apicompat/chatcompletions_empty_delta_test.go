@@ -1,6 +1,7 @@
 package apicompat
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -136,4 +137,26 @@ func TestChatChunkToResponses_OutputItemDoneCarriesContent(t *testing.T) {
 		}
 	}
 	assert.True(t, found, "must emit message output_item.done with content")
+}
+
+// mimo and other chat/completions upstreams reject reasoning_effort "xhigh"
+// (only low/medium/high allowed). It must be normalized to high.
+func TestResponsesToChatCompletions_XhighReasoningNormalized(t *testing.T) {
+	body := []byte(`{"model":"gpt-5.5","reasoning":{"effort":"xhigh"},"input":[{"role":"user","content":[{"type":"input_text","text":"hi"}]}]}`)
+	var req ResponsesRequest
+	require.NoError(t, json.Unmarshal(body, &req))
+	cc, err := ResponsesToChatCompletionsRequest(&req)
+	require.NoError(t, err)
+	assert.Equal(t, "high", cc.ReasoningEffort, "xhigh must be normalized to high for chat/completions")
+}
+
+func TestNormalizeChatReasoningEffort(t *testing.T) {
+	assert.Equal(t, "high", normalizeChatReasoningEffort("xhigh"))
+	assert.Equal(t, "high", normalizeChatReasoningEffort("high"))
+	assert.Equal(t, "high", normalizeChatReasoningEffort("max"))
+	assert.Equal(t, "medium", normalizeChatReasoningEffort("medium"))
+	assert.Equal(t, "low", normalizeChatReasoningEffort("low"))
+	assert.Equal(t, "low", normalizeChatReasoningEffort("minimal"))
+	assert.Equal(t, "", normalizeChatReasoningEffort(""))
+	assert.Equal(t, "", normalizeChatReasoningEffort("bogus"))
 }
