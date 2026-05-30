@@ -151,6 +151,11 @@ type AnthropicEventToResponsesState struct {
 
 	// For message output: accumulate text parts
 	ContentIndex int
+	// CurrentText accumulates the message's output_text so the terminal
+	// output_item.done can carry the full content. codex collects final text
+	// from OutputItemDone items, not from output_text.delta events, so the
+	// message item MUST include content:[{type:output_text,text:...}].
+	CurrentText string
 
 	// For function_call: track per-output info
 	CurrentCallID string
@@ -278,6 +283,7 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 			state.CurrentItemID = generateItemID()
 			state.CurrentItemType = "message"
 			state.ContentIndex = 0
+			state.CurrentText = ""
 
 			events = append(events, makeResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
 				OutputIndex: state.OutputIndex,
@@ -339,6 +345,7 @@ func anthToResHandleContentBlockDelta(evt *AnthropicStreamEvent, state *Anthropi
 		if evt.Delta.Text == "" {
 			return nil
 		}
+		state.CurrentText += evt.Delta.Text
 		return []ResponsesStreamEvent{makeResponsesEvent(state, "response.output_text.delta", &ResponsesStreamEvent{
 			OutputIndex:  state.OutputIndex,
 			ContentIndex: state.ContentIndex,
@@ -414,6 +421,7 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 				OutputIndex:  state.OutputIndex,
 				ContentIndex: state.ContentIndex,
 				ItemID:       state.CurrentItemID,
+				Text:         state.CurrentText,
 			}),
 			makeResponsesEvent(state, "response.content_part.done", &ResponsesStreamEvent{
 				OutputIndex:  state.OutputIndex,
@@ -421,7 +429,7 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 				ItemID:       state.CurrentItemID,
 				Part: &ResponsesContentPart{
 					Type: "output_text",
-					Text: "",
+					Text: state.CurrentText,
 				},
 			}),
 		}
@@ -477,22 +485,36 @@ func closeCurrentResponsesItem(state *AnthropicEventToResponsesState) []Response
 
 	itemType := state.CurrentItemType
 	itemID := state.CurrentItemID
+	currentText := state.CurrentText
 
 	// Reset
 	state.CurrentItemType = ""
 	state.CurrentItemID = ""
 	state.CurrentCallID = ""
 	state.CurrentName = ""
+	state.CurrentText = ""
 	state.OutputIndex++
 	state.ContentIndex = 0
 
+	// The terminal item carries its full content. codex collects final output
+	// from OutputItemDone items (not from output_text.delta), so a message item
+	// without content renders blank. Attach the accumulated text.
+	doneItem := &ResponsesOutput{
+		Type:   itemType,
+		ID:     itemID,
+		Status: "completed",
+	}
+	if itemType == "message" {
+		doneItem.Role = "assistant"
+		doneItem.Content = []ResponsesContentPart{{
+			Type: "output_text",
+			Text: currentText,
+		}}
+	}
+
 	return []ResponsesStreamEvent{makeResponsesEvent(state, "response.output_item.done", &ResponsesStreamEvent{
 		OutputIndex: state.OutputIndex - 1, // Use the index before increment
-		Item: &ResponsesOutput{
-			Type:   itemType,
-			ID:     itemID,
-			Status: "completed",
-		},
+		Item:        doneItem,
 	})}
 }
 

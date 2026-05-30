@@ -594,6 +594,12 @@ func FinalizeChatCompletionsResponsesStream(state *ChatCompletionsToResponsesStr
 				ID:     state.MessageItemID,
 				Role:   "assistant",
 				Status: "completed",
+				// codex collects final text from OutputItemDone items, so the
+				// message item must carry its full content, not just status.
+				Content: []ResponsesContentPart{{
+					Type: "output_text",
+					Text: state.Text.String(),
+				}},
 			},
 		}))
 	}
