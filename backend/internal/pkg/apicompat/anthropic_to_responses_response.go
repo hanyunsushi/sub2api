@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -160,6 +161,11 @@ type AnthropicEventToResponsesState struct {
 	// For function_call: track per-output info
 	CurrentCallID string
 	CurrentName   string
+	// CurrentArguments accumulates the function_call's argument JSON so the
+	// terminal output_item.done (and arguments.done) can carry the full args.
+	// codex reads the tool call from the OutputItemDone item; without
+	// call_id/name/arguments it cannot execute the tool and stalls.
+	CurrentArguments string
 
 	// Usage from message_start / message_delta. InputTokens here follows
 	// Anthropic semantics (excludes cached tokens); they are added back when
@@ -319,6 +325,7 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 		state.CurrentItemType = "function_call"
 		state.CurrentCallID = toResponsesCallID(evt.ContentBlock.ID)
 		state.CurrentName = evt.ContentBlock.Name
+		state.CurrentArguments = ""
 
 		events = append(events, makeResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
 			OutputIndex: state.OutputIndex,
@@ -368,6 +375,7 @@ func anthToResHandleContentBlockDelta(evt *AnthropicStreamEvent, state *Anthropi
 		if evt.Delta.PartialJSON == "" {
 			return nil
 		}
+		state.CurrentArguments += evt.Delta.PartialJSON
 		return []ResponsesStreamEvent{makeResponsesEvent(state, "response.function_call_arguments.delta", &ResponsesStreamEvent{
 			OutputIndex: state.OutputIndex,
 			Delta:       evt.Delta.PartialJSON,
@@ -406,6 +414,7 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 				ItemID:      state.CurrentItemID,
 				CallID:      state.CurrentCallID,
 				Name:        state.CurrentName,
+				Arguments:   nonEmptyArguments(state.CurrentArguments),
 			}),
 		}
 		events = append(events, closeCurrentResponsesItem(state)...)
@@ -486,6 +495,9 @@ func closeCurrentResponsesItem(state *AnthropicEventToResponsesState) []Response
 	itemType := state.CurrentItemType
 	itemID := state.CurrentItemID
 	currentText := state.CurrentText
+	currentCallID := state.CurrentCallID
+	currentName := state.CurrentName
+	currentArgs := state.CurrentArguments
 
 	// Reset
 	state.CurrentItemType = ""
@@ -493,29 +505,44 @@ func closeCurrentResponsesItem(state *AnthropicEventToResponsesState) []Response
 	state.CurrentCallID = ""
 	state.CurrentName = ""
 	state.CurrentText = ""
+	state.CurrentArguments = ""
 	state.OutputIndex++
 	state.ContentIndex = 0
 
 	// The terminal item carries its full content. codex collects final output
-	// from OutputItemDone items (not from output_text.delta), so a message item
-	// without content renders blank. Attach the accumulated text.
+	// from OutputItemDone items (not from the delta events), so an item missing
+	// its content/arguments renders blank or cannot be executed as a tool call.
 	doneItem := &ResponsesOutput{
 		Type:   itemType,
 		ID:     itemID,
 		Status: "completed",
 	}
-	if itemType == "message" {
+	switch itemType {
+	case "message":
 		doneItem.Role = "assistant"
 		doneItem.Content = []ResponsesContentPart{{
 			Type: "output_text",
 			Text: currentText,
 		}}
+	case "function_call":
+		doneItem.CallID = currentCallID
+		doneItem.Name = currentName
+		doneItem.Arguments = nonEmptyArguments(currentArgs)
 	}
 
 	return []ResponsesStreamEvent{makeResponsesEvent(state, "response.output_item.done", &ResponsesStreamEvent{
 		OutputIndex: state.OutputIndex - 1, // Use the index before increment
 		Item:        doneItem,
 	})}
+}
+
+// nonEmptyArguments ensures function_call arguments are valid JSON. Anthropic
+// tool_use with no input produces an empty string; codex expects at least "{}".
+func nonEmptyArguments(args string) string {
+	if strings.TrimSpace(args) == "" {
+		return "{}"
+	}
+	return args
 }
 
 func makeResponsesCreatedEvent(state *AnthropicEventToResponsesState) ResponsesStreamEvent {

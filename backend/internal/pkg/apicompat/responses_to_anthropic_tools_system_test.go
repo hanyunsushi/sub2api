@@ -165,3 +165,38 @@ func TestResponsesToAnthropic_EmptySystemOmitted(t *testing.T) {
 		assert.NotEqual(t, "", strings.TrimSpace(sys), "system must never be empty/whitespace")
 	}
 }
+
+
+// codex reads the tool call from the OutputItemDone item, so a streamed
+// function_call's output_item.done must carry call_id, name and arguments —
+// without them codex cannot execute the tool and stalls.
+func TestAnthropicStream_FunctionCallDoneCarriesCallFields(t *testing.T) {
+	state := &AnthropicEventToResponsesState{}
+	idx := 0
+	var all []ResponsesStreamEvent
+	all = append(all, AnthropicEventToResponsesEvents(&AnthropicStreamEvent{
+		Type: "message_start", Message: &AnthropicResponse{ID: "msg_1", Model: "claude-opus-4-8"},
+	}, state)...)
+	all = append(all, AnthropicEventToResponsesEvents(&AnthropicStreamEvent{
+		Type: "content_block_start", Index: &idx,
+		ContentBlock: &AnthropicContentBlock{Type: "tool_use", ID: "tu_1", Name: "exec"},
+	}, state)...)
+	all = append(all, AnthropicEventToResponsesEvents(&AnthropicStreamEvent{
+		Type: "content_block_delta", Index: &idx,
+		Delta: &AnthropicDelta{Type: "input_json_delta", PartialJSON: `{"cmd":"ls"}`},
+	}, state)...)
+	all = append(all, AnthropicEventToResponsesEvents(&AnthropicStreamEvent{
+		Type: "content_block_stop", Index: &idx,
+	}, state)...)
+
+	var fcDone *ResponsesOutput
+	for _, e := range all {
+		if e.Type == "response.output_item.done" && e.Item != nil && e.Item.Type == "function_call" {
+			fcDone = e.Item
+		}
+	}
+	require.NotNil(t, fcDone, "must emit function_call output_item.done")
+	assert.NotEmpty(t, fcDone.CallID, "call_id required")
+	assert.Equal(t, "exec", fcDone.Name)
+	assert.JSONEq(t, `{"cmd":"ls"}`, fcDone.Arguments)
+}
