@@ -25,9 +25,10 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         markdown = generator.build_markdown(source)
 
         self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
-        self.assertIn("右上角有常驻的 `ask ai` 搜索框", markdown)
+        self.assertIn("右上角有常驻的 `Ask AI` 入口", markdown)
+        self.assertIn("点击后会在屏幕中央弹出聊天窗口", markdown)
         self.assertIn("每 3 天按用户版知识文档重新上传一次", markdown)
-        self.assertIn("官方 search bar 组件展示相关结果和来源片段", markdown)
+        self.assertIn("Cloudflare 官方聊天组件，基于知识库给出自然语言回答并附带来源", markdown)
         self.assertIn("管理员后台提供 Codex/CPA 账号管理能力", markdown)
         self.assertEqual([], generator.validate_public_markdown(markdown))
         self.assertNotIn("/Users/hinaw", markdown)
