@@ -288,6 +288,21 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 					Status: "in_progress",
 				},
 			}))
+
+			// Emit response.content_part.added so clients (e.g. codex) know a
+			// text content part is starting. Without it the subsequent
+			// output_text.delta events have no part to attach to and the client
+			// renders nothing. Reverse of anthToResHandleContentBlockStop's
+			// content_part.done.
+			events = append(events, makeResponsesEvent(state, "response.content_part.added", &ResponsesStreamEvent{
+				OutputIndex:  state.OutputIndex,
+				ContentIndex: state.ContentIndex,
+				ItemID:       state.CurrentItemID,
+				Part: &ResponsesContentPart{
+					Type: "output_text",
+					Text: "",
+				},
+			}))
 		}
 
 	case "tool_use":
@@ -390,12 +405,24 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 		return events
 
 	case "message":
-		// Emit output_text.done (text block is done, but message item stays open for potential more blocks)
+		// Text block done: emit output_text.done then content_part.done.
+		// The message item stays open for potential more blocks; it is closed
+		// later by closeCurrentResponsesItem. content_part.done mirrors the
+		// content_part.added emitted in anthToResHandleContentBlockStart.
 		return []ResponsesStreamEvent{
 			makeResponsesEvent(state, "response.output_text.done", &ResponsesStreamEvent{
 				OutputIndex:  state.OutputIndex,
 				ContentIndex: state.ContentIndex,
 				ItemID:       state.CurrentItemID,
+			}),
+			makeResponsesEvent(state, "response.content_part.done", &ResponsesStreamEvent{
+				OutputIndex:  state.OutputIndex,
+				ContentIndex: state.ContentIndex,
+				ItemID:       state.CurrentItemID,
+				Part: &ResponsesContentPart{
+					Type: "output_text",
+					Text: "",
+				},
 			}),
 		}
 	}

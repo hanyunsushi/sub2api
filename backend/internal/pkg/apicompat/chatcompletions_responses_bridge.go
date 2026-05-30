@@ -577,6 +577,16 @@ func FinalizeChatCompletionsResponsesStream(state *ChatCompletionsToResponsesStr
 			Text:         state.Text.String(),
 			ItemID:       state.MessageItemID,
 		}))
+		// content_part.done mirrors content_part.added from ensureChatToResponsesMessageItem.
+		events = append(events, chatToResponsesEvent(state, "response.content_part.done", &ResponsesStreamEvent{
+			OutputIndex:  0,
+			ContentIndex: 0,
+			ItemID:       state.MessageItemID,
+			Part: &ResponsesContentPart{
+				Type: "output_text",
+				Text: state.Text.String(),
+			},
+		}))
 		events = append(events, chatToResponsesEvent(state, "response.output_item.done", &ResponsesStreamEvent{
 			OutputIndex: 0,
 			Item: &ResponsesOutput{
@@ -631,15 +641,28 @@ func ensureChatToResponsesMessageItem(state *ChatCompletionsToResponsesStreamSta
 		return nil
 	}
 	state.MessageItemID = generateItemID()
-	return []ResponsesStreamEvent{chatToResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
-		OutputIndex: 0,
-		Item: &ResponsesOutput{
-			Type:   "message",
-			ID:     state.MessageItemID,
-			Role:   "assistant",
-			Status: "in_progress",
-		},
-	})}
+	return []ResponsesStreamEvent{
+		chatToResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
+			OutputIndex: 0,
+			Item: &ResponsesOutput{
+				Type:   "message",
+				ID:     state.MessageItemID,
+				Role:   "assistant",
+				Status: "in_progress",
+			},
+		}),
+		// content_part.added must precede output_text.delta or strict clients
+		// (codex) have no part to attach text to and render nothing.
+		chatToResponsesEvent(state, "response.content_part.added", &ResponsesStreamEvent{
+			OutputIndex:  0,
+			ContentIndex: 0,
+			ItemID:       state.MessageItemID,
+			Part: &ResponsesContentPart{
+				Type: "output_text",
+				Text: "",
+			},
+		}),
+	}
 }
 
 func (state *ChatCompletionsToResponsesStreamState) chatOutput() []ResponsesOutput {
