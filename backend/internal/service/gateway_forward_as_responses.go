@@ -87,6 +87,14 @@ func (s *GatewayService) ForwardAsResponses(
 		return nil, fmt.Errorf("marshal anthropic request: %w", err)
 	}
 
+	// TEMP-DEBUG: capture inbound Responses body and converted Anthropic body
+	// to diagnose upstream 422. Remove after diagnosis.
+	logger.L().Info("TEMPDEBUG forward_as_responses bodies",
+		zap.Int64("account_id", account.ID),
+		zap.String("inbound_responses_body", string(body)),
+		zap.String("converted_anthropic_body", string(anthropicBody)),
+	)
+
 	// 6. Apply Claude Code mimicry for OAuth accounts (non-Claude-Code endpoints).
 	// OpenAI Responses 协议进来的请求永远不是 Claude Code 客户端，所以对 OAuth 账号
 	// 必须完整执行 /v1/messages 主路径上的伪装链路（system 重写 + normalize + metadata 注入），
