@@ -28,6 +28,31 @@ func anthReqFrom(t *testing.T, body string) *AnthropicRequest {
 	return out
 }
 
+// systemText extracts the concatenated text from an Anthropic system field,
+// which buildSystemJSON emits in array form ([{"type":"text","text":...}]).
+func systemText(t *testing.T, raw json.RawMessage) string {
+	t.Helper()
+	if len(raw) == 0 {
+		return ""
+	}
+	// array form
+	var parts []struct {
+		Type string `json:"type"`
+		Text string `json:"text"`
+	}
+	if err := json.Unmarshal(raw, &parts); err == nil {
+		var sb []string
+		for _, p := range parts {
+			sb = append(sb, p.Text)
+		}
+		return strings.Join(sb, "\n\n")
+	}
+	// string form (fallback)
+	var s string
+	require.NoError(t, json.Unmarshal(raw, &s))
+	return s
+}
+
 func TestResponsesToAnthropic_ToolWithoutParametersGetsSchema(t *testing.T) {
 	// codex namespace tools (mcp__*, multi_agent_v1, codex_app) carry no parameters.
 	out := anthReqFrom(t, `{
@@ -86,8 +111,7 @@ func TestResponsesToAnthropic_InstructionsBecomeSystem(t *testing.T) {
 		"input": [{"role":"user","content":[{"type":"input_text","text":"hi"}]}]
 	}`)
 	require.NotEmpty(t, out.System)
-	var sys string
-	require.NoError(t, json.Unmarshal(out.System, &sys))
+	sys := systemText(t, out.System)
 	assert.Contains(t, sys, "You are a coding agent.")
 }
 
@@ -101,8 +125,7 @@ func TestResponsesToAnthropic_DeveloperRoleBecomesSystem(t *testing.T) {
 	}`)
 	// developer content must be in system, not leaked into a user message
 	require.NotEmpty(t, out.System)
-	var sys string
-	require.NoError(t, json.Unmarshal(out.System, &sys))
+	sys := systemText(t, out.System)
 	assert.Contains(t, sys, "Follow the rules.")
 
 	// no message content may carry input_text (Anthropic only knows "text")
@@ -121,8 +144,7 @@ func TestResponsesToAnthropic_InstructionsAndDeveloperConcatenated(t *testing.T)
 			{"role":"user","content":[{"type":"input_text","text":"hi"}]}
 		]
 	}`)
-	var sys string
-	require.NoError(t, json.Unmarshal(out.System, &sys))
+	sys := systemText(t, out.System)
 	assert.Contains(t, sys, "Primary prompt.")
 	assert.Contains(t, sys, "Extra context.")
 }
@@ -139,8 +161,7 @@ func TestResponsesToAnthropic_EmptySystemOmitted(t *testing.T) {
 		]
 	}`)
 	if len(out.System) > 0 {
-		var sys string
-		require.NoError(t, json.Unmarshal(out.System, &sys))
+		sys := systemText(t, out.System)
 		assert.NotEqual(t, "", strings.TrimSpace(sys), "system must never be empty/whitespace")
 	}
 }
