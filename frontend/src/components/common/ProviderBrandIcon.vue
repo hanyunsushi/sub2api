@@ -37,9 +37,19 @@ import { providerBrandInfo } from '@/utils/providerBrandIcon'
 const props = defineProps<{
   provider?: string | null
   model?: string | null
+  logoUrl?: string | null
 }>()
 
-const brand = computed(() => providerBrandInfo(props.provider, props.model))
+const brand = computed(() => {
+  const info = providerBrandInfo(props.provider, props.model)
+  const logoUrl = props.logoUrl?.trim()
+  if (!logoUrl) return info
+  return {
+    ...info,
+    iconModel: null,
+    iconUrl: logoUrl,
+  }
+})
 const title = computed(() => props.provider || props.model || 'Provider')
 </script>
 

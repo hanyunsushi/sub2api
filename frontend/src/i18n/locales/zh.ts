@@ -3003,6 +3003,8 @@ export default {
       form: {
         name: '名称',
         namePlaceholder: '输入监控名称',
+        logo: 'AI Logo',
+        logoHint: '从图床合集选择，或粘贴自定义图片 URL。',
         provider: '平台',
         apiMode: 'OpenAI 协议',
         apiModeChatCompletions: 'OpenAI Compatible',

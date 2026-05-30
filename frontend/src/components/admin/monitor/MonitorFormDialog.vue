@@ -23,11 +23,18 @@
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="form.provider = opt.value"
           >
-            <ProviderBrandIcon :provider="opt.value" :model="form.primary_model || opt.value" />
+            <ProviderBrandIcon :provider="opt.value" :model="form.primary_model || opt.value" :logo-url="form.logo_url" />
             <span>{{ opt.label }}</span>
           </button>
         </div>
       </div>
+
+      <LogoPicker
+        v-model="form.logo_url"
+        :label="t('admin.channelMonitor.form.logo')"
+        :hint="t('admin.channelMonitor.form.logoHint')"
+        input-test-id="channel-monitor-logo-url"
+      />
 
       <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
@@ -198,6 +205,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import Select from '@/components/common/Select.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import ModelTagInput from '@/components/admin/channel/ModelTagInput.vue'
 import { getPlatformTextClass } from '@/components/admin/channel/types'
 import MonitorKeyPickerDialog from '@/components/admin/monitor/MonitorKeyPickerDialog.vue'
@@ -246,6 +254,7 @@ const userGroupRates = ref<Record<number, number>>({})
 
 interface MonitorForm {
   name: string
+  logo_url: string
   provider: Provider
   api_mode: APIMode
   endpoint: string
@@ -264,6 +273,7 @@ interface MonitorForm {
 
 const form = reactive<MonitorForm>({
   name: '',
+  logo_url: '',
   provider: PROVIDER_ANTHROPIC,
   api_mode: API_MODE_CHAT_COMPLETIONS,
   endpoint: '',
@@ -411,6 +421,7 @@ watch(() => form.api_mode, () => {
 function resetForm() {
   suppressFormWatchers = true
   form.name = ''
+  form.logo_url = ''
   form.provider = PROVIDER_ANTHROPIC
   form.api_mode = API_MODE_CHAT_COMPLETIONS
   form.endpoint = ''
@@ -430,6 +441,7 @@ function resetForm() {
 function loadFromMonitor(m: ChannelMonitor) {
   suppressFormWatchers = true
   form.name = m.name
+  form.logo_url = m.logo_url || ''
   form.provider = m.provider
   form.api_mode = normalizeAPIMode(m.api_mode)
   form.endpoint = m.endpoint
@@ -495,6 +507,7 @@ function pickMyKey(k: ApiKey) {
 function buildPayload(): CreateParams {
   return {
     name: form.name.trim(),
+    logo_url: form.logo_url.trim(),
     provider: form.provider,
     api_mode: form.provider === PROVIDER_OPENAI ? form.api_mode : API_MODE_CHAT_COMPLETIONS,
     endpoint: form.endpoint.trim(),

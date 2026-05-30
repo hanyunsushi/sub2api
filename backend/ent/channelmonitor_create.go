@@ -59,6 +59,20 @@ func (_c *ChannelMonitorCreate) SetName(v string) *ChannelMonitorCreate {
 	return _c
 }
 
+// SetLogoURL sets the "logo_url" field.
+func (_c *ChannelMonitorCreate) SetLogoURL(v string) *ChannelMonitorCreate {
+	_c.mutation.SetLogoURL(v)
+	return _c
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_c *ChannelMonitorCreate) SetNillableLogoURL(v *string) *ChannelMonitorCreate {
+	if v != nil {
+		_c.SetLogoURL(*v)
+	}
+	return _c
+}
+
 // SetProvider sets the "provider" field.
 func (_c *ChannelMonitorCreate) SetProvider(v channelmonitor.Provider) *ChannelMonitorCreate {
 	_c.mutation.SetProvider(v)
@@ -289,6 +303,10 @@ func (_c *ChannelMonitorCreate) defaults() {
 		v := channelmonitor.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		v := channelmonitor.DefaultLogoURL
+		_c.mutation.SetLogoURL(v)
+	}
 	if _, ok := _c.mutation.APIMode(); !ok {
 		v := channelmonitor.DefaultAPIMode
 		_c.mutation.SetAPIMode(v)
@@ -330,6 +348,9 @@ func (_c *ChannelMonitorCreate) check() error {
 		if err := channelmonitor.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.LogoURL(); !ok {
+		return &ValidationError{Name: "logo_url", err: errors.New(`ent: missing required field "ChannelMonitor.logo_url"`)}
 	}
 	if _, ok := _c.mutation.Provider(); !ok {
 		return &ValidationError{Name: "provider", err: errors.New(`ent: missing required field "ChannelMonitor.provider"`)}
@@ -442,6 +463,10 @@ func (_c *ChannelMonitorCreate) createSpec() (*ChannelMonitor, *sqlgraph.CreateS
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(channelmonitor.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := _c.mutation.LogoURL(); ok {
+		_spec.SetField(channelmonitor.FieldLogoURL, field.TypeString, value)
+		_node.LogoURL = value
 	}
 	if value, ok := _c.mutation.Provider(); ok {
 		_spec.SetField(channelmonitor.FieldProvider, field.TypeEnum, value)
@@ -621,6 +646,18 @@ func (u *ChannelMonitorUpsert) SetName(v string) *ChannelMonitorUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *ChannelMonitorUpsert) UpdateName() *ChannelMonitorUpsert {
 	u.SetExcluded(channelmonitor.FieldName)
+	return u
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *ChannelMonitorUpsert) SetLogoURL(v string) *ChannelMonitorUpsert {
+	u.Set(channelmonitor.FieldLogoURL, v)
+	return u
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *ChannelMonitorUpsert) UpdateLogoURL() *ChannelMonitorUpsert {
+	u.SetExcluded(channelmonitor.FieldLogoURL)
 	return u
 }
 
@@ -910,6 +947,20 @@ func (u *ChannelMonitorUpsertOne) SetName(v string) *ChannelMonitorUpsertOne {
 func (u *ChannelMonitorUpsertOne) UpdateName() *ChannelMonitorUpsertOne {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *ChannelMonitorUpsertOne) SetLogoURL(v string) *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertOne) UpdateLogoURL() *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 
@@ -1401,6 +1452,20 @@ func (u *ChannelMonitorUpsertBulk) SetName(v string) *ChannelMonitorUpsertBulk {
 func (u *ChannelMonitorUpsertBulk) UpdateName() *ChannelMonitorUpsertBulk {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (u *ChannelMonitorUpsertBulk) SetLogoURL(v string) *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetLogoURL(v)
+	})
+}
+
+// UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertBulk) UpdateLogoURL() *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateLogoURL()
 	})
 }
 

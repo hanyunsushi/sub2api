@@ -2926,6 +2926,8 @@ export default {
       form: {
         name: 'Name',
         namePlaceholder: 'Enter monitor name',
+        logo: 'AI Logo',
+        logoHint: 'Pick from the logo gallery or paste a custom image URL.',
         provider: 'Platform',
         apiMode: 'OpenAI protocol',
         apiModeChatCompletions: 'OpenAI Compatible',

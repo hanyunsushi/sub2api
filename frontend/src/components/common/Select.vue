@@ -487,8 +487,8 @@ onUnmounted(() => {
   --select-option-hover-surface: var(--atelier-ui-hover-surface);
   --select-option-hover-text: var(--atelier-ink);
   --select-option-focused-surface: var(--atelier-ui-hover-surface);
-  --select-option-selected-surface: var(--atelier-blue);
-  --select-option-selected-text: var(--atelier-white);
+  --select-option-selected-surface: var(--atelier-ui-hover-surface);
+  --select-option-selected-text: var(--atelier-ink);
   background: var(--select-surface);
   border-color: var(--atelier-line);
   color: var(--atelier-ink);
@@ -589,8 +589,8 @@ onUnmounted(() => {
   --select-option-hover-surface: var(--atelier-ui-hover-surface);
   --select-option-hover-text: var(--atelier-ink);
   --select-option-focused-surface: var(--atelier-ui-hover-surface);
-  --select-option-selected-surface: var(--atelier-blue);
-  --select-option-selected-text: var(--atelier-white);
+  --select-option-selected-surface: var(--atelier-ui-hover-surface);
+  --select-option-selected-text: var(--atelier-ink);
   background: var(--select-surface);
   border-color: var(--atelier-material-edge);
   color: var(--atelier-ink);

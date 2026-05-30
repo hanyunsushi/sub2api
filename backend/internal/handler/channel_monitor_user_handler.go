@@ -43,6 +43,7 @@ func (h *ChannelMonitorUserHandler) featureEnabled(c *gin.Context) bool {
 type channelMonitorUserListItem struct {
 	ID                   int64                                `json:"id"`
 	Name                 string                               `json:"name"`
+	LogoURL              string                               `json:"logo_url"`
 	Provider             string                               `json:"provider"`
 	GroupName            string                               `json:"group_name"`
 	PrimaryModel         string                               `json:"primary_model"`
@@ -66,6 +67,7 @@ type channelMonitorUserTimelinePoint struct {
 type channelMonitorUserDetailResponse struct {
 	ID        int64                         `json:"id"`
 	Name      string                        `json:"name"`
+	LogoURL   string                        `json:"logo_url"`
 	Provider  string                        `json:"provider"`
 	GroupName string                        `json:"group_name"`
 	Models    []channelMonitorUserModelStat `json:"models"`
@@ -102,6 +104,7 @@ func userMonitorViewToItem(v *service.UserMonitorView) channelMonitorUserListIte
 	return channelMonitorUserListItem{
 		ID:                   v.ID,
 		Name:                 v.Name,
+		LogoURL:              v.LogoURL,
 		Provider:             v.Provider,
 		GroupName:            v.GroupName,
 		PrimaryModel:         v.PrimaryModel,
@@ -130,6 +133,7 @@ func userMonitorDetailToResponse(d *service.UserMonitorDetail) *channelMonitorUs
 	return &channelMonitorUserDetailResponse{
 		ID:        d.ID,
 		Name:      d.Name,
+		LogoURL:   d.LogoURL,
 		Provider:  d.Provider,
 		GroupName: d.GroupName,
 		Models:    models,

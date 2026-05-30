@@ -4,6 +4,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/schema/mixins"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -34,6 +35,9 @@ func (ChannelMonitor) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			MaxLen(100),
+		field.String("logo_url").
+			Default("").
+			SchemaType(map[string]string{dialect.Postgres: "text"}),
 		field.Enum("provider").
 			Values("openai", "anthropic", "gemini"),
 		field.String("api_mode").

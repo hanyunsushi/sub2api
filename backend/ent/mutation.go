@@ -8811,6 +8811,7 @@ type ChannelMonitorMutation struct {
 	created_at              *time.Time
 	updated_at              *time.Time
 	name                    *string
+	logo_url                *string
 	provider                *channelmonitor.Provider
 	api_mode                *string
 	endpoint                *string
@@ -9046,6 +9047,42 @@ func (m *ChannelMonitorMutation) OldName(ctx context.Context) (v string, err err
 // ResetName resets all changes to the "name" field.
 func (m *ChannelMonitorMutation) ResetName() {
 	m.name = nil
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (m *ChannelMonitorMutation) SetLogoURL(s string) {
+	m.logo_url = &s
+}
+
+// LogoURL returns the value of the "logo_url" field in the mutation.
+func (m *ChannelMonitorMutation) LogoURL() (r string, exists bool) {
+	v := m.logo_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogoURL returns the old "logo_url" field's value of the ChannelMonitor entity.
+// If the ChannelMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChannelMonitorMutation) OldLogoURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogoURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogoURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogoURL: %w", err)
+	}
+	return oldValue.LogoURL, nil
+}
+
+// ResetLogoURL resets all changes to the "logo_url" field.
+func (m *ChannelMonitorMutation) ResetLogoURL() {
+	m.logo_url = nil
 }
 
 // SetProvider sets the "provider" field.
@@ -9877,7 +9914,7 @@ func (m *ChannelMonitorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChannelMonitorMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, channelmonitor.FieldCreatedAt)
 	}
@@ -9886,6 +9923,9 @@ func (m *ChannelMonitorMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, channelmonitor.FieldName)
+	}
+	if m.logo_url != nil {
+		fields = append(fields, channelmonitor.FieldLogoURL)
 	}
 	if m.provider != nil {
 		fields = append(fields, channelmonitor.FieldProvider)
@@ -9946,6 +9986,8 @@ func (m *ChannelMonitorMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case channelmonitor.FieldName:
 		return m.Name()
+	case channelmonitor.FieldLogoURL:
+		return m.LogoURL()
 	case channelmonitor.FieldProvider:
 		return m.Provider()
 	case channelmonitor.FieldAPIMode:
@@ -9991,6 +10033,8 @@ func (m *ChannelMonitorMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldUpdatedAt(ctx)
 	case channelmonitor.FieldName:
 		return m.OldName(ctx)
+	case channelmonitor.FieldLogoURL:
+		return m.OldLogoURL(ctx)
 	case channelmonitor.FieldProvider:
 		return m.OldProvider(ctx)
 	case channelmonitor.FieldAPIMode:
@@ -10050,6 +10094,13 @@ func (m *ChannelMonitorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case channelmonitor.FieldLogoURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogoURL(v)
 		return nil
 	case channelmonitor.FieldProvider:
 		v, ok := value.(channelmonitor.Provider)
@@ -10267,6 +10318,9 @@ func (m *ChannelMonitorMutation) ResetField(name string) error {
 		return nil
 	case channelmonitor.FieldName:
 		m.ResetName()
+		return nil
+	case channelmonitor.FieldLogoURL:
+		m.ResetLogoURL()
 		return nil
 	case channelmonitor.FieldProvider:
 		m.ResetProvider()

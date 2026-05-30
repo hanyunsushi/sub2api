@@ -52,6 +52,20 @@ func (_u *ChannelMonitorUpdate) SetNillableName(v *string) *ChannelMonitorUpdate
 	return _u
 }
 
+// SetLogoURL sets the "logo_url" field.
+func (_u *ChannelMonitorUpdate) SetLogoURL(v string) *ChannelMonitorUpdate {
+	_u.mutation.SetLogoURL(v)
+	return _u
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_u *ChannelMonitorUpdate) SetNillableLogoURL(v *string) *ChannelMonitorUpdate {
+	if v != nil {
+		_u.SetLogoURL(*v)
+	}
+	return _u
+}
+
 // SetProvider sets the "provider" field.
 func (_u *ChannelMonitorUpdate) SetProvider(v channelmonitor.Provider) *ChannelMonitorUpdate {
 	_u.mutation.SetProvider(v)
@@ -488,6 +502,9 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(channelmonitor.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.LogoURL(); ok {
+		_spec.SetField(channelmonitor.FieldLogoURL, field.TypeString, value)
+	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(channelmonitor.FieldProvider, field.TypeEnum, value)
 	}
@@ -705,6 +722,20 @@ func (_u *ChannelMonitorUpdateOne) SetName(v string) *ChannelMonitorUpdateOne {
 func (_u *ChannelMonitorUpdateOne) SetNillableName(v *string) *ChannelMonitorUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetLogoURL sets the "logo_url" field.
+func (_u *ChannelMonitorUpdateOne) SetLogoURL(v string) *ChannelMonitorUpdateOne {
+	_u.mutation.SetLogoURL(v)
+	return _u
+}
+
+// SetNillableLogoURL sets the "logo_url" field if the given value is not nil.
+func (_u *ChannelMonitorUpdateOne) SetNillableLogoURL(v *string) *ChannelMonitorUpdateOne {
+	if v != nil {
+		_u.SetLogoURL(*v)
 	}
 	return _u
 }
@@ -1174,6 +1205,9 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(channelmonitor.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.LogoURL(); ok {
+		_spec.SetField(channelmonitor.FieldLogoURL, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(channelmonitor.FieldProvider, field.TypeEnum, value)

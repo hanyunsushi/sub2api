@@ -119,6 +119,7 @@ func (s *ChannelMonitorService) Create(ctx context.Context, p ChannelMonitorCrea
 	}
 	m := &ChannelMonitor{
 		Name:             strings.TrimSpace(p.Name),
+		LogoURL:          strings.TrimSpace(p.LogoURL),
 		Provider:         p.Provider,
 		APIMode:          defaultAPIMode(p.APIMode),
 		Endpoint:         normalizeEndpoint(p.Endpoint),
@@ -477,6 +478,9 @@ func applyMonitorUpdate(existing *ChannelMonitor, p ChannelMonitorUpdateParams) 
 	providerChanged := false
 	if p.Name != nil {
 		existing.Name = strings.TrimSpace(*p.Name)
+	}
+	if p.LogoURL != nil {
+		existing.LogoURL = strings.TrimSpace(*p.LogoURL)
 	}
 	if p.Provider != nil {
 		if err := validateProvider(*p.Provider); err != nil {

@@ -37,6 +37,7 @@ func NewChannelMonitorHandler(monitorService *service.ChannelMonitorService) *Ch
 
 type channelMonitorCreateRequest struct {
 	Name             string            `json:"name" binding:"required,max=100"`
+	LogoURL          string            `json:"logo_url" binding:"omitempty,max=2048"`
 	Provider         string            `json:"provider" binding:"required,oneof=openai anthropic gemini"`
 	APIMode          string            `json:"api_mode" binding:"omitempty,oneof=chat_completions responses"`
 	Endpoint         string            `json:"endpoint" binding:"required,max=500"`
@@ -54,6 +55,7 @@ type channelMonitorCreateRequest struct {
 
 type channelMonitorUpdateRequest struct {
 	Name             *string            `json:"name" binding:"omitempty,max=100"`
+	LogoURL          *string            `json:"logo_url" binding:"omitempty,max=2048"`
 	Provider         *string            `json:"provider" binding:"omitempty,oneof=openai anthropic gemini"`
 	APIMode          *string            `json:"api_mode" binding:"omitempty,oneof=chat_completions responses"`
 	Endpoint         *string            `json:"endpoint" binding:"omitempty,max=500"`
@@ -73,6 +75,7 @@ type channelMonitorUpdateRequest struct {
 type channelMonitorResponse struct {
 	ID                  int64                                `json:"id"`
 	Name                string                               `json:"name"`
+	LogoURL             string                               `json:"logo_url"`
 	Provider            string                               `json:"provider"`
 	APIMode             string                               `json:"api_mode"`
 	Endpoint            string                               `json:"endpoint"`
@@ -140,6 +143,7 @@ func channelMonitorToResponse(m *service.ChannelMonitor) *channelMonitorResponse
 	resp := &channelMonitorResponse{
 		ID:                  m.ID,
 		Name:                m.Name,
+		LogoURL:             strings.TrimSpace(m.LogoURL),
 		Provider:            m.Provider,
 		APIMode:             m.APIMode,
 		Endpoint:            m.Endpoint,
@@ -306,6 +310,7 @@ func (h *ChannelMonitorHandler) Create(c *gin.Context) {
 
 	m, err := h.monitorService.Create(c.Request.Context(), service.ChannelMonitorCreateParams{
 		Name:             req.Name,
+		LogoURL:          req.LogoURL,
 		Provider:         req.Provider,
 		APIMode:          req.APIMode,
 		Endpoint:         req.Endpoint,
@@ -342,6 +347,7 @@ func (h *ChannelMonitorHandler) Update(c *gin.Context) {
 
 	m, err := h.monitorService.Update(c.Request.Context(), id, service.ChannelMonitorUpdateParams{
 		Name:             req.Name,
+		LogoURL:          req.LogoURL,
 		Provider:         req.Provider,
 		APIMode:          req.APIMode,
 		Endpoint:         req.Endpoint,
