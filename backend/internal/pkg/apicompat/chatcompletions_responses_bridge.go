@@ -30,7 +30,7 @@ func ResponsesToChatCompletionsRequest(req *ResponsesRequest) (*ChatCompletionsR
 		ServiceTier:         req.ServiceTier,
 	}
 	if req.Reasoning != nil {
-		out.ReasoningEffort = req.Reasoning.Effort
+		out.ReasoningEffort = normalizeChatReasoningEffort(req.Reasoning.Effort)
 	}
 	if len(req.Tools) > 0 {
 		out.Tools = responsesToolsToChatTools(req.Tools)
@@ -727,6 +727,24 @@ func chatToResponsesEvent(
 	evt.Type = eventType
 	evt.SequenceNumber = seq
 	return evt
+}
+
+// normalizeChatReasoningEffort maps a Responses reasoning effort to a value the
+// Chat Completions protocol accepts. The Responses API allows "xhigh" (codex's
+// highest tier for gpt-5.5 etc.), but chat/completions upstreams (mimo, and the
+// OpenAI chat/completions schema) only accept low/medium/high and 400 on
+// "xhigh". Map xhigh→high; pass through known values; drop unknown/empty.
+func normalizeChatReasoningEffort(effort string) string {
+	switch strings.ToLower(strings.TrimSpace(effort)) {
+	case "xhigh", "extrahigh", "max", "high":
+		return "high"
+	case "medium":
+		return "medium"
+	case "low", "minimal", "none":
+		return "low"
+	default:
+		return "" // omit unknown/empty so the upstream uses its default
+	}
 }
 
 // responsesArgumentsToChatString converts a Responses function_call.arguments
