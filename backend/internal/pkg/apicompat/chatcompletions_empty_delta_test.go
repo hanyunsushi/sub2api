@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // strptr is a local helper for *string fields.
@@ -114,4 +115,25 @@ func TestChatChunkToResponses_EmitsContentPartEvents(t *testing.T) {
 	assert.GreaterOrEqual(t, iDelta, 0)
 	assert.GreaterOrEqual(t, iAdded, 0)
 	assert.Less(t, iAdded, iDelta, "content_part.added must precede output_text.delta")
+}
+
+// codex collects final text from OutputItemDone items, so the message item in
+// response.output_item.done must carry content with the accumulated text.
+func TestChatChunkToResponses_OutputItemDoneCarriesContent(t *testing.T) {
+	state := NewChatCompletionsToResponsesStreamState("mimo-v2.5")
+	for _, c := range []*ChatCompletionsChunk{
+		{ID: "x", Choices: []ChatChunkChoice{{Delta: ChatDelta{Content: strptr("Hello world")}}}},
+	} {
+		ChatCompletionsChunkToResponsesEvents(c, state)
+	}
+	var found bool
+	for _, e := range FinalizeChatCompletionsResponsesStream(state) {
+		if e.Type == "response.output_item.done" && e.Item != nil && e.Item.Type == "message" {
+			found = true
+			require.Len(t, e.Item.Content, 1)
+			assert.Equal(t, "output_text", e.Item.Content[0].Type)
+			assert.Equal(t, "Hello world", e.Item.Content[0].Text)
+		}
+	}
+	assert.True(t, found, "must emit message output_item.done with content")
 }
