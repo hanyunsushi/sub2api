@@ -206,15 +206,23 @@ func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMess
 }
 
 // buildSystemJSON joins collected system prompt fragments into Anthropic's
-// system field (a JSON string). Returns nil when there is no non-empty content,
-// so the system field is omitted entirely — Anthropic returns 422 for an empty
-// or whitespace-only system string, so we must never emit one.
+// system field. Returns nil when there is no non-empty content, so the system
+// field is omitted entirely — Anthropic returns 422 for an empty or
+// whitespace-only system.
+//
+// The system is emitted in ARRAY form ([{"type":"text","text":...}]), not as a
+// bare JSON string. Both are valid per the Anthropic spec and the official
+// Claude Code client uses the array form, but some third-party Anthropic-
+// compatible upstreams (e.g. buzz) return 422 when a string-form system is
+// combined with tools. The array form works in every case.
 func buildSystemJSON(parts []string) json.RawMessage {
 	joined := strings.TrimSpace(strings.Join(parts, "\n\n"))
 	if joined == "" {
 		return nil
 	}
-	out, err := json.Marshal(joined)
+	out, err := json.Marshal([]map[string]string{
+		{"type": "text", "text": joined},
+	})
 	if err != nil {
 		return nil
 	}
