@@ -93,7 +93,7 @@ func responsesInputToChatMessages(instructions string, inputRaw json.RawMessage)
 		itemType := rawString(item["type"])
 		switch itemType {
 		case "function_call":
-			arguments := rawString(item["arguments"])
+			arguments := responsesArgumentsToChatString(item["arguments"])
 			if strings.TrimSpace(arguments) == "" {
 				arguments = "{}"
 			}
@@ -110,7 +110,7 @@ func responsesInputToChatMessages(instructions string, inputRaw json.RawMessage)
 			})
 			continue
 		case "function_call_output":
-			content, _ := json.Marshal(rawString(item["output"]))
+			content, _ := json.Marshal(extractResponsesOutputText(item["output"]))
 			messages = append(messages, ChatMessage{
 				Role:       "tool",
 				ToolCallID: rawString(item["call_id"]),
@@ -693,6 +693,27 @@ func chatToResponsesEvent(
 	evt.Type = eventType
 	evt.SequenceNumber = seq
 	return evt
+}
+
+// responsesArgumentsToChatString converts a Responses function_call.arguments
+// field into the stringified-JSON form required by Chat Completions
+// (ChatFunctionCall.Arguments is a string).
+//
+//   - stringified JSON: "{\"x\":1}" → use the inner string as-is
+//   - raw JSON object:   {"x":1}     → serialize to its string form
+//   - empty/absent                   → ""
+func responsesArgumentsToChatString(raw json.RawMessage) string {
+	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
+	if len(trimmed) == 0 || string(trimmed) == "null" {
+		return ""
+	}
+	// Already a JSON string — return the inner value verbatim.
+	var s string
+	if err := json.Unmarshal(trimmed, &s); err == nil {
+		return s
+	}
+	// Object/array/other JSON — serialize to its compact string form.
+	return string(trimmed)
 }
 
 func rawString(raw json.RawMessage) string {

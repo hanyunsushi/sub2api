@@ -127,15 +127,11 @@ func convertResponsesInputToAnthropic(inputRaw json.RawMessage) (json.RawMessage
 
 		case item.Type == "function_call":
 			// function_call → assistant message with tool_use block
-			input := json.RawMessage("{}")
-			if item.Arguments != "" {
-				input = json.RawMessage(item.Arguments)
-			}
 			block := AnthropicContentBlock{
 				Type:  "tool_use",
 				ID:    fromResponsesCallIDToAnthropic(item.CallID),
 				Name:  item.Name,
-				Input: input,
+				Input: normalizeResponsesArguments(item.Arguments),
 			}
 			blockJSON, _ := json.Marshal([]AnthropicContentBlock{block})
 			messages = append(messages, AnthropicMessage{
@@ -145,7 +141,7 @@ func convertResponsesInputToAnthropic(inputRaw json.RawMessage) (json.RawMessage
 
 		case item.Type == "function_call_output":
 			// function_call_output → user message with tool_result block
-			outputContent := item.Output
+			outputContent := extractResponsesOutputText(item.Output)
 			if outputContent == "" {
 				outputContent = "(empty)"
 			}
@@ -470,4 +466,72 @@ func convertResponsesToAnthropicToolChoice(raw json.RawMessage) (json.RawMessage
 
 	// Pass through unknown
 	return raw, nil
+}
+
+// normalizeResponsesArguments converts a Responses function_call.arguments
+// field into a JSON object suitable for Anthropic's tool_use.input.
+//
+// The arguments field has three observed shapes:
+//   - stringified JSON: "{\"x\":1}"  → unwrap one layer → {"x":1}
+//   - raw JSON object:   {"x":1}      → use as-is
+//   - empty/absent                    → {}
+//
+// Anything that does not resolve to a JSON object falls back to {} so the
+// upstream always receives a valid tool_use.input.
+func normalizeResponsesArguments(raw json.RawMessage) json.RawMessage {
+	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
+	if len(trimmed) == 0 || string(trimmed) == "null" {
+		return json.RawMessage("{}")
+	}
+
+	// Case 1: stringified JSON — unwrap one layer.
+	var s string
+	if err := json.Unmarshal(trimmed, &s); err == nil {
+		inner := strings.TrimSpace(s)
+		if inner == "" {
+			return json.RawMessage("{}")
+		}
+		if json.Valid([]byte(inner)) {
+			return json.RawMessage(inner)
+		}
+		return json.RawMessage("{}")
+	}
+
+	// Case 2: already a JSON object/value — use as-is.
+	return trimmed
+}
+
+// extractResponsesOutputText converts a Responses function_call_output.output
+// field into a plain string for Anthropic's tool_result.content.
+//
+// The output field has three observed shapes:
+//   - plain string: "result"                                  → use as-is
+//   - array of content parts: [{"type":"output_text",...}]    → join the text
+//   - empty/absent                                            → ""
+func extractResponsesOutputText(raw json.RawMessage) string {
+	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
+	if len(trimmed) == 0 || string(trimmed) == "null" {
+		return ""
+	}
+
+	// Case 1: plain string.
+	var s string
+	if err := json.Unmarshal(trimmed, &s); err == nil {
+		return s
+	}
+
+	// Case 2: array of content parts.
+	var parts []ResponsesContentPart
+	if err := json.Unmarshal(trimmed, &parts); err == nil {
+		var texts []string
+		for _, p := range parts {
+			if p.Text != "" {
+				texts = append(texts, p.Text)
+			}
+		}
+		return strings.Join(texts, "\n\n")
+	}
+
+	// Case 3: unknown structure — pass through raw JSON so content is not lost.
+	return string(trimmed)
 }
