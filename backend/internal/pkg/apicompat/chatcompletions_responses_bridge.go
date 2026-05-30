@@ -490,7 +490,12 @@ func ChatCompletionsChunkToResponsesEvents(
 	events = append(events, ensureChatToResponsesCreated(state)...)
 
 	for _, choice := range chunk.Choices {
-		if choice.Delta.Content != nil {
+		// Skip empty-string content deltas. Some upstreams (e.g. mimo) emit a
+		// leading {"content":""} chunk; it is non-nil but carries no text, and
+		// emitting it produces a response.output_text.delta with an empty delta
+		// (omitempty drops the field entirely) plus a premature message item —
+		// codex then shows "thinking" with no visible output.
+		if choice.Delta.Content != nil && *choice.Delta.Content != "" {
 			events = append(events, ensureChatToResponsesMessageItem(state)...)
 			_, _ = state.Text.WriteString(*choice.Delta.Content)
 			events = append(events, chatToResponsesEvent(state, "response.output_text.delta", &ResponsesStreamEvent{
@@ -500,7 +505,7 @@ func ChatCompletionsChunkToResponsesEvents(
 				ItemID:       state.MessageItemID,
 			}))
 		}
-		if choice.Delta.ReasoningContent != nil {
+		if choice.Delta.ReasoningContent != nil && *choice.Delta.ReasoningContent != "" {
 			_, _ = state.Reasoning.WriteString(*choice.Delta.ReasoningContent)
 			events = append(events, chatToResponsesEvent(state, "response.reasoning_summary_text.delta", &ResponsesStreamEvent{
 				OutputIndex:  0,
