@@ -76,6 +76,17 @@ describe('AI Search box source contract', () => {
     expect(componentSource).not.toContain('aiSearchAPI.search')
   })
 
+  it('guards the chat input against IME composition so Enter does not submit mid-composition', () => {
+    expect(componentSource).toContain('function handleChatKeydownCapture')
+    expect(componentSource).toContain('event.isComposing || event.keyCode === 229')
+    expect(componentSource).toContain('event.stopImmediatePropagation()')
+    expect(componentSource).toContain('attachChatImeGuard')
+    expect(componentSource).toContain('detachChatImeGuard')
+    // Must listen in the capture phase on the snippet host so the component's
+    // own keydown handler never runs for the composition Enter.
+    expect(componentSource).toContain("addEventListener('keydown', handleChatKeydownCapture, true)")
+  })
+
   it('styles a resident trigger plus a centered overlay panel without overlap', () => {
     const boxBlock = cssBlock(styleSource, '.ai-search-box')
     const triggerBlock = cssBlock(styleSource, '.ai-search-trigger')

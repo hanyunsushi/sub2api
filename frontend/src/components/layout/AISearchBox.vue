@@ -124,6 +124,31 @@ function handleKeydown(event: KeyboardEvent) {
   }
 }
 
+// The embedded `chat-page-snippet` web component sends the message whenever
+// Enter is pressed without Shift, but it does not guard against IME
+// composition. While typing Chinese (or any IME) the Enter that should only
+// confirm the candidate would otherwise submit the half-finished input as
+// English. We intercept Enter during composition in the capture phase on the
+// snippet host so the component's own keydown handler never runs, letting the
+// IME commit the text normally.
+function handleChatKeydownCapture(event: KeyboardEvent) {
+  if (event.key !== 'Enter') return
+  if (event.isComposing || event.keyCode === 229) {
+    event.stopImmediatePropagation()
+  }
+}
+
+function attachChatImeGuard() {
+  const el = chatRef.value
+  if (!el) return
+  el.removeEventListener('keydown', handleChatKeydownCapture, true)
+  el.addEventListener('keydown', handleChatKeydownCapture, true)
+}
+
+function detachChatImeGuard() {
+  chatRef.value?.removeEventListener('keydown', handleChatKeydownCapture, true)
+}
+
 function openPanel() {
   open.value = true
   refreshSnippetConfig(true)
@@ -144,6 +169,7 @@ onBeforeUnmount(() => {
     clearInterval(refreshTimer)
     refreshTimer = null
   }
+  detachChatImeGuard()
   document.removeEventListener('keydown', handleKeydown)
 })
 
@@ -154,7 +180,22 @@ watch(open, (value) => {
   if (value) {
     nextTick(() => {
       panelRef.value?.focus?.()
+      attachChatImeGuard()
     })
+  } else {
+    detachChatImeGuard()
   }
 })
+
+// The chat element only renders once the snippet config resolves, which can
+// land after the panel is already open. Re-attach the IME guard when the chat
+// element appears so Enter-during-composition is always intercepted.
+watch(
+  () => snippetConfig.value.configured,
+  (configured) => {
+    if (configured && open.value) {
+      nextTick(() => attachChatImeGuard())
+    }
+  },
+)
 </script>
