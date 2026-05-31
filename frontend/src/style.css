@@ -193,6 +193,19 @@
 :root[data-theme="cloudflare"] .ai-search-chat {
   --search-snippet-focus-ring: rgba(246, 130, 31, 0.16);
 }
+
+/* Text selection: Cloudflare orange tint, not Klein blue. */
+:root.theme-cloudflare ::selection,
+:root[data-theme="cloudflare"] ::selection {
+  background: rgba(246, 130, 31, 0.18);
+  color: var(--atelier-blue-dark);
+}
+
+/* Shared primary-button / accent shadow glows: orange, not blue. */
+:root.theme-cloudflare .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"]),
+:root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-stripe, .date-picker-apply, .codex-button--primary) {
+  box-shadow: 0 10px 24px -18px rgba(246, 130, 31, 0.5) !important;
+}
 /* Cloudflare appearance theme end */
 
 @layer base {
