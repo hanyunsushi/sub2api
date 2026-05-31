@@ -6650,3 +6650,15 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   background: var(--atelier-blue-dark) !important;
   color: var(--atelier-white) !important;
 }
+
+/* ---- 12. Final authoritative CF hover for neutral filter-bar buttons.
+   Several base rules set :hover background to --atelier-slab-field (= no visible
+   change). This last-wins rule (high specificity, end of file) guarantees a
+   real neutral-gray hover for non-primary filter buttons under Cloudflare. ---- */
+:root.theme-cloudflare body #app .app-layout-content .table-page-layout .table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .table-filter-left, .users-filter-left, .usage-filter-left, .users-filter-tools)
+  :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(:disabled):hover {
+  background: var(--atelier-ui-hover-surface) !important;
+  border-color: var(--atelier-line-strong) !important;
+  color: var(--atelier-ink) !important;
+}
