@@ -31,9 +31,10 @@ describe('global hover logic — calm non-interactive surfaces', () => {
     ]) {
       expect(calmLayer, `calm layer should cover ${surface}`).toContain(surface)
     }
-    // Table rows inherit (no row recolor) on hover.
+    // Table rows get a subtle neutral hover tint (CF dashboards highlight rows),
+    // without lift/shadow/butter.
     expect(calmLayer).toContain('tbody tr:hover')
-    expect(calmLayer).toContain('background: inherit !important;')
+    expect(calmLayer).toContain('background: var(--atelier-ui-hover-surface) !important;')
   })
 
   it('does not neutralize interactive controls so they keep their highlight', () => {
