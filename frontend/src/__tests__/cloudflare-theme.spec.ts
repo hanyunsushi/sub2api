@@ -84,6 +84,9 @@ describe('Cloudflare appearance theme', () => {
   it('re-tints the hardcoded literals that bypass the token axis', () => {
     // Body background gradient + codex admin accents must follow the brand.
     expect(styleSource).toContain('rgba(246, 130, 31, 0.06)')
+    // Text selection re-tinted to Cloudflare orange (no Klein-blue leak).
+    expect(styleSource).toContain(':root.theme-cloudflare ::selection')
+    expect(styleSource).toContain('background: rgba(246, 130, 31, 0.18);')
     expect(codexThemeSource).toContain(':root.theme-cloudflare .codex-admin')
     expect(codexThemeSource).toContain(`--codex-accent: ${cfOrange};`)
     expect(codexThemeSource).toContain(`--codex-violet: ${cfOrange};`)
