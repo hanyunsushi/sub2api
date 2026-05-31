@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getThemeAccent, withChartAlpha } from '@/utils/chartColors'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,8 +39,8 @@ const isDarkMode = computed(() => document.documentElement.classList.contains('d
 const colors = computed(() => ({
   butter: '#c79a3a',
   butterAlpha: '#c79a3a26',
-  blue: '#002FA7',
-  blueAlpha: '#002FA720',
+  blue: getThemeAccent(),
+  blueAlpha: withChartAlpha(getThemeAccent(), 0.13),
   dust: '#4f6a8c',
   grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
