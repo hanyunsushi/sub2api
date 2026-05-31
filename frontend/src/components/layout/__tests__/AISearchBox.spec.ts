@@ -74,4 +74,40 @@ describe('AISearchBox chat panel interactions', () => {
     expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
     wrapper.unmount()
   })
+
+  it('swallows Enter on the chat snippet while an IME composition is active', async () => {
+    const wrapper = mount(AISearchBox, { attachTo: document.body })
+    await nextTick()
+    await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    await nextTick()
+
+    const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
+    expect(chat).not.toBeNull()
+
+    // Enter pressed while composing (isComposing) must not reach the snippet's
+    // own keydown handler, so it cannot submit the half-typed input.
+    const composing = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    })
+    Object.defineProperty(composing, 'isComposing', { value: true })
+    const composingStop = vi.spyOn(composing, 'stopImmediatePropagation')
+    chat.dispatchEvent(composing)
+    expect(composingStop).toHaveBeenCalledTimes(1)
+
+    // A normal Enter (composition finished) is left untouched so the snippet
+    // can send the message as usual.
+    const committed = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    })
+    const committedStop = vi.spyOn(committed, 'stopImmediatePropagation')
+    chat.dispatchEvent(committed)
+    expect(committedStop).not.toHaveBeenCalled()
+
+    wrapper.unmount()
+  })
 })
