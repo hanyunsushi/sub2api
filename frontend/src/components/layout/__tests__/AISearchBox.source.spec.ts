@@ -9,7 +9,12 @@ const viteConfigSource = readFileSync(resolve(__dirname, '../../../../vite.confi
 const vitestConfigSource = readFileSync(resolve(__dirname, '../../../../vitest.config.ts'), 'utf8')
 
 const cssBlock = (source: string, selector: string) => {
-  const selectorIndex = source.indexOf(`${selector} {`)
+  // Match the selector only when it begins a rule (start of file or line),
+  // so descendant overrides like `:root.theme-x .ai-search-chat {` do not
+  // shadow the base `.ai-search-chat {` block we are inspecting.
+  const blockStart = `${selector} {`
+  let selectorIndex = source.startsWith(blockStart) ? 0 : source.indexOf(`\n${selector} {`)
+  if (selectorIndex > 0) selectorIndex += 1
   expect(selectorIndex).toBeGreaterThan(-1)
   const openBraceIndex = source.indexOf('{', selectorIndex)
   let depth = 0
