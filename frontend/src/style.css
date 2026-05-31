@@ -6560,3 +6560,28 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 :root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip-arrow {
   background: var(--atelier-paper) !important;
 }
+
+/* ---- 10. Cloudflare sidebar: neutral gray hover (not gold), brand-orange active ---- */
+:root.theme-cloudflare .sidebar {
+  --sidebar-hover: var(--atelier-ui-hover-surface);
+  --sidebar-active-bg: var(--atelier-blue);
+  --sidebar-active-text: var(--atelier-white);
+  --sidebar-active-border: var(--atelier-blue);
+}
+
+:root.theme-cloudflare .sidebar .sidebar-link:hover {
+  background: var(--atelier-ui-hover-surface) !important;
+  border-bottom-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare .sidebar .sidebar-link:hover :where(svg, span, .sidebar-label, .sidebar-label-flex, .sidebar-svg-icon) {
+  color: var(--atelier-ink) !important;
+}
+
+/* Brand wordmark accents follow Cloudflare orange, not gold. */
+:root.theme-cloudflare .sidebar-brand .relative > button:where([class~="text-amber-700"], [class~="dark:text-amber-400"]),
+:root.theme-cloudflare .sidebar-brand .relative > button .relative.flex.h-2.w-2 :where(span) {
+  color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+}
