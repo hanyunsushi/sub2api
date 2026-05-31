@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-export type AppearanceThemeId = 'newspaper'
+export type AppearanceThemeId = 'newspaper' | 'cloudflare'
 
 export interface AppearanceThemeOption {
   id: AppearanceThemeId
@@ -11,6 +11,7 @@ const STORAGE_KEY = 'appearance_theme'
 
 export const appearanceThemeOptions: AppearanceThemeOption[] = [
   { id: 'newspaper', label: 'Newspaper' },
+  { id: 'cloudflare', label: 'Cloudflare' },
 ]
 
 const activeTheme = ref<AppearanceThemeId>('newspaper')
@@ -25,6 +26,7 @@ function applyTheme(theme: AppearanceThemeId) {
   activeTheme.value = theme
   document.documentElement.dataset.theme = theme
   document.documentElement.classList.toggle('theme-newspaper', theme === 'newspaper')
+  document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')
   document.documentElement.classList.remove('dark')
   localStorage.setItem(STORAGE_KEY, theme)
 }
