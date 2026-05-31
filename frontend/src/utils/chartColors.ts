@@ -42,3 +42,17 @@ export const withChartAlpha = (hexColor: string, alpha = 0.14): string => {
   const blue = parseInt(normalized.slice(4, 6), 16)
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`
 }
+
+/**
+ * Read the active theme accent (`--atelier-blue`) at runtime so single-series
+ * charts follow the appearance theme: Klein blue under Newspaper, Cloudflare
+ * orange under the Cloudflare theme. Falls back to the Newspaper Klein blue
+ * when the document/computed style is unavailable (SSR / tests).
+ */
+export const getThemeAccent = (fallback = '#002FA7'): string => {
+  if (typeof document === 'undefined' || typeof getComputedStyle !== 'function') {
+    return fallback
+  }
+  const value = getComputedStyle(document.documentElement).getPropertyValue('--atelier-blue').trim()
+  return value || fallback
+}

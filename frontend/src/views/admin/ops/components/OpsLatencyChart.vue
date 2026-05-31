@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getThemeAccent } from '@/utils/chartColors'
 import { Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Tooltip } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 import type { OpsLatencyHistogramResponse } from '@/api/admin/ops'
@@ -20,7 +21,7 @@ const { t } = useI18n()
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  blue: '#002FA7',
+  blue: getThemeAccent(),
   grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
