@@ -52,6 +52,7 @@ describe('global hover logic — calm non-interactive surfaces', () => {
 
 describe('Cloudflare theme — filter bars are not a black slab', () => {
   const cfMarker = 'Cloudflare theme — complete de-slab pass'
+  const finalHoverMarker = 'Final authoritative CF hover for neutral filter-bar buttons'
   const cfLayer = styleSource.slice(styleSource.indexOf(cfMarker))
 
   it('repaints ink-filled filter shells to a light panel under the Cloudflare theme', () => {
@@ -65,5 +66,28 @@ describe('Cloudflare theme — filter bars are not a black slab', () => {
     expect(cfLayer).toContain('color: var(--atelier-ink) !important;')
     // The scoped overrides must not paint these shells with the ink slab.
     expect(cfLayer).not.toContain('background: var(--atelier-ink) !important;')
+  })
+
+  it('keeps a last-wins neutral hover for filter-bar buttons that are not filled actions', () => {
+    expect(styleSource).toContain(finalHoverMarker)
+    expect(styleSource.lastIndexOf(finalHoverMarker)).toBeGreaterThan(styleSource.indexOf('CF filter-action button hover'))
+
+    const finalHoverLayer = styleSource.slice(styleSource.lastIndexOf(finalHoverMarker))
+    expect(finalHoverLayer).toContain(':root.theme-cloudflare body #app .app-layout-content .table-page-layout .table-page-filter-section')
+    for (const zone of [
+      '.table-filter-actions',
+      '.users-filter-actions',
+      '.usage-filter-actions',
+      '.table-filter-left',
+      '.users-filter-left',
+      '.usage-filter-left',
+      '.users-filter-tools',
+    ]) {
+      expect(finalHoverLayer).toContain(zone)
+    }
+    expect(finalHoverLayer).toContain(':not(.btn-primary):not(.btn-success):not(.users-filter-create):not(:disabled):hover')
+    expect(finalHoverLayer).toContain('background: var(--atelier-ui-hover-surface) !important;')
+    expect(finalHoverLayer).toContain('border-color: var(--atelier-line-strong) !important;')
+    expect(finalHoverLayer).toContain('color: var(--atelier-ink) !important;')
   })
 })
