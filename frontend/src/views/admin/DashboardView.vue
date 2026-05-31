@@ -815,10 +815,10 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card) {
-  border: 1px solid var(--atelier-ink) !important;
+  border: 1px solid var(--atelier-slab-edge) !important;
   border-radius: 8px;
-  background: var(--atelier-ink) !important;
-  color: var(--atelier-paper);
+  background: var(--atelier-slab-surface) !important;
+  color: var(--atelier-slab-text);
   box-shadow: none !important;
 }
 
@@ -856,8 +856,8 @@ onBeforeUnmount(() => {
   align-self: stretch;
   position: relative;
   border-right: 0;
-  background: var(--atelier-ink);
-  color: var(--atelier-paper);
+  background: var(--atelier-slab-surface);
+  color: var(--atelier-slab-text);
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)::after {
@@ -870,11 +870,11 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range)) {
-  color: var(--atelier-paper);
+  color: var(--atelier-slab-text);
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
-  color: var(--atelier-paper) !important;
+  color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
@@ -882,8 +882,8 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range > span) {
-  color: var(--atelier-paper) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
@@ -891,21 +891,21 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range:hover > span) {
-  color: var(--atelier-paper) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-granularity) {
   align-self: center;
-  background: var(--atelier-ink) !important;
+  background: var(--atelier-slab-surface) !important;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control),
 .admin-dashboard-atelier :deep(.date-picker-trigger),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: rgba(255, 250, 240, 0.28) !important;
-  background: var(--atelier-ink) !important;
-  color: var(--atelier-paper) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
+  background: var(--atelier-slab-surface) !important;
+  color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
   box-shadow: none !important;
 }
@@ -917,15 +917,15 @@ onBeforeUnmount(() => {
 
 .admin-dashboard-atelier :deep(.date-picker-trigger *),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger *) {
-  color: var(--atelier-paper) !important;
+  color: var(--atelier-slab-text) !important;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover),
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
-  border-color: var(--atelier-paper) !important;
-  background: var(--atelier-ink) !important;
-  color: var(--atelier-paper) !important;
+  border-color: var(--atelier-slab-text) !important;
+  background: var(--atelier-slab-surface) !important;
+  color: var(--atelier-slab-text) !important;
 }
 
 .admin-dashboard-atelier:where(.dark *) {
