@@ -6218,3 +6218,146 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
     transform: none;
   }
 }
+
+/* =====================================================================
+   Global hover/highlight logic (all themes) — Cloudflare-style calm surfaces
+   Non-interactive surfaces (cards, panels, tiles, tables, filter shells,
+   generic rounded containers) must NOT recolor / lift / shadow-shift on
+   hover. Only genuinely interactive controls keep a hover highlight:
+   buttons, sidebar links, dropdown / select / menu items, date presets,
+   pagination, theme switcher, AI search trigger, tabs.
+   This block is appended last and uses #app to win specificity without
+   editing the hundreds of upstream :where()/:not() rules individually.
+   ===================================================================== */
+#app .app-layout-content :where(
+  .card, .paper-card, .paper-surface, .stat-card, .summary-tile,
+  .admin-material-surface, .codex-panel, .codex-account-card,
+  .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-monitor-header,
+  .table-container, .table-wrapper, .table-scroll-container,
+  .layout-section-fixed, .layout-section-scrollable,
+  .dashboard-filter-card, .usage-time-filter-card, .usage-filter-card,
+  .codex-topbar, .codex-side, .settings-tabs-shell
+):hover {
+  transform: none !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow, none) !important;
+  border-color: var(--atelier-material-edge) !important;
+}
+
+/* Generic Tailwind rounded+padded white/gray containers: freeze hover paint. */
+#app .app-layout-content :where(div, section, article, details):where(
+  [class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]
+):where(
+  [class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"],
+  [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"],
+  [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]
+):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):not([class~="btn"]):hover {
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  box-shadow: var(--atelier-material-shadow, none) !important;
+  transform: none !important;
+}
+
+/* Table rows: no row-level recolor on hover (Cloudflare tables stay still). */
+#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
+#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover .sticky-col,
+#app .app-layout-content :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover,
+#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover :where(td, .sticky-col, .table-cell),
+#app .app-layout-content :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th),
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th) {
+  background: inherit !important;
+  color: inherit !important;
+}
+
+/* =====================================================================
+   Cloudflare theme: filter bars must not read as a black slab.
+   The Newspaper theme intentionally paints filter shells with --atelier-ink
+   (dark) + paper text. Under Cloudflare we flip those to a clean light panel
+   (paper surface, ink text, soft edges) to match cloudflare.com dashboards.
+   Only color/surface is changed here; layout (grid/margins/padding) is left
+   to the base rules.
+   ===================================================================== */
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
+:root[data-theme="cloudflare"] .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell),
+:root[data-theme="cloudflare"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell) {
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+/* Left / right partitions of every filter shell -> light panel, ink text. */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child,
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover,
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range,
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh,
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-granularity,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-card,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  border-color: var(--atelier-material-edge) !important;
+}
+
+/* Inputs / selects / date triggers / buttons inside filter bars -> light field. */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left)
+  :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(.select-trigger, input.input),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:hover,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:focus-visible,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger-open,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger:hover,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger-open {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+/* Labels / icons / placeholder text inside filter bars -> ink, not paper. */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-left, .users-filter-left, .usage-filter-left)
+  :where(label, span, svg, path, .select-value, .select-icon, .date-picker-icon, .date-picker-chevron),
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(svg, path, span),
+:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(input)::placeholder,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(input.input)::placeholder {
+  color: var(--atelier-muted) !important;
+  -webkit-text-fill-color: var(--atelier-muted) !important;
+}
+
+/* The dark vertical separator rule between filter partitions -> soft edge. */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before,
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)::before,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before {
+  background: var(--atelier-material-edge) !important;
+}
