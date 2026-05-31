@@ -3759,7 +3759,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex {
-  border-color: var(--atelier-ink) !important;
+  border-color: transparent !important;
   box-shadow: none !important;
 }
 
@@ -3768,16 +3768,16 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-gray-200 {
-  background: var(--atelier-paper) !important;
+  background: color-mix(in srgb, var(--atelier-ink) 16%, var(--atelier-paper-2)) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex > span {
-  background: var(--atelier-ink) !important;
-  box-shadow: none !important;
+  background: var(--atelier-white) !important;
+  box-shadow: 0 1px 2px rgba(23, 21, 18, 0.28) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-primary-500 > span {
-  background: var(--atelier-paper-2) !important;
+  background: var(--atelier-white) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] {
