@@ -967,3 +967,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Cloudflare appearance theme: the codex admin panel hardcodes Klein-blue
+   accents that bypass the --atelier-* token axis. Re-map them to Cloudflare
+   orange so the CPA management module matches the rest of the theme. */
+:root.theme-cloudflare .codex-admin,
+:root[data-theme="cloudflare"] .codex-admin,
+:root.theme-cloudflare .dark .codex-admin,
+:root[data-theme="cloudflare"] .dark .codex-admin {
+  --codex-accent: #f6821f;
+  --codex-accent-strong: #d96f15;
+  --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper));
+  --codex-violet: #f6821f;
+}
+/* Cloudflare appearance theme end */

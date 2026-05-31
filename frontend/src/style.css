@@ -81,6 +81,108 @@
 }
 /* Newspaper appearance theme end */
 
+/* Cloudflare appearance theme */
+:root[data-theme="cloudflare"],
+:root.theme-cloudflare {
+  --app-theme-name: "Cloudflare";
+  /* Cloudflare uses a clean white canvas with light neutral panels. */
+  --atelier-paper: #ffffff;
+  --atelier-paper-2: #f6f7f8;
+  --atelier-ink: #36393a;
+  --atelier-muted: #595e60;
+  --atelier-lime: #595e60;
+  --atelier-line: rgba(54, 57, 58, 0.12);
+  --atelier-line-strong: rgba(54, 57, 58, 0.26);
+  /* Cloudflare brand orange + gold replace the Klein-blue accent axis. */
+  --atelier-blue: #f6821f;
+  --atelier-blue-dark: #d96f15;
+  --atelier-butter: #fbad41;
+  --atelier-butter-dark: #d98e1f;
+  --atelier-dust: #404041;
+  --atelier-white: #ffffff;
+  --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 12%, var(--atelier-paper));
+  --atelier-butter-soft: #fbad41;
+  --atelier-surface: var(--atelier-paper);
+  --atelier-surface-strong: #ffffff;
+  --atelier-surface-muted: #f6f7f8;
+  --atelier-shadow: rgba(54, 57, 58, 0.22);
+  --atelier-component-muted: var(--atelier-dust);
+  --atelier-component-warning: var(--atelier-butter-dark);
+  --atelier-red: #bd2719;
+  --atelier-green: #2faa4a;
+  --atelier-canvas: var(--atelier-paper);
+  --atelier-surface-panel: var(--atelier-paper-2);
+  --atelier-surface-cool: var(--atelier-paper-2);
+  --atelier-surface-dust: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
+  --atelier-surface-blue: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper));
+  --atelier-material-1: var(--atelier-paper-2);
+  --atelier-material-2: var(--atelier-paper-2);
+  --atelier-material-blue: var(--atelier-surface-blue);
+  --atelier-material-dust: var(--atelier-surface-dust);
+  --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 20%, var(--atelier-paper));
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 6%, var(--atelier-paper-2));
+  --atelier-material-edge: rgba(54, 57, 58, 0.12);
+  --atelier-material-edge-strong: rgba(54, 57, 58, 0.24);
+  --atelier-material-shadow: 0 10px 24px -22px rgba(54, 57, 58, 0.34);
+  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(246, 130, 31, 0.32);
+  --atelier-material-grid: none;
+  --atelier-material-grid-dark: none;
+  --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 24%, var(--atelier-paper));
+  --atelier-material-dust-strong: color-mix(in srgb, var(--atelier-dust) 24%, var(--atelier-paper));
+  --atelier-material-butter-strong: color-mix(in srgb, var(--atelier-butter) 36%, var(--atelier-paper));
+  --atelier-material-green: #d6efdb;
+  --atelier-material-red: #f7d9d5;
+  --atelier-material-active: var(--atelier-blue);
+  --atelier-ui-hover-surface: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2));
+  --atelier-filter-action-surface: var(--atelier-ink);
+  --atelier-console-grid-line: rgba(54, 57, 58, 0.028);
+  --atelier-console-grid-line-soft: rgba(54, 57, 58, 0.02);
+  --atelier-console-grid-size: 32px 32px;
+  --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-invert: repeating-linear-gradient(to right, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.42) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.36) 2px, transparent 2px, transparent 8px);
+  --atelier-filter-stitch-horizontal: var(--atelier-console-rule);
+  --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
+  --atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);
+  --atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);
+  --atelier-scrollbar: var(--atelier-dust);
+  --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-dust) 78%, var(--atelier-ink));
+  --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-dust) 14%, transparent);
+  --atelier-module-enter-duration: 0.9s;
+  /* Cloudflare's product UI is a clean humanist sans-serif system stack. */
+  --sans: "Inter", "Helvetica Neue", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, "Arial", sans-serif;
+  --serif: var(--sans);
+  --mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --atelier-font-sans: var(--sans);
+  --atelier-font-serif: var(--serif);
+  --atelier-font-mono: var(--mono);
+}
+
+/* Cloudflare theme: re-tint the few hardcoded Klein-blue literals that do not
+   flow through the --atelier-* token axis, so no blue leaks on any page. */
+:root.theme-cloudflare body,
+:root[data-theme="cloudflare"] body {
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(246, 130, 31, 0.06), transparent 28rem),
+    radial-gradient(circle at 84% 9%, rgba(251, 173, 65, 0.07), transparent 24rem),
+    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
+    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+}
+
+:root.theme-cloudflare .btn-primary,
+:root[data-theme="cloudflare"] .btn-primary {
+  box-shadow: 0 10px 24px -18px rgba(246, 130, 31, 0.62);
+}
+
+:root.theme-cloudflare .ai-search-chat,
+:root[data-theme="cloudflare"] .ai-search-chat {
+  --search-snippet-focus-ring: rgba(246, 130, 31, 0.16);
+}
+/* Cloudflare appearance theme end */
+
 @layer base {
   * {
     @apply border-gray-200 dark:border-dark-700;
