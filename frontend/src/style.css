@@ -6288,7 +6288,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   transform: none !important;
 }
 
-/* Table rows: no row-level recolor on hover (Cloudflare tables stay still). */
+/* Table rows: subtle neutral row hover like cloudflare.com dashboards
+   (calm tint, no lift/shadow/butter). */
 #app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
 #app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover .sticky-col,
 #app .app-layout-content :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover,
@@ -6296,8 +6297,10 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th),
 #app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover,
 #app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table, .global-pricing-table, .table-wrapper table, .table-scroll-container table) tbody tr:hover :where(td, th) {
-  background: inherit !important;
-  color: inherit !important;
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 
@@ -6624,4 +6627,23 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 :root.theme-cloudflare .sidebar-brand .relative > button .relative.flex.h-2.w-2 :where(span) {
   color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
+}
+
+/* ---- 11. CF filter-action button hover must mirror the base rule's exact
+   structure/specificity so neutral buttons get a real gray hover (the base
+   Newspaper rule keeps them flat). Primary/success/create keep their fill. ---- */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(:disabled):hover {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover {
+  border-color: var(--atelier-blue-dark) !important;
+  background: var(--atelier-blue-dark) !important;
+  color: var(--atelier-white) !important;
 }
