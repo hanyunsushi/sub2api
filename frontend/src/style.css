@@ -63,6 +63,7 @@
   --atelier-slab-edge: rgba(255, 250, 240, 0.42);
   --atelier-slab-edge-soft: rgba(255, 250, 240, 0.28);
   --atelier-slab-muted: color-mix(in srgb, var(--atelier-paper) 68%, transparent);
+  --atelier-slab-field-hover: color-mix(in srgb, var(--atelier-ink) 84%, var(--atelier-white));
   --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
   --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
   --atelier-console-grid-size: 32px 32px;
@@ -149,6 +150,7 @@
   --atelier-slab-edge: var(--atelier-material-edge);
   --atelier-slab-edge-soft: var(--atelier-material-edge);
   --atelier-slab-muted: var(--atelier-muted);
+  --atelier-slab-field-hover: var(--atelier-ui-hover-surface);
   --atelier-console-grid-line: rgba(54, 57, 58, 0.028);
   --atelier-console-grid-line-soft: rgba(54, 57, 58, 0.02);
   --atelier-console-grid-size: 32px 32px;
@@ -305,6 +307,7 @@
     --atelier-slab-edge: rgba(255, 250, 240, 0.42);
     --atelier-slab-edge-soft: rgba(255, 250, 240, 0.28);
     --atelier-slab-muted: color-mix(in srgb, var(--atelier-paper) 68%, transparent);
+    --atelier-slab-field-hover: color-mix(in srgb, var(--atelier-ink) 84%, var(--atelier-white));
     --atelier-console-grid-line: rgba(255, 250, 240, 0.035);
     --atelier-console-grid-line-soft: rgba(255, 250, 240, 0.025);
     --atelier-console-rule: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
@@ -2946,7 +2949,7 @@ body:has(.table-page-layout) :where(
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled),
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
   border-color: var(--atelier-paper) !important;
-  background: var(--atelier-slab-field) !important;
+  background: var(--atelier-slab-field-hover) !important;
   color: var(--atelier-slab-text) !important;
 }
 
@@ -3266,9 +3269,9 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
-  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
-  border-color: var(--atelier-paper) !important;
-  background: var(--atelier-slab-field) !important;
+  :where(.btn-secondary, .btn-ghost, .btn-danger, button):not(.btn-primary):not(.btn-success):not(.users-filter-create):hover:not(:disabled) {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field-hover) !important;
   color: var(--atelier-slab-text) !important;
 }
 
