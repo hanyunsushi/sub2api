@@ -57,6 +57,12 @@
   --atelier-material-active: var(--atelier-blue);
   --atelier-ui-hover-surface: color-mix(in srgb, var(--atelier-white) 42%, var(--atelier-paper-2));
   --atelier-filter-action-surface: var(--atelier-ink);
+  --atelier-slab-surface: var(--atelier-ink);
+  --atelier-slab-field: var(--atelier-ink);
+  --atelier-slab-text: var(--atelier-paper);
+  --atelier-slab-edge: rgba(255, 250, 240, 0.42);
+  --atelier-slab-edge-soft: rgba(255, 250, 240, 0.28);
+  --atelier-slab-muted: color-mix(in srgb, var(--atelier-paper) 68%, transparent);
   --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
   --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
   --atelier-console-grid-size: 32px 32px;
@@ -126,7 +132,7 @@
   --atelier-material-edge: rgba(54, 57, 58, 0.12);
   --atelier-material-edge-strong: rgba(54, 57, 58, 0.24);
   --atelier-material-shadow: 0 10px 24px -22px rgba(54, 57, 58, 0.34);
-  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(246, 130, 31, 0.32);
+  --atelier-material-shadow-hover: 0 14px 30px -24px rgba(20, 22, 23, 0.22);
   --atelier-material-grid: none;
   --atelier-material-grid-dark: none;
   --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 24%, var(--atelier-paper));
@@ -135,8 +141,14 @@
   --atelier-material-green: #d6efdb;
   --atelier-material-red: #f7d9d5;
   --atelier-material-active: var(--atelier-blue);
-  --atelier-ui-hover-surface: color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2));
-  --atelier-filter-action-surface: var(--atelier-ink);
+  --atelier-ui-hover-surface: #eef0f2;
+  --atelier-filter-action-surface: var(--atelier-paper-2);
+  --atelier-slab-surface: var(--atelier-paper-2);
+  --atelier-slab-field: var(--atelier-paper);
+  --atelier-slab-text: var(--atelier-ink);
+  --atelier-slab-edge: var(--atelier-material-edge);
+  --atelier-slab-edge-soft: var(--atelier-material-edge);
+  --atelier-slab-muted: var(--atelier-muted);
   --atelier-console-grid-line: rgba(54, 57, 58, 0.028);
   --atelier-console-grid-line-soft: rgba(54, 57, 58, 0.02);
   --atelier-console-grid-size: 32px 32px;
@@ -274,6 +286,12 @@
     --atelier-material-shadow-hover: 0 18px 42px -30px rgba(255, 250, 240, 0.2);
     --atelier-ui-hover-surface: rgba(255, 250, 240, 0.12);
     --atelier-filter-action-surface: var(--atelier-ink);
+    --atelier-slab-surface: var(--atelier-ink);
+    --atelier-slab-field: var(--atelier-ink);
+    --atelier-slab-text: var(--atelier-paper);
+    --atelier-slab-edge: rgba(255, 250, 240, 0.42);
+    --atelier-slab-edge-soft: rgba(255, 250, 240, 0.28);
+    --atelier-slab-muted: color-mix(in srgb, var(--atelier-paper) 68%, transparent);
     --atelier-console-grid-line: rgba(255, 250, 240, 0.035);
     --atelier-console-grid-line-soft: rgba(255, 250, 240, 0.025);
     --atelier-console-rule: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.28), rgba(255, 250, 240, 0.28) 2px, transparent 2px, transparent 8px);
@@ -6041,8 +6059,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content .global-pricing-filter-card,
 #app .app-layout-content .global-pricing-filter-shell,
 #app .app-layout-content .global-pricing-filter-actions {
-  background: var(--atelier-ink) !important;
-  color: var(--atelier-paper) !important;
+  background: var(--atelier-slab-surface) !important;
+  color: var(--atelier-slab-text) !important;
 }
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
@@ -6270,33 +6288,28 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: inherit !important;
 }
 
+
 /* =====================================================================
-   Cloudflare theme: filter bars must not read as a black slab.
-   The Newspaper theme intentionally paints filter shells with --atelier-ink
-   (dark) + paper text. Under Cloudflare we flip those to a clean light panel
-   (paper surface, ink text, soft edges) to match cloudflare.com dashboards.
-   Only color/surface is changed here; layout (grid/margins/padding) is left
-   to the base rules.
+   Cloudflare theme — complete de-slab pass (v3).
+   The Newspaper base intentionally paints control surfaces as dark
+   --atelier-ink slabs with paper text (filter bars, ops toolbar,
+   dropdown/date-picker portals, popovers). Those base rules are written
+   with `#app .app-layout-content ...` (ID specificity), so the Cloudflare
+   overrides MUST carry `:root.theme-cloudflare #app .app-layout-content`
+   to win. Under Cloudflare every such surface becomes a clean light panel
+   (white / #f6f7f8) with ink text + subtle gray hover, matching
+   cloudflare.com dashboards. Colour/surface only — layout untouched.
    ===================================================================== */
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
-:root[data-theme="cloudflare"] .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
+
+/* ---- 1. All filter LEFT / shell partitions -> light panel ---- */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell),
-:root[data-theme="cloudflare"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
-  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell) {
-  background: var(--atelier-paper-2) !important;
-  color: var(--atelier-ink) !important;
-}
-
-/* Left / right partitions of every filter shell -> light panel, ink text. */
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
-  > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions),
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child,
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+  > :where(.flex-1, .table-filter-left, .users-filter-left, .usage-filter-left),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child,
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :last-child,
 :root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
 :root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover,
 :root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range,
@@ -6304,28 +6317,39 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 :root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-granularity,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-card,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-shell,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+:root.theme-cloudflare #app .app-layout-content .user-usage-atelier .usage-filter-left,
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-left,
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-left,
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section,
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section > .accounts-filter-shell,
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-left {
   background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
-  border-color: var(--atelier-material-edge) !important;
 }
 
-/* Inputs / selects / date triggers / buttons inside filter bars -> light field. */
+/* ---- 2. Fields (input/select/date) inside every filter partition ---- */
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-left, .users-filter-left, .usage-filter-left)
   :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
-:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
-  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
-  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(.select-trigger, input.input),
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:hover,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:focus-visible,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger-open,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger:hover,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger-open {
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger-open,
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(.select-trigger, input.input),
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-left :where(.select-trigger, input.input),
+:root.theme-cloudflare #app .app-layout-content .user-usage-atelier .usage-filter-left :where(.select-trigger, input.input, .date-picker-trigger),
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-left :where(input.input, select.input),
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-left label:has(input[type="checkbox"]),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-left :where(.select-trigger, .input),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-actions-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper) !important;
   color: var(--atelier-ink) !important;
@@ -6334,30 +6358,205 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   -webkit-text-fill-color: var(--atelier-ink) !important;
 }
 
-/* Labels / icons / placeholder text inside filter bars -> ink, not paper. */
+/* ---- 3. Buttons inside every filter ACTIONS partition ---- */
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button, .hash-pill):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button, .hash-pill):hover:not(:disabled) {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+}
+
+/* ---- 4. Labels / icons / placeholders in filter partitions -> ink/muted ---- */
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-left, .users-filter-left, .usage-filter-left)
   :where(label, span, svg, path, .select-value, .select-icon, .date-picker-icon, .date-picker-chevron),
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(svg, path, span),
-:root.theme-cloudflare #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg),
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *),
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon) {
+:root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(svg, path, span),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon),
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(svg, span),
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-left :where(label, span, svg, .select-value, .select-icon),
+:root.theme-cloudflare #app .app-layout-content .user-usage-atelier .usage-filter-left :where(label, span, svg, .select-value, .select-icon),
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-left :where(.input, select, label, svg, span),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-left :where(span, svg, .select-value, .select-icon),
+:root.theme-cloudflare #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions :where(svg, span) {
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
   stroke: currentColor !important;
 }
 
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(input)::placeholder,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(input.input)::placeholder {
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(input.input)::placeholder,
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-left :where(input.input)::placeholder,
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-left :where(input.input)::placeholder {
   color: var(--atelier-muted) !important;
   -webkit-text-fill-color: var(--atelier-muted) !important;
 }
 
-/* The dark vertical separator rule between filter partitions -> soft edge. */
+/* ---- 5. Vertical separators between partitions -> soft edge ---- */
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
-  :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before,
-:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)::before,
+  > :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)
+  > :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before,
 :root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before,
-:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before {
+:root.theme-cloudflare #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before,
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-actions::before,
+:root.theme-cloudflare #app .app-layout-content .global-pricing-filter-actions::before,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta::after {
   background: var(--atelier-material-edge) !important;
+}
+
+/* ---- 6. Ops monitor toolbar (meta + controls + select trigger) ---- */
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(h1, div, span, svg),
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta:hover :where(h1, div, span, svg),
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar:hover .ops-monitor-toolbar-meta :where(h1, div, span, svg),
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-value, .select-icon, .select-icon svg, svg, path, span, label) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+}
+
+/* ---- 7. Dropdown / select / date-picker portals (black submenus) ---- */
+:root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed :where(.select-dropdown-portal, .date-picker-dropdown-portal),
+:root.theme-cloudflare body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal),
+:root.theme-cloudflare body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-search,
+  .select-dropdown-portal .select-options,
+  .date-picker-dropdown-portal .date-picker-presets,
+  .date-picker-dropdown-portal .date-picker-actions,
+  .date-picker-dropdown-portal .date-picker-custom,
+  .date-picker-dropdown-portal .date-picker-divider,
+  .date-picker-dropdown-portal .date-picker-input
+),
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu,
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare body:has(.table-page-layout) :where(
+  .select-dropdown-portal .select-option,
+  .select-dropdown-portal .select-option-label,
+  .select-dropdown-portal .select-empty,
+  .date-picker-dropdown-portal .date-picker-preset,
+  .date-picker-dropdown-portal .date-picker-label,
+  .date-picker-dropdown-portal .date-picker-separator
+),
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty) {
+  color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare body:has(.table-page-layout) :where(.select-dropdown-portal .select-option, .date-picker-dropdown-portal .date-picker-preset):hover,
+:root.theme-cloudflare .select-dropdown-portal .select-option-focused,
+:root.theme-cloudflare .date-picker-dropdown-portal .date-picker-preset-active,
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu .select-option:hover,
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu .select-option-focused {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+}
+
+/* ---- 8. Ops diagnosis popover + endpoint popover list ---- */
+:root.theme-cloudflare .ops-diagnosis-popover,
+:root.theme-cloudflare .ops-diagnosis-popover > div,
+:root.theme-cloudflare .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover > div,
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list > div {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  background-color: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  --atelier-card-surface: var(--atelier-paper);
+  --atelier-material-2: var(--atelier-paper);
+}
+
+:root.theme-cloudflare .ops-diagnosis-popover *,
+:root.theme-cloudflare .ops-diagnosis-popover :where(svg, path),
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover *,
+:root.theme-cloudflare body:has(.ops-dashboard-atelier) .ops-diagnosis-popover *,
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(span, code, button, a, svg, path) {
+  border-color: var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+/* ---- 9. Remaining slab families (user-usage actions, date-picker portal, endpoint code) ---- */
+:root.theme-cloudflare #app .app-layout-content .user-usage-atelier .usage-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled),
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .user-usage-atelier .usage-filter-actions :where(svg, span),
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .keys-filter-actions :where(svg, span) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+/* Date-picker portal under table pages (presets / actions / custom / input). */
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
+:root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
+:root.theme-cloudflare body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input)::placeholder {
+  color: var(--atelier-muted) !important;
+  -webkit-text-fill-color: var(--atelier-muted) !important;
+}
+
+/* Endpoint popover code block + tooltip arrow on user-keys page. */
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-code {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip-arrow {
+  background: var(--atelier-paper) !important;
 }

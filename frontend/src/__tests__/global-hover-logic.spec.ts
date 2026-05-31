@@ -10,7 +10,7 @@ const styleSource = readFileSync(resolve(frontendRoot, 'style.css'), 'utf8')
 // Pull the appended "Global hover/highlight logic" section so assertions are
 // scoped to the new calm-surface layer, not the legacy rules above it.
 const marker = 'Global hover/highlight logic (all themes)'
-const cfFilterMarker = 'Cloudflare theme: filter bars must not read as a black slab'
+const cfFilterMarker = 'Cloudflare theme — complete de-slab pass'
 const calmLayer = styleSource.slice(
   styleSource.indexOf(marker),
   styleSource.indexOf(cfFilterMarker),
@@ -50,7 +50,7 @@ describe('global hover logic — calm non-interactive surfaces', () => {
 })
 
 describe('Cloudflare theme — filter bars are not a black slab', () => {
-  const cfMarker = 'Cloudflare theme: filter bars must not read as a black slab'
+  const cfMarker = 'Cloudflare theme — complete de-slab pass'
   const cfLayer = styleSource.slice(styleSource.indexOf(cfMarker))
 
   it('repaints ink-filled filter shells to a light panel under the Cloudflare theme', () => {

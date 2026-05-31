@@ -89,6 +89,24 @@ describe('Cloudflare appearance theme', () => {
     expect(codexThemeSource).toContain(`--codex-violet: ${cfOrange};`)
   })
 
+  it('defines slab tokens so dark Newspaper control surfaces become light under Cloudflare', () => {
+    // Base (Newspaper) keeps the dark ink slab; Cloudflare flips slabs to light.
+    expect(newspaperBlock).toContain('--atelier-slab-surface: var(--atelier-ink);')
+    expect(newspaperBlock).toContain('--atelier-slab-text: var(--atelier-paper);')
+    expect(cloudflareBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
+    expect(cloudflareBlock).toContain('--atelier-slab-field: var(--atelier-paper);')
+    expect(cloudflareBlock).toContain('--atelier-slab-text: var(--atelier-ink);')
+    // The master filter-shell slab rule must reference the token, not hardcoded ink.
+    expect(styleSource).toContain('background: var(--atelier-slab-surface) !important;')
+    // Cloudflare hover must be a neutral gray, not an orange tint.
+    expect(cloudflareBlock).toContain('--atelier-ui-hover-surface: #eef0f2;')
+    expect(cloudflareBlock).not.toContain('color-mix(in srgb, var(--atelier-blue) 8%, var(--atelier-paper-2))')
+    // Cloudflare must repaint dropdown/date-picker portals + ops toolbar away from ink.
+    expect(styleSource).toContain('Cloudflare theme — complete de-slab pass')
+    expect(styleSource).toContain(':root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu')
+    expect(styleSource).toContain(':root.theme-cloudflare .ops-diagnosis-popover')
+  })
+
   it('does not move layout — the Cloudflare theme is colour/typography only', () => {
     for (const banned of [
       'grid-template-columns',
