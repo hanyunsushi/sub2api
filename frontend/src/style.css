@@ -380,7 +380,7 @@
     @apply border border-white/20 bg-primary-500 text-white shadow-sm shadow-primary-600/20;
     @apply hover:bg-primary-600 hover:shadow-md hover:shadow-primary-600/20;
     @apply dark:bg-primary-500 dark:hover:bg-primary-400 dark:hover:text-dark-950;
-    border-color: var(--atelier-ink);
+    border-color: var(--atelier-blue);
     background: var(--atelier-blue);
     box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
   }
@@ -434,7 +434,7 @@
   .btn-alipay,
   .btn-wxpay {
     @apply text-white shadow-md;
-    border: 1px solid var(--atelier-ink);
+    border: 1px solid var(--atelier-dust);
     background: var(--atelier-dust);
     box-shadow: 0 10px 24px -18px rgba(79, 106, 140, 0.58);
   }
@@ -2228,7 +2228,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -2458,7 +2458,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 
 :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary),
 .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
   color: var(--atelier-white) !important;
   box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62) !important;
@@ -2759,7 +2759,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-paper) !important;
@@ -2781,7 +2781,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed :where(.btn-secondary, .btn-ghost):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-paper) !important;
@@ -2796,7 +2796,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed .card {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-ui-hover-surface) !important;
   box-shadow: none !important;
 }
@@ -2808,7 +2808,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
@@ -2818,7 +2818,7 @@ body:has(.table-page-layout) :where(
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create) {
   position: relative;
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
@@ -2832,7 +2832,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create):hover:not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
 }
@@ -2892,12 +2892,12 @@ body:has(.table-page-layout) :where(
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .justify-between, .users-filter-shell) > :not(:last-child) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > .flex-col > :first-child :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input),
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-left, .users-filter-left, .table-filter-left) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
 }
 
@@ -2939,7 +2939,7 @@ body:has(.table-page-layout) :where(
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled),
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   border-image: none !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
@@ -2948,7 +2948,7 @@ body:has(.table-page-layout) :where(
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(div, form) > :where(.flex:last-child, .ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled),
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.usage-filter-actions, .users-filter-actions, .table-filter-actions) :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):hover:not(:disabled) {
-  border-color: var(--atelier-paper) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field-hover) !important;
   color: var(--atelier-slab-text) !important;
 }
@@ -3081,7 +3081,7 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .table-page-layout > .layout-section-fixed.table-page-actions-section :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-material-edge) !important;
   border-image: none !important;
   background: var(--atelier-ui-hover-surface) !important;
   color: var(--atelier-ink) !important;
@@ -3236,10 +3236,10 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-left, .users-filter-left, .usage-filter-left)
   :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -3261,7 +3261,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
   :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -3340,7 +3340,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {
   align-self: center !important;
   margin: 0 !important;
-  border-color: rgba(255, 250, 240, 0.28) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
   outline: none !important;
   outline-offset: 0 !important;
   background: var(--atelier-slab-surface) !important;
@@ -3356,20 +3356,20 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover {
   transform: none !important;
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-surface) !important;
   box-shadow: none !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-card {
   overflow: hidden !important;
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
@@ -3394,10 +3394,10 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -3405,7 +3405,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:hover,
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger:focus-visible,
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger-open {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -3438,10 +3438,10 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger,
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger:hover,
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger-open {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -3454,7 +3454,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap {
   overflow: hidden;
-  border: 1px solid var(--atelier-ink);
+  border: 1px solid var(--atelier-slab-edge);
   border-radius: 8px;
   background: var(--atelier-ui-hover-surface);
 }
@@ -3513,10 +3513,10 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(.select-trigger, input.input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -3526,7 +3526,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -3620,10 +3620,10 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
   .table-filter-left :where(.select-trigger, .input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
 }
 
@@ -3635,7 +3635,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section
   .table-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
 }
@@ -4125,10 +4125,10 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-keys-atelier .keys-filter-left :where(.select-trigger, input.input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -4149,7 +4149,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list > div {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-surface) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -4170,7 +4170,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-default-badge,
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip,
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip-arrow {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   background-image: none !important;
   color: var(--atelier-slab-text) !important;
@@ -4179,7 +4179,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip {
-  outline: 1px solid rgba(255, 250, 240, 0.32) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -1px !important;
 }
 
@@ -4397,10 +4397,10 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-usage-atelier .usage-filter-left :where(.select-trigger, .date-picker-trigger, input.input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -4412,7 +4412,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-usage-atelier .usage-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -4549,10 +4549,10 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .global-pricing-filter-left :where(input.input, select.input) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -4567,21 +4567,21 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .global-pricing-filter-left label:has(input[type="checkbox"]) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
-  outline: 1px solid rgba(255, 250, 240, 0.42) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -2px !important;
 }
 
 #app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
 }
 
 #app .app-layout-content .global-pricing-filter-actions :where(.hash-pill) {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
 }
@@ -4740,7 +4740,7 @@ body:has(.table-page-layout) :where(
 
 .auth-ascii-shell .auth-logo {
   border-radius: 50% !important;
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
   box-shadow: none !important;
 }
@@ -4789,7 +4789,7 @@ body:has(.table-page-layout) :where(
 }
 
 .auth-ascii-shell .input {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper) !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
@@ -5108,7 +5108,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open {
-  border-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -5130,14 +5130,14 @@ body:has(.table-page-layout) :where(
   --select-menu-active-text: var(--atelier-ink);
   --select-menu-selected-surface: var(--atelier-ui-hover-surface);
   --select-menu-selected-text: var(--atelier-ink);
-  border-color: rgba(255, 250, 240, 0.28) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
   background: var(--atelier-slab-surface) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
 }
 
 .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options) {
-  border-color: rgba(255, 250, 240, 0.28) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
 }
@@ -5576,7 +5576,7 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected .pl
 
 body:has(.table-page-layout) .date-picker-dropdown-portal,
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
-  border-color: rgba(255, 250, 240, 0.32) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -5584,22 +5584,22 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input) {
-  border-color: rgba(255, 250, 240, 0.78) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
 }
 
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible) {
-  border-color: var(--atelier-paper) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.2) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-slab-text) 20%, transparent) !important;
 }
 
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover) {
@@ -5912,7 +5912,7 @@ body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-pic
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
 body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider),
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
-  border-color: rgba(255, 250, 240, 0.32) !important;
+  border-color: var(--atelier-slab-edge-soft) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
@@ -5923,17 +5923,17 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron),
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-icon, .date-picker-chevron) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
 body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input),
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input) {
-  border-color: rgba(255, 250, 240, 0.78) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   box-shadow: none !important;
 }
 
@@ -5941,10 +5941,10 @@ body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-pic
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
 body:has(.user-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible),
 body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input:focus, .date-picker-input:focus-visible) {
-  border-color: var(--atelier-paper) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  box-shadow: 0 0 0 2px rgba(255, 250, 240, 0.2) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-slab-text) 20%, transparent) !important;
 }
 
 body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-input::-webkit-calendar-picker-indicator),
@@ -6015,7 +6015,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: inherit !important;
 }
 
-/* Non-dashboard/ops filter bars are unified ink blocks with perimeter stitching. */
+/* Non-dashboard/ops filter bars use slab edge tokens, not ink-black borders. */
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section,
 #app .app-layout-content .user-keys-atelier > .table-page-filter-section,
 #app .app-layout-content .user-usage-atelier > .table-page-filter-section,
@@ -6649,6 +6649,173 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   border-color: var(--atelier-blue-dark) !important;
   background: var(--atelier-blue-dark) !important;
   color: var(--atelier-white) !important;
+}
+
+/* ---- 13. Global hover typography stability (all themes).
+   Hover should communicate with surface/border affordance, not by repainting
+   neutral option text. Filled/semantic actions keep their own button rules. ---- */
+:where(
+  .dropdown-item:hover,
+  .floating-dropdown-portal button:hover,
+  .action-menu-content button:hover,
+  .action-menu-content a:hover,
+  [class*="dropdown"][class*="portal"] button:hover
+):not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.date-picker-apply):not(.codex-button--primary):not(.codex-button--danger) {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.select-dropdown-portal {
+  --select-option-stable-text: var(--select-option-text, var(--atelier-muted));
+  --select-option-selected-stable-text: var(--select-option-selected-text, var(--atelier-ink));
+}
+
+:root.theme-cloudflare body.dashboard-filter-menu-open .select-dropdown-portal,
+:root.theme-cloudflare body:has(.table-page-layout) .select-dropdown-portal {
+  --select-option-stable-text: var(--atelier-ink);
+}
+
+.select-dropdown-portal .select-option:not(.select-option-selected):not(.select-option-group),
+.dark .select-dropdown-portal .select-option:not(.select-option-selected):not(.select-option-group) {
+  color: var(--select-option-stable-text) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.select-dropdown-portal .select-option:hover:not(.select-option-selected):not(.select-option-group),
+.select-dropdown-portal .select-option-focused:not(.select-option-selected):not(.select-option-group),
+.dark .select-dropdown-portal .select-option:hover:not(.select-option-selected):not(.select-option-group),
+.dark .select-dropdown-portal .select-option-focused:not(.select-option-selected):not(.select-option-group) {
+  background: var(--select-option-hover-surface, var(--atelier-ui-hover-surface)) !important;
+  color: var(--select-option-stable-text) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.select-dropdown-portal .select-option:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg),
+.select-dropdown-portal .select-option:hover:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg),
+.select-dropdown-portal .select-option-focused:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option:hover:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option-focused:not(.select-option-selected):not(.select-option-group) :where(.select-option-label, svg) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.select-dropdown-portal .select-option-selected,
+.select-dropdown-portal .select-option-selected:hover,
+.select-dropdown-portal .select-option-selected.select-option-focused,
+.dark .select-dropdown-portal .select-option-selected,
+.dark .select-dropdown-portal .select-option-selected:hover,
+.dark .select-dropdown-portal .select-option-selected.select-option-focused {
+  background: var(--select-option-selected-surface, var(--atelier-ui-hover-surface)) !important;
+  color: var(--select-option-selected-stable-text) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.select-dropdown-portal .select-option-selected :where(.select-option-label, svg),
+.select-dropdown-portal .select-option-selected:hover :where(.select-option-label, svg),
+.select-dropdown-portal .select-option-selected.select-option-focused :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option-selected :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option-selected:hover :where(.select-option-label, svg),
+.dark .select-dropdown-portal .select-option-selected.select-option-focused :where(.select-option-label, svg) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) {
+  color: var(--date-picker-muted-text, var(--atelier-muted)) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+body:has(.user-usage-atelier) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active),
+.dark .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) {
+  background: var(--date-picker-hover-surface, var(--atelier-ui-hover-surface)) !important;
+  color: var(--date-picker-muted-text, var(--atelier-muted)) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+.dark .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) {
+  background: var(--date-picker-hover-surface, var(--atelier-ui-hover-surface)) !important;
+  color: var(--date-picker-muted-text, var(--atelier-muted)) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron),
+:root.theme-cloudflare body:has(.table-page-layout) .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) :where(.date-picker-label, .date-picker-icon, .date-picker-chevron) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.theme-switcher-option:hover:not(.theme-switcher-option-active) {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.theme-switcher-option:hover:not(.theme-switcher-option-active) :where(svg, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.app-layout-content .action-menu-trigger:hover,
+:root.theme-cloudflare #app .app-layout-content .action-menu-trigger:hover {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.app-layout-content .action-menu-trigger:hover :where(svg, span),
+:root.theme-cloudflare #app .app-layout-content .action-menu-trigger:hover :where(svg, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+:root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary),
+:root.theme-cloudflare .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]) {
+  border-color: var(--atelier-blue) !important;
+}
+
+:root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
+:root.theme-cloudflare .app-layout-content :where([class~="hover:bg-primary-700"], [class~="hover:bg-blue-700"], [class~="hover:bg-indigo-700"], [class~="hover:bg-purple-700"], [class~="hover:bg-violet-700"]):hover:not(:disabled) {
+  border-color: var(--atelier-blue-dark) !important;
+}
+
+:root.theme-cloudflare :where(.date-picker-dropdown-portal .date-picker-apply):not(:disabled) {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+  -webkit-text-fill-color: var(--atelier-white) !important;
+}
+
+:root.theme-cloudflare :where(.date-picker-dropdown-portal .date-picker-apply):hover:not(:disabled) {
+  border-color: var(--atelier-blue-dark) !important;
+  background: var(--atelier-blue-dark) !important;
+  color: var(--atelier-white) !important;
+  -webkit-text-fill-color: var(--atelier-white) !important;
 }
 
 /* ---- 12. Final authoritative CF hover for neutral filter-bar buttons.

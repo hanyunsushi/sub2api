@@ -212,6 +212,13 @@ describe('admin DashboardView', () => {
     expect(dashboardSource).toContain('background: var(--atelier-slab-surface) !important;')
     expect(dashboardSource).toContain('color: var(--atelier-slab-text);')
     expect(dashboardSource).toContain('color: var(--atelier-slab-text) !important;')
+    const dashboardControlHoverBlock = dashboardSource.slice(
+      dashboardSource.indexOf('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover)'),
+      dashboardSource.indexOf('.admin-dashboard-atelier:where(.dark *)')
+    )
+    expect(dashboardControlHoverBlock).toContain('.admin-dashboard-atelier :deep(.date-picker-trigger:hover)')
+    expect(dashboardControlHoverBlock).not.toContain('border-color: var(--atelier-slab-text) !important;')
+    expect(dashboardControlHoverBlock).toContain('border-color: var(--atelier-slab-edge) !important;')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range))')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-refresh)')

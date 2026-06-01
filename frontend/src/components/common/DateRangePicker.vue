@@ -441,6 +441,10 @@ onUnmounted(() => {
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink);
+  --date-picker-muted-text: var(--atelier-muted);
+  --date-picker-hover-surface: var(--atelier-ui-hover-surface);
+  --date-picker-active-surface: var(--atelier-material-blue);
+  --date-picker-active-text: var(--atelier-blue);
   box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.58) !important;
   pointer-events: auto !important;
 }
@@ -455,14 +459,24 @@ onUnmounted(() => {
   @apply text-gray-600 dark:text-gray-400;
   @apply hover:bg-gray-100 dark:hover:bg-dark-700;
   @apply transition-colors duration-150;
-  color: var(--atelier-muted);
+  color: var(--date-picker-muted-text);
 }
 
 .date-picker-dropdown-portal .date-picker-preset-active {
   @apply bg-primary-100 dark:bg-primary-900/30;
   @apply text-primary-700 dark:text-primary-300;
-  background: var(--atelier-material-blue);
-  color: var(--atelier-blue);
+  background: var(--date-picker-active-surface);
+  color: var(--date-picker-active-text);
+}
+
+.date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) {
+  background: var(--date-picker-hover-surface);
+  color: var(--date-picker-muted-text);
+}
+
+.date-picker-dropdown-portal .date-picker-preset-active:hover {
+  background: var(--date-picker-active-surface);
+  color: var(--date-picker-active-text);
 }
 
 .date-picker-dropdown-portal .date-picker-divider {
@@ -501,16 +515,6 @@ onUnmounted(() => {
 
 .dark .date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
-}
-
-.dark .date-picker-dropdown-portal .date-picker-preset:hover {
-  background: rgba(0, 47, 167, 0.24);
-  color: #f8fbff;
-}
-
-.dark .date-picker-dropdown-portal .date-picker-preset-active:hover {
-  background: rgba(0, 47, 167, 0.34);
-  color: #f8fbff;
 }
 
 .date-picker-dropdown-portal .date-picker-separator {
