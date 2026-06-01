@@ -20,11 +20,22 @@ describe('password recovery auth theme source', () => {
     for (const source of [forgotSource, resetSource]) {
       expect(source).toContain('var(--atelier-paper')
       expect(source).toContain('var(--atelier-blue')
-      expect(source).toContain(':global(.theme-cloudflare)')
+      expect(source).toContain(':global(.theme-cloudflare .auth-recovery')
       expect(source).not.toContain('bg-green-50')
       expect(source).not.toContain('bg-amber-50')
       expect(source).not.toContain('dark:bg-green-900/20')
       expect(source).not.toContain('dark:bg-amber-900/20')
+    }
+  })
+
+  it('scopes theme recovery overrides to descendants instead of restyling the root theme class', () => {
+    for (const source of [forgotSource, resetSource]) {
+      expect(source).toContain(':global(.theme-cloudflare .auth-recovery-kicker)')
+      expect(source).toContain(':global(.theme-cloudflare .auth-recovery-status-icon)')
+      expect(source).toContain(':global(.dark .auth-recovery-heading)')
+      expect(source).toContain(':global(.dark .auth-recovery-status)')
+      expect(source).not.toContain(':global(.theme-cloudflare) .auth-recovery')
+      expect(source).not.toContain(':global(.dark) .auth-recovery')
     }
   })
 
