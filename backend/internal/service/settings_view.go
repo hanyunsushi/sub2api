@@ -225,7 +225,9 @@ type SystemSettings struct {
 	TCDMXSubscriptionEnabled            bool
 	TCDMXSubscriptionAPIBaseURL         string
 	TCDMXSubscriptionAPIToken           string
+	TCDMXSubscriptionRefreshToken       string
 	TCDMXSubscriptionAPITokenConfigured bool
+	TCDMXSubscriptionRefreshConfigured  bool
 
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool

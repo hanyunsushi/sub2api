@@ -30,4 +30,12 @@ describe('SettingsView external quota settings placement', () => {
     expect(source).not.toContain('localText("TCDMX API Key", "TCDMX API Key")')
     expect(source).not.toContain("localText('粘贴 TCDMX API Key', 'Paste TCDMX API key')")
   })
+
+  it('collects the TCDMX refresh_token separately for automatic auth_token renewal', () => {
+    expect(source).toContain('tcdmx_subscription_refresh_token')
+    expect(source).toContain('tcdmx_subscription_refresh_token_configured')
+    expect(source).toContain('localText("TCDMX refresh_token", "TCDMX refresh_token")')
+    expect(source).toContain('auth_token 过期后自动刷新')
+    expect(source).toContain('不是 sk- API 密钥')
+  })
 })

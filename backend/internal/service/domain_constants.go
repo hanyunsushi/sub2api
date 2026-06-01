@@ -447,9 +447,10 @@ const (
 	SettingKeyBuzzBalanceAPIToken   = "buzz_balance_api_token"
 
 	// TCDMX subscription display
-	SettingKeyTCDMXSubscriptionEnabled    = "tcdmx_subscription_enabled"
-	SettingKeyTCDMXSubscriptionAPIBaseURL = "tcdmx_subscription_api_base_url"
-	SettingKeyTCDMXSubscriptionAPIToken   = "tcdmx_subscription_api_token"
+	SettingKeyTCDMXSubscriptionEnabled      = "tcdmx_subscription_enabled"
+	SettingKeyTCDMXSubscriptionAPIBaseURL   = "tcdmx_subscription_api_base_url"
+	SettingKeyTCDMXSubscriptionAPIToken     = "tcdmx_subscription_api_token"
+	SettingKeyTCDMXSubscriptionRefreshToken = "tcdmx_subscription_refresh_token"
 
 	// 订阅到期提醒
 	SettingKeySubscriptionExpiryNotifyEnabled = "subscription_expiry_notify_enabled" // 订阅到期提醒全局开关，默认开启

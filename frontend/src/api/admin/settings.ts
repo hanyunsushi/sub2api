@@ -612,6 +612,7 @@ export interface SystemSettings {
   tcdmx_subscription_enabled: boolean;
   tcdmx_subscription_api_base_url: string;
   tcdmx_subscription_api_token_configured: boolean;
+  tcdmx_subscription_refresh_token_configured: boolean;
   subscription_expiry_notify_enabled: boolean;
   account_quota_notify_enabled: boolean;
   account_quota_notify_emails: NotifyEmailEntry[];
@@ -849,6 +850,7 @@ export interface UpdateSettingsRequest {
   tcdmx_subscription_enabled?: boolean;
   tcdmx_subscription_api_base_url?: string;
   tcdmx_subscription_api_token?: string;
+  tcdmx_subscription_refresh_token?: string;
   subscription_expiry_notify_enabled?: boolean;
   account_quota_notify_enabled?: boolean;
   account_quota_notify_emails?: NotifyEmailEntry[];

@@ -272,6 +272,7 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		TCDMXSubscriptionEnabled:               settings.TCDMXSubscriptionEnabled,
 		TCDMXSubscriptionAPIBaseURL:            settings.TCDMXSubscriptionAPIBaseURL,
 		TCDMXSubscriptionAPITokenConfigured:    settings.TCDMXSubscriptionAPITokenConfigured,
+		TCDMXSubscriptionRefreshConfigured:     settings.TCDMXSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -613,6 +614,7 @@ type UpdateSettingsRequest struct {
 	TCDMXSubscriptionEnabled        *bool                   `json:"tcdmx_subscription_enabled"`
 	TCDMXSubscriptionAPIBaseURL     *string                 `json:"tcdmx_subscription_api_base_url"`
 	TCDMXSubscriptionAPIToken       string                  `json:"tcdmx_subscription_api_token"`
+	TCDMXSubscriptionRefreshToken   string                  `json:"tcdmx_subscription_refresh_token"`
 	SubscriptionExpiryNotifyEnabled *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled       *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails        *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
@@ -1491,6 +1493,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		req.TCDMXSubscriptionAPIBaseURL = &normalized
 	}
 	req.TCDMXSubscriptionAPIToken = strings.TrimSpace(req.TCDMXSubscriptionAPIToken)
+	req.TCDMXSubscriptionRefreshToken = strings.TrimSpace(req.TCDMXSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1788,7 +1791,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.TCDMXSubscriptionAPIBaseURL
 		}(),
-		TCDMXSubscriptionAPIToken: req.TCDMXSubscriptionAPIToken,
+		TCDMXSubscriptionAPIToken:     req.TCDMXSubscriptionAPIToken,
+		TCDMXSubscriptionRefreshToken: req.TCDMXSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2133,6 +2137,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TCDMXSubscriptionEnabled:               updatedSettings.TCDMXSubscriptionEnabled,
 		TCDMXSubscriptionAPIBaseURL:            updatedSettings.TCDMXSubscriptionAPIBaseURL,
 		TCDMXSubscriptionAPITokenConfigured:    updatedSettings.TCDMXSubscriptionAPITokenConfigured,
+		TCDMXSubscriptionRefreshConfigured:     updatedSettings.TCDMXSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2639,6 +2644,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.TCDMXSubscriptionAPIToken != "" {
 		changed = append(changed, "tcdmx_subscription_api_token")
+	}
+	if req.TCDMXSubscriptionRefreshToken != "" {
+		changed = append(changed, "tcdmx_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

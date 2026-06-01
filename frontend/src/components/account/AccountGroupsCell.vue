@@ -1,7 +1,7 @@
 <template>
-  <div v-if="groups && groups.length > 0" class="relative max-w-56">
-    <!-- 分组容器：固定最大宽度，最多显示2行 -->
-    <div class="flex flex-wrap gap-1 max-h-14 overflow-hidden">
+  <div v-if="groups && groups.length > 0" class="account-groups-cell relative w-full min-w-0 max-w-full">
+    <!-- 分组容器：使用卡片内可用横向空间，最多显示2行 -->
+    <div class="account-groups-cell__chips flex flex-wrap gap-1 overflow-hidden">
       <GroupBadge
         v-for="group in displayGroups"
         :key="group.id"

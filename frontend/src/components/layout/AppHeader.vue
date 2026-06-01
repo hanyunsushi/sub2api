@@ -418,6 +418,9 @@ const formattedBuzzExpiry = computed(() => {
 
 const formattedTCDMXBalance = computed(() => {
   if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '未配置'
+  if (tcdmxSubscription.value.error_code) {
+    return tcdmxSubscription.value.error_code === 'INVALID_TOKEN' ? 'Token 失效' : '读取失败'
+  }
   const remaining = tcdmxSubscription.value.remaining_usd
   const total = tcdmxSubscription.value.total_limit_usd
   if (typeof remaining === 'number' && typeof total === 'number') {
@@ -430,6 +433,9 @@ const formattedTCDMXBalance = computed(() => {
 
 const formattedTCDMXExpiry = computed(() => {
   if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '期限未配置'
+  if (tcdmxSubscription.value.error_code) {
+    return tcdmxSubscription.value.error_code === 'INVALID_TOKEN' ? '请更新 Token' : (tcdmxSubscription.value.error_message || '请检查配置')
+  }
   return formatExternalExpiry(tcdmxSubscription.value.expires_at)
 })
 

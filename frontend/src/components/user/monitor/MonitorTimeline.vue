@@ -17,7 +17,7 @@
       <div
         v-for="(bar, idx) in displayBars"
         :key="idx"
-        class="flex-1 min-w-[3px] rounded-sm"
+        class="monitor-timeline-bar flex-1 min-w-[3px] rounded-sm"
         :class="bar.colorClass"
         :style="{ height: bar.heightPct + '%' }"
         :title="bar.title"
@@ -70,11 +70,11 @@ const STATUS_HEIGHT: Record<string, number> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  operational: 'bg-emerald-500',
-  degraded: 'bg-amber-500',
-  failed: 'bg-red-500',
-  error: 'bg-red-500',
-  empty: 'bg-gray-300 dark:bg-dark-600',
+  operational: 'monitor-timeline-bar--operational',
+  degraded: 'monitor-timeline-bar--degraded',
+  failed: 'monitor-timeline-bar--failed',
+  error: 'monitor-timeline-bar--error',
+  empty: 'monitor-timeline-bar--empty',
 }
 
 const displayBars = computed<Bar[]>(() => {

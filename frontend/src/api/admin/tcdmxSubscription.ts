@@ -19,6 +19,8 @@ export interface TCDMXSubscriptionStatus {
   configured: boolean;
   currency: "USD" | string;
   site_url: string;
+  error_code?: string;
+  error_message?: string;
   total_limit_usd?: number;
   used_usd: number;
   remaining_usd?: number;

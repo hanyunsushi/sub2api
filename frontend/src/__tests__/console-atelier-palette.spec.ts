@@ -11,10 +11,12 @@ const themeSwitcherSource = readFileSync(resolve(__dirname, '../components/commo
 const appearanceThemeSource = readFileSync(resolve(__dirname, '../composables/useAppearanceTheme.ts'), 'utf8')
 const localeSwitcherSource = readFileSync(resolve(__dirname, '../components/common/LocaleSwitcher.vue'), 'utf8')
 const selectSource = readFileSync(resolve(__dirname, '../components/common/Select.vue'), 'utf8')
+const toggleSource = readFileSync(resolve(__dirname, '../components/common/Toggle.vue'), 'utf8')
 const dashboardSource = readFileSync(resolve(__dirname, '../views/admin/DashboardView.vue'), 'utf8')
 const usersSource = readFileSync(resolve(__dirname, '../views/admin/UsersView.vue'), 'utf8')
 const tablePageLayoutSource = readFileSync(resolve(__dirname, '../components/layout/TablePageLayout.vue'), 'utf8')
 const accountsSource = readFileSync(resolve(__dirname, '../views/admin/AccountsView.vue'), 'utf8')
+const accountGroupsCellSource = readFileSync(resolve(__dirname, '../components/account/AccountGroupsCell.vue'), 'utf8')
 const groupsSource = readFileSync(resolve(__dirname, '../views/admin/GroupsView.vue'), 'utf8')
 const channelsSource = readFileSync(resolve(__dirname, '../views/admin/ChannelsView.vue'), 'utf8')
 const proxiesSource = readFileSync(resolve(__dirname, '../views/admin/ProxiesView.vue'), 'utf8')
@@ -90,6 +92,21 @@ const cssBlock = (source: string, selector: string) => {
   }
 
   throw new Error(`CSS block not closed for ${selector}`)
+}
+
+const cssBlocksForSelector = (source: string, selector: string) => {
+  const blocks: string[] = []
+  let searchIndex = 0
+
+  while (searchIndex < source.length) {
+    const selectorIndex = source.indexOf(`${selector} {`, searchIndex)
+    if (selectorIndex === -1) break
+
+    blocks.push(cssBlock(source.slice(selectorIndex), selector))
+    searchIndex = selectorIndex + selector.length
+  }
+
+  return blocks
 }
 
 describe('console atelier palette restyle', () => {
@@ -520,6 +537,8 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('grid-template-columns: repeat(3, minmax(0, 1fr));')
     expect(materialSystemBlock).toContain('padding-right: 2rem !important;')
     expect(materialSystemBlock).toContain('td[data-column-key="usage"]')
+    expect(materialSystemBlock).toContain('td[data-column-key="groups"]')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"]')).toContain('grid-column: 2 / -1;')
     expect(materialSystemBlock).toContain('width: max-content !important;')
     expect(materialSystemBlock).toContain('z-index: 60;')
     expect(materialSystemBlock).toContain('pointer-events: auto !important;')
@@ -540,7 +559,16 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('.usage-progress-fill--safe')
     expect(materialSystemBlock).toContain('background: var(--atelier-green) !important;')
     expect(materialSystemBlock).toContain('.usage-progress-fill--warning')
-    expect(materialSystemBlock).toContain('background: var(--atelier-dust) !important;')
+    const warningFillBlock = cssBlock(
+      materialSystemBlock,
+      '#app .app-layout-content .accounts-table-page .usage-progress-fill--warning'
+    )
+    expect(warningFillBlock).toContain('background: var(--atelier-butter) !important;')
+    expect(warningFillBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(warningFillBlock).not.toContain('var(--atelier-dust)')
+    const warningFillBlocks = cssBlocksForSelector(styleSource, '.usage-progress-fill--warning')
+    expect(warningFillBlocks.length).toBeGreaterThan(0)
+    expect(warningFillBlocks.join('\n')).not.toMatch(/var\(--atelier-(?:ui-hover-surface|dust)\)/)
     expect(materialSystemBlock).toContain('.usage-progress-fill--danger')
     expect(materialSystemBlock).toContain('background: var(--atelier-red) !important;')
     expect(usageProgressBarSource).toContain('class="usage-progress-bar"')
@@ -550,6 +578,13 @@ describe('console atelier palette restyle', () => {
     expect(usageProgressBarSource).toContain('usage-progress-fill--safe bg-green-500')
     expect(usageProgressBarSource).toContain('usage-progress-fill--warning bg-amber-500')
     expect(usageProgressBarSource).toContain('usage-progress-fill--danger bg-red-500')
+    expect(accountGroupsCellSource).toContain('account-groups-cell')
+    expect(accountGroupsCellSource).toContain('account-groups-cell__chips')
+    expect(accountGroupsCellSource).not.toContain('relative max-w-56')
+    expect(accountGroupsCellSource).not.toContain('max-h-14 overflow-hidden')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell')).toContain('width: 100% !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell__chips')).toContain('max-height: 3.2rem;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell__chips')).toContain('overflow: hidden;')
 
     expect(settingsSource).toContain('settings-tab-icon')
     expect(materialSystemBlock).toContain('.app-layout-content .settings-tab::before')
@@ -588,6 +623,9 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list .endpoint-default-badge')
     expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list .endpoint-tooltip')
     expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(span, code, button, a, svg, path)')).toContain('-webkit-text-fill-color: currentColor !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list :where(.endpoint-popover-item, .endpoint-tooltip) :where(span, p, code, button, a, svg, path)')).toContain('-webkit-text-fill-color: currentColor !important;')
+    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-code')).toContain('-webkit-text-fill-color: currentColor !important;')
 
     for (const source of [announcementsSource, redeemSource, promoCodesSource]) {
       expect(source).toContain('table-filter-shell flex flex-wrap items-center gap-3')
@@ -725,6 +763,17 @@ describe('console atelier palette restyle', () => {
     ).map((match) => match[0])
     expect(nonSidebarHoverBlocks.join('\n')).not.toContain('var(--atelier-butter)')
     expect(nonSidebarHoverBlocks.join('\n')).not.toContain('--atelier-material-2: var(--atelier-butter)')
+  })
+
+  it('keeps shared external subscription toggles visible when switched off', () => {
+    expect(toggleSource).toContain('toggle-switch')
+    expect(toggleSource).toContain('toggle-switch__thumb')
+    expect(toggleSource).toContain(':aria-checked="modelValue"')
+    expect(styleSource).toContain('#app .app-layout-content .toggle-switch')
+    expect(styleSource).toContain('#app .app-layout-content .toggle-switch.bg-gray-200')
+    expect(styleSource).toContain('border-color: color-mix(in srgb, var(--atelier-ink) 24%, transparent) !important;')
+    expect(styleSource).toContain('box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-ink) 14%, transparent) !important;')
+    expect(styleSource).toContain('#app .app-layout-content .toggle-switch__thumb')
   })
 
   it('wraps the current visual language as the Newspaper theme without moving layout', () => {

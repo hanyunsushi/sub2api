@@ -7,7 +7,7 @@
     <!-- Header: icon + name/model + status chip -->
     <div class="flex items-start gap-3">
       <span
-        class="w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
+        class="monitor-provider-logo-shell w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
         :class="[providerGradient(item.provider), providerTintClass, monitorProviderClass(item.provider)]"
       >
         <ProviderBrandIcon :provider="item.provider" :model="item.primary_model" :logo-url="item.logo_url" />

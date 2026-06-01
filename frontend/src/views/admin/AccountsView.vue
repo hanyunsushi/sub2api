@@ -797,6 +797,18 @@ const buildBuzzExternalQuota = (): AccountExternalQuota => {
 }
 
 const buildTCDMXExternalQuota = (): AccountExternalQuota => {
+  if (tcdmxSubscription.value?.error_code) {
+    return {
+      label: 'TCDMX',
+      url: tcdmxSubscription.value?.site_url || defaultTCDMXURL,
+      formattedBalance: tcdmxSubscription.value.error_code === 'INVALID_TOKEN'
+        ? localText('Token 失效', 'Token invalid')
+        : localText('读取失败', 'Read failed'),
+      formattedExpiry: tcdmxSubscription.value.error_code === 'INVALID_TOKEN'
+        ? localText('请更新 Token', 'Update token')
+        : (tcdmxSubscription.value.error_message || localText('请检查配置', 'Check settings'))
+    }
+  }
   const total = formatExternalAmount(tcdmxSubscription.value?.total_limit_usd)
   const remaining = formatExternalAmount(tcdmxSubscription.value?.remaining_usd)
   const activeCount = tcdmxSubscription.value?.active_count ?? 0
