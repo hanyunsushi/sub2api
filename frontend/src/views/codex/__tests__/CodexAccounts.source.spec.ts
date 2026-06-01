@@ -62,4 +62,19 @@ describe('CodexAccounts source contracts', () => {
     expect(shellBlock).not.toContain('overflow: hidden;')
     expect(shellBlock).not.toContain('min-height: calc(100dvh - 128px);')
   })
+
+  it('uses opaque high-priority surfaces for the delete confirmation modal', () => {
+    const backdropBlock = getCssBlock('.codex-modal-backdrop')
+    const modalBlock = getCssBlock('.codex-modal')
+    const modalListBlock = getCssBlock('.codex-modal-list')
+
+    expect(backdropBlock).toContain('z-index: 100000030;')
+    expect(backdropBlock).toContain('background: rgba(17, 24, 39, 0.46);')
+    expect(backdropBlock).toContain('opacity: 1;')
+    expect(modalBlock).toContain('background: var(--codex-surface-strong, var(--atelier-paper)) !important;')
+    expect(modalBlock).toContain('opacity: 1;')
+    expect(modalBlock).toContain('isolation: isolate;')
+    expect(modalListBlock).toContain('background: var(--codex-surface-soft, var(--atelier-paper-2)) !important;')
+    expect(modalListBlock).toContain('opacity: 1;')
+  })
 })

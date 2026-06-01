@@ -15,7 +15,6 @@ const themeFiles = [
   'src/styles/codex-theme.css',
   'src/styles/onboarding.css',
   'src/assets/icons/stripe.svg',
-  'src/utils/chartColors.ts',
   'src/components/common/ModelIcon.vue',
   'src/components/layout/AppLayout.vue',
   'src/components/payment/StripePaymentInline.vue',
@@ -86,7 +85,7 @@ describe('Klein blue theme', () => {
     expect(manifest.theme_color).toBe(kleinBlue)
   })
 
-  it('uses Klein blue as the primary Tailwind token and visible chart accent', () => {
+  it('uses Klein blue as the primary Tailwind token while shared charts use a separate data palette', () => {
     const tailwindConfig = readThemeFile('tailwind.config.js')
     const chartColors = readThemeFile('src/utils/chartColors.ts')
 
@@ -104,7 +103,9 @@ describe('Klein blue theme', () => {
     }
     expect(tailwindConfig).toContain("'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #002FA7 100%)'")
     expect(tailwindConfig).toContain('Klein blue theme')
-    expect(chartColors).toContain(`'${kleinBlue}'`)
+    expect(chartColors).toContain('chartCategoricalColors')
+    expect(chartColors).toContain("'#4290F0'")
+    expect(chartColors).not.toContain(`'${kleinBlue}'`)
   })
 
   it('maps the light UI surfaces to the Atelier Zero palette with warm paper as the dominant canvas', () => {

@@ -782,6 +782,7 @@ func TestAPIContracts(t *testing.T) {
 						"site_subtitle": "Subtitle",
 						"api_base_url": "https://api.example.com",
 						"api_key_acl_trust_forwarded_ip": false,
+						"appearance_theme_default": "",
 					"contact_info": "support",
 					"doc_url": "https://docs.example.com",
 					"auth_source_default_email_balance": 0,
@@ -1056,6 +1057,7 @@ func TestAPIContracts(t *testing.T) {
 					"site_subtitle": "Subscription to API Conversion Platform",
 					"api_base_url": "",
 					"api_key_acl_trust_forwarded_ip": false,
+					"appearance_theme_default": "",
 					"contact_info": "",
 					"doc_url": "",
 					"home_content": "",
@@ -1204,6 +1206,23 @@ func TestAPIContracts(t *testing.T) {
 					"auth_source_default_dingtalk_grant_on_signup": false,
 					"auth_source_default_dingtalk_grant_on_first_bind": false,
 					"force_email_on_third_party_signup": false
+				}
+			}`,
+		},
+		{
+			name:   "PUT /api/v1/admin/settings/appearance-theme-default",
+			method: http.MethodPut,
+			path:   "/api/v1/admin/settings/appearance-theme-default",
+			body:   `{"appearance_theme_default":"cloudflare"}`,
+			headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			wantStatus: http.StatusOK,
+			wantJSON: `{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"appearance_theme_default": "cloudflare"
 				}
 			}`,
 		},
@@ -1367,6 +1386,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	v1Admin := v1.Group("/admin")
 	v1Admin.Use(adminAuth)
 	v1Admin.GET("/settings", adminSettingHandler.GetSettings)
+	v1Admin.PUT("/settings/appearance-theme-default", adminSettingHandler.UpdateAppearanceThemeDefault)
 	v1Admin.POST("/accounts/bulk-update", adminAccountHandler.BulkUpdate)
 	v1Admin.GET("/tcdmx/subscription", adminTCDMXSubscriptionHandler.GetStatus)
 

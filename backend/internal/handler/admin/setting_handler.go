@@ -504,6 +504,7 @@ type UpdateSettingsRequest struct {
 	DocURL                      string                `json:"doc_url"`
 	HomeContent                 string                `json:"home_content"`
 	HideCcsImportButton         bool                  `json:"hide_ccs_import_button"`
+	AppearanceThemeDefault      *string               `json:"appearance_theme_default"`
 	PurchaseSubscriptionEnabled *bool                 `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL     *string               `json:"purchase_subscription_url"`
 	TableDefaultPageSize        int                   `json:"table_default_page_size"`
@@ -670,6 +671,30 @@ type UpdateSettingsRequest struct {
 	AuthSourceGitHubPlatformQuotas   map[string]*service.DefaultPlatformQuotaSetting `json:"auth_source_default_github_platform_quotas"`
 	AuthSourceGooglePlatformQuotas   map[string]*service.DefaultPlatformQuotaSetting `json:"auth_source_default_google_platform_quotas"`
 	AuthSourceDingTalkPlatformQuotas map[string]*service.DefaultPlatformQuotaSetting `json:"auth_source_default_dingtalk_platform_quotas"`
+}
+
+type updateAppearanceThemeDefaultRequest struct {
+	AppearanceThemeDefault string `json:"appearance_theme_default" binding:"required"`
+}
+
+// UpdateAppearanceThemeDefault updates the public default console theme only.
+// PUT /api/v1/admin/settings/appearance-theme-default
+func (h *SettingHandler) UpdateAppearanceThemeDefault(c *gin.Context) {
+	var req updateAppearanceThemeDefaultRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	theme, err := h.settingService.UpdateAppearanceThemeDefault(c.Request.Context(), req.AppearanceThemeDefault)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{
+		"appearance_theme_default": theme,
+	})
 }
 
 // UpdateSettings 更新系统设置
@@ -1245,6 +1270,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	if req.PurchaseSubscriptionURL != nil {
 		purchaseURL = strings.TrimSpace(*req.PurchaseSubscriptionURL)
 	}
+	appearanceThemeDefault := previousSettings.AppearanceThemeDefault
+	if req.AppearanceThemeDefault != nil {
+		appearanceThemeDefault = strings.TrimSpace(*req.AppearanceThemeDefault)
+	}
 
 	// - 启用时要求 URL 合法且非空
 	// - 禁用时允许为空；若提供了 URL 也做基本校验，避免误配置
@@ -1588,6 +1617,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		DocURL:                                 req.DocURL,
 		HomeContent:                            req.HomeContent,
 		HideCcsImportButton:                    req.HideCcsImportButton,
+		AppearanceThemeDefault:                 appearanceThemeDefault,
 		PurchaseSubscriptionEnabled:            purchaseEnabled,
 		PurchaseSubscriptionURL:                purchaseURL,
 		TableDefaultPageSize:                   req.TableDefaultPageSize,
@@ -2051,6 +2081,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		DocURL:                                 updatedSettings.DocURL,
 		HomeContent:                            updatedSettings.HomeContent,
 		HideCcsImportButton:                    updatedSettings.HideCcsImportButton,
+		AppearanceThemeDefault:                 updatedSettings.AppearanceThemeDefault,
 		PurchaseSubscriptionEnabled:            updatedSettings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                updatedSettings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                   updatedSettings.TableDefaultPageSize,

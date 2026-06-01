@@ -10,6 +10,7 @@ const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'ut
 const styleSource = readFile('src/style.css')
 const codexThemeSource = readFile('src/styles/codex-theme.css')
 const appearanceThemeSource = readFile('src/composables/useAppearanceTheme.ts')
+const themeSwitcherSource = readFile('src/components/common/ThemeSwitcher.vue')
 
 // Cloudflare brand palette
 const cfOrange = '#f6821f'
@@ -54,6 +55,30 @@ describe('Cloudflare appearance theme', () => {
     expect(appearanceThemeSource).toContain(
       "document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')",
     )
+  })
+
+  it('hydrates the default theme from public settings when the user has no local override', () => {
+    expect(appearanceThemeSource).toContain('const DEFAULT_THEME_STORAGE_KEY')
+    expect(appearanceThemeSource).toContain('getInjectedAppearanceThemeDefault')
+    expect(appearanceThemeSource).toContain('localStorage.getItem(STORAGE_KEY)')
+    expect(appearanceThemeSource).toContain('window.__APP_CONFIG__?.appearance_theme_default')
+    expect(appearanceThemeSource).toContain('updateAppearanceThemeDefault')
+  })
+
+  it('uses the official Cloudflare logomark in the theme switcher and exposes admin global visibility controls', () => {
+    expect(themeSwitcherSource).toContain('CloudflareLogoMark')
+    expect(themeSwitcherSource).toContain('viewBox: \'0 0 209.51 94.74\'')
+    expect(themeSwitcherSource).toContain('M143.05 93.42')
+    expect(themeSwitcherSource).toContain('M168.22 41.15')
+    expect(themeSwitcherSource).toContain('#F48120')
+    expect(themeSwitcherSource).toContain('#FAAD3F')
+    expect(themeSwitcherSource).not.toContain('<Icon name="book"')
+    expect(themeSwitcherSource).toContain('authStore.isAdmin')
+    expect(themeSwitcherSource).toContain('applyGlobally')
+    expect(themeSwitcherSource).toContain('所有人可见')
+    expect(themeSwitcherSource).toContain('updateAppearanceThemeDefault')
+    expect(themeSwitcherSource).toContain('adminAPI.settings.updateAppearanceThemeDefault')
+    expect(themeSwitcherSource).not.toContain('adminAPI.settings.updateSettings')
   })
 
   it('defines a Cloudflare theme token block covering every Newspaper token', () => {

@@ -770,21 +770,24 @@
 .codex-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 100000030;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(17, 24, 39, 0.42);
+  background: rgba(17, 24, 39, 0.46);
+  opacity: 1;
 }
 
 .codex-modal {
   width: min(420px, 100%);
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
-  background: var(--codex-surface);
+  background: var(--codex-surface-strong, var(--atelier-paper)) !important;
   box-shadow: 0 24px 60px rgba(7, 12, 27, 0.22);
   padding: 20px;
+  opacity: 1;
+  isolation: isolate;
 }
 
 .codex-modal-title {
@@ -807,11 +810,12 @@
   overflow: auto;
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
-  background: var(--codex-surface-soft);
+  background: var(--codex-surface-soft, var(--atelier-paper-2)) !important;
   padding: 10px;
   color: var(--codex-text);
   font-family: var(--codex-font-mono);
   font-size: 12px;
+  opacity: 1;
 }
 
 .codex-modal-actions {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getThemeAccent } from '@/utils/chartColors'
+import { getOpsChartColors } from '@/utils/chartColors'
 import { Chart as ChartJS, ArcElement, Legend, Tooltip } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
 import type { OpsErrorDistributionResponse } from '@/api/admin/ops'
@@ -24,10 +24,10 @@ const { t } = useI18n()
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  blue: getThemeAccent(),
-  butter: '#c79a3a',
-  red: '#b44536',
-  dust: '#4f6a8c',
+  upstreamError: getOpsChartColors().upstreamError,
+  warning: getOpsChartColors().warning,
+  critical: getOpsChartColors().critical,
+  neutral: getOpsChartColors().neutral,
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
 
@@ -69,10 +69,10 @@ const categories = computed<ErrorCategory[]>(() => {
   }
 
   const out: ErrorCategory[] = []
-  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.butter })
-  if (client > 0) out.push({ label: t('admin.ops.client'), count: client, color: colors.value.blue })
-  if (system > 0) out.push({ label: t('admin.ops.system'), count: system, color: colors.value.red })
-  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.dust })
+  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.warning })
+  if (client > 0) out.push({ label: t('admin.ops.client'), count: client, color: colors.value.upstreamError })
+  if (system > 0) out.push({ label: t('admin.ops.system'), count: system, color: colors.value.critical })
+  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.neutral })
   return out
 })
 

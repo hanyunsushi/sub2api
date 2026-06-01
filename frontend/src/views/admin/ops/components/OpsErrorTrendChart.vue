@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getThemeAccent, withChartAlpha } from '@/utils/chartColors'
+import { getOpsChartColors, withChartAlpha } from '@/utils/chartColors'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,11 +37,11 @@ const { t } = useI18n()
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  butter: '#c79a3a',
-  butterAlpha: '#c79a3a26',
-  blue: getThemeAccent(),
-  blueAlpha: withChartAlpha(getThemeAccent(), 0.13),
-  dust: '#4f6a8c',
+  requestError: getOpsChartColors().requestError,
+  requestErrorAlpha: withChartAlpha(getOpsChartColors().requestError, 0.13),
+  upstreamError: getOpsChartColors().upstreamError,
+  upstreamErrorAlpha: withChartAlpha(getOpsChartColors().upstreamError, 0.13),
+  businessLimited: getOpsChartColors().businessLimited,
   grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
@@ -69,8 +69,8 @@ const chartData = computed(() => {
       {
         label: t('admin.ops.errorsSla'),
         data: props.points.map((p) => p.error_count_sla ?? 0),
-        borderColor: colors.value.butter,
-        backgroundColor: colors.value.butterAlpha,
+        borderColor: colors.value.requestError,
+        backgroundColor: colors.value.requestErrorAlpha,
         fill: true,
         tension: 0.35,
         pointRadius: 0,
@@ -79,8 +79,8 @@ const chartData = computed(() => {
       {
         label: t('admin.ops.upstreamExcl429529'),
         data: props.points.map((p) => p.upstream_error_count_excl_429_529 ?? 0),
-        borderColor: colors.value.blue,
-        backgroundColor: colors.value.blueAlpha,
+        borderColor: colors.value.upstreamError,
+        backgroundColor: colors.value.upstreamErrorAlpha,
         fill: true,
         tension: 0.35,
         pointRadius: 0,
@@ -89,7 +89,7 @@ const chartData = computed(() => {
       {
         label: t('admin.ops.businessLimited'),
         data: props.points.map((p) => p.business_limited_count ?? 0),
-        borderColor: colors.value.dust,
+        borderColor: colors.value.businessLimited,
         backgroundColor: 'transparent',
         borderDash: [6, 6],
         fill: false,

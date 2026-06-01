@@ -13,6 +13,7 @@ import {
   Tooltip
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import { getOpsChartColors, withChartAlpha } from '@/utils/chartColors'
 import type { OpsThroughputTrendPoint } from '@/api/admin/ops'
 import type { ChartState } from '../types'
 import { formatHistoryLabel, sumNumbers } from '../utils/opsFormatters'
@@ -33,8 +34,8 @@ const { t } = useI18n()
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  dust: '#4f6a8c',
-  dustAlpha: '#4f6a8c26',
+  switchRate: getOpsChartColors().switchRate,
+  switchRateAlpha: withChartAlpha(getOpsChartColors().switchRate, 0.13),
   grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
@@ -54,8 +55,8 @@ const chartData = computed(() => {
           if (requests <= 0) return 0
           return switches / requests
         }),
-        borderColor: colors.value.dust,
-        backgroundColor: colors.value.dustAlpha,
+        borderColor: colors.value.switchRate,
+        backgroundColor: colors.value.switchRateAlpha,
         fill: true,
         tension: 0.35,
         pointRadius: 0,

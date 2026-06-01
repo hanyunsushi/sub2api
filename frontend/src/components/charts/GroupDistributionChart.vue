@@ -13,7 +13,7 @@
           class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
           :class="metric === 'tokens'
             ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
+            : 'text-gray-500 dark:text-gray-400'"
           @click="emit('update:metric', 'tokens')"
         >
           {{ t('admin.dashboard.metricTokens') }}
@@ -23,7 +23,7 @@
           class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
           :class="metric === 'actual_cost'
             ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
+            : 'text-gray-500 dark:text-gray-400'"
           @click="emit('update:metric', 'actual_cost')"
         >
           {{ t('admin.dashboard.metricActualCost') }}
@@ -53,12 +53,12 @@
             <template v-for="group in displayGroupStats" :key="group.group_id">
               <tr
                 class="border-t border-gray-100 transition-colors dark:border-gray-700"
-                :class="group.group_id > 0 ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/40' : ''"
+                :class="group.group_id > 0 ? 'cursor-pointer' : ''"
                 @click="group.group_id > 0 && toggleBreakdown('group', group.group_id)"
               >
                 <td
                   class="max-w-[100px] truncate py-1.5 font-medium"
-                  :class="group.group_id > 0 ? 'text-gray-900 hover:text-gray-700 dark:text-white dark:hover:text-gray-200' : 'text-gray-900 dark:text-white'"
+                  :class="group.group_id > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'"
                   :title="group.group_name || String(group.group_id)"
                 >
                   <span class="inline-flex items-center gap-1">

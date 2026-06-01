@@ -90,7 +90,7 @@ describe('TokenUsageTrend', () => {
     const chartData = readChartData(wrapper)
     const colors = chartData.datasets.map((dataset) => dataset.borderColor)
 
-    expect(colors).toEqual(['#002FA7', '#001E6E', '#c79a3a', '#4f6a8c', '#171512'])
+    expect(colors).toEqual(['#4290F0', '#F5B647', '#E8649D', '#50C3B6', '#D37536'])
     expect(new Set(colors).size).toBe(colors.length)
     expect(chartData.datasets[4].label).toBe('Cache Hit Rate')
     expect(chartData.datasets[4].borderDash).toEqual([5, 5])
@@ -99,7 +99,7 @@ describe('TokenUsageTrend', () => {
     const chartOptions = JSON.parse(wrapper.find('.line-chart-options').text()) as {
       scales: { yPercent: { ticks: { color: string } } }
     }
-    expect(chartOptions.scales.yPercent.ticks.color).toBe('#171512')
+    expect(chartOptions.scales.yPercent.ticks.color).toBe('#D37536')
   })
 
   it('calculates cache hit rate against all prompt tokens', () => {
