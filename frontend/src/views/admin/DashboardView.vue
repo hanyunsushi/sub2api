@@ -923,7 +923,7 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover),
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
-  border-color: var(--atelier-slab-text) !important;
+  border-color: var(--atelier-slab-edge) !important;
   background: var(--atelier-slab-surface) !important;
   color: var(--atelier-slab-text) !important;
 }

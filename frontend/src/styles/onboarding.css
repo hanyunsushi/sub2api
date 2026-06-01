@@ -22,7 +22,7 @@
 .driver-active-element {
   position: relative !important;
   z-index: 99999999 !important;
-  outline: 4px solid rgba(0, 47, 167, 0.2) !important;
+  outline: 4px solid color-mix(in srgb, var(--atelier-blue) 20%, transparent) !important;
   border-radius: 4px !important;
 }
 
@@ -83,8 +83,8 @@
   align-items: center !important;
   justify-content: center !important;
 }
-.theme-tour-popover .driver-popover-close-btn:hover { background-color: var(--atelier-blue-soft) !important; color: var(--atelier-blue-dark) !important; }
-.dark .theme-tour-popover .driver-popover-close-btn:hover { background-color: rgba(0, 47, 167, 0.24) !important; color: #f8fbff !important; }
+.theme-tour-popover .driver-popover-close-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
+.dark .theme-tour-popover .driver-popover-close-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
 
 /* 4. Body Content */
 .theme-tour-popover .driver-popover-description {
@@ -196,11 +196,11 @@
 }
 
 .theme-tour-popover .driver-popover-next-btn {
-  background-color: #002FA7 !important;
-  color: #f8fbff !important;
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62) !important;
+  background-color: var(--atelier-blue) !important;
+  color: var(--atelier-white) !important;
+  box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--atelier-blue) 62%, transparent) !important;
 }
-.theme-tour-popover .driver-popover-next-btn:hover { background-color: #002FA7 !important; }
+.theme-tour-popover .driver-popover-next-btn:hover { background-color: var(--atelier-blue-dark) !important; }
 
 .theme-tour-popover .driver-popover-prev-btn {
   background-color: var(--atelier-paper-2) !important;
@@ -208,7 +208,7 @@
   border: 1px solid var(--atelier-material-edge) !important;
   box-shadow: 0 8px 18px -18px rgba(17, 24, 39, 0.32) !important;
 }
-.theme-tour-popover .driver-popover-prev-btn:hover { background-color: var(--atelier-blue-soft) !important; color: var(--atelier-blue-dark) !important; }
+.theme-tour-popover .driver-popover-prev-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
 .dark .theme-tour-popover .driver-popover-prev-btn {
   background-color: var(--atelier-paper-2) !important;
   border-color: var(--atelier-material-edge) !important;

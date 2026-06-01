@@ -484,8 +484,8 @@ onUnmounted(() => {
   --select-surface: var(--atelier-paper-2);
   --select-muted-surface: var(--atelier-paper-2);
   --select-option-text: var(--atelier-muted);
+  --select-option-stable-text: var(--select-option-text);
   --select-option-hover-surface: var(--atelier-ui-hover-surface);
-  --select-option-hover-text: var(--atelier-ink);
   --select-option-focused-surface: var(--atelier-ui-hover-surface);
   --select-option-selected-surface: var(--atelier-ui-hover-surface);
   --select-option-selected-text: var(--atelier-ink);
@@ -534,12 +534,12 @@ onUnmounted(() => {
 .select-dropdown-portal .select-option-focused {
   @apply bg-gray-100 dark:bg-dark-700;
   background: var(--select-option-focused-surface);
-  color: var(--select-option-hover-text);
+  color: var(--select-option-stable-text);
 }
 
 .select-dropdown-portal .select-option:hover {
   background: var(--select-option-hover-surface);
-  color: var(--select-option-hover-text);
+  color: var(--select-option-stable-text);
 }
 
 .select-dropdown-portal .select-option-selected.select-option-focused,
@@ -556,7 +556,7 @@ onUnmounted(() => {
 
 .select-dropdown-portal .select-option-focused :where(.select-option-label, svg),
 .select-dropdown-portal .select-option:hover :where(.select-option-label, svg) {
-  color: var(--select-option-hover-text);
+  color: var(--select-option-stable-text);
 }
 
 .select-dropdown-portal .select-option-disabled {
@@ -586,8 +586,8 @@ onUnmounted(() => {
   --select-surface: var(--atelier-paper-2);
   --select-muted-surface: var(--atelier-paper-2);
   --select-option-text: var(--atelier-muted);
+  --select-option-stable-text: var(--select-option-text);
   --select-option-hover-surface: var(--atelier-ui-hover-surface);
-  --select-option-hover-text: var(--atelier-ink);
   --select-option-focused-surface: var(--atelier-ui-hover-surface);
   --select-option-selected-surface: var(--atelier-ui-hover-surface);
   --select-option-selected-text: var(--atelier-ink);
@@ -613,7 +613,7 @@ onUnmounted(() => {
 .dark .select-dropdown-portal .select-option:hover,
 .dark .select-dropdown-portal .select-option-focused {
   background: var(--select-option-hover-surface);
-  color: var(--select-option-hover-text);
+  color: var(--select-option-stable-text);
 }
 
 .dark .select-dropdown-portal .select-option-selected:hover {
