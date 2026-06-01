@@ -9,6 +9,13 @@ const styleSource = readFileSync(resolve(frontendRoot, 'style.css'), 'utf8')
 const selectSource = readFileSync(resolve(frontendRoot, 'components/common/Select.vue'), 'utf8')
 const dateRangePickerSource = readFileSync(resolve(frontendRoot, 'components/common/DateRangePicker.vue'), 'utf8')
 const onboardingSource = readFileSync(resolve(frontendRoot, 'styles/onboarding.css'), 'utf8')
+const adminUsageTableSource = readFileSync(resolve(frontendRoot, 'components/admin/usage/UsageTable.vue'), 'utf8')
+const adminUsageSource = readFileSync(resolve(frontendRoot, 'views/admin/UsageView.vue'), 'utf8')
+const userUsageSource = readFileSync(resolve(frontendRoot, 'views/user/UsageView.vue'), 'utf8')
+const quickActionsSource = readFileSync(resolve(frontendRoot, 'components/user/dashboard/UserDashboardQuickActions.vue'), 'utf8')
+const groupDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/GroupDistributionChart.vue'), 'utf8')
+const modelDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/ModelDistributionChart.vue'), 'utf8')
+const endpointDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/EndpointDistributionChart.vue'), 'utf8')
 
 // Pull the appended "Global hover/highlight logic" section so assertions are
 // scoped to the new calm-surface layer, not the legacy rules above it.
@@ -20,6 +27,7 @@ const calmLayer = styleSource.slice(
   styleSource.indexOf(cfFilterMarker),
 )
 const stableHoverLayer = styleSource.slice(styleSource.indexOf(stableHoverMarker))
+const finalStabilityLayer = styleSource.slice(styleSource.lastIndexOf(stableHoverMarker))
 const broadDropdownHoverBlock = stableHoverLayer.slice(
   stableHoverLayer.indexOf(':where(\n  .dropdown-item:hover'),
   stableHoverLayer.indexOf('.select-dropdown-portal {'),
@@ -190,6 +198,54 @@ describe('global hover logic — stable typography for neutral option controls',
     expect(onboardingPrevHoverBlock).not.toContain('color: var(--atelier-blue-dark) !important;')
     expect(onboardingCloseHoverBlock).toContain('background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important;')
     expect(onboardingPrevHoverBlock).toContain('background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important;')
+  })
+
+  it('removes source-level hover text repaint classes from dashboard and usage data regions', () => {
+    for (const [name, source] of [
+      ['admin usage table', adminUsageTableSource],
+      ['admin usage view', adminUsageSource],
+      ['user usage view', userUsageSource],
+      ['quick actions', quickActionsSource],
+      ['group chart', groupDistributionSource],
+      ['model chart', modelDistributionSource],
+      ['endpoint chart', endpointDistributionSource],
+    ] as const) {
+      expect(source, `${name} should not repaint text with group-hover`).not.toMatch(/group-hover:(?:text|bg)-/)
+      expect(source, `${name} should not repaint neutral text on hover`).not.toMatch(/hover:text-(?:gray|blue|primary)-/)
+    }
+  })
+
+  it('pins dashboard, ops and usage nested panels to border-only hover surfaces at the final layer', () => {
+    for (const wrapper of [
+      '.admin-dashboard-atelier:hover',
+      '.ops-dashboard-atelier:hover',
+      '.admin-usage-atelier:hover',
+      '.user-usage-atelier:hover',
+      '.user-dashboard:hover',
+    ]) {
+      expect(finalStabilityLayer, `final stability layer should not repaint page wrapper ${wrapper}`).not.toContain(wrapper)
+    }
+    for (const selector of [
+      '.card',
+      '.usage-stat-card',
+      '.ops-live-panel',
+      '.ops-health-score-card',
+      '.ops-realtime-panel',
+      '.ops-chart-card',
+      '.ops-concurrency-card',
+    ]) {
+      expect(finalStabilityLayer, `final stability layer should cover ${selector}`).toContain(selector)
+    }
+    expect(finalStabilityLayer).toContain('box-shadow: var(--atelier-material-shadow) !important;')
+    expect(finalStabilityLayer).toContain('border-color: var(--atelier-material-edge) !important;')
+    expect(finalStabilityLayer).not.toContain('var(--atelier-material-shadow-hover)')
+    expect(finalStabilityLayer).toContain(':where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600)')
+    expect(finalStabilityLayer).toContain(':hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700)')
+    expect(finalStabilityLayer).toContain('color: var(--atelier-muted) !important;')
+    expect(finalStabilityLayer).toContain(':hover :where(.text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600)')
+    expect(finalStabilityLayer).toContain('color: var(--atelier-blue) !important;')
+    expect(finalStabilityLayer).not.toContain('\n  color: currentColor !important;')
+    expect(finalStabilityLayer).toContain('-webkit-text-fill-color: currentColor !important;')
   })
 })
 

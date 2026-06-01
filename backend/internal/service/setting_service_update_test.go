@@ -129,6 +129,28 @@ func TestSettingService_UpdateSettings_DefaultSubscriptions_ValidGroup(t *testin
 	}, got)
 }
 
+func TestSettingService_UpdateSettings_AppearanceThemeDefault(t *testing.T) {
+	repo := &settingUpdateRepoStub{}
+	svc := NewSettingService(repo, &config.Config{})
+
+	err := svc.UpdateSettings(context.Background(), &SystemSettings{
+		AppearanceThemeDefault: "cloudflare",
+	})
+	require.NoError(t, err)
+	require.Equal(t, "cloudflare", repo.updates[SettingKeyAppearanceThemeDefault])
+}
+
+func TestSettingService_UpdateSettings_RejectsInvalidAppearanceThemeDefault(t *testing.T) {
+	repo := &settingUpdateRepoStub{}
+	svc := NewSettingService(repo, &config.Config{})
+
+	err := svc.UpdateSettings(context.Background(), &SystemSettings{
+		AppearanceThemeDefault: "purple",
+	})
+	require.Error(t, err)
+	require.True(t, infraerrors.IsBadRequest(err))
+}
+
 func TestSettingService_UpdateSettings_DefaultSubscriptions_RejectsNonSubscriptionGroup(t *testing.T) {
 	repo := &settingUpdateRepoStub{}
 	groupReader := &defaultSubGroupReaderStub{

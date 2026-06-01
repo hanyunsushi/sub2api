@@ -135,6 +135,7 @@ type SystemSettings struct {
 	DocURL                      string
 	HomeContent                 string
 	HideCcsImportButton         bool
+	AppearanceThemeDefault      string
 	PurchaseSubscriptionEnabled bool
 	PurchaseSubscriptionURL     string
 	TableDefaultPageSize        int
@@ -266,6 +267,7 @@ type PublicSettings struct {
 	DocURL                           string
 	HomeContent                      string
 	HideCcsImportButton              bool
+	AppearanceThemeDefault           string
 
 	PurchaseSubscriptionEnabled bool
 	PurchaseSubscriptionURL     string

@@ -4,8 +4,8 @@
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('dashboard.quickActions') }}</h2>
     </div>
     <div class="space-y-3 p-4">
-      <button @click="router.push('/keys')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 hover:bg-primary-50 dark:bg-dark-800/50 dark:hover:bg-dark-800">
-        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform group-hover:-translate-y-0.5">
+      <button @click="router.push('/keys')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="key" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>
         <div class="min-w-0 flex-1">
@@ -15,12 +15,12 @@
         <Icon
           name="chevronRight"
           size="md"
-          class="text-gray-400 transition-colors group-hover:text-primary-500 dark:text-dark-500"
+          class="text-gray-400 transition-colors dark:text-dark-500"
         />
       </button>
 
-      <button @click="router.push('/usage')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 hover:bg-primary-50 dark:bg-dark-800/50 dark:hover:bg-dark-800">
-        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform group-hover:-translate-y-0.5">
+      <button @click="router.push('/usage')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="chart" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>
         <div class="min-w-0 flex-1">
@@ -30,12 +30,12 @@
         <Icon
           name="chevronRight"
           size="md"
-          class="text-gray-400 transition-colors group-hover:text-primary-500 dark:text-dark-500"
+          class="text-gray-400 transition-colors dark:text-dark-500"
         />
       </button>
 
-      <button @click="router.push('/redeem')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 hover:bg-primary-50 dark:bg-dark-800/50 dark:hover:bg-dark-800">
-        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform group-hover:-translate-y-0.5">
+      <button @click="router.push('/redeem')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+        <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="gift" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>
         <div class="min-w-0 flex-1">
@@ -45,7 +45,7 @@
         <Icon
           name="chevronRight"
           size="md"
-          class="text-gray-400 transition-colors group-hover:text-primary-500 dark:text-dark-500"
+          class="text-gray-400 transition-colors dark:text-dark-500"
         />
       </button>
     </div>

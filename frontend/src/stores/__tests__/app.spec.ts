@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAppStore } from '@/stores/app'
 import { getPublicSettings } from '@/api/auth'
+import { useAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 // Mock API 模块
 vi.mock('@/api/admin/system', () => ({
@@ -274,6 +275,7 @@ describe('useAppStore', () => {
         contact_info: 'test@test.com',
         api_base_url: 'https://api.test.com',
         doc_url: 'https://docs.test.com',
+        appearance_theme_default: 'cloudflare',
       }
 
       const store = useAppStore()
@@ -284,6 +286,7 @@ describe('useAppStore', () => {
       expect(store.siteLogo).toBe('/logo.png')
       expect(store.siteVersion).toBe('1.0.0')
       expect(store.publicSettingsLoaded).toBe(true)
+      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
     })
 
     it('无注入配置时返回 false', () => {
@@ -334,6 +337,7 @@ describe('useAppStore', () => {
         custom_endpoints: [],
         linuxdo_oauth_enabled: false,
         backend_mode_enabled: false,
+        appearance_theme_default: 'cloudflare',
         version: '1.0.0'
       })
 
@@ -342,8 +346,25 @@ describe('useAppStore', () => {
 
       expect((window as any).__APP_CONFIG__.table_default_page_size).toBe(1000)
       expect((window as any).__APP_CONFIG__.table_page_size_options).toEqual([20, 100, 1000])
+      expect((window as any).__APP_CONFIG__.appearance_theme_default).toBe('cloudflare')
+      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
       expect(localStorage.getItem('table-page-size')).toBeNull()
       expect(localStorage.getItem('table-page-size-source')).toBeNull()
+    })
+
+    it('不覆盖用户本地主题选择', () => {
+      localStorage.setItem('appearance_theme', 'newspaper')
+      const windowAny = window as any
+      windowAny.__APP_CONFIG__ = {
+        site_name: 'TestSite',
+        appearance_theme_default: 'cloudflare',
+      }
+
+      const store = useAppStore()
+      store.initFromInjectedConfig()
+
+      expect(useAppearanceTheme().currentTheme.value).toBe('newspaper')
+      expect(localStorage.getItem('appearance_theme')).toBe('newspaper')
     })
   })
 })

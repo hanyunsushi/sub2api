@@ -1,27 +1,35 @@
 export const chartCategoricalColors = [
-  '#002FA7',
-  '#001E6E',
-  '#c79a3a',
-  '#4f6a8c',
-  '#171512',
-  '#8e6c1f',
-  '#2f7d59',
-  '#b44536',
-  '#70685c',
-  '#ddd2bd',
-  '#98907f',
-  '#d5dfd4',
+  '#4290F0',
+  '#F5B647',
+  '#E8649D',
+  '#8D58EE',
+  '#50C3B6',
+  '#D37536',
 ] as const
 
 export const tokenTrendColors = {
-  input: '#002FA7',
-  output: '#001E6E',
-  cacheCreation: '#c79a3a',
-  cacheRead: '#4f6a8c',
-  cacheHitRate: '#171512',
+  input: '#4290F0',
+  output: '#F5B647',
+  cacheCreation: '#E8649D',
+  cacheRead: '#50C3B6',
+  cacheHitRate: '#D37536',
 } as const
 
-export const chartNeutralColor = '#98907f'
+export const chartNeutralColor = '#B9D6FF'
+
+export const getOpsChartColors = () => ({
+  brand: '#F48120',
+  throughput: '#4290F0',
+  tokenRate: '#F5B647',
+  switchRate: '#50C3B6',
+  requestError: '#F8A054',
+  upstreamError: '#FC574A',
+  businessLimited: '#B9D6FF',
+  critical: '#FC574A',
+  warning: '#F8A054',
+  success: '#00A63E',
+  neutral: '#B9D6FF',
+})
 
 export const getChartColor = (index: number): string => {
   return chartCategoricalColors[index % chartCategoricalColors.length]
@@ -45,11 +53,10 @@ export const withChartAlpha = (hexColor: string, alpha = 0.14): string => {
 
 /**
  * Read the active theme accent (`--atelier-blue`) at runtime so single-series
- * charts follow the appearance theme: Klein blue under Newspaper, Cloudflare
- * orange under the Cloudflare theme. Falls back to the Newspaper Klein blue
- * when the document/computed style is unavailable (SSR / tests).
+ * charts follow the appearance theme. Falls back to Cloudflare orange when the
+ * document/computed style is unavailable (SSR / tests).
  */
-export const getThemeAccent = (fallback = '#002FA7'): string => {
+export const getThemeAccent = (fallback = '#F48120'): string => {
   if (typeof document === 'undefined' || typeof getComputedStyle !== 'function') {
     return fallback
   }

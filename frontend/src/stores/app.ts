@@ -13,6 +13,7 @@ import {
   type ReleaseInfo
 } from '@/api/admin/system'
 import { getPublicSettings as fetchPublicSettingsAPI } from '@/api/auth'
+import { updateAppearanceThemeDefault } from '@/composables/useAppearanceTheme'
 
 export const useAppStore = defineStore('app', () => {
   // ==================== State ====================
@@ -307,6 +308,7 @@ export const useAppStore = defineStore('app', () => {
     contactInfo.value = config.contact_info || ''
     apiBaseUrl.value = config.api_base_url || ''
     docUrl.value = config.doc_url || ''
+    updateAppearanceThemeDefault(config.appearance_theme_default || 'newspaper')
     publicSettingsLoaded.value = true
   }
 
@@ -368,6 +370,7 @@ export const useAppStore = defineStore('app', () => {
         available_channels_enabled: false,
         risk_control_enabled: false,
         affiliate_enabled: false,
+        appearance_theme_default: 'newspaper',
       }
     }
 

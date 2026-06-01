@@ -12,6 +12,13 @@ func TestSettingKeyDefaultPlatformQuotas(t *testing.T) {
 	}
 }
 
+func TestSettingKeyAppearanceThemeDefault(t *testing.T) {
+	if SettingKeyAppearanceThemeDefault != "appearance_theme_default" {
+		t.Errorf("SettingKeyAppearanceThemeDefault = %q, want %q",
+			SettingKeyAppearanceThemeDefault, "appearance_theme_default")
+	}
+}
+
 // TestSettingKeyAuthSourcePlatformQuotas 验证新的 auth-source JSON key 函数返回值正确。
 func TestSettingKeyAuthSourcePlatformQuotas(t *testing.T) {
 	if got := SettingKeyAuthSourcePlatformQuotas("email"); got != "auth_source_default_email_platform_quotas" {

@@ -442,6 +442,7 @@ export interface SystemSettings {
   doc_url: string;
   home_content: string;
   hide_ccs_import_button: boolean;
+  appearance_theme_default: "newspaper" | "cloudflare";
   table_default_page_size: number;
   table_page_size_options: number[];
   backend_mode_enabled: boolean;
@@ -703,6 +704,7 @@ export interface UpdateSettingsRequest {
   doc_url?: string;
   home_content?: string;
   hide_ccs_import_button?: boolean;
+  appearance_theme_default?: "newspaper" | "cloudflare";
   table_default_page_size?: number;
   table_page_size_options?: number[];
   backend_mode_enabled?: boolean;
@@ -886,6 +888,17 @@ export async function updateSettings(
     "/admin/settings",
     settings,
   );
+  return data;
+}
+
+export async function updateAppearanceThemeDefault(
+  appearanceThemeDefault: "newspaper" | "cloudflare",
+): Promise<{ appearance_theme_default: "newspaper" | "cloudflare" }> {
+  const { data } = await apiClient.put<{
+    appearance_theme_default: "newspaper" | "cloudflare";
+  }>("/admin/settings/appearance-theme-default", {
+    appearance_theme_default: appearanceThemeDefault,
+  });
   return data;
 }
 
@@ -1349,6 +1362,7 @@ export async function resetWebSearchUsage(payload: {
 export const settingsAPI = {
   getSettings,
   updateSettings,
+  updateAppearanceThemeDefault,
   testSmtpConnection,
   sendTestEmail,
   getEmailTemplates,

@@ -92,6 +92,13 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('font-size: 0.75rem;')
     expect(styleSource).toContain('.sidebar .sidebar-channel-child-link :where(svg, .sidebar-svg-icon)')
   })
+
+  it('keeps active sidebar descendants readable when the selected item is hovered', () => {
+    expect(styleSource).toContain('.sidebar .sidebar-link-active:hover')
+    expect(styleSource).toContain('.sidebar .sidebar-link-active:hover :where(svg, .sidebar-svg-icon, .sidebar-label, span)')
+    expect(styleSource).toContain('color: var(--sidebar-active-text) !important;')
+    expect(styleSource).toContain('-webkit-text-fill-color: currentColor !important;')
+  })
 })
 
 describe('AppSidebar scroll position', () => {

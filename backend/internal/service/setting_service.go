@@ -763,6 +763,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyAvailableChannelsEnabled,
 		SettingKeyAffiliateEnabled,
 		SettingKeyRiskControlEnabled,
+		SettingKeyAppearanceThemeDefault,
 	}
 
 	settings, err := s.settingRepo.GetMultiple(ctx, keys)
@@ -844,6 +845,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		DocURL:                           settings[SettingKeyDocURL],
 		HomeContent:                      settings[SettingKeyHomeContent],
 		HideCcsImportButton:              settings[SettingKeyHideCcsImportButton] == "true",
+		AppearanceThemeDefault:           normalizeAppearanceThemeDefault(settings[SettingKeyAppearanceThemeDefault]),
 		PurchaseSubscriptionEnabled:      settings[SettingKeyPurchaseSubscriptionEnabled] == "true",
 		PurchaseSubscriptionURL:          strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
 		TableDefaultPageSize:             tableDefaultPageSize,
@@ -1145,6 +1147,7 @@ type PublicSettingsInjectionPayload struct {
 	DocURL                           string                   `json:"doc_url"`
 	HomeContent                      string                   `json:"home_content"`
 	HideCcsImportButton              bool                     `json:"hide_ccs_import_button"`
+	AppearanceThemeDefault           string                   `json:"appearance_theme_default"`
 	PurchaseSubscriptionEnabled      bool                     `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL          string                   `json:"purchase_subscription_url"`
 	TableDefaultPageSize             int                      `json:"table_default_page_size"`
@@ -1239,11 +1242,35 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
 		RiskControlEnabled:                   settings.RiskControlEnabled,
+		AppearanceThemeDefault:               settings.AppearanceThemeDefault,
 	}, nil
 }
 
 func DefaultWeChatConnectScopesForMode(mode string) string {
 	return defaultWeChatConnectScopeForMode(mode)
+}
+
+func normalizeAppearanceThemeDefault(value string) string {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "cloudflare":
+		return "cloudflare"
+	default:
+		return "newspaper"
+	}
+}
+
+func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
+	normalized := normalizeAppearanceThemeDefault(theme)
+	if normalized != strings.ToLower(strings.TrimSpace(theme)) {
+		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper or cloudflare")
+	}
+	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyAppearanceThemeDefault: normalized}); err != nil {
+		return "", err
+	}
+	if s.onUpdate != nil {
+		s.onUpdate()
+	}
+	return normalized, nil
 }
 
 func (s *SettingService) parseWeChatConnectOAuthConfig(settings map[string]string) (WeChatConnectOAuthConfig, error) {
@@ -1802,6 +1829,13 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyDocURL] = settings.DocURL
 	updates[SettingKeyHomeContent] = settings.HomeContent
 	updates[SettingKeyHideCcsImportButton] = strconv.FormatBool(settings.HideCcsImportButton)
+	rawThemeDefault := strings.ToLower(strings.TrimSpace(settings.AppearanceThemeDefault))
+	themeDefault := normalizeAppearanceThemeDefault(rawThemeDefault)
+	if rawThemeDefault != "" && themeDefault != rawThemeDefault {
+		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper or cloudflare")
+	}
+	settings.AppearanceThemeDefault = themeDefault
+	updates[SettingKeyAppearanceThemeDefault] = themeDefault
 	updates[SettingKeyPurchaseSubscriptionEnabled] = strconv.FormatBool(settings.PurchaseSubscriptionEnabled)
 	updates[SettingKeyPurchaseSubscriptionURL] = strings.TrimSpace(settings.PurchaseSubscriptionURL)
 	tableDefaultPageSize, tablePageSizeOptions := normalizeTablePreferences(
@@ -2794,6 +2828,7 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyAuthSourceDefaultDingTalkGrantOnSignup:    "false",
 		SettingKeyAuthSourceDefaultDingTalkGrantOnFirstBind: "false",
 		SettingKeyForceEmailOnThirdPartySignup:              "false",
+		SettingKeyAppearanceThemeDefault:                    "newspaper",
 		SettingKeySMTPPort:                                  "587",
 		SettingKeySMTPUseTLS:                                "false",
 		// Model fallback defaults
@@ -2894,6 +2929,7 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		DocURL:                           settings[SettingKeyDocURL],
 		HomeContent:                      settings[SettingKeyHomeContent],
 		HideCcsImportButton:              settings[SettingKeyHideCcsImportButton] == "true",
+		AppearanceThemeDefault:           normalizeAppearanceThemeDefault(settings[SettingKeyAppearanceThemeDefault]),
 		PurchaseSubscriptionEnabled:      settings[SettingKeyPurchaseSubscriptionEnabled] == "true",
 		PurchaseSubscriptionURL:          strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
 		CustomMenuItems:                  settings[SettingKeyCustomMenuItems],

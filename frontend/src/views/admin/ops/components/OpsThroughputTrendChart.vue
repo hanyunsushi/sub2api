@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getThemeAccent, withChartAlpha } from '@/utils/chartColors'
+import { getOpsChartColors, withChartAlpha } from '@/utils/chartColors'
 import { Chart as ChartJS, CategoryScale, Filler, Legend, LineElement, LinearScale, PointElement, Title, Tooltip } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import type { ChartComponentRef } from 'vue-chartjs'
@@ -46,10 +46,10 @@ watch(
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  blue: getThemeAccent(),
-  blueAlpha: withChartAlpha(getThemeAccent(), 0.13),
-  butter: '#c79a3a',
-  butterAlpha: '#c79a3a26',
+  throughput: getOpsChartColors().throughput,
+  throughputAlpha: withChartAlpha(getOpsChartColors().throughput, 0.13),
+  tokenRate: getOpsChartColors().tokenRate,
+  tokenRateAlpha: withChartAlpha(getOpsChartColors().tokenRate, 0.13),
   grid: isDarkMode.value ? 'rgba(255, 250, 240, 0.18)' : 'rgba(23, 21, 18, 0.18)',
   text: isDarkMode.value ? '#fffaf0' : '#70685c'
 }))
@@ -64,8 +64,8 @@ const chartData = computed(() => {
       {
         label: 'QPS',
         data: props.points.map((p) => p.qps ?? 0),
-        borderColor: colors.value.blue,
-        backgroundColor: colors.value.blueAlpha,
+        borderColor: colors.value.throughput,
+        backgroundColor: colors.value.throughputAlpha,
         fill: true,
         tension: 0.4,
         pointRadius: 0,
@@ -74,8 +74,8 @@ const chartData = computed(() => {
       {
         label: t('admin.ops.tpsK'),
         data: props.points.map((p) => (p.tps ?? 0) / 1000),
-        borderColor: colors.value.butter,
-        backgroundColor: colors.value.butterAlpha,
+        borderColor: colors.value.tokenRate,
+        backgroundColor: colors.value.tokenRateAlpha,
         fill: true,
         tension: 0.4,
         pointRadius: 0,
@@ -151,7 +151,7 @@ const options = computed(() => {
         display: true,
         position: 'right' as const,
         grid: { display: false },
-        ticks: { color: c.butter, font: { size: 10 } }
+        ticks: { color: c.tokenRate, font: { size: 10 } }
       }
     }
   }
