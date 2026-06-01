@@ -715,8 +715,6 @@ onBeforeUnmount(() => {
   --dashboard-control-shadow: rgba(23, 21, 18, 0.2);
   --dashboard-module-shadow: rgba(23, 21, 18, 0.36);
   --dashboard-module-rule: var(--atelier-console-rule);
-  --dashboard-hover-surface: var(--atelier-ui-hover-surface);
-  --dashboard-hover-edge: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge));
   font-family: var(--atelier-font-sans);
 }
 
@@ -754,10 +752,10 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.card:hover) {
-  transform: translate3d(0, -2px, 0);
-  border-color: var(--dashboard-hover-edge) !important;
-  background: var(--dashboard-hover-surface) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  box-shadow: 0 10px 24px -22px var(--dashboard-module-shadow) !important;
   color: var(--atelier-ink) !important;
 }
 

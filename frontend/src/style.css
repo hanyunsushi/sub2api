@@ -32,6 +32,7 @@
   --atelier-component-warning: var(--atelier-dust);
   --atelier-red: #b44536;
   --atelier-green: #2f7d59;
+  --atelier-orange: var(--atelier-butter-dark);
   --atelier-canvas: var(--atelier-paper);
   --atelier-surface-panel: var(--atelier-paper-2);
   --atelier-surface-cool: var(--atelier-paper-2);
@@ -119,6 +120,7 @@
   --atelier-component-warning: var(--atelier-butter-dark);
   --atelier-red: #bd2719;
   --atelier-green: #2faa4a;
+  --atelier-orange: #d96f15;
   --atelier-canvas: var(--atelier-paper);
   --atelier-surface-panel: var(--atelier-paper-2);
   --atelier-surface-cool: var(--atelier-paper-2);
@@ -3163,21 +3165,18 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
 .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
-}
-
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600) {
-  color: var(--atelier-ink) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 :where(.floating-dropdown-portal, .action-menu-content, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.border-t, .border-b, .divide-y > *) {
@@ -4227,11 +4226,11 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-usage-atelier > .table-page-actions-section .card:hover {
-  transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card {
@@ -4290,18 +4289,32 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover {
-  transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon {
   background: var(--atelier-material-1) !important;
   border: 1px solid var(--atelier-material-edge) !important;
-  color: var(--atelier-ink) !important;
   box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-blue-600, .text-purple-600),
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-blue-600, .text-purple-600) {
+  color: var(--atelier-blue) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-amber-600, .text-orange-600),
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-amber-600, .text-orange-600) {
+  color: var(--atelier-orange) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-green-600, .text-emerald-600),
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-green-600, .text-emerald-600) {
+  color: var(--atelier-green) !important;
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(svg, svg *, path),
@@ -4326,12 +4339,6 @@ body:has(.table-page-layout) :where(
   font-size: 0.625rem !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase;
-}
-
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover :where(.text-xl, .text-xs, svg, path) {
-  color: var(--atelier-ink) !important;
-  -webkit-text-fill-color: var(--atelier-ink) !important;
-  stroke: currentColor !important;
 }
 
 #app .app-layout-content .user-usage-atelier > .table-page-filter-section {
@@ -4497,11 +4504,11 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .global-pricing-summary-row .summary-tile:hover {
-  transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 #app .app-layout-content .global-pricing-filter-card {
@@ -4953,14 +4960,10 @@ body:has(.table-page-layout) :where(
 }
 
 .app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  border-color: var(--ops-card-edge) !important;
+  background: var(--ops-card-surface) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
-}
-
-.app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
-  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
 }
 
 .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button:where([class~="bg-primary-500"]) {
@@ -5002,19 +5005,12 @@ body:has(.table-page-layout) :where(
 .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover,
 .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
 .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
-  background-color: var(--atelier-ui-hover-surface) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
-}
-
-.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
-.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
-.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700),
-.app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover :where(.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-900, .text-primary-600, .text-primary-700) {
-  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
 }
 
 .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500,
@@ -5216,14 +5212,14 @@ body .select-dropdown-portal.ops-toolbar-select-menu .select-option-selected svg
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-system-card:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-metric-card:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-system-card:hover {
-  --atelier-card-surface: var(--atelier-ui-hover-surface);
-  --atelier-material-2: var(--atelier-ui-hover-surface);
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
-  background-color: var(--atelier-ui-hover-surface) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  box-shadow: var(--ops-card-shadow) !important;
 }
 
 .ops-diagnosis-popover {
@@ -5847,18 +5843,12 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 #app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover {
-  --atelier-card-surface: var(--atelier-ui-hover-surface);
-  --atelier-material-2: var(--atelier-ui-hover-surface);
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background-color: var(--atelier-ui-hover-surface) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background-color: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
-}
-
-#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-emerald-600, .text-green-600, .text-amber-600, .text-orange-600, svg) {
-  color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover {
@@ -5883,16 +5873,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   box-shadow: var(--ops-card-shadow) !important;
 }
 
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card):not(:hover) :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
-  color: var(--atelier-blue) !important;
-  -webkit-text-fill-color: var(--atelier-blue) !important;
-}
-
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover .ops-health-score-card:not(:hover) :where(.text-3xl, .text-4xl, .text-5xl, .font-black, .font-bold, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
-  color: var(--atelier-red) !important;
-  -webkit-text-fill-color: var(--atelier-red) !important;
-}
-
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card) :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"]) {
   border: 1px solid color-mix(in srgb, var(--atelier-ink) 26%, transparent) !important;
   background: var(--atelier-paper) !important;
@@ -5902,11 +5882,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"]) {
   border-color: color-mix(in srgb, var(--atelier-ink) 42%, transparent) !important;
   background: rgba(255, 250, 240, 0.72) !important;
-}
-
-#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, .text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
-  color: var(--atelier-ink) !important;
-  -webkit-text-fill-color: var(--atelier-ink) !important;
 }
 
 body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal,
@@ -5971,21 +5946,12 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover,
 #app .app-layout-content .global-pricing-atelier .global-pricing-summary-row .summary-tile:hover {
-  --atelier-card-surface: var(--atelier-ui-hover-surface);
-  --atelier-material-2: var(--atelier-ui-hover-surface);
-  transform: translate3d(0, -2px, 0) !important;
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--atelier-material-edge)) !important;
-  background-color: var(--atelier-ui-hover-surface) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background-color: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
+  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
   color: var(--atelier-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
-}
-
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover :where(.text-xl, .text-xs, .text-gray-400, .text-gray-500, .text-green-600, .text-orange-500, svg, path),
-#app .app-layout-content .global-pricing-atelier .global-pricing-summary-row .summary-tile:hover :where(.summary-label, .summary-value, span, strong) {
-  color: var(--atelier-ink) !important;
-  -webkit-text-fill-color: var(--atelier-ink) !important;
-  stroke: currentColor !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 /* Alert and log panels are data regions; keep row hover, not panel hover. */
@@ -6000,10 +5966,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   box-shadow: var(--ops-card-shadow) !important;
 }
 
-#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, svg) {
-  color: inherit !important;
-}
-
 /* Ops chart and live diagnostic panels are data regions; keep metric hover only. */
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover {
   --atelier-card-surface: var(--ops-card-surface);
@@ -6014,10 +5976,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   background: var(--ops-card-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow) !important;
-}
-
-#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .text-primary-500, .text-primary-600, .text-primary-700, .text-blue-500, .text-blue-600, svg) {
-  color: inherit !important;
 }
 
 /* Non-dashboard/ops filter bars use slab edge tokens, not ink-black borders. */
@@ -6283,39 +6241,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow, none) !important;
   border-color: var(--atelier-material-edge) !important;
-}
-
-#app .app-layout-content :where(
-  .admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier,
-  .user-usage-atelier, .user-dashboard
-) :where(
-  .card, .paper-card, .stat-card, .summary-tile, .usage-stat-card,
-  .ops-metric-card, .ops-system-card, .ops-live-panel, .ops-health-score-card,
-  .ops-realtime-panel, .ops-chart-card, .ops-concurrency-card
-):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {
-  -webkit-text-fill-color: currentColor !important;
-}
-
-#app .app-layout-content :where(
-  .admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier,
-  .user-usage-atelier, .user-dashboard
-) :where(
-  .card, .paper-card, .stat-card, .summary-tile, .usage-stat-card,
-  .ops-metric-card, .ops-system-card, .ops-live-panel, .ops-health-score-card,
-  .ops-realtime-panel, .ops-chart-card, .ops-concurrency-card
-):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700) {
-  color: var(--atelier-muted) !important;
-}
-
-#app .app-layout-content :where(
-  .admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier,
-  .user-usage-atelier, .user-dashboard
-) :where(
-  .card, .paper-card, .stat-card, .summary-tile, .usage-stat-card,
-  .ops-metric-card, .ops-system-card, .ops-live-panel, .ops-health-score-card,
-  .ops-realtime-panel, .ops-chart-card, .ops-concurrency-card
-):hover :where(.text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {
-  color: var(--atelier-blue) !important;
 }
 
 /* Generic Tailwind rounded+padded white/gray containers: freeze hover paint. */
@@ -6901,71 +6826,9 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
-#app .app-layout-content :where(
-  .admin-dashboard-atelier,
-  .ops-dashboard-atelier,
-  .admin-usage-atelier,
-  .user-usage-atelier,
-  .user-dashboard
-) :where(
-  .card,
-  .paper-card,
-  .stat-card,
-  .summary-tile,
-  .usage-stat-card,
-  .ops-metric-card,
-  .ops-system-card,
-  .ops-live-panel,
-  .ops-health-score-card,
-  .ops-realtime-panel,
-  .ops-chart-card,
-  .ops-concurrency-card
-):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {
-  -webkit-text-fill-color: currentColor !important;
-}
-
-#app .app-layout-content :where(
-  .admin-dashboard-atelier,
-  .ops-dashboard-atelier,
-  .admin-usage-atelier,
-  .user-usage-atelier,
-  .user-dashboard
-) :where(
-  .card,
-  .paper-card,
-  .stat-card,
-  .summary-tile,
-  .usage-stat-card,
-  .ops-metric-card,
-  .ops-system-card,
-  .ops-live-panel,
-  .ops-health-score-card,
-  .ops-realtime-panel,
-  .ops-chart-card,
-  .ops-concurrency-card
-):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700) {
-  color: var(--atelier-muted) !important;
-}
-
-#app .app-layout-content :where(
-  .admin-dashboard-atelier,
-  .ops-dashboard-atelier,
-  .admin-usage-atelier,
-  .user-usage-atelier,
-  .user-dashboard
-) :where(
-  .card,
-  .paper-card,
-  .stat-card,
-  .summary-tile,
-  .usage-stat-card,
-  .ops-metric-card,
-  .ops-system-card,
-  .ops-live-panel,
-  .ops-health-score-card,
-  .ops-realtime-panel,
-  .ops-chart-card,
-  .ops-concurrency-card
-):hover :where(.text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {
-  color: var(--atelier-blue) !important;
+#app .app-layout-content .app-header-atelier:hover {
+  transform: none !important;
+  background: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: none !important;
 }
