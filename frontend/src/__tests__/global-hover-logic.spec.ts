@@ -215,7 +215,7 @@ describe('global hover logic — stable typography for neutral option controls',
     }
   })
 
-  it('pins dashboard, ops and usage nested panels to border-only hover surfaces at the final layer', () => {
+  it('pins dashboard, ops and usage top panels to static hover surfaces at the final layer', () => {
     for (const wrapper of [
       '.admin-dashboard-atelier:hover',
       '.ops-dashboard-atelier:hover',
@@ -228,6 +228,7 @@ describe('global hover logic — stable typography for neutral option controls',
     for (const selector of [
       '.card',
       '.usage-stat-card',
+      '.app-header-atelier',
       '.ops-live-panel',
       '.ops-health-score-card',
       '.ops-realtime-panel',
@@ -239,13 +240,17 @@ describe('global hover logic — stable typography for neutral option controls',
     expect(finalStabilityLayer).toContain('box-shadow: var(--atelier-material-shadow) !important;')
     expect(finalStabilityLayer).toContain('border-color: var(--atelier-material-edge) !important;')
     expect(finalStabilityLayer).not.toContain('var(--atelier-material-shadow-hover)')
-    expect(finalStabilityLayer).toContain(':where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600)')
-    expect(finalStabilityLayer).toContain(':hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700)')
-    expect(finalStabilityLayer).toContain('color: var(--atelier-muted) !important;')
-    expect(finalStabilityLayer).toContain(':hover :where(.text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600)')
-    expect(finalStabilityLayer).toContain('color: var(--atelier-blue) !important;')
-    expect(finalStabilityLayer).not.toContain('\n  color: currentColor !important;')
-    expect(finalStabilityLayer).toContain('-webkit-text-fill-color: currentColor !important;')
+    expect(finalStabilityLayer).not.toContain('translate3d(0, -2px')
+    expect(finalStabilityLayer).not.toContain('background: var(--atelier-ui-hover-surface) !important;')
+    expect(finalStabilityLayer).not.toContain('background-color: var(--atelier-ui-hover-surface) !important;')
+    expect(finalStabilityLayer).not.toMatch(/:hover\s+:where\([^)]*\.text-/)
+    expect(finalStabilityLayer).not.toContain('color: var(--atelier-muted) !important;')
+    expect(finalStabilityLayer).not.toContain('color: var(--atelier-blue) !important;')
+    expect(finalStabilityLayer).not.toContain('color: var(--atelier-green) !important;')
+    expect(finalStabilityLayer).not.toContain('color: var(--atelier-orange) !important;')
+    expect(finalStabilityLayer).not.toContain('.app-header-atelier:hover :where')
+    expect(finalStabilityLayer).not.toContain('-webkit-text-fill-color')
+    expect(finalStabilityLayer).not.toContain('):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {\n  color: inherit !important;')
   })
 })
 
