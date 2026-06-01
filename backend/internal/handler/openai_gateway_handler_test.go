@@ -175,6 +175,28 @@ func TestOpenAIEnsureForwardErrorResponse_WritesFallbackWhenNotWritten(t *testin
 	assert.Equal(t, "Upstream request failed", errorObj["message"])
 }
 
+func TestOpenAIHandleFailoverExhausted_PassesThroughUpstreamClientError(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, EndpointResponses, nil)
+
+	h := &OpenAIGatewayHandler{}
+	h.handleFailoverExhausted(c, &service.UpstreamFailoverError{
+		StatusCode:   http.StatusBadRequest,
+		ResponseBody: []byte(`{"error":{"message":"Input is too long for model context window","type":"invalid_request_error","code":"context_length_exceeded"}}`),
+	}, false)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	var parsed map[string]any
+	err := json.Unmarshal(w.Body.Bytes(), &parsed)
+	require.NoError(t, err)
+	errorObj, ok := parsed["error"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "upstream_error", errorObj["type"])
+	assert.Contains(t, errorObj["message"], "Input is too long")
+}
+
 // Writer 已写后 ensureForwardErrorResponse 必须仍然把错误信息以 SSE
 // 形式追加给客户端（streamStarted 强制 true）。
 // 这是 case B 修复：旧实现遇到 Writer.Written 直接 return false，

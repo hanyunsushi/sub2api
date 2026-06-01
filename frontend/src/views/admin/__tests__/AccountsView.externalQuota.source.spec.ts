@@ -42,6 +42,12 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("if (provider === 'buzz' && canShowBuzzExternalQuota())")
   })
 
+  it('keeps TCDMX account cards visible with a clear invalid-token state', () => {
+    expect(source).toContain('tcdmxSubscription.value?.error_code')
+    expect(source).toContain("localText('Token 失效', 'Token invalid')")
+    expect(source).toContain("localText('请更新 Token', 'Update token')")
+  })
+
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {
     expect(source).toContain('data-testid="account-provider-logo"')
     expect(source).toContain('getAccountLogo(row)')

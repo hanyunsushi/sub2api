@@ -1954,6 +1954,9 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.TCDMXSubscriptionAPIToken) != "" {
 		updates[SettingKeyTCDMXSubscriptionAPIToken] = strings.TrimSpace(settings.TCDMXSubscriptionAPIToken)
 	}
+	if strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken) != "" {
+		updates[SettingKeyTCDMXSubscriptionRefreshToken] = strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken)
+	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -2879,6 +2882,7 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyBuzzBalanceAPIBaseURL:              DefaultBuzzBalanceAPIBaseURL,
 		SettingKeyTCDMXSubscriptionEnabled:           "false",
 		SettingKeyTCDMXSubscriptionAPIBaseURL:        DefaultTCDMXSubscriptionAPIBaseURL,
+		SettingKeyTCDMXSubscriptionRefreshToken:      "",
 	}
 
 	return s.settingRepo.SetMultiple(ctx, defaults)
@@ -3423,7 +3427,9 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.TCDMXSubscriptionEnabled = settings[SettingKeyTCDMXSubscriptionEnabled] == "true"
 	result.TCDMXSubscriptionAPIBaseURL = normalizeTCDMXSubscriptionAPIBaseURL(settings[SettingKeyTCDMXSubscriptionAPIBaseURL])
 	result.TCDMXSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionAPIToken])
+	result.TCDMXSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionRefreshToken])
 	result.TCDMXSubscriptionAPITokenConfigured = result.TCDMXSubscriptionAPIToken != ""
+	result.TCDMXSubscriptionRefreshConfigured = result.TCDMXSubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

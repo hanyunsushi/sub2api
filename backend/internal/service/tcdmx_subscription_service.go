@@ -15,9 +15,10 @@ import (
 )
 
 type TCDMXSubscriptionSettings struct {
-	Enabled    bool
-	APIBaseURL string
-	APIToken   string
+	Enabled      bool
+	APIBaseURL   string
+	APIToken     string
+	RefreshToken string
 }
 
 type TCDMXSubscriptionStatus struct {
@@ -26,6 +27,8 @@ type TCDMXSubscriptionStatus struct {
 	Configured    bool                    `json:"configured"`
 	Currency      string                  `json:"currency"`
 	SiteURL       string                  `json:"site_url"`
+	ErrorCode     string                  `json:"error_code,omitempty"`
+	ErrorMessage  string                  `json:"error_message,omitempty"`
 	TotalLimitUSD *float64                `json:"total_limit_usd,omitempty"`
 	UsedUSD       float64                 `json:"used_usd"`
 	RemainingUSD  *float64                `json:"remaining_usd,omitempty"`
@@ -52,6 +55,25 @@ type TCDMXSubscriptionItem struct {
 type TCDMXSubscriptionService struct {
 	settingService *SettingService
 	client         *req.Client
+}
+
+type tcdmxSubscriptionUpstreamError struct {
+	StatusCode int
+	Code       string
+	Message    string
+}
+
+func (e *tcdmxSubscriptionUpstreamError) Error() string {
+	if e == nil {
+		return "TCDMX subscription upstream error"
+	}
+	if e.Code != "" && e.Message != "" {
+		return fmt.Sprintf("TCDMX subscription upstream error: status=%d code=%s message=%s", e.StatusCode, e.Code, e.Message)
+	}
+	if e.Code != "" {
+		return fmt.Sprintf("TCDMX subscription upstream error: status=%d code=%s", e.StatusCode, e.Code)
+	}
+	return fmt.Sprintf("TCDMX subscription upstream error: status=%d", e.StatusCode)
 }
 
 func NewTCDMXSubscriptionService(settingService *SettingService) *TCDMXSubscriptionService {
@@ -86,14 +108,16 @@ func (s *SettingService) GetTCDMXSubscriptionSettings(ctx context.Context) (TCDM
 		SettingKeyTCDMXSubscriptionEnabled,
 		SettingKeyTCDMXSubscriptionAPIBaseURL,
 		SettingKeyTCDMXSubscriptionAPIToken,
+		SettingKeyTCDMXSubscriptionRefreshToken,
 	})
 	if err != nil {
 		return TCDMXSubscriptionSettings{}, fmt.Errorf("get tcdmx subscription settings: %w", err)
 	}
 	return TCDMXSubscriptionSettings{
-		Enabled:    values[SettingKeyTCDMXSubscriptionEnabled] == "true",
-		APIBaseURL: normalizeTCDMXSubscriptionAPIBaseURL(values[SettingKeyTCDMXSubscriptionAPIBaseURL]),
-		APIToken:   strings.TrimSpace(values[SettingKeyTCDMXSubscriptionAPIToken]),
+		Enabled:      values[SettingKeyTCDMXSubscriptionEnabled] == "true",
+		APIBaseURL:   normalizeTCDMXSubscriptionAPIBaseURL(values[SettingKeyTCDMXSubscriptionAPIBaseURL]),
+		APIToken:     strings.TrimSpace(values[SettingKeyTCDMXSubscriptionAPIToken]),
+		RefreshToken: strings.TrimSpace(values[SettingKeyTCDMXSubscriptionRefreshToken]),
 	}, nil
 }
 
@@ -116,9 +140,43 @@ func (s *TCDMXSubscriptionService) GetStatus(ctx context.Context) (*TCDMXSubscri
 
 	var subscriptions []tcdmxUserSubscription
 	if err := s.getJSON(ctx, settings, "/api/v1/subscriptions/active", &subscriptions); err != nil {
+		if upstreamErr, ok := err.(*tcdmxSubscriptionUpstreamError); ok {
+			if strings.TrimSpace(settings.RefreshToken) != "" && isTCDMXSubscriptionInvalidTokenError(upstreamErr) {
+				refreshedSettings, refreshErr := s.refreshAuthToken(ctx, settings)
+				if refreshErr == nil {
+					settings = refreshedSettings
+					upstreamErr = nil
+					err = s.getJSON(ctx, settings, "/api/v1/subscriptions/active", &subscriptions)
+					if err == nil {
+						goto aggregateSubscriptions
+					}
+					if nextUpstreamErr, ok := err.(*tcdmxSubscriptionUpstreamError); ok {
+						upstreamErr = nextUpstreamErr
+					} else {
+						return nil, err
+					}
+				} else if refreshUpstreamErr, ok := refreshErr.(*tcdmxSubscriptionUpstreamError); ok {
+					upstreamErr = refreshUpstreamErr
+				} else {
+					return nil, refreshErr
+				}
+			}
+			result.ErrorCode = upstreamErr.Code
+			if result.ErrorCode == "" {
+				result.ErrorCode = "TCDMX_SUBSCRIPTION_UPSTREAM_ERROR"
+			}
+			result.ErrorMessage = upstreamErr.Message
+			if strings.TrimSpace(result.ErrorMessage) == "" {
+				result.ErrorMessage = "TCDMX subscription API returned an error"
+			}
+			result.Subscriptions = []TCDMXSubscriptionItem{}
+			result.RefreshedAt = time.Now().UTC()
+			return result, nil
+		}
 		return nil, err
 	}
 
+aggregateSubscriptions:
 	result.ActiveCount = len(subscriptions)
 	result.Subscriptions = make([]TCDMXSubscriptionItem, 0, len(subscriptions))
 	var totalLimit float64
@@ -152,6 +210,47 @@ func (s *TCDMXSubscriptionService) GetStatus(ctx context.Context) (*TCDMXSubscri
 	return result, nil
 }
 
+type tcdmxRefreshTokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int    `json:"expires_in"`
+}
+
+func (s *TCDMXSubscriptionService) refreshAuthToken(ctx context.Context, settings TCDMXSubscriptionSettings) (TCDMXSubscriptionSettings, error) {
+	var refreshed tcdmxRefreshTokenResponse
+	if err := s.postJSON(ctx, settings, "/api/v1/auth/refresh", map[string]string{
+		"refresh_token": settings.RefreshToken,
+	}, &refreshed); err != nil {
+		return settings, err
+	}
+	refreshed.AccessToken = strings.TrimSpace(refreshed.AccessToken)
+	refreshed.RefreshToken = strings.TrimSpace(refreshed.RefreshToken)
+	if refreshed.AccessToken == "" {
+		return settings, &tcdmxSubscriptionUpstreamError{
+			StatusCode: http.StatusOK,
+			Code:       "TCDMX_SUBSCRIPTION_REFRESH_FAILED",
+			Message:    "TCDMX refresh response did not include an access token",
+		}
+	}
+
+	nextSettings := settings
+	nextSettings.APIToken = refreshed.AccessToken
+	if refreshed.RefreshToken != "" {
+		nextSettings.RefreshToken = refreshed.RefreshToken
+	}
+
+	updates := map[string]string{
+		SettingKeyTCDMXSubscriptionAPIToken: nextSettings.APIToken,
+	}
+	if nextSettings.RefreshToken != settings.RefreshToken {
+		updates[SettingKeyTCDMXSubscriptionRefreshToken] = nextSettings.RefreshToken
+	}
+	if err := s.settingService.settingRepo.SetMultiple(ctx, updates); err != nil {
+		return settings, fmt.Errorf("save refreshed tcdmx subscription token: %w", err)
+	}
+	return nextSettings, nil
+}
+
 func (s *TCDMXSubscriptionService) getJSON(ctx context.Context, settings TCDMXSubscriptionSettings, path string, out any) error {
 	var envelope struct {
 		Code    json.RawMessage `json:"code"`
@@ -167,15 +266,104 @@ func (s *TCDMXSubscriptionService) getJSON(ctx context.Context, settings TCDMXSu
 		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "failed to query TCDMX subscription")
 	}
 	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "TCDMX subscription API returned an error")
+		return tcdmxSubscriptionErrorFromResponse(resp, envelope)
 	}
 	if !isTCDMXSubscriptionSuccessCode(envelope.Code) {
-		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "TCDMX subscription API returned an error")
+		return tcdmxSubscriptionErrorFromResponse(resp, envelope)
 	}
 	if err := json.Unmarshal(envelope.Data, out); err != nil {
 		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "failed to parse TCDMX subscription response")
 	}
 	return nil
+}
+
+func (s *TCDMXSubscriptionService) postJSON(ctx context.Context, settings TCDMXSubscriptionSettings, path string, body any, out any) error {
+	var envelope struct {
+		Code    json.RawMessage `json:"code"`
+		Message string          `json:"message"`
+		Data    json.RawMessage `json:"data"`
+	}
+	resp, err := s.client.R().
+		SetContext(ctx).
+		SetBody(body).
+		SetSuccessResult(&envelope).
+		Post(settings.APIBaseURL + path)
+	if err != nil {
+		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "failed to refresh TCDMX subscription token")
+	}
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return tcdmxSubscriptionErrorFromResponse(resp, envelope)
+	}
+	if !isTCDMXSubscriptionSuccessCode(envelope.Code) {
+		return tcdmxSubscriptionErrorFromResponse(resp, envelope)
+	}
+	if err := json.Unmarshal(envelope.Data, out); err != nil {
+		return infraerrors.ServiceUnavailable("TCDMX_SUBSCRIPTION_UPSTREAM_ERROR", "failed to parse TCDMX refresh response")
+	}
+	return nil
+}
+
+func isTCDMXSubscriptionInvalidTokenError(err *tcdmxSubscriptionUpstreamError) bool {
+	if err == nil {
+		return false
+	}
+	code := strings.ToUpper(strings.TrimSpace(err.Code))
+	message := strings.ToLower(strings.TrimSpace(err.Message))
+	return err.StatusCode == http.StatusUnauthorized ||
+		code == "INVALID_TOKEN" ||
+		code == "TOKEN_EXPIRED" ||
+		strings.Contains(message, "invalid token") ||
+		strings.Contains(message, "token expired")
+}
+
+func tcdmxSubscriptionErrorFromResponse(resp *req.Response, envelope struct {
+	Code    json.RawMessage `json:"code"`
+	Message string          `json:"message"`
+	Data    json.RawMessage `json:"data"`
+}) error {
+	code := tcdmxSubscriptionErrorCode(envelope.Code)
+	message := strings.TrimSpace(envelope.Message)
+	if code == "" || message == "" {
+		var raw struct {
+			Code    json.RawMessage `json:"code"`
+			Message string          `json:"message"`
+		}
+		if err := json.Unmarshal(resp.Bytes(), &raw); err == nil {
+			if code == "" {
+				code = tcdmxSubscriptionErrorCode(raw.Code)
+			}
+			if message == "" {
+				message = strings.TrimSpace(raw.Message)
+			}
+		}
+	}
+	if code == "" {
+		code = "TCDMX_SUBSCRIPTION_UPSTREAM_ERROR"
+	}
+	if message == "" {
+		message = "TCDMX subscription API returned an error"
+	}
+	return &tcdmxSubscriptionUpstreamError{
+		StatusCode: resp.StatusCode,
+		Code:       code,
+		Message:    message,
+	}
+}
+
+func tcdmxSubscriptionErrorCode(raw json.RawMessage) string {
+	text := strings.TrimSpace(string(raw))
+	if text == "" || text == "null" {
+		return ""
+	}
+	var numeric int
+	if err := json.Unmarshal(raw, &numeric); err == nil {
+		return fmt.Sprintf("%d", numeric)
+	}
+	var value string
+	if err := json.Unmarshal(raw, &value); err == nil {
+		return strings.TrimSpace(value)
+	}
+	return ""
 }
 
 func isTCDMXSubscriptionSuccessCode(raw json.RawMessage) bool {

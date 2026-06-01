@@ -3761,6 +3761,12 @@ body:has(.table-page-layout) :where(
   grid-column: span 2;
 }
 
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] {
+  grid-column: 2 / -1;
+  align-self: start;
+  min-width: 0;
+}
+
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="usage"] {
   grid-column: 1 / -1;
 }
@@ -3988,16 +3994,32 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--warning {
-  background: var(--atelier-ui-hover-surface) !important;
+  background: var(--atelier-butter) !important;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--danger {
   background: var(--atelier-red) !important;
 }
 
+#app .app-layout-content .accounts-table-page .account-groups-cell {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .account-groups-cell__chips {
+  max-height: 3.2rem;
+  overflow: hidden;
+  align-content: flex-start;
+}
+
 @media (max-width: 640px) {
   #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
     grid-template-columns: 1fr;
+  }
+
+  #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] {
+    grid-column: 1 / -1;
   }
 }
 
@@ -4161,7 +4183,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(span, code, button, a, svg, path) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: currentColor !important;
   stroke: currentColor !important;
 }
 
@@ -4189,14 +4211,14 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list :where(.endpoint-popover-item, .endpoint-tooltip) :where(span, p, code, button, a, svg, path) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: currentColor !important;
   stroke: currentColor !important;
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-code {
   background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: currentColor !important;
 }
 
 #app .app-layout-content .user-keys-atelier .keys-page-actions :where(.btn-secondary, .btn-primary):not(:disabled) {
@@ -6141,6 +6163,25 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   --monitor-provider-edge: var(--atelier-material-edge);
 }
 
+#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-icon {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
 #app .app-layout-content .monitor-channel-card .monitor-status-operational {
   --monitor-status-color: #10a37f;
   --monitor-status-surface: color-mix(in srgb, #10a37f 14%, var(--atelier-paper));
@@ -6196,6 +6237,23 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 #app .app-layout-content .monitor-channel-card:hover .monitor-status-badge {
   color: var(--monitor-status-color) !important;
   -webkit-text-fill-color: var(--monitor-status-color) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--operational {
+  background: #10a37f !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--degraded {
+  background: var(--atelier-butter) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--failed,
+#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--error {
+  background: var(--atelier-red) !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--empty {
+  background: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper)) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -6831,4 +6889,26 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   background: var(--atelier-paper-2) !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
+}
+
+/* ---- 14. Shared toggle visibility.
+   Off-state switches need their own rail and thumb contrast on paper surfaces,
+   otherwise settings-page subscription toggles visually disappear. ---- */
+#app .app-layout-content .toggle-switch {
+  border-color: color-mix(in srgb, var(--atelier-ink) 24%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-ink) 14%, transparent) !important;
+}
+
+#app .app-layout-content .toggle-switch.bg-gray-200 {
+  background: color-mix(in srgb, var(--atelier-ink) 16%, var(--atelier-paper-2)) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .toggle-switch.bg-gray-200 {
+  background: color-mix(in srgb, var(--atelier-slab-text) 18%, var(--atelier-paper-2)) !important;
+  border-color: color-mix(in srgb, var(--atelier-slab-text) 28%, transparent) !important;
+}
+
+#app .app-layout-content .toggle-switch__thumb {
+  background: var(--atelier-white) !important;
+  box-shadow: 0 1px 3px rgba(23, 21, 18, 0.32) !important;
 }

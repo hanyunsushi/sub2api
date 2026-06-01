@@ -238,6 +238,35 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).not.toContain("期限未返回");
   });
 
+  it("keeps TCDMX visible when the saved subscription token is invalid", async () => {
+    vi.mocked(tcdmxSubscriptionAPI.getStatus).mockResolvedValueOnce({
+      provider: "tcdmx",
+      enabled: true,
+      configured: true,
+      currency: "USD",
+      site_url: "https://tcdmx.com",
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+      error_code: "INVALID_TOKEN",
+      error_message: "Invalid token",
+      refreshed_at: "2026-05-21T10:00:00Z",
+    });
+
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+
+    const dropdown = wrapper.get('[data-testid="header-balance-dropdown"]');
+    expect(dropdown.text()).toContain("TCDMX");
+    expect(dropdown.text()).toContain("Token 失效");
+    expect(dropdown.text()).toContain("请更新 Token");
+  });
+
   it("keeps the console route context visible in the header", async () => {
     const wrapper = mountHeader();
     await nextTick();

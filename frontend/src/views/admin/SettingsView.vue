@@ -3873,6 +3873,37 @@
                       }}
                     </p>
                   </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("TCDMX refresh_token", "TCDMX refresh_token") }}
+                    </label>
+                    <input
+                      v-model="form.tcdmx_subscription_refresh_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.tcdmx_subscription_refresh_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴 TCDMX 登录态 refresh_token', 'Paste the TCDMX login refresh_token')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.tcdmx_subscription_refresh_token_configured
+                          ? localText(
+                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
+                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
+                            )
+                          : localText(
+                              "从 TCDMX 已登录浏览器 localStorage 复制 refresh_token；这是登录续期凭证，不是 sk- API 密钥。",
+                              "Copy refresh_token from a logged-in TCDMX browser localStorage; this is a login renewal credential, not an sk- API key.",
+                            )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -7134,6 +7165,7 @@ type SettingsForm = Omit<
   openai_advanced_scheduler_enabled: boolean;
   buzz_balance_api_token: string;
   tcdmx_subscription_api_token: string;
+  tcdmx_subscription_refresh_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7345,6 +7377,8 @@ const form = reactive<SettingsForm>({
   tcdmx_subscription_api_base_url: "https://tcdmx.com",
   tcdmx_subscription_api_token: "",
   tcdmx_subscription_api_token_configured: false,
+  tcdmx_subscription_refresh_token: "",
+  tcdmx_subscription_refresh_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -7999,6 +8033,7 @@ async function loadSettings() {
     form.wechat_connect_mobile_app_secret = "";
     form.buzz_balance_api_token = "";
     form.tcdmx_subscription_api_token = "";
+    form.tcdmx_subscription_refresh_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -8500,6 +8535,8 @@ async function saveSettings() {
         form.tcdmx_subscription_api_base_url?.trim() || "https://tcdmx.com",
       tcdmx_subscription_api_token:
         form.tcdmx_subscription_api_token || undefined,
+      tcdmx_subscription_refresh_token:
+        form.tcdmx_subscription_refresh_token || undefined,
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -8579,6 +8616,7 @@ async function saveSettings() {
     form.wechat_connect_mobile_app_secret = "";
     form.buzz_balance_api_token = "";
     form.tcdmx_subscription_api_token = "";
+    form.tcdmx_subscription_refresh_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

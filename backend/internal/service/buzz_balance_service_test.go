@@ -99,8 +99,14 @@ func (s *buzzBalanceSettingsRepoStub) GetMultiple(_ context.Context, keys []stri
 	return out, nil
 }
 
-func (s *buzzBalanceSettingsRepoStub) SetMultiple(context.Context, map[string]string) error {
-	panic("unexpected SetMultiple call")
+func (s *buzzBalanceSettingsRepoStub) SetMultiple(_ context.Context, settings map[string]string) error {
+	if s.values == nil {
+		s.values = map[string]string{}
+	}
+	for key, value := range settings {
+		s.values[key] = value
+	}
+	return nil
 }
 
 func (s *buzzBalanceSettingsRepoStub) GetAll(context.Context) (map[string]string, error) {

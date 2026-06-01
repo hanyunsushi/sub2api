@@ -1759,6 +1759,11 @@ func (h *OpenAIGatewayHandler) handleFailoverExhausted(c *gin.Context, failoverE
 	upstreamMsg := service.ExtractUpstreamErrorMessage(responseBody)
 	service.SetOpsUpstreamError(c, statusCode, upstreamMsg, "")
 
+	if shouldDefaultPassthroughUpstreamClientError(statusCode, responseBody) {
+		h.handleStreamingAwareError(c, statusCode, "upstream_error", upstreamMsg, streamStarted)
+		return
+	}
+
 	// 使用默认的错误映射
 	status, errType, errMsg := h.mapUpstreamError(statusCode)
 	h.handleStreamingAwareError(c, status, errType, errMsg, streamStarted)
@@ -1786,6 +1791,15 @@ func (h *OpenAIGatewayHandler) mapUpstreamError(statusCode int) (int, string, st
 	default:
 		return http.StatusBadGateway, "upstream_error", "Upstream request failed"
 	}
+}
+
+func shouldDefaultPassthroughUpstreamClientError(statusCode int, responseBody []byte) bool {
+	return statusCode >= http.StatusBadRequest &&
+		statusCode < http.StatusInternalServerError &&
+		statusCode != http.StatusUnauthorized &&
+		statusCode != http.StatusForbidden &&
+		statusCode != http.StatusTooManyRequests &&
+		strings.TrimSpace(service.ExtractUpstreamErrorMessage(responseBody)) != ""
 }
 
 // handleStreamingAwareError handles errors that may occur after streaming has started

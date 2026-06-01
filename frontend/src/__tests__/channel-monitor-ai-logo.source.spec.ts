@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 const adminMonitorSource = readFileSync(resolve(__dirname, '../views/admin/ChannelMonitorView.vue'), 'utf8')
 const userMonitorCardSource = readFileSync(resolve(__dirname, '../components/user/monitor/MonitorCard.vue'), 'utf8')
+const userMonitorTimelineSource = readFileSync(resolve(__dirname, '../components/user/monitor/MonitorTimeline.vue'), 'utf8')
 const primaryModelCellSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorPrimaryModelCell.vue'), 'utf8')
 const filtersBarSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorFiltersBar.vue'), 'utf8')
 const monitorFormDialogSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorFormDialog.vue'), 'utf8')
@@ -13,6 +14,31 @@ const templateApplyPickerSource = readFileSync(resolve(__dirname, '../components
 const adminMonitorApiSource = readFileSync(resolve(__dirname, '../api/admin/channelMonitor.ts'), 'utf8')
 const userMonitorApiSource = readFileSync(resolve(__dirname, '../api/channelMonitor.ts'), 'utf8')
 const providerBrandIconSource = readFileSync(resolve(__dirname, '../components/common/ProviderBrandIcon.vue'), 'utf8')
+const styleSource = readFileSync(resolve(__dirname, '../style.css'), 'utf8')
+
+const cssBlock = (source: string, selector: string) => {
+  const selectorIndex = source.indexOf(`${selector} {`)
+  expect(selectorIndex).toBeGreaterThan(-1)
+
+  const openBraceIndex = source.indexOf('{', selectorIndex)
+  expect(openBraceIndex).toBeGreaterThan(-1)
+
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') {
+      depth += 1
+    }
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) {
+        return source.slice(openBraceIndex + 1, index)
+      }
+    }
+  }
+
+  throw new Error(`CSS block not closed for ${selector}`)
+}
 
 describe('channel monitor AI logo contract', () => {
   it('uses the shared AI logo resolver on admin and user channel monitor surfaces', () => {
@@ -69,5 +95,45 @@ describe('channel monitor AI logo contract', () => {
     expect(adminMonitorSource).toContain(':logo-url="row.logo_url"')
     expect(primaryModelCellSource).toContain(':logo-url="row.logo_url"')
     expect(userMonitorCardSource).toContain(':logo-url="item.logo_url"')
+  })
+
+  it('aligns the monitor provider logo shell with the shared brand icon tile', () => {
+    expect(userMonitorCardSource).toContain('monitor-provider-logo-shell')
+
+    const shellBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell'
+    )
+    expect(shellBlock).toContain('width: 2.25rem !important;')
+    expect(shellBlock).toContain('height: 2.25rem !important;')
+    expect(shellBlock).toContain('padding: 0 !important;')
+
+    const brandIconBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-icon'
+    )
+    expect(brandIconBlock).toContain('width: 100% !important;')
+    expect(brandIconBlock).toContain('height: 100% !important;')
+    expect(brandIconBlock).toContain('border-radius: inherit !important;')
+  })
+
+  it('keeps monitor timeline status bars on explicit health colors', () => {
+    expect(userMonitorTimelineSource).toContain('monitor-timeline-bar flex-1')
+    expect(userMonitorTimelineSource).toContain("operational: 'monitor-timeline-bar--operational'")
+    expect(userMonitorTimelineSource).toContain("degraded: 'monitor-timeline-bar--degraded'")
+    expect(userMonitorTimelineSource).not.toContain("operational: 'bg-emerald-500'")
+    expect(userMonitorTimelineSource).not.toContain("degraded: 'bg-amber-500'")
+
+    const operationalBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--operational'
+    )
+    expect(operationalBlock).toContain('background: #10a37f !important;')
+
+    const degradedBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--degraded'
+    )
+    expect(degradedBlock).toContain('background: var(--atelier-butter) !important;')
   })
 })

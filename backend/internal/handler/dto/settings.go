@@ -237,6 +237,7 @@ type SystemSettings struct {
 	TCDMXSubscriptionEnabled            bool               `json:"tcdmx_subscription_enabled"`
 	TCDMXSubscriptionAPIBaseURL         string             `json:"tcdmx_subscription_api_base_url"`
 	TCDMXSubscriptionAPITokenConfigured bool               `json:"tcdmx_subscription_api_token_configured"`
+	TCDMXSubscriptionRefreshConfigured  bool               `json:"tcdmx_subscription_refresh_token_configured"`
 	SubscriptionExpiryNotifyEnabled     bool               `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled           bool               `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails            []NotifyEmailEntry `json:"account_quota_notify_emails"`

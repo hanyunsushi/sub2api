@@ -120,3 +120,20 @@ func TestStreamWrittenGuard_NoByteWritten_GuardNotTriggered(t *testing.T) {
 	require.False(t, guardTriggered,
 		"未写入任何字节时，守卫条件必须为 false，应允许正常 failover 继续")
 }
+
+func TestGatewayHandleFailoverExhausted_PassesThroughUpstreamClientError(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/messages", nil)
+
+	h := &GatewayHandler{}
+	h.handleFailoverExhausted(c, &service.UpstreamFailoverError{
+		StatusCode:   http.StatusBadRequest,
+		ResponseBody: []byte(`{"error":{"message":"Input is too long for model context window","type":"invalid_request_error"}}`),
+	}, service.PlatformAnthropic, false)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Input is too long")
+	assert.Contains(t, w.Body.String(), "upstream_error")
+}
