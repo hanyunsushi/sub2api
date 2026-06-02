@@ -142,6 +142,8 @@ type SystemSettings struct {
 	TablePageSizeOptions        []int
 	CustomMenuItems             string // JSON array of custom menu items
 	CustomEndpoints             string // JSON array of custom endpoints
+	AILogoCDNBaseURL            string
+	CustomAILogoPresets         []string
 
 	DefaultConcurrency           int
 	DefaultBalance               float64
@@ -285,6 +287,8 @@ type PublicSettings struct {
 	TablePageSizeOptions        []int
 	CustomMenuItems             string // JSON array of custom menu items
 	CustomEndpoints             string // JSON array of custom endpoints
+	AILogoCDNBaseURL            string
+	CustomAILogoPresets         []string
 
 	LinuxDoOAuthEnabled      bool
 	DingTalkOAuthEnabled     bool

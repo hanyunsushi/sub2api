@@ -36,9 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
-import { getMergedAILogoPresets, rememberCustomAILogoPreset } from '@/utils/providerBrandIcon'
+import { getPublicSettings as fetchPublicSettings } from '@/api/auth'
+import { appendCustomAILogoPreset } from '@/api/aiLogoPresets'
+import { getMergedAILogoPresets, rememberCustomAILogoPreset, setAILogoRuntimeConfig } from '@/utils/providerBrandIcon'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -68,8 +70,27 @@ function refreshMergedLogoPresets() {
   logoPresetVersion.value += 1
 }
 
-function rememberLogoURL(url: string) {
-  rememberCustomAILogoPreset(url)
+async function refreshLogoRuntimeConfig() {
+  try {
+    const settings = await fetchPublicSettings()
+    setAILogoRuntimeConfig(settings)
+    refreshMergedLogoPresets()
+  } catch {
+    refreshMergedLogoPresets()
+  }
+}
+
+async function rememberLogoURL(url: string) {
+  const normalized = url.trim()
+  if (!normalized) return
+  try {
+    const result = await appendCustomAILogoPreset(normalized)
+    setAILogoRuntimeConfig({
+      custom_ai_logo_presets: result.custom_ai_logo_presets,
+    })
+  } catch {
+    rememberCustomAILogoPreset(normalized)
+  }
   refreshMergedLogoPresets()
 }
 
@@ -78,13 +99,17 @@ function handleInput(value: string) {
 }
 
 function rememberCurrentValue() {
-  rememberLogoURL(props.modelValue)
+  void rememberLogoURL(props.modelValue)
 }
 
 function selectPreset(url: string) {
-  rememberLogoURL(url)
+  void rememberLogoURL(url)
   emit('update:modelValue', url)
 }
+
+onMounted(() => {
+  void refreshLogoRuntimeConfig()
+})
 </script>
 
 <style scoped>

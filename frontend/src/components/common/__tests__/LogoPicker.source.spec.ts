@@ -10,6 +10,9 @@ describe('LogoPicker preset gallery contract', () => {
   it('offers the shared CDN AI logo gallery as direct selectable presets', () => {
     expect(logoPickerSource).toContain('getMergedAILogoPresets')
     expect(logoPickerSource).toContain('rememberCustomAILogoPreset')
+    expect(logoPickerSource).toContain('appendCustomAILogoPreset')
+    expect(logoPickerSource).toContain('fetchPublicSettings')
+    expect(logoPickerSource).toContain('setAILogoRuntimeConfig')
     expect(logoPickerSource).toContain('mergedLogoPresets')
     expect(logoPickerSource).toContain('v-for="preset in mergedLogoPresets"')
     expect(logoPickerSource).toContain('logo-picker-preset')
@@ -20,17 +23,21 @@ describe('LogoPicker preset gallery contract', () => {
     expect(providerBrandSource).toContain("slug: 'openai'")
     expect(providerBrandSource).toContain("slug: 'bailian-color'")
     expect(providerBrandSource).toContain("slug: 'claudecode-color'")
+    expect(providerBrandSource).toContain('defaultAILogoCDNBaseURL')
+    expect(providerBrandSource).toContain('custom_ai_logo_presets')
+    expect(providerBrandSource).not.toContain('localStorage')
+    expect(providerBrandSource).not.toContain('sub2api.customAiLogoPresets')
     expect(logoPickerSource).toContain('Custom URL')
   })
 
   it('fills provider icon image and svg art inside the fixed icon wrapper', () => {
     const providerBrandIconSource = readFileSync(resolve(__dirname, '../ProviderBrandIcon.vue'), 'utf8')
     expect(providerBrandIconSource).toContain('overflow-hidden')
-    expect(providerBrandIconSource).toContain('size="100%"')
-    expect(providerBrandIconSource).toContain('@apply h-full w-full flex-shrink-0 object-cover')
+    expect(providerBrandIconSource).toContain('size="95%"')
+    expect(providerBrandIconSource).toContain('@apply flex-shrink-0 object-cover')
     expect(providerBrandIconSource).toContain(':deep(.model-icon)')
-    expect(providerBrandIconSource).toContain('width: 100%;')
-    expect(providerBrandIconSource).toContain('height: 100%;')
+    expect(providerBrandIconSource).toContain('width: 95%;')
+    expect(providerBrandIconSource).toContain('height: 95%;')
   })
 
   it('remembers custom URL only after the field value is committed or a preset is selected', () => {

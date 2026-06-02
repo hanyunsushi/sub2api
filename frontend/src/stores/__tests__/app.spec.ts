@@ -338,6 +338,8 @@ describe('useAppStore', () => {
         linuxdo_oauth_enabled: false,
         backend_mode_enabled: false,
         appearance_theme_default: 'cloudflare',
+        ai_logo_cdn_base_url: 'https://img.example.com/lobe/light',
+        custom_ai_logo_presets: ['https://img.example.com/custom/a.png'],
         version: '1.0.0'
       })
 
@@ -347,6 +349,8 @@ describe('useAppStore', () => {
       expect((window as any).__APP_CONFIG__.table_default_page_size).toBe(1000)
       expect((window as any).__APP_CONFIG__.table_page_size_options).toEqual([20, 100, 1000])
       expect((window as any).__APP_CONFIG__.appearance_theme_default).toBe('cloudflare')
+      expect((window as any).__APP_CONFIG__.ai_logo_cdn_base_url).toBe('https://img.example.com/lobe/light')
+      expect((window as any).__APP_CONFIG__.custom_ai_logo_presets).toEqual(['https://img.example.com/custom/a.png'])
       expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
       expect(localStorage.getItem('table-page-size')).toBeNull()
       expect(localStorage.getItem('table-page-size-source')).toBeNull()

@@ -443,6 +443,8 @@ export interface SystemSettings {
   home_content: string;
   hide_ccs_import_button: boolean;
   appearance_theme_default: "newspaper" | "cloudflare";
+  ai_logo_cdn_base_url: string;
+  custom_ai_logo_presets: string[];
   table_default_page_size: number;
   table_page_size_options: number[];
   backend_mode_enabled: boolean;
@@ -710,6 +712,8 @@ export interface UpdateSettingsRequest {
   home_content?: string;
   hide_ccs_import_button?: boolean;
   appearance_theme_default?: "newspaper" | "cloudflare";
+  ai_logo_cdn_base_url?: string;
+  custom_ai_logo_presets?: string[];
   table_default_page_size?: number;
   table_page_size_options?: number[];
   backend_mode_enabled?: boolean;

@@ -14,6 +14,7 @@ import {
 } from '@/api/admin/system'
 import { getPublicSettings as fetchPublicSettingsAPI } from '@/api/auth'
 import { updateAppearanceThemeDefault } from '@/composables/useAppearanceTheme'
+import { setAILogoRuntimeConfig } from '@/utils/providerBrandIcon'
 
 export const useAppStore = defineStore('app', () => {
   // ==================== State ====================
@@ -309,6 +310,7 @@ export const useAppStore = defineStore('app', () => {
     apiBaseUrl.value = config.api_base_url || ''
     docUrl.value = config.doc_url || ''
     updateAppearanceThemeDefault(config.appearance_theme_default || 'newspaper')
+    setAILogoRuntimeConfig(config)
     publicSettingsLoaded.value = true
   }
 
@@ -371,6 +373,8 @@ export const useAppStore = defineStore('app', () => {
         risk_control_enabled: false,
         affiliate_enabled: false,
         appearance_theme_default: 'newspaper',
+        ai_logo_cdn_base_url: '',
+        custom_ai_logo_presets: [],
       }
     }
 

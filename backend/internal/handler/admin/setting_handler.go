@@ -219,6 +219,9 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		DocURL:                                 settings.DocURL,
 		HomeContent:                            settings.HomeContent,
 		HideCcsImportButton:                    settings.HideCcsImportButton,
+		AppearanceThemeDefault:                 settings.AppearanceThemeDefault,
+		AILogoCDNBaseURL:                       settings.AILogoCDNBaseURL,
+		CustomAILogoPresets:                    settings.CustomAILogoPresets,
 		PurchaseSubscriptionEnabled:            settings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                settings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                   settings.TableDefaultPageSize,
@@ -510,6 +513,8 @@ type UpdateSettingsRequest struct {
 	HomeContent                 string                `json:"home_content"`
 	HideCcsImportButton         bool                  `json:"hide_ccs_import_button"`
 	AppearanceThemeDefault      *string               `json:"appearance_theme_default"`
+	AILogoCDNBaseURL            *string               `json:"ai_logo_cdn_base_url"`
+	CustomAILogoPresets         *[]string             `json:"custom_ai_logo_presets"`
 	PurchaseSubscriptionEnabled *bool                 `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL     *string               `json:"purchase_subscription_url"`
 	TableDefaultPageSize        int                   `json:"table_default_page_size"`
@@ -1284,6 +1289,14 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	if req.AppearanceThemeDefault != nil {
 		appearanceThemeDefault = strings.TrimSpace(*req.AppearanceThemeDefault)
 	}
+	aiLogoCDNBaseURL := previousSettings.AILogoCDNBaseURL
+	if req.AILogoCDNBaseURL != nil {
+		aiLogoCDNBaseURL = strings.TrimSpace(*req.AILogoCDNBaseURL)
+	}
+	customAILogoPresets := previousSettings.CustomAILogoPresets
+	if req.CustomAILogoPresets != nil {
+		customAILogoPresets = *req.CustomAILogoPresets
+	}
 
 	// - 启用时要求 URL 合法且非空
 	// - 禁用时允许为空；若提供了 URL 也做基本校验，避免误配置
@@ -1635,6 +1648,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HomeContent:                            req.HomeContent,
 		HideCcsImportButton:                    req.HideCcsImportButton,
 		AppearanceThemeDefault:                 appearanceThemeDefault,
+		AILogoCDNBaseURL:                       aiLogoCDNBaseURL,
+		CustomAILogoPresets:                    customAILogoPresets,
 		PurchaseSubscriptionEnabled:            purchaseEnabled,
 		PurchaseSubscriptionURL:                purchaseURL,
 		TableDefaultPageSize:                   req.TableDefaultPageSize,
@@ -2114,6 +2129,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HomeContent:                            updatedSettings.HomeContent,
 		HideCcsImportButton:                    updatedSettings.HideCcsImportButton,
 		AppearanceThemeDefault:                 updatedSettings.AppearanceThemeDefault,
+		AILogoCDNBaseURL:                       updatedSettings.AILogoCDNBaseURL,
+		CustomAILogoPresets:                    updatedSettings.CustomAILogoPresets,
 		PurchaseSubscriptionEnabled:            updatedSettings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                updatedSettings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                   updatedSettings.TableDefaultPageSize,

@@ -19,7 +19,10 @@ func (s *settingPublicRepoStub) Get(ctx context.Context, key string) (*Setting, 
 }
 
 func (s *settingPublicRepoStub) GetValue(ctx context.Context, key string) (string, error) {
-	panic("unexpected GetValue call")
+	if value, ok := s.values[key]; ok {
+		return value, nil
+	}
+	return "", ErrSettingNotFound
 }
 
 func (s *settingPublicRepoStub) Set(ctx context.Context, key, value string) error {
@@ -37,7 +40,13 @@ func (s *settingPublicRepoStub) GetMultiple(ctx context.Context, keys []string) 
 }
 
 func (s *settingPublicRepoStub) SetMultiple(ctx context.Context, settings map[string]string) error {
-	panic("unexpected SetMultiple call")
+	if s.values == nil {
+		s.values = map[string]string{}
+	}
+	for key, value := range settings {
+		s.values[key] = value
+	}
+	return nil
 }
 
 func (s *settingPublicRepoStub) GetAll(ctx context.Context) (map[string]string, error) {
@@ -102,6 +111,45 @@ func TestSettingService_GetPublicSettings_ExposesAppearanceThemeDefault(t *testi
 	settings, err := svc.GetPublicSettings(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, "cloudflare", settings.AppearanceThemeDefault)
+}
+
+func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyAILogoCDNBaseURL:       "https://img.example.com/lobe/light/",
+			SettingKeyCustomAILogoPresets:    `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
+			SettingKeyAppearanceThemeDefault: "cloudflare",
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	settings, err := svc.GetPublicSettings(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "https://img.example.com/lobe/light", settings.AILogoCDNBaseURL)
+	require.Equal(t, []string{
+		"https://img.example.com/custom/a.png",
+		"https://img.example.com/custom/b.svg",
+	}, settings.CustomAILogoPresets)
+}
+
+func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png"]`,
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	presets, err := svc.AppendCustomAILogoPreset(context.Background(), " https://img.example.com/custom/b.png ")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/custom/b.png",
+		"https://img.example.com/custom/a.png",
+	}, presets)
+	require.JSONEq(t, `["https://img.example.com/custom/b.png","https://img.example.com/custom/a.png"]`, repo.values[SettingKeyCustomAILogoPresets])
+
+	_, err = svc.AppendCustomAILogoPreset(context.Background(), "javascript:alert(1)")
+	require.Error(t, err)
 }
 
 func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefault(t *testing.T) {
