@@ -38,6 +38,8 @@ describe('LogoPicker preset gallery contract', () => {
     expect(providerBrandIconSource).toContain(':deep(.model-icon)')
     expect(providerBrandIconSource).toContain('width: 95%;')
     expect(providerBrandIconSource).toContain('height: 95%;')
+    expect(providerBrandIconSource).not.toContain('border shadow-sm')
+    expect(providerBrandIconSource).not.toContain('box-shadow:')
   })
 
   it('remembers custom URL only after the field value is committed or a preset is selected', () => {

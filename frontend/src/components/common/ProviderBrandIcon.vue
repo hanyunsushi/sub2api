@@ -55,8 +55,7 @@ const title = computed(() => props.provider || props.model || 'Provider')
 
 <style scoped>
 .provider-brand-icon {
-  @apply inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-md border shadow-sm transition-transform duration-150;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(15, 23, 42, 0.08);
+  @apply inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-md transition-transform duration-150;
 }
 
 .provider-brand-icon :deep(.model-icon),
