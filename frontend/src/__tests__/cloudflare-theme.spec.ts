@@ -67,6 +67,8 @@ describe('Cloudflare appearance theme', () => {
 
   it('uses the official Cloudflare logomark in the theme switcher and exposes admin global visibility controls', () => {
     expect(themeSwitcherSource).toContain('CloudflareLogoMark')
+    expect(themeSwitcherSource).toContain('<ThemeLogo :theme-id="currentTheme"')
+    expect(themeSwitcherSource).not.toContain('<CloudflareLogoMark class="h-5 w-5 flex-shrink-0" />')
     expect(themeSwitcherSource).toContain('viewBox: \'0 0 209.51 94.74\'')
     expect(themeSwitcherSource).toContain('M143.05 93.42')
     expect(themeSwitcherSource).toContain('M168.22 41.15')
@@ -104,6 +106,12 @@ describe('Cloudflare appearance theme', () => {
     // No Klein-blue leakage in the Cloudflare token block.
     expect(cloudflareBlock.toLowerCase()).not.toContain('#002fa7')
     expect(cloudflareBlock).not.toContain('0, 47, 167')
+  })
+
+  it('uses neutral Cloudflare-gray scrollbar tokens globally', () => {
+    expect(cloudflareBlock).toContain('--atelier-scrollbar: #9b9b9b;')
+    expect(cloudflareBlock).toContain('--atelier-scrollbar-hover: #777777;')
+    expect(cloudflareBlock).toContain('--atelier-scrollbar-track: #f1f1f1;')
   })
 
   it('re-tints the hardcoded literals that bypass the token axis', () => {

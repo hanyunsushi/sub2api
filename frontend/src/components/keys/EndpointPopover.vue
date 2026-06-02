@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useClipboard } from '@/composables/useClipboard'
 import type { CustomEndpoint } from '@/types'
@@ -12,6 +12,13 @@ const props = defineProps<{
 const { t } = useI18n()
 const { copyToClipboard } = useClipboard()
 const copiedEndpoint = ref<string | null>(null)
+const activeTooltipEndpoint = ref<string | null>(null)
+const tooltipStyle = ref<Record<string, string>>({
+  left: '0px',
+  top: '0px',
+  position: 'fixed',
+  zIndex: '100000220',
+})
 
 let copiedResetTimer: number | undefined
 
@@ -56,6 +63,42 @@ function speedTestUrl(endpoint: string): string {
   return `https://www.tcptest.cn/http/${encodeURIComponent(endpoint)}`
 }
 
+function endpointTooltipData(endpoint: string) {
+  return allEndpoints.value.find((item) => item.endpoint === endpoint) || null
+}
+
+function openTooltip(endpoint: string, event: MouseEvent | FocusEvent) {
+  activeTooltipEndpoint.value = endpoint
+  const target = event.currentTarget as HTMLElement | null
+  if (!target) return
+
+  const rect = target.getBoundingClientRect()
+  nextTick(() => {
+    const tooltipWidth = Math.min(384, Math.max(220, window.innerWidth - 32))
+    const preferredLeft = rect.left + rect.width / 2
+    const clampedLeft = Math.min(
+      window.innerWidth - tooltipWidth / 2 - 12,
+      Math.max(tooltipWidth / 2 + 12, preferredLeft),
+    )
+    const preferredTop = rect.top - 10
+    const top = preferredTop > 96 ? preferredTop : rect.bottom + 10
+    tooltipStyle.value = {
+      position: 'fixed',
+      zIndex: '100000220',
+      left: `${clampedLeft}px`,
+      top: `${top}px`,
+      maxWidth: '24rem',
+      transform: preferredTop > 96 ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
+    }
+  })
+}
+
+function closeTooltip(endpoint: string) {
+  if (activeTooltipEndpoint.value === endpoint) {
+    activeTooltipEndpoint.value = null
+  }
+}
+
 onBeforeUnmount(() => {
   if (copiedResetTimer !== undefined) {
     window.clearTimeout(copiedResetTimer)
@@ -79,29 +122,15 @@ onBeforeUnmount(() => {
       <span class="text-gray-300 dark:text-dark-500">|</span>
 
       <div class="group/endpoint relative flex items-center gap-1.5">
-        <div
-          class="endpoint-tooltip pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[24rem] -translate-x-1/2 translate-y-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left opacity-0 shadow-[0_14px_36px_-20px_rgba(15,23,42,0.35)] ring-1 ring-slate-200/80 transition-all duration-150 group-hover/endpoint:translate-y-0 group-hover/endpoint:opacity-100 group-focus-within/endpoint:translate-y-0 group-focus-within/endpoint:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-700/70"
-        >
-          <p
-            v-if="item.description"
-            class="max-w-[24rem] break-words text-xs leading-5 text-slate-600 dark:text-slate-200"
-          >
-            {{ item.description }}
-          </p>
-          <p
-            class="flex items-center gap-1.5 text-[11px] leading-4 text-primary-600 dark:text-primary-300"
-            :class="item.description ? 'mt-1.5' : ''"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-primary-500 dark:bg-primary-300"></span>
-            {{ tooltipHint(item.endpoint) }}
-          </p>
-          <div class="endpoint-tooltip-arrow absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"></div>
-        </div>
-
         <code
           class="endpoint-code cursor-pointer font-mono text-gray-500 decoration-gray-400 decoration-dashed underline-offset-2 hover:text-primary-600 hover:underline focus:text-primary-600 focus:underline focus:outline-none dark:text-gray-400 dark:decoration-gray-500 dark:hover:text-primary-400 dark:focus:text-primary-400"
           role="button"
           tabindex="0"
+          data-testid="endpoint-tooltip-trigger"
+          @mouseenter="openTooltip(item.endpoint, $event)"
+          @mouseleave="closeTooltip(item.endpoint)"
+          @focus="openTooltip(item.endpoint, $event)"
+          @blur="closeTooltip(item.endpoint)"
           @click="copy(item.endpoint)"
           @keydown.enter.prevent="copy(item.endpoint)"
           @keydown.space.prevent="copy(item.endpoint)"
@@ -138,4 +167,28 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <div
+      v-if="activeTooltipEndpoint && endpointTooltipData(activeTooltipEndpoint)"
+      class="endpoint-tooltip pointer-events-none fixed w-max max-w-[24rem] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left shadow-[0_14px_36px_-20px_rgba(15,23,42,0.35)] ring-1 ring-slate-200/80 dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-700/70"
+      :style="tooltipStyle"
+      role="tooltip"
+    >
+      <p
+        v-if="endpointTooltipData(activeTooltipEndpoint)?.description"
+        class="max-w-[24rem] break-words text-xs leading-5 text-slate-600 dark:text-slate-200"
+      >
+        {{ endpointTooltipData(activeTooltipEndpoint)?.description }}
+      </p>
+      <p
+        class="flex items-center gap-1.5 text-[11px] leading-4 text-primary-600 dark:text-primary-300"
+        :class="endpointTooltipData(activeTooltipEndpoint)?.description ? 'mt-1.5' : ''"
+      >
+        <span class="h-1.5 w-1.5 rounded-full bg-primary-500 dark:bg-primary-300"></span>
+        {{ tooltipHint(activeTooltipEndpoint) }}
+      </p>
+      <div class="endpoint-tooltip-arrow absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"></div>
+    </div>
+  </Teleport>
 </template>

@@ -9,7 +9,7 @@
       aria-label="Appearance theme"
       @click="toggleDropdown"
     >
-      <CloudflareLogoMark class="h-5 w-5 flex-shrink-0" />
+      <ThemeLogo :theme-id="currentTheme" class="h-5 w-5 flex-shrink-0" />
       <span
         class="sidebar-label"
         :class="{ 'sidebar-label-collapsed': collapsed }"
@@ -51,8 +51,7 @@
         type="button"
         @click="selectTheme(theme.id)"
       >
-        <CloudflareLogoMark v-if="theme.id === 'cloudflare'" class="h-4 w-4 flex-shrink-0" />
-        <Icon v-else name="book" size="sm" />
+        <ThemeLogo :theme-id="theme.id" class="h-4 w-4 flex-shrink-0" />
         <span>{{ theme.label }}</span>
         <Icon v-if="theme.id === currentTheme" name="check" size="sm" class="ml-auto text-primary-500" />
       </button>
@@ -139,6 +138,50 @@ const CloudflareLogoMark = defineComponent({
         d: 'M168.22 41.15q-1 0-2.1.06a.88.88 0 0 0-.32.07 1.17 1.17 0 0 0-.76.8l-3 10.26c-1.28 4.41-.81 8.48 1.34 11.48a11.65 11.65 0 0 0 9.24 4.57l16.11 1a1.44 1.44 0 0 1 1.14.62 1.5 1.5 0 0 1 .17 1.37 2 2 0 0 1-1.75 1.34l-16.73 1c-9.09.42-18.88 7.75-22.31 16.7l-1.21 3.16a.9.9 0 0 0 .79 1.22h57.63a1.55 1.55 0 0 0 1.51-1.14 41.34 41.34 0 0 0-39.75-52.49z',
       }),
     ])
+  },
+})
+
+const NewspaperLogoMark = defineComponent({
+  name: 'NewspaperLogoMark',
+  setup(_, { attrs }) {
+    return () => h('svg', {
+      ...attrs,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg',
+      'aria-hidden': 'true',
+    }, [
+      h('rect', {
+        x: '4',
+        y: '5',
+        width: '16',
+        height: '14',
+        rx: '2',
+        fill: 'currentColor',
+        opacity: '0.12',
+      }),
+      h('path', {
+        d: 'M7 8h10M7 11h10M7 14h6',
+        stroke: 'currentColor',
+        'stroke-width': '1.8',
+        'stroke-linecap': 'round',
+      }),
+    ])
+  },
+})
+
+const ThemeLogo = defineComponent({
+  name: 'ThemeLogo',
+  props: {
+    themeId: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props, { attrs }) {
+    return () => props.themeId === 'cloudflare'
+      ? h(CloudflareLogoMark, { ...attrs, 'data-theme-logo': 'cloudflare' })
+      : h(NewspaperLogoMark, { ...attrs, 'data-theme-logo': 'newspaper' })
   },
 })
 </script>

@@ -466,7 +466,9 @@ const formattedTCDMXExpiry = computed(() => {
 })
 
 const formattedQLHazyCoderBalance = computed(() => {
-  return formatExternalSubscriptionBalance(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value)
+  return formatExternalSubscriptionBalance(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value, {
+    walletOnly: true,
+  })
 })
 
 const formattedQLHazyCoderExpiry = computed(() => {
@@ -616,10 +618,14 @@ async function fetchQLHazyCoderSubscription() {
 function formatExternalSubscriptionBalance(
   subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
   canShow = false,
+  options: { walletOnly?: boolean } = {},
 ) {
   if (!canShow || !subscription) return '未配置'
   if (subscription.error_code) {
-    return subscription.error_code === 'INVALID_TOKEN' ? 'Token 失效' : '读取失败'
+    return isExternalSubscriptionInvalidToken(subscription.error_code) ? 'Token 失效' : '读取失败'
+  }
+  if (options.walletOnly && typeof subscription.remaining_usd === 'number') {
+    return formatExternalSubscriptionMoney(subscription.remaining_usd, subscription.currency)
   }
   const remaining = subscription.remaining_usd
   const total = subscription.total_limit_usd
@@ -631,15 +637,28 @@ function formatExternalSubscriptionBalance(
   return '无有效订阅'
 }
 
+function formatExternalSubscriptionMoney(value: number, currency?: string | null) {
+  const normalized = (currency || '').trim().toUpperCase()
+  if (normalized === 'USD' || normalized === '') return `$${value.toFixed(2)}`
+  if (normalized === 'CNY' || normalized === 'RMB') return `¥${value.toFixed(2)}`
+  if (normalized === 'JPY') return `¥${value.toFixed(0)}`
+  return `${normalized} ${value.toFixed(2)}`
+}
+
 function formatExternalSubscriptionExpiry(
   subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
   canShow = false,
 ) {
   if (!canShow || !subscription) return '期限未配置'
   if (subscription.error_code) {
-    return subscription.error_code === 'INVALID_TOKEN' ? '请更新 Token' : (subscription.error_message || '请检查配置')
+    return isExternalSubscriptionInvalidToken(subscription.error_code) ? '请更新 Token' : (subscription.error_message || '请检查配置')
   }
   return formatExternalExpiry(subscription.expires_at)
+}
+
+function isExternalSubscriptionInvalidToken(code?: string | null) {
+  const normalized = (code || '').trim().toUpperCase()
+  return normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED' || normalized === '401'
 }
 
 function formatExternalExpiry(value?: string | null) {

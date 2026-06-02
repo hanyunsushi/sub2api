@@ -12,12 +12,15 @@
     <ModelIcon
       v-if="!brand.iconUrl && brand.iconModel"
       :model="brand.iconModel"
-      size="95%"
+      size="100%"
       aria-hidden="true"
     />
     <img
       v-else-if="brand.iconUrl"
-      class="provider-brand-image"
+      :class="[
+        'provider-brand-image',
+        imageMode === 'system' ? 'provider-brand-image-system' : 'provider-brand-image-custom',
+      ]"
       :src="brand.iconUrl"
       alt=""
       loading="lazy"
@@ -32,7 +35,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import ModelIcon from '@/components/common/ModelIcon.vue'
-import { providerBrandInfo } from '@/utils/providerBrandIcon'
+import { isSystemAILogoPresetURL, providerBrandInfo } from '@/utils/providerBrandIcon'
 
 const props = defineProps<{
   provider?: string | null
@@ -51,6 +54,7 @@ const brand = computed(() => {
   }
 })
 const title = computed(() => props.provider || props.model || 'Provider')
+const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
 </script>
 
 <style scoped>
@@ -61,8 +65,8 @@ const title = computed(() => props.provider || props.model || 'Provider')
 .provider-brand-icon :deep(.model-icon),
 .provider-brand-icon :deep(svg) {
   @apply flex-shrink-0;
-  width: 95%;
-  height: 95%;
+  width: 100%;
+  height: 100%;
 }
 
 .provider-brand-icon :deep(svg path) {
@@ -70,9 +74,19 @@ const title = computed(() => props.provider || props.model || 'Provider')
 }
 
 .provider-brand-image {
-  @apply flex-shrink-0 object-cover;
-  width: 95%;
-  height: 95%;
+  @apply flex-shrink-0;
+}
+
+.provider-brand-image-system {
+  @apply object-contain;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.provider-brand-image-custom {
+  @apply object-cover;
+  width: 100%;
+  height: 100%;
 }
 
 .provider-brand-tile {

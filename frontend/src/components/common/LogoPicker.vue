@@ -1,7 +1,12 @@
 <template>
   <div class="logo-picker">
     <div class="logo-picker-preview" aria-hidden="true">
-      <img v-if="normalizedValue" :src="normalizedValue" alt="" />
+      <img
+        v-if="normalizedValue"
+        :class="previewImageClass"
+        :src="normalizedValue"
+        alt=""
+      />
       <Icon v-else name="grid" size="sm" />
     </div>
     <div class="logo-picker-field">
@@ -40,7 +45,12 @@ import { computed, onMounted, ref } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
 import { getPublicSettings as fetchPublicSettings } from '@/api/auth'
 import { appendCustomAILogoPreset } from '@/api/aiLogoPresets'
-import { getMergedAILogoPresets, rememberCustomAILogoPreset, setAILogoRuntimeConfig } from '@/utils/providerBrandIcon'
+import {
+  getMergedAILogoPresets,
+  isSystemAILogoPresetURL,
+  rememberCustomAILogoPreset,
+  setAILogoRuntimeConfig,
+} from '@/utils/providerBrandIcon'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -60,6 +70,12 @@ const emit = defineEmits<{
 }>()
 
 const normalizedValue = computed(() => props.modelValue.trim())
+const previewImageClass = computed(() => [
+  'logo-picker-preview-image',
+  isSystemAILogoPresetURL(normalizedValue.value)
+    ? 'logo-picker-preview-image-system'
+    : 'logo-picker-preview-image-custom',
+])
 const logoPresetVersion = ref(0)
 const mergedLogoPresets = computed(() => {
   logoPresetVersion.value
@@ -130,6 +146,23 @@ onMounted(() => {
 
 .logo-picker-preset img {
   @apply h-full w-full object-contain;
+}
+
+.logo-picker-preview-image {
+  display: block;
+}
+
+.logo-picker-preview-image-system {
+  height: 1.75rem;
+  max-width: 1.75rem;
+  object-fit: contain;
+  width: 1.75rem;
+}
+
+.logo-picker-preview-image-custom {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .logo-picker-custom-label {

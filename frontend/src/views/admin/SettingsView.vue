@@ -3917,8 +3917,8 @@
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
-                          "按 TCDMX 同协议读取 qlhazycoder 订阅额度与到期时间；如果上游接口不一致，会透传错误便于排查。",
-                          "Read qlhazycoder quota and expiry with the same protocol as TCDMX; upstream errors are passed through if the API differs.",
+                          "读取 qlhazycoder New API 控制台的余额、订阅额度和到期时间；该控制台使用网页登录 user.token，不需要单独 refresh_token。",
+                          "Read qlhazycoder New API console balance, subscription quota, and expiry; this console uses the web login user.token and does not need a separate refresh_token.",
                         )
                       }}
                     </p>
@@ -3937,14 +3937,14 @@
                       v-model="form.qlhazycoder_subscription_api_base_url"
                       type="url"
                       class="input font-mono text-sm"
-                      placeholder="https://shop.qlhazycoder.top"
+                      placeholder="https://api.qlhazycoder.top"
                     />
                   </div>
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("qlhazycoder 订阅访问 Token", "qlhazycoder subscription access token") }}
+                      {{ localText("qlhazycoder 网页登录 token", "qlhazycoder web login token") }}
                     </label>
                     <input
                       v-model="form.qlhazycoder_subscription_api_token"
@@ -3953,7 +3953,7 @@
                       :placeholder="
                         form.qlhazycoder_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 qlhazycoder 订阅接口的 Token', 'Paste a token that can access qlhazycoder subscription APIs')
+                          : localText('粘贴 localStorage.user JSON 里的 token 字段', 'Paste the token field from localStorage.user JSON')
                       "
                       autocomplete="off"
                     />
@@ -3965,39 +3965,8 @@
                               "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 qlhazycoder 订阅接口的 Token。",
-                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access qlhazycoder subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("qlhazycoder refresh_token", "qlhazycoder refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.qlhazycoder_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.qlhazycoder_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 qlhazycoder 登录态 refresh_token', 'Paste the qlhazycoder login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.qlhazycoder_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
-                            )
-                          : localText(
-                              "从 qlhazycoder 已登录浏览器 localStorage 复制 refresh_token；这是登录续期凭证，不是 sk- API 密钥。",
-                              "Copy refresh_token from a logged-in qlhazycoder browser localStorage; this is a login renewal credential, not an sk- API key.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取 qlhazycoder 余额和订阅。登录 api.qlhazycoder.top/console 后，在 DevTools 的 Application > Local Storage 打开 user，复制 JSON 里的 token 字段值。",
+                              "A normal sk- model API key can call model endpoints but cannot read qlhazycoder balance and subscriptions. After logging in to api.qlhazycoder.top/console, open user under DevTools Application > Local Storage and copy the token field from that JSON.",
                             )
                       }}
                     </p>
@@ -7327,7 +7296,6 @@ type SettingsForm = Omit<
   tcdmx_subscription_api_token: string;
   tcdmx_subscription_refresh_token: string;
   qlhazycoder_subscription_api_token: string;
-  qlhazycoder_subscription_refresh_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7544,11 +7512,9 @@ const form = reactive<SettingsForm>({
   tcdmx_subscription_refresh_token: "",
   tcdmx_subscription_refresh_token_configured: false,
   qlhazycoder_subscription_enabled: false,
-  qlhazycoder_subscription_api_base_url: "https://shop.qlhazycoder.top",
+  qlhazycoder_subscription_api_base_url: "https://api.qlhazycoder.top",
   qlhazycoder_subscription_api_token: "",
   qlhazycoder_subscription_api_token_configured: false,
-  qlhazycoder_subscription_refresh_token: "",
-  qlhazycoder_subscription_refresh_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -8242,7 +8208,6 @@ async function loadSettings() {
     form.tcdmx_subscription_api_token = "";
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
-    form.qlhazycoder_subscription_refresh_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -8549,7 +8514,7 @@ async function saveSettings() {
       form.tcdmx_subscription_api_base_url = "https://tcdmx.com";
     }
     if (!isValidHttpUrl(form.qlhazycoder_subscription_api_base_url)) {
-      form.qlhazycoder_subscription_api_base_url = "https://shop.qlhazycoder.top";
+      form.qlhazycoder_subscription_api_base_url = "https://api.qlhazycoder.top";
     }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
@@ -8770,11 +8735,9 @@ async function saveSettings() {
         form.tcdmx_subscription_refresh_token || undefined,
       qlhazycoder_subscription_enabled: form.qlhazycoder_subscription_enabled,
       qlhazycoder_subscription_api_base_url:
-        form.qlhazycoder_subscription_api_base_url?.trim() || "https://shop.qlhazycoder.top",
+        form.qlhazycoder_subscription_api_base_url?.trim() || "https://api.qlhazycoder.top",
       qlhazycoder_subscription_api_token:
         form.qlhazycoder_subscription_api_token || undefined,
-      qlhazycoder_subscription_refresh_token:
-        form.qlhazycoder_subscription_refresh_token || undefined,
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -8856,7 +8819,6 @@ async function saveSettings() {
     form.tcdmx_subscription_api_token = "";
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
-    form.qlhazycoder_subscription_refresh_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

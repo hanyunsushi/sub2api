@@ -2,40 +2,76 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-func TestQLHazyCoderSubscriptionService_GetStatusAggregatesActiveSubscriptions(t *testing.T) {
-	var requestedPath string
+func TestQLHazyCoderSubscriptionService_GetStatusReadsNewAPISubscriptionQuota(t *testing.T) {
+	var requestedPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestedPath = r.URL.Path
-		require.Equal(t, "Bearer qlhazycoder-secret", r.Header.Get("Authorization"))
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		if r.URL.Path != "/api/status" {
+			require.Equal(t, "Bearer qlhazycoder-secret", r.Header.Get("Authorization"))
+		}
+		w.Header().Set("Content-Type", "application/json")
 
-		_, _ = w.Write([]byte(`{
-			"code": 0,
-			"message": "success",
-			"data": [
-				{
-					"id": 21,
-					"group_id": 3,
-					"status": "active",
-					"daily_usage_usd": 0.75,
-					"weekly_usage_usd": 5,
-					"monthly_usage_usd": 22.5,
-					"expires_at": "2026-08-09T00:00:00Z",
-					"group": {
-						"name": "QL Pro",
-						"monthly_limit_usd": 120
-					}
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"quota_display_type": "CNY",
+					"quota_per_unit": 500000,
+					"usd_exchange_rate": 1
 				}
-			]
-		}`))
+			}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"id": 707,
+					"username": "hanyunsushi",
+					"quota": 0,
+					"used_quota": 1030000,
+					"request_count": 245
+				}
+			}`))
+		case "/api/subscription/self":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"billing_preference": "subscription_first",
+					"subscriptions": [
+						{
+							"subscription": {
+								"id": 229,
+								"plan_id": 30,
+								"status": "active",
+								"start_time": 1780171016,
+								"end_time": 1811707016,
+								"amount_total": 15000000,
+								"amount_used": 1030000
+							},
+							"plan": {
+								"id": 30,
+								"title": "项目支持 30 元计划"
+							}
+						}
+					],
+					"all_subscriptions": []
+				}
+			}`))
+		default:
+			http.NotFound(w, r)
+		}
 	}))
 	defer server.Close()
 
@@ -49,48 +85,61 @@ func TestQLHazyCoderSubscriptionService_GetStatusAggregatesActiveSubscriptions(t
 	got, err := svc.GetStatus(context.Background())
 	require.NoError(t, err)
 
-	require.Equal(t, "/api/v1/subscriptions/active", requestedPath)
+	require.Equal(t, []string{"/api/status", "/api/user/self", "/api/subscription/self"}, requestedPaths)
 	require.Equal(t, "qlhazycoder", got.Provider)
 	require.True(t, got.Enabled)
 	require.True(t, got.Configured)
 	require.Equal(t, server.URL, got.SiteURL)
+	require.Equal(t, "CNY", got.Currency)
 	require.Equal(t, 1, got.ActiveCount)
-	require.NotNil(t, got.TotalLimitUSD)
-	require.InDelta(t, 120, *got.TotalLimitUSD, 0.0001)
-	require.InDelta(t, 22.5, got.UsedUSD, 0.0001)
+	require.InDelta(t, 30, *got.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 2.06, got.UsedUSD, 0.0001)
 	require.NotNil(t, got.RemainingUSD)
-	require.InDelta(t, 97.5, *got.RemainingUSD, 0.0001)
+	require.InDelta(t, 27.94, *got.RemainingUSD, 0.0001)
 	require.NotNil(t, got.ExpiresAt)
-	require.Equal(t, "2026-08-09T00:00:00Z", got.ExpiresAt.UTC().Format("2006-01-02T15:04:05Z"))
+	require.Equal(t, time.Unix(1811707016, 0).UTC(), got.ExpiresAt.UTC())
 	require.Len(t, got.Subscriptions, 1)
-	require.Equal(t, "QL Pro", got.Subscriptions[0].GroupName)
+	require.Equal(t, int64(229), got.Subscriptions[0].ID)
+	require.Equal(t, int64(30), got.Subscriptions[0].GroupID)
+	require.Equal(t, "项目支持 30 元计划", got.Subscriptions[0].GroupName)
+	require.Equal(t, "active", got.Subscriptions[0].Status)
+	require.Equal(t, "subscription", got.Subscriptions[0].Window)
+	require.InDelta(t, 30, *got.Subscriptions[0].LimitUSD, 0.0001)
+	require.InDelta(t, 2.06, got.Subscriptions[0].UsedUSD, 0.0001)
+	require.InDelta(t, 27.94, *got.Subscriptions[0].RemainingUSD, 0.0001)
 }
 
-func TestQLHazyCoderSubscriptionService_GetStatusRefreshesExpiredAccessToken(t *testing.T) {
-	var requestedPaths []string
+func TestQLHazyCoderSubscriptionService_GetStatusFallsBackToUserQuotaWhenNoActiveSubscription(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestedPaths = append(requestedPaths, r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.URL.Path {
-		case "/api/v1/subscriptions/active":
-			if len(requestedPaths) == 1 {
-				w.WriteHeader(http.StatusUnauthorized)
-				_, _ = w.Write([]byte(`{"code":"TOKEN_EXPIRED","message":"Token expired"}`))
-				return
-			}
-			require.Equal(t, "Bearer fresh-ql-access", r.Header.Get("Authorization"))
-			_, _ = w.Write([]byte(`{"code":0,"message":"success","data":[]}`))
-		case "/api/v1/auth/refresh":
-			var payload map[string]string
-			require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
-			require.Equal(t, "saved-ql-refresh", payload["refresh_token"])
+		case "/api/status":
 			_, _ = w.Write([]byte(`{
-				"code": 0,
-				"message": "success",
+				"success": true,
+				"message": "",
 				"data": {
-					"access_token": "fresh-ql-access",
-					"refresh_token": "fresh-ql-refresh"
+					"quota_display_type": "CNY",
+					"quota_per_unit": 500000,
+					"usd_exchange_rate": 1
+				}
+			}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"quota": 2500000,
+					"used_quota": 750000
+				}
+			}`))
+		case "/api/subscription/self":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"subscriptions": [],
+					"all_subscriptions": []
 				}
 			}`))
 		default:
@@ -100,25 +149,54 @@ func TestQLHazyCoderSubscriptionService_GetStatusRefreshesExpiredAccessToken(t *
 	defer server.Close()
 
 	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
-		SettingKeyQLHazyCoderSubscriptionEnabled:      "true",
-		SettingKeyQLHazyCoderSubscriptionAPIBaseURL:   server.URL,
-		SettingKeyQLHazyCoderSubscriptionAPIToken:     "expired-ql-access",
-		SettingKeyQLHazyCoderSubscriptionRefreshToken: "saved-ql-refresh",
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: server.URL,
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "qlhazycoder-secret",
 	}}
 	svc := NewQLHazyCoderSubscriptionService(NewSettingService(repo, &config.Config{}))
 
 	got, err := svc.GetStatus(context.Background())
 	require.NoError(t, err)
 
-	require.Equal(t, []string{
-		"/api/v1/subscriptions/active",
-		"/api/v1/auth/refresh",
-		"/api/v1/subscriptions/active",
-	}, requestedPaths)
-	require.Empty(t, got.ErrorCode)
 	require.Equal(t, 0, got.ActiveCount)
-	require.Equal(t, "fresh-ql-access", repo.values[SettingKeyQLHazyCoderSubscriptionAPIToken])
-	require.Equal(t, "fresh-ql-refresh", repo.values[SettingKeyQLHazyCoderSubscriptionRefreshToken])
+	require.InDelta(t, 1.5, got.UsedUSD, 0.0001)
+	require.NotNil(t, got.RemainingUSD)
+	require.InDelta(t, 5, *got.RemainingUSD, 0.0001)
+	require.Nil(t, got.TotalLimitUSD)
+	require.Nil(t, got.ExpiresAt)
+	require.Equal(t, "CNY", got.Currency)
+	require.Empty(t, got.ErrorCode)
+}
+
+func TestQLHazyCoderSubscriptionService_GetStatusUsesNewAPIUnauthorizedEnvelope(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path != "/api/status" && r.URL.Path != "/api/user/self" {
+			http.NotFound(w, r)
+			return
+		}
+		if r.URL.Path == "/api/status" {
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
+			return
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte(`{"success": false, "message": "Unauthorized, not logged in and no access token provided"}`))
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: server.URL,
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "qlhazycoder-secret",
+	}}
+	svc := NewQLHazyCoderSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, "401", got.ErrorCode)
+	require.Equal(t, "Unauthorized, not logged in and no access token provided", got.ErrorMessage)
+	require.Equal(t, 0, got.ActiveCount)
 }
 
 func TestQLHazyCoderSubscriptionService_GetStatusSkipsUpstreamWhenDisabled(t *testing.T) {

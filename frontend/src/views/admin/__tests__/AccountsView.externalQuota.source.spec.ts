@@ -6,9 +6,10 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
-  it('loads BuzzAI and TCDMX quota summaries for matching account cards', () => {
+  it('loads BuzzAI, TCDMX, and qlhazycoder quota summaries for matching account cards', () => {
     expect(source).toContain("import buzzBalanceAPI")
     expect(source).toContain("import tcdmxSubscriptionAPI")
+    expect(source).toContain("import qlhazycoderSubscriptionAPI")
     expect(source).toContain("fetchExternalQuotaSummaries")
     expect(source).toContain("getAccountExternalQuota")
   })
@@ -27,8 +28,10 @@ describe('AccountsView external quota card metadata', () => {
   it('uses external provider base URLs instead of provider subpages for account card links', () => {
     expect(source).toContain("const defaultBuzzURL = 'https://buzzai.cc'")
     expect(source).toContain("const defaultTCDMXURL = 'https://tcdmx.com'")
+    expect(source).toContain("const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'")
     expect(source).not.toContain("https://buzzai.cc/dashboard/billing")
     expect(source).not.toContain("https://tcdmx.com/subscriptions")
+    expect(source).not.toContain("https://shop.qlhazycoder.top")
   })
 
   it('only shows provider quota cards after that provider summary is enabled and configured', () => {
@@ -38,14 +41,26 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('canShowTCDMXExternalQuota')
     expect(source).toContain('tcdmxSubscription.value?.enabled')
     expect(source).toContain('tcdmxSubscription.value?.configured')
+    expect(source).toContain('canShowQLHazyCoderExternalQuota')
+    expect(source).toContain('qlhazycoderSubscription.value?.enabled')
+    expect(source).toContain('qlhazycoderSubscription.value?.configured')
     expect(source).toContain("if (provider === 'tcdmx' && canShowTCDMXExternalQuota())")
+    expect(source).toContain("if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota())")
     expect(source).toContain("if (provider === 'buzz' && canShowBuzzExternalQuota())")
   })
 
-  it('keeps TCDMX account cards visible with a clear invalid-token state', () => {
+  it('keeps TCDMX and qlhazycoder account cards visible with a clear invalid-token state', () => {
     expect(source).toContain('tcdmxSubscription.value?.error_code')
+    expect(source).toContain('qlhazycoderSubscription.value?.error_code')
     expect(source).toContain("localText('Token 失效', 'Token invalid')")
     expect(source).toContain("localText('请更新 Token', 'Update token')")
+  })
+
+  it('formats qlhazycoder account card quota in CNY while keeping subscription expiry visible', () => {
+    expect(source).toContain("formatExternalAmount(qlhazycoderSubscription.value?.remaining_usd, qlhazycoderSubscription.value?.currency)")
+    expect(source).toContain("formatExternalAmount(qlhazycoderSubscription.value?.total_limit_usd, qlhazycoderSubscription.value?.currency)")
+    expect(source).toContain("label: 'QL'")
+    expect(source).toContain('qlhazycoderSubscription.value?.expires_at')
   })
 
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {

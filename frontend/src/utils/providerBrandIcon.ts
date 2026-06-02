@@ -208,6 +208,13 @@ export function getMergedAILogoPresets(): AILogoPreset[] {
   return [...systemPresets, ...custom]
 }
 
+export function isSystemAILogoPresetURL(rawURL?: string | null): boolean {
+  const url = normalizeLogoURL(rawURL)
+  if (!url) return false
+  return buildAILogoPresets().some((preset) => preset.url === url)
+    || aiLogoPresets.some((preset) => preset.url === url)
+}
+
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
   { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },

@@ -135,12 +135,10 @@ describe("AppHeader BuzzAI balance", () => {
       provider: "qlhazycoder",
       enabled: true,
       configured: true,
-      currency: "USD",
-      site_url: "https://shop.qlhazycoder.top/subscriptions",
-      total_limit_usd: 120,
-      used_usd: 22.5,
-      remaining_usd: 97.5,
-      expires_at: "2026-08-09T00:00:00Z",
+      currency: "CNY",
+      site_url: "https://api.qlhazycoder.top",
+      used_usd: 48.75,
+      remaining_usd: 101.25,
       active_count: 1,
       subscriptions: [],
       refreshed_at: "2026-05-21T10:00:00Z",
@@ -205,7 +203,7 @@ describe("AppHeader BuzzAI balance", () => {
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("QL");
-    expect(chip.text()).toContain("$97.50 / $120.00");
+    expect(chip.text()).toContain("¥101.25");
     expect(chip.classes().join(" ")).toContain("balance-chip-qlhazycoder");
 
     await vi.advanceTimersByTimeAsync(7000);
@@ -235,8 +233,8 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("$87.75 / $100.00");
     expect(dropdown.text()).toContain("2026-07-08");
     expect(dropdown.text()).toContain("QL");
-    expect(dropdown.text()).toContain("$97.50 / $120.00");
-    expect(dropdown.text()).toContain("2026-08-09");
+    expect(dropdown.text()).toContain("¥101.25");
+    expect(dropdown.text()).toContain("长期");
     expect(dropdown.find("a").exists()).toBe(false);
     expect(dropdown.find("button").exists()).toBe(false);
   });
@@ -295,6 +293,35 @@ describe("AppHeader BuzzAI balance", () => {
 
     const dropdown = wrapper.get('[data-testid="header-balance-dropdown"]');
     expect(dropdown.text()).toContain("TCDMX");
+    expect(dropdown.text()).toContain("Token 失效");
+    expect(dropdown.text()).toContain("请更新 Token");
+  });
+
+  it("shows qlhazycoder web login token failures as token expiry", async () => {
+    vi.mocked(qlhazycoderSubscriptionAPI.getStatus).mockResolvedValueOnce({
+      provider: "qlhazycoder",
+      enabled: true,
+      configured: true,
+      currency: "CNY",
+      site_url: "https://api.qlhazycoder.top",
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+      error_code: "401",
+      error_message: "缺少 Authorization header",
+      refreshed_at: "2026-05-21T10:00:00Z",
+    });
+
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+
+    const dropdown = wrapper.get('[data-testid="header-balance-dropdown"]');
+    expect(dropdown.text()).toContain("QL");
     expect(dropdown.text()).toContain("Token 失效");
     expect(dropdown.text()).toContain("请更新 Token");
   });

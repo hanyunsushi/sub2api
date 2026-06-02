@@ -308,7 +308,7 @@ const (
 	defaultAuthSourceConcurrency             = 5
 	DefaultBuzzBalanceAPIBaseURL             = "https://buzzai.cc"
 	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
-	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://shop.qlhazycoder.top"
+	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://api.qlhazycoder.top"
 	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
 	defaultWeChatConnectScopes               = "snsapi_login"
