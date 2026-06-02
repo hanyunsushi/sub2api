@@ -158,15 +158,21 @@ CPA Codex Buzz TCDMX
 	})
 
 	require.NoError(t, svc.SyncOnce(context.Background()))
-	require.Contains(t, uploadedContent, "右上角有常驻的 `ask ai` 搜索框")
+	require.Contains(t, uploadedContent, "右上角有常驻的 `Ask AI` 入口")
+	require.Contains(t, uploadedContent, "点击后会在屏幕中央弹出聊天窗口")
 	require.Contains(t, uploadedContent, "每 3 天按用户版知识文档重新上传一次")
-	require.Contains(t, uploadedContent, "官方 search bar 组件展示相关结果和来源片段")
+	require.Contains(t, uploadedContent, "Cloudflare 官方聊天组件，基于知识库给出自然语言回答并附带来源")
 	require.NotContains(t, uploadedContent, "/Users/hinaw")
 	require.NotContains(t, uploadedContent, "sha256:")
 	require.NotContains(t, uploadedContent, "本机路径")
 	require.NotContains(t, uploadedContent, "提交记录")
 	require.NotContains(t, uploadedContent, "镜像信息")
 	require.NotContains(t, uploadedContent, "部署命令")
+	require.NotContains(t, uploadedContent, "密钥")
+	require.NotContains(t, uploadedContent, "凭据")
+	require.NotContains(t, uploadedContent, "敏感值")
+	require.NotContains(t, uploadedContent, "API key")
+	require.NotContains(t, uploadedContent, "API Key")
 }
 
 func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMissing(t *testing.T) {
