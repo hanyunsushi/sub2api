@@ -39,6 +39,11 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         self.assertNotIn("提交记录", markdown)
         self.assertNotIn("镜像信息", markdown)
         self.assertNotIn("部署命令", markdown)
+        self.assertNotIn("密钥", markdown)
+        self.assertNotIn("凭据", markdown)
+        self.assertNotIn("敏感值", markdown)
+        self.assertNotIn("API key", markdown)
+        self.assertNotIn("API Key", markdown)
 
     def test_uses_r2_backup_time_not_ai_search_sync_time(self):
         source = """

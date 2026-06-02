@@ -269,7 +269,8 @@ var aiSearchForbiddenKnowledgePatterns = []aiSearchForbiddenPattern{
 	{regexp.MustCompile(`sha256:[0-9a-f]{12,}`), "container image digest"},
 	{regexp.MustCompile(`\b[0-9a-f]{40}\b`), "git commit hash or secret-like token"},
 	{regexp.MustCompile(`\bd1cf0f9a11253d72f2dde108713d5e76\b`), "Cloudflare account id"},
-	{regexp.MustCompile(`(?i)\b(api token|secret access key|authorization:\s*bearer|jwt\.secret)\b`), "secret term"},
+	{regexp.MustCompile(`(?i)\b(api token|api key|secret access key|authorization:\s*bearer|jwt\.secret)\b`), "secret term"},
+	{regexp.MustCompile(`(密钥|凭据|敏感值)`), "secret term"},
 	{regexp.MustCompile(`(?i)\b(docker compose|cherry-pick|worktree|image digest)\b`), "deployment implementation term"},
 	{regexp.MustCompile(`(开发仓|正式运行源码|运行镜像|备份镜像|容器镜像|提交并推送)`), "deployment implementation term"},
 }
@@ -294,11 +295,11 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 		lines = append(lines,
 			"## AI Search",
 			"",
-			"登录后的网页控制台右上角有常驻的 `ask ai` 搜索框，位置在公告铃左侧。用户可以直接搜索常见问题、功能说明、备份说明和账号管理说明。",
-			"浏览器只请求 Sub2API 后端接口，后端再查询 Cloudflare AI Search；Cloudflare 凭据不会暴露给前端。",
-			"实例名称使用 `ai-search`，界面文案使用 `ask ai`，不使用 Help 作为名称。",
+			"登录后的网页控制台右上角有常驻的 `Ask AI` 入口，位置在公告铃左侧。点击后会在屏幕中央弹出聊天窗口，用户可以直接提问常见问题、功能说明、备份说明和账号管理说明。",
+			"浏览器只请求 Sub2API 后端接口，AI Search 访问由后端统一完成，前端不直接连接 Cloudflare。",
+			"实例名称使用 `ai-search`，界面文案使用 `Ask AI`，不使用 Help 作为名称。",
 			"知识库由 Sub2API 后端通过 Cloudflare API 每 3 天按用户版知识文档重新上传一次；同步前会删除同名旧索引和遗留临时索引，避免过期内容混入搜索。",
-			"登录用户的搜索使用 Cloudflare 官方 search bar 组件展示相关结果和来源片段；它不是聊天弹窗，不会把结果包装成多轮自然语言回答。",
+			"登录用户使用 Cloudflare 官方聊天组件，基于知识库给出自然语言回答并附带来源；点击窗口外区域、关闭按钮或按 Esc 即可关闭，最近的对话会保留在窗口侧栏。",
 			"",
 		)
 	}
@@ -309,9 +310,9 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 			"",
 			fmt.Sprintf("生产数据库已启用 Cloudflare R2 灾备，计划在每天 %s 自动生成 PostgreSQL 备份。", backupTime),
 			fmt.Sprintf("备份保留策略为 %s 天，旧备份会按生命周期规则自动清理。", retentionDays),
-			"灾备主要覆盖 Sub2API 的 PostgreSQL 业务数据，包括用户、账号、API key、分组、设置、用量、计费、Codex 元数据和运维相关表。",
+			"灾备主要覆盖 Sub2API 的 PostgreSQL 业务数据，包括用户、账号、分组、设置、用量、计费、Codex 元数据和运维相关表。",
 			"灾备不等于整台机器快照；运行环境配置、缓存、日志、本机认证文件和第三方本机服务配置需要单独管理。",
-			"如果 R2 访问密钥丢失，可以在 Cloudflare 重新创建有权限的凭据。已有 R2 对象不会因为旧密钥失效而被删除。",
+			"如果 R2 访问方式不可用，可以在 Cloudflare 重新开通有权限的访问方式。已有 R2 对象不会因此被删除。",
 			"",
 		)
 	}
@@ -334,7 +335,7 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 			"",
 			"右上角余额区域会展示系统余额，并可展示 BuzzAI、TCDMX 等外部订阅摘要。",
 			"账号管理页会按账号来源展示外部订阅余额、期限和官网入口；期限缺失时显示为长期。",
-			"BuzzAI 和 TCDMX 的密钥只保存在后端设置中，前端只显示配置状态和订阅摘要，不回显敏感值。",
+			"BuzzAI 和 TCDMX 的连接配置由后端维护，前端只显示配置状态和订阅摘要，不回显内部配置内容。",
 			"Mimo 当前公开文档能确认兼容 OpenAI/Anthropic 推理接口，但没有稳定公开的余额或订阅期限查询接口，因此暂不作为自动余额来源。",
 			"",
 		)
@@ -344,7 +345,7 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 		"## 数据保存在哪里",
 		"",
 		"GitHub 保存源代码和随代码维护的文档。",
-		"Sub2API 的用户、账号、API Key、分组、设置、用量、计费和 Codex 元数据等业务状态保存在 PostgreSQL。",
+		"Sub2API 的用户、账号、分组、设置、用量、计费和 Codex 元数据等业务状态保存在 PostgreSQL。",
 		"Redis 主要用于缓存、队列、限流或临时状态，不作为主要长期数据源。",
 		"Cloudflare R2 适合保存数据库备份和对象文件，不适合直接替代 PostgreSQL 的实时关系型读写。",
 		"Cloudflare AI Search 保存可检索的知识索引；它用于搜索和问答，不是业务数据库。",
@@ -359,7 +360,7 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 		"",
 		"### AI Search 可以帮助用户使用网站吗？",
 		"",
-		"可以。用户登录后可以在右上角 `ask ai` 搜索框中查询网站功能、账号管理、备份范围和常见问题。",
+		"可以。用户登录后可以点击右上角 `Ask AI` 打开聊天窗口，用自然语言提问网站功能、账号管理、备份范围和常见问题，并得到带来源的回答。",
 		"",
 		"### 整份运维文档能直接作为知识库吗？",
 		"",
@@ -369,9 +370,9 @@ func buildAISearchPublicKnowledge(source string) (string, error) {
 		"",
 		"不能。R2 是对象存储，适合备份和文件，不适合作为 Sub2API 主业务数据库。结构化业务数据仍应由 PostgreSQL 承担。",
 		"",
-		"### R2 密钥丢失后数据还在吗？",
+		"### R2 访问方式不可用后数据还在吗？",
 		"",
-		"还在。丢失访问密钥通常只影响当前凭据访问能力，可以重新创建有权限的凭据来访问已有对象。",
+		"还在。访问方式不可用通常只影响当前访问能力，可以重新开通有权限的访问方式来访问已有对象。",
 	)
 
 	markdown := strings.TrimSpace(strings.Join(lines, "\n")) + "\n"
