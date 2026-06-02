@@ -66,6 +66,9 @@ func (h *SettingHandler) GetPublicSettings(c *gin.Context) {
 		DocURL:                           settings.DocURL,
 		HomeContent:                      settings.HomeContent,
 		HideCcsImportButton:              settings.HideCcsImportButton,
+		AppearanceThemeDefault:           settings.AppearanceThemeDefault,
+		AILogoCDNBaseURL:                 settings.AILogoCDNBaseURL,
+		CustomAILogoPresets:              settings.CustomAILogoPresets,
 		PurchaseSubscriptionEnabled:      settings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:          settings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:             settings.TableDefaultPageSize,
@@ -98,6 +101,30 @@ func (h *SettingHandler) GetPublicSettings(c *gin.Context) {
 		AffiliateEnabled: settings.AffiliateEnabled,
 
 		RiskControlEnabled: settings.RiskControlEnabled,
+	})
+}
+
+type appendCustomAILogoPresetRequest struct {
+	URL string `json:"url" binding:"required"`
+}
+
+// AppendCustomAILogoPreset appends a custom AI logo URL to the shared server-side preset library.
+// POST /api/v1/settings/ai-logo-presets
+func (h *SettingHandler) AppendCustomAILogoPreset(c *gin.Context) {
+	var req appendCustomAILogoPresetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	presets, err := h.settingService.AppendCustomAILogoPreset(c.Request.Context(), req.URL)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{
+		"custom_ai_logo_presets": presets,
 	})
 }
 

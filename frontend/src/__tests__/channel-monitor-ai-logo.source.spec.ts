@@ -115,6 +115,13 @@ describe('channel monitor AI logo contract', () => {
     expect(brandIconBlock).toContain('width: 100% !important;')
     expect(brandIconBlock).toContain('height: 100% !important;')
     expect(brandIconBlock).toContain('border-radius: inherit !important;')
+
+    const brandImageBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image'
+    )
+    expect(brandImageBlock).toContain('width: 95% !important;')
+    expect(brandImageBlock).toContain('height: 95% !important;')
   })
 
   it('keeps monitor timeline status bars on explicit health colors', () => {

@@ -224,17 +224,13 @@
               <div
                 data-testid="account-provider-logo"
                 class="account-provider-logo"
-                :title="getAccountLogoAlt(row)"
+                :title="getAccountLogoProvider(row)"
               >
-                <img
-                  v-if="getAccountLogo(row)"
-                  class="account-provider-logo-img"
-                  :src="getAccountLogo(row) || undefined"
-                  :alt="getAccountLogoAlt(row)"
-                  loading="lazy"
-                  @error="handleAccountLogoError(row)"
+                <ProviderBrandIcon
+                  :provider="getAccountLogoProvider(row)"
+                  :model="row.name || row.platform"
+                  :logo-url="getAccountCustomLogo(row)"
                 />
-                <span v-else class="account-provider-logo-fallback">{{ getAccountLogoFallback(row) }}</span>
               </div>
               <div class="flex min-w-0 flex-1 flex-col">
                 <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -464,13 +460,13 @@ import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
 import AccountGroupsCell from '@/components/account/AccountGroupsCell.vue'
 import AccountCapacityCell from '@/components/account/AccountCapacityCell.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import PlatformTypeBadge from '@/components/common/PlatformTypeBadge.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ErrorPassthroughRulesModal from '@/components/admin/ErrorPassthroughRulesModal.vue'
 import TLSFingerprintProfilesModal from '@/components/admin/TLSFingerprintProfilesModal.vue'
 import { buildOpenAIUsageRefreshKey } from '@/utils/accountUsageRefresh'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
-import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'
 import type { Account, AccountPlatform, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel } from '@/types'
 
 const { t, locale } = useI18n()
@@ -615,7 +611,6 @@ const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
-const logoErrorAccountIds = ref<Set<number>>(new Set())
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -859,30 +854,17 @@ const buildAccountLogoSearchText = (account: Account) => {
     .toLowerCase()
 }
 
-const getAccountLogo = (account: Account) => {
-  if (logoErrorAccountIds.value.has(account.id)) return null
+const getAccountCustomLogo = (account: Account) => {
   const extra = account.extra ?? {}
   const customLogoURL = typeof extra.custom_logo_url === 'string'
     ? extra.custom_logo_url.trim()
     : typeof extra.logo_url === 'string'
       ? extra.logo_url.trim()
       : ''
-  if (customLogoURL) return customLogoURL
-
-  const text = buildAccountLogoSearchText(account)
-  return aiLogoUrlForProvider(text, account.name || account.platform) || null
+  return customLogoURL || null
 }
 
-const getAccountLogoAlt = (account: Account) => `${account.name || account.platform} logo`
-
-const getAccountLogoFallback = (account: Account) => {
-  const source = String(account.name || account.platform || '?').trim()
-  return (source.match(/[A-Za-z0-9]/)?.[0] || source.charAt(0) || '?').toUpperCase()
-}
-
-const handleAccountLogoError = (account: Account) => {
-  logoErrorAccountIds.value = new Set([...logoErrorAccountIds.value, account.id])
-}
+const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(account) || account.name || account.platform
 
 const fetchExternalQuotaSummaries = async () => {
   if (!authStore.isAdmin) return

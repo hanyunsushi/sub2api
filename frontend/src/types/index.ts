@@ -234,6 +234,8 @@ export interface PublicSettings {
   available_channels_enabled: boolean
   affiliate_enabled: boolean
   appearance_theme_default: 'newspaper' | 'cloudflare'
+  ai_logo_cdn_base_url?: string
+  custom_ai_logo_presets?: string[]
 }
 
 export interface AuthResponse {

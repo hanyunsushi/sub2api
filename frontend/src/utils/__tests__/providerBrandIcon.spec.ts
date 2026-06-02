@@ -3,16 +3,16 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   aiLogoPresets,
   aiLogoUrlForProvider,
-  clearCustomAILogoPresetsForTest,
   getMergedAILogoPresets,
   providerBrandInfo,
   providerBrandModel,
-  rememberCustomAILogoPreset
+  rememberCustomAILogoPreset,
+  setAILogoRuntimeConfig
 } from '../providerBrandIcon'
 
 describe('provider brand icon resolution', () => {
   beforeEach(() => {
-    clearCustomAILogoPresetsForTest()
+    setAILogoRuntimeConfig()
   })
 
   it('uses provider-first seeds for stable color brand icons', () => {
@@ -72,14 +72,18 @@ describe('provider brand icon resolution', () => {
     expect(brand.color).toMatch(/^#/)
   })
 
-  it('merges remembered custom logo URLs after system CDN presets without mutating system presets', () => {
+  it('merges server-backed custom logo URLs after system CDN presets without mutating system presets', () => {
     const customURL = 'https://img.example.com/custom/openai-alt.png'
     const beforeCount = aiLogoPresets.length
 
-    rememberCustomAILogoPreset(`  ${customURL}  `)
-    rememberCustomAILogoPreset(customURL)
-    rememberCustomAILogoPreset(aiLogoPresets[0].url)
-    rememberCustomAILogoPreset('javascript:alert(1)')
+    setAILogoRuntimeConfig({
+      custom_ai_logo_presets: [
+        `  ${customURL}  `,
+        customURL,
+        aiLogoPresets[0].url,
+        'javascript:alert(1)'
+      ]
+    })
 
     const merged = getMergedAILogoPresets()
     expect(aiLogoPresets).toHaveLength(beforeCount)
@@ -90,5 +94,31 @@ describe('provider brand icon resolution', () => {
       label: 'Custom logo',
       url: customURL
     })
+  })
+
+  it('uses the server-provided AI logo CDN base URL for system presets and provider matching', () => {
+    setAILogoRuntimeConfig({
+      ai_logo_cdn_base_url: 'https://img.example.com/lobe/light/'
+    })
+
+    expect(getMergedAILogoPresets()[0]).toMatchObject({
+      id: 'openai',
+      url: 'https://img.example.com/lobe/light/openai.png'
+    })
+    expect(aiLogoUrlForProvider('anthropic', 'claude-sonnet-4-5')).toBe(
+      'https://img.example.com/lobe/light/claude-color.png'
+    )
+  })
+
+  it('keeps remembered custom logo URLs in runtime memory only after server confirmation', () => {
+    const customURL = 'https://img.example.com/custom/runtime-confirmed.png'
+
+    rememberCustomAILogoPreset(customURL)
+
+    expect(getMergedAILogoPresets().at(-1)).toMatchObject({
+      id: 'custom-runtime-confirmed-png',
+      url: customURL
+    })
+    expect(localStorage.getItem('sub2api.customAiLogoPresets')).toBeNull()
   })
 })

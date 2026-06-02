@@ -5001,6 +5001,65 @@
                 />
               </div>
 
+              <!-- AI Logo Library -->
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ localText("AI logo 图床", "AI logo library") }}
+                </h3>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {{
+                    localText(
+                      "系统预设和自定义 AI logo 会合并展示；这里保存的是服务器共享配置，不写入本地浏览器存储。",
+                      "System presets and custom AI logos are merged for display; these are shared server settings, not browser-local storage.",
+                    )
+                  }}
+                </p>
+                <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("AI logo 图床基础 URL", "AI logo CDN base URL") }}
+                    </label>
+                    <input
+                      v-model="form.ai_logo_cdn_base_url"
+                      type="url"
+                      class="input font-mono text-sm"
+                      placeholder="https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "默认固定到当前 LobeHub 图标版本以保证稳定；如需自动跟随上游，可改成 @latest 或你自己的图床目录。",
+                          "The default pins the current LobeHub icon version for stability; switch to @latest or your own CDN directory when you want upstream changes.",
+                        )
+                      }}
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("共享自定义 AI logo", "Shared custom AI logos") }}
+                    </label>
+                    <textarea
+                      v-model="customAILogoPresetsInput"
+                      rows="5"
+                      class="input font-mono text-sm"
+                      placeholder="https://img.example.com/openai-alt.png&#10;https://img.example.com/provider.svg"
+                    ></textarea>
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "每行一个 http/https 图片 URL。用户在 LogoPicker 中确认过的自定义 URL 也会自动追加到同一个服务器列表。",
+                          "One http/https image URL per line. Custom URLs confirmed in LogoPicker are appended to this same server-side list.",
+                        )
+                      }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Home Content -->
               <div>
                 <label
@@ -7112,6 +7171,9 @@ const testEmailAddress = ref("");
 const registrationEmailSuffixWhitelistTags = ref<string[]>([]);
 const registrationEmailSuffixWhitelistDraft = ref("");
 const tablePageSizeOptionsInput = ref("10, 20, 50, 100");
+const defaultAILogoCDNBaseURL =
+  "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light";
+const customAILogoPresetsInput = ref("");
 
 // Admin API Key 状态
 const adminApiKeyLoading = ref(true);
@@ -7303,6 +7365,8 @@ const form = reactive<SettingsForm>({
   backend_mode_enabled: false,
   hide_ccs_import_button: false,
   appearance_theme_default: "newspaper",
+  ai_logo_cdn_base_url: defaultAILogoCDNBaseURL,
+  custom_ai_logo_presets: [],
   payment_enabled: false,
   risk_control_enabled: false,
   payment_min_amount: 1,
@@ -8084,6 +8148,37 @@ function parseTablePageSizeOptionsInput(raw: string): number[] | null {
   return deduped;
 }
 
+function normalizeCustomAILogoPresetsInput(raw: string): string[] | null {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  const tokens = raw
+    .split(/\r?\n/)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+
+  for (const token of tokens) {
+    try {
+      const parsed = new URL(token);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return null;
+      }
+      const url = parsed.toString();
+      if (seen.has(url)) {
+        continue;
+      }
+      seen.add(url);
+      result.push(url);
+      if (result.length >= 48) {
+        break;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return result;
+}
+
 async function loadSettings() {
   loading.value = true;
   loadFailed.value = false;
@@ -8125,6 +8220,12 @@ async function loadSettings() {
         ? settings.table_page_size_options
         : [10, 20, 50, 100],
     );
+    form.ai_logo_cdn_base_url =
+      settings.ai_logo_cdn_base_url || defaultAILogoCDNBaseURL;
+    form.custom_ai_logo_presets = Array.isArray(settings.custom_ai_logo_presets)
+      ? settings.custom_ai_logo_presets
+      : [];
+    customAILogoPresetsInput.value = form.custom_ai_logo_presets.join("\n");
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
     smtpPasswordManuallyEdited.value = false;
@@ -8424,6 +8525,23 @@ async function saveSettings() {
     // Optional URL fields: auto-clear invalid values so they don't cause backend 400 errors
     if (!isValidHttpUrl(form.frontend_url)) form.frontend_url = "";
     if (!isValidHttpUrl(form.doc_url)) form.doc_url = "";
+    if (!isValidHttpUrl(form.ai_logo_cdn_base_url)) {
+      form.ai_logo_cdn_base_url = defaultAILogoCDNBaseURL;
+    }
+    const normalizedCustomAILogoPresets = normalizeCustomAILogoPresetsInput(
+      customAILogoPresetsInput.value,
+    );
+    if (!normalizedCustomAILogoPresets) {
+      appStore.showError(
+        localText(
+          "共享自定义 AI logo 只能填写 http/https 图片 URL。",
+          "Shared custom AI logos only accept http/https image URLs.",
+        ),
+      );
+      return;
+    }
+    form.custom_ai_logo_presets = normalizedCustomAILogoPresets;
+    customAILogoPresetsInput.value = normalizedCustomAILogoPresets.join("\n");
     if (!isValidHttpUrl(form.buzz_balance_api_base_url)) {
       form.buzz_balance_api_base_url = "https://buzzai.cc";
     }
@@ -8478,6 +8596,8 @@ async function saveSettings() {
       backend_mode_enabled: form.backend_mode_enabled,
       hide_ccs_import_button: form.hide_ccs_import_button,
       appearance_theme_default: form.appearance_theme_default,
+      ai_logo_cdn_base_url: form.ai_logo_cdn_base_url,
+      custom_ai_logo_presets: form.custom_ai_logo_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
       custom_menu_items: form.custom_menu_items,

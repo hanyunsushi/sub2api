@@ -309,6 +309,7 @@ const (
 	DefaultBuzzBalanceAPIBaseURL             = "https://buzzai.cc"
 	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
 	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://shop.qlhazycoder.top"
+	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
 	defaultWeChatConnectScopes               = "snsapi_login"
 	defaultWeChatConnectFrontend             = "/auth/wechat/callback"
@@ -727,6 +728,8 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyTablePageSizeOptions,
 		SettingKeyCustomMenuItems,
 		SettingKeyCustomEndpoints,
+		SettingKeyAILogoCDNBaseURL,
+		SettingKeyCustomAILogoPresets,
 		SettingKeyLinuxDoConnectEnabled,
 		SettingKeyDingTalkConnectEnabled,
 		SettingKeyWeChatConnectEnabled,
@@ -853,6 +856,8 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		TablePageSizeOptions:             tablePageSizeOptions,
 		CustomMenuItems:                  settings[SettingKeyCustomMenuItems],
 		CustomEndpoints:                  settings[SettingKeyCustomEndpoints],
+		AILogoCDNBaseURL:                 normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
+		CustomAILogoPresets:              parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
 		LinuxDoOAuthEnabled:              linuxDoEnabled,
 		DingTalkOAuthEnabled:             dingTalkEnabled,
 		WeChatOAuthEnabled:               weChatEnabled,
@@ -1149,6 +1154,8 @@ type PublicSettingsInjectionPayload struct {
 	HomeContent                      string                   `json:"home_content"`
 	HideCcsImportButton              bool                     `json:"hide_ccs_import_button"`
 	AppearanceThemeDefault           string                   `json:"appearance_theme_default"`
+	AILogoCDNBaseURL                 string                   `json:"ai_logo_cdn_base_url"`
+	CustomAILogoPresets              []string                 `json:"custom_ai_logo_presets"`
 	PurchaseSubscriptionEnabled      bool                     `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL          string                   `json:"purchase_subscription_url"`
 	TableDefaultPageSize             int                      `json:"table_default_page_size"`
@@ -1214,6 +1221,9 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		DocURL:                           settings.DocURL,
 		HomeContent:                      settings.HomeContent,
 		HideCcsImportButton:              settings.HideCcsImportButton,
+		AppearanceThemeDefault:           settings.AppearanceThemeDefault,
+		AILogoCDNBaseURL:                 settings.AILogoCDNBaseURL,
+		CustomAILogoPresets:              settings.CustomAILogoPresets,
 		PurchaseSubscriptionEnabled:      settings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:          settings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:             settings.TableDefaultPageSize,
@@ -1243,7 +1253,6 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
 		RiskControlEnabled:                   settings.RiskControlEnabled,
-		AppearanceThemeDefault:               settings.AppearanceThemeDefault,
 	}, nil
 }
 
@@ -1258,6 +1267,94 @@ func normalizeAppearanceThemeDefault(value string) string {
 	default:
 		return "newspaper"
 	}
+}
+
+func normalizeAILogoCDNBaseURL(value string) string {
+	normalized := strings.TrimRight(normalizeHTTPURL(value), "/")
+	if normalized == "" {
+		return DefaultAILogoCDNBaseURL
+	}
+	return normalized
+}
+
+func normalizeHTTPURL(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return ""
+	}
+	parsed, err := url.Parse(trimmed)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return ""
+	}
+	if parsed.Scheme != "http" && parsed.Scheme != "https" {
+		return ""
+	}
+	return parsed.String()
+}
+
+func parseCustomAILogoPresetURLs(raw string) []string {
+	var values []string
+	if strings.TrimSpace(raw) == "" {
+		return []string{}
+	}
+	if err := json.Unmarshal([]byte(raw), &values); err != nil {
+		return []string{}
+	}
+	return normalizeCustomAILogoPresetURLs(values)
+}
+
+func normalizeCustomAILogoPresetURLs(values []string) []string {
+	result := make([]string, 0, len(values))
+	seen := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		normalized := normalizeHTTPURL(value)
+		if normalized == "" {
+			continue
+		}
+		if _, ok := seen[normalized]; ok {
+			continue
+		}
+		seen[normalized] = struct{}{}
+		result = append(result, normalized)
+		if len(result) >= 48 {
+			break
+		}
+	}
+	return result
+}
+
+func customAILogoPresetURLsJSON(values []string) (string, error) {
+	normalized := normalizeCustomAILogoPresetURLs(values)
+	raw, err := json.Marshal(normalized)
+	if err != nil {
+		return "", err
+	}
+	return string(raw), nil
+}
+
+func (s *SettingService) AppendCustomAILogoPreset(ctx context.Context, rawURL string) ([]string, error) {
+	url := normalizeHTTPURL(rawURL)
+	if url == "" {
+		return nil, infraerrors.BadRequest("INVALID_AI_LOGO_URL", "AI logo URL must be a valid http or https URL")
+	}
+
+	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomAILogoPresets)
+	if err != nil && !errors.Is(err, ErrSettingNotFound) {
+		return nil, err
+	}
+	current := parseCustomAILogoPresetURLs(currentRaw)
+	next := normalizeCustomAILogoPresetURLs(append([]string{url}, current...))
+	encoded, err := customAILogoPresetURLsJSON(next)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
+	}
+	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomAILogoPresets: encoded}); err != nil {
+		return nil, err
+	}
+	if s.onUpdate != nil {
+		s.onUpdate()
+	}
+	return next, nil
 }
 
 func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
@@ -1851,6 +1948,12 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyTablePageSizeOptions] = string(tablePageSizeOptionsJSON)
 	updates[SettingKeyCustomMenuItems] = settings.CustomMenuItems
 	updates[SettingKeyCustomEndpoints] = settings.CustomEndpoints
+	updates[SettingKeyAILogoCDNBaseURL] = normalizeAILogoCDNBaseURL(settings.AILogoCDNBaseURL)
+	customAILogoPresetsJSON, err := customAILogoPresetURLsJSON(settings.CustomAILogoPresets)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
+	}
+	updates[SettingKeyCustomAILogoPresets] = customAILogoPresetsJSON
 
 	// 默认配置
 	updates[SettingKeyDefaultConcurrency] = strconv.Itoa(settings.DefaultConcurrency)
@@ -2748,6 +2851,8 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyTablePageSizeOptions:                      "[10,20,50,100]",
 		SettingKeyCustomMenuItems:                           "[]",
 		SettingKeyCustomEndpoints:                           "[]",
+		SettingKeyAILogoCDNBaseURL:                          DefaultAILogoCDNBaseURL,
+		SettingKeyCustomAILogoPresets:                       "[]",
 		SettingKeyWeChatConnectEnabled:                      "false",
 		SettingKeyWeChatConnectAppID:                        "",
 		SettingKeyWeChatConnectAppSecret:                    "",
@@ -2950,6 +3055,8 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		PurchaseSubscriptionURL:          strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
 		CustomMenuItems:                  settings[SettingKeyCustomMenuItems],
 		CustomEndpoints:                  settings[SettingKeyCustomEndpoints],
+		AILogoCDNBaseURL:                 normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
+		CustomAILogoPresets:              parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
 		BackendModeEnabled:               settings[SettingKeyBackendModeEnabled] == "true",
 	}
 	result.TableDefaultPageSize, result.TablePageSizeOptions = parseTablePreferences(

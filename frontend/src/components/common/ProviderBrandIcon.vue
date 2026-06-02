@@ -12,7 +12,7 @@
     <ModelIcon
       v-if="!brand.iconUrl && brand.iconModel"
       :model="brand.iconModel"
-      size="100%"
+      size="95%"
       aria-hidden="true"
     />
     <img
@@ -62,8 +62,8 @@ const title = computed(() => props.provider || props.model || 'Provider')
 .provider-brand-icon :deep(.model-icon),
 .provider-brand-icon :deep(svg) {
   @apply flex-shrink-0;
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 95%;
 }
 
 .provider-brand-icon :deep(svg path) {
@@ -71,7 +71,9 @@ const title = computed(() => props.provider || props.model || 'Provider')
 }
 
 .provider-brand-image {
-  @apply h-full w-full flex-shrink-0 object-cover;
+  @apply flex-shrink-0 object-cover;
+  width: 95%;
+  height: 95%;
 }
 
 .provider-brand-tile {

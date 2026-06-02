@@ -17,9 +17,17 @@ type ProviderBrandPreset = Omit<ProviderBrandInfo, 'label'> & {
   label?: string
 }
 
-const aiLogoCDNBase = 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light'
-const aiLogoUrl = (slug: string) => `${aiLogoCDNBase}/${slug}.png`
-const customAILogoPresetStorageKey = 'sub2api.customAiLogoPresets'
+export interface AILogoRuntimeConfig {
+  ai_logo_cdn_base_url?: string | null
+  custom_ai_logo_presets?: string[] | null
+}
+
+export const defaultAILogoCDNBaseURL = 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light'
+
+let runtimeAILogoCDNBaseURL = defaultAILogoCDNBaseURL
+let runtimeCustomAILogoPresetURLs: string[] = []
+
+const aiLogoUrl = (slug: string) => `${runtimeAILogoCDNBaseURL}/${slug}.png`
 
 const aiLogoPresetSources = [
   { id: 'openai', label: 'OpenAI', slug: 'openai' },
@@ -110,15 +118,19 @@ const aiLogoPresetSources = [
   { id: 'luma', label: 'Luma', slug: 'luma-color' },
 ]
 
+function buildAILogoPresets(): AILogoPreset[] {
+  return aiLogoPresetSources.map((preset) => ({
+    id: preset.id,
+    label: preset.label,
+    url: aiLogoUrl(preset.slug),
+  }))
+}
+
 export const aiLogoPresets: AILogoPreset[] = aiLogoPresetSources.map((preset) => ({
   id: preset.id,
   label: preset.label,
-  url: aiLogoUrl(preset.slug),
+  url: `${defaultAILogoCDNBaseURL}/${preset.slug}.png`,
 }))
-
-function canUseLogoStorage(): boolean {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
-}
 
 function normalizeLogoURL(raw?: string | null): string {
   const value = (raw || '').trim()
@@ -132,6 +144,11 @@ function normalizeLogoURL(raw?: string | null): string {
   }
 }
 
+function normalizeAILogoCDNBaseURL(raw?: string | null): string {
+  const url = normalizeLogoURL(raw)
+  return url ? url.replace(/\/+$/, '') : defaultAILogoCDNBaseURL
+}
+
 function customLogoPresetId(url: string): string {
   try {
     const parsed = new URL(url)
@@ -142,35 +159,38 @@ function customLogoPresetId(url: string): string {
   }
 }
 
-function readCustomAILogoPresetURLs(): string[] {
-  if (!canUseLogoStorage()) return []
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(customAILogoPresetStorageKey) || '[]')
-    if (!Array.isArray(parsed)) return []
-    return parsed
-      .map((item) => normalizeLogoURL(String(item || '')))
-      .filter(Boolean)
-  } catch {
-    return []
+function normalizeCustomAILogoPresetURLs(urls?: Array<string | null | undefined> | null): string[] {
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const item of urls ?? []) {
+    const url = normalizeLogoURL(item)
+    if (!url || seen.has(url)) continue
+    seen.add(url)
+    result.push(url)
+    if (result.length >= 48) break
   }
+  return result
 }
 
-function writeCustomAILogoPresetURLs(urls: string[]) {
-  if (!canUseLogoStorage()) return
-  window.localStorage.setItem(customAILogoPresetStorageKey, JSON.stringify(urls))
+export function setAILogoRuntimeConfig(config?: AILogoRuntimeConfig | null) {
+  runtimeAILogoCDNBaseURL = normalizeAILogoCDNBaseURL(config?.ai_logo_cdn_base_url)
+  runtimeCustomAILogoPresetURLs = normalizeCustomAILogoPresetURLs(config?.custom_ai_logo_presets)
 }
 
 export function rememberCustomAILogoPreset(rawURL?: string | null): AILogoPreset[] {
   const url = normalizeLogoURL(rawURL)
   if (!url) return getMergedAILogoPresets()
-  if (aiLogoPresets.some((preset) => preset.url === url)) return getMergedAILogoPresets()
-  const next = [url, ...readCustomAILogoPresetURLs().filter((existing) => existing !== url)].slice(0, 48)
-  writeCustomAILogoPresetURLs(next)
+  const systemPresets = buildAILogoPresets()
+  if (systemPresets.some((preset) => preset.url === url)) return getMergedAILogoPresets()
+  runtimeCustomAILogoPresetURLs = normalizeCustomAILogoPresetURLs([
+    url,
+    ...runtimeCustomAILogoPresetURLs,
+  ])
   return getMergedAILogoPresets()
 }
 
 export function getCustomAILogoPresets(): AILogoPreset[] {
-  return readCustomAILogoPresetURLs().map((url) => ({
+  return runtimeCustomAILogoPresetURLs.map((url) => ({
     id: customLogoPresetId(url),
     label: 'Custom logo',
     url,
@@ -178,19 +198,14 @@ export function getCustomAILogoPresets(): AILogoPreset[] {
 }
 
 export function getMergedAILogoPresets(): AILogoPreset[] {
-  const seen = new Set(aiLogoPresets.map((preset) => preset.url))
+  const systemPresets = buildAILogoPresets()
+  const seen = new Set(systemPresets.map((preset) => preset.url))
   const custom = getCustomAILogoPresets().filter((preset) => {
     if (seen.has(preset.url)) return false
     seen.add(preset.url)
     return true
   })
-  return [...aiLogoPresets, ...custom]
-}
-
-export function clearCustomAILogoPresetsForTest() {
-  if (canUseLogoStorage()) {
-    window.localStorage.removeItem(customAILogoPresetStorageKey)
-  }
+  return [...systemPresets, ...custom]
 }
 
 const fallbackPalettes = [
@@ -207,7 +222,7 @@ const fallbackPalettes = [
 const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   [
     ['text-completion-openai', 'openai', 'azure-openai'],
-    { iconModel: 'gpt', label: 'AI', iconUrl: aiLogoUrl('openai'), background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
+    { iconModel: 'gpt', label: 'AI', background: '#E9FBF4', color: '#087F5B', border: '#9BE7C4' },
   ],
   [
     ['anthropic', 'claude'],

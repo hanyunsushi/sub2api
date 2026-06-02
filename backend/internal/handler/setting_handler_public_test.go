@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -24,7 +25,10 @@ func (s *settingHandlerPublicRepoStub) Get(ctx context.Context, key string) (*se
 }
 
 func (s *settingHandlerPublicRepoStub) GetValue(ctx context.Context, key string) (string, error) {
-	panic("unexpected GetValue call")
+	if value, ok := s.values[key]; ok {
+		return value, nil
+	}
+	return "", service.ErrSettingNotFound
 }
 
 func (s *settingHandlerPublicRepoStub) Set(ctx context.Context, key, value string) error {
@@ -42,7 +46,13 @@ func (s *settingHandlerPublicRepoStub) GetMultiple(ctx context.Context, keys []s
 }
 
 func (s *settingHandlerPublicRepoStub) SetMultiple(ctx context.Context, settings map[string]string) error {
-	panic("unexpected SetMultiple call")
+	if s.values == nil {
+		s.values = map[string]string{}
+	}
+	for key, value := range settings {
+		s.values[key] = value
+	}
+	return nil
 }
 
 func (s *settingHandlerPublicRepoStub) GetAll(ctx context.Context) (map[string]string, error) {
@@ -109,6 +119,75 @@ func TestSettingHandler_GetPublicSettings_ExposesAppearanceThemeDefault(t *testi
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
 	require.Equal(t, 0, resp.Code)
 	require.Equal(t, "cloudflare", resp.Data.AppearanceThemeDefault)
+}
+
+func TestSettingHandler_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	repo := &settingHandlerPublicRepoStub{
+		values: map[string]string{
+			service.SettingKeyAILogoCDNBaseURL:    "https://img.example.com/lobe/light",
+			service.SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png"]`,
+		},
+	}
+	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
+
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	c.Request = httptest.NewRequest(http.MethodGet, "/api/v1/settings/public", nil)
+
+	h.GetPublicSettings(c)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+
+	var resp struct {
+		Code int `json:"code"`
+		Data struct {
+			AILogoCDNBaseURL    string   `json:"ai_logo_cdn_base_url"`
+			CustomAILogoPresets []string `json:"custom_ai_logo_presets"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
+	require.Equal(t, 0, resp.Code)
+	require.Equal(t, "https://img.example.com/lobe/light", resp.Data.AILogoCDNBaseURL)
+	require.Equal(t, []string{"https://img.example.com/custom/a.png"}, resp.Data.CustomAILogoPresets)
+}
+
+func TestSettingHandler_AppendCustomAILogoPreset_PersistsServerSideLibrary(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	repo := &settingHandlerPublicRepoStub{
+		values: map[string]string{
+			service.SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png"]`,
+		},
+	}
+	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
+
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	c.Request = httptest.NewRequest(
+		http.MethodPost,
+		"/api/v1/settings/ai-logo-presets",
+		strings.NewReader(`{"url":" https://img.example.com/custom/b.png "}`),
+	)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	h.AppendCustomAILogoPreset(c)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.JSONEq(t, `["https://img.example.com/custom/b.png","https://img.example.com/custom/a.png"]`, repo.values[service.SettingKeyCustomAILogoPresets])
+
+	var resp struct {
+		Code int `json:"code"`
+		Data struct {
+			CustomAILogoPresets []string `json:"custom_ai_logo_presets"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
+	require.Equal(t, []string{
+		"https://img.example.com/custom/b.png",
+		"https://img.example.com/custom/a.png",
+	}, resp.Data.CustomAILogoPresets)
 }
 
 func TestSettingHandler_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
