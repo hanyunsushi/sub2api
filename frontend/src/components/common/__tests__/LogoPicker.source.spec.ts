@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 const logoPickerSource = readFileSync(resolve(__dirname, '../LogoPicker.vue'), 'utf8')
 const providerBrandSource = readFileSync(resolve(__dirname, '../../../utils/providerBrandIcon.ts'), 'utf8')
+const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 
 describe('LogoPicker preset gallery contract', () => {
   it('offers the shared CDN AI logo gallery as direct selectable presets', () => {
@@ -30,16 +31,30 @@ describe('LogoPicker preset gallery contract', () => {
     expect(logoPickerSource).toContain('Custom URL')
   })
 
-  it('fills provider icon image and svg art inside the fixed icon wrapper', () => {
+  it('keeps system CDN logo art contained while custom logo URLs fill the icon wrapper', () => {
     const providerBrandIconSource = readFileSync(resolve(__dirname, '../ProviderBrandIcon.vue'), 'utf8')
     expect(providerBrandIconSource).toContain('overflow-hidden')
-    expect(providerBrandIconSource).toContain('size="95%"')
-    expect(providerBrandIconSource).toContain('@apply flex-shrink-0 object-cover')
+    expect(providerBrandIconSource).toContain('isSystemAILogoPresetURL')
+    expect(providerBrandIconSource).toContain('provider-brand-image-system')
+    expect(providerBrandIconSource).toContain('provider-brand-image-custom')
+    expect(providerBrandIconSource).toContain('object-contain')
+    expect(providerBrandIconSource).toContain('object-cover')
     expect(providerBrandIconSource).toContain(':deep(.model-icon)')
-    expect(providerBrandIconSource).toContain('width: 95%;')
-    expect(providerBrandIconSource).toContain('height: 95%;')
+    expect(providerBrandSource).toContain('isSystemAILogoPresetURL')
+    expect(providerBrandSource).toContain('buildAILogoPresets()')
+    expect(providerBrandSource).toContain('aiLogoPresets')
     expect(providerBrandIconSource).not.toContain('border shadow-sm')
     expect(providerBrandIconSource).not.toContain('box-shadow:')
+
+    expect(logoPickerSource).toContain('previewImageClass')
+    expect(logoPickerSource).toContain('isSystemAILogoPresetURL(normalizedValue.value)')
+    expect(logoPickerSource).toContain('logo-picker-preview-image-system')
+    expect(logoPickerSource).toContain('logo-picker-preview-image-custom')
+    expect(styleSource).toContain('.logo-picker-preview-image-system')
+    expect(styleSource).toContain('object-fit: contain;')
+    expect(styleSource).toContain('.logo-picker-preview-image-custom')
+    expect(styleSource).toContain('width: 100%;')
+    expect(styleSource).not.toContain('.logo-picker-preview img {\n  display: block;\n  height: 95%;')
   })
 
   it('remembers custom URL only after the field value is committed or a preset is selected', () => {

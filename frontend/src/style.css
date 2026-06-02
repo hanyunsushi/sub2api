@@ -164,9 +164,9 @@
   --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
   --atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);
   --atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);
-  --atelier-scrollbar: var(--atelier-dust);
-  --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-dust) 78%, var(--atelier-ink));
-  --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-dust) 14%, transparent);
+  --atelier-scrollbar: #9b9b9b;
+  --atelier-scrollbar-hover: #777777;
+  --atelier-scrollbar-track: #f1f1f1;
   --atelier-module-enter-duration: 0.9s;
   /* Cloudflare's product UI is a clean humanist sans-serif system stack. */
   --sans: "Inter", "Helvetica Neue", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", ui-sans-serif, system-ui, -apple-system, "Arial", sans-serif;
@@ -1649,12 +1649,21 @@ body.ai-search-locked {
   width: 2.5rem;
 }
 
-.logo-picker-preview img {
+.logo-picker-preview-image {
   display: block;
-  height: 95%;
-  max-width: 95%;
+}
+
+.logo-picker-preview-image-system {
+  height: 1.75rem;
+  max-width: 1.75rem;
+  object-fit: contain;
+  width: 1.75rem;
+}
+
+.logo-picker-preview-image-custom {
+  height: 100%;
   object-fit: cover;
-  width: 95%;
+  width: 100%;
 }
 
 .logo-picker-field {
@@ -4197,8 +4206,33 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip {
+  position: fixed;
+  z-index: 100000220;
   outline: 1px solid var(--atelier-slab-edge-soft) !important;
   outline-offset: -1px !important;
+}
+
+body > .endpoint-tooltip {
+  position: fixed !important;
+  z-index: 100000220 !important;
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  background-image: none !important;
+  color: var(--atelier-slab-text) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
+  outline-offset: -1px !important;
+  box-shadow: none !important;
+}
+
+body > .endpoint-tooltip :where(span, p, svg, path) {
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+body > .endpoint-tooltip .endpoint-tooltip-arrow {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-list :where(.endpoint-popover-item, .endpoint-tooltip) :where(span, p, code, button, a, svg, path) {
@@ -4313,22 +4347,8 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon {
   background: var(--atelier-material-1) !important;
   border: 1px solid var(--atelier-material-edge) !important;
+  color: var(--atelier-ink) !important;
   box-shadow: none !important;
-}
-
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-blue-600, .text-purple-600),
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-blue-600, .text-purple-600) {
-  color: var(--atelier-blue) !important;
-}
-
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-amber-600, .text-orange-600),
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-amber-600, .text-orange-600) {
-  color: var(--atelier-orange) !important;
-}
-
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon:where(.text-green-600, .text-emerald-600),
-#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(.text-green-600, .text-emerald-600) {
-  color: var(--atelier-green) !important;
 }
 
 #app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon :where(svg, svg *, path),
@@ -6175,9 +6195,16 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   box-shadow: none !important;
 }
 
-#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image {
-  width: 95% !important;
-  height: 95% !important;
+#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-system {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  object-fit: contain !important;
+}
+
+#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-custom {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-status-operational {
@@ -6625,6 +6652,11 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 :root.theme-cloudflare #app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-tooltip-arrow {
+  background: var(--atelier-paper) !important;
+}
+
+:root.theme-cloudflare body > .endpoint-tooltip,
+:root.theme-cloudflare body > .endpoint-tooltip .endpoint-tooltip-arrow {
   background: var(--atelier-paper) !important;
 }
 

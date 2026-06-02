@@ -118,12 +118,21 @@ describe('channel monitor AI logo contract', () => {
     expect(brandIconBlock).toContain('border-radius: inherit !important;')
     expect(brandIconBlock).toContain('box-shadow: none !important;')
 
-    const brandImageBlock = cssBlock(
+    const systemImageBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image'
+      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-system'
     )
-    expect(brandImageBlock).toContain('width: 95% !important;')
-    expect(brandImageBlock).toContain('height: 95% !important;')
+    expect(systemImageBlock).toContain('width: 1.25rem !important;')
+    expect(systemImageBlock).toContain('height: 1.25rem !important;')
+    expect(systemImageBlock).toContain('object-fit: contain !important;')
+
+    const customImageBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-custom'
+    )
+    expect(customImageBlock).toContain('width: 100% !important;')
+    expect(customImageBlock).toContain('height: 100% !important;')
+    expect(customImageBlock).toContain('object-fit: cover !important;')
   })
 
   it('keeps monitor timeline status bars on explicit health colors', () => {

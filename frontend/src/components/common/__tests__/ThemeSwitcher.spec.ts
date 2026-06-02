@@ -47,6 +47,22 @@ describe('ThemeSwitcher', () => {
     expect(adminAPI.settings.updateAppearanceThemeDefault).not.toHaveBeenCalled()
   })
 
+  it('renders the current theme logo on the trigger instead of always showing Cloudflare', () => {
+    const authStore = useAuthStore()
+    authStore.user = { id: 2, email: 'user@example.com', username: 'user', role: 'user' } as any
+    setAppearanceTheme('newspaper')
+
+    const wrapper = mount(ThemeSwitcher, {
+      global: {
+        stubs: { FloatingDropdown: { template: '<div><slot /></div>' } },
+      },
+    })
+
+    const trigger = wrapper.find('button.theme-switcher-trigger')
+    expect(trigger.find('[data-theme-logo="newspaper"]').exists()).toBe(true)
+    expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
+  })
+
   it('admins can publish the selected theme as the public default', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
