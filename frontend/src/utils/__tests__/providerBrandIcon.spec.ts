@@ -1,13 +1,20 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
   aiLogoPresets,
   aiLogoUrlForProvider,
+  clearCustomAILogoPresetsForTest,
+  getMergedAILogoPresets,
   providerBrandInfo,
-  providerBrandModel
+  providerBrandModel,
+  rememberCustomAILogoPreset
 } from '../providerBrandIcon'
 
 describe('provider brand icon resolution', () => {
+  beforeEach(() => {
+    clearCustomAILogoPresetsForTest()
+  })
+
   it('uses provider-first seeds for stable color brand icons', () => {
     expect(providerBrandModel('openai', 'gpt-5.5')).toBe('gpt')
     expect(providerBrandModel('anthropic', 'claude-sonnet-4-5')).toBe('claude')
@@ -63,5 +70,25 @@ describe('provider brand icon resolution', () => {
     expect(brand.iconModel).toBeNull()
     expect(brand.background).toMatch(/^#/)
     expect(brand.color).toMatch(/^#/)
+  })
+
+  it('merges remembered custom logo URLs after system CDN presets without mutating system presets', () => {
+    const customURL = 'https://img.example.com/custom/openai-alt.png'
+    const beforeCount = aiLogoPresets.length
+
+    rememberCustomAILogoPreset(`  ${customURL}  `)
+    rememberCustomAILogoPreset(customURL)
+    rememberCustomAILogoPreset(aiLogoPresets[0].url)
+    rememberCustomAILogoPreset('javascript:alert(1)')
+
+    const merged = getMergedAILogoPresets()
+    expect(aiLogoPresets).toHaveLength(beforeCount)
+    expect(merged.slice(0, beforeCount)).toEqual(aiLogoPresets)
+    expect(merged).toHaveLength(beforeCount + 1)
+    expect(merged.at(-1)).toMatchObject({
+      id: 'custom-openai-alt-png',
+      label: 'Custom logo',
+      url: customURL
+    })
   })
 })

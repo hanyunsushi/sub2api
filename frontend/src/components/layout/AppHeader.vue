@@ -85,7 +85,13 @@
               />
             </svg>
             <span
-              v-if="showBuzzBalanceInChip"
+              v-if="showQLHazyCoderSubscriptionInChip"
+              class="balance-qlhazycoder-text text-sm font-semibold"
+            >
+              QL {{ formattedQLHazyCoderBalance }}
+            </span>
+            <span
+              v-else-if="showBuzzBalanceInChip"
               class="balance-buzz-text text-sm font-semibold"
             >
               Buzz {{ formattedBuzzBalance }}
@@ -148,6 +154,19 @@
                   </div>
                   <div class="balance-expiry-text text-[11px] leading-4">
                     {{ formattedTCDMXExpiry }}
+                  </div>
+                </div>
+              </div>
+              <div class="balance-row balance-row-qlhazycoder flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-qlhazycoder-text text-xs font-medium">
+                  QL
+                </div>
+                <div class="text-right">
+                  <div class="balance-qlhazycoder-text text-sm font-semibold">
+                    {{ formattedQLHazyCoderBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedQLHazyCoderExpiry }}
                   </div>
                 </div>
               </div>
@@ -313,6 +332,7 @@ import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
+import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -337,8 +357,10 @@ const balanceDropdownOpen = ref(false)
 const balanceCarouselIndex = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
+const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
 const buzzBalanceLoading = ref(false)
 const tcdmxSubscriptionLoading = ref(false)
+const qlhazycoderSubscriptionLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
@@ -389,8 +411,19 @@ const canShowTCDMXSubscription = computed(() => {
   )
 })
 
+const canShowQLHazyCoderSubscription = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    qlhazycoderSubscription.value?.enabled &&
+    qlhazycoderSubscription.value?.configured
+  )
+})
+
 const balanceSlotCount = computed(() => {
-  return 1 + (canShowBuzzBalance.value ? 1 : 0) + (canShowTCDMXSubscription.value ? 1 : 0)
+  return 1 +
+    (canShowBuzzBalance.value ? 1 : 0) +
+    (canShowTCDMXSubscription.value ? 1 : 0) +
+    (canShowQLHazyCoderSubscription.value ? 1 : 0)
 })
 
 const currentBalanceSlot = computed(() => {
@@ -406,6 +439,14 @@ const showTCDMXSubscriptionInChip = computed(() => {
   return currentBalanceSlot.value === (canShowBuzzBalance.value ? 2 : 1)
 })
 
+const showQLHazyCoderSubscriptionInChip = computed(() => {
+  if (!canShowQLHazyCoderSubscription.value) return false
+  let slot = 1
+  if (canShowBuzzBalance.value) slot += 1
+  if (canShowTCDMXSubscription.value) slot += 1
+  return currentBalanceSlot.value === slot
+})
+
 const formattedBuzzBalance = computed(() => {
   if (!canShowBuzzBalance.value || !buzzBalance.value) return '未配置'
   return `$${buzzBalance.value.remaining.toFixed(2)}`
@@ -417,29 +458,25 @@ const formattedBuzzExpiry = computed(() => {
 })
 
 const formattedTCDMXBalance = computed(() => {
-  if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '未配置'
-  if (tcdmxSubscription.value.error_code) {
-    return tcdmxSubscription.value.error_code === 'INVALID_TOKEN' ? 'Token 失效' : '读取失败'
-  }
-  const remaining = tcdmxSubscription.value.remaining_usd
-  const total = tcdmxSubscription.value.total_limit_usd
-  if (typeof remaining === 'number' && typeof total === 'number') {
-    return `$${remaining.toFixed(2)} / $${total.toFixed(2)}`
-  }
-  if (typeof total === 'number') return `限额 $${total.toFixed(2)}`
-  if (tcdmxSubscription.value.active_count > 0) return `${tcdmxSubscription.value.active_count} 个订阅`
-  return '无有效订阅'
+  return formatExternalSubscriptionBalance(tcdmxSubscription.value, canShowTCDMXSubscription.value)
 })
 
 const formattedTCDMXExpiry = computed(() => {
-  if (!canShowTCDMXSubscription.value || !tcdmxSubscription.value) return '期限未配置'
-  if (tcdmxSubscription.value.error_code) {
-    return tcdmxSubscription.value.error_code === 'INVALID_TOKEN' ? '请更新 Token' : (tcdmxSubscription.value.error_message || '请检查配置')
-  }
-  return formatExternalExpiry(tcdmxSubscription.value.expires_at)
+  return formatExternalSubscriptionExpiry(tcdmxSubscription.value, canShowTCDMXSubscription.value)
+})
+
+const formattedQLHazyCoderBalance = computed(() => {
+  return formatExternalSubscriptionBalance(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value)
+})
+
+const formattedQLHazyCoderExpiry = computed(() => {
+  return formatExternalSubscriptionExpiry(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value)
 })
 
 const balanceChipClass = computed(() => {
+  if (showQLHazyCoderSubscriptionInChip.value) {
+    return 'balance-chip-qlhazycoder'
+  }
   if (showBuzzBalanceInChip.value) {
     return 'balance-chip-buzz'
   }
@@ -450,6 +487,9 @@ const balanceChipClass = computed(() => {
 })
 
 const balanceIconClass = computed(() => {
+  if (showQLHazyCoderSubscriptionInChip.value) {
+    return 'balance-qlhazycoder-text'
+  }
   if (showBuzzBalanceInChip.value) {
     return 'balance-buzz-text'
   }
@@ -560,6 +600,48 @@ async function fetchTCDMXSubscription() {
   }
 }
 
+async function fetchQLHazyCoderSubscription() {
+  if (!authStore.isAdmin || qlhazycoderSubscriptionLoading.value) return
+  qlhazycoderSubscriptionLoading.value = true
+  try {
+    qlhazycoderSubscription.value = await qlhazycoderSubscriptionAPI.getStatus()
+  } catch (error) {
+    qlhazycoderSubscription.value = null
+    console.error('Failed to fetch qlhazycoder subscription:', error)
+  } finally {
+    qlhazycoderSubscriptionLoading.value = false
+  }
+}
+
+function formatExternalSubscriptionBalance(
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
+  canShow = false,
+) {
+  if (!canShow || !subscription) return '未配置'
+  if (subscription.error_code) {
+    return subscription.error_code === 'INVALID_TOKEN' ? 'Token 失效' : '读取失败'
+  }
+  const remaining = subscription.remaining_usd
+  const total = subscription.total_limit_usd
+  if (typeof remaining === 'number' && typeof total === 'number') {
+    return `$${remaining.toFixed(2)} / $${total.toFixed(2)}`
+  }
+  if (typeof total === 'number') return `限额 $${total.toFixed(2)}`
+  if (subscription.active_count > 0) return `${subscription.active_count} 个订阅`
+  return '无有效订阅'
+}
+
+function formatExternalSubscriptionExpiry(
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
+  canShow = false,
+) {
+  if (!canShow || !subscription) return '期限未配置'
+  if (subscription.error_code) {
+    return subscription.error_code === 'INVALID_TOKEN' ? '请更新 Token' : (subscription.error_message || '请检查配置')
+  }
+  return formatExternalExpiry(subscription.expires_at)
+}
+
 function formatExternalExpiry(value?: string | null) {
   if (!value) return '长期'
   const parsed = new Date(value)
@@ -611,6 +693,7 @@ onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   void fetchBuzzBalance()
   void fetchTCDMXSubscription()
+  void fetchQLHazyCoderSubscription()
   startBalanceCarousel()
 })
 
@@ -626,8 +709,10 @@ watch(
     balanceCarouselIndex.value = 0
     buzzBalance.value = null
     tcdmxSubscription.value = null
+    qlhazycoderSubscription.value = null
     void fetchBuzzBalance()
     void fetchTCDMXSubscription()
+    void fetchQLHazyCoderSubscription()
   }
 )
 </script>
@@ -732,6 +817,7 @@ watch(
 }
 
 .balance-chip-buzz,
+.balance-chip-qlhazycoder,
 .balance-chip-tcdmx {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
@@ -746,6 +832,7 @@ watch(
 
 .balance-chip-system:hover,
 .balance-chip-buzz:hover,
+.balance-chip-qlhazycoder:hover,
 .balance-chip-tcdmx:hover {
   background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
@@ -761,6 +848,7 @@ watch(
 }
 
 .balance-row-buzz,
+.balance-row-qlhazycoder,
 .balance-row-tcdmx {
   background: var(--atelier-butter-soft);
 }
@@ -770,6 +858,7 @@ watch(
 }
 
 .balance-buzz-text,
+.balance-qlhazycoder-text,
 .balance-tcdmx-text {
   color: var(--atelier-ink);
 }
@@ -785,14 +874,17 @@ watch(
 }
 
 .dark .balance-chip-buzz,
+.dark .balance-chip-qlhazycoder,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
+.dark .balance-row-qlhazycoder,
 .dark .balance-row-tcdmx {
   background: transparent;
 }
 
 .dark .balance-chip-system:hover,
 .dark .balance-chip-buzz:hover,
+.dark .balance-chip-qlhazycoder:hover,
 .dark .balance-chip-tcdmx:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
@@ -802,6 +894,7 @@ watch(
 }
 
 .dark .balance-buzz-text,
+.dark .balance-qlhazycoder-text,
 .dark .balance-tcdmx-text {
   color: var(--atelier-ink);
 }

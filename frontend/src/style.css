@@ -1651,10 +1651,10 @@ body.ai-search-locked {
 
 .logo-picker-preview img {
   display: block;
-  height: 1.625rem;
-  max-width: 1.625rem;
-  object-fit: contain;
-  width: 1.625rem;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .logo-picker-field {
@@ -4904,11 +4904,6 @@ body:has(.table-page-layout) :where(
   box-shadow: none;
 }
 
-.home-ascii-shell .home-provider-logo-mark .provider-brand-icon svg {
-  width: 1.95rem;
-  height: 1.95rem;
-}
-
 @media (max-width: 1024px) {
   #app .app-layout-content .user-keys-atelier .keys-filter-shell,
   #app .app-layout-content .user-usage-atelier .usage-filter-shell,
@@ -5750,8 +5745,10 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .balance-chip-buzz,
+.balance-chip-qlhazycoder,
 .balance-chip-tcdmx,
 .balance-row-buzz,
+.balance-row-qlhazycoder,
 .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
   background: var(--atelier-material-dust) !important;
@@ -5759,6 +5756,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .app-header-atelier .balance-chip-buzz,
+.app-header-atelier .balance-chip-qlhazycoder,
 .app-header-atelier .balance-chip-tcdmx,
 .app-header-atelier .balance-chip-system {
   border: 0 !important;
@@ -5770,6 +5768,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .app-header-atelier .balance-chip-buzz:hover,
+.app-header-atelier .balance-chip-qlhazycoder:hover,
 .app-header-atelier .balance-chip-tcdmx:hover,
 .app-header-atelier .balance-chip-system:hover {
   border-color: color-mix(in srgb, var(--atelier-ink) 28%, var(--atelier-line-strong)) !important;
@@ -5778,25 +5777,30 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .balance-buzz-text,
+.balance-qlhazycoder-text,
 .balance-tcdmx-text {
   color: var(--atelier-dust) !important;
 }
 
 .app-header-atelier .balance-buzz-text,
+.app-header-atelier .balance-qlhazycoder-text,
 .app-header-atelier .balance-tcdmx-text,
 .app-header-atelier .balance-system-text {
   color: var(--atelier-ink) !important;
 }
 
 .dark .balance-chip-buzz,
+.dark .balance-chip-qlhazycoder,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
+.dark .balance-row-qlhazycoder,
 .dark .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
   background: rgba(199, 154, 58, 0.18) !important;
 }
 
 .dark .balance-buzz-text,
+.dark .balance-qlhazycoder-text,
 .dark .balance-tcdmx-text {
   color: #e9c96c !important;
 }
@@ -6178,8 +6182,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image {
-  width: 1.5rem !important;
-  height: 1.5rem !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-status-operational {

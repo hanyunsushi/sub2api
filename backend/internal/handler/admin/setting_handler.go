@@ -273,6 +273,10 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		TCDMXSubscriptionAPIBaseURL:            settings.TCDMXSubscriptionAPIBaseURL,
 		TCDMXSubscriptionAPITokenConfigured:    settings.TCDMXSubscriptionAPITokenConfigured,
 		TCDMXSubscriptionRefreshConfigured:     settings.TCDMXSubscriptionRefreshConfigured,
+		QLHazyCoderSubscriptionEnabled:         settings.QLHazyCoderSubscriptionEnabled,
+		QLHazyCoderSubscriptionAPIBaseURL:      settings.QLHazyCoderSubscriptionAPIBaseURL,
+		QLHazyCoderAPITokenConfigured:          settings.QLHazyCoderSubscriptionAPITokenConfigured,
+		QLHazyCoderRefreshConfigured:           settings.QLHazyCoderSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -605,19 +609,23 @@ type UpdateSettingsRequest struct {
 	OpenAIAdvancedSchedulerEnabled *bool `json:"openai_advanced_scheduler_enabled"`
 
 	// 余额、订阅到期与账号限额通知
-	BalanceLowNotifyEnabled         *bool                   `json:"balance_low_notify_enabled"`
-	BalanceLowNotifyThreshold       *float64                `json:"balance_low_notify_threshold"`
-	BalanceLowNotifyRechargeURL     *string                 `json:"balance_low_notify_recharge_url"`
-	BuzzBalanceEnabled              *bool                   `json:"buzz_balance_enabled"`
-	BuzzBalanceAPIBaseURL           *string                 `json:"buzz_balance_api_base_url"`
-	BuzzBalanceAPIToken             string                  `json:"buzz_balance_api_token"`
-	TCDMXSubscriptionEnabled        *bool                   `json:"tcdmx_subscription_enabled"`
-	TCDMXSubscriptionAPIBaseURL     *string                 `json:"tcdmx_subscription_api_base_url"`
-	TCDMXSubscriptionAPIToken       string                  `json:"tcdmx_subscription_api_token"`
-	TCDMXSubscriptionRefreshToken   string                  `json:"tcdmx_subscription_refresh_token"`
-	SubscriptionExpiryNotifyEnabled *bool                   `json:"subscription_expiry_notify_enabled"`
-	AccountQuotaNotifyEnabled       *bool                   `json:"account_quota_notify_enabled"`
-	AccountQuotaNotifyEmails        *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
+	BalanceLowNotifyEnabled             *bool                   `json:"balance_low_notify_enabled"`
+	BalanceLowNotifyThreshold           *float64                `json:"balance_low_notify_threshold"`
+	BalanceLowNotifyRechargeURL         *string                 `json:"balance_low_notify_recharge_url"`
+	BuzzBalanceEnabled                  *bool                   `json:"buzz_balance_enabled"`
+	BuzzBalanceAPIBaseURL               *string                 `json:"buzz_balance_api_base_url"`
+	BuzzBalanceAPIToken                 string                  `json:"buzz_balance_api_token"`
+	TCDMXSubscriptionEnabled            *bool                   `json:"tcdmx_subscription_enabled"`
+	TCDMXSubscriptionAPIBaseURL         *string                 `json:"tcdmx_subscription_api_base_url"`
+	TCDMXSubscriptionAPIToken           string                  `json:"tcdmx_subscription_api_token"`
+	TCDMXSubscriptionRefreshToken       string                  `json:"tcdmx_subscription_refresh_token"`
+	QLHazyCoderSubscriptionEnabled      *bool                   `json:"qlhazycoder_subscription_enabled"`
+	QLHazyCoderSubscriptionAPIBaseURL   *string                 `json:"qlhazycoder_subscription_api_base_url"`
+	QLHazyCoderSubscriptionAPIToken     string                  `json:"qlhazycoder_subscription_api_token"`
+	QLHazyCoderSubscriptionRefreshToken string                  `json:"qlhazycoder_subscription_refresh_token"`
+	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
+	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
+	AccountQuotaNotifyEmails            *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
 
 	// Payment configuration (integrated into settings, full replace)
 	PaymentEnabled                   *bool    `json:"payment_enabled"`
@@ -1494,6 +1502,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	}
 	req.TCDMXSubscriptionAPIToken = strings.TrimSpace(req.TCDMXSubscriptionAPIToken)
 	req.TCDMXSubscriptionRefreshToken = strings.TrimSpace(req.TCDMXSubscriptionRefreshToken)
+	if req.QLHazyCoderSubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.QLHazyCoderSubscriptionAPIBaseURL)
+		req.QLHazyCoderSubscriptionAPIBaseURL = &normalized
+	}
+	req.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(req.QLHazyCoderSubscriptionAPIToken)
+	req.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(req.QLHazyCoderSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1793,6 +1807,20 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		}(),
 		TCDMXSubscriptionAPIToken:     req.TCDMXSubscriptionAPIToken,
 		TCDMXSubscriptionRefreshToken: req.TCDMXSubscriptionRefreshToken,
+		QLHazyCoderSubscriptionEnabled: func() bool {
+			if req.QLHazyCoderSubscriptionEnabled != nil {
+				return *req.QLHazyCoderSubscriptionEnabled
+			}
+			return previousSettings.QLHazyCoderSubscriptionEnabled
+		}(),
+		QLHazyCoderSubscriptionAPIBaseURL: func() string {
+			if req.QLHazyCoderSubscriptionAPIBaseURL != nil {
+				return *req.QLHazyCoderSubscriptionAPIBaseURL
+			}
+			return previousSettings.QLHazyCoderSubscriptionAPIBaseURL
+		}(),
+		QLHazyCoderSubscriptionAPIToken:     req.QLHazyCoderSubscriptionAPIToken,
+		QLHazyCoderSubscriptionRefreshToken: req.QLHazyCoderSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2138,6 +2166,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TCDMXSubscriptionAPIBaseURL:            updatedSettings.TCDMXSubscriptionAPIBaseURL,
 		TCDMXSubscriptionAPITokenConfigured:    updatedSettings.TCDMXSubscriptionAPITokenConfigured,
 		TCDMXSubscriptionRefreshConfigured:     updatedSettings.TCDMXSubscriptionRefreshConfigured,
+		QLHazyCoderSubscriptionEnabled:         updatedSettings.QLHazyCoderSubscriptionEnabled,
+		QLHazyCoderSubscriptionAPIBaseURL:      updatedSettings.QLHazyCoderSubscriptionAPIBaseURL,
+		QLHazyCoderAPITokenConfigured:          updatedSettings.QLHazyCoderSubscriptionAPITokenConfigured,
+		QLHazyCoderRefreshConfigured:           updatedSettings.QLHazyCoderSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2647,6 +2679,18 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.TCDMXSubscriptionRefreshToken != "" {
 		changed = append(changed, "tcdmx_subscription_refresh_token")
+	}
+	if before.QLHazyCoderSubscriptionEnabled != after.QLHazyCoderSubscriptionEnabled {
+		changed = append(changed, "qlhazycoder_subscription_enabled")
+	}
+	if before.QLHazyCoderSubscriptionAPIBaseURL != after.QLHazyCoderSubscriptionAPIBaseURL {
+		changed = append(changed, "qlhazycoder_subscription_api_base_url")
+	}
+	if req.QLHazyCoderSubscriptionAPIToken != "" {
+		changed = append(changed, "qlhazycoder_subscription_api_token")
+	}
+	if req.QLHazyCoderSubscriptionRefreshToken != "" {
+		changed = append(changed, "qlhazycoder_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

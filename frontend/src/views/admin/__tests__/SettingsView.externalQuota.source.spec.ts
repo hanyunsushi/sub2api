@@ -11,16 +11,20 @@ describe('SettingsView external quota settings placement', () => {
     expect(source).not.toContain('localText("BuzzAI 余额", "BuzzAI Balance")')
   })
 
-  it('keeps BuzzAI and TCDMX external quota settings in the same gateway card', () => {
+  it('keeps BuzzAI, TCDMX, and qlhazycoder external quota settings in the same gateway card', () => {
     const buzzIndex = source.indexOf('<!-- BuzzAI Balance Settings -->')
     const tcdmxIndex = source.indexOf('启用 TCDMX 订阅额度')
+    const qlhazycoderIndex = source.indexOf('启用 qlhazycoder 订阅额度')
     const gatewaySchedulingIndex = source.indexOf('<!-- Gateway Scheduling Settings -->')
     const securityEndIndex = source.indexOf('<!-- /Tab: Security')
 
     expect(buzzIndex).toBeGreaterThan(-1)
     expect(tcdmxIndex).toBeGreaterThan(buzzIndex)
+    expect(qlhazycoderIndex).toBeGreaterThan(tcdmxIndex)
+    expect(qlhazycoderIndex).toBeLessThan(gatewaySchedulingIndex)
     expect(tcdmxIndex).toBeLessThan(gatewaySchedulingIndex)
     expect(source.slice(0, securityEndIndex)).not.toContain('启用 TCDMX 订阅额度')
+    expect(source.slice(0, securityEndIndex)).not.toContain('启用 qlhazycoder 订阅额度')
   })
 
   it('explains that TCDMX quota lookup needs a subscription access token, not the normal model API key', () => {
@@ -36,6 +40,18 @@ describe('SettingsView external quota settings placement', () => {
     expect(source).toContain('tcdmx_subscription_refresh_token_configured')
     expect(source).toContain('localText("TCDMX refresh_token", "TCDMX refresh_token")')
     expect(source).toContain('auth_token 过期后自动刷新')
+    expect(source).toContain('不是 sk- API 密钥')
+  })
+
+  it('collects qlhazycoder access and refresh tokens with the same external subscription contract', () => {
+    expect(source).toContain('qlhazycoder_subscription_enabled')
+    expect(source).toContain('qlhazycoder_subscription_api_base_url')
+    expect(source).toContain('qlhazycoder_subscription_api_token')
+    expect(source).toContain('qlhazycoder_subscription_refresh_token')
+    expect(source).toContain('qlhazycoder_subscription_api_token_configured')
+    expect(source).toContain('qlhazycoder_subscription_refresh_token_configured')
+    expect(source).toContain('localText("qlhazycoder 订阅访问 Token", "qlhazycoder subscription access token")')
+    expect(source).toContain('https://shop.qlhazycoder.top')
     expect(source).toContain('不是 sk- API 密钥')
   })
 })

@@ -452,6 +452,12 @@ const (
 	SettingKeyTCDMXSubscriptionAPIToken     = "tcdmx_subscription_api_token"
 	SettingKeyTCDMXSubscriptionRefreshToken = "tcdmx_subscription_refresh_token"
 
+	// qlhazycoder subscription display
+	SettingKeyQLHazyCoderSubscriptionEnabled      = "qlhazycoder_subscription_enabled"
+	SettingKeyQLHazyCoderSubscriptionAPIBaseURL   = "qlhazycoder_subscription_api_base_url"
+	SettingKeyQLHazyCoderSubscriptionAPIToken     = "qlhazycoder_subscription_api_token"
+	SettingKeyQLHazyCoderSubscriptionRefreshToken = "qlhazycoder_subscription_refresh_token"
+
 	// 订阅到期提醒
 	SettingKeySubscriptionExpiryNotifyEnabled = "subscription_expiry_notify_enabled" // 订阅到期提醒全局开关，默认开启
 

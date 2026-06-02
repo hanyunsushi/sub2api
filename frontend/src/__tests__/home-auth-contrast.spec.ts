@@ -27,6 +27,7 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
 
   it('keeps default home header and CTA readable on the ASCII background', () => {
     const home = readFile('src/views/HomeView.vue')
+    const css = readFile('src/style.css')
 
     expect(home).toContain('<router-link to="/home" class="flex items-center" aria-label="Home">')
     expect(home).toContain('<LocaleSwitcher tone="on-deep" />')
@@ -41,6 +42,7 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(home).toContain('background: var(--atelier-blue);')
     expect(home).toContain('color: var(--atelier-ink);')
     expect(home).not.toContain('class="btn btn-primary px-8 py-3 text-base"')
+    expect(css).not.toContain('.home-ascii-shell .home-provider-logo-mark .provider-brand-icon svg')
   })
 
   it('applies Zero Landing style reveal motion to every visible home module', () => {
