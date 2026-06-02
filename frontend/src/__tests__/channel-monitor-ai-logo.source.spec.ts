@@ -114,7 +114,9 @@ describe('channel monitor AI logo contract', () => {
     )
     expect(brandIconBlock).toContain('width: 100% !important;')
     expect(brandIconBlock).toContain('height: 100% !important;')
+    expect(brandIconBlock).toContain('border: 0 !important;')
     expect(brandIconBlock).toContain('border-radius: inherit !important;')
+    expect(brandIconBlock).toContain('box-shadow: none !important;')
 
     const brandImageBlock = cssBlock(
       styleSource,
