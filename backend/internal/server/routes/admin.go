@@ -106,6 +106,9 @@ func RegisterAdminRoutes(
 
 		// TCDMX 订阅额度
 		registerTCDMXSubscriptionRoutes(admin, h)
+
+		// qlhazycoder 订阅额度
+		registerQLHazyCoderSubscriptionRoutes(admin, h)
 	}
 }
 
@@ -120,6 +123,13 @@ func registerTCDMXSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers
 	tcdmx := admin.Group("/tcdmx")
 	{
 		tcdmx.GET("/subscription", h.Admin.TCDMXSubscription.GetStatus)
+	}
+}
+
+func registerQLHazyCoderSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	qlhazycoder := admin.Group("/qlhazycoder")
+	{
+		qlhazycoder.GET("/subscription", h.Admin.QLHazyCoderSubscription.GetStatus)
 	}
 }
 

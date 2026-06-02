@@ -19,6 +19,7 @@ type ProviderBrandPreset = Omit<ProviderBrandInfo, 'label'> & {
 
 const aiLogoCDNBase = 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light'
 const aiLogoUrl = (slug: string) => `${aiLogoCDNBase}/${slug}.png`
+const customAILogoPresetStorageKey = 'sub2api.customAiLogoPresets'
 
 const aiLogoPresetSources = [
   { id: 'openai', label: 'OpenAI', slug: 'openai' },
@@ -114,6 +115,83 @@ export const aiLogoPresets: AILogoPreset[] = aiLogoPresetSources.map((preset) =>
   label: preset.label,
   url: aiLogoUrl(preset.slug),
 }))
+
+function canUseLogoStorage(): boolean {
+  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+}
+
+function normalizeLogoURL(raw?: string | null): string {
+  const value = (raw || '').trim()
+  if (!value) return ''
+  try {
+    const parsed = new URL(value)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return ''
+    return parsed.toString()
+  } catch {
+    return ''
+  }
+}
+
+function customLogoPresetId(url: string): string {
+  try {
+    const parsed = new URL(url)
+    const lastPath = parsed.pathname.split('/').filter(Boolean).pop() || parsed.hostname
+    return `custom-${lastPath.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'logo'}`
+  } catch {
+    return 'custom-logo'
+  }
+}
+
+function readCustomAILogoPresetURLs(): string[] {
+  if (!canUseLogoStorage()) return []
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(customAILogoPresetStorageKey) || '[]')
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .map((item) => normalizeLogoURL(String(item || '')))
+      .filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
+function writeCustomAILogoPresetURLs(urls: string[]) {
+  if (!canUseLogoStorage()) return
+  window.localStorage.setItem(customAILogoPresetStorageKey, JSON.stringify(urls))
+}
+
+export function rememberCustomAILogoPreset(rawURL?: string | null): AILogoPreset[] {
+  const url = normalizeLogoURL(rawURL)
+  if (!url) return getMergedAILogoPresets()
+  if (aiLogoPresets.some((preset) => preset.url === url)) return getMergedAILogoPresets()
+  const next = [url, ...readCustomAILogoPresetURLs().filter((existing) => existing !== url)].slice(0, 48)
+  writeCustomAILogoPresetURLs(next)
+  return getMergedAILogoPresets()
+}
+
+export function getCustomAILogoPresets(): AILogoPreset[] {
+  return readCustomAILogoPresetURLs().map((url) => ({
+    id: customLogoPresetId(url),
+    label: 'Custom logo',
+    url,
+  }))
+}
+
+export function getMergedAILogoPresets(): AILogoPreset[] {
+  const seen = new Set(aiLogoPresets.map((preset) => preset.url))
+  const custom = getCustomAILogoPresets().filter((preset) => {
+    if (seen.has(preset.url)) return false
+    seen.add(preset.url)
+    return true
+  })
+  return [...aiLogoPresets, ...custom]
+}
+
+export function clearCustomAILogoPresetsForTest() {
+  if (canUseLogoStorage()) {
+    window.localStorage.removeItem(customAILogoPresetStorageKey)
+  }
+}
 
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },

@@ -12,7 +12,7 @@
     <ModelIcon
       v-if="!brand.iconUrl && brand.iconModel"
       :model="brand.iconModel"
-      size="18px"
+      size="100%"
       aria-hidden="true"
     />
     <img
@@ -55,12 +55,15 @@ const title = computed(() => props.provider || props.model || 'Provider')
 
 <style scoped>
 .provider-brand-icon {
-  @apply inline-flex h-8 w-8 items-center justify-center rounded-md border shadow-sm transition-transform duration-150;
+  @apply inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-md border shadow-sm transition-transform duration-150;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
+.provider-brand-icon :deep(.model-icon),
 .provider-brand-icon :deep(svg) {
   @apply flex-shrink-0;
+  width: 100%;
+  height: 100%;
 }
 
 .provider-brand-icon :deep(svg path) {
@@ -68,7 +71,7 @@ const title = computed(() => props.provider || props.model || 'Provider')
 }
 
 .provider-brand-image {
-  @apply h-5 w-5 flex-shrink-0 object-contain;
+  @apply h-full w-full flex-shrink-0 object-cover;
 }
 
 .provider-brand-tile {

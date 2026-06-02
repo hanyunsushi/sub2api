@@ -33,6 +33,7 @@ import affiliatesAPI from './affiliates'
 import riskControlAPI from './riskControl'
 import buzzBalanceAPI from './buzzBalance'
 import tcdmxSubscriptionAPI from './tcdmxSubscription'
+import qlhazycoderSubscriptionAPI from './qlhazycoderSubscription'
 
 /**
  * Unified admin API object for convenient access
@@ -67,7 +68,8 @@ export const adminAPI = {
   affiliates: affiliatesAPI,
   riskControl: riskControlAPI,
   buzzBalance: buzzBalanceAPI,
-  tcdmxSubscription: tcdmxSubscriptionAPI
+  tcdmxSubscription: tcdmxSubscriptionAPI,
+  qlhazycoderSubscription: qlhazycoderSubscriptionAPI
 }
 
 export {
@@ -100,7 +102,8 @@ export {
   affiliatesAPI,
   riskControlAPI,
   buzzBalanceAPI,
-  tcdmxSubscriptionAPI
+  tcdmxSubscriptionAPI,
+  qlhazycoderSubscriptionAPI
 }
 
 export default adminAPI
@@ -113,3 +116,4 @@ export type { TLSFingerprintProfile, CreateProfileRequest, UpdateProfileRequest 
 export type { ContentModerationConfig, ContentModerationLog, ModerationMode } from './riskControl'
 export type { BuzzBalance } from './buzzBalance'
 export type { TCDMXSubscriptionStatus, TCDMXSubscriptionItem } from './tcdmxSubscription'
+export type { QLHazyCoderSubscriptionStatus, QLHazyCoderSubscriptionItem } from './qlhazycoderSubscription'

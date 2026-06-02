@@ -229,6 +229,14 @@ type SystemSettings struct {
 	TCDMXSubscriptionAPITokenConfigured bool
 	TCDMXSubscriptionRefreshConfigured  bool
 
+	// qlhazycoder subscription display
+	QLHazyCoderSubscriptionEnabled            bool
+	QLHazyCoderSubscriptionAPIBaseURL         string
+	QLHazyCoderSubscriptionAPIToken           string
+	QLHazyCoderSubscriptionRefreshToken       string
+	QLHazyCoderSubscriptionAPITokenConfigured bool
+	QLHazyCoderSubscriptionRefreshConfigured  bool
+
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

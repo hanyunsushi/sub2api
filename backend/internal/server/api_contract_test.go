@@ -444,6 +444,27 @@ func TestAPIContracts(t *testing.T) {
 			}`,
 		},
 		{
+			name:       "GET /api/v1/admin/qlhazycoder/subscription disabled",
+			method:     http.MethodGet,
+			path:       "/api/v1/admin/qlhazycoder/subscription",
+			wantStatus: http.StatusOK,
+			wantJSON: `{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"provider": "qlhazycoder",
+					"enabled": false,
+					"configured": false,
+					"currency": "USD",
+					"site_url": "https://shop.qlhazycoder.top",
+					"used_usd": 0,
+					"active_count": 0,
+					"subscriptions": null,
+					"refreshed_at": "0001-01-01T00:00:00Z"
+				}
+			}`,
+		},
+		{
 			name: "GET /api/v1/redeem/history",
 			setup: func(t *testing.T, deps *contractDeps) {
 				t.Helper()
@@ -907,6 +928,10 @@ func TestAPIContracts(t *testing.T) {
 						"tcdmx_subscription_api_base_url": "https://tcdmx.com",
 						"tcdmx_subscription_api_token_configured": false,
 						"tcdmx_subscription_refresh_token_configured": false,
+						"qlhazycoder_subscription_enabled": false,
+						"qlhazycoder_subscription_api_base_url": "https://shop.qlhazycoder.top",
+						"qlhazycoder_subscription_api_token_configured": false,
+						"qlhazycoder_subscription_refresh_token_configured": false,
 						"account_quota_notify_emails": [],
 						"channel_monitor_enabled": true,
 					"channel_monitor_default_interval_seconds": 60,
@@ -1150,6 +1175,10 @@ func TestAPIContracts(t *testing.T) {
 						"tcdmx_subscription_api_base_url": "https://tcdmx.com",
 						"tcdmx_subscription_api_token_configured": false,
 						"tcdmx_subscription_refresh_token_configured": false,
+						"qlhazycoder_subscription_enabled": false,
+						"qlhazycoder_subscription_api_base_url": "https://shop.qlhazycoder.top",
+						"qlhazycoder_subscription_api_token_configured": false,
+						"qlhazycoder_subscription_refresh_token_configured": false,
 						"account_quota_notify_emails": [],
 						"channel_monitor_enabled": true,
 					"channel_monitor_default_interval_seconds": 60,
@@ -1340,6 +1369,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil)
 	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	adminTCDMXSubscriptionHandler := adminhandler.NewTCDMXSubscriptionHandler(service.NewTCDMXSubscriptionService(settingService))
+	adminQLHazyCoderSubscriptionHandler := adminhandler.NewQLHazyCoderSubscriptionHandler(service.NewQLHazyCoderSubscriptionService(settingService))
 
 	jwtAuth := func(c *gin.Context) {
 		c.Set(string(middleware.ContextKeyUser), middleware.AuthSubject{
@@ -1391,6 +1421,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	v1Admin.PUT("/settings/appearance-theme-default", adminSettingHandler.UpdateAppearanceThemeDefault)
 	v1Admin.POST("/accounts/bulk-update", adminAccountHandler.BulkUpdate)
 	v1Admin.GET("/tcdmx/subscription", adminTCDMXSubscriptionHandler.GetStatus)
+	v1Admin.GET("/qlhazycoder/subscription", adminQLHazyCoderSubscriptionHandler.GetStatus)
 
 	return &contractDeps{
 		now:         now,

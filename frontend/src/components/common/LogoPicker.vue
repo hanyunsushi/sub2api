@@ -12,13 +12,15 @@
         class="input"
         :data-testid="inputTestId"
         :placeholder="placeholder"
-        @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        @blur="rememberCurrentValue"
+        @change="rememberCurrentValue"
+        @input="handleInput(($event.target as HTMLInputElement).value)"
       />
       <p v-if="hint" class="input-hint">{{ hint }}</p>
     </div>
     <div class="logo-picker-presets" aria-label="AI logo presets">
       <button
-        v-for="preset in aiLogoPresets"
+        v-for="preset in mergedLogoPresets"
         :key="preset.id"
         type="button"
         class="logo-picker-preset"
@@ -34,9 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
-import { aiLogoPresets } from '@/utils/providerBrandIcon'
+import { getMergedAILogoPresets, rememberCustomAILogoPreset } from '@/utils/providerBrandIcon'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -56,8 +58,31 @@ const emit = defineEmits<{
 }>()
 
 const normalizedValue = computed(() => props.modelValue.trim())
+const logoPresetVersion = ref(0)
+const mergedLogoPresets = computed(() => {
+  logoPresetVersion.value
+  return getMergedAILogoPresets()
+})
+
+function refreshMergedLogoPresets() {
+  logoPresetVersion.value += 1
+}
+
+function rememberLogoURL(url: string) {
+  rememberCustomAILogoPreset(url)
+  refreshMergedLogoPresets()
+}
+
+function handleInput(value: string) {
+  emit('update:modelValue', value)
+}
+
+function rememberCurrentValue() {
+  rememberLogoURL(props.modelValue)
+}
 
 function selectPreset(url: string) {
+  rememberLogoURL(url)
   emit('update:modelValue', url)
 }
 </script>

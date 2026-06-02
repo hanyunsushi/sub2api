@@ -304,26 +304,27 @@ var (
 )
 
 const (
-	defaultAuthSourceBalance           = 0
-	defaultAuthSourceConcurrency       = 5
-	DefaultBuzzBalanceAPIBaseURL       = "https://buzzai.cc"
-	DefaultTCDMXSubscriptionAPIBaseURL = "https://tcdmx.com"
-	defaultWeChatConnectMode           = "open"
-	defaultWeChatConnectScopes         = "snsapi_login"
-	defaultWeChatConnectFrontend       = "/auth/wechat/callback"
-	defaultGitHubOAuthAuthorize        = "https://github.com/login/oauth/authorize"
-	defaultGitHubOAuthToken            = "https://github.com/login/oauth/access_token"
-	defaultGitHubOAuthUserInfo         = "https://api.github.com/user"
-	defaultGitHubOAuthEmails           = "https://api.github.com/user/emails"
-	defaultGitHubOAuthScopes           = "read:user user:email"
-	defaultGitHubOAuthFrontend         = "/auth/oauth/callback"
-	defaultGoogleOAuthAuthorize        = "https://accounts.google.com/o/oauth2/v2/auth"
-	defaultGoogleOAuthToken            = "https://oauth2.googleapis.com/token"
-	defaultGoogleOAuthUserInfo         = "https://openidconnect.googleapis.com/v1/userinfo"
-	defaultGoogleOAuthScopes           = "openid email profile"
-	defaultGoogleOAuthFrontend         = "/auth/oauth/callback"
-	defaultLoginAgreementMode          = "modal"
-	defaultLoginAgreementDate          = "2026-03-31"
+	defaultAuthSourceBalance                 = 0
+	defaultAuthSourceConcurrency             = 5
+	DefaultBuzzBalanceAPIBaseURL             = "https://buzzai.cc"
+	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
+	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://shop.qlhazycoder.top"
+	defaultWeChatConnectMode                 = "open"
+	defaultWeChatConnectScopes               = "snsapi_login"
+	defaultWeChatConnectFrontend             = "/auth/wechat/callback"
+	defaultGitHubOAuthAuthorize              = "https://github.com/login/oauth/authorize"
+	defaultGitHubOAuthToken                  = "https://github.com/login/oauth/access_token"
+	defaultGitHubOAuthUserInfo               = "https://api.github.com/user"
+	defaultGitHubOAuthEmails                 = "https://api.github.com/user/emails"
+	defaultGitHubOAuthScopes                 = "read:user user:email"
+	defaultGitHubOAuthFrontend               = "/auth/oauth/callback"
+	defaultGoogleOAuthAuthorize              = "https://accounts.google.com/o/oauth2/v2/auth"
+	defaultGoogleOAuthToken                  = "https://oauth2.googleapis.com/token"
+	defaultGoogleOAuthUserInfo               = "https://openidconnect.googleapis.com/v1/userinfo"
+	defaultGoogleOAuthScopes                 = "openid email profile"
+	defaultGoogleOAuthFrontend               = "/auth/oauth/callback"
+	defaultLoginAgreementMode                = "modal"
+	defaultLoginAgreementDate                = "2026-03-31"
 )
 
 func normalizeLoginAgreementMode(raw string) string {
@@ -1957,6 +1958,14 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken) != "" {
 		updates[SettingKeyTCDMXSubscriptionRefreshToken] = strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken)
 	}
+	updates[SettingKeyQLHazyCoderSubscriptionEnabled] = strconv.FormatBool(settings.QLHazyCoderSubscriptionEnabled)
+	updates[SettingKeyQLHazyCoderSubscriptionAPIBaseURL] = normalizeQLHazyCoderSubscriptionAPIBaseURL(settings.QLHazyCoderSubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken) != "" {
+		updates[SettingKeyQLHazyCoderSubscriptionAPIToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken)
+	}
+	if strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken) != "" {
+		updates[SettingKeyQLHazyCoderSubscriptionRefreshToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken)
+	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -2868,21 +2877,24 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyMaxClaudeCodeVersion: "",
 
 		// 分组隔离（默认不允许未分组 Key 调度）
-		SettingKeyAllowUngroupedKeyScheduling:        "false",
-		SettingKeyEnableAnthropicCacheTTL1hInjection: "false",
-		SettingKeyRewriteMessageCacheControl:         strconv.FormatBool(s.defaultRewriteMessageCacheControl()),
-		SettingKeyAntigravityUserAgentVersion:        "",
-		SettingKeyOpenAICodexUserAgent:               "",
-		SettingPaymentVisibleMethodAlipaySource:      "",
-		SettingPaymentVisibleMethodWxpaySource:       "",
-		SettingPaymentVisibleMethodAlipayEnabled:     "false",
-		SettingPaymentVisibleMethodWxpayEnabled:      "false",
-		openAIAdvancedSchedulerSettingKey:            "false",
-		SettingKeyBuzzBalanceEnabled:                 "false",
-		SettingKeyBuzzBalanceAPIBaseURL:              DefaultBuzzBalanceAPIBaseURL,
-		SettingKeyTCDMXSubscriptionEnabled:           "false",
-		SettingKeyTCDMXSubscriptionAPIBaseURL:        DefaultTCDMXSubscriptionAPIBaseURL,
-		SettingKeyTCDMXSubscriptionRefreshToken:      "",
+		SettingKeyAllowUngroupedKeyScheduling:         "false",
+		SettingKeyEnableAnthropicCacheTTL1hInjection:  "false",
+		SettingKeyRewriteMessageCacheControl:          strconv.FormatBool(s.defaultRewriteMessageCacheControl()),
+		SettingKeyAntigravityUserAgentVersion:         "",
+		SettingKeyOpenAICodexUserAgent:                "",
+		SettingPaymentVisibleMethodAlipaySource:       "",
+		SettingPaymentVisibleMethodWxpaySource:        "",
+		SettingPaymentVisibleMethodAlipayEnabled:      "false",
+		SettingPaymentVisibleMethodWxpayEnabled:       "false",
+		openAIAdvancedSchedulerSettingKey:             "false",
+		SettingKeyBuzzBalanceEnabled:                  "false",
+		SettingKeyBuzzBalanceAPIBaseURL:               DefaultBuzzBalanceAPIBaseURL,
+		SettingKeyTCDMXSubscriptionEnabled:            "false",
+		SettingKeyTCDMXSubscriptionAPIBaseURL:         DefaultTCDMXSubscriptionAPIBaseURL,
+		SettingKeyTCDMXSubscriptionRefreshToken:       "",
+		SettingKeyQLHazyCoderSubscriptionEnabled:      "false",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL:   DefaultQLHazyCoderSubscriptionAPIBaseURL,
+		SettingKeyQLHazyCoderSubscriptionRefreshToken: "",
 	}
 
 	return s.settingRepo.SetMultiple(ctx, defaults)
@@ -3430,6 +3442,12 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.TCDMXSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionRefreshToken])
 	result.TCDMXSubscriptionAPITokenConfigured = result.TCDMXSubscriptionAPIToken != ""
 	result.TCDMXSubscriptionRefreshConfigured = result.TCDMXSubscriptionRefreshToken != ""
+	result.QLHazyCoderSubscriptionEnabled = settings[SettingKeyQLHazyCoderSubscriptionEnabled] == "true"
+	result.QLHazyCoderSubscriptionAPIBaseURL = normalizeQLHazyCoderSubscriptionAPIBaseURL(settings[SettingKeyQLHazyCoderSubscriptionAPIBaseURL])
+	result.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionAPIToken])
+	result.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionRefreshToken])
+	result.QLHazyCoderSubscriptionAPITokenConfigured = result.QLHazyCoderSubscriptionAPIToken != ""
+	result.QLHazyCoderSubscriptionRefreshConfigured = result.QLHazyCoderSubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知
