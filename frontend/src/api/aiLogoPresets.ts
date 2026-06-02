@@ -8,4 +8,3 @@ export async function appendCustomAILogoPreset(url: string): Promise<AppendCusto
   const { data } = await apiClient.post<AppendCustomAILogoPresetResponse>('/settings/ai-logo-presets', { url })
   return data
 }
-
