@@ -35,7 +35,7 @@ func TestAISearchConfigService_UpdateEncryptsTokenAndHidesItOnRead(t *testing.T)
 		ItemKey:                   "sub2api-user-knowledge.md",
 		SyncEnabled:               true,
 		SyncCron:                  "20 3 */3 * *",
-		SyncSourcePath:            "/app/resources/ai-search/sub2api-codex-custom-plan.md",
+		SyncSourcePath:            "",
 		SyncKnowledgePath:         "/app/resources/ai-search/sub2api-user-knowledge.md",
 		SyncWaitForCompletion:     true,
 		SyncDeleteLegacySeedItems: true,

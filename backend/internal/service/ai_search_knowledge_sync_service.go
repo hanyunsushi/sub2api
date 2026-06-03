@@ -27,7 +27,7 @@ const (
 	defaultAISearchNamespace             = "default"
 	defaultAISearchItemKey               = "sub2api-user-knowledge.md"
 	defaultAISearchSyncCron              = "20 3 */3 * *"
-	defaultAISearchSyncSourcePath        = "/app/resources/ai-search/sub2api-codex-custom-plan.md"
+	defaultAISearchSyncSourcePath        = ""
 	defaultAISearchSyncKnowledgePath     = "/app/resources/ai-search/sub2api-user-knowledge.md"
 	legacyAISearchKnowledgeSeedItemKey   = "sub2api-ai-search.md"
 	aiSearchKnowledgeSyncRequestTimeout  = 90 * time.Second
@@ -238,9 +238,13 @@ func (s aiSearchKnowledgeSyncSettings) configured() bool {
 }
 
 func (s *AISearchKnowledgeSyncService) knowledgeContent(settings aiSearchKnowledgeSyncSettings) ([]byte, error) {
-	if strings.TrimSpace(settings.sourcePath) != "" {
-		source, err := os.ReadFile(settings.sourcePath)
-		if err == nil {
+	if sourcePath := strings.TrimSpace(settings.sourcePath); sourcePath != "" {
+		info, err := os.Stat(sourcePath)
+		if err == nil && !info.IsDir() {
+			source, err := os.ReadFile(sourcePath)
+			if err != nil {
+				return nil, fmt.Errorf("read AI Search source document: %w", err)
+			}
 			markdown, err := buildAISearchPublicKnowledge(string(source))
 			if err != nil {
 				return nil, err
@@ -248,7 +252,7 @@ func (s *AISearchKnowledgeSyncService) knowledgeContent(settings aiSearchKnowled
 			return []byte(markdown), nil
 		}
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("read AI Search source document: %w", err)
+			return nil, fmt.Errorf("stat AI Search source document: %w", err)
 		}
 	}
 
