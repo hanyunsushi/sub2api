@@ -176,6 +176,54 @@ CPA Codex Buzz TCDMX
 	require.NotContains(t, uploadedContent, "API Key")
 }
 
+func TestAISearchKnowledgeSyncService_SyncOnceFallsBackWhenSourcePathIsDirectory(t *testing.T) {
+	sourceDir := t.TempDir()
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Sub2API 用户知识库\n\nfallback knowledge content\n")
+
+	var uploadedContent string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && strings.Contains(r.URL.Path, "/items"):
+			_, _ = w.Write([]byte(`{"success":true,"result":[]}`))
+		case r.Method == http.MethodPost && strings.HasSuffix(r.URL.Path, "/items"):
+			reader, err := r.MultipartReader()
+			require.NoError(t, err)
+			for {
+				part, err := reader.NextPart()
+				if err == io.EOF {
+					break
+				}
+				require.NoError(t, err)
+				if part.FormName() == "file" {
+					data, err := io.ReadAll(part)
+					require.NoError(t, err)
+					uploadedContent = string(data)
+				}
+			}
+			_, _ = w.Write([]byte(`{"success":true,"result":{"id":"new-item"}}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	svc := NewAISearchKnowledgeSyncService(&config.Config{
+		CloudflareAI: config.CloudflareAIConfig{
+			AccountID:                 testAISearchAccountID,
+			AISearchInstanceID:        "ai-search",
+			AISearchAPIToken:          "cf-secret",
+			AISearchAPIBaseURL:        server.URL,
+			AISearchNamespace:         "default",
+			AISearchItemKey:           "sub2api-user-knowledge.md",
+			AISearchSyncSourcePath:    sourceDir,
+			AISearchSyncKnowledgePath: knowledgeFile,
+		},
+	})
+
+	require.NoError(t, svc.SyncOnce(context.Background()))
+	require.Contains(t, uploadedContent, "fallback knowledge content")
+}
+
 func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMissing(t *testing.T) {
 	svc := NewAISearchKnowledgeSyncService(&config.Config{})
 	require.NoError(t, svc.SyncOnce(context.Background()))

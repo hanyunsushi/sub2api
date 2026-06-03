@@ -1976,7 +1976,7 @@ func setDefaults() {
 	viper.SetDefault("cloudflare_ai.ai_search_item_key", "sub2api-user-knowledge.md")
 	viper.SetDefault("cloudflare_ai.ai_search_sync_enabled", true)
 	viper.SetDefault("cloudflare_ai.ai_search_sync_cron", "20 3 */3 * *")
-	viper.SetDefault("cloudflare_ai.ai_search_sync_source_path", "/app/resources/ai-search/sub2api-codex-custom-plan.md")
+	viper.SetDefault("cloudflare_ai.ai_search_sync_source_path", "")
 	viper.SetDefault("cloudflare_ai.ai_search_sync_knowledge_path", "/app/resources/ai-search/sub2api-user-knowledge.md")
 	viper.SetDefault("cloudflare_ai.ai_search_sync_wait_for_completion", true)
 	viper.SetDefault("cloudflare_ai.ai_search_sync_delete_legacy_seed_items", true)

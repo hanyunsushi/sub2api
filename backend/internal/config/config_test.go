@@ -95,7 +95,7 @@ func TestLoadDefaultCloudflareAISearchSyncConfig(t *testing.T) {
 	require.Equal(t, "sub2api-user-knowledge.md", cfg.CloudflareAI.AISearchItemKey)
 	require.True(t, cfg.CloudflareAI.AISearchSyncEnabled)
 	require.Equal(t, "20 3 */3 * *", cfg.CloudflareAI.AISearchSyncCron)
-	require.Equal(t, "/app/resources/ai-search/sub2api-codex-custom-plan.md", cfg.CloudflareAI.AISearchSyncSourcePath)
+	require.Equal(t, "", cfg.CloudflareAI.AISearchSyncSourcePath)
 	require.Equal(t, "/app/resources/ai-search/sub2api-user-knowledge.md", cfg.CloudflareAI.AISearchSyncKnowledgePath)
 	require.True(t, cfg.CloudflareAI.AISearchSyncWaitForCompletion)
 	require.True(t, cfg.CloudflareAI.AISearchSyncDeleteLegacySeedItems)
