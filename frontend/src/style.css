@@ -6540,6 +6540,32 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   color: var(--atelier-ink) !important;
 }
 
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button:hover {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button :where(svg, path, span) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  fill: currentColor !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button-menu {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+}
+
 /* ---- 7. Dropdown / select / date-picker portals (black submenus) ---- */
 :root.theme-cloudflare .app-layout-content .table-page-layout > .layout-section-fixed :where(.select-dropdown-portal, .date-picker-dropdown-portal),
 :root.theme-cloudflare body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal),
@@ -6869,6 +6895,32 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   background: var(--atelier-blue-dark) !important;
   color: var(--atelier-white) !important;
   -webkit-text-fill-color: var(--atelier-white) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .auto-refresh-button {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .auto-refresh-button:hover {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .auto-refresh-button :where(svg, path, span) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  fill: currentColor !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .auto-refresh-button-menu {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
 }
 
 /* ---- 12. Final authoritative CF hover for neutral filter-bar buttons.

@@ -6037,6 +6037,8 @@ export default {
         siteSubtitle: '站点副标题',
         siteSubtitleHint: '显示在登录和注册页面',
         siteSubtitlePlaceholder: '订阅转 API 转换平台',
+        defaultTheme: '默认主题',
+        defaultThemeHint: '用于没有个人主题选择的新用户和访客，不覆盖已自行选择主题的用户。',
         apiBaseUrl: 'API 端点地址',
         apiBaseUrlHint: '用于"使用密钥"和"导入到 CC Switch"功能，留空则使用当前站点地址',
         apiBaseUrlPlaceholder: 'https://api.example.com',

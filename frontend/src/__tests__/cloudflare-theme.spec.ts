@@ -11,6 +11,7 @@ const styleSource = readFile('src/style.css')
 const codexThemeSource = readFile('src/styles/codex-theme.css')
 const appearanceThemeSource = readFile('src/composables/useAppearanceTheme.ts')
 const themeSwitcherSource = readFile('src/components/common/ThemeSwitcher.vue')
+const settingsViewSource = readFile('src/views/admin/SettingsView.vue')
 
 // Cloudflare brand palette
 const cfOrange = '#f6821f'
@@ -65,7 +66,7 @@ describe('Cloudflare appearance theme', () => {
     expect(appearanceThemeSource).toContain('updateAppearanceThemeDefault')
   })
 
-  it('uses the official Cloudflare logomark in the theme switcher and exposes admin global visibility controls', () => {
+  it('uses the official Cloudflare logomark in the theme switcher without global publishing controls', () => {
     expect(themeSwitcherSource).toContain('CloudflareLogoMark')
     expect(themeSwitcherSource).toContain('<ThemeLogo :theme-id="currentTheme"')
     expect(themeSwitcherSource).not.toContain('<CloudflareLogoMark class="h-5 w-5 flex-shrink-0" />')
@@ -75,12 +76,21 @@ describe('Cloudflare appearance theme', () => {
     expect(themeSwitcherSource).toContain('#F48120')
     expect(themeSwitcherSource).toContain('#FAAD3F')
     expect(themeSwitcherSource).not.toContain('<Icon name="book"')
-    expect(themeSwitcherSource).toContain('authStore.isAdmin')
-    expect(themeSwitcherSource).toContain('applyGlobally')
-    expect(themeSwitcherSource).toContain('所有人可见')
-    expect(themeSwitcherSource).toContain('updateAppearanceThemeDefault')
-    expect(themeSwitcherSource).toContain('adminAPI.settings.updateAppearanceThemeDefault')
+    expect(themeSwitcherSource).not.toContain('authStore.isAdmin')
+    expect(themeSwitcherSource).not.toContain('applyGlobally')
+    expect(themeSwitcherSource).not.toContain('所有人可见')
+    expect(themeSwitcherSource).not.toContain('updateAppearanceThemeDefault')
+    expect(themeSwitcherSource).not.toContain('adminAPI.settings.updateAppearanceThemeDefault')
     expect(themeSwitcherSource).not.toContain('adminAPI.settings.updateSettings')
+  })
+
+  it('moves the public default theme setting into the admin general settings form', () => {
+    expect(settingsViewSource).toContain('v-model="form.appearance_theme_default"')
+    expect(settingsViewSource).toContain("admin.settings.site.defaultTheme")
+    expect(settingsViewSource).toContain("admin.settings.site.defaultThemeHint")
+    expect(settingsViewSource).toContain('<option value="newspaper">Newspaper</option>')
+    expect(settingsViewSource).toContain('<option value="cloudflare">Cloudflare</option>')
+    expect(settingsViewSource).toContain('appearance_theme_default: form.appearance_theme_default')
   })
 
   it('defines a Cloudflare theme token block covering every Newspaper token', () => {

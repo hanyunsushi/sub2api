@@ -32,17 +32,6 @@
       placement="bottom-end"
       panel-class="theme-switcher-menu w-52 overflow-hidden"
     >
-      <label
-        v-if="authStore.isAdmin"
-        class="theme-switcher-global flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 dark:border-dark-700 dark:text-gray-300"
-      >
-        <input
-          v-model="applyGlobally"
-          type="checkbox"
-          class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-        />
-        <span>所有人可见</span>
-      </label>
       <button
         v-for="theme in themes"
         :key="theme.id"
@@ -61,11 +50,9 @@
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue'
-import { adminAPI } from '@/api/admin'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { type AppearanceThemeId, useAppearanceTheme } from '@/composables/useAppearanceTheme'
-import { useAppStore, useAuthStore } from '@/stores'
 
 withDefaults(defineProps<{
   collapsed?: boolean
@@ -73,11 +60,8 @@ withDefaults(defineProps<{
   collapsed: false,
 })
 
-const { currentTheme, currentThemeOption, themes, setAppearanceTheme, updateAppearanceThemeDefault } = useAppearanceTheme()
-const appStore = useAppStore()
-const authStore = useAuthStore()
+const { currentTheme, currentThemeOption, themes, setAppearanceTheme } = useAppearanceTheme()
 const isOpen = ref(false)
-const applyGlobally = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
 
@@ -85,23 +69,8 @@ function toggleDropdown() {
   isOpen.value = !isOpen.value
 }
 
-async function selectTheme(theme: AppearanceThemeId) {
-  const previousTheme = currentTheme.value
+function selectTheme(theme: AppearanceThemeId) {
   setAppearanceTheme(theme)
-  if (authStore.isAdmin && applyGlobally.value) {
-    try {
-      const updated = await adminAPI.settings.updateAppearanceThemeDefault(theme)
-      const nextDefault = updated.appearance_theme_default ?? theme
-      updateAppearanceThemeDefault(nextDefault)
-      if (appStore.cachedPublicSettings) {
-        appStore.cachedPublicSettings.appearance_theme_default = nextDefault
-      }
-    } catch (error) {
-      setAppearanceTheme(previousTheme)
-      const message = error instanceof Error ? error.message : 'Failed to publish theme'
-      appStore.showError(message)
-    }
-  }
   isOpen.value = false
 }
 

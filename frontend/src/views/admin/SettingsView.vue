@@ -4718,6 +4718,23 @@
                     {{ t("admin.settings.site.siteSubtitleHint") }}
                   </p>
                 </div>
+                <div>
+                  <label
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ t("admin.settings.site.defaultTheme") }}
+                  </label>
+                  <select
+                    v-model="form.appearance_theme_default"
+                    class="input"
+                  >
+                    <option value="newspaper">Newspaper</option>
+                    <option value="cloudflare">Cloudflare</option>
+                  </select>
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.site.defaultThemeHint") }}
+                  </p>
+                </div>
               </div>
 
               <!-- API Base URL -->
@@ -8158,6 +8175,10 @@ async function loadSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
+    form.appearance_theme_default =
+      settings.appearance_theme_default === "cloudflare"
+        ? "cloudflare"
+        : "newspaper";
     form.login_agreement_mode =
       settings.login_agreement_mode === "checkbox" ? "checkbox" : "modal";
     form.login_agreement_updated_at =
@@ -8393,6 +8414,10 @@ async function saveSettings() {
 
     form.table_default_page_size = normalizedTableDefaultPageSize;
     form.table_page_size_options = normalizedTablePageSizeOptions;
+    form.appearance_theme_default =
+      form.appearance_theme_default === "cloudflare"
+        ? "cloudflare"
+        : "newspaper";
 
     const normalizedLoginAgreementDocuments =
       normalizeLoginAgreementDocumentsForSave();

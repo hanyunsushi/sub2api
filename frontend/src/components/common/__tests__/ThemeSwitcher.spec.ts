@@ -3,9 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ThemeSwitcher from '../ThemeSwitcher.vue'
-import { adminAPI } from '@/api/admin'
 import { setAppearanceTheme } from '@/composables/useAppearanceTheme'
-import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 
 vi.mock('@/api/admin', () => ({
@@ -25,8 +23,6 @@ describe('ThemeSwitcher', () => {
     document.documentElement.className = ''
     delete window.__APP_CONFIG__
     setAppearanceTheme('newspaper')
-    vi.mocked(adminAPI.settings.updateSettings).mockReset()
-    vi.mocked(adminAPI.settings.updateAppearanceThemeDefault).mockReset()
   })
 
   it('ordinary users only change their own local view', async () => {
@@ -43,8 +39,6 @@ describe('ThemeSwitcher', () => {
     await wrapper.findAll('button.theme-switcher-option').find((button) => button.text().includes('Cloudflare'))!.trigger('click')
 
     expect(localStorage.getItem('appearance_theme')).toBe('cloudflare')
-    expect(adminAPI.settings.updateSettings).not.toHaveBeenCalled()
-    expect(adminAPI.settings.updateAppearanceThemeDefault).not.toHaveBeenCalled()
   })
 
   it('renders the current theme logo on the trigger instead of always showing Cloudflare', () => {
@@ -63,13 +57,9 @@ describe('ThemeSwitcher', () => {
     expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
   })
 
-  it('admins can publish the selected theme as the public default', async () => {
+  it('does not render the old global visibility control for admins', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
-    const appStore = useAppStore()
-    appStore.cachedPublicSettings = { site_name: 'Sub2API', appearance_theme_default: 'newspaper' } as any
-    window.__APP_CONFIG__ = appStore.cachedPublicSettings as any
-    vi.mocked(adminAPI.settings.updateAppearanceThemeDefault).mockResolvedValue({ appearance_theme_default: 'cloudflare' } as any)
 
     const wrapper = mount(ThemeSwitcher, {
       global: {
@@ -78,21 +68,15 @@ describe('ThemeSwitcher', () => {
     })
 
     await wrapper.find('button.theme-switcher-trigger').trigger('click')
-    await wrapper.find('input[type="checkbox"]').setValue(true)
-    await wrapper.findAll('button.theme-switcher-option').find((button) => button.text().includes('Cloudflare'))!.trigger('click')
 
-    expect(adminAPI.settings.updateSettings).not.toHaveBeenCalled()
-    expect(adminAPI.settings.updateAppearanceThemeDefault).toHaveBeenCalledWith('cloudflare')
-    expect(window.__APP_CONFIG__?.appearance_theme_default).toBe('cloudflare')
+    expect(wrapper.text()).not.toContain('所有人可见')
+    expect(wrapper.find('input[type="checkbox"]').exists()).toBe(false)
   })
 
-  it('rolls back the local theme if publishing the public default fails', async () => {
+  it('admins only change their own local view from the theme switcher', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
-    const appStore = useAppStore()
-    const showError = vi.spyOn(appStore, 'showError')
-    localStorage.setItem('appearance_theme', 'newspaper')
-    vi.mocked(adminAPI.settings.updateAppearanceThemeDefault).mockRejectedValue(new Error('publish failed'))
+    window.__APP_CONFIG__ = { site_name: 'Sub2API', appearance_theme_default: 'newspaper' } as any
 
     const wrapper = mount(ThemeSwitcher, {
       global: {
@@ -101,11 +85,10 @@ describe('ThemeSwitcher', () => {
     })
 
     await wrapper.find('button.theme-switcher-trigger').trigger('click')
-    await wrapper.find('input[type="checkbox"]').setValue(true)
     await wrapper.findAll('button.theme-switcher-option').find((button) => button.text().includes('Cloudflare'))!.trigger('click')
 
-    expect(localStorage.getItem('appearance_theme')).toBe('newspaper')
-    expect(document.documentElement.dataset.theme).toBe('newspaper')
-    expect(showError).toHaveBeenCalledWith('publish failed')
+    expect(localStorage.getItem('appearance_theme')).toBe('cloudflare')
+    expect(document.documentElement.dataset.theme).toBe('cloudflare')
+    expect(window.__APP_CONFIG__?.appearance_theme_default).toBe('newspaper')
   })
 })
