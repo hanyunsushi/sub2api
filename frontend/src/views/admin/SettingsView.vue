@@ -3917,8 +3917,8 @@
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
-                          "读取 qlhazycoder New API 控制台的余额、订阅额度和到期时间；该控制台使用网页登录 user.token，不需要单独 refresh_token。",
-                          "Read qlhazycoder New API console balance, subscription quota, and expiry; this console uses the web login user.token and does not need a separate refresh_token.",
+                          "读取 qlhazycoder New API 控制台的余额、订阅额度和到期时间；该控制台使用个人设置里的用户令牌，不需要单独 refresh_token。",
+                          "Read qlhazycoder New API console balance, subscription quota, and expiry; this console uses the user token from personal settings and does not need a separate refresh_token.",
                         )
                       }}
                     </p>
@@ -3944,7 +3944,7 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("qlhazycoder 网页登录 token", "qlhazycoder web login token") }}
+                      {{ localText("qlhazycoder 用户令牌", "qlhazycoder user token") }}
                     </label>
                     <input
                       v-model="form.qlhazycoder_subscription_api_token"
@@ -3953,7 +3953,7 @@
                       :placeholder="
                         form.qlhazycoder_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 localStorage.user JSON 里的 token 字段', 'Paste the token field from localStorage.user JSON')
+                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
                       "
                       autocomplete="off"
                     />
@@ -3965,8 +3965,8 @@
                               "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取 qlhazycoder 余额和订阅。登录 api.qlhazycoder.top/console 后，在 DevTools 的 Application > Local Storage 打开 user，复制 JSON 里的 token 字段值。",
-                              "A normal sk- model API key can call model endpoints but cannot read qlhazycoder balance and subscriptions. After logging in to api.qlhazycoder.top/console, open user under DevTools Application > Local Storage and copy the token field from that JSON.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取 qlhazycoder 余额和订阅。登录 api.qlhazycoder.top/console 后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
+                              "A normal sk- model API key can call model endpoints but cannot read qlhazycoder balance and subscriptions. After logging in to api.qlhazycoder.top/console, open personal settings and generate the user token; if the API requires a user header, a {id, token} JSON value is also accepted.",
                             )
                       }}
                     </p>

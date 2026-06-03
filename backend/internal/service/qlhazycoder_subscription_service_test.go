@@ -109,6 +109,44 @@ func TestQLHazyCoderSubscriptionService_GetStatusReadsNewAPISubscriptionQuota(t 
 	require.InDelta(t, 27.94, *got.Subscriptions[0].RemainingUSD, 0.0001)
 }
 
+func TestQLHazyCoderSubscriptionService_GetStatusNormalizesCopiedUserToken(t *testing.T) {
+	var authHeaders []string
+	var userHeaders []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/status" {
+			authHeaders = append(authHeaders, r.Header.Get("Authorization"))
+			userHeaders = append(userHeaders, r.Header.Get("New-API-User"))
+		}
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota": 500000, "used_quota": 0}}`))
+		case "/api/subscription/self":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"subscriptions": [], "all_subscriptions": []}}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: server.URL,
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   `{"success":true,"data":{"token":"Bearer qlhazycoder-secret","id":707}}`,
+	}}
+	svc := NewQLHazyCoderSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.True(t, got.Configured)
+	require.Equal(t, []string{"Bearer qlhazycoder-secret", "Bearer qlhazycoder-secret"}, authHeaders)
+	require.Equal(t, []string{"707", "707"}, userHeaders)
+}
+
 func TestQLHazyCoderSubscriptionService_GetStatusFallsBackToUserQuotaWhenNoActiveSubscription(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
