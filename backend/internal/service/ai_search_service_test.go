@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,7 +60,7 @@ func TestAISearchService_SearchUsesCloudflareInstanceAPI(t *testing.T) {
 
 	svc := NewAISearchService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:          "test-account",
+			AccountID:          testAISearchAccountID,
 			AISearchInstanceID: "ai-search",
 			AISearchAPIToken:   "cf-secret",
 			AISearchAPIBaseURL: server.URL,
@@ -69,7 +70,7 @@ func TestAISearchService_SearchUsesCloudflareInstanceAPI(t *testing.T) {
 	got, err := svc.Search(context.Background(), "  如何配置密钥  ")
 	require.NoError(t, err)
 
-	require.Equal(t, "/accounts/test-account/ai-search/instances/ai-search/chat/completions", requestedPath)
+	require.Equal(t, "/accounts/"+testAISearchAccountID+"/ai-search/instances/ai-search/chat/completions", requestedPath)
 	require.Equal(t, "Bearer cf-secret", authHeader)
 	require.Empty(t, originHeader)
 	messages := body["messages"].([]any)
@@ -101,10 +102,10 @@ func TestAISearchService_SearchFallsBackToChunksWhenChatCompletionFails(t *testi
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
 		switch r.URL.Path {
-		case "/accounts/test-account/ai-search/instances/ai-search/chat/completions":
+		case "/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/chat/completions":
 			w.WriteHeader(http.StatusNotFound)
 			_, _ = w.Write([]byte(`{"success":false,"errors":[{"message":"not found"}]}`))
-		case "/accounts/test-account/ai-search/instances/ai-search/search":
+		case "/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/search":
 			_, _ = w.Write([]byte(`{
 				"success": true,
 				"result": {
@@ -128,7 +129,7 @@ func TestAISearchService_SearchFallsBackToChunksWhenChatCompletionFails(t *testi
 
 	svc := NewAISearchService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:          "test-account",
+			AccountID:          testAISearchAccountID,
 			AISearchInstanceID: "ai-search",
 			AISearchAPIToken:   "cf-secret",
 			AISearchAPIBaseURL: server.URL,
@@ -139,8 +140,8 @@ func TestAISearchService_SearchFallsBackToChunksWhenChatCompletionFails(t *testi
 	require.NoError(t, err)
 
 	require.Equal(t, []string{
-		"/accounts/test-account/ai-search/instances/ai-search/chat/completions",
-		"/accounts/test-account/ai-search/instances/ai-search/search",
+		"/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/chat/completions",
+		"/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/search",
 	}, requestedPaths)
 	require.Equal(t, "根据知识库，R2 灾备保留 30 天。", got.Answer)
 	require.Len(t, got.Results, 1)
@@ -153,10 +154,10 @@ func TestAISearchService_SearchFallsBackToPublicChatWhenPrivateAPIIsUnavailable(
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
 		switch r.URL.Path {
-		case "/accounts/test-account/ai-search/instances/ai-search/chat/completions":
+		case "/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/chat/completions":
 			w.WriteHeader(http.StatusUnauthorized)
 			_, _ = w.Write([]byte(`{"success":false}`))
-		case "/accounts/test-account/ai-search/instances/ai-search/search":
+		case "/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/search":
 			w.WriteHeader(http.StatusUnauthorized)
 			_, _ = w.Write([]byte(`{"success":false}`))
 		case "/public-chat":
@@ -175,7 +176,7 @@ func TestAISearchService_SearchFallsBackToPublicChatWhenPrivateAPIIsUnavailable(
 
 	svc := NewAISearchService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:                     "test-account",
+			AccountID:                     testAISearchAccountID,
 			AISearchInstanceID:            "ai-search",
 			AISearchAPIToken:              "cf-secret",
 			AISearchAPIBaseURL:            server.URL,
@@ -189,8 +190,8 @@ func TestAISearchService_SearchFallsBackToPublicChatWhenPrivateAPIIsUnavailable(
 	require.NoError(t, err)
 
 	require.Equal(t, []string{
-		"/accounts/test-account/ai-search/instances/ai-search/chat/completions",
-		"/accounts/test-account/ai-search/instances/ai-search/search",
+		"/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/chat/completions",
+		"/accounts/" + testAISearchAccountID + "/ai-search/instances/ai-search/search",
 		"/public-chat",
 	}, requestedPaths)
 	require.Equal(t, "公开 chat endpoint 已接管回答。", got.Answer)
@@ -336,4 +337,30 @@ func TestAISearchService_SearchRequiresBackendConfiguration(t *testing.T) {
 	require.Nil(t, got)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "AI_SEARCH_NOT_CONFIGURED")
+}
+
+func TestAISearchService_SearchWithConfigRejectsEmailAccountIDBeforeCallingUpstream(t *testing.T) {
+	var called bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	svc := NewAISearchService(&config.Config{})
+
+	got, err := svc.SearchWithConfig(context.Background(), "FAQ", AISearchBackendConfig{
+		AccountID:  "admin@example.com",
+		APIToken:   "cf-secret",
+		APIBaseURL: server.URL,
+		InstanceID: "ai-search",
+		Namespace:  "default",
+		ItemKey:    "sub2api-user-knowledge.md",
+	})
+
+	require.Nil(t, got)
+	require.Error(t, err)
+	require.True(t, infraerrors.IsBadRequest(err))
+	require.Equal(t, "AI_SEARCH_ACCOUNT_ID_INVALID", infraerrors.Reason(err))
+	require.False(t, called)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -15,6 +16,8 @@ const (
 	settingKeyCloudflareAISearchConfig = "cloudflare_ai_search_config"
 	aiSearchPublicProxyAPIURL          = "/api/v1/ai-search/public"
 )
+
+var cloudflareAccountIDPattern = regexp.MustCompile(`^[0-9a-fA-F]{32}$`)
 
 type AISearchBackendConfig struct {
 	AccountID                 string `json:"account_id"`
@@ -102,7 +105,11 @@ func (s *AISearchConfigService) UpdateConfig(ctx context.Context, cfg AISearchBa
 		return nil, err
 	}
 
-	record := aiSearchRecordFromConfig(normalizeAISearchBackendConfig(&cfg))
+	normalized := normalizeAISearchBackendConfig(&cfg)
+	if err := validateAISearchAccountID(normalized.AccountID); err != nil {
+		return nil, err
+	}
+	record := aiSearchRecordFromConfig(normalized)
 	if record.APIToken == "" && old != nil {
 		record.APIToken = old.APIToken
 	}
@@ -309,6 +316,17 @@ func normalizeAISearchBackendConfig(cfg *AISearchBackendConfig) *AISearchBackend
 	out.SyncSourcePath = firstNonBlank(out.SyncSourcePath, defaultAISearchSyncSourcePath)
 	out.SyncKnowledgePath = firstNonBlank(out.SyncKnowledgePath, defaultAISearchSyncKnowledgePath)
 	return &out
+}
+
+func validateAISearchAccountID(accountID string) error {
+	accountID = strings.TrimSpace(accountID)
+	if accountID == "" || cloudflareAccountIDPattern.MatchString(accountID) {
+		return nil
+	}
+	return infraerrors.BadRequest(
+		"AI_SEARCH_ACCOUNT_ID_INVALID",
+		"Cloudflare Account ID must be the 32-character ID from the Cloudflare dashboard, not a login email.",
+	)
 }
 
 func sanitizeAISearchBackendConfig(cfg *AISearchBackendConfig) *AISearchBackendConfig {

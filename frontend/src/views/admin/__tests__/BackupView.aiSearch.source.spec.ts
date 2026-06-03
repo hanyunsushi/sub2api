@@ -10,6 +10,10 @@ describe('BackupView AI Search backend settings contract', () => {
   it('adds Cloudflare AI Search backend settings to the data backup screen', () => {
     expect(backupViewSource).toContain('admin.backup.aiSearch.title')
     expect(backupViewSource).toContain('aiSearchForm.account_id')
+    expect(backupViewSource).toContain('CLOUDFLARE_ACCOUNT_ID_PATTERN')
+    expect(backupViewSource).toContain('validateAISearchAccountID')
+    expect(backupViewSource).toContain('admin.backup.aiSearch.accountIdHint')
+    expect(backupViewSource).toContain('admin.backup.aiSearch.accountIdInvalid')
     expect(backupViewSource).toContain('aiSearchForm.api_token')
     expect(backupViewSource).toContain('aiSearchForm.instance_id')
     expect(backupViewSource).toContain('ai-search')

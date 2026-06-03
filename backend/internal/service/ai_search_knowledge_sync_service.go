@@ -142,6 +142,9 @@ func (s *AISearchKnowledgeSyncService) SyncOnce(ctx context.Context) error {
 	if !settings.configured() {
 		return nil
 	}
+	if err := validateAISearchAccountID(settings.accountID); err != nil {
+		return err
+	}
 
 	content, err := s.knowledgeContent(settings)
 	if err != nil {
