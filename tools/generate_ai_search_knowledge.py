@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 DEFAULT_SOURCE = Path(
-    "/Users/hinaw/Library/Mobile Documents/com~apple~CloudDocs/obsidian vault/knowledge vault/sub2api-codex-custom-plan.md"
+    "/Users/hinaw/Library/Mobile Documents/com~apple~CloudDocs/obsidian vault/knowledge vault/dev/sub2api-codex-custom-plan.md"
 )
 DEFAULT_OUTPUT = Path("docs/ai-search/sub2api-user-knowledge.md")
 
