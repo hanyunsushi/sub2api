@@ -14,6 +14,7 @@ const templateApplyPickerSource = readFileSync(resolve(__dirname, '../components
 const adminMonitorApiSource = readFileSync(resolve(__dirname, '../api/admin/channelMonitor.ts'), 'utf8')
 const userMonitorApiSource = readFileSync(resolve(__dirname, '../api/channelMonitor.ts'), 'utf8')
 const providerBrandIconSource = readFileSync(resolve(__dirname, '../components/common/ProviderBrandIcon.vue'), 'utf8')
+const autoRefreshButtonSource = readFileSync(resolve(__dirname, '../components/common/AutoRefreshButton.vue'), 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../style.css'), 'utf8')
 
 const cssBlock = (source: string, selector: string) => {
@@ -153,5 +154,44 @@ describe('channel monitor AI logo contract', () => {
       '#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--degraded'
     )
     expect(degradedBlock).toContain('background: var(--atelier-butter) !important;')
+  })
+
+  it('keeps the shared auto-refresh button readable in Cloudflare monitor toolbars', () => {
+    expect(autoRefreshButtonSource).toContain('auto-refresh-button')
+    expect(autoRefreshButtonSource).toContain('auto-refresh-button-menu')
+    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .auto-refresh-button')
+    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .auto-refresh-button :where(svg, path, span)')
+    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button')
+    expect(styleSource).toContain('.ops-monitor-toolbar-controls .auto-refresh-button :where(svg, path, span)')
+
+    const sharedButtonBlock = cssBlock(
+      styleSource,
+      ':root.theme-cloudflare #app .app-layout-content .auto-refresh-button'
+    )
+    expect(sharedButtonBlock).toContain('background: var(--atelier-paper) !important;')
+    expect(sharedButtonBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(sharedButtonBlock).toContain('border-color: var(--atelier-material-edge) !important;')
+
+    const sharedChildBlock = cssBlock(
+      styleSource,
+      ':root.theme-cloudflare #app .app-layout-content .auto-refresh-button :where(svg, path, span)'
+    )
+    expect(sharedChildBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(sharedChildBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+
+    const buttonBlock = cssBlock(
+      styleSource,
+      ':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button'
+    )
+    expect(buttonBlock).toContain('background: var(--atelier-paper) !important;')
+    expect(buttonBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(buttonBlock).toContain('border-color: var(--atelier-material-edge) !important;')
+
+    const childBlock = cssBlock(
+      styleSource,
+      ':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button :where(svg, path, span)'
+    )
+    expect(childBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(childBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
   })
 })

@@ -5883,6 +5883,8 @@ export default {
         siteSubtitle: 'Site Subtitle',
         siteSubtitlePlaceholder: 'Subscription to API Conversion Platform',
         siteSubtitleHint: 'Displayed on login and register pages',
+        defaultTheme: 'Default Theme',
+        defaultThemeHint: 'Used for new visitors and users without a personal theme choice. Existing personal choices are not overwritten.',
         apiBaseUrl: 'API Base URL',
         apiBaseUrlPlaceholder: 'https://api.example.com',
         apiBaseUrlHint:
