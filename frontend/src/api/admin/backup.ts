@@ -96,7 +96,9 @@ export async function testAISearchConfig(config: AISearchBackendConfig): Promise
 }
 
 export async function syncAISearchKnowledge(): Promise<TestS3Response> {
-  const { data } = await apiClient.post<TestS3Response>('/admin/backups/ai-search-sync')
+  const { data } = await apiClient.post<TestS3Response>('/admin/backups/ai-search-sync', undefined, {
+    timeout: 120000,
+  })
   return data
 }
 
