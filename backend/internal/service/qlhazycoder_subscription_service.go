@@ -135,6 +135,8 @@ func (s *QLHazyCoderSubscriptionService) GetStatus(ctx context.Context) (*QLHazy
 	if err != nil {
 		return nil, err
 	}
+	auth := normalizeQLHazyCoderSubscriptionAuth(settings.APIToken)
+	settings.APIToken = auth.Token
 
 	result := &ExternalSubscriptionStatus{
 		Provider:      "qlhazycoder",
@@ -149,19 +151,19 @@ func (s *QLHazyCoderSubscriptionService) GetStatus(ctx context.Context) (*QLHazy
 	}
 
 	var metadata qlhazyCoderStatusMetadata
-	if err := s.getQLHazyCoderJSON(ctx, settings, "/api/status", &metadata); err != nil {
+	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/status", &metadata); err != nil {
 		return s.statusWithQLHazyCoderError(result, err)
 	}
 	converter := newQLHazyCoderQuotaConverter(metadata)
 	result.Currency = converter.currency
 
 	var user qlhazyCoderUserSelf
-	if err := s.getQLHazyCoderJSON(ctx, settings, "/api/user/self", &user); err != nil {
+	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/user/self", &user); err != nil {
 		return s.statusWithQLHazyCoderError(result, err)
 	}
 
 	var subscription qlhazyCoderSubscriptionSelf
-	if err := s.getQLHazyCoderJSON(ctx, settings, "/api/subscription/self", &subscription); err != nil {
+	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/subscription/self", &subscription); err != nil {
 		return s.statusWithQLHazyCoderError(result, err)
 	}
 
@@ -208,13 +210,16 @@ func (s *QLHazyCoderSubscriptionService) GetStatus(ctx context.Context) (*QLHazy
 	return result, nil
 }
 
-func (s *QLHazyCoderSubscriptionService) getQLHazyCoderJSON(ctx context.Context, settings ExternalSubscriptionSettings, path string, out any) error {
+func (s *QLHazyCoderSubscriptionService) getQLHazyCoderJSON(ctx context.Context, settings ExternalSubscriptionSettings, auth qlhazyCoderSubscriptionAuth, path string, out any) error {
 	var envelope qlhazyCoderEnvelope
-	resp, err := s.client.R().
+	req := s.client.R().
 		SetContext(ctx).
-		SetBearerAuthToken(settings.APIToken).
-		SetSuccessResult(&envelope).
-		Get(settings.APIBaseURL + path)
+		SetHeader("Authorization", "Bearer "+settings.APIToken).
+		SetSuccessResult(&envelope)
+	if auth.UserID != "" {
+		req.SetHeader("New-API-User", auth.UserID)
+	}
+	resp, err := req.Get(settings.APIBaseURL + path)
 	if err != nil {
 		return infraerrors.ServiceUnavailable("QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR", "failed to query qlhazycoder account status")
 	}
@@ -228,6 +233,82 @@ func (s *QLHazyCoderSubscriptionService) getQLHazyCoderJSON(ctx context.Context,
 		return infraerrors.ServiceUnavailable("QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR", "failed to parse qlhazycoder account status")
 	}
 	return nil
+}
+
+type qlhazyCoderSubscriptionAuth struct {
+	Token  string
+	UserID string
+}
+
+func normalizeQLHazyCoderSubscriptionAuth(raw string) qlhazyCoderSubscriptionAuth {
+	auth := qlhazyCoderSubscriptionAuth{Token: strings.TrimSpace(raw)}
+	if auth.Token == "" {
+		return auth
+	}
+
+	var wrapped struct {
+		Data        json.RawMessage `json:"data"`
+		Token       string          `json:"token"`
+		AccessToken string          `json:"access_token"`
+		UserID      any             `json:"id"`
+		UserIDAlt   any             `json:"user_id"`
+	}
+	if err := json.Unmarshal([]byte(auth.Token), &wrapped); err == nil {
+		auth.UserID = qlhazyCoderUserIDString(wrapped.UserID)
+		if auth.UserID == "" {
+			auth.UserID = qlhazyCoderUserIDString(wrapped.UserIDAlt)
+		}
+		switch {
+		case strings.TrimSpace(wrapped.Token) != "":
+			auth.Token = strings.TrimSpace(wrapped.Token)
+		case strings.TrimSpace(wrapped.AccessToken) != "":
+			auth.Token = strings.TrimSpace(wrapped.AccessToken)
+		case len(wrapped.Data) > 0 && string(wrapped.Data) != "null":
+			var dataString string
+			if err := json.Unmarshal(wrapped.Data, &dataString); err == nil && strings.TrimSpace(dataString) != "" {
+				auth.Token = strings.TrimSpace(dataString)
+			} else {
+				var dataObject struct {
+					Token       string `json:"token"`
+					AccessToken string `json:"access_token"`
+					UserID      any    `json:"id"`
+					UserIDAlt   any    `json:"user_id"`
+				}
+				if err := json.Unmarshal(wrapped.Data, &dataObject); err == nil {
+					auth.UserID = qlhazyCoderUserIDString(dataObject.UserID)
+					if auth.UserID == "" {
+						auth.UserID = qlhazyCoderUserIDString(dataObject.UserIDAlt)
+					}
+					if strings.TrimSpace(dataObject.Token) != "" {
+						auth.Token = strings.TrimSpace(dataObject.Token)
+					} else if strings.TrimSpace(dataObject.AccessToken) != "" {
+						auth.Token = strings.TrimSpace(dataObject.AccessToken)
+					}
+				}
+			}
+		}
+	}
+
+	auth.Token = strings.TrimSpace(auth.Token)
+	if strings.HasPrefix(strings.ToLower(auth.Token), "bearer ") {
+		auth.Token = strings.TrimSpace(auth.Token[len("bearer "):])
+	}
+	return auth
+}
+
+func qlhazyCoderUserIDString(value any) string {
+	switch typed := value.(type) {
+	case nil:
+		return ""
+	case string:
+		return strings.TrimSpace(typed)
+	case float64:
+		return strconv.FormatInt(int64(typed), 10)
+	case json.Number:
+		return strings.TrimSpace(typed.String())
+	default:
+		return strings.TrimSpace(fmt.Sprint(typed))
+	}
 }
 
 func (s *QLHazyCoderSubscriptionService) statusWithQLHazyCoderError(result *ExternalSubscriptionStatus, err error) (*QLHazyCoderSubscriptionStatus, error) {
