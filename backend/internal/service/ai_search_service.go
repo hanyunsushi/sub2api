@@ -66,8 +66,11 @@ func (s *AISearchService) Search(ctx context.Context, query string) (*AISearchRe
 		return nil, infraerrors.BadRequest("AI_SEARCH_QUERY_REQUIRED", "AI Search query is required")
 	}
 
-	settings := s.settings()
-	return s.searchWithSettings(ctx, settings, query)
+	cf := aiSearchConfigForService(s.cfg, s.configSvc)
+	if err := validateAISearchAccountID(cf.AccountID); err != nil {
+		return nil, err
+	}
+	return s.searchWithSettings(ctx, aiSearchSettingsFromConfig(&cf), query)
 }
 
 func (s *AISearchService) SearchWithConfig(ctx context.Context, query string, cfg AISearchBackendConfig) (*AISearchResponse, error) {
@@ -75,7 +78,11 @@ func (s *AISearchService) SearchWithConfig(ctx context.Context, query string, cf
 	if query == "" {
 		return nil, infraerrors.BadRequest("AI_SEARCH_QUERY_REQUIRED", "AI Search query is required")
 	}
-	return s.searchWithSettings(ctx, aiSearchSettingsFromConfig(normalizeAISearchBackendConfig(&cfg)), query)
+	normalized := normalizeAISearchBackendConfig(&cfg)
+	if err := validateAISearchAccountID(normalized.AccountID); err != nil {
+		return nil, err
+	}
+	return s.searchWithSettings(ctx, aiSearchSettingsFromConfig(normalized), query)
 }
 
 func (s *AISearchService) searchWithSettings(ctx context.Context, settings aiSearchSettings, query string) (*AISearchResponse, error) {

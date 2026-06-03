@@ -9,7 +9,14 @@ import (
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/stretchr/testify/require"
+)
+
+const (
+	testAISearchAccountID      = "0123456789abcdef0123456789abcdef"
+	testAISearchAccountIDAlt   = "abcdef0123456789abcdef0123456789"
+	testAISearchAccountIDThird = "11111111111111111111111111111111"
 )
 
 func TestAISearchConfigService_UpdateEncryptsTokenAndHidesItOnRead(t *testing.T) {
@@ -17,7 +24,7 @@ func TestAISearchConfigService_UpdateEncryptsTokenAndHidesItOnRead(t *testing.T)
 	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
 
 	got, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:                 "account-from-ui",
+		AccountID:                 testAISearchAccountID,
 		APIToken:                  "cf-secret",
 		APIBaseURL:                "https://api.example.com/",
 		PublicEndpointURL:         "https://public.example.com/search",
@@ -49,7 +56,7 @@ func TestAISearchConfigService_UpdateEncryptsTokenAndHidesItOnRead(t *testing.T)
 	require.NoError(t, err)
 	require.Empty(t, read.APIToken)
 	require.True(t, read.APITokenConfigured)
-	require.Equal(t, "account-from-ui", read.AccountID)
+	require.Equal(t, testAISearchAccountID, read.AccountID)
 	require.Equal(t, "ai-search", read.InstanceID)
 	require.Equal(t, "sub2api-user-knowledge.md", read.ItemKey)
 }
@@ -59,7 +66,7 @@ func TestAISearchConfigService_UpdatePreservesExistingTokenWhenBlank(t *testing.
 	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
 
 	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:         "account-a",
+		AccountID:         testAISearchAccountID,
 		APIToken:          "old-token",
 		InstanceID:        "ai-search",
 		Namespace:         "default",
@@ -69,7 +76,7 @@ func TestAISearchConfigService_UpdatePreservesExistingTokenWhenBlank(t *testing.
 	require.NoError(t, err)
 
 	_, err = svc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:         "account-b",
+		AccountID:         testAISearchAccountIDAlt,
 		APIToken:          "",
 		InstanceID:        "ai-search",
 		Namespace:         "default",
@@ -82,8 +89,49 @@ func TestAISearchConfigService_UpdatePreservesExistingTokenWhenBlank(t *testing.
 	require.NoError(t, err)
 	var stored aiSearchBackendConfigRecord
 	require.NoError(t, json.Unmarshal([]byte(raw), &stored))
-	require.Equal(t, "account-b", stored.AccountID)
+	require.Equal(t, testAISearchAccountIDAlt, stored.AccountID)
 	require.Equal(t, "ENC:old-token", stored.APIToken)
+}
+
+func TestAISearchConfigService_UpdateRejectsEmailAccountID(t *testing.T) {
+	repo := newAISearchConfigTestSettingRepo()
+	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
+
+	got, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
+		AccountID:         "admin@example.com",
+		APIToken:          "cf-secret",
+		InstanceID:        "ai-search",
+		Namespace:         "default",
+		ItemKey:           "sub2api-user-knowledge.md",
+		SyncKnowledgePath: "/app/resources/ai-search/sub2api-user-knowledge.md",
+	})
+
+	require.Nil(t, got)
+	require.Error(t, err)
+	require.True(t, infraerrors.IsBadRequest(err))
+	require.Equal(t, "AI_SEARCH_ACCOUNT_ID_INVALID", infraerrors.Reason(err))
+	raw, err := repo.GetValue(context.Background(), settingKeyCloudflareAISearchConfig)
+	require.NoError(t, err)
+	require.Empty(t, raw)
+}
+
+func TestAISearchConfigService_UpdateAllowsBlankAccountIDForPublicOnlyConfig(t *testing.T) {
+	repo := newAISearchConfigTestSettingRepo()
+	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
+
+	got, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
+		PublicEndpointURL:         "https://public.example.com/search",
+		PublicChatEndpointURL:     "https://public.example.com/chat/completions",
+		InstanceID:                "ai-search",
+		Namespace:                 "default",
+		ItemKey:                   "sub2api-user-knowledge.md",
+		SyncKnowledgePath:         "/app/resources/ai-search/sub2api-user-knowledge.md",
+		SyncDeleteLegacySeedItems: true,
+	})
+
+	require.NoError(t, err)
+	require.Empty(t, got.AccountID)
+	require.False(t, got.APITokenConfigured)
 }
 
 func TestAISearchConfigService_MergeWithStoredSecretUsesStoredTokenWhenBlank(t *testing.T) {
@@ -91,7 +139,7 @@ func TestAISearchConfigService_MergeWithStoredSecretUsesStoredTokenWhenBlank(t *
 	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
 
 	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:  "stored-account",
+		AccountID:  testAISearchAccountID,
 		APIToken:   "stored-token",
 		InstanceID: "ai-search",
 		Namespace:  "default",
@@ -100,14 +148,14 @@ func TestAISearchConfigService_MergeWithStoredSecretUsesStoredTokenWhenBlank(t *
 	require.NoError(t, err)
 
 	merged := svc.MergeWithStoredSecret(context.Background(), AISearchBackendConfig{
-		AccountID:  "draft-account",
+		AccountID:  testAISearchAccountIDAlt,
 		APIToken:   "",
 		InstanceID: "ai-search",
 		Namespace:  "default",
 		ItemKey:    "sub2api-user-knowledge.md",
 	})
 
-	require.Equal(t, "draft-account", merged.AccountID)
+	require.Equal(t, testAISearchAccountIDAlt, merged.AccountID)
 	require.Equal(t, "stored-token", merged.APIToken)
 }
 
@@ -115,7 +163,7 @@ func TestAISearchConfigService_GetPublicSnippetConfigReturnsSameOriginProxy(t *t
 	repo := newAISearchConfigTestSettingRepo()
 	svc := NewAISearchConfigService(repo, &config.Config{}, &aiSearchConfigTestEncryptor{})
 	_, err := svc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:             "stored-account",
+		AccountID:             testAISearchAccountID,
 		APIToken:              "stored-token",
 		PublicEndpointURL:     "https://public.example.com/search",
 		PublicChatEndpointURL: "https://public.example.com/chat/completions",
@@ -175,7 +223,7 @@ func TestAISearchServicesUseDBConfigOverEnvironmentDefaults(t *testing.T) {
 		},
 	}, &aiSearchConfigTestEncryptor{})
 	_, err := configSvc.UpdateConfig(context.Background(), AISearchBackendConfig{
-		AccountID:                 "db-account",
+		AccountID:                 testAISearchAccountIDAlt,
 		APIToken:                  "db-token",
 		APIBaseURL:                "https://api.db.example.com/",
 		PublicEndpointURL:         "https://public.db.example.com/search",
@@ -203,7 +251,7 @@ func TestAISearchServicesUseDBConfigOverEnvironmentDefaults(t *testing.T) {
 	}, configSvc)
 	searchSettings := searchSvc.settings()
 	require.Equal(t, "db-token", searchSettings.token)
-	require.Equal(t, "https://api.db.example.com/accounts/db-account/ai-search/instances/ai-search/chat/completions", searchSettings.chatEndpoint)
+	require.Equal(t, "https://api.db.example.com/accounts/"+testAISearchAccountIDAlt+"/ai-search/instances/ai-search/chat/completions", searchSettings.chatEndpoint)
 	require.Equal(t, "https://public.db.example.com/search", searchSettings.publicEndpoint)
 	require.Equal(t, "https://sub2api.db.example.com", searchSettings.origin)
 
@@ -221,7 +269,7 @@ func TestAISearchServicesUseDBConfigOverEnvironmentDefaults(t *testing.T) {
 	}, configSvc)
 	syncSettings := syncSvc.settings()
 	require.True(t, syncSettings.enabled)
-	require.Equal(t, "db-account", syncSettings.accountID)
+	require.Equal(t, testAISearchAccountIDAlt, syncSettings.accountID)
 	require.Equal(t, "db-token", syncSettings.token)
 	require.Equal(t, "ai-search", syncSettings.instanceID)
 	require.Equal(t, "default", syncSettings.namespace)

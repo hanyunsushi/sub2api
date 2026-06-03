@@ -1624,6 +1624,8 @@ export default {
         title: 'Cloudflare AI Search Backend',
         description: 'Configure Ask AI answers and knowledge sync every 3 days',
         accountId: 'Cloudflare Account ID',
+        accountIdHint: 'Use the 32-character Account ID from Cloudflare Account Home, not your login email',
+        accountIdInvalid: 'Cloudflare Account ID must be the 32-character account ID, not your login email',
         apiToken: 'AI Search API Token',
         apiBaseUrl: 'Cloudflare API Base URL',
         publicEndpointUrl: 'Public Search Endpoint',

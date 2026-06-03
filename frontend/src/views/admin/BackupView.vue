@@ -72,7 +72,10 @@
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
             <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.accountId') }}</label>
-            <input v-model="aiSearchForm.account_id" class="input w-full" />
+            <input v-model="aiSearchForm.account_id" class="input w-full" :aria-invalid="!isAISearchAccountIDValid" placeholder="0123456789abcdef0123456789abcdef" />
+            <p class="mt-1 text-xs" :class="isAISearchAccountIDValid ? 'text-gray-500 dark:text-gray-400' : 'text-red-600 dark:text-red-300'">
+              {{ isAISearchAccountIDValid ? t('admin.backup.aiSearch.accountIdHint') : t('admin.backup.aiSearch.accountIdInvalid') }}
+            </p>
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">{{ t('admin.backup.aiSearch.apiToken') }}</label>
@@ -415,6 +418,8 @@ const apiTokenConfigured = ref(false)
 const savingAISearch = ref(false)
 const testingAISearch = ref(false)
 const syncingAISearch = ref(false)
+const CLOUDFLARE_ACCOUNT_ID_PATTERN = /^[0-9a-f]{32}$/i
+const isAISearchAccountIDValid = computed(() => validateAISearchAccountID())
 
 // Schedule config
 const scheduleForm = ref<BackupScheduleConfig>({
@@ -623,6 +628,7 @@ async function loadAISearchConfig() {
 }
 
 async function saveAISearchConfig() {
+  if (!validateAISearchAccountID(true)) return
   savingAISearch.value = true
   try {
     await adminAPI.backup.updateAISearchConfig(aiSearchForm.value)
@@ -636,6 +642,7 @@ async function saveAISearchConfig() {
 }
 
 async function testAISearchConfig() {
+  if (!validateAISearchAccountID(true)) return
   testingAISearch.value = true
   try {
     const result = await adminAPI.backup.testAISearchConfig(aiSearchForm.value)
@@ -653,6 +660,7 @@ async function testAISearchConfig() {
 }
 
 async function syncAISearchKnowledge() {
+  if (!validateAISearchAccountID(true)) return
   syncingAISearch.value = true
   try {
     const result = await adminAPI.backup.syncAISearchKnowledge()
@@ -662,6 +670,15 @@ async function syncAISearchKnowledge() {
   } finally {
     syncingAISearch.value = false
   }
+}
+
+function validateAISearchAccountID(showMessage = false): boolean {
+  const accountID = aiSearchForm.value.account_id.trim()
+  const valid = accountID === '' || CLOUDFLARE_ACCOUNT_ID_PATTERN.test(accountID)
+  if (!valid && showMessage) {
+    appStore.showError(t('admin.backup.aiSearch.accountIdInvalid'))
+  }
+  return valid
 }
 
 async function loadSchedule() {

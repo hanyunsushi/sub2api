@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -78,7 +79,7 @@ func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudfl
 
 	svc := NewAISearchKnowledgeSyncService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:                         "test-account",
+			AccountID:                         testAISearchAccountID,
 			AISearchInstanceID:                "ai-search",
 			AISearchAPIToken:                  "cf-secret",
 			AISearchAPIBaseURL:                server.URL,
@@ -99,10 +100,10 @@ func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudfl
 	require.Contains(t, uploadedMetadata, `"title"`)
 	require.Equal(t, "true", uploadedWait)
 	require.Equal(t, []string{
-		"GET /accounts/test-account/ai-search/namespaces/default/instances/ai-search/items?per_page=50&search=sub2api-user-knowledge.md&source=builtin",
-		"DELETE /accounts/test-account/ai-search/namespaces/default/instances/ai-search/items/old-item",
-		"DELETE /accounts/test-account/ai-search/namespaces/default/instances/ai-search/items/legacy-item",
-		"POST /accounts/test-account/ai-search/namespaces/default/instances/ai-search/items",
+		"GET /accounts/" + testAISearchAccountID + "/ai-search/namespaces/default/instances/ai-search/items?per_page=50&search=sub2api-user-knowledge.md&source=builtin",
+		"DELETE /accounts/" + testAISearchAccountID + "/ai-search/namespaces/default/instances/ai-search/items/old-item",
+		"DELETE /accounts/" + testAISearchAccountID + "/ai-search/namespaces/default/instances/ai-search/items/legacy-item",
+		"POST /accounts/" + testAISearchAccountID + "/ai-search/namespaces/default/instances/ai-search/items",
 	}, requestedPaths)
 }
 
@@ -146,7 +147,7 @@ CPA Codex Buzz TCDMX
 
 	svc := NewAISearchKnowledgeSyncService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:                 "test-account",
+			AccountID:                 testAISearchAccountID,
 			AISearchInstanceID:        "ai-search",
 			AISearchAPIToken:          "cf-secret",
 			AISearchAPIBaseURL:        server.URL,
@@ -181,12 +182,41 @@ func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMiss
 
 	svc = NewAISearchKnowledgeSyncService(&config.Config{
 		CloudflareAI: config.CloudflareAIConfig{
-			AccountID:                 "test-account",
+			AccountID:                 testAISearchAccountID,
 			AISearchAPIToken:          "cf-secret",
 			AISearchSyncKnowledgePath: "/path/that/does/not/exist.md",
 		},
 	})
 	require.NoError(t, svc.SyncOnce(context.Background()))
+}
+
+func TestAISearchKnowledgeSyncService_SyncOnceRejectsEmailAccountIDBeforeCallingCloudflare(t *testing.T) {
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Sub2API 用户知识库\n\nask ai 可以回答常见问题。\n")
+	var called bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	svc := NewAISearchKnowledgeSyncService(&config.Config{
+		CloudflareAI: config.CloudflareAIConfig{
+			AccountID:                 "admin@example.com",
+			AISearchInstanceID:        "ai-search",
+			AISearchAPIToken:          "cf-secret",
+			AISearchAPIBaseURL:        server.URL,
+			AISearchNamespace:         "default",
+			AISearchItemKey:           "sub2api-user-knowledge.md",
+			AISearchSyncKnowledgePath: knowledgeFile,
+		},
+	})
+
+	err := svc.SyncOnce(context.Background())
+
+	require.Error(t, err)
+	require.True(t, infraerrors.IsBadRequest(err))
+	require.Equal(t, "AI_SEARCH_ACCOUNT_ID_INVALID", infraerrors.Reason(err))
+	require.False(t, called)
 }
 
 func writeAISearchKnowledgeFixture(t *testing.T, content string) string {
