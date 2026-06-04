@@ -26,9 +26,9 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         markdown = generator.build_markdown(source)
 
         self.assertIn("每天 03:00 自动生成 PostgreSQL 备份", markdown)
-        self.assertIn("右上角有常驻的 `Ask Creepee.ai` 入口", markdown)
+        self.assertIn("右上角有常驻的 `Creepee` 入口", markdown)
         self.assertIn("右侧侧边栏", markdown)
-        self.assertIn("助手名称是 `creepee`", markdown)
+        self.assertIn("助手名称是 `Creepee`", markdown)
         self.assertIn("后台已有 Cloudflare AI Search 连接", markdown)
         self.assertIn("管理端的“立即同步知识库”", markdown)
         self.assertIn("Cloudflare 官方聊天组件承载，基于知识库给出自然语言回答并附带来源", markdown)

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ai-search-sidecar-width: clamp(22rem, 36vw, 34rem);
+}
+
 /* Newspaper appearance theme */
 :root,
 :root[data-theme="newspaper"],
@@ -1472,27 +1476,13 @@
   border-color: rgba(23, 21, 18, 0.32);
 }
 
-.ai-search-trigger-icon {
-  position: relative;
-  width: 0.875rem;
-  height: 0.875rem;
+.ai-search-trigger-avatar {
+  width: 1.25rem;
+  height: 1.25rem;
   flex: 0 0 auto;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-  color: var(--atelier-muted);
-}
-
-.ai-search-trigger-icon::after {
-  content: "";
-  position: absolute;
-  top: 0.62rem;
-  left: 0.6rem;
-  width: 0.4rem;
-  height: 2px;
-  border-radius: 999px;
-  background: currentColor;
-  transform: rotate(45deg);
-  transform-origin: left center;
+  border-radius: 0.25rem;
+  background: transparent;
+  object-fit: contain;
 }
 
 .ai-search-trigger-label {
@@ -1502,28 +1492,35 @@
   white-space: nowrap;
 }
 
-.ai-search-overlay {
+body.ai-search-panel-open .app-layout-content {
+  margin-right: var(--ai-search-sidecar-width);
+}
+
+.ai-search-sidecar {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   z-index: 100000060;
   display: flex;
   align-items: stretch;
-  justify-content: flex-end;
-  padding: 0;
-  background: rgba(23, 21, 18, 0.34);
+  width: var(--ai-search-sidecar-width);
+  min-width: 22rem;
+  border-left: 1px solid rgba(23, 21, 18, 0.18);
+  background: var(--atelier-paper);
+  box-shadow: -18px 0 48px -36px rgba(17, 24, 39, 0.72);
 }
 
 .ai-search-panel {
   display: flex;
   flex-direction: column;
-  width: min(34rem, 100vw);
+  width: 100%;
   height: 100%;
   border: 0;
-  border-left: 1px solid rgba(23, 21, 18, 0.18);
   border-radius: 0;
   background: var(--atelier-paper);
   color: var(--atelier-ink);
-  box-shadow: -28px 0 72px -44px rgba(17, 24, 39, 0.72);
+  box-shadow: none;
   overflow: hidden;
   outline: none;
 }
@@ -1551,10 +1548,10 @@
   width: 2rem;
   height: 2rem;
   flex: 0 0 auto;
-  border: 1px solid rgba(246, 130, 31, 0.28);
+  border: 0;
   border-radius: 0.375rem;
-  background: #f6821f;
-  object-fit: cover;
+  background: transparent;
+  object-fit: contain;
 }
 
 .ai-search-panel-copy {
@@ -1641,17 +1638,23 @@
   text-align: center;
 }
 
-body.ai-search-locked {
-  overflow: hidden;
-}
-
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .ai-search-trigger-label {
     display: none;
   }
 
   .ai-search-trigger {
     padding: 0 0.55rem;
+  }
+
+  body.ai-search-panel-open .app-layout-content {
+    margin-right: 0;
+  }
+
+  .ai-search-sidecar {
+    left: 0;
+    width: 100vw;
+    min-width: 0;
   }
 
   .ai-search-panel {

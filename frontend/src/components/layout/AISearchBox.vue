@@ -5,29 +5,34 @@
       class="ai-search-trigger"
       data-testid="ai-search-trigger"
       role="search"
-      aria-label="Ask Creepee.ai"
-      title="Ask Creepee.ai"
+      aria-label="Creepee"
+      title="Creepee"
       :aria-expanded="open"
+      aria-controls="creepee-ai-sidecar"
       @click="openPanel"
     >
-      <span class="ai-search-trigger-icon" aria-hidden="true"></span>
-      <span class="ai-search-trigger-label">Ask Creepee.ai</span>
+      <img
+        class="ai-search-trigger-avatar"
+        :src="claudeCodeCrabAvatar"
+        alt=""
+        aria-hidden="true"
+      >
+      <span class="ai-search-trigger-label">Creepee</span>
     </button>
 
     <Teleport to="body">
       <div
         v-if="open"
-        class="ai-search-overlay"
-        data-testid="ai-search-overlay"
-        @pointerdown.self="closePanel"
+        id="creepee-ai-sidecar"
+        class="ai-search-sidecar"
+        data-testid="ai-search-sidecar"
       >
         <div
           ref="panelRef"
           class="ai-search-panel"
           data-testid="ai-search-panel"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Ask Creepee.ai"
+          role="complementary"
+          aria-label="Creepee 智能助手"
           tabindex="-1"
         >
           <header class="ai-search-panel-head">
@@ -38,8 +43,8 @@
                 alt="Claude Code crab"
               >
               <div class="ai-search-panel-copy">
-                <span class="ai-search-panel-title">Ask Creepee.ai</span>
-                <span class="ai-search-panel-subtitle">{{ creepeeName }}</span>
+                <span class="ai-search-panel-title">Creepee</span>
+                <span class="ai-search-panel-subtitle">智能助手</span>
               </div>
             </div>
             <button
@@ -59,13 +64,13 @@
               class="ai-search-chat"
               data-testid="ai-search-chat"
               :api-url="snippetConfig.api_url"
-              placeholder="Ask Creepee.ai"
+              placeholder="问 Creepee"
               theme="light"
               hide-branding="true"
               :translations.prop="chatTranslations"
             />
             <div v-else class="ai-search-unavailable">
-              Ask Creepee.ai is not configured yet.
+              Creepee is not configured yet.
             </div>
           </div>
         </div>
@@ -91,8 +96,7 @@ const open = ref(false)
 const panelRef = ref<HTMLElement | null>(null)
 const chatRef = ref<HTMLElement | null>(null)
 
-const creepeeName = 'creepee'
-const askCreepeeLabel = 'Ask Creepee.ai'
+const creepeeLabel = 'Creepee'
 const claudeCodeCrabAvatar = '/brand/claudecode-color.png'
 const creepeeSnippetBrandStyleID = 'creepee-ai-search-brand-style'
 const creepeeSnippetLoadingColor = '#f6821f'
@@ -108,14 +112,14 @@ const creepeeLoadingMessages = [
 ]
 
 const chatTranslations: Translations = {
-  chatTitle: askCreepeeLabel,
-  chatPlaceholder: askCreepeeLabel,
+  chatTitle: creepeeLabel,
+  chatPlaceholder: '问 Creepee',
   newChatButton: 'New chat',
-  emptyStateTitle: askCreepeeLabel,
-  emptyStateDescription: 'Ask creepee about this platform and get an answer with sources.',
-  chatEmptyTitle: askCreepeeLabel,
-  chatEmptyDescription: 'Ask creepee about channels, models, menus, usage, or admin settings.',
-  assistantAvatar: 'creepee',
+  emptyStateTitle: creepeeLabel,
+  emptyStateDescription: '向智能助手询问站点功能，并获得带来源的回答。',
+  chatEmptyTitle: creepeeLabel,
+  chatEmptyDescription: '询问渠道、模型、菜单、用量或管理后台设置。',
+  assistantAvatar: creepeeLabel,
   loadingMessages: creepeeLoadingMessages,
 }
 
@@ -238,11 +242,12 @@ onBeforeUnmount(() => {
   }
   detachChatImeGuard()
   document.removeEventListener('keydown', handleKeydown)
+  document.body.classList.remove('ai-search-panel-open')
 })
 
 watch(open, (value) => {
   if (typeof document !== 'undefined') {
-    document.body.classList.toggle('ai-search-locked', value)
+    document.body.classList.toggle('ai-search-panel-open', value)
   }
   if (value) {
     nextTick(() => {
