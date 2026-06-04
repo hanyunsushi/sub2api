@@ -34,14 +34,15 @@ const cssBlock = (source: string, selector: string) => {
 }
 
 describe('AI Search box source contract', () => {
-  it('uses the Creepee label and crab avatar on a resident trigger', () => {
+  it('uses the Ask Creepee label and crab avatar on a resident trigger', () => {
     expect(componentSource).toContain('class="ai-search-trigger"')
-    expect(componentSource).toContain('aria-label="Creepee"')
-    expect(componentSource).toContain('title="Creepee"')
+    expect(componentSource).toContain('aria-label="Ask Creepee"')
+    expect(componentSource).toContain('title="Ask Creepee"')
     expect(componentSource).toContain('class="ai-search-trigger-avatar"')
-    expect(componentSource).toContain('Creepee')
+    expect(componentSource).toContain('Ask Creepee')
     expect(panelSource).toContain('智能助手')
     expect(componentSource).not.toContain('Ask Creepee.ai')
+    expect(componentSource).not.toContain('Ask AI')
     expect(componentSource).not.toContain('placeholder="ask ai"')
     expect(componentSource).not.toContain('aria-label="ask ai"')
   })
@@ -120,6 +121,10 @@ describe('AI Search box source contract', () => {
 
   it('collapses Cloudflare conversation history behind the built-in top-left button', () => {
     expect(panelSource).toContain('collapseSnippetHistorySidebar')
+    expect(panelSource).toContain('handleDocumentPointerDown')
+    expect(panelSource).toContain('document.addEventListener(\'pointerdown\', handleDocumentPointerDown, true)')
+    expect(panelSource).toContain('document.removeEventListener(\'pointerdown\', handleDocumentPointerDown, true)')
+    expect(panelSource).toContain('isSnippetHistorySidebarExpanded')
     expect(panelSource).toContain("root.querySelector('.chat-sidebar')")
     expect(panelSource).toContain("root.querySelector<HTMLButtonElement>('.toggle-sidebar-button')")
     expect(panelSource).toContain("sidebar.classList.contains('collapsed')")
@@ -133,6 +138,27 @@ describe('AI Search box source contract', () => {
     expect(panelSource).toContain('position: absolute !important;')
     expect(panelSource).toContain('.chat-main')
     expect(panelSource).toContain('width: 100% !important;')
+  })
+
+  it('renders a CF-style Creepee welcome state with timed greeting and prompt suggestions', () => {
+    expect(panelSource).toContain('renderCreepeeWelcomeState')
+    expect(panelSource).toContain('ensureDefaultWelcomeSession')
+    expect(panelSource).toContain('getTimeGreeting')
+    expect(panelSource).toContain('Good morning.')
+    expect(panelSource).toContain('Good afternoon.')
+    expect(panelSource).toContain('Good evening.')
+    expect(panelSource).toContain('What are we doing today?')
+    expect(panelSource).toContain('creepee-welcome')
+    expect(panelSource).toContain('creepee-welcome-orb')
+    expect(panelSource).toContain('creepee-welcome-suggestion')
+    expect(panelSource).toContain('handleWelcomeSuggestionClick')
+    expect(panelSource).toContain("root.querySelector<HTMLTextAreaElement>('.chat-input')")
+    expect(panelSource).toContain("root.querySelector<HTMLButtonElement>('.chat-send-button')")
+    expect(panelSource).toContain("new Event('input', { bubbles: true, composed: true })")
+    expect(panelSource).toContain('sendButton.click()')
+    expect(panelSource).toContain('customizeSnippetWelcomeState')
+    expect(panelSource).toContain('.chat-empty-icon {')
+    expect(panelSource).toContain('display: none !important;')
   })
 
   it('styles a resident trigger plus a layout-pushing right sidecar', () => {

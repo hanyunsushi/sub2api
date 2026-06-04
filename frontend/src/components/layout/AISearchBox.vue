@@ -5,8 +5,8 @@
       class="ai-search-trigger"
       data-testid="ai-search-trigger"
       role="search"
-      aria-label="Creepee"
-      title="Creepee"
+      aria-label="Ask Creepee"
+      title="Ask Creepee"
       :aria-expanded="appStore.aiSearchPanelOpen"
       aria-controls="creepee-ai-sidecar"
       @click="openPanel"
@@ -17,7 +17,7 @@
         alt=""
         aria-hidden="true"
       >
-      <span class="ai-search-trigger-label">Creepee</span>
+      <span class="ai-search-trigger-label">Ask Creepee</span>
     </button>
   </div>
 </template>

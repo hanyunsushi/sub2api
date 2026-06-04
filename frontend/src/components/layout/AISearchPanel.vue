@@ -90,6 +90,12 @@ const creepeeLoadingMessages = [
   'Distilling...',
   'Inferring...',
 ]
+const creepeeWelcomeSuggestions = [
+  '渠道监控为什么会失败？',
+  '怎么配置自定义菜单？',
+  'QLHazyCoder 支持哪些监控模型？',
+  '如何排查模型映射不生效？',
+]
 
 const chatTranslations: Translations = {
   chatTitle: creepeeLabel,
@@ -106,6 +112,8 @@ const chatTranslations: Translations = {
 let refreshPromise: Promise<void> | null = null
 let lastRefreshAt = 0
 let refreshTimer: ReturnType<typeof setInterval> | null = null
+let welcomeObserver: MutationObserver | null = null
+let welcomeSessionPrepared = false
 
 function emptySnippetConfig(): AISearchSnippetConfig {
   return {
@@ -182,6 +190,141 @@ function snippetBrandStyles() {
   font-weight: 750 !important;
 }
 
+.chat-empty {
+  min-height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.5rem !important;
+}
+
+.chat-empty-icon {
+  display: none !important;
+}
+
+.creepee-welcome {
+  width: min(100%, 29rem) !important;
+  margin: 0 auto !important;
+  color: var(--search-snippet-text-color) !important;
+  text-align: center !important;
+}
+
+.creepee-welcome-orb {
+  position: relative !important;
+  width: 5.25rem !important;
+  height: 5.25rem !important;
+  margin: 0 auto 1.4rem !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.creepee-welcome-logo {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 3.4rem !important;
+  height: 3.4rem !important;
+  object-fit: contain !important;
+  animation: creepee-logo-float 4s ease-in-out infinite !important;
+}
+
+.creepee-welcome-pixel {
+  position: absolute !important;
+  display: block !important;
+  width: 0.42rem !important;
+  height: 0.42rem !important;
+  border-radius: 0.125rem !important;
+  background: ${creepeeSnippetLoadingColor} !important;
+  opacity: 0.78 !important;
+  animation: creepee-pixel-drift 3.6s ease-in-out infinite !important;
+}
+
+.creepee-welcome-pixel:nth-child(1) {
+  top: 0.65rem !important;
+  left: 1.15rem !important;
+}
+
+.creepee-welcome-pixel:nth-child(2) {
+  right: 0.85rem !important;
+  top: 1.55rem !important;
+  width: 0.34rem !important;
+  height: 0.34rem !important;
+  animation-delay: -1.15s !important;
+}
+
+.creepee-welcome-pixel:nth-child(3) {
+  right: 1.35rem !important;
+  bottom: 0.7rem !important;
+  animation-delay: -2.05s !important;
+}
+
+.creepee-welcome-pixel:nth-child(4) {
+  left: 0.95rem !important;
+  bottom: 1.55rem !important;
+  width: 0.3rem !important;
+  height: 0.3rem !important;
+  background: rgba(0, 47, 167, 0.86) !important;
+  animation-delay: -0.55s !important;
+}
+
+.creepee-welcome-greeting {
+  color: var(--search-snippet-text-secondary) !important;
+  font-family: var(--search-snippet-font-family-mono) !important;
+  font-size: 0.76rem !important;
+  font-weight: 760 !important;
+  line-height: 1.25 !important;
+}
+
+.creepee-welcome-headline {
+  margin-top: 0.35rem !important;
+  color: var(--search-snippet-text-color) !important;
+  font-size: 1.35rem !important;
+  font-weight: 780 !important;
+  line-height: 1.16 !important;
+}
+
+.creepee-welcome-suggestions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0.5rem !important;
+  margin-top: 1.35rem !important;
+}
+
+.creepee-welcome-suggestion {
+  width: 100% !important;
+  min-height: 2.45rem !important;
+  border: var(--search-snippet-border-width) solid var(--search-snippet-border-color) !important;
+  border-radius: 0.45rem !important;
+  background: var(--search-snippet-surface) !important;
+  color: var(--search-snippet-text-color) !important;
+  padding: 0.55rem 0.75rem !important;
+  font-family: var(--search-snippet-font-family) !important;
+  font-size: 0.82rem !important;
+  font-weight: 680 !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease !important;
+}
+
+.creepee-welcome-suggestion:hover {
+  background: var(--search-snippet-hover-background) !important;
+  border-color: rgba(246, 130, 31, 0.34) !important;
+}
+
+.creepee-welcome-suggestion:active {
+  transform: translateY(1px) !important;
+}
+
+@keyframes creepee-logo-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -0.24rem, 0); }
+}
+
+@keyframes creepee-pixel-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.62; }
+  50% { transform: translate3d(0.22rem, -0.2rem, 0) scale(1.18); opacity: 0.92; }
+}
+
 .chat-page-container {
   position: relative !important;
   overflow: hidden !important;
@@ -221,6 +364,119 @@ function collapseSnippetHistorySidebar(root: ShadowRoot): boolean {
   return true
 }
 
+function isSnippetHistorySidebarExpanded(root: ShadowRoot): boolean {
+  const sidebar = root.querySelector('.chat-sidebar')
+  return Boolean(sidebar && !sidebar.classList.contains('collapsed'))
+}
+
+function handleDocumentPointerDown(event: PointerEvent) {
+  if (!open.value) return
+  const root = chatRef.value?.shadowRoot
+  if (!root || !isSnippetHistorySidebarExpanded(root)) return
+
+  const sidebar = root.querySelector('.chat-sidebar')
+  const toggleButton = root.querySelector('.toggle-sidebar-button')
+  const path = event.composedPath()
+  if ((sidebar && path.includes(sidebar)) || (toggleButton && path.includes(toggleButton))) {
+    return
+  }
+
+  collapseSnippetHistorySidebar(root)
+}
+
+function getTimeGreeting(date = new Date()) {
+  const hour = date.getHours()
+  if (hour < 12) return 'Good morning.'
+  if (hour < 18) return 'Good afternoon.'
+  return 'Good evening.'
+}
+
+function escapeSnippetHTML(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function handleWelcomeSuggestionClick(event: Event) {
+  const button = event.currentTarget as HTMLButtonElement
+  const question = button.dataset.question || button.textContent?.trim() || ''
+  if (!question) return
+
+  const root = chatRef.value?.shadowRoot
+  if (!root) return
+  const input = root.querySelector<HTMLTextAreaElement>('.chat-input')
+  const sendButton = root.querySelector<HTMLButtonElement>('.chat-send-button')
+  if (!input || !sendButton) return
+
+  input.value = question
+  input.dispatchEvent(new Event('input', { bubbles: true, composed: true }))
+  sendButton.click()
+}
+
+function renderCreepeeWelcomeState(root: ShadowRoot): boolean {
+  const emptyState = root.querySelector<HTMLElement>('.chat-empty')
+  if (!emptyState) return false
+  if (emptyState.dataset.creepeeWelcome === 'true') return true
+
+  const suggestionButtons = creepeeWelcomeSuggestions
+    .map((question) => {
+      const safeQuestion = escapeSnippetHTML(question)
+      return `<button type="button" class="creepee-welcome-suggestion" data-question="${safeQuestion}">${safeQuestion}</button>`
+    })
+    .join('')
+
+  emptyState.dataset.creepeeWelcome = 'true'
+  emptyState.innerHTML = `
+    <div class="creepee-welcome">
+      <div class="creepee-welcome-orb" aria-hidden="true">
+        <span class="creepee-welcome-pixel"></span>
+        <span class="creepee-welcome-pixel"></span>
+        <span class="creepee-welcome-pixel"></span>
+        <span class="creepee-welcome-pixel"></span>
+        <img class="creepee-welcome-logo" src="${claudeCodeCrabAvatar}" alt="">
+      </div>
+      <div class="creepee-welcome-greeting">${getTimeGreeting()}</div>
+      <div class="creepee-welcome-headline">What are we doing today?</div>
+      <div class="creepee-welcome-suggestions">
+        ${suggestionButtons}
+      </div>
+    </div>
+  `
+  emptyState.querySelectorAll('.creepee-welcome-suggestion').forEach((button) => {
+    button.addEventListener('click', handleWelcomeSuggestionClick)
+  })
+  return true
+}
+
+function ensureDefaultWelcomeSession(root: ShadowRoot): boolean {
+  if (root.querySelector('.chat-empty')) return true
+  const newChatButton = root.querySelector<HTMLButtonElement>('.new-chat-button')
+  if (!newChatButton) return false
+  newChatButton.click()
+  return Boolean(root.querySelector('.chat-empty'))
+}
+
+function customizeSnippetWelcomeState(root: ShadowRoot, prepareEmptySession = false): boolean {
+  if (prepareEmptySession && !ensureDefaultWelcomeSession(root)) return false
+  return renderCreepeeWelcomeState(root)
+}
+
+function attachSnippetWelcomeObserver(root: ShadowRoot) {
+  if (welcomeObserver) return
+  welcomeObserver = new MutationObserver(() => {
+    renderCreepeeWelcomeState(root)
+  })
+  welcomeObserver.observe(root, { childList: true, subtree: true })
+}
+
+function detachSnippetWelcomeObserver() {
+  welcomeObserver?.disconnect()
+  welcomeObserver = null
+}
+
 function installSnippetBrandStyles(attempt = 0) {
   const root = chatRef.value?.shadowRoot
   if (!root) {
@@ -240,6 +496,16 @@ function installSnippetBrandStyles(attempt = 0) {
   if (!collapseSnippetHistorySidebar(root) && attempt < 20 && typeof window !== 'undefined') {
     window.setTimeout(() => installSnippetBrandStyles(attempt + 1), 50)
   }
+
+  const welcomeReady = welcomeSessionPrepared
+    ? renderCreepeeWelcomeState(root)
+    : customizeSnippetWelcomeState(root, true)
+  if (welcomeReady) {
+    welcomeSessionPrepared = true
+  } else if (attempt < 20 && typeof window !== 'undefined') {
+    window.setTimeout(() => installSnippetBrandStyles(attempt + 1), 50)
+  }
+  attachSnippetWelcomeObserver(root)
 }
 
 function closePanel() {
@@ -250,6 +516,7 @@ onMounted(() => {
   refreshSnippetConfig(true)
   refreshTimer = setInterval(() => refreshSnippetConfig(), 8 * 60 * 1000)
   document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('pointerdown', handleDocumentPointerDown, true)
 })
 
 onBeforeUnmount(() => {
@@ -258,7 +525,9 @@ onBeforeUnmount(() => {
     refreshTimer = null
   }
   detachChatImeGuard()
+  detachSnippetWelcomeObserver()
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('pointerdown', handleDocumentPointerDown, true)
   document.body.classList.remove('ai-search-panel-open')
 })
 
@@ -267,6 +536,7 @@ watch(open, (value) => {
     document.body.classList.toggle('ai-search-panel-open', value)
   }
   if (value) {
+    welcomeSessionPrepared = false
     refreshSnippetConfig(true)
     nextTick(() => {
       panelRef.value?.focus?.()
@@ -275,6 +545,7 @@ watch(open, (value) => {
     })
   } else {
     detachChatImeGuard()
+    detachSnippetWelcomeObserver()
   }
 })
 
