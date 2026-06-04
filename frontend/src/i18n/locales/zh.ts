@@ -3315,6 +3315,16 @@ export default {
       notes: '备注',
       notesPlaceholder: '请输入备注',
       notesHint: '备注可选',
+      sortBy: '排序字段',
+      sortDirection: '排序方向',
+      sortOptions: {
+        name: '名称',
+        priority: '优先级'
+      },
+      sortDirections: {
+        asc: '升序',
+        desc: '降序'
+      },
       // Filter options
       allPlatforms: '全部平台',
       allTypes: '全部类型',

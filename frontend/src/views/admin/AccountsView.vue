@@ -7,7 +7,7 @@
             v-model:searchQuery="params.search"
             :filters="params"
             :groups="groups"
-            @update:filters="(newFilters) => Object.assign(params, newFilters)"
+            @update:filters="handleAccountFilterUpdate"
             @change="debouncedReload"
             @update:searchQuery="debouncedReload"
           />
@@ -202,6 +202,8 @@
           @sort="handleSort"
           default-sort-key="name"
           default-sort-order="asc"
+          :external-sort-key="sortState.sort_by"
+          :external-sort-order="sortState.sort_order"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
           vertical-scroll-mode="page"
           :estimate-row-height="72"
@@ -217,7 +219,16 @@
             />
           </template>
           <template #cell-select="{ row }">
-            <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <div class="inline-flex items-center gap-2">
+              <span
+                data-testid="account-card-priority"
+                class="inline-flex h-6 min-w-9 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-1.5 font-mono text-[11px] font-semibold leading-none text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300"
+                :title="t('admin.accounts.priority')"
+              >
+                P{{ row.priority ?? '-' }}
+              </span>
+              <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            </div>
           </template>
           <template #cell-name="{ row, value }">
             <div class="flex min-w-0 items-start gap-2">
@@ -1095,6 +1106,23 @@ const handleSort = (key: string, order: AccountSortOrder) => {
   resetAutoRefreshCache()
   pendingTodayStatsRefresh.value = true
   load()
+}
+
+const handleAccountFilterUpdate = (newFilters: Record<string, any>) => {
+  Object.assign(params, newFilters)
+  const sortBy = typeof newFilters.sort_by === 'string' && ACCOUNT_SORTABLE_KEYS.has(newFilters.sort_by)
+    ? newFilters.sort_by
+    : sortState.sort_by
+  const sortOrder: AccountSortOrder = newFilters.sort_order === 'desc'
+    ? 'desc'
+    : newFilters.sort_order === 'asc'
+      ? 'asc'
+      : sortState.sort_order
+  sortState.sort_by = sortBy
+  sortState.sort_order = sortOrder
+  const requestParams = params as any
+  requestParams.sort_by = sortBy
+  requestParams.sort_order = sortOrder
 }
 
 watch(loading, (isLoading, wasLoading) => {

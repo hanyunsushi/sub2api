@@ -12,6 +12,22 @@
     <Select :model-value="filters.status" class="w-40" :options="sOpts" @update:model-value="updateStatus" @change="$emit('change')" />
     <Select :model-value="filters.privacy_mode" class="w-40" :options="privacyOpts" @update:model-value="updatePrivacyMode" @change="$emit('change')" />
     <Select :model-value="filters.group" class="w-40" :options="gOpts" @update:model-value="updateGroup" @change="$emit('change')" />
+    <Select
+      :model-value="normalizedSortBy"
+      class="w-40"
+      :options="sortByOpts"
+      :placeholder="t('admin.accounts.sortBy')"
+      @update:model-value="updateSortBy"
+      @change="$emit('change')"
+    />
+    <Select
+      :model-value="normalizedSortOrder"
+      class="w-36"
+      :options="sortOrderOpts"
+      :placeholder="t('admin.accounts.sortDirection')"
+      @update:model-value="updateSortOrder"
+      @change="$emit('change')"
+    />
   </div>
 </template>
 
@@ -20,11 +36,21 @@ import { computed } from 'vue'; import { useI18n } from 'vue-i18n'; import Selec
 import type { AdminGroup } from '@/types'
 const props = defineProps<{ searchQuery: string; filters: Record<string, any>; groups?: AdminGroup[] }>()
 const emit = defineEmits(['update:searchQuery', 'update:filters', 'change']); const { t } = useI18n()
+const normalizeSortBy = (value: unknown) => value === 'priority' ? 'priority' : 'name'
+const normalizeSortOrder = (value: unknown) => value === 'desc' ? 'desc' : 'asc'
+const normalizedSortBy = computed(() => normalizeSortBy(props.filters.sort_by))
+const normalizedSortOrder = computed(() => normalizeSortOrder(props.filters.sort_order))
 const updatePlatform = (value: string | number | boolean | null) => { emit('update:filters', { ...props.filters, platform: value }) }
 const updateType = (value: string | number | boolean | null) => { emit('update:filters', { ...props.filters, type: value }) }
 const updateStatus = (value: string | number | boolean | null) => { emit('update:filters', { ...props.filters, status: value }) }
 const updatePrivacyMode = (value: string | number | boolean | null) => { emit('update:filters', { ...props.filters, privacy_mode: value }) }
 const updateGroup = (value: string | number | boolean | null) => { emit('update:filters', { ...props.filters, group: value }) }
+const updateSortBy = (value: string | number | boolean | null) => {
+  emit('update:filters', { ...props.filters, sort_by: normalizeSortBy(value), sort_order: normalizedSortOrder.value })
+}
+const updateSortOrder = (value: string | number | boolean | null) => {
+  emit('update:filters', { ...props.filters, sort_by: normalizedSortBy.value, sort_order: normalizeSortOrder(value) })
+}
 const pOpts = computed(() => [{ value: '', label: t('admin.accounts.allPlatforms') }, { value: 'anthropic', label: 'Anthropic' }, { value: 'openai', label: 'OpenAI' }, { value: 'gemini', label: 'Gemini' }, { value: 'antigravity', label: 'Antigravity' }])
 const tOpts = computed(() => [{ value: '', label: t('admin.accounts.allTypes') }, { value: 'oauth', label: t('admin.accounts.oauthType') }, { value: 'setup-token', label: t('admin.accounts.setupToken') }, { value: 'apikey', label: t('admin.accounts.apiKey') }, { value: 'bedrock', label: 'AWS Bedrock' }])
 const sOpts = computed(() => [{ value: '', label: t('admin.accounts.allStatus') }, { value: 'active', label: t('admin.accounts.status.active') }, { value: 'inactive', label: t('admin.accounts.status.inactive') }, { value: 'error', label: t('admin.accounts.status.error') }, { value: 'rate_limited', label: t('admin.accounts.status.rateLimited') }, { value: 'temp_unschedulable', label: t('admin.accounts.status.tempUnschedulable') }, { value: 'unschedulable', label: t('admin.accounts.status.unschedulable') }])
@@ -39,5 +65,13 @@ const gOpts = computed(() => [
   { value: '', label: t('admin.accounts.allGroups') },
   { value: 'ungrouped', label: t('admin.accounts.ungroupedGroup') },
   ...(props.groups || []).map(g => ({ value: String(g.id), label: g.name }))
+])
+const sortByOpts = computed(() => [
+  { value: 'name', label: t('admin.accounts.sortOptions.name') },
+  { value: 'priority', label: t('admin.accounts.sortOptions.priority') }
+])
+const sortOrderOpts = computed(() => [
+  { value: 'asc', label: t('admin.accounts.sortDirections.asc') },
+  { value: 'desc', label: t('admin.accounts.sortDirections.desc') }
 ])
 </script>
