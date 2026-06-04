@@ -980,11 +980,10 @@
     @apply transition-all duration-200;
     position: relative;
     min-height: 2.625rem;
-    border: 0;
-    border-bottom: 1px dotted var(--sidebar-line);
-    border-radius: 0;
-    padding-left: 0;
-    padding-right: 0;
+    border: 1px solid transparent;
+    border-radius: 0.625rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
     font-family: var(--atelier-font-sans);
     font-size: 0.75rem;
     letter-spacing: 0;
@@ -992,17 +991,19 @@
 
   .sidebar .sidebar-link:hover {
     background: var(--sidebar-hover);
-    border-bottom-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--sidebar-line));
+    border-color: color-mix(in srgb, var(--atelier-butter) 48%, var(--sidebar-line));
     color: var(--atelier-ink);
-    padding-left: 0.375rem;
+    padding-left: 0.625rem;
   }
 
   .sidebar .sidebar-link-active {
     background: var(--sidebar-active-bg);
-    border-bottom-color: var(--sidebar-active-border);
+    border-color: var(--sidebar-active-border);
+    border-radius: 0.625rem;
     color: var(--sidebar-active-text);
     box-shadow: none;
-    padding-left: 0.375rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
   }
 
   .sidebar .sidebar-link-active :where(svg, span, .sidebar-label, .sidebar-label-flex, .sidebar-svg-icon) {
@@ -1022,7 +1023,7 @@
   .sidebar .sidebar-link-active:hover {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-active-text);
-    padding-left: 0.375rem;
+    padding-left: 0.625rem;
   }
 
   .sidebar .sidebar-link-active:hover :where(svg, .sidebar-svg-icon, .sidebar-label, span) {
@@ -1059,8 +1060,8 @@
 
   .sidebar.w-\[72px\] .sidebar-link {
     justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
   }
 
   .sidebar.w-\[72px\] .sidebar-link-active::after {
@@ -4032,7 +4033,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .settings-tab {
-  border-radius: 0 !important;
+  border-radius: 0.625rem !important;
   overflow: hidden !important;
   background-clip: border-box !important;
   color: var(--atelier-ink) !important;
@@ -4041,7 +4042,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .settings-tab::before {
   inset: 0 !important;
   z-index: 0 !important;
-  border-radius: 0 !important;
+  border-radius: inherit !important;
   background: var(--atelier-ui-hover-surface) !important;
 }
 
@@ -4073,6 +4074,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .settings-tab-active:hover,
 #app .app-layout-content .settings-tab-active:focus-visible {
   border-color: var(--atelier-blue) !important;
+  border-radius: 0.625rem !important;
   background: var(--atelier-blue) !important;
   color: var(--atelier-white) !important;
   box-shadow: none !important;
@@ -6696,12 +6698,22 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 :root.theme-cloudflare .sidebar .sidebar-link:hover {
   background: var(--atelier-ui-hover-surface) !important;
-  border-bottom-color: var(--atelier-material-edge) !important;
+  border-color: var(--atelier-material-edge) !important;
   color: var(--atelier-ink) !important;
 }
 
 :root.theme-cloudflare .sidebar .sidebar-link:hover :where(svg, span, .sidebar-label, .sidebar-label-flex, .sidebar-svg-icon) {
   color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare .sidebar .sidebar-link-active:hover {
+  background: var(--sidebar-active-bg) !important;
+  border-color: var(--sidebar-active-border) !important;
+  color: var(--sidebar-active-text) !important;
+}
+
+:root.theme-cloudflare .sidebar .sidebar-link-active:hover :where(svg, span, .sidebar-label, .sidebar-label-flex, .sidebar-svg-icon) {
+  color: var(--sidebar-active-text) !important;
 }
 
 /* Brand wordmark accents follow Cloudflare orange, not gold. */

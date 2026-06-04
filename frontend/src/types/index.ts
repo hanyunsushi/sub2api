@@ -171,6 +171,7 @@ export interface CustomMenuItem {
   page_slug?: string
   visibility: 'user' | 'admin'
   sort_order: number
+  open_mode?: 'iframe' | 'redirect'
 }
 
 export interface CustomEndpoint {

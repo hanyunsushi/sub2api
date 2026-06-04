@@ -16,6 +16,7 @@ type CustomMenuItem struct {
 	PageSlug   string `json:"page_slug,omitempty"`
 	Visibility string `json:"visibility"` // "user" or "admin"
 	SortOrder  int    `json:"sort_order"`
+	OpenMode   string `json:"open_mode,omitempty"` // "iframe" or "redirect"
 }
 
 // CustomEndpoint represents an admin-configured API endpoint for quick copy.
