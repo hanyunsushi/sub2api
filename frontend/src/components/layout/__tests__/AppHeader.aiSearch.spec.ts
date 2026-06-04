@@ -108,7 +108,7 @@ describe('AppHeader AI Search placement', () => {
     })
   })
 
-  it('places Ask Creepee.ai immediately before the announcement bell in the right header controls', async () => {
+  it('places Creepee immediately before the announcement bell in the right header controls', async () => {
     const wrapper = mount(AppHeader, {
       attachTo: document.body,
       global: {
@@ -116,7 +116,7 @@ describe('AppHeader AI Search placement', () => {
           Icon: { template: '<span />' },
           LocaleSwitcher: { template: '<div />' },
           SubscriptionProgressMini: { template: '<div />' },
-          AISearchBox: { template: '<div data-testid="ai-search-box">Ask Creepee.ai</div>' },
+          AISearchBox: { template: '<div data-testid="ai-search-box">Creepee</div>' },
           AnnouncementBell: { template: '<div data-testid="announcement-bell" />' },
           FloatingDropdown: {
             props: ['show', 'triggerEl', 'panelClass'],
@@ -132,7 +132,8 @@ describe('AppHeader AI Search placement', () => {
     const bell = wrapper.get('[data-testid="announcement-bell"]').element
     expect(aiSearch.compareDocumentPosition(bell) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(aiSearch.nextElementSibling).toBe(bell)
-    expect(wrapper.text()).toContain('Ask Creepee.ai')
+    expect(wrapper.text()).toContain('Creepee')
+    expect(wrapper.text()).not.toContain('Creepee.ai')
     expect(wrapper.text()).not.toContain('Ask AI')
     expect(wrapper.text()).not.toContain('help')
   })

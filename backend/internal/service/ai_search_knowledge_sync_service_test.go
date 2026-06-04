@@ -15,7 +15,7 @@ import (
 )
 
 func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudflareAPI(t *testing.T) {
-	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nAsk Creepee.ai 可以回答常见问题。\n")
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nCreepee 可以回答常见问题。\n")
 
 	var requestedPaths []string
 	var sawDeleteExisting bool
@@ -96,7 +96,7 @@ func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudfl
 	require.True(t, sawDeleteExisting)
 	require.True(t, sawDeleteLegacy)
 	require.Equal(t, "sub2api-user-knowledge.md", uploadedFilename)
-	require.Contains(t, uploadedContent, "Ask Creepee.ai 可以回答常见问题")
+	require.Contains(t, uploadedContent, "Creepee 可以回答常见问题")
 	require.Contains(t, uploadedMetadata, `"title"`)
 	require.Equal(t, "true", uploadedWait)
 	require.Equal(t, []string{
@@ -161,9 +161,9 @@ QLHazyCoder Mimo replace challenge mismatch
 	})
 
 	require.NoError(t, svc.SyncOnce(context.Background()))
-	require.Contains(t, uploadedContent, "右上角有常驻的 `Ask Creepee.ai` 入口")
+	require.Contains(t, uploadedContent, "右上角有常驻的 `Creepee` 入口")
 	require.Contains(t, uploadedContent, "右侧侧边栏")
-	require.Contains(t, uploadedContent, "助手名称是 `creepee`")
+	require.Contains(t, uploadedContent, "助手名称是 `Creepee`")
 	require.Contains(t, uploadedContent, "后台已有 Cloudflare AI Search 连接")
 	require.Contains(t, uploadedContent, "管理端的“立即同步知识库”")
 	require.Contains(t, uploadedContent, "Cloudflare 官方聊天组件承载，基于知识库给出自然语言回答并附带来源")
@@ -249,7 +249,7 @@ func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMiss
 }
 
 func TestAISearchKnowledgeSyncService_SyncOnceRejectsEmailAccountIDBeforeCallingCloudflare(t *testing.T) {
-	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nAsk Creepee.ai 可以回答常见问题。\n")
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nCreepee 可以回答常见问题。\n")
 	var called bool
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true

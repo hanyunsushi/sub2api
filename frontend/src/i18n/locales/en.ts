@@ -1622,7 +1622,7 @@ export default {
       },
       aiSearch: {
         title: 'Cloudflare AI Search Backend',
-        description: 'Configure Ask Creepee.ai answers and knowledge sync every 3 days',
+        description: 'Configure Creepee answers and knowledge sync every 3 days',
         accountId: 'Cloudflare Account ID',
         accountIdHint: 'Use the 32-character Account ID from Cloudflare Account Home, not your login email',
         accountIdInvalid: 'Cloudflare Account ID must be the 32-character account ID, not your login email',

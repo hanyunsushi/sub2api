@@ -36,25 +36,30 @@ describe('AISearchBox chat panel interactions', () => {
 
   afterEach(() => {
     document.body.classList.remove('ai-search-locked')
+    document.body.classList.remove('ai-search-panel-open')
   })
 
-  it('opens a right-side Creepee chat drawer only after clicking the resident trigger', async () => {
+  it('opens a right-side Creepee workspace that pushes the page layout', async () => {
     const wrapper = mount(AISearchBox, { attachTo: document.body })
     await nextTick()
 
-    expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
-    expect(wrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Ask Creepee.ai')
+    expect(document.querySelector('[data-testid="ai-search-panel"]')).toBeNull()
+    expect(wrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Creepee')
+    expect(wrapper.get('[data-testid="ai-search-trigger"]').text()).toContain('Creepee')
+    expect(wrapper.get('[data-testid="ai-search-trigger"]').text()).not.toContain('.ai')
 
     await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
 
-    expect(document.querySelector('[data-testid="ai-search-overlay"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).not.toBeNull()
     expect(document.querySelector('[data-testid="ai-search-panel"]')).not.toBeNull()
     expect(document.querySelector('chat-page-snippet')).not.toBeNull()
-    expect(document.querySelector('.ai-search-panel-title')?.textContent).toContain('Ask Creepee.ai')
-    expect(document.querySelector('.ai-search-panel-subtitle')?.textContent).toContain('creepee')
+    expect(document.querySelector('.ai-search-panel-title')?.textContent).toContain('Creepee')
+    expect(document.querySelector('.ai-search-panel-title')?.textContent).not.toContain('.ai')
+    expect(document.querySelector('.ai-search-panel-subtitle')?.textContent).toContain('智能助手')
     expect(document.querySelector<HTMLImageElement>('.ai-search-panel-avatar')?.getAttribute('src')).toBe('/brand/claudecode-color.png')
-    expect(document.body.classList.contains('ai-search-locked')).toBe(true)
+    expect(document.body.classList.contains('ai-search-panel-open')).toBe(true)
+    expect(document.body.classList.contains('ai-search-locked')).toBe(false)
     wrapper.unmount()
   })
 
@@ -77,22 +82,15 @@ describe('AISearchBox chat panel interactions', () => {
     wrapper.unmount()
   })
 
-  it('closes when clicking the overlay backdrop outside the panel', async () => {
+  it('does not use an overlay backdrop for the docked sidecar', async () => {
     const wrapper = mount(AISearchBox, { attachTo: document.body })
     await nextTick()
     await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
 
-    const overlay = document.querySelector('[data-testid="ai-search-overlay"]') as HTMLElement
-    const event =
-      typeof PointerEvent === 'function'
-        ? new PointerEvent('pointerdown', { bubbles: true })
-        : new MouseEvent('pointerdown', { bubbles: true })
-    overlay.dispatchEvent(event)
-    await nextTick()
-
     expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
-    expect(document.body.classList.contains('ai-search-locked')).toBe(false)
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).not.toBeNull()
+    expect(document.body.classList.contains('ai-search-panel-open')).toBe(true)
     wrapper.unmount()
   })
 
@@ -104,14 +102,16 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await nextTick()
-    expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).toBeNull()
+    expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
 
     await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
     const closeButton = document.querySelector('.ai-search-panel-close') as HTMLElement
     closeButton.click()
     await nextTick()
-    expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).toBeNull()
+    expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
     wrapper.unmount()
   })
 

@@ -96,7 +96,7 @@ services:
       - ANTIGRAVITY_USER_AGENT_VERSION=${ANTIGRAVITY_USER_AGENT_VERSION:-}
 
       # =======================================================================
-      # Cloudflare AI Search (optional Ask Creepee.ai helper)
+      # Cloudflare AI Search (optional Creepee helper)
       # =======================================================================
       - CLOUDFLARE_AI_ACCOUNT_ID=${CLOUDFLARE_AI_ACCOUNT_ID:-}
       - CLOUDFLARE_AI_AI_SEARCH_API_TOKEN=${CLOUDFLARE_AI_AI_SEARCH_API_TOKEN:-}
