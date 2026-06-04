@@ -1643,7 +1643,7 @@ export default {
       },
       aiSearch: {
         title: 'Cloudflare AI Search 后端设置',
-        description: '配置右上角 Ask AI 问答和每 3 天知识库同步',
+        description: '配置右上角 Ask Creepee.ai 问答和每 3 天知识库同步',
         accountId: 'Cloudflare Account ID',
         accountIdHint: '填 Cloudflare 控制台 Account Home 里的 32 位 Account ID，不是登录邮箱',
         accountIdInvalid: 'Cloudflare Account ID 应为控制台里的 32 位账号 ID，不是登录邮箱',

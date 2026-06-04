@@ -18,7 +18,7 @@ describe('AI Search API adapter', () => {
       data: {
         query: 'FAQ',
         configured: true,
-        answer: 'FAQ 可以在右上角 ask ai 中查询。',
+        answer: 'FAQ 可以在右上角 Ask Creepee.ai 中查询。',
         results: []
       }
     })
@@ -29,6 +29,6 @@ describe('AI Search API adapter', () => {
 
     expect(post).toHaveBeenCalledWith('/ai-search/search', { query: 'FAQ' })
     expect(result.configured).toBe(true)
-    expect(result.answer).toBe('FAQ 可以在右上角 ask ai 中查询。')
+    expect(result.answer).toBe('FAQ 可以在右上角 Ask Creepee.ai 中查询。')
   })
 })
