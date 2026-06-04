@@ -227,5 +227,6 @@ func RegisterAuthRoutes(
 		authenticated.POST("/auth/revoke-all-sessions", h.Auth.RevokeAllSessions)
 		authenticated.POST("/auth/oauth/bind-token", h.Auth.PrepareOAuthBindAccessTokenCookie)
 		authenticated.POST("/settings/ai-logo-presets", h.Setting.AppendCustomAILogoPreset)
+		authenticated.POST("/settings/custom-menu-svg-icon-presets", h.Setting.AppendCustomMenuSVGIconPreset)
 	}
 }

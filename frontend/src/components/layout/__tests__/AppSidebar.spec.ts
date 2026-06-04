@@ -17,6 +17,16 @@ describe('AppSidebar custom SVG styles', () => {
     expect(componentSource).not.toContain('stroke: currentColor;')
     expect(componentSource).not.toContain('fill: none;')
   })
+
+  it('renders custom menu icon URLs as images while keeping inline SVG sanitized', () => {
+    expect(componentSource).toContain('function isCustomMenuIconURL')
+    expect(componentSource).toContain('function renderCustomMenuIcon')
+    expect(componentSource).toContain("isCustomMenuIconURL(item.iconSvg)")
+    expect(componentSource).toContain('<img')
+    expect(componentSource).toContain('sidebar-svg-icon-image')
+    expect(componentSource).toContain(':src="item.iconSvg"')
+    expect(componentSource).toContain('v-html="sanitizeSvg(item.iconSvg)"')
+  })
 })
 
 describe('AppSidebar custom menu open mode', () => {

@@ -5098,6 +5098,81 @@
               </p>
             </div>
             <div class="space-y-4 p-6">
+              <div
+                v-if="form.custom_menu_items.length"
+                class="custom-menu-order-list rounded-lg border border-gray-200 bg-gray-50/70 p-4 dark:border-dark-600 dark:bg-dark-800/45"
+              >
+                <div class="mb-3">
+                  <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+                    {{ t("admin.settings.customMenu.orderTitle") }}
+                  </h3>
+                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.customMenu.orderDescription") }}
+                  </p>
+                </div>
+                <div class="grid gap-2">
+                  <div
+                    v-for="(item, index) in form.custom_menu_items"
+                    :key="`order-${item.id || index}`"
+                    class="flex min-h-11 items-center gap-3 rounded-md border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
+                  >
+                    <span class="w-8 flex-shrink-0 text-xs font-semibold tabular-nums text-gray-500 dark:text-gray-400">
+                      {{ index + 1 }}
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-800 dark:text-gray-200">
+                      {{
+                        item.label ||
+                        t("admin.settings.customMenu.itemLabel", { n: index + 1 })
+                      }}
+                    </span>
+                    <div class="flex flex-shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-200"
+                        :disabled="index === 0"
+                        :title="t('admin.settings.customMenu.moveUp')"
+                        @click="moveMenuItem(index, -1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 15l7-7 7 7"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-200"
+                        :disabled="index === form.custom_menu_items.length - 1"
+                        :title="t('admin.settings.customMenu.moveDown')"
+                        @click="moveMenuItem(index, 1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Existing menu items -->
               <div
                 v-for="(item, index) in form.custom_menu_items"
@@ -5260,13 +5335,16 @@
                     >
                       {{ t("admin.settings.customMenu.iconSvg") }}
                     </label>
-                    <ImageUpload
+                    <CustomMenuIconPicker
                       :model-value="item.icon_svg"
-                      mode="svg"
-                      size="sm"
                       :upload-label="t('admin.settings.customMenu.uploadSvg')"
                       :remove-label="t('admin.settings.customMenu.removeSvg')"
+                      :url-label="t('admin.settings.customMenu.svgUrl')"
+                      :url-placeholder="t('admin.settings.customMenu.svgUrlPlaceholder')"
+                      :url-hint="t('admin.settings.customMenu.svgUrlHint')"
+                      :presets-label="t('admin.settings.customMenu.savedSvgIcons')"
                       @update:model-value="(v: string) => (item.icon_svg = v)"
+                      @presets-updated="handleCustomMenuIconPresetsUpdated"
                     />
                   </div>
                 </div>
@@ -7057,6 +7135,7 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
+import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue';
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import { useClipboard } from "@/composables/useClipboard";
@@ -7071,6 +7150,10 @@ import {
   normalizeRegistrationEmailSuffixDomains,
   parseRegistrationEmailSuffixWhitelistInput,
 } from "@/utils/registrationEmailPolicy";
+import {
+  normalizeCustomMenuSVGIconPresetURLs,
+  setCustomMenuIconRuntimeConfig,
+} from "@/utils/customMenuIconPresets";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -7373,6 +7456,7 @@ const form = reactive<SettingsForm>({
   appearance_theme_default: "newspaper",
   ai_logo_cdn_base_url: defaultAILogoCDNBaseURL,
   custom_ai_logo_presets: [],
+  custom_menu_svg_icon_presets: [],
   payment_enabled: false,
   risk_control_enabled: false,
   payment_min_amount: 1,
@@ -8077,6 +8161,13 @@ function moveMenuItem(index: number, direction: -1 | 1) {
   });
 }
 
+function handleCustomMenuIconPresetsUpdated(urls: string[]) {
+  form.custom_menu_svg_icon_presets = normalizeCustomMenuSVGIconPresetURLs(urls);
+  setCustomMenuIconRuntimeConfig({
+    custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
+  });
+}
+
 // Custom endpoint management
 function addEndpoint() {
   form.custom_endpoints.push({ name: "", endpoint: "", description: "" });
@@ -8241,6 +8332,12 @@ async function loadSettings() {
     form.custom_ai_logo_presets = Array.isArray(settings.custom_ai_logo_presets)
       ? settings.custom_ai_logo_presets
       : [];
+    form.custom_menu_svg_icon_presets = Array.isArray(settings.custom_menu_svg_icon_presets)
+      ? settings.custom_menu_svg_icon_presets
+      : [];
+    setCustomMenuIconRuntimeConfig({
+      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
+    });
     customAILogoPresetsInput.value = form.custom_ai_logo_presets.join("\n");
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
@@ -8621,6 +8718,7 @@ async function saveSettings() {
       appearance_theme_default: form.appearance_theme_default,
       ai_logo_cdn_base_url: form.ai_logo_cdn_base_url,
       custom_ai_logo_presets: form.custom_ai_logo_presets,
+      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
       custom_menu_items: normalizedCustomMenuItems,

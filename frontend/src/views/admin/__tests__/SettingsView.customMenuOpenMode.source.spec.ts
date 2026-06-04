@@ -36,6 +36,40 @@ describe('SettingsView custom menu open mode contract', () => {
   })
 })
 
+describe('SettingsView custom menu ordering and SVG icon presets', () => {
+  it('exposes a dedicated order panel so admins can reorder menus without hunting card header icons', () => {
+    expect(settingsSource).toContain('admin.settings.customMenu.orderTitle')
+    expect(settingsSource).toContain('admin.settings.customMenu.orderDescription')
+    expect(settingsSource).toContain('custom-menu-order-list')
+    expect(settingsSource).toContain('v-for="(item, index) in form.custom_menu_items"')
+    expect(settingsSource).toContain('@click="moveMenuItem(index, -1)"')
+    expect(settingsSource).toContain('@click="moveMenuItem(index, 1)"')
+  })
+
+  it('uses the custom menu icon picker instead of raw SVG upload alone', () => {
+    expect(settingsSource).toContain("import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue'")
+    expect(settingsSource).toContain('<CustomMenuIconPicker')
+    expect(settingsSource).toContain('custom_menu_svg_icon_presets')
+    expect(settingsSource).toContain('@update:model-value="(v: string) => (item.icon_svg = v)"')
+    expect(settingsSource).toContain("setCustomMenuIconRuntimeConfig")
+  })
+
+  it('carries custom menu SVG icon presets through frontend API types', () => {
+    expect(typesSource).toContain('custom_menu_svg_icon_presets?: string[]')
+    expect(adminSettingsApiSource).toContain('custom_menu_svg_icon_presets: string[]')
+    expect(adminSettingsApiSource).toContain('custom_menu_svg_icon_presets?: string[]')
+  })
+
+  it('localizes the ordering and SVG URL picker labels', () => {
+    expect(zhLocaleSource).toContain('菜单顺序')
+    expect(zhLocaleSource).toContain('SVG 图床链接')
+    expect(zhLocaleSource).toContain('已保存的 SVG 图标')
+    expect(enLocaleSource).toContain('Menu order')
+    expect(enLocaleSource).toContain('SVG image URL')
+    expect(enLocaleSource).toContain('Saved SVG icons')
+  })
+})
+
 describe('SettingsView rounded settings tabs', () => {
   it('uses rounded hover and active tab surfaces in the final global override layer', () => {
     const settingsTabBlock = styleSource.slice(

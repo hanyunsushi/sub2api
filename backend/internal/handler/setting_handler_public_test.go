@@ -126,8 +126,9 @@ func TestSettingHandler_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 
 	repo := &settingHandlerPublicRepoStub{
 		values: map[string]string{
-			service.SettingKeyAILogoCDNBaseURL:    "https://img.example.com/lobe/light",
-			service.SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png"]`,
+			service.SettingKeyAILogoCDNBaseURL:         "https://img.example.com/lobe/light",
+			service.SettingKeyCustomAILogoPresets:      `["https://img.example.com/custom/a.png"]`,
+			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
 		},
 	}
 	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
@@ -143,14 +144,16 @@ func TestSettingHandler_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 	var resp struct {
 		Code int `json:"code"`
 		Data struct {
-			AILogoCDNBaseURL    string   `json:"ai_logo_cdn_base_url"`
-			CustomAILogoPresets []string `json:"custom_ai_logo_presets"`
+			AILogoCDNBaseURL         string   `json:"ai_logo_cdn_base_url"`
+			CustomAILogoPresets      []string `json:"custom_ai_logo_presets"`
+			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
 		} `json:"data"`
 	}
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
 	require.Equal(t, 0, resp.Code)
 	require.Equal(t, "https://img.example.com/lobe/light", resp.Data.AILogoCDNBaseURL)
 	require.Equal(t, []string{"https://img.example.com/custom/a.png"}, resp.Data.CustomAILogoPresets)
+	require.Equal(t, []string{"https://img.example.com/menu/a.svg"}, resp.Data.CustomMenuSVGIconPresets)
 }
 
 func TestSettingHandler_AppendCustomAILogoPreset_PersistsServerSideLibrary(t *testing.T) {
@@ -188,6 +191,43 @@ func TestSettingHandler_AppendCustomAILogoPreset_PersistsServerSideLibrary(t *te
 		"https://img.example.com/custom/b.png",
 		"https://img.example.com/custom/a.png",
 	}, resp.Data.CustomAILogoPresets)
+}
+
+func TestSettingHandler_AppendCustomMenuSVGIconPreset_PersistsServerSideLibrary(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	repo := &settingHandlerPublicRepoStub{
+		values: map[string]string{
+			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
+		},
+	}
+	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
+
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	c.Request = httptest.NewRequest(
+		http.MethodPost,
+		"/api/v1/settings/custom-menu-svg-icon-presets",
+		strings.NewReader(`{"url":" https://img.example.com/menu/b.svg "}`),
+	)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	h.AppendCustomMenuSVGIconPreset(c)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.JSONEq(t, `["https://img.example.com/menu/b.svg","https://img.example.com/menu/a.svg"]`, repo.values[service.SettingKeyCustomMenuSVGIconPresets])
+
+	var resp struct {
+		Code int `json:"code"`
+		Data struct {
+			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
+	require.Equal(t, []string{
+		"https://img.example.com/menu/b.svg",
+		"https://img.example.com/menu/a.svg",
+	}, resp.Data.CustomMenuSVGIconPresets)
 }
 
 func TestSettingHandler_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
