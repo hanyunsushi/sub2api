@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --ai-search-sidecar-width: clamp(22rem, 36vw, 34rem);
+  --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
 }
 
 /* Newspaper appearance theme */
@@ -1505,7 +1505,7 @@ body.ai-search-panel-open .app-layout-content {
   display: flex;
   align-items: stretch;
   width: var(--ai-search-sidecar-width);
-  min-width: 22rem;
+  min-width: 34.25rem;
   border-left: 1px solid rgba(23, 21, 18, 0.18);
   background: var(--atelier-paper);
   box-shadow: -18px 0 48px -36px rgba(17, 24, 39, 0.72);
@@ -1638,7 +1638,7 @@ body.ai-search-panel-open .app-layout-content {
   text-align: center;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .ai-search-trigger-label {
     display: none;
   }
