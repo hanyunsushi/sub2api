@@ -1376,6 +1376,18 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 				response.BadRequest(c, "Custom menu item visibility must be 'user' or 'admin'")
 				return
 			}
+			switch item.OpenMode {
+			case "", "iframe":
+				items[i].OpenMode = "iframe"
+			case "redirect":
+				if strings.HasPrefix(urlTrimmed, "md:") {
+					response.BadRequest(c, "Custom menu item markdown pages must use iframe open mode")
+					return
+				}
+			default:
+				response.BadRequest(c, "Custom menu item open_mode must be 'iframe' or 'redirect'")
+				return
+			}
 			if len(item.IconSVG) > maxMenuItemIconSVGLen {
 				response.BadRequest(c, "Custom menu item icon SVG is too large (max 10KB)")
 				return

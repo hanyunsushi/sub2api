@@ -5216,6 +5216,26 @@
                     </select>
                   </div>
 
+                  <!-- Open mode -->
+                  <div>
+                    <label
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      {{ t("admin.settings.customMenu.openMode") }}
+                    </label>
+                    <select v-model="item.open_mode" class="input text-sm">
+                      <option value="iframe">
+                        {{ t("admin.settings.customMenu.openModeIframe") }}
+                      </option>
+                      <option value="redirect">
+                        {{ t("admin.settings.customMenu.openModeRedirect") }}
+                      </option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.customMenu.openModeHint") }}
+                    </p>
+                  </div>
+
                   <!-- URL (full width) -->
                   <div class="sm:col-span-2">
                     <label
@@ -7020,6 +7040,7 @@ import type {
 } from "@/api/admin/settings";
 import type {
   AdminGroup,
+  CustomMenuItem,
   LoginAgreementDocument,
   NotifyEmailEntry,
   Proxy,
@@ -7383,6 +7404,7 @@ const form = reactive<SettingsForm>({
     url: string;
     visibility: "user" | "admin";
     sort_order: number;
+    open_mode: "iframe" | "redirect";
   }>,
   custom_endpoints: [] as Array<{
     name: string;
@@ -8030,6 +8052,7 @@ function addMenuItem() {
     url: "",
     visibility: "user",
     sort_order: form.custom_menu_items.length,
+    open_mode: "iframe",
   });
 }
 
@@ -8179,6 +8202,12 @@ async function loadSettings() {
       settings.appearance_theme_default === "cloudflare"
         ? "cloudflare"
         : "newspaper";
+    form.custom_menu_items = Array.isArray(settings.custom_menu_items)
+      ? settings.custom_menu_items.map((item) => ({
+          ...item,
+          open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
+        }))
+      : [];
     form.login_agreement_mode =
       settings.login_agreement_mode === "checkbox" ? "checkbox" : "modal";
     form.login_agreement_updated_at =
@@ -8548,6 +8577,10 @@ async function saveSettings() {
       form.wechat_connect_mobile_enabled,
       form.wechat_connect_mode,
     );
+    const normalizedCustomMenuItems = form.custom_menu_items.map((item): CustomMenuItem => ({
+      ...item,
+      open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
+    }));
 
     const payload: UpdateSettingsRequest = {
       registration_enabled: form.registration_enabled,
@@ -8590,7 +8623,7 @@ async function saveSettings() {
       custom_ai_logo_presets: form.custom_ai_logo_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
-      custom_menu_items: form.custom_menu_items,
+      custom_menu_items: normalizedCustomMenuItems,
       custom_endpoints: form.custom_endpoints,
       frontend_url: form.frontend_url,
       smtp_host: form.smtp_host,

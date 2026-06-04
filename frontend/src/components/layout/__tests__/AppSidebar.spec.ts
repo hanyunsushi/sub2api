@@ -19,6 +19,16 @@ describe('AppSidebar custom SVG styles', () => {
   })
 })
 
+describe('AppSidebar custom menu open mode', () => {
+  it('renders redirect custom menu entries as external anchors without routing through the iframe page', () => {
+    expect(componentSource).toContain("openMode?: 'iframe' | 'redirect'")
+    expect(componentSource).toContain("openMode: item.open_mode === 'redirect' ? 'redirect' : 'iframe'")
+    expect(componentSource).toContain("v-if=\"item.openMode === 'redirect'\"")
+    expect(componentSource).toContain(':href="item.path"')
+    expect(componentSource).toContain('@click="handleMenuItemClick(item.path)"')
+  })
+})
+
 describe('AppSidebar header styles', () => {
   it('links only the top-left logo to the public welcome page', () => {
     const homeLinkMatch = componentSource.match(/<router-link[^>]*to="\/home"[^>]*>[\s\S]*?<\/router-link>/)
@@ -72,7 +82,7 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar .sidebar-link-active')
     expect(styleSource).toContain('.sidebar .sidebar-link-active::after')
     expect(styleSource).toContain('background: var(--sidebar-active-text);')
-    expect(styleSource).toContain('padding-left: 0.375rem;')
+    expect(styleSource).toContain('padding-left: 0.625rem;')
     expect(styleSource).toContain('margin-left: 0.625rem;')
     expect(styleSource).not.toContain('inset 3px 0 0 var(--sidebar-active-border)')
     expect(styleSource).not.toContain('color-mix(in srgb, var(--atelier-butter) 58%, transparent)')
@@ -98,6 +108,36 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar .sidebar-link-active:hover :where(svg, .sidebar-svg-icon, .sidebar-label, span)')
     expect(styleSource).toContain('color: var(--sidebar-active-text) !important;')
     expect(styleSource).toContain('-webkit-text-fill-color: currentColor !important;')
+  })
+
+  it('uses rounded hover and active surfaces instead of square full-width slabs', () => {
+    const sidebarLinkBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-link {'),
+      styleSource.indexOf('.sidebar .sidebar-link:hover {'),
+    )
+    const sidebarHoverBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar .sidebar-link:hover {'),
+      styleSource.indexOf('.sidebar .sidebar-link-active {'),
+    )
+    const sidebarActiveBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar .sidebar-link-active {'),
+      styleSource.indexOf('.sidebar .sidebar-link-active :where'),
+    )
+    const cloudflareSidebarHoverBlock = styleSource.slice(
+      styleSource.indexOf(':root.theme-cloudflare .sidebar .sidebar-link:hover {'),
+      styleSource.indexOf(':root.theme-cloudflare .sidebar .sidebar-link:hover :where'),
+    )
+
+    expect(sidebarLinkBlock).toContain('border-radius: 0.625rem;')
+    expect(sidebarLinkBlock).toContain('padding-left: 0.625rem;')
+    expect(sidebarLinkBlock).toContain('padding-right: 0.625rem;')
+    expect(sidebarHoverBlock).toContain('border-color:')
+    expect(sidebarHoverBlock).toContain('padding-left: 0.625rem;')
+    expect(sidebarActiveBlock).toContain('border-radius: 0.625rem;')
+    expect(sidebarActiveBlock).toContain('padding-left: 0.625rem;')
+    expect(sidebarActiveBlock).toContain('padding-right: 0.625rem;')
+    expect(cloudflareSidebarHoverBlock).toContain('border-color: var(--atelier-material-edge) !important;')
+    expect(cloudflareSidebarHoverBlock).not.toContain('border-bottom-color')
   })
 })
 
