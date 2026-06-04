@@ -15,7 +15,7 @@ import (
 )
 
 func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudflareAPI(t *testing.T) {
-	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Sub2API 用户知识库\n\nask ai 可以回答常见问题。\n")
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nAsk Creepee.ai 可以回答常见问题。\n")
 
 	var requestedPaths []string
 	var sawDeleteExisting bool
@@ -96,7 +96,7 @@ func TestAISearchKnowledgeSyncService_SyncOnceUploadsFilteredKnowledgeViaCloudfl
 	require.True(t, sawDeleteExisting)
 	require.True(t, sawDeleteLegacy)
 	require.Equal(t, "sub2api-user-knowledge.md", uploadedFilename)
-	require.Contains(t, uploadedContent, "ask ai 可以回答常见问题")
+	require.Contains(t, uploadedContent, "Ask Creepee.ai 可以回答常见问题")
 	require.Contains(t, uploadedMetadata, `"title"`)
 	require.Equal(t, "true", uploadedWait)
 	require.Equal(t, []string{
@@ -116,6 +116,8 @@ func TestAISearchKnowledgeSyncService_SyncOnceGeneratesKnowledgeFromCanonicalSou
 ## Cloudflare AI Search 状态
 AI Search 搜索框放在公告铃左边。
 CPA Codex Buzz TCDMX
+QLHazyCoder Mimo replace challenge mismatch
+自定义菜单 iframe 跳转 菜单顺序 SVG 图床链接
 `)
 
 	var uploadedContent string
@@ -159,10 +161,18 @@ CPA Codex Buzz TCDMX
 	})
 
 	require.NoError(t, svc.SyncOnce(context.Background()))
-	require.Contains(t, uploadedContent, "右上角有常驻的 `Ask AI` 入口")
-	require.Contains(t, uploadedContent, "点击后会在屏幕中央弹出聊天窗口")
-	require.Contains(t, uploadedContent, "每 3 天按用户版知识文档重新上传一次")
-	require.Contains(t, uploadedContent, "Cloudflare 官方聊天组件，基于知识库给出自然语言回答并附带来源")
+	require.Contains(t, uploadedContent, "右上角有常驻的 `Ask Creepee.ai` 入口")
+	require.Contains(t, uploadedContent, "右侧侧边栏")
+	require.Contains(t, uploadedContent, "助手名称是 `creepee`")
+	require.Contains(t, uploadedContent, "后台已有 Cloudflare AI Search 连接")
+	require.Contains(t, uploadedContent, "管理端的“立即同步知识库”")
+	require.Contains(t, uploadedContent, "Cloudflare 官方聊天组件承载，基于知识库给出自然语言回答并附带来源")
+	require.Contains(t, uploadedContent, "渠道监控建议优先使用低输出的 `replace` 探针")
+	require.Contains(t, uploadedContent, "challenge mismatch")
+	require.Contains(t, uploadedContent, "QLHazyCoder")
+	require.Contains(t, uploadedContent, "Mimo")
+	require.Contains(t, uploadedContent, "自定义菜单")
+	require.Contains(t, uploadedContent, "SVG 图床链接")
 	require.NotContains(t, uploadedContent, "/Users/hinaw")
 	require.NotContains(t, uploadedContent, "sha256:")
 	require.NotContains(t, uploadedContent, "本机路径")
@@ -239,7 +249,7 @@ func TestAISearchKnowledgeSyncService_SyncOnceSkipsWhenConfigurationOrFileIsMiss
 }
 
 func TestAISearchKnowledgeSyncService_SyncOnceRejectsEmailAccountIDBeforeCallingCloudflare(t *testing.T) {
-	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Sub2API 用户知识库\n\nask ai 可以回答常见问题。\n")
+	knowledgeFile := writeAISearchKnowledgeFixture(t, "# Creeper & AI 用户知识库\n\nAsk Creepee.ai 可以回答常见问题。\n")
 	var called bool
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true

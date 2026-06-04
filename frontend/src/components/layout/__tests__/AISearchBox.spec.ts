@@ -4,7 +4,19 @@ import { nextTick } from 'vue'
 
 import AISearchBox from '../AISearchBox.vue'
 
-vi.mock('@cloudflare/ai-search-snippet', () => ({}))
+vi.mock('@cloudflare/ai-search-snippet', () => {
+  if (!customElements.get('chat-page-snippet')) {
+    customElements.define(
+      'chat-page-snippet',
+      class ChatPageSnippetStub extends HTMLElement {
+        connectedCallback() {
+          if (!this.shadowRoot) this.attachShadow({ mode: 'open' })
+        }
+      },
+    )
+  }
+  return {}
+})
 
 const getSnippetConfig = vi.hoisted(() => vi.fn())
 vi.mock('@/api/aiSearch', () => ({
@@ -26,18 +38,42 @@ describe('AISearchBox chat panel interactions', () => {
     document.body.classList.remove('ai-search-locked')
   })
 
-  it('opens a centered chat panel only after clicking the resident trigger', async () => {
+  it('opens a right-side Creepee chat drawer only after clicking the resident trigger', async () => {
     const wrapper = mount(AISearchBox, { attachTo: document.body })
     await nextTick()
 
     expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
+    expect(wrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Ask Creepee.ai')
 
     await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
 
     expect(document.querySelector('[data-testid="ai-search-overlay"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-panel"]')).not.toBeNull()
     expect(document.querySelector('chat-page-snippet')).not.toBeNull()
+    expect(document.querySelector('.ai-search-panel-title')?.textContent).toContain('Ask Creepee.ai')
+    expect(document.querySelector('.ai-search-panel-subtitle')?.textContent).toContain('creepee')
+    expect(document.querySelector<HTMLImageElement>('.ai-search-panel-avatar')?.getAttribute('src')).toBe('/brand/claudecode-color.png')
     expect(document.body.classList.contains('ai-search-locked')).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('injects Claude Code avatar and orange loading styles into the snippet shadow DOM', async () => {
+    const wrapper = mount(AISearchBox, { attachTo: document.body })
+    await nextTick()
+    await wrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    await nextTick()
+
+    const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
+    const shadow = chat.shadowRoot
+    await nextTick()
+
+    const style = shadow?.querySelector('style[data-creepee-brand-style]')
+    expect(style?.textContent).toContain('/brand/claudecode-color.png')
+    expect(style?.textContent).toContain('.chat-message-assistant .chat-message-avatar')
+    expect(style?.textContent).toContain('.chat-streaming .loading-text')
+    expect(style?.textContent).toContain('#f6821f')
     wrapper.unmount()
   })
 
@@ -48,7 +84,11 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
 
     const overlay = document.querySelector('[data-testid="ai-search-overlay"]') as HTMLElement
-    overlay.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    const event =
+      typeof PointerEvent === 'function'
+        ? new PointerEvent('pointerdown', { bubbles: true })
+        : new MouseEvent('pointerdown', { bubbles: true })
+    overlay.dispatchEvent(event)
     await nextTick()
 
     expect(document.querySelector('[data-testid="ai-search-overlay"]')).toBeNull()
