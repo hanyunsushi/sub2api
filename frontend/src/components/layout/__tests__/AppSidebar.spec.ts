@@ -25,6 +25,8 @@ describe('AppSidebar custom menu open mode', () => {
     expect(componentSource).toContain("openMode: item.open_mode === 'redirect' ? 'redirect' : 'iframe'")
     expect(componentSource).toContain("v-if=\"item.openMode === 'redirect'\"")
     expect(componentSource).toContain(':href="item.path"')
+    expect(componentSource).toContain('target="_blank"')
+    expect(componentSource).toContain('rel="noopener noreferrer"')
     expect(componentSource).toContain('@click="handleMenuItemClick(item.path)"')
   })
 })
