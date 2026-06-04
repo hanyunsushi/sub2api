@@ -30,11 +30,12 @@ const cssBlock = (source: string, selector: string) => {
 }
 
 describe('AI Search box source contract', () => {
-  it('uses the Ask AI label on a resident trigger', () => {
+  it('uses the Ask Creepee.ai label on a resident trigger', () => {
     expect(componentSource).toContain('class="ai-search-trigger"')
-    expect(componentSource).toContain('aria-label="Ask AI"')
-    expect(componentSource).toContain('title="Ask AI"')
-    expect(componentSource).toContain('Ask AI')
+    expect(componentSource).toContain('aria-label="Ask Creepee.ai"')
+    expect(componentSource).toContain('title="Ask Creepee.ai"')
+    expect(componentSource).toContain('Ask Creepee.ai')
+    expect(componentSource).toContain('const creepeeName = ')
     expect(componentSource).not.toContain('placeholder="ask ai"')
     expect(componentSource).not.toContain('aria-label="ask ai"')
   })
@@ -48,18 +49,24 @@ describe('AI Search box source contract', () => {
     expect(componentSource).toContain(':translations.prop="chatTranslations"')
     expect(componentSource).toContain("import type { Translations } from '@cloudflare/ai-search-snippet'")
     expect(componentSource).toContain('const chatTranslations: Translations = {')
+    expect(componentSource).toContain("assistantAvatar: 'creepee'")
+    expect(componentSource).toContain('claudeCodeCrabAvatar')
+    expect(componentSource).toContain("'/brand/claudecode-color.png'")
+    expect(componentSource).toContain('installSnippetBrandStyles')
     expect(viteConfigSource).toContain('isCustomElement: (tag) => tag.endsWith(\'-snippet\')')
     expect(vitestConfigSource).toContain('isCustomElement: (tag) => tag.endsWith(\'-snippet\')')
     expect(componentSource).not.toContain('<search-bar-snippet')
     expect(componentSource).not.toContain('performSearch')
   })
 
-  it('renders the chat panel through a teleported modal dialog', () => {
+  it('renders the chat panel through a teleported right-side drawer', () => {
     expect(componentSource).toContain('<Teleport to="body">')
     expect(componentSource).toContain('role="dialog"')
     expect(componentSource).toContain('aria-modal="true"')
     expect(componentSource).toContain('class="ai-search-overlay"')
     expect(componentSource).toContain('class="ai-search-panel"')
+    expect(componentSource).toContain('class="ai-search-panel-brand"')
+    expect(componentSource).not.toContain('点击后会在屏幕中央弹出聊天窗口')
   })
 
   it('closes the panel by clicking outside, the close button, or Escape', () => {
@@ -92,7 +99,7 @@ describe('AI Search box source contract', () => {
     expect(componentSource).toContain("addEventListener('keydown', handleChatKeydownCapture, true)")
   })
 
-  it('styles a resident trigger plus a centered overlay panel without overlap', () => {
+  it('styles a resident trigger plus a right drawer panel without overlap', () => {
     const boxBlock = cssBlock(styleSource, '.ai-search-box')
     const triggerBlock = cssBlock(styleSource, '.ai-search-trigger')
     const overlayBlock = cssBlock(styleSource, '.ai-search-overlay')
@@ -103,10 +110,14 @@ describe('AI Search box source contract', () => {
     expect(triggerBlock).toContain('cursor: pointer;')
     expect(overlayBlock).toContain('position: fixed;')
     expect(overlayBlock).toContain('inset: 0;')
-    expect(overlayBlock).toContain('justify-content: center;')
+    expect(overlayBlock).toContain('justify-content: flex-end;')
     expect(panelBlock).toContain('flex-direction: column;')
+    expect(panelBlock).toContain('height: 100%;')
+    expect(panelBlock).toContain('border-radius: 0;')
     expect(chatBlock).toContain('--search-snippet-background: var(--atelier-paper);')
     expect(chatBlock).toContain('--search-snippet-primary-color: var(--atelier-blue);')
+    expect(styleSource).toContain('.ai-search-panel-avatar')
+    expect(styleSource).toContain('background: #f6821f;')
     expect(styleSource).toContain('body.ai-search-locked')
     expect(styleSource).not.toContain('.ai-search-manual-form')
     expect(styleSource).not.toContain('.ai-search-official-bar')
