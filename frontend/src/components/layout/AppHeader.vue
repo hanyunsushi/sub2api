@@ -458,7 +458,9 @@ const formattedBuzzExpiry = computed(() => {
 })
 
 const formattedTCDMXBalance = computed(() => {
-  return formatExternalSubscriptionBalance(tcdmxSubscription.value, canShowTCDMXSubscription.value)
+  return formatExternalSubscriptionBalance(tcdmxSubscription.value, canShowTCDMXSubscription.value, {
+    walletOnly: true,
+  })
 })
 
 const formattedTCDMXExpiry = computed(() => {

@@ -3237,11 +3237,14 @@ export default {
       notes: 'Notes',
       notesPlaceholder: 'Enter notes',
       notesHint: 'Notes are optional',
-      sortBy: 'Sort field',
-      sortDirection: 'Sort direction',
+      sortBy: 'Sort',
       sortOptions: {
         name: 'Name',
-        priority: 'Priority'
+        priority: 'Priority',
+        nameAsc: 'Name ascending',
+        nameDesc: 'Name descending',
+        priorityAsc: 'Priority ascending',
+        priorityDesc: 'Priority descending'
       },
       sortDirections: {
         asc: 'Ascending',
