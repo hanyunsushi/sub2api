@@ -730,6 +730,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyCustomEndpoints,
 		SettingKeyAILogoCDNBaseURL,
 		SettingKeyCustomAILogoPresets,
+		SettingKeyCustomMenuSVGIconPresets,
 		SettingKeyLinuxDoConnectEnabled,
 		SettingKeyDingTalkConnectEnabled,
 		SettingKeyWeChatConnectEnabled,
@@ -858,6 +859,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		CustomEndpoints:                  settings[SettingKeyCustomEndpoints],
 		AILogoCDNBaseURL:                 normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
 		CustomAILogoPresets:              parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
+		CustomMenuSVGIconPresets:         parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		LinuxDoOAuthEnabled:              linuxDoEnabled,
 		DingTalkOAuthEnabled:             dingTalkEnabled,
 		WeChatOAuthEnabled:               weChatEnabled,
@@ -1156,6 +1158,7 @@ type PublicSettingsInjectionPayload struct {
 	AppearanceThemeDefault           string                   `json:"appearance_theme_default"`
 	AILogoCDNBaseURL                 string                   `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets              []string                 `json:"custom_ai_logo_presets"`
+	CustomMenuSVGIconPresets         []string                 `json:"custom_menu_svg_icon_presets"`
 	PurchaseSubscriptionEnabled      bool                     `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL          string                   `json:"purchase_subscription_url"`
 	TableDefaultPageSize             int                      `json:"table_default_page_size"`
@@ -1224,6 +1227,7 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		AppearanceThemeDefault:           settings.AppearanceThemeDefault,
 		AILogoCDNBaseURL:                 settings.AILogoCDNBaseURL,
 		CustomAILogoPresets:              settings.CustomAILogoPresets,
+		CustomMenuSVGIconPresets:         settings.CustomMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:      settings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:          settings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:             settings.TableDefaultPageSize,
@@ -1332,6 +1336,46 @@ func customAILogoPresetURLsJSON(values []string) (string, error) {
 	return string(raw), nil
 }
 
+func parseCustomMenuSVGIconPresetURLs(raw string) []string {
+	var values []string
+	if strings.TrimSpace(raw) == "" {
+		return []string{}
+	}
+	if err := json.Unmarshal([]byte(raw), &values); err != nil {
+		return []string{}
+	}
+	return normalizeCustomMenuSVGIconPresetURLs(values)
+}
+
+func normalizeCustomMenuSVGIconPresetURLs(values []string) []string {
+	result := make([]string, 0, len(values))
+	seen := make(map[string]struct{}, len(values))
+	for _, value := range values {
+		normalized := normalizeHTTPURL(value)
+		if normalized == "" {
+			continue
+		}
+		if _, ok := seen[normalized]; ok {
+			continue
+		}
+		seen[normalized] = struct{}{}
+		result = append(result, normalized)
+		if len(result) >= 48 {
+			break
+		}
+	}
+	return result
+}
+
+func customMenuSVGIconPresetURLsJSON(values []string) (string, error) {
+	normalized := normalizeCustomMenuSVGIconPresetURLs(values)
+	raw, err := json.Marshal(normalized)
+	if err != nil {
+		return "", err
+	}
+	return string(raw), nil
+}
+
 func (s *SettingService) AppendCustomAILogoPreset(ctx context.Context, rawURL string) ([]string, error) {
 	url := normalizeHTTPURL(rawURL)
 	if url == "" {
@@ -1349,6 +1393,31 @@ func (s *SettingService) AppendCustomAILogoPreset(ctx context.Context, rawURL st
 		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
 	}
 	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomAILogoPresets: encoded}); err != nil {
+		return nil, err
+	}
+	if s.onUpdate != nil {
+		s.onUpdate()
+	}
+	return next, nil
+}
+
+func (s *SettingService) AppendCustomMenuSVGIconPreset(ctx context.Context, rawURL string) ([]string, error) {
+	url := normalizeHTTPURL(rawURL)
+	if url == "" {
+		return nil, infraerrors.BadRequest("INVALID_CUSTOM_MENU_SVG_ICON_URL", "custom menu SVG icon URL must be a valid http or https URL")
+	}
+
+	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomMenuSVGIconPresets)
+	if err != nil && !errors.Is(err, ErrSettingNotFound) {
+		return nil, err
+	}
+	current := parseCustomMenuSVGIconPresetURLs(currentRaw)
+	next := normalizeCustomMenuSVGIconPresetURLs(append([]string{url}, current...))
+	encoded, err := customMenuSVGIconPresetURLsJSON(next)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
+	}
+	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomMenuSVGIconPresets: encoded}); err != nil {
 		return nil, err
 	}
 	if s.onUpdate != nil {
@@ -1954,6 +2023,11 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
 	}
 	updates[SettingKeyCustomAILogoPresets] = customAILogoPresetsJSON
+	customMenuSVGIconPresetsJSON, err := customMenuSVGIconPresetURLsJSON(settings.CustomMenuSVGIconPresets)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
+	}
+	updates[SettingKeyCustomMenuSVGIconPresets] = customMenuSVGIconPresetsJSON
 
 	// 默认配置
 	updates[SettingKeyDefaultConcurrency] = strconv.Itoa(settings.DefaultConcurrency)
@@ -2853,6 +2927,7 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyCustomEndpoints:                           "[]",
 		SettingKeyAILogoCDNBaseURL:                          DefaultAILogoCDNBaseURL,
 		SettingKeyCustomAILogoPresets:                       "[]",
+		SettingKeyCustomMenuSVGIconPresets:                  "[]",
 		SettingKeyWeChatConnectEnabled:                      "false",
 		SettingKeyWeChatConnectAppID:                        "",
 		SettingKeyWeChatConnectAppSecret:                    "",
@@ -3057,6 +3132,7 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		CustomEndpoints:                  settings[SettingKeyCustomEndpoints],
 		AILogoCDNBaseURL:                 normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
 		CustomAILogoPresets:              parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
+		CustomMenuSVGIconPresets:         parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		BackendModeEnabled:               settings[SettingKeyBackendModeEnabled] == "true",
 	}
 	result.TableDefaultPageSize, result.TablePageSizeOptions = parseTablePreferences(

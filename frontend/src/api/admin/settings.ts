@@ -445,6 +445,7 @@ export interface SystemSettings {
   appearance_theme_default: "newspaper" | "cloudflare";
   ai_logo_cdn_base_url: string;
   custom_ai_logo_presets: string[];
+  custom_menu_svg_icon_presets: string[];
   table_default_page_size: number;
   table_page_size_options: number[];
   backend_mode_enabled: boolean;
@@ -713,6 +714,7 @@ export interface UpdateSettingsRequest {
   appearance_theme_default?: "newspaper" | "cloudflare";
   ai_logo_cdn_base_url?: string;
   custom_ai_logo_presets?: string[];
+  custom_menu_svg_icon_presets?: string[];
   table_default_page_size?: number;
   table_page_size_options?: number[];
   backend_mode_enabled?: boolean;

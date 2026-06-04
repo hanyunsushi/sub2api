@@ -222,6 +222,7 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		AppearanceThemeDefault:                 settings.AppearanceThemeDefault,
 		AILogoCDNBaseURL:                       settings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                    settings.CustomAILogoPresets,
+		CustomMenuSVGIconPresets:               settings.CustomMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:            settings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                settings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                   settings.TableDefaultPageSize,
@@ -515,6 +516,7 @@ type UpdateSettingsRequest struct {
 	AppearanceThemeDefault      *string               `json:"appearance_theme_default"`
 	AILogoCDNBaseURL            *string               `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets         *[]string             `json:"custom_ai_logo_presets"`
+	CustomMenuSVGIconPresets    *[]string             `json:"custom_menu_svg_icon_presets"`
 	PurchaseSubscriptionEnabled *bool                 `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL     *string               `json:"purchase_subscription_url"`
 	TableDefaultPageSize        int                   `json:"table_default_page_size"`
@@ -1297,6 +1299,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	if req.CustomAILogoPresets != nil {
 		customAILogoPresets = *req.CustomAILogoPresets
 	}
+	customMenuSVGIconPresets := previousSettings.CustomMenuSVGIconPresets
+	if req.CustomMenuSVGIconPresets != nil {
+		customMenuSVGIconPresets = *req.CustomMenuSVGIconPresets
+	}
 
 	// - 启用时要求 URL 合法且非空
 	// - 禁用时允许为空；若提供了 URL 也做基本校验，避免误配置
@@ -1662,6 +1668,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		AppearanceThemeDefault:                 appearanceThemeDefault,
 		AILogoCDNBaseURL:                       aiLogoCDNBaseURL,
 		CustomAILogoPresets:                    customAILogoPresets,
+		CustomMenuSVGIconPresets:               customMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:            purchaseEnabled,
 		PurchaseSubscriptionURL:                purchaseURL,
 		TableDefaultPageSize:                   req.TableDefaultPageSize,
@@ -2143,6 +2150,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		AppearanceThemeDefault:                 updatedSettings.AppearanceThemeDefault,
 		AILogoCDNBaseURL:                       updatedSettings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                    updatedSettings.CustomAILogoPresets,
+		CustomMenuSVGIconPresets:               updatedSettings.CustomMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:            updatedSettings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                updatedSettings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                   updatedSettings.TableDefaultPageSize,

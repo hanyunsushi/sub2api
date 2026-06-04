@@ -116,9 +116,10 @@ func TestSettingService_GetPublicSettings_ExposesAppearanceThemeDefault(t *testi
 func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
-			SettingKeyAILogoCDNBaseURL:       "https://img.example.com/lobe/light/",
-			SettingKeyCustomAILogoPresets:    `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
-			SettingKeyAppearanceThemeDefault: "cloudflare",
+			SettingKeyAILogoCDNBaseURL:         "https://img.example.com/lobe/light/",
+			SettingKeyCustomAILogoPresets:      `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
+			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","javascript:alert(1)","https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
+			SettingKeyAppearanceThemeDefault:   "cloudflare",
 		},
 	}
 	svc := NewSettingService(repo, &config.Config{})
@@ -130,6 +131,10 @@ func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 		"https://img.example.com/custom/a.png",
 		"https://img.example.com/custom/b.svg",
 	}, settings.CustomAILogoPresets)
+	require.Equal(t, []string{
+		"https://img.example.com/menu/a.svg",
+		"https://img.example.com/menu/b.svg",
+	}, settings.CustomMenuSVGIconPresets)
 }
 
 func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t *testing.T) {
@@ -149,6 +154,26 @@ func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t 
 	require.JSONEq(t, `["https://img.example.com/custom/b.png","https://img.example.com/custom/a.png"]`, repo.values[SettingKeyCustomAILogoPresets])
 
 	_, err = svc.AppendCustomAILogoPreset(context.Background(), "javascript:alert(1)")
+	require.Error(t, err)
+}
+
+func TestSettingService_AppendCustomMenuSVGIconPreset_NormalizesDedupesAndPersists(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	presets, err := svc.AppendCustomMenuSVGIconPreset(context.Background(), " https://img.example.com/menu/b.svg ")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/menu/b.svg",
+		"https://img.example.com/menu/a.svg",
+	}, presets)
+	require.JSONEq(t, `["https://img.example.com/menu/b.svg","https://img.example.com/menu/a.svg"]`, repo.values[SettingKeyCustomMenuSVGIconPresets])
+
+	_, err = svc.AppendCustomMenuSVGIconPreset(context.Background(), "javascript:alert(1)")
 	require.Error(t, err)
 }
 

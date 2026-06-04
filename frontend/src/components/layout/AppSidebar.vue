@@ -84,7 +84,8 @@
               :title="sidebarCollapsed ? item.label : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
@@ -105,7 +106,8 @@
               "
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
@@ -132,7 +134,8 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
@@ -145,7 +148,8 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
@@ -168,7 +172,8 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
@@ -181,7 +186,8 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
+              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
@@ -226,6 +232,7 @@ import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } 
 import VersionBadge from '@/components/common/VersionBadge.vue'
 import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'
 import { sanitizeSvg } from '@/utils/sanitize'
+import { isCustomMenuIconURL as isCustomMenuIconURLValue } from '@/utils/customMenuIconPresets'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
 
 interface NavItem {
@@ -704,6 +711,14 @@ function customMenuNavItem(item: {
   }
 }
 
+function isCustomMenuIconURL(value?: string | null): boolean {
+  return isCustomMenuIconURLValue(value)
+}
+
+function renderCustomMenuIcon(value?: string | null): string {
+  return (value ?? '').trim()
+}
+
 // buildSelfNavItems 构造用户自己的导航项（用户端主菜单和管理员的"我的账户"子菜单共享这组声明）。
 // withDashboard=true 时包含仪表盘（用户端），false 时不含（管理员的个人区已经有独立仪表盘入口）。
 //
@@ -1178,6 +1193,11 @@ onBeforeUnmount(() => {
   display: block;
   width: 1.25rem;
   height: 1.25rem;
+}
+
+.sidebar-svg-icon-image {
+  display: block;
+  object-fit: contain;
 }
 
 </style>
