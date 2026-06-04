@@ -22,7 +22,23 @@ vi.mock('@cloudflare/ai-search-snippet', () => {
                   <button class="toggle-sidebar-button" type="button"></button>
                 </div>
                 <div class="chat-page-content">
-                  <div class="container"></div>
+                  <div class="container">
+                    <div class="chat-container">
+                      <div class="chat-messages">
+                        <div class="chat-empty">
+                          <svg class="chat-empty-icon"></svg>
+                          <div class="chat-empty-title">Start a Conversation</div>
+                          <div class="chat-empty-description">Send a message to begin chatting</div>
+                        </div>
+                      </div>
+                      <div class="chat-input-area">
+                        <div class="chat-input-wrapper">
+                          <textarea class="chat-input"></textarea>
+                          <button class="chat-send-button" type="button">Send</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -72,8 +88,8 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
 
     expect(document.querySelector('[data-testid="ai-search-panel"]')).toBeNull()
-    expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Creepee')
-    expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').text()).toContain('Creepee')
+    expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Ask Creepee')
+    expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').text()).toContain('Ask Creepee')
     expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').text()).not.toContain('.ai')
 
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
@@ -146,6 +162,8 @@ describe('AISearchBox chat panel interactions', () => {
     const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
     const shadow = chat.shadowRoot
     const sidebar = shadow?.querySelector('.chat-sidebar')
+    const toggleButton = shadow?.querySelector('.toggle-sidebar-button') as HTMLButtonElement
+    const chatMain = shadow?.querySelector('.chat-main') as HTMLElement
     const style = shadow?.querySelector('style[data-creepee-brand-style]')
 
     expect(sidebar?.classList.contains('collapsed')).toBe(true)
@@ -153,6 +171,49 @@ describe('AISearchBox chat panel interactions', () => {
     expect(style?.textContent).toContain('position: absolute !important;')
     expect(style?.textContent).toContain('.chat-main')
     expect(style?.textContent).toContain('width: 100% !important;')
+
+    toggleButton.click()
+    await nextTick()
+    expect(sidebar?.classList.contains('collapsed')).toBe(false)
+
+    chatMain.dispatchEvent(new Event('pointerdown', { bubbles: true, composed: true }))
+    await nextTick()
+    expect(sidebar?.classList.contains('collapsed')).toBe(true)
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
+  it('replaces the default empty chat history with a Creepee welcome state and prompt suggestions', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    await nextTick()
+
+    const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
+    const shadow = chat.shadowRoot
+    const welcome = shadow?.querySelector('.creepee-welcome')
+    const logo = shadow?.querySelector('.creepee-welcome-logo')
+    const greeting = shadow?.querySelector('.creepee-welcome-greeting')
+    const headline = shadow?.querySelector('.creepee-welcome-headline')
+    const suggestions = shadow?.querySelectorAll('.creepee-welcome-suggestion')
+    const input = shadow?.querySelector('.chat-input') as HTMLTextAreaElement
+    const sendButton = shadow?.querySelector('.chat-send-button') as HTMLButtonElement
+    const sendClick = vi.spyOn(sendButton, 'click')
+
+    expect(welcome).not.toBeNull()
+    expect(logo?.getAttribute('src')).toBe('/brand/claudecode-color.png')
+    expect(greeting?.textContent).toMatch(/Good (morning|afternoon|evening)\./)
+    expect(headline?.textContent).toContain('What are we doing today?')
+    expect(suggestions?.length).toBeGreaterThanOrEqual(4)
+
+    ;(suggestions?.[0] as HTMLButtonElement).click()
+    await nextTick()
+    expect(input.value.trim().length).toBeGreaterThan(0)
+    expect(sendClick).toHaveBeenCalledTimes(1)
+
     triggerWrapper.unmount()
     panelWrapper.unmount()
   })
