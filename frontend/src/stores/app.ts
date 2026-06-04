@@ -23,6 +23,7 @@ export const useAppStore = defineStore('app', () => {
   const sidebarCollapsed = ref<boolean>(false)
   const mobileOpen = ref<boolean>(false)
   const sidebarNavScrollTop = ref<number>(0)
+  const aiSearchPanelOpen = ref<boolean>(false)
   const loading = ref<boolean>(false)
   const toasts = ref<Toast[]>([])
 
@@ -93,6 +94,21 @@ export const useAppStore = defineStore('app', () => {
    */
   function setSidebarNavScrollTop(scrollTop: number): void {
     sidebarNavScrollTop.value = Math.max(0, Math.round(scrollTop))
+  }
+
+  /**
+   * Keep the Creepee sidecar open state above route-level layouts.
+   */
+  function setAISearchPanelOpen(open: boolean): void {
+    aiSearchPanelOpen.value = open
+  }
+
+  function openAISearchPanel(): void {
+    setAISearchPanelOpen(true)
+  }
+
+  function closeAISearchPanel(): void {
+    setAISearchPanelOpen(false)
   }
 
   /**
@@ -239,6 +255,7 @@ export const useAppStore = defineStore('app', () => {
   function reset(): void {
     sidebarCollapsed.value = false
     sidebarNavScrollTop.value = 0
+    aiSearchPanelOpen.value = false
     loading.value = false
     loadingCount.value = 0
     toasts.value = []
@@ -427,6 +444,7 @@ export const useAppStore = defineStore('app', () => {
     sidebarCollapsed,
     mobileOpen,
     sidebarNavScrollTop,
+    aiSearchPanelOpen,
     loading,
     toasts,
 
@@ -459,6 +477,9 @@ export const useAppStore = defineStore('app', () => {
     toggleMobileSidebar,
     setMobileOpen,
     setSidebarNavScrollTop,
+    setAISearchPanelOpen,
+    openAISearchPanel,
+    closeAISearchPanel,
     setLoading,
     showToast,
     showSuccess,
