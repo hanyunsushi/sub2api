@@ -38,7 +38,7 @@ const SearchInputStub = {
 }
 
 describe('AccountTableFilters', () => {
-  it('adds account name and priority sort controls to the filter bar', async () => {
+  it('combines account name and priority sort direction into one filter control', async () => {
     const wrapper = mount(AccountTableFilters, {
       props: {
         searchQuery: '',
@@ -61,20 +61,22 @@ describe('AccountTableFilters', () => {
       }
     })
 
-    const sortSelects = wrapper.findAll('select').slice(-2)
-    expect(sortSelects).toHaveLength(2)
-    expect(sortSelects[0].text()).toContain('admin.accounts.sortOptions.name')
-    expect(sortSelects[0].text()).toContain('admin.accounts.sortOptions.priority')
-    expect(sortSelects[1].text()).toContain('admin.accounts.sortDirections.asc')
-    expect(sortSelects[1].text()).toContain('admin.accounts.sortDirections.desc')
+    const selects = wrapper.findAll('select')
+    expect(selects).toHaveLength(6)
 
-    await sortSelects[0].setValue('priority')
+    const sortSelect = selects.at(-1)!
+    expect(sortSelect.text()).toContain('admin.accounts.sortOptions.nameAsc')
+    expect(sortSelect.text()).toContain('admin.accounts.sortOptions.nameDesc')
+    expect(sortSelect.text()).toContain('admin.accounts.sortOptions.priorityAsc')
+    expect(sortSelect.text()).toContain('admin.accounts.sortOptions.priorityDesc')
+
+    await sortSelect.setValue('priority:desc')
     expect(wrapper.emitted('update:filters')?.at(-1)?.[0]).toMatchObject({
       sort_by: 'priority',
-      sort_order: 'asc'
+      sort_order: 'desc'
     })
 
-    await sortSelects[1].setValue('desc')
+    await sortSelect.setValue('name:desc')
     expect(wrapper.emitted('update:filters')?.at(-1)?.[0]).toMatchObject({
       sort_by: 'name',
       sort_order: 'desc'

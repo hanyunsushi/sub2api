@@ -3315,11 +3315,14 @@ export default {
       notes: '备注',
       notesPlaceholder: '请输入备注',
       notesHint: '备注可选',
-      sortBy: '排序字段',
-      sortDirection: '排序方向',
+      sortBy: '排序',
       sortOptions: {
         name: '名称',
-        priority: '优先级'
+        priority: '优先级',
+        nameAsc: '名称升序',
+        nameDesc: '名称降序',
+        priorityAsc: '优先级升序',
+        priorityDesc: '优先级降序'
       },
       sortDirections: {
         asc: '升序',

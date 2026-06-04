@@ -195,7 +195,8 @@ describe("AppHeader BuzzAI balance", () => {
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("TCDMX");
-    expect(chip.text()).toContain("$87.75 / $100.00");
+    expect(chip.text()).toContain("$87.75");
+    expect(chip.text()).not.toContain("/ $100.00");
     expect(chip.classes().join(" ")).toContain("balance-chip-tcdmx");
 
     await vi.advanceTimersByTimeAsync(7000);
@@ -230,7 +231,8 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("Buzz");
     expect(dropdown.text()).toContain("$87.66");
     expect(dropdown.text()).toContain("TCDMX");
-    expect(dropdown.text()).toContain("$87.75 / $100.00");
+    expect(dropdown.text()).toContain("$87.75");
+    expect(dropdown.text()).not.toContain("/ $100.00");
     expect(dropdown.text()).toContain("2026-07-08");
     expect(dropdown.text()).toContain("QL");
     expect(dropdown.text()).toContain("¥101.25");
