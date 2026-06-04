@@ -389,6 +389,12 @@ interface Props {
    */
   sortStorageKey?: string
   /**
+   * Optional externally controlled sort state for server-side tables with
+   * filter-bar sort controls.
+   */
+  externalSortKey?: string
+  externalSortOrder?: 'asc' | 'desc'
+  /**
    * Enable server-side sorting mode. When true, clicking sort headers
    * will emit 'sort' events instead of performing client-side sorting.
    */
@@ -473,6 +479,11 @@ const writePersistedSortState = (state: PersistedSortState) => {
 }
 
 const resolveInitialSortState = (): PersistedSortState | null => {
+  const controlledKey = normalizeSortKey(props.externalSortKey || '')
+  if (controlledKey) {
+    return { key: controlledKey, order: normalizeSortOrder(props.externalSortOrder) }
+  }
+
   const persisted = readPersistedSortState()
   if (persisted) return persisted
 
@@ -724,6 +735,17 @@ watch(
         sortOrder.value = 'asc'
       }
     }
+  },
+  { flush: 'post' }
+)
+
+watch(
+  () => [props.externalSortKey, props.externalSortOrder] as const,
+  ([nextKey, nextOrder]) => {
+    const key = normalizeSortKey(nextKey || '')
+    if (!key) return
+    sortKey.value = key
+    sortOrder.value = normalizeSortOrder(nextOrder)
   },
   { flush: 'post' }
 )

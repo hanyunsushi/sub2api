@@ -3237,6 +3237,16 @@ export default {
       notes: 'Notes',
       notesPlaceholder: 'Enter notes',
       notesHint: 'Notes are optional',
+      sortBy: 'Sort field',
+      sortDirection: 'Sort direction',
+      sortOptions: {
+        name: 'Name',
+        priority: 'Priority'
+      },
+      sortDirections: {
+        asc: 'Ascending',
+        desc: 'Descending'
+      },
       allPlatforms: 'All Platforms',
       allTypes: 'All Types',
       allStatus: 'All Status',
