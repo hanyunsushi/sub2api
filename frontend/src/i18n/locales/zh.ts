@@ -6124,7 +6124,7 @@ export default {
         openMode: '打开方式',
         openModeIframe: 'iframe 内嵌',
         openModeRedirect: '直接跳转',
-        openModeHint: 'iframe 会在站内页面嵌入目标链接；跳转会从侧边栏直接打开目标链接，适合不支持 iframe 的网站。',
+        openModeHint: 'iframe 会在站内页面嵌入目标链接；跳转会从侧边栏在新标签页打开目标链接，适合不支持 iframe 的网站。',
         add: '添加菜单项',
         remove: '删除',
         moveUp: '上移',

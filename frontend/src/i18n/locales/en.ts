@@ -5968,7 +5968,7 @@ export default {
         openMode: 'Open Mode',
         openModeIframe: 'Embed in iframe',
         openModeRedirect: 'Redirect',
-        openModeHint: 'Iframe embeds the page inside the console; redirect opens the target URL directly from the sidebar for sites that do not support iframe embedding.',
+        openModeHint: 'Iframe embeds the page inside the console; redirect opens the target URL in a new browser tab from the sidebar for sites that do not support iframe embedding.',
         add: 'Add Menu Item',
         remove: 'Remove',
         moveUp: 'Move Up',

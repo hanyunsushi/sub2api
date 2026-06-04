@@ -8,6 +8,8 @@ const settingsSource = readFileSync(resolve(frontendRoot, 'views/admin/SettingsV
 const typesSource = readFileSync(resolve(frontendRoot, 'types/index.ts'), 'utf8')
 const adminSettingsApiSource = readFileSync(resolve(frontendRoot, 'api/admin/settings.ts'), 'utf8')
 const styleSource = readFileSync(resolve(frontendRoot, 'style.css'), 'utf8')
+const zhLocaleSource = readFileSync(resolve(frontendRoot, 'i18n/locales/zh.ts'), 'utf8')
+const enLocaleSource = readFileSync(resolve(frontendRoot, 'i18n/locales/en.ts'), 'utf8')
 
 describe('SettingsView custom menu open mode contract', () => {
   it('exposes an iframe-or-redirect selector for every custom menu item', () => {
@@ -26,6 +28,11 @@ describe('SettingsView custom menu open mode contract', () => {
   it('carries open_mode through frontend API types', () => {
     expect(typesSource).toContain("open_mode?: 'iframe' | 'redirect'")
     expect(adminSettingsApiSource).toContain('custom_menu_items?: CustomMenuItem[]')
+  })
+
+  it('describes redirect mode as opening a new browser tab', () => {
+    expect(zhLocaleSource).toContain('跳转会从侧边栏在新标签页打开目标链接')
+    expect(enLocaleSource).toContain('redirect opens the target URL in a new browser tab from the sidebar')
   })
 })
 

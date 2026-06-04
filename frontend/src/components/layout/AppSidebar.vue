@@ -77,6 +77,8 @@
             <a
               v-else-if="item.openMode === 'redirect'"
               :href="item.path"
+              target="_blank"
+              rel="noopener noreferrer"
               class="sidebar-link mb-1"
               :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
               :title="sidebarCollapsed ? item.label : undefined"
@@ -122,6 +124,8 @@
             <a
               v-if="item.openMode === 'redirect'"
               :href="item.path"
+              target="_blank"
+              rel="noopener noreferrer"
               class="sidebar-link mb-1"
               :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
               :title="sidebarCollapsed ? item.label : undefined"
@@ -156,6 +160,8 @@
             <a
               v-if="item.openMode === 'redirect'"
               :href="item.path"
+              target="_blank"
+              rel="noopener noreferrer"
               class="sidebar-link mb-1"
               :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
               :title="sidebarCollapsed ? item.label : undefined"
