@@ -1426,6 +1426,7 @@
   position: relative;
   isolation: isolate;
   overflow: visible !important;
+  transition-property: margin-left;
 }
 
 .dark .app-layout-content {
@@ -1509,6 +1510,26 @@ body.ai-search-panel-open .app-layout-content {
   border-left: 1px solid rgba(23, 21, 18, 0.18);
   background: var(--atelier-paper);
   box-shadow: -18px 0 48px -36px rgba(17, 24, 39, 0.72);
+  contain: layout paint style;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(100%, 0, 0);
+  transition:
+    transform 180ms var(--atelier-ease),
+    opacity 120ms ease,
+    visibility 0s linear 180ms;
+  visibility: hidden;
+  will-change: transform;
+}
+
+.ai-search-sidecar.ai-search-sidecar-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 180ms var(--atelier-ease),
+    opacity 120ms ease;
+  visibility: visible;
 }
 
 .ai-search-panel {
@@ -3780,6 +3801,8 @@ body:has(.table-page-layout) :where(
   background: var(--atelier-paper-2) !important;
   box-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
   padding: 0.56rem;
+  content-visibility: auto;
+  contain-intrinsic-size: 9.5rem 20rem;
   transition: transform 0.22s var(--atelier-ease), box-shadow 0.22s var(--atelier-ease);
 }
 
