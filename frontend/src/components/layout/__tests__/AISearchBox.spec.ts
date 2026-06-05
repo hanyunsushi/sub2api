@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia, type Pinia } from 'pinia'
 import { nextTick } from 'vue'
@@ -61,6 +61,12 @@ vi.mock('@/api/aiSearch', () => ({
   default: { getSnippetConfig },
 }))
 
+async function waitForSnippetEnhancement() {
+  await flushPromises()
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+  await nextTick()
+}
+
 describe('AISearchBox chat panel interactions', () => {
   let pinia: Pinia
 
@@ -79,6 +85,7 @@ describe('AISearchBox chat panel interactions', () => {
   afterEach(() => {
     document.body.classList.remove('ai-search-locked')
     document.body.classList.remove('ai-search-panel-open')
+    document.querySelectorAll('[data-testid="ai-search-sidecar"]').forEach((node) => node.remove())
   })
 
   it('opens a right-side Creepee workspace that pushes the page layout', async () => {
@@ -86,8 +93,13 @@ describe('AISearchBox chat panel interactions', () => {
     const triggerWrapper = mount(AISearchBox, mountOptions)
     const panelWrapper = mount(AISearchPanel, mountOptions)
     await nextTick()
+    await flushPromises()
 
-    expect(document.querySelector('[data-testid="ai-search-panel"]')).toBeNull()
+    const closedSidecar = document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement
+    expect(closedSidecar).not.toBeNull()
+    expect(closedSidecar.dataset.open).toBe('false')
+    expect(closedSidecar.getAttribute('aria-hidden')).toBe('true')
+    expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
     expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').attributes('aria-label')).toBe('Ask Creepee')
     expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').text()).toContain('Ask Creepee')
     expect(triggerWrapper.get('[data-testid="ai-search-trigger"]').text()).not.toContain('.ai')
@@ -97,6 +109,8 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
 
     expect(document.querySelector('[data-testid="ai-search-sidecar"]')).not.toBeNull()
+    expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('true')
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('false')
     expect(document.querySelector('[data-testid="ai-search-panel"]')).not.toBeNull()
     expect(document.querySelector('chat-page-snippet')).not.toBeNull()
     expect(document.querySelector('.ai-search-panel-title')?.textContent).toContain('Creepee')
@@ -128,6 +142,60 @@ describe('AISearchBox chat panel interactions', () => {
     panelWrapper.unmount()
   })
 
+  it('keeps the chat snippet resident across close and reopen cycles', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+    await flushPromises()
+
+    const initialChat = document.querySelector('[data-testid="ai-search-chat"]')
+    expect(initialChat).not.toBeNull()
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    document.querySelector<HTMLButtonElement>('.ai-search-panel-close')?.click()
+    await nextTick()
+
+    const closedSidecar = document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement
+    expect(closedSidecar).not.toBeNull()
+    expect(closedSidecar.dataset.open).toBe('false')
+    expect(document.querySelector('[data-testid="ai-search-chat"]')).toBe(initialChat)
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    expect(document.querySelector('[data-testid="ai-search-chat"]')).toBe(initialChat)
+    expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('true')
+
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
+  it('does not re-fetch the snippet config when opening the resident sidecar', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+    await flushPromises()
+
+    expect(getSnippetConfig).toHaveBeenCalledTimes(1)
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    await flushPromises()
+    expect(getSnippetConfig).toHaveBeenCalledTimes(1)
+
+    document.querySelector<HTMLButtonElement>('.ai-search-panel-close')?.click()
+    await nextTick()
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    await flushPromises()
+    expect(getSnippetConfig).toHaveBeenCalledTimes(1)
+
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
   it('injects Claude Code avatar and orange loading styles into the snippet shadow DOM', async () => {
     const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
     const triggerWrapper = mount(AISearchBox, mountOptions)
@@ -135,11 +203,10 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
-    await nextTick()
+    await waitForSnippetEnhancement()
 
     const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
     const shadow = chat.shadowRoot
-    await nextTick()
 
     const style = shadow?.querySelector('style[data-creepee-brand-style]')
     expect(style?.textContent).toContain('/brand/claudecode-color.png')
@@ -157,7 +224,7 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
-    await nextTick()
+    await waitForSnippetEnhancement()
 
     const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
     const shadow = chat.shadowRoot
@@ -190,7 +257,7 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
-    await nextTick()
+    await waitForSnippetEnhancement()
 
     const chat = document.querySelector('[data-testid="ai-search-chat"]') as HTMLElement
     const shadow = chat.shadowRoot
@@ -243,7 +310,9 @@ describe('AISearchBox chat panel interactions', () => {
     await nextTick()
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await nextTick()
-    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).not.toBeNull()
+    expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('false')
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
 
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
@@ -251,7 +320,9 @@ describe('AISearchBox chat panel interactions', () => {
     const closeButton = document.querySelector('.ai-search-panel-close') as HTMLElement
     closeButton.click()
     await nextTick()
-    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).toBeNull()
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')).not.toBeNull()
+    expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('false')
+    expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
     triggerWrapper.unmount()
     panelWrapper.unmount()

@@ -1,9 +1,11 @@
 <template>
   <Teleport to="body">
     <div
-      v-if="open"
       id="creepee-ai-sidecar"
       class="ai-search-sidecar"
+      :class="{ 'ai-search-sidecar-open': open }"
+      :data-open="open ? 'true' : 'false'"
+      :aria-hidden="!open"
       data-testid="ai-search-sidecar"
     >
       <div
@@ -113,7 +115,11 @@ let refreshPromise: Promise<void> | null = null
 let lastRefreshAt = 0
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 let welcomeObserver: MutationObserver | null = null
+let welcomeObserverFrame: number | null = null
 let welcomeSessionPrepared = false
+let snippetEnhancementFrame: number | null = null
+let snippetEnhancementTimer: number | null = null
+let snippetEnhancementAttempt = 0
 
 function emptySnippetConfig(): AISearchSnippetConfig {
   return {
@@ -167,7 +173,6 @@ function attachChatImeGuard() {
   if (!el) return
   el.removeEventListener('keydown', handleChatKeydownCapture, true)
   el.addEventListener('keydown', handleChatKeydownCapture, true)
-  installSnippetBrandStyles()
 }
 
 function detachChatImeGuard() {
@@ -467,21 +472,72 @@ function customizeSnippetWelcomeState(root: ShadowRoot, prepareEmptySession = fa
 function attachSnippetWelcomeObserver(root: ShadowRoot) {
   if (welcomeObserver) return
   welcomeObserver = new MutationObserver(() => {
-    renderCreepeeWelcomeState(root)
+    if (typeof window === 'undefined') {
+      renderCreepeeWelcomeState(root)
+      return
+    }
+    if (welcomeObserverFrame !== null) return
+    welcomeObserverFrame = window.requestAnimationFrame(() => {
+      welcomeObserverFrame = null
+      renderCreepeeWelcomeState(root)
+    })
   })
-  welcomeObserver.observe(root, { childList: true, subtree: true })
+  welcomeObserver.observe(root.querySelector('.chat-messages') || root, { childList: true, subtree: true })
 }
 
 function detachSnippetWelcomeObserver() {
+  if (welcomeObserverFrame !== null && typeof window !== 'undefined') {
+    window.cancelAnimationFrame(welcomeObserverFrame)
+    welcomeObserverFrame = null
+  }
   welcomeObserver?.disconnect()
   welcomeObserver = null
 }
 
-function installSnippetBrandStyles(attempt = 0) {
+function scheduleSnippetEnhancement(delay = 0, attempt = 0) {
+  snippetEnhancementAttempt = Math.max(snippetEnhancementAttempt, attempt)
+  if (snippetEnhancementFrame !== null || snippetEnhancementTimer !== null) return
+
+  if (typeof window === 'undefined') {
+    runSnippetEnhancement(snippetEnhancementAttempt)
+    snippetEnhancementAttempt = 0
+    return
+  }
+
+  const queueFrame = () => {
+    snippetEnhancementTimer = null
+    snippetEnhancementFrame = window.requestAnimationFrame(() => {
+      const nextAttempt = snippetEnhancementAttempt
+      snippetEnhancementAttempt = 0
+      snippetEnhancementFrame = null
+      runSnippetEnhancement(nextAttempt)
+    })
+  }
+
+  if (delay > 0) {
+    snippetEnhancementTimer = window.setTimeout(queueFrame, delay)
+  } else {
+    queueFrame()
+  }
+}
+
+function cancelScheduledSnippetEnhancement() {
+  if (snippetEnhancementTimer !== null && typeof window !== 'undefined') {
+    window.clearTimeout(snippetEnhancementTimer)
+  }
+  if (snippetEnhancementFrame !== null && typeof window !== 'undefined') {
+    window.cancelAnimationFrame(snippetEnhancementFrame)
+  }
+  snippetEnhancementTimer = null
+  snippetEnhancementFrame = null
+  snippetEnhancementAttempt = 0
+}
+
+function runSnippetEnhancement(attempt = 0) {
   const root = chatRef.value?.shadowRoot
   if (!root) {
     if (attempt < 20 && typeof window !== 'undefined') {
-      window.setTimeout(() => installSnippetBrandStyles(attempt + 1), 50)
+      scheduleSnippetEnhancement(50, attempt + 1)
     }
     return
   }
@@ -494,7 +550,7 @@ function installSnippetBrandStyles(attempt = 0) {
   }
 
   if (!collapseSnippetHistorySidebar(root) && attempt < 20 && typeof window !== 'undefined') {
-    window.setTimeout(() => installSnippetBrandStyles(attempt + 1), 50)
+    scheduleSnippetEnhancement(50, attempt + 1)
   }
 
   const welcomeReady = welcomeSessionPrepared
@@ -503,7 +559,7 @@ function installSnippetBrandStyles(attempt = 0) {
   if (welcomeReady) {
     welcomeSessionPrepared = true
   } else if (attempt < 20 && typeof window !== 'undefined') {
-    window.setTimeout(() => installSnippetBrandStyles(attempt + 1), 50)
+    scheduleSnippetEnhancement(50, attempt + 1)
   }
   attachSnippetWelcomeObserver(root)
 }
@@ -524,6 +580,7 @@ onBeforeUnmount(() => {
     clearInterval(refreshTimer)
     refreshTimer = null
   }
+  cancelScheduledSnippetEnhancement()
   detachChatImeGuard()
   detachSnippetWelcomeObserver()
   document.removeEventListener('keydown', handleKeydown)
@@ -536,29 +593,24 @@ watch(open, (value) => {
     document.body.classList.toggle('ai-search-panel-open', value)
   }
   if (value) {
-    welcomeSessionPrepared = false
-    refreshSnippetConfig(true)
     nextTick(() => {
       panelRef.value?.focus?.()
       attachChatImeGuard()
-      installSnippetBrandStyles()
+      scheduleSnippetEnhancement()
     })
-  } else {
-    detachChatImeGuard()
-    detachSnippetWelcomeObserver()
   }
 })
 
 // The chat element only renders once the snippet config resolves, which can
-// land after the panel is already open. Re-attach the IME guard when the chat
-// element appears so Enter-during-composition is always intercepted.
+// land while the panel is still closed. Prepare the resident chat component in
+// the background so opening the sidecar only toggles the dock state.
 watch(
   () => snippetConfig.value.configured,
   (configured) => {
-    if (configured && open.value) {
+    if (configured) {
       nextTick(() => {
         attachChatImeGuard()
-        installSnippetBrandStyles()
+        scheduleSnippetEnhancement()
       })
     }
   },

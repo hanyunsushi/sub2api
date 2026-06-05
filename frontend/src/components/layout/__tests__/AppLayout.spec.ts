@@ -9,6 +9,27 @@ const componentSource = readFileSync(componentPath, 'utf8')
 const styleSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../../style.css'), 'utf8')
 
 describe('AppLayout route transition', () => {
+  it('does not animate AI sidecar margin squeeze across the whole page', () => {
+    expect(componentSource).toContain('transition-[margin-left]')
+    expect(componentSource).not.toContain('transition-[margin-left,margin-right]')
+    expect(styleSource).toContain('body.ai-search-panel-open .app-layout-content')
+    expect(styleSource).toContain('margin-right: var(--ai-search-sidecar-width);')
+    expect(styleSource).not.toContain('transition-property: margin-left, margin-right;')
+  })
+
+  it('skips offscreen account-card layout work during sidecar squeeze', () => {
+    const accountCardBlockStart =
+      '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr {'
+    const accountCardBlock = styleSource.slice(
+      styleSource.indexOf(accountCardBlockStart),
+      styleSource.indexOf(
+        '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
+      )
+    )
+    expect(accountCardBlock).toContain('content-visibility: auto;')
+    expect(accountCardBlock).toContain('contain-intrinsic-size:')
+  })
+
   it('stages only the right-side page content with route phase classes', () => {
     expect(componentSource).toContain(':class="[')
     expect(componentSource).toContain('`app-route-page-${pageTransitionPhase}`')

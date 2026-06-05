@@ -5,7 +5,7 @@
 
     <!-- Main Content Area -->
     <div
-      class="app-layout-content relative min-h-screen overflow-hidden transition-all duration-300"
+      class="app-layout-content relative min-h-screen overflow-hidden transition-[margin-left] duration-300"
       :class="[sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64']"
     >
       <div class="relative z-[1] min-h-screen">

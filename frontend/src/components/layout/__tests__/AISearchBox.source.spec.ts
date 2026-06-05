@@ -59,7 +59,7 @@ describe('AI Search box source contract', () => {
     expect(panelSource).toContain('assistantAvatar: creepeeLabel')
     expect(panelSource).toContain('claudeCodeCrabAvatar')
     expect(panelSource).toContain("'/brand/claudecode-color.png'")
-    expect(panelSource).toContain('installSnippetBrandStyles')
+    expect(panelSource).toContain('runSnippetEnhancement')
     expect(viteConfigSource).toContain('isCustomElement: (tag) => tag.endsWith(\'-snippet\')')
     expect(vitestConfigSource).toContain('isCustomElement: (tag) => tag.endsWith(\'-snippet\')')
     expect(panelSource).not.toContain('<search-bar-snippet')
@@ -69,6 +69,10 @@ describe('AI Search box source contract', () => {
   it('renders the chat panel through a docked right-side sidecar', () => {
     expect(panelSource).toContain('<Teleport to="body">')
     expect(panelSource).toContain('data-testid="ai-search-sidecar"')
+    expect(panelSource).toContain(':data-open="open ? \'true\' : \'false\'"')
+    expect(panelSource).toContain(':aria-hidden="!open"')
+    expect(panelSource).toContain('ai-search-sidecar-open')
+    expect(panelSource).not.toContain('v-if="open"')
     expect(panelSource).toContain('role="complementary"')
     expect(panelSource).not.toContain('aria-modal="true"')
     expect(panelSource).not.toContain('class="ai-search-overlay"')
@@ -106,6 +110,18 @@ describe('AI Search box source contract', () => {
     expect(panelSource).toContain('refreshSnippetConfig')
     expect(panelSource).toContain('setInterval')
     expect(panelSource).not.toContain('aiSearchAPI.search')
+  })
+
+  it('preheats the resident sidecar without doing config or shadow-DOM work on the opening frame', () => {
+    expect(panelSource).toContain('scheduleSnippetEnhancement')
+    expect(panelSource).toContain('requestAnimationFrame')
+    expect(panelSource).toContain('runSnippetEnhancement')
+
+    const openWatcher = panelSource.slice(panelSource.indexOf('watch(open'), panelSource.indexOf('// The chat element only renders'))
+    expect(openWatcher).not.toContain('welcomeSessionPrepared = false')
+    expect(openWatcher).not.toContain('refreshSnippetConfig(true)')
+    expect(openWatcher).not.toContain('installSnippetBrandStyles()')
+    expect(openWatcher).toContain('scheduleSnippetEnhancement()')
   })
 
   it('guards the chat input against IME composition so Enter does not submit mid-composition', () => {
@@ -174,6 +190,10 @@ describe('AI Search box source contract', () => {
     expect(sidecarBlock).toContain('right: 0;')
     expect(sidecarBlock).toContain('width: var(--ai-search-sidecar-width);')
     expect(sidecarBlock).toContain('min-width: 34.25rem;')
+    expect(sidecarBlock).toContain('transform: translate3d(100%, 0, 0);')
+    expect(sidecarBlock).toContain('contain: layout paint style;')
+    expect(styleSource).toContain('.ai-search-sidecar.ai-search-sidecar-open')
+    expect(styleSource).toContain('transform: translate3d(0, 0, 0);')
     expect(styleSource).toContain('--ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);')
     expect(styleSource).toContain('@media (max-width: 560px)')
     expect(styleSource).toContain('body.ai-search-panel-open .app-layout-content')
