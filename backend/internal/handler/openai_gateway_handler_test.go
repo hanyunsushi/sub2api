@@ -94,6 +94,20 @@ func TestOpenAIHandleStreamingAwareError_JSONEscaping(t *testing.T) {
 	}
 }
 
+func TestResolveOpenAIUsageUpstreamEndpoint_UsesForwardResultOverride(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/responses", nil)
+	c.Set(ctxKeyInboundEndpoint, NormalizeInboundEndpoint(c.Request.URL.Path))
+
+	account := &service.Account{Platform: service.PlatformOpenAI}
+	result := &service.OpenAIForwardResult{UpstreamEndpoint: " /v1/chat/completions "}
+
+	require.Equal(t, "/v1/chat/completions", resolveOpenAIUsageUpstreamEndpoint(c, account, result))
+	require.Equal(t, EndpointResponses, resolveOpenAIUsageUpstreamEndpoint(c, account, nil))
+}
+
 func TestResolveOpenAIMessagesMetadataSession_DoesNotDerivePromptCacheKey(t *testing.T) {
 	body := []byte(`{"model":"claude-sonnet-4-5","metadata":{"user_id":"claude-code-session"},"messages":[{"role":"user","content":"hello"}]}`)
 
