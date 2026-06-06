@@ -250,6 +250,10 @@ type SystemSettings struct {
 	XHYAPISubscriptionAPIBaseURL         string             `json:"xhyapi_subscription_api_base_url"`
 	XHYAPISubscriptionAPITokenConfigured bool               `json:"xhyapi_subscription_api_token_configured"`
 	XHYAPISubscriptionRefreshConfigured  bool               `json:"xhyapi_subscription_refresh_token_configured"`
+	LiustSubscriptionEnabled             bool               `json:"liust_subscription_enabled"`
+	LiustSubscriptionAPIBaseURL          string             `json:"liust_subscription_api_base_url"`
+	LiustSubscriptionAPITokenConfigured  bool               `json:"liust_subscription_api_token_configured"`
+	LiustSubscriptionRefreshConfigured   bool               `json:"liust_subscription_refresh_token_configured"`
 	SubscriptionExpiryNotifyEnabled      bool               `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled            bool               `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails             []NotifyEmailEntry `json:"account_quota_notify_emails"`

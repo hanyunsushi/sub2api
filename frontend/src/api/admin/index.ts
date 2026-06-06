@@ -35,6 +35,7 @@ import buzzBalanceAPI from './buzzBalance'
 import tcdmxSubscriptionAPI from './tcdmxSubscription'
 import qlhazycoderSubscriptionAPI from './qlhazycoderSubscription'
 import xhyapiSubscriptionAPI from './xhyapiSubscription'
+import liustSubscriptionAPI from './liustSubscription'
 
 /**
  * Unified admin API object for convenient access
@@ -71,7 +72,8 @@ export const adminAPI = {
   buzzBalance: buzzBalanceAPI,
   tcdmxSubscription: tcdmxSubscriptionAPI,
   qlhazycoderSubscription: qlhazycoderSubscriptionAPI,
-  xhyapiSubscription: xhyapiSubscriptionAPI
+  xhyapiSubscription: xhyapiSubscriptionAPI,
+  liustSubscription: liustSubscriptionAPI
 }
 
 export {
@@ -106,7 +108,8 @@ export {
   buzzBalanceAPI,
   tcdmxSubscriptionAPI,
   qlhazycoderSubscriptionAPI,
-  xhyapiSubscriptionAPI
+  xhyapiSubscriptionAPI,
+  liustSubscriptionAPI
 }
 
 export default adminAPI
@@ -121,3 +124,4 @@ export type { BuzzBalance } from './buzzBalance'
 export type { TCDMXSubscriptionStatus, TCDMXSubscriptionItem } from './tcdmxSubscription'
 export type { QLHazyCoderSubscriptionStatus, QLHazyCoderSubscriptionItem } from './qlhazycoderSubscription'
 export type { XHYAPISubscriptionStatus, XHYAPISubscriptionItem } from './xhyapiSubscription'
+export type { LiustSubscriptionStatus, LiustSubscriptionItem } from './liustSubscription'

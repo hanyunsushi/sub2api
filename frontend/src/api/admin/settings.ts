@@ -623,6 +623,10 @@ export interface SystemSettings {
   xhyapi_subscription_api_base_url: string;
   xhyapi_subscription_api_token_configured: boolean;
   xhyapi_subscription_refresh_token_configured: boolean;
+  liust_subscription_enabled: boolean;
+  liust_subscription_api_base_url: string;
+  liust_subscription_api_token_configured: boolean;
+  liust_subscription_refresh_token_configured: boolean;
   subscription_expiry_notify_enabled: boolean;
   account_quota_notify_enabled: boolean;
   account_quota_notify_emails: NotifyEmailEntry[];
@@ -874,6 +878,10 @@ export interface UpdateSettingsRequest {
   xhyapi_subscription_api_base_url?: string;
   xhyapi_subscription_api_token?: string;
   xhyapi_subscription_refresh_token?: string;
+  liust_subscription_enabled?: boolean;
+  liust_subscription_api_base_url?: string;
+  liust_subscription_api_token?: string;
+  liust_subscription_refresh_token?: string;
   subscription_expiry_notify_enabled?: boolean;
   account_quota_notify_enabled?: boolean;
   account_quota_notify_emails?: NotifyEmailEntry[];

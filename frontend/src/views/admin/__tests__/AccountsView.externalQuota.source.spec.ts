@@ -6,11 +6,12 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
-  it('loads BuzzAI, TCDMX, qlhazycoder, and XHYAPI quota summaries for matching account cards', () => {
+  it('loads BuzzAI, TCDMX, qlhazycoder, XHYAPI, and liust quota summaries for matching account cards', () => {
     expect(source).toContain("import buzzBalanceAPI")
     expect(source).toContain("import tcdmxSubscriptionAPI")
     expect(source).toContain("import qlhazycoderSubscriptionAPI")
     expect(source).toContain("import xhyapiSubscriptionAPI")
+    expect(source).toContain("import liustSubscriptionAPI")
     expect(source).toContain("fetchExternalQuotaSummaries")
     expect(source).toContain("getAccountExternalQuota")
   })
@@ -31,6 +32,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("const defaultTCDMXURL = 'https://tcdmx.com'")
     expect(source).toContain("const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'")
     expect(source).toContain("const defaultXHYAPIURL = 'https://xhyapi.com'")
+    expect(source).toContain("const defaultLiustURL = 'https://liust.xyz'")
     expect(source).not.toContain("https://buzzai.cc/dashboard/billing")
     expect(source).not.toContain("https://tcdmx.com/subscriptions")
     expect(source).not.toContain("https://shop.qlhazycoder.top")
@@ -49,6 +51,10 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('canShowXHYAPIExternalQuota')
     expect(source).toContain('xhyapiSubscription.value?.enabled')
     expect(source).toContain('xhyapiSubscription.value?.configured')
+    expect(source).toContain('canShowLiustExternalQuota')
+    expect(source).toContain('liustSubscription.value?.enabled')
+    expect(source).toContain('liustSubscription.value?.configured')
+    expect(source).toContain("if (provider === 'liust' && canShowLiustExternalQuota())")
     expect(source).toContain("if (provider === 'xhyapi' && canShowXHYAPIExternalQuota())")
     expect(source).toContain("if (provider === 'tcdmx' && canShowTCDMXExternalQuota())")
     expect(source).toContain("if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota())")
@@ -76,6 +82,14 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("label: 'XHY'")
     expect(source).toContain('xhyapiSubscription.value?.expires_at')
     expect(source).toContain("text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')")
+  })
+
+  it('formats liust account card quota with the shared external subscription display', () => {
+    expect(source).toContain("formatExternalAmount(liustSubscription.value?.remaining_usd, liustSubscription.value?.currency)")
+    expect(source).toContain("formatExternalAmount(liustSubscription.value?.total_limit_usd, liustSubscription.value?.currency)")
+    expect(source).toContain("label: 'LIUST'")
+    expect(source).toContain('liustSubscription.value?.expires_at')
+    expect(source).toContain("text.includes('liust.xyz') || text.includes('liust')")
   })
 
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {

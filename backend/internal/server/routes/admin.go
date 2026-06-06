@@ -112,6 +112,9 @@ func RegisterAdminRoutes(
 
 		// XHYAPI 订阅额度
 		registerXHYAPISubscriptionRoutes(admin, h)
+
+		// liust 订阅额度
+		registerLiustSubscriptionRoutes(admin, h)
 	}
 }
 
@@ -140,6 +143,13 @@ func registerXHYAPISubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handler
 	xhyapi := admin.Group("/xhyapi")
 	{
 		xhyapi.GET("/subscription", h.Admin.XHYAPISubscription.GetStatus)
+	}
+}
+
+func registerLiustSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	liust := admin.Group("/liust")
+	{
+		liust.GET("/subscription", h.Admin.LiustSubscription.GetStatus)
 	}
 }
 

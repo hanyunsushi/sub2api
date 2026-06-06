@@ -41,6 +41,7 @@ type AdminHandlers struct {
 	TCDMXSubscription       *admin.TCDMXSubscriptionHandler
 	QLHazyCoderSubscription *admin.QLHazyCoderSubscriptionHandler
 	XHYAPISubscription      *admin.XHYAPISubscriptionHandler
+	LiustSubscription       *admin.LiustSubscriptionHandler
 }
 
 // Handlers contains all HTTP handlers
