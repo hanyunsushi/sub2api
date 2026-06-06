@@ -284,7 +284,54 @@ func callProvider(ctx context.Context, provider, endpoint, apiKey, model, prompt
 	if provider == MonitorProviderOpenAI && apiMode == MonitorAPIModeResponses {
 		return extractOpenAIResponsesText(respBytes), string(respBytes), status, nil
 	}
+	if provider == MonitorProviderOpenAI && apiMode == MonitorAPIModeChatCompletions {
+		return extractOpenAIChatCompletionsText(respBytes), string(respBytes), status, nil
+	}
 	return gjson.GetBytes(respBytes, adapter.textPath).String(), string(respBytes), status, nil
+}
+
+// extractOpenAIChatCompletionsText 支持普通 JSON 和部分 OpenAI-compatible 上游会错误返回的 SSE。
+// QLHazyCoder 等兼容站即使请求 stream:false，也可能用 text/event-stream 包一层 delta。
+func extractOpenAIChatCompletionsText(respBytes []byte) string {
+	if text := gjson.GetBytes(respBytes, providerOpenAIChatAdapter.textPath).String(); strings.TrimSpace(text) != "" {
+		return text
+	}
+
+	var texts []string
+	forEachOpenAISSEDataPayload(string(respBytes), func(payload []byte) {
+		appendOpenAIChatCompletionText(&texts, payload)
+	})
+	if len(texts) > 0 {
+		return strings.Join(texts, "")
+	}
+	return gjson.GetBytes(respBytes, providerOpenAIChatAdapter.textPath).String()
+}
+
+func appendOpenAIChatCompletionText(texts *[]string, payload []byte) {
+	if texts == nil || !gjson.ValidBytes(payload) {
+		return
+	}
+
+	choices := gjson.GetBytes(payload, "choices")
+	if choices.IsArray() {
+		choices.ForEach(func(_, choice gjson.Result) bool {
+			appendNonEmptyText(texts, choice.Get("delta.content").String())
+			appendNonEmptyText(texts, choice.Get("message.content").String())
+			appendNonEmptyText(texts, choice.Get("text").String())
+			return true
+		})
+	}
+
+	if gjson.GetBytes(payload, "type").String() == "response.output_text.delta" {
+		appendNonEmptyText(texts, gjson.GetBytes(payload, "delta").String())
+	}
+}
+
+func appendNonEmptyText(texts *[]string, text string) {
+	if strings.TrimSpace(text) == "" {
+		return
+	}
+	*texts = append(*texts, text)
 }
 
 // extractOpenAIResponsesText 聚合 Responses API 的最终 assistant 文本。
