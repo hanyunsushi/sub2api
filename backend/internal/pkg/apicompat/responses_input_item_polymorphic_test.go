@@ -66,7 +66,8 @@ func TestResponsesToAnthropicRequest_FunctionCallObjectArguments(t *testing.T) {
 	body := []byte(`{
 		"model": "claude-opus-4-8",
 		"input": [
-			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": {"x": 1}}
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": {"x": 1}},
+			{"type": "function_call_output", "call_id": "c1", "output": "ok"}
 		]
 	}`)
 	var req ResponsesRequest
@@ -76,7 +77,7 @@ func TestResponsesToAnthropicRequest_FunctionCallObjectArguments(t *testing.T) {
 	require.NoError(t, err) // before fix: "cannot unmarshal object ... arguments of type string"
 	require.NotNil(t, anth)
 
-	require.Len(t, anth.Messages, 1)
+	require.Len(t, anth.Messages, 2)
 	var blocks []AnthropicContentBlock
 	require.NoError(t, json.Unmarshal(anth.Messages[0].Content, &blocks))
 	require.Len(t, blocks, 1)
@@ -89,7 +90,8 @@ func TestResponsesToAnthropicRequest_FunctionCallStringifiedArguments(t *testing
 	body := []byte(`{
 		"model": "claude-opus-4-8",
 		"input": [
-			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": "{\"x\":1}"}
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": "{\"x\":1}"},
+			{"type": "function_call_output", "call_id": "c1", "output": "ok"}
 		]
 	}`)
 	var req ResponsesRequest
@@ -98,7 +100,7 @@ func TestResponsesToAnthropicRequest_FunctionCallStringifiedArguments(t *testing
 	anth, err := ResponsesToAnthropicRequest(&req)
 	require.NoError(t, err)
 
-	require.Len(t, anth.Messages, 1)
+	require.Len(t, anth.Messages, 2)
 	var blocks []AnthropicContentBlock
 	require.NoError(t, json.Unmarshal(anth.Messages[0].Content, &blocks))
 	require.Len(t, blocks, 1)
@@ -109,6 +111,7 @@ func TestResponsesToAnthropicRequest_FunctionCallOutputArray(t *testing.T) {
 	body := []byte(`{
 		"model": "claude-opus-4-8",
 		"input": [
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": "{}"},
 			{"type": "function_call_output", "call_id": "c1",
 			 "output": [{"type": "output_text", "text": "result"}]}
 		]
@@ -120,9 +123,9 @@ func TestResponsesToAnthropicRequest_FunctionCallOutputArray(t *testing.T) {
 	require.NoError(t, err) // before fix: "cannot unmarshal array ... output of type string"
 	require.NotNil(t, anth)
 
-	require.Len(t, anth.Messages, 1)
+	require.Len(t, anth.Messages, 2)
 	var blocks []AnthropicContentBlock
-	require.NoError(t, json.Unmarshal(anth.Messages[0].Content, &blocks))
+	require.NoError(t, json.Unmarshal(anth.Messages[1].Content, &blocks))
 	require.Len(t, blocks, 1)
 	assert.Equal(t, "tool_result", blocks[0].Type)
 	assert.Equal(t, "toolu_c1", blocks[0].ToolUseID) // call_id is namespaced for Anthropic
@@ -134,6 +137,7 @@ func TestResponsesToAnthropicRequest_FunctionCallOutputString(t *testing.T) {
 	body := []byte(`{
 		"model": "claude-opus-4-8",
 		"input": [
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": "{}"},
 			{"type": "function_call_output", "call_id": "c1", "output": "result"}
 		]
 	}`)
@@ -143,9 +147,9 @@ func TestResponsesToAnthropicRequest_FunctionCallOutputString(t *testing.T) {
 	anth, err := ResponsesToAnthropicRequest(&req)
 	require.NoError(t, err)
 
-	require.Len(t, anth.Messages, 1)
+	require.Len(t, anth.Messages, 2)
 	var blocks []AnthropicContentBlock
-	require.NoError(t, json.Unmarshal(anth.Messages[0].Content, &blocks))
+	require.NoError(t, json.Unmarshal(anth.Messages[1].Content, &blocks))
 	require.Len(t, blocks, 1)
 	assert.JSONEq(t, `"result"`, string(blocks[0].Content))
 }
@@ -156,7 +160,8 @@ func TestResponsesToChatCompletionsRequest_FunctionCallObjectArguments(t *testin
 	body := []byte(`{
 		"model": "gpt-5.4",
 		"input": [
-			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": {"x": 1}}
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": {"x": 1}},
+			{"type": "function_call_output", "call_id": "c1", "output": "ok"}
 		]
 	}`)
 	var req ResponsesRequest
@@ -164,7 +169,7 @@ func TestResponsesToChatCompletionsRequest_FunctionCallObjectArguments(t *testin
 
 	cc, err := ResponsesToChatCompletionsRequest(&req)
 	require.NoError(t, err)
-	require.Len(t, cc.Messages, 1)
+	require.Len(t, cc.Messages, 2)
 	require.Len(t, cc.Messages[0].ToolCalls, 1)
 	// Chat Completions requires arguments to be a stringified JSON object;
 	// before the fix rawString returned "" and it degraded to "{}".
@@ -175,6 +180,7 @@ func TestResponsesToChatCompletionsRequest_FunctionCallOutputArray(t *testing.T)
 	body := []byte(`{
 		"model": "gpt-5.4",
 		"input": [
+			{"type": "function_call", "call_id": "c1", "name": "foo", "arguments": "{}"},
 			{"type": "function_call_output", "call_id": "c1",
 			 "output": [{"type": "output_text", "text": "result"}]}
 		]
@@ -184,8 +190,8 @@ func TestResponsesToChatCompletionsRequest_FunctionCallOutputArray(t *testing.T)
 
 	cc, err := ResponsesToChatCompletionsRequest(&req)
 	require.NoError(t, err)
-	require.Len(t, cc.Messages, 1)
-	assert.Equal(t, "tool", cc.Messages[0].Role)
+	require.Len(t, cc.Messages, 2)
+	assert.Equal(t, "tool", cc.Messages[1].Role)
 	// before the fix rawString returned "" → tool result content lost.
-	assert.JSONEq(t, `"result"`, string(cc.Messages[0].Content))
+	assert.JSONEq(t, `"result"`, string(cc.Messages[1].Content))
 }

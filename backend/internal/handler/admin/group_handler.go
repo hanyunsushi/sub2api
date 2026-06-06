@@ -125,7 +125,7 @@ type CreateGroupRequest struct {
 type UpdateGroupRequest struct {
 	Name             string             `json:"name"`
 	LogoURL          *string            `json:"logo_url" binding:"omitempty,max=2048"`
-	Description      string             `json:"description"`
+	Description      *string            `json:"description"`
 	Platform         string             `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity"`
 	RateMultiplier   *float64           `json:"rate_multiplier"`
 	IsExclusive      *bool              `json:"is_exclusive"`
