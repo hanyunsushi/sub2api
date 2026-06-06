@@ -553,9 +553,13 @@ type ForwardResult struct {
 	RequestID string
 	Usage     ClaudeUsage
 	Model     string
+	// BillingModel overrides cost calculation when the client-facing model and
+	// upstream model do not represent the desired pricing key.
+	BillingModel string
 	// UpstreamModel is the actual upstream model after mapping.
 	// Prefer empty when it is identical to Model; persistence normalizes equal values away as no-op mappings.
 	UpstreamModel    string
+	UpstreamEndpoint string
 	Stream           bool
 	Duration         time.Duration
 	FirstTokenMs     *int // 首字时间（流式请求）
@@ -8911,6 +8915,9 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 
 	// 确定计费模型
 	billingModel := forwardResultBillingModel(result.Model, result.UpstreamModel)
+	if result.BillingModel != "" {
+		billingModel = result.BillingModel
+	}
 	if input.BillingModelSource == BillingModelSourceChannelMapped && input.ChannelMappedModel != "" {
 		billingModel = input.ChannelMappedModel
 	}
