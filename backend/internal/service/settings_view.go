@@ -248,6 +248,14 @@ type SystemSettings struct {
 	XHYAPISubscriptionAPITokenConfigured bool
 	XHYAPISubscriptionRefreshConfigured  bool
 
+	// liust subscription display
+	LiustSubscriptionEnabled            bool
+	LiustSubscriptionAPIBaseURL         string
+	LiustSubscriptionAPIToken           string
+	LiustSubscriptionRefreshToken       string
+	LiustSubscriptionAPITokenConfigured bool
+	LiustSubscriptionRefreshConfigured  bool
+
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

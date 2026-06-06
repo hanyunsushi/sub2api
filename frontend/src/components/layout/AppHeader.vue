@@ -97,6 +97,12 @@
               XHY {{ formattedXHYAPIBalance }}
             </span>
             <span
+              v-else-if="showLiustSubscriptionInChip"
+              class="balance-liust-text text-sm font-semibold"
+            >
+              LIUST {{ formattedLiustBalance }}
+            </span>
+            <span
               v-else-if="showBuzzBalanceInChip"
               class="balance-buzz-text text-sm font-semibold"
             >
@@ -186,6 +192,19 @@
                   </div>
                   <div class="balance-expiry-text text-[11px] leading-4">
                     {{ formattedXHYAPIExpiry }}
+                  </div>
+                </div>
+              </div>
+              <div class="balance-row balance-row-liust flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-liust-text text-xs font-medium">
+                  LIUST
+                </div>
+                <div class="text-right">
+                  <div class="balance-liust-text text-sm font-semibold">
+                    {{ formattedLiustBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedLiustExpiry }}
                   </div>
                 </div>
               </div>
@@ -353,6 +372,7 @@ import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
 import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
+import liustSubscriptionAPI, { type LiustSubscriptionStatus } from '@/api/admin/liustSubscription'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -379,10 +399,12 @@ const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
 const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
+const liustSubscription = ref<LiustSubscriptionStatus | null>(null)
 const buzzBalanceLoading = ref(false)
 const tcdmxSubscriptionLoading = ref(false)
 const qlhazycoderSubscriptionLoading = ref(false)
 const xhyapiSubscriptionLoading = ref(false)
+const liustSubscriptionLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
@@ -449,12 +471,21 @@ const canShowXHYAPISubscription = computed(() => {
   )
 })
 
+const canShowLiustSubscription = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    liustSubscription.value?.enabled &&
+    liustSubscription.value?.configured
+  )
+})
+
 const balanceSlotCount = computed(() => {
   return 1 +
     (canShowBuzzBalance.value ? 1 : 0) +
     (canShowTCDMXSubscription.value ? 1 : 0) +
     (canShowQLHazyCoderSubscription.value ? 1 : 0) +
-    (canShowXHYAPISubscription.value ? 1 : 0)
+    (canShowXHYAPISubscription.value ? 1 : 0) +
+    (canShowLiustSubscription.value ? 1 : 0)
 })
 
 const currentBalanceSlot = computed(() => {
@@ -484,6 +515,16 @@ const showXHYAPISubscriptionInChip = computed(() => {
   if (canShowBuzzBalance.value) slot += 1
   if (canShowTCDMXSubscription.value) slot += 1
   if (canShowQLHazyCoderSubscription.value) slot += 1
+  return currentBalanceSlot.value === slot
+})
+
+const showLiustSubscriptionInChip = computed(() => {
+  if (!canShowLiustSubscription.value) return false
+  let slot = 1
+  if (canShowBuzzBalance.value) slot += 1
+  if (canShowTCDMXSubscription.value) slot += 1
+  if (canShowQLHazyCoderSubscription.value) slot += 1
+  if (canShowXHYAPISubscription.value) slot += 1
   return currentBalanceSlot.value === slot
 })
 
@@ -527,12 +568,25 @@ const formattedXHYAPIExpiry = computed(() => {
   return formatExternalSubscriptionExpiry(xhyapiSubscription.value, canShowXHYAPISubscription.value)
 })
 
+const formattedLiustBalance = computed(() => {
+  return formatExternalSubscriptionBalance(liustSubscription.value, canShowLiustSubscription.value, {
+    walletOnly: true,
+  })
+})
+
+const formattedLiustExpiry = computed(() => {
+  return formatExternalSubscriptionExpiry(liustSubscription.value, canShowLiustSubscription.value)
+})
+
 const balanceChipClass = computed(() => {
   if (showQLHazyCoderSubscriptionInChip.value) {
     return 'balance-chip-qlhazycoder'
   }
   if (showXHYAPISubscriptionInChip.value) {
     return 'balance-chip-xhyapi'
+  }
+  if (showLiustSubscriptionInChip.value) {
+    return 'balance-chip-liust'
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-chip-buzz'
@@ -549,6 +603,9 @@ const balanceIconClass = computed(() => {
   }
   if (showXHYAPISubscriptionInChip.value) {
     return 'balance-xhyapi-text'
+  }
+  if (showLiustSubscriptionInChip.value) {
+    return 'balance-liust-text'
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-buzz-text'
@@ -686,8 +743,21 @@ async function fetchXHYAPISubscription() {
   }
 }
 
+async function fetchLiustSubscription() {
+  if (!authStore.isAdmin || liustSubscriptionLoading.value) return
+  liustSubscriptionLoading.value = true
+  try {
+    liustSubscription.value = await liustSubscriptionAPI.getStatus()
+  } catch (error) {
+    liustSubscription.value = null
+    console.error('Failed to fetch liust subscription:', error)
+  } finally {
+    liustSubscriptionLoading.value = false
+  }
+}
+
 function formatExternalSubscriptionBalance(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | LiustSubscriptionStatus | null,
   canShow = false,
   options: { walletOnly?: boolean } = {},
 ) {
@@ -717,7 +787,7 @@ function formatExternalSubscriptionMoney(value: number, currency?: string | null
 }
 
 function formatExternalSubscriptionExpiry(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | LiustSubscriptionStatus | null,
   canShow = false,
 ) {
   if (!canShow || !subscription) return '期限未配置'
@@ -785,6 +855,7 @@ onMounted(() => {
   void fetchTCDMXSubscription()
   void fetchQLHazyCoderSubscription()
   void fetchXHYAPISubscription()
+  void fetchLiustSubscription()
   startBalanceCarousel()
 })
 
@@ -802,10 +873,12 @@ watch(
     tcdmxSubscription.value = null
     qlhazycoderSubscription.value = null
     xhyapiSubscription.value = null
+    liustSubscription.value = null
     void fetchBuzzBalance()
     void fetchTCDMXSubscription()
     void fetchQLHazyCoderSubscription()
     void fetchXHYAPISubscription()
+    void fetchLiustSubscription()
   }
 )
 </script>
@@ -912,6 +985,7 @@ watch(
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
 .balance-chip-xhyapi,
+.balance-chip-liust,
 .balance-chip-tcdmx {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
@@ -928,6 +1002,7 @@ watch(
 .balance-chip-buzz:hover,
 .balance-chip-qlhazycoder:hover,
 .balance-chip-xhyapi:hover,
+.balance-chip-liust:hover,
 .balance-chip-tcdmx:hover {
   background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
@@ -945,6 +1020,7 @@ watch(
 .balance-row-buzz,
 .balance-row-qlhazycoder,
 .balance-row-xhyapi,
+.balance-row-liust,
 .balance-row-tcdmx {
   background: var(--atelier-butter-soft);
 }
@@ -956,6 +1032,7 @@ watch(
 .balance-buzz-text,
 .balance-qlhazycoder-text,
 .balance-xhyapi-text,
+.balance-liust-text,
 .balance-tcdmx-text {
   color: var(--atelier-ink);
 }
@@ -973,10 +1050,12 @@ watch(
 .dark .balance-chip-buzz,
 .dark .balance-chip-qlhazycoder,
 .dark .balance-chip-xhyapi,
+.dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
 .dark .balance-row-xhyapi,
+.dark .balance-row-liust,
 .dark .balance-row-tcdmx {
   background: transparent;
 }
@@ -985,6 +1064,7 @@ watch(
 .dark .balance-chip-buzz:hover,
 .dark .balance-chip-qlhazycoder:hover,
 .dark .balance-chip-xhyapi:hover,
+.dark .balance-chip-liust:hover,
 .dark .balance-chip-tcdmx:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
@@ -996,6 +1076,7 @@ watch(
 .dark .balance-buzz-text,
 .dark .balance-qlhazycoder-text,
 .dark .balance-xhyapi-text,
+.dark .balance-liust-text,
 .dark .balance-tcdmx-text {
   color: var(--atelier-ink);
 }

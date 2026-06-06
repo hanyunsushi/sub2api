@@ -7,6 +7,7 @@ import buzzBalanceAPI from "@/api/admin/buzzBalance";
 import qlhazycoderSubscriptionAPI from "@/api/admin/qlhazycoderSubscription";
 import tcdmxSubscriptionAPI from "@/api/admin/tcdmxSubscription";
 import xhyapiSubscriptionAPI from "@/api/admin/xhyapiSubscription";
+import liustSubscriptionAPI from "@/api/admin/liustSubscription";
 
 const authState = vi.hoisted(() => ({
   user: {
@@ -40,6 +41,12 @@ vi.mock("@/api/admin/qlhazycoderSubscription", () => ({
 }));
 
 vi.mock("@/api/admin/xhyapiSubscription", () => ({
+  default: {
+    getStatus: vi.fn(),
+  },
+}));
+
+vi.mock("@/api/admin/liustSubscription", () => ({
   default: {
     getStatus: vi.fn(),
   },
@@ -164,6 +171,20 @@ describe("AppHeader BuzzAI balance", () => {
       subscriptions: [],
       refreshed_at: "2026-05-21T10:00:00Z",
     });
+    vi.mocked(liustSubscriptionAPI.getStatus).mockResolvedValue({
+      provider: "liust",
+      enabled: true,
+      configured: true,
+      currency: "USD",
+      site_url: "https://liust.xyz",
+      total_limit_usd: 90,
+      used_usd: 14.25,
+      remaining_usd: 75.75,
+      expires_at: "2026-09-10T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    });
   });
 
   afterEach(() => {
@@ -240,12 +261,20 @@ describe("AppHeader BuzzAI balance", () => {
     await nextTick();
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("LIUST");
+    expect(chip.text()).toContain("$75.75");
+    expect(chip.classes().join(" ")).toContain("balance-chip-liust");
+
+    await vi.advanceTimersByTimeAsync(7000);
+    await nextTick();
+
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("$42.50");
     expect(chip.text()).not.toContain("Buzz");
     expect(chip.classes().join(" ")).toContain("balance-chip-system");
   });
 
-  it("shows system, BuzzAI, TCDMX, qlhazycoder, and XHYAPI balances in a display-only hover dropdown", async () => {
+  it("shows system, BuzzAI, TCDMX, qlhazycoder, XHYAPI, and liust balances in a display-only hover dropdown", async () => {
     const wrapper = mountHeader();
     await nextTick();
     await Promise.resolve();
@@ -269,6 +298,9 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("XHY");
     expect(dropdown.text()).toContain("$66.50");
     expect(dropdown.text()).toContain("2026-08-09");
+    expect(dropdown.text()).toContain("LIUST");
+    expect(dropdown.text()).toContain("$75.75");
+    expect(dropdown.text()).toContain("2026-09-10");
     expect(dropdown.find("a").exists()).toBe(false);
     expect(dropdown.find("button").exists()).toBe(false);
   });

@@ -4071,6 +4071,104 @@
                   </div>
                 </div>
               </div>
+              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                  <div>
+                    <label
+                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("启用 liust 订阅额度", "Enable liust subscription quota") }}
+                    </label>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "读取 liust New API 控制台的订阅额度和到期时间，显示在余额栏和对应账号卡片。",
+                          "Read liust New API subscription quota and expiry for the balance panel and matching account cards.",
+                        )
+                      }}
+                    </p>
+                  </div>
+                  <Toggle v-model="form.liust_subscription_enabled" />
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("liust API Base URL", "liust API Base URL") }}
+                    </label>
+                    <input
+                      v-model="form.liust_subscription_api_base_url"
+                      type="url"
+                      class="input font-mono text-sm"
+                      placeholder="https://liust.xyz"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("liust 订阅访问 Token", "liust subscription access token") }}
+                    </label>
+                    <input
+                      v-model="form.liust_subscription_api_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.liust_subscription_api_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴可访问 liust 订阅接口的 Token', 'Paste a token that can access liust subscription APIs')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.liust_subscription_api_token_configured
+                          ? localText(
+                              "已保存 Token 不会回显，前端只拿到额度摘要。",
+                              "Saved token is never echoed; the frontend receives only the quota summary.",
+                            )
+                          : localText(
+                              "普通模型调用密钥可能不能读取订阅额度；这里需要可访问 liust 订阅接口的登录访问 Token。",
+                              "A normal model API key may not read subscription quota; this field needs a login access token that can access liust subscription APIs.",
+                            )
+                      }}
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("liust refresh_token", "liust refresh_token") }}
+                    </label>
+                    <input
+                      v-model="form.liust_subscription_refresh_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.liust_subscription_refresh_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴 liust 登录态 refresh_token', 'Paste the liust login refresh_token')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.liust_subscription_refresh_token_configured
+                          ? localText(
+                              "已保存 refresh_token 不会回显，用于 access token 过期后自动刷新。",
+                              "Saved refresh_token is never echoed; it renews the access token automatically after expiry.",
+                            )
+                          : localText(
+                              "这是登录续期凭证，不是普通 sk- 模型 API 密钥。",
+                              "This is a login renewal credential, not a normal sk- model API key.",
+                            )
+                      }}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -7546,6 +7644,8 @@ type SettingsForm = Omit<
   qlhazycoder_subscription_api_token: string;
   xhyapi_subscription_api_token: string;
   xhyapi_subscription_refresh_token: string;
+  liust_subscription_api_token: string;
+  liust_subscription_refresh_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7773,6 +7873,12 @@ const form = reactive<SettingsForm>({
   xhyapi_subscription_api_token_configured: false,
   xhyapi_subscription_refresh_token: "",
   xhyapi_subscription_refresh_token_configured: false,
+  liust_subscription_enabled: false,
+  liust_subscription_api_base_url: "https://liust.xyz",
+  liust_subscription_api_token: "",
+  liust_subscription_api_token_configured: false,
+  liust_subscription_refresh_token: "",
+  liust_subscription_refresh_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -8494,6 +8600,8 @@ async function loadSettings() {
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
     form.xhyapi_subscription_refresh_token = "";
+    form.liust_subscription_api_token = "";
+    form.liust_subscription_refresh_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -8809,6 +8917,9 @@ async function saveSettings() {
     if (!isValidHttpUrl(form.xhyapi_subscription_api_base_url)) {
       form.xhyapi_subscription_api_base_url = "https://xhyapi.com";
     }
+    if (!isValidHttpUrl(form.liust_subscription_api_base_url)) {
+      form.liust_subscription_api_base_url = "https://liust.xyz";
+    }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -9043,6 +9154,13 @@ async function saveSettings() {
         form.xhyapi_subscription_api_token || undefined,
       xhyapi_subscription_refresh_token:
         form.xhyapi_subscription_refresh_token || undefined,
+      liust_subscription_enabled: form.liust_subscription_enabled,
+      liust_subscription_api_base_url:
+        form.liust_subscription_api_base_url?.trim() || "https://liust.xyz",
+      liust_subscription_api_token:
+        form.liust_subscription_api_token || undefined,
+      liust_subscription_refresh_token:
+        form.liust_subscription_refresh_token || undefined,
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -9127,6 +9245,8 @@ async function saveSettings() {
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
     form.xhyapi_subscription_refresh_token = "";
+    form.liust_subscription_api_token = "";
+    form.liust_subscription_refresh_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

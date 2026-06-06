@@ -310,6 +310,7 @@ const (
 	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
 	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://api.qlhazycoder.top"
 	DefaultXHYAPISubscriptionAPIBaseURL      = "https://xhyapi.com"
+	DefaultLiustSubscriptionAPIBaseURL       = "https://liust.xyz"
 	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
 	defaultWeChatConnectScopes               = "snsapi_login"
@@ -2198,6 +2199,14 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken) != "" {
 		updates[SettingKeyXHYAPISubscriptionRefreshToken] = strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken)
 	}
+	updates[SettingKeyLiustSubscriptionEnabled] = strconv.FormatBool(settings.LiustSubscriptionEnabled)
+	updates[SettingKeyLiustSubscriptionAPIBaseURL] = normalizeLiustSubscriptionAPIBaseURL(settings.LiustSubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.LiustSubscriptionAPIToken) != "" {
+		updates[SettingKeyLiustSubscriptionAPIToken] = strings.TrimSpace(settings.LiustSubscriptionAPIToken)
+	}
+	if strings.TrimSpace(settings.LiustSubscriptionRefreshToken) != "" {
+		updates[SettingKeyLiustSubscriptionRefreshToken] = strings.TrimSpace(settings.LiustSubscriptionRefreshToken)
+	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -3135,6 +3144,9 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyXHYAPISubscriptionEnabled:           "false",
 		SettingKeyXHYAPISubscriptionAPIBaseURL:        DefaultXHYAPISubscriptionAPIBaseURL,
 		SettingKeyXHYAPISubscriptionRefreshToken:      "",
+		SettingKeyLiustSubscriptionEnabled:            "false",
+		SettingKeyLiustSubscriptionAPIBaseURL:         DefaultLiustSubscriptionAPIBaseURL,
+		SettingKeyLiustSubscriptionRefreshToken:       "",
 		SettingKeyAllowUserViewErrorRequests:          "false",
 	}
 
@@ -3698,6 +3710,12 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.XHYAPISubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionRefreshToken])
 	result.XHYAPISubscriptionAPITokenConfigured = result.XHYAPISubscriptionAPIToken != ""
 	result.XHYAPISubscriptionRefreshConfigured = result.XHYAPISubscriptionRefreshToken != ""
+	result.LiustSubscriptionEnabled = settings[SettingKeyLiustSubscriptionEnabled] == "true"
+	result.LiustSubscriptionAPIBaseURL = normalizeLiustSubscriptionAPIBaseURL(settings[SettingKeyLiustSubscriptionAPIBaseURL])
+	result.LiustSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionAPIToken])
+	result.LiustSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionRefreshToken])
+	result.LiustSubscriptionAPITokenConfigured = result.LiustSubscriptionAPIToken != ""
+	result.LiustSubscriptionRefreshConfigured = result.LiustSubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

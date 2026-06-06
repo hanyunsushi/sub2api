@@ -464,6 +464,12 @@ const (
 	SettingKeyXHYAPISubscriptionAPIToken     = "xhyapi_subscription_api_token"
 	SettingKeyXHYAPISubscriptionRefreshToken = "xhyapi_subscription_refresh_token"
 
+	// liust subscription display
+	SettingKeyLiustSubscriptionEnabled      = "liust_subscription_enabled"
+	SettingKeyLiustSubscriptionAPIBaseURL   = "liust_subscription_api_base_url"
+	SettingKeyLiustSubscriptionAPIToken     = "liust_subscription_api_token"
+	SettingKeyLiustSubscriptionRefreshToken = "liust_subscription_refresh_token"
+
 	// AI logo library
 	SettingKeyAILogoCDNBaseURL         = "ai_logo_cdn_base_url"
 	SettingKeyCustomAILogoPresets      = "custom_ai_logo_presets"

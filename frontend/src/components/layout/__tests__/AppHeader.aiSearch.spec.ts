@@ -7,6 +7,7 @@ import buzzBalanceAPI from '@/api/admin/buzzBalance'
 import qlhazycoderSubscriptionAPI from '@/api/admin/qlhazycoderSubscription'
 import tcdmxSubscriptionAPI from '@/api/admin/tcdmxSubscription'
 import xhyapiSubscriptionAPI from '@/api/admin/xhyapiSubscription'
+import liustSubscriptionAPI from '@/api/admin/liustSubscription'
 
 const authState = vi.hoisted(() => ({
   user: {
@@ -40,6 +41,12 @@ vi.mock('@/api/admin/qlhazycoderSubscription', () => ({
 }))
 
 vi.mock('@/api/admin/xhyapiSubscription', () => ({
+  default: {
+    getStatus: vi.fn(),
+  },
+}))
+
+vi.mock('@/api/admin/liustSubscription', () => ({
   default: {
     getStatus: vi.fn(),
   },
@@ -136,6 +143,16 @@ describe('AppHeader AI Search placement', () => {
       configured: false,
       currency: 'USD',
       site_url: 'https://xhyapi.com',
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+    })
+    vi.mocked(liustSubscriptionAPI.getStatus).mockResolvedValue({
+      provider: 'liust',
+      enabled: false,
+      configured: false,
+      currency: 'USD',
+      site_url: 'https://liust.xyz',
       used_usd: 0,
       active_count: 0,
       subscriptions: [],

@@ -285,6 +285,10 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		XHYAPISubscriptionAPIBaseURL:           settings.XHYAPISubscriptionAPIBaseURL,
 		XHYAPISubscriptionAPITokenConfigured:   settings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    settings.XHYAPISubscriptionRefreshConfigured,
+		LiustSubscriptionEnabled:               settings.LiustSubscriptionEnabled,
+		LiustSubscriptionAPIBaseURL:            settings.LiustSubscriptionAPIBaseURL,
+		LiustSubscriptionAPITokenConfigured:    settings.LiustSubscriptionAPITokenConfigured,
+		LiustSubscriptionRefreshConfigured:     settings.LiustSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -640,6 +644,10 @@ type UpdateSettingsRequest struct {
 	XHYAPISubscriptionAPIBaseURL        *string                 `json:"xhyapi_subscription_api_base_url"`
 	XHYAPISubscriptionAPIToken          string                  `json:"xhyapi_subscription_api_token"`
 	XHYAPISubscriptionRefreshToken      string                  `json:"xhyapi_subscription_refresh_token"`
+	LiustSubscriptionEnabled            *bool                   `json:"liust_subscription_enabled"`
+	LiustSubscriptionAPIBaseURL         *string                 `json:"liust_subscription_api_base_url"`
+	LiustSubscriptionAPIToken           string                  `json:"liust_subscription_api_token"`
+	LiustSubscriptionRefreshToken       string                  `json:"liust_subscription_refresh_token"`
 	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails            *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
@@ -1557,6 +1565,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	}
 	req.XHYAPISubscriptionAPIToken = strings.TrimSpace(req.XHYAPISubscriptionAPIToken)
 	req.XHYAPISubscriptionRefreshToken = strings.TrimSpace(req.XHYAPISubscriptionRefreshToken)
+	if req.LiustSubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.LiustSubscriptionAPIBaseURL)
+		req.LiustSubscriptionAPIBaseURL = &normalized
+	}
+	req.LiustSubscriptionAPIToken = strings.TrimSpace(req.LiustSubscriptionAPIToken)
+	req.LiustSubscriptionRefreshToken = strings.TrimSpace(req.LiustSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1893,6 +1907,20 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		}(),
 		XHYAPISubscriptionAPIToken:     req.XHYAPISubscriptionAPIToken,
 		XHYAPISubscriptionRefreshToken: req.XHYAPISubscriptionRefreshToken,
+		LiustSubscriptionEnabled: func() bool {
+			if req.LiustSubscriptionEnabled != nil {
+				return *req.LiustSubscriptionEnabled
+			}
+			return previousSettings.LiustSubscriptionEnabled
+		}(),
+		LiustSubscriptionAPIBaseURL: func() string {
+			if req.LiustSubscriptionAPIBaseURL != nil {
+				return *req.LiustSubscriptionAPIBaseURL
+			}
+			return previousSettings.LiustSubscriptionAPIBaseURL
+		}(),
+		LiustSubscriptionAPIToken:     req.LiustSubscriptionAPIToken,
+		LiustSubscriptionRefreshToken: req.LiustSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2249,6 +2277,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		XHYAPISubscriptionAPIBaseURL:           updatedSettings.XHYAPISubscriptionAPIBaseURL,
 		XHYAPISubscriptionAPITokenConfigured:   updatedSettings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    updatedSettings.XHYAPISubscriptionRefreshConfigured,
+		LiustSubscriptionEnabled:               updatedSettings.LiustSubscriptionEnabled,
+		LiustSubscriptionAPIBaseURL:            updatedSettings.LiustSubscriptionAPIBaseURL,
+		LiustSubscriptionAPITokenConfigured:    updatedSettings.LiustSubscriptionAPITokenConfigured,
+		LiustSubscriptionRefreshConfigured:     updatedSettings.LiustSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2783,6 +2815,18 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.XHYAPISubscriptionRefreshToken != "" {
 		changed = append(changed, "xhyapi_subscription_refresh_token")
+	}
+	if before.LiustSubscriptionEnabled != after.LiustSubscriptionEnabled {
+		changed = append(changed, "liust_subscription_enabled")
+	}
+	if before.LiustSubscriptionAPIBaseURL != after.LiustSubscriptionAPIBaseURL {
+		changed = append(changed, "liust_subscription_api_base_url")
+	}
+	if req.LiustSubscriptionAPIToken != "" {
+		changed = append(changed, "liust_subscription_api_token")
+	}
+	if req.LiustSubscriptionRefreshToken != "" {
+		changed = append(changed, "liust_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")
