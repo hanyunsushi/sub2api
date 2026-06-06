@@ -309,6 +309,7 @@ const (
 	DefaultBuzzBalanceAPIBaseURL             = "https://buzzai.cc"
 	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
 	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://api.qlhazycoder.top"
+	DefaultXHYAPISubscriptionAPIBaseURL      = "https://xhyapi.com"
 	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
 	defaultWeChatConnectScopes               = "snsapi_login"
@@ -1401,6 +1402,36 @@ func (s *SettingService) AppendCustomAILogoPreset(ctx context.Context, rawURL st
 	return next, nil
 }
 
+func (s *SettingService) DeleteCustomAILogoPreset(ctx context.Context, rawURL string) ([]string, error) {
+	url := normalizeHTTPURL(rawURL)
+	if url == "" {
+		return nil, infraerrors.BadRequest("INVALID_AI_LOGO_URL", "AI logo URL must be a valid http or https URL")
+	}
+
+	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomAILogoPresets)
+	if err != nil && !errors.Is(err, ErrSettingNotFound) {
+		return nil, err
+	}
+	current := parseCustomAILogoPresetURLs(currentRaw)
+	next := make([]string, 0, len(current))
+	for _, item := range current {
+		if item != url {
+			next = append(next, item)
+		}
+	}
+	encoded, err := customAILogoPresetURLsJSON(next)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
+	}
+	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomAILogoPresets: encoded}); err != nil {
+		return nil, err
+	}
+	if s.onUpdate != nil {
+		s.onUpdate()
+	}
+	return next, nil
+}
+
 func (s *SettingService) AppendCustomMenuSVGIconPreset(ctx context.Context, rawURL string) ([]string, error) {
 	url := normalizeHTTPURL(rawURL)
 	if url == "" {
@@ -2142,6 +2173,14 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	}
 	if strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken) != "" {
 		updates[SettingKeyQLHazyCoderSubscriptionRefreshToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken)
+	}
+	updates[SettingKeyXHYAPISubscriptionEnabled] = strconv.FormatBool(settings.XHYAPISubscriptionEnabled)
+	updates[SettingKeyXHYAPISubscriptionAPIBaseURL] = normalizeXHYAPISubscriptionAPIBaseURL(settings.XHYAPISubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.XHYAPISubscriptionAPIToken) != "" {
+		updates[SettingKeyXHYAPISubscriptionAPIToken] = strings.TrimSpace(settings.XHYAPISubscriptionAPIToken)
+	}
+	if strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken) != "" {
+		updates[SettingKeyXHYAPISubscriptionRefreshToken] = strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken)
 	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
@@ -3075,6 +3114,9 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyQLHazyCoderSubscriptionEnabled:      "false",
 		SettingKeyQLHazyCoderSubscriptionAPIBaseURL:   DefaultQLHazyCoderSubscriptionAPIBaseURL,
 		SettingKeyQLHazyCoderSubscriptionRefreshToken: "",
+		SettingKeyXHYAPISubscriptionEnabled:           "false",
+		SettingKeyXHYAPISubscriptionAPIBaseURL:        DefaultXHYAPISubscriptionAPIBaseURL,
+		SettingKeyXHYAPISubscriptionRefreshToken:      "",
 	}
 
 	return s.settingRepo.SetMultiple(ctx, defaults)
@@ -3631,6 +3673,12 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionRefreshToken])
 	result.QLHazyCoderSubscriptionAPITokenConfigured = result.QLHazyCoderSubscriptionAPIToken != ""
 	result.QLHazyCoderSubscriptionRefreshConfigured = result.QLHazyCoderSubscriptionRefreshToken != ""
+	result.XHYAPISubscriptionEnabled = settings[SettingKeyXHYAPISubscriptionEnabled] == "true"
+	result.XHYAPISubscriptionAPIBaseURL = normalizeXHYAPISubscriptionAPIBaseURL(settings[SettingKeyXHYAPISubscriptionAPIBaseURL])
+	result.XHYAPISubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionAPIToken])
+	result.XHYAPISubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionRefreshToken])
+	result.XHYAPISubscriptionAPITokenConfigured = result.XHYAPISubscriptionAPIToken != ""
+	result.XHYAPISubscriptionRefreshConfigured = result.XHYAPISubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

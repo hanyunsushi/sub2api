@@ -574,6 +574,8 @@ var ProviderSet = wire.NewSet(
 	NewAffiliateService,
 	NewBuzzBalanceService,
 	NewTCDMXSubscriptionService,
+	NewQLHazyCoderSubscriptionService,
+	NewXHYAPISubscriptionService,
 	NewAISearchConfigService,
 	ProvideAISearchService,
 	ProvideAISearchKnowledgeSyncService,

@@ -91,6 +91,12 @@
               QL {{ formattedQLHazyCoderBalance }}
             </span>
             <span
+              v-else-if="showXHYAPISubscriptionInChip"
+              class="balance-xhyapi-text text-sm font-semibold"
+            >
+              XHY {{ formattedXHYAPIBalance }}
+            </span>
+            <span
               v-else-if="showBuzzBalanceInChip"
               class="balance-buzz-text text-sm font-semibold"
             >
@@ -167,6 +173,19 @@
                   </div>
                   <div class="balance-expiry-text text-[11px] leading-4">
                     {{ formattedQLHazyCoderExpiry }}
+                  </div>
+                </div>
+              </div>
+              <div class="balance-row balance-row-xhyapi flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-xhyapi-text text-xs font-medium">
+                  XHY
+                </div>
+                <div class="text-right">
+                  <div class="balance-xhyapi-text text-sm font-semibold">
+                    {{ formattedXHYAPIBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedXHYAPIExpiry }}
                   </div>
                 </div>
               </div>
@@ -333,6 +352,7 @@ import { useAdminSettingsStore } from '@/stores/adminSettings'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
+import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -358,9 +378,11 @@ const balanceCarouselIndex = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
+const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
 const buzzBalanceLoading = ref(false)
 const tcdmxSubscriptionLoading = ref(false)
 const qlhazycoderSubscriptionLoading = ref(false)
+const xhyapiSubscriptionLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
@@ -419,11 +441,20 @@ const canShowQLHazyCoderSubscription = computed(() => {
   )
 })
 
+const canShowXHYAPISubscription = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    xhyapiSubscription.value?.enabled &&
+    xhyapiSubscription.value?.configured
+  )
+})
+
 const balanceSlotCount = computed(() => {
   return 1 +
     (canShowBuzzBalance.value ? 1 : 0) +
     (canShowTCDMXSubscription.value ? 1 : 0) +
-    (canShowQLHazyCoderSubscription.value ? 1 : 0)
+    (canShowQLHazyCoderSubscription.value ? 1 : 0) +
+    (canShowXHYAPISubscription.value ? 1 : 0)
 })
 
 const currentBalanceSlot = computed(() => {
@@ -444,6 +475,15 @@ const showQLHazyCoderSubscriptionInChip = computed(() => {
   let slot = 1
   if (canShowBuzzBalance.value) slot += 1
   if (canShowTCDMXSubscription.value) slot += 1
+  return currentBalanceSlot.value === slot
+})
+
+const showXHYAPISubscriptionInChip = computed(() => {
+  if (!canShowXHYAPISubscription.value) return false
+  let slot = 1
+  if (canShowBuzzBalance.value) slot += 1
+  if (canShowTCDMXSubscription.value) slot += 1
+  if (canShowQLHazyCoderSubscription.value) slot += 1
   return currentBalanceSlot.value === slot
 })
 
@@ -477,9 +517,22 @@ const formattedQLHazyCoderExpiry = computed(() => {
   return formatExternalSubscriptionExpiry(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value)
 })
 
+const formattedXHYAPIBalance = computed(() => {
+  return formatExternalSubscriptionBalance(xhyapiSubscription.value, canShowXHYAPISubscription.value, {
+    walletOnly: true,
+  })
+})
+
+const formattedXHYAPIExpiry = computed(() => {
+  return formatExternalSubscriptionExpiry(xhyapiSubscription.value, canShowXHYAPISubscription.value)
+})
+
 const balanceChipClass = computed(() => {
   if (showQLHazyCoderSubscriptionInChip.value) {
     return 'balance-chip-qlhazycoder'
+  }
+  if (showXHYAPISubscriptionInChip.value) {
+    return 'balance-chip-xhyapi'
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-chip-buzz'
@@ -493,6 +546,9 @@ const balanceChipClass = computed(() => {
 const balanceIconClass = computed(() => {
   if (showQLHazyCoderSubscriptionInChip.value) {
     return 'balance-qlhazycoder-text'
+  }
+  if (showXHYAPISubscriptionInChip.value) {
+    return 'balance-xhyapi-text'
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-buzz-text'
@@ -617,8 +673,21 @@ async function fetchQLHazyCoderSubscription() {
   }
 }
 
+async function fetchXHYAPISubscription() {
+  if (!authStore.isAdmin || xhyapiSubscriptionLoading.value) return
+  xhyapiSubscriptionLoading.value = true
+  try {
+    xhyapiSubscription.value = await xhyapiSubscriptionAPI.getStatus()
+  } catch (error) {
+    xhyapiSubscription.value = null
+    console.error('Failed to fetch XHYAPI subscription:', error)
+  } finally {
+    xhyapiSubscriptionLoading.value = false
+  }
+}
+
 function formatExternalSubscriptionBalance(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | null,
   canShow = false,
   options: { walletOnly?: boolean } = {},
 ) {
@@ -648,7 +717,7 @@ function formatExternalSubscriptionMoney(value: number, currency?: string | null
 }
 
 function formatExternalSubscriptionExpiry(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | null,
   canShow = false,
 ) {
   if (!canShow || !subscription) return '期限未配置'
@@ -715,6 +784,7 @@ onMounted(() => {
   void fetchBuzzBalance()
   void fetchTCDMXSubscription()
   void fetchQLHazyCoderSubscription()
+  void fetchXHYAPISubscription()
   startBalanceCarousel()
 })
 
@@ -731,9 +801,11 @@ watch(
     buzzBalance.value = null
     tcdmxSubscription.value = null
     qlhazycoderSubscription.value = null
+    xhyapiSubscription.value = null
     void fetchBuzzBalance()
     void fetchTCDMXSubscription()
     void fetchQLHazyCoderSubscription()
+    void fetchXHYAPISubscription()
   }
 )
 </script>
@@ -839,6 +911,7 @@ watch(
 
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
+.balance-chip-xhyapi,
 .balance-chip-tcdmx {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
@@ -854,6 +927,7 @@ watch(
 .balance-chip-system:hover,
 .balance-chip-buzz:hover,
 .balance-chip-qlhazycoder:hover,
+.balance-chip-xhyapi:hover,
 .balance-chip-tcdmx:hover {
   background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
@@ -870,6 +944,7 @@ watch(
 
 .balance-row-buzz,
 .balance-row-qlhazycoder,
+.balance-row-xhyapi,
 .balance-row-tcdmx {
   background: var(--atelier-butter-soft);
 }
@@ -880,6 +955,7 @@ watch(
 
 .balance-buzz-text,
 .balance-qlhazycoder-text,
+.balance-xhyapi-text,
 .balance-tcdmx-text {
   color: var(--atelier-ink);
 }
@@ -896,9 +972,11 @@ watch(
 
 .dark .balance-chip-buzz,
 .dark .balance-chip-qlhazycoder,
+.dark .balance-chip-xhyapi,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
+.dark .balance-row-xhyapi,
 .dark .balance-row-tcdmx {
   background: transparent;
 }
@@ -906,6 +984,7 @@ watch(
 .dark .balance-chip-system:hover,
 .dark .balance-chip-buzz:hover,
 .dark .balance-chip-qlhazycoder:hover,
+.dark .balance-chip-xhyapi:hover,
 .dark .balance-chip-tcdmx:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
@@ -916,6 +995,7 @@ watch(
 
 .dark .balance-buzz-text,
 .dark .balance-qlhazycoder-text,
+.dark .balance-xhyapi-text,
 .dark .balance-tcdmx-text {
   color: var(--atelier-ink);
 }

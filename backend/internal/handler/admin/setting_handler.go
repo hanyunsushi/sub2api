@@ -281,6 +281,10 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		QLHazyCoderSubscriptionAPIBaseURL:      settings.QLHazyCoderSubscriptionAPIBaseURL,
 		QLHazyCoderAPITokenConfigured:          settings.QLHazyCoderSubscriptionAPITokenConfigured,
 		QLHazyCoderRefreshConfigured:           settings.QLHazyCoderSubscriptionRefreshConfigured,
+		XHYAPISubscriptionEnabled:              settings.XHYAPISubscriptionEnabled,
+		XHYAPISubscriptionAPIBaseURL:           settings.XHYAPISubscriptionAPIBaseURL,
+		XHYAPISubscriptionAPITokenConfigured:   settings.XHYAPISubscriptionAPITokenConfigured,
+		XHYAPISubscriptionRefreshConfigured:    settings.XHYAPISubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -630,6 +634,10 @@ type UpdateSettingsRequest struct {
 	QLHazyCoderSubscriptionAPIBaseURL   *string                 `json:"qlhazycoder_subscription_api_base_url"`
 	QLHazyCoderSubscriptionAPIToken     string                  `json:"qlhazycoder_subscription_api_token"`
 	QLHazyCoderSubscriptionRefreshToken string                  `json:"qlhazycoder_subscription_refresh_token"`
+	XHYAPISubscriptionEnabled           *bool                   `json:"xhyapi_subscription_enabled"`
+	XHYAPISubscriptionAPIBaseURL        *string                 `json:"xhyapi_subscription_api_base_url"`
+	XHYAPISubscriptionAPIToken          string                  `json:"xhyapi_subscription_api_token"`
+	XHYAPISubscriptionRefreshToken      string                  `json:"xhyapi_subscription_refresh_token"`
 	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails            *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
@@ -1539,6 +1547,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 	}
 	req.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(req.QLHazyCoderSubscriptionAPIToken)
 	req.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(req.QLHazyCoderSubscriptionRefreshToken)
+	if req.XHYAPISubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.XHYAPISubscriptionAPIBaseURL)
+		req.XHYAPISubscriptionAPIBaseURL = &normalized
+	}
+	req.XHYAPISubscriptionAPIToken = strings.TrimSpace(req.XHYAPISubscriptionAPIToken)
+	req.XHYAPISubscriptionRefreshToken = strings.TrimSpace(req.XHYAPISubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1855,6 +1869,20 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		}(),
 		QLHazyCoderSubscriptionAPIToken:     req.QLHazyCoderSubscriptionAPIToken,
 		QLHazyCoderSubscriptionRefreshToken: req.QLHazyCoderSubscriptionRefreshToken,
+		XHYAPISubscriptionEnabled: func() bool {
+			if req.XHYAPISubscriptionEnabled != nil {
+				return *req.XHYAPISubscriptionEnabled
+			}
+			return previousSettings.XHYAPISubscriptionEnabled
+		}(),
+		XHYAPISubscriptionAPIBaseURL: func() string {
+			if req.XHYAPISubscriptionAPIBaseURL != nil {
+				return *req.XHYAPISubscriptionAPIBaseURL
+			}
+			return previousSettings.XHYAPISubscriptionAPIBaseURL
+		}(),
+		XHYAPISubscriptionAPIToken:     req.XHYAPISubscriptionAPIToken,
+		XHYAPISubscriptionRefreshToken: req.XHYAPISubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2207,6 +2235,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		QLHazyCoderSubscriptionAPIBaseURL:      updatedSettings.QLHazyCoderSubscriptionAPIBaseURL,
 		QLHazyCoderAPITokenConfigured:          updatedSettings.QLHazyCoderSubscriptionAPITokenConfigured,
 		QLHazyCoderRefreshConfigured:           updatedSettings.QLHazyCoderSubscriptionRefreshConfigured,
+		XHYAPISubscriptionEnabled:              updatedSettings.XHYAPISubscriptionEnabled,
+		XHYAPISubscriptionAPIBaseURL:           updatedSettings.XHYAPISubscriptionAPIBaseURL,
+		XHYAPISubscriptionAPITokenConfigured:   updatedSettings.XHYAPISubscriptionAPITokenConfigured,
+		XHYAPISubscriptionRefreshConfigured:    updatedSettings.XHYAPISubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2728,6 +2760,18 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.QLHazyCoderSubscriptionRefreshToken != "" {
 		changed = append(changed, "qlhazycoder_subscription_refresh_token")
+	}
+	if before.XHYAPISubscriptionEnabled != after.XHYAPISubscriptionEnabled {
+		changed = append(changed, "xhyapi_subscription_enabled")
+	}
+	if before.XHYAPISubscriptionAPIBaseURL != after.XHYAPISubscriptionAPIBaseURL {
+		changed = append(changed, "xhyapi_subscription_api_base_url")
+	}
+	if req.XHYAPISubscriptionAPIToken != "" {
+		changed = append(changed, "xhyapi_subscription_api_token")
+	}
+	if req.XHYAPISubscriptionRefreshToken != "" {
+		changed = append(changed, "xhyapi_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

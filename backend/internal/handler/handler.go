@@ -40,6 +40,7 @@ type AdminHandlers struct {
 	BuzzBalance             *admin.BuzzBalanceHandler
 	TCDMXSubscription       *admin.TCDMXSubscriptionHandler
 	QLHazyCoderSubscription *admin.QLHazyCoderSubscriptionHandler
+	XHYAPISubscription      *admin.XHYAPISubscriptionHandler
 }
 
 // Handlers contains all HTTP handlers

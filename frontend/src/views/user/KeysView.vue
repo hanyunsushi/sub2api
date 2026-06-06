@@ -88,13 +88,13 @@
 
           <template #cell-name="{ value, row }">
             <div class="entity-name-with-logo">
-              <img
+              <span
                 v-if="row.logo_url"
-                :src="row.logo_url"
-                alt=""
-                class="entity-logo"
-                loading="lazy"
-              />
+                class="entity-logo-shell"
+                :title="row.name"
+              >
+                <ProviderBrandIcon :provider="row.name" :model="row.name" :logo-url="row.logo_url" />
+              </span>
               <Icon v-else name="key" size="sm" class="entity-logo-fallback" />
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <Icon
@@ -1080,6 +1080,7 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 	import Select from '@/components/common/Select.vue'
 	import SearchInput from '@/components/common/SearchInput.vue'
 	import LogoPicker from '@/components/common/LogoPicker.vue'
+	import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 	import Icon from '@/components/icons/Icon.vue'
 	import UseKeyModal from '@/components/keys/UseKeyModal.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
