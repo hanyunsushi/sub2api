@@ -34,6 +34,7 @@ import riskControlAPI from './riskControl'
 import buzzBalanceAPI from './buzzBalance'
 import tcdmxSubscriptionAPI from './tcdmxSubscription'
 import qlhazycoderSubscriptionAPI from './qlhazycoderSubscription'
+import xhyapiSubscriptionAPI from './xhyapiSubscription'
 
 /**
  * Unified admin API object for convenient access
@@ -69,7 +70,8 @@ export const adminAPI = {
   riskControl: riskControlAPI,
   buzzBalance: buzzBalanceAPI,
   tcdmxSubscription: tcdmxSubscriptionAPI,
-  qlhazycoderSubscription: qlhazycoderSubscriptionAPI
+  qlhazycoderSubscription: qlhazycoderSubscriptionAPI,
+  xhyapiSubscription: xhyapiSubscriptionAPI
 }
 
 export {
@@ -103,7 +105,8 @@ export {
   riskControlAPI,
   buzzBalanceAPI,
   tcdmxSubscriptionAPI,
-  qlhazycoderSubscriptionAPI
+  qlhazycoderSubscriptionAPI,
+  xhyapiSubscriptionAPI
 }
 
 export default adminAPI
@@ -117,3 +120,4 @@ export type { ContentModerationConfig, ContentModerationLog, ModerationMode } fr
 export type { BuzzBalance } from './buzzBalance'
 export type { TCDMXSubscriptionStatus, TCDMXSubscriptionItem } from './tcdmxSubscription'
 export type { QLHazyCoderSubscriptionStatus, QLHazyCoderSubscriptionItem } from './qlhazycoderSubscription'
+export type { XHYAPISubscriptionStatus, XHYAPISubscriptionItem } from './xhyapiSubscription'

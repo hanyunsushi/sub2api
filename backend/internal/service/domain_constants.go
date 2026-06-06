@@ -458,6 +458,12 @@ const (
 	SettingKeyQLHazyCoderSubscriptionAPIToken     = "qlhazycoder_subscription_api_token"
 	SettingKeyQLHazyCoderSubscriptionRefreshToken = "qlhazycoder_subscription_refresh_token"
 
+	// XHYAPI subscription display
+	SettingKeyXHYAPISubscriptionEnabled      = "xhyapi_subscription_enabled"
+	SettingKeyXHYAPISubscriptionAPIBaseURL   = "xhyapi_subscription_api_base_url"
+	SettingKeyXHYAPISubscriptionAPIToken     = "xhyapi_subscription_api_token"
+	SettingKeyXHYAPISubscriptionRefreshToken = "xhyapi_subscription_refresh_token"
+
 	// AI logo library
 	SettingKeyAILogoCDNBaseURL         = "ai_logo_cdn_base_url"
 	SettingKeyCustomAILogoPresets      = "custom_ai_logo_presets"

@@ -1,11 +1,14 @@
 <template>
   <span
-    class="provider-brand-icon"
+    :class="[
+      'provider-brand-icon',
+      shouldUseTransparentShell ? 'provider-brand-transparent-shell' : '',
+    ]"
     :title="title"
     :aria-label="title"
     :style="{
-      backgroundColor: brand.background,
-      borderColor: brand.border,
+      backgroundColor: shouldUseTransparentShell ? 'transparent' : brand.background,
+      borderColor: shouldUseTransparentShell ? 'transparent' : brand.border,
       color: brand.color,
     }"
   >
@@ -55,6 +58,12 @@ const brand = computed(() => {
 })
 const title = computed(() => props.provider || props.model || 'Provider')
 const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
+const transparentSystemLogoIds = ['openai', 'claude', 'anthropic']
+const shouldUseTransparentShell = computed(() => {
+  if (imageMode.value !== 'system') return false
+  const value = `${props.provider || ''} ${props.model || ''} ${brand.value.iconUrl || ''}`.toLowerCase()
+  return transparentSystemLogoIds.some((id) => value.includes(id))
+})
 </script>
 
 <style scoped>
@@ -87,6 +96,11 @@ const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 
   @apply object-cover;
   width: 100%;
   height: 100%;
+}
+
+.provider-brand-transparent-shell {
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
 .provider-brand-tile {

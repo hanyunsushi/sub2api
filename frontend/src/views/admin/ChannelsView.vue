@@ -59,13 +59,13 @@
         >
           <template #cell-name="{ row, value }">
             <span class="entity-name-with-logo">
-              <img
+              <span
                 v-if="row.logo_url"
-                :src="row.logo_url"
-                alt=""
-                class="entity-logo"
-                loading="lazy"
-              />
+                class="entity-logo-shell"
+                :title="row.name"
+              >
+                <ProviderBrandIcon :provider="row.name" :model="row.name" :logo-url="row.logo_url" />
+              </span>
               <Icon v-else name="globe" size="sm" class="entity-logo-fallback" />
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
             </span>
@@ -667,6 +667,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import LogoPicker from '@/components/common/LogoPicker.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import Toggle from '@/components/common/Toggle.vue'

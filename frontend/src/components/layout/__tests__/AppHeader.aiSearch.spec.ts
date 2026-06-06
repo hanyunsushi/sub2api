@@ -4,7 +4,9 @@ import { nextTick } from 'vue'
 
 import AppHeader from '../AppHeader.vue'
 import buzzBalanceAPI from '@/api/admin/buzzBalance'
+import qlhazycoderSubscriptionAPI from '@/api/admin/qlhazycoderSubscription'
 import tcdmxSubscriptionAPI from '@/api/admin/tcdmxSubscription'
+import xhyapiSubscriptionAPI from '@/api/admin/xhyapiSubscription'
 
 const authState = vi.hoisted(() => ({
   user: {
@@ -26,6 +28,18 @@ vi.mock('@/api/admin/buzzBalance', () => ({
 }))
 
 vi.mock('@/api/admin/tcdmxSubscription', () => ({
+  default: {
+    getStatus: vi.fn(),
+  },
+}))
+
+vi.mock('@/api/admin/qlhazycoderSubscription', () => ({
+  default: {
+    getStatus: vi.fn(),
+  },
+}))
+
+vi.mock('@/api/admin/xhyapiSubscription', () => ({
   default: {
     getStatus: vi.fn(),
   },
@@ -102,6 +116,26 @@ describe('AppHeader AI Search placement', () => {
       configured: false,
       currency: 'USD',
       site_url: 'https://tcdmx.com/subscriptions',
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+    })
+    vi.mocked(qlhazycoderSubscriptionAPI.getStatus).mockResolvedValue({
+      provider: 'qlhazycoder',
+      enabled: false,
+      configured: false,
+      currency: 'CNY',
+      site_url: 'https://api.qlhazycoder.top',
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+    })
+    vi.mocked(xhyapiSubscriptionAPI.getStatus).mockResolvedValue({
+      provider: 'xhyapi',
+      enabled: false,
+      configured: false,
+      currency: 'USD',
+      site_url: 'https://xhyapi.com',
       used_usd: 0,
       active_count: 0,
       subscriptions: [],

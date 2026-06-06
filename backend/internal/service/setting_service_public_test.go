@@ -157,6 +157,31 @@ func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t 
 	require.Error(t, err)
 }
 
+func TestSettingService_DeleteCustomAILogoPreset_NormalizesRemovesAndPersists(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png","https://img.example.com/custom/b.png"]`,
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	presets, err := svc.DeleteCustomAILogoPreset(context.Background(), " https://img.example.com/custom/a.png ")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/custom/b.png",
+	}, presets)
+	require.JSONEq(t, `["https://img.example.com/custom/b.png"]`, repo.values[SettingKeyCustomAILogoPresets])
+
+	presets, err = svc.DeleteCustomAILogoPreset(context.Background(), "https://img.example.com/custom/missing.png")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/custom/b.png",
+	}, presets)
+
+	_, err = svc.DeleteCustomAILogoPreset(context.Background(), "javascript:alert(1)")
+	require.Error(t, err)
+}
+
 func TestSettingService_AppendCustomMenuSVGIconPreset_NormalizesDedupesAndPersists(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{

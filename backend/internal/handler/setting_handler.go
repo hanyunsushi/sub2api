@@ -129,6 +129,26 @@ func (h *SettingHandler) AppendCustomAILogoPreset(c *gin.Context) {
 	})
 }
 
+// DeleteCustomAILogoPreset removes a custom AI logo URL from the shared server-side preset library.
+// DELETE /api/v1/settings/ai-logo-presets
+func (h *SettingHandler) DeleteCustomAILogoPreset(c *gin.Context) {
+	var req appendCustomAILogoPresetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	presets, err := h.settingService.DeleteCustomAILogoPreset(c.Request.Context(), req.URL)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{
+		"custom_ai_logo_presets": presets,
+	})
+}
+
 // AppendCustomMenuSVGIconPreset appends a custom menu SVG icon URL to the shared server-side preset library.
 // POST /api/v1/settings/custom-menu-svg-icon-presets
 func (h *SettingHandler) AppendCustomMenuSVGIconPreset(c *gin.Context) {

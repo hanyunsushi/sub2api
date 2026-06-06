@@ -240,6 +240,14 @@ type SystemSettings struct {
 	QLHazyCoderSubscriptionAPITokenConfigured bool
 	QLHazyCoderSubscriptionRefreshConfigured  bool
 
+	// XHYAPI subscription display
+	XHYAPISubscriptionEnabled            bool
+	XHYAPISubscriptionAPIBaseURL         string
+	XHYAPISubscriptionAPIToken           string
+	XHYAPISubscriptionRefreshToken       string
+	XHYAPISubscriptionAPITokenConfigured bool
+	XHYAPISubscriptionRefreshConfigured  bool
+
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

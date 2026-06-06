@@ -109,6 +109,9 @@ func RegisterAdminRoutes(
 
 		// qlhazycoder 订阅额度
 		registerQLHazyCoderSubscriptionRoutes(admin, h)
+
+		// XHYAPI 订阅额度
+		registerXHYAPISubscriptionRoutes(admin, h)
 	}
 }
 
@@ -130,6 +133,13 @@ func registerQLHazyCoderSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Ha
 	qlhazycoder := admin.Group("/qlhazycoder")
 	{
 		qlhazycoder.GET("/subscription", h.Admin.QLHazyCoderSubscription.GetStatus)
+	}
+}
+
+func registerXHYAPISubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	xhyapi := admin.Group("/xhyapi")
+	{
+		xhyapi.GET("/subscription", h.Admin.XHYAPISubscription.GetStatus)
 	}
 }
 

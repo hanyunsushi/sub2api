@@ -447,6 +447,7 @@ import { adminAPI } from '@/api/admin'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
+import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
@@ -624,6 +625,7 @@ const usageManualRefreshToken = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
+const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -753,6 +755,7 @@ interface AccountExternalQuota {
 const defaultBuzzURL = 'https://buzzai.cc'
 const defaultTCDMXURL = 'https://tcdmx.com'
 const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'
+const defaultXHYAPIURL = 'https://xhyapi.com'
 
 const formatExternalAmount = (value?: number | null, currency?: string | null) => {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
@@ -791,9 +794,10 @@ const buildExternalSearchText = (account: Account) => {
     .toLowerCase()
 }
 
-const getAccountExternalProvider = (account: Account): 'buzz' | 'tcdmx' | 'qlhazycoder' | null => {
+const getAccountExternalProvider = (account: Account): 'buzz' | 'tcdmx' | 'qlhazycoder' | 'xhyapi' | null => {
   const text = buildExternalSearchText(account)
   if (text.includes('api.qlhazycoder.top') || text.includes('qlhazycoder') || text.includes('qlhazy')) return 'qlhazycoder'
+  if (text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')) return 'xhyapi'
   if (text.includes('tcdmx.com') || text.includes('tcdmx')) return 'tcdmx'
   if (text.includes('buzzai.cc') || text.includes('buzzai') || /\bbuzz\b/.test(text)) return 'buzz'
   return null
@@ -865,6 +869,35 @@ const buildQLHazyCoderExternalQuota = (): AccountExternalQuota => {
   }
 }
 
+const buildXHYAPIExternalQuota = (): AccountExternalQuota => {
+  if (xhyapiSubscription.value?.error_code) {
+    const isInvalidToken = xhyapiSubscription.value.error_code === '401' ||
+      xhyapiSubscription.value.error_code === 'INVALID_TOKEN' ||
+      xhyapiSubscription.value.error_code === 'TOKEN_EXPIRED'
+    return {
+      label: 'XHY',
+      url: xhyapiSubscription.value?.site_url || defaultXHYAPIURL,
+      formattedBalance: isInvalidToken
+        ? localText('Token 失效', 'Token invalid')
+        : localText('读取失败', 'Read failed'),
+      formattedExpiry: isInvalidToken
+        ? localText('请更新 Token', 'Update token')
+        : (xhyapiSubscription.value.error_message || localText('请检查配置', 'Check settings'))
+    }
+  }
+  const total = formatExternalAmount(xhyapiSubscription.value?.total_limit_usd, xhyapiSubscription.value?.currency)
+  const remaining = formatExternalAmount(xhyapiSubscription.value?.remaining_usd, xhyapiSubscription.value?.currency)
+  const activeCount = xhyapiSubscription.value?.active_count ?? 0
+  return {
+    label: 'XHY',
+    url: xhyapiSubscription.value?.site_url || defaultXHYAPIURL,
+    formattedBalance: remaining && total
+      ? `${remaining} / ${total}`
+      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
+    formattedExpiry: formatExternalDate(xhyapiSubscription.value?.expires_at)
+  }
+}
+
 const canShowBuzzExternalQuota = () => Boolean(
   buzzBalance.value?.enabled &&
   buzzBalance.value?.configured
@@ -880,8 +913,14 @@ const canShowQLHazyCoderExternalQuota = () => Boolean(
   qlhazycoderSubscription.value?.configured
 )
 
+const canShowXHYAPIExternalQuota = () => Boolean(
+  xhyapiSubscription.value?.enabled &&
+  xhyapiSubscription.value?.configured
+)
+
 const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
   const provider = getAccountExternalProvider(account)
+  if (provider === 'xhyapi' && canShowXHYAPIExternalQuota()) return buildXHYAPIExternalQuota()
   if (provider === 'tcdmx' && canShowTCDMXExternalQuota()) return buildTCDMXExternalQuota()
   if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota()) return buildQLHazyCoderExternalQuota()
   if (provider === 'buzz' && canShowBuzzExternalQuota()) return buildBuzzExternalQuota()
@@ -922,10 +961,11 @@ const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(
 
 const fetchExternalQuotaSummaries = async () => {
   if (!authStore.isAdmin) return
-  const [buzzResult, tcdmxResult, qlhazycoderResult] = await Promise.allSettled([
+  const [buzzResult, tcdmxResult, qlhazycoderResult, xhyapiResult] = await Promise.allSettled([
     buzzBalanceAPI.getBalance(),
     tcdmxSubscriptionAPI.getStatus(),
-    qlhazycoderSubscriptionAPI.getStatus()
+    qlhazycoderSubscriptionAPI.getStatus(),
+    xhyapiSubscriptionAPI.getStatus()
   ])
   if (buzzResult.status === 'fulfilled') {
     buzzBalance.value = buzzResult.value
@@ -944,6 +984,12 @@ const fetchExternalQuotaSummaries = async () => {
   } else {
     qlhazycoderSubscription.value = null
     console.error('Failed to load qlhazycoder quota summary:', qlhazycoderResult.reason)
+  }
+  if (xhyapiResult.status === 'fulfilled') {
+    xhyapiSubscription.value = xhyapiResult.value
+  } else {
+    xhyapiSubscription.value = null
+    console.error('Failed to load XHYAPI quota summary:', xhyapiResult.reason)
   }
 }
 

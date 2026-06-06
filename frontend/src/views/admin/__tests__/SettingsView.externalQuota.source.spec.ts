@@ -11,20 +11,24 @@ describe('SettingsView external quota settings placement', () => {
     expect(source).not.toContain('localText("BuzzAI 余额", "BuzzAI Balance")')
   })
 
-  it('keeps BuzzAI, TCDMX, and qlhazycoder external quota settings in the same gateway card', () => {
+  it('keeps BuzzAI, TCDMX, qlhazycoder, and XHYAPI external quota settings in the same gateway card', () => {
     const buzzIndex = source.indexOf('<!-- BuzzAI Balance Settings -->')
     const tcdmxIndex = source.indexOf('启用 TCDMX 订阅额度')
     const qlhazycoderIndex = source.indexOf('启用 qlhazycoder 订阅额度')
+    const xhyapiIndex = source.indexOf('启用 XHYAPI 订阅额度')
     const gatewaySchedulingIndex = source.indexOf('<!-- Gateway Scheduling Settings -->')
     const securityEndIndex = source.indexOf('<!-- /Tab: Security')
 
     expect(buzzIndex).toBeGreaterThan(-1)
     expect(tcdmxIndex).toBeGreaterThan(buzzIndex)
     expect(qlhazycoderIndex).toBeGreaterThan(tcdmxIndex)
+    expect(xhyapiIndex).toBeGreaterThan(qlhazycoderIndex)
+    expect(xhyapiIndex).toBeLessThan(gatewaySchedulingIndex)
     expect(qlhazycoderIndex).toBeLessThan(gatewaySchedulingIndex)
     expect(tcdmxIndex).toBeLessThan(gatewaySchedulingIndex)
     expect(source.slice(0, securityEndIndex)).not.toContain('启用 TCDMX 订阅额度')
     expect(source.slice(0, securityEndIndex)).not.toContain('启用 qlhazycoder 订阅额度')
+    expect(source.slice(0, securityEndIndex)).not.toContain('启用 XHYAPI 订阅额度')
   })
 
   it('explains that TCDMX quota lookup needs a subscription access token, not the normal model API key', () => {
@@ -59,5 +63,17 @@ describe('SettingsView external quota settings placement', () => {
     expect(source).not.toContain('qlhazycoder refresh_token')
     expect(source).not.toContain('localStorage.user JSON')
     expect(source).not.toContain('localStorage.user_token')
+  })
+
+  it('collects XHYAPI subscription token and refresh_token like the shared New API subscription flow', () => {
+    expect(source).toContain('xhyapi_subscription_enabled')
+    expect(source).toContain('xhyapi_subscription_api_base_url')
+    expect(source).toContain('xhyapi_subscription_api_token')
+    expect(source).toContain('xhyapi_subscription_api_token_configured')
+    expect(source).toContain('xhyapi_subscription_refresh_token')
+    expect(source).toContain('xhyapi_subscription_refresh_token_configured')
+    expect(source).toContain('localText("XHYAPI 订阅访问 Token", "XHYAPI subscription access token")')
+    expect(source).toContain('localText("XHYAPI refresh_token", "XHYAPI refresh_token")')
+    expect(source).toContain('https://xhyapi.com')
   })
 })

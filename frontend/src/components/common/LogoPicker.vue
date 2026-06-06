@@ -24,17 +24,32 @@
       <p v-if="hint" class="input-hint">{{ hint }}</p>
     </div>
     <div class="logo-picker-presets" aria-label="AI logo presets">
-      <button
+      <div
         v-for="preset in mergedLogoPresets"
         :key="preset.id"
-        type="button"
-        class="logo-picker-preset"
-        :class="{ 'logo-picker-preset-active': normalizedValue === preset.url }"
-        :title="preset.label"
-        @click="selectPreset(preset.url)"
+        class="logo-picker-preset-frame"
       >
-        <img :src="preset.url" :alt="preset.label" loading="lazy" />
-      </button>
+        <button
+          type="button"
+          class="logo-picker-preset"
+          :class="{ 'logo-picker-preset-active': normalizedValue === preset.url }"
+          :title="preset.label"
+          @click="selectPreset(preset.url)"
+        >
+          <img :src="preset.url" :alt="preset.label" loading="lazy" />
+        </button>
+        <button
+          v-if="isCustomPreset(preset.url)"
+          type="button"
+          class="logo-picker-preset-delete"
+          aria-label="Delete custom logo"
+          title="Delete custom logo"
+          @click.stop="deletePreset(preset.url)"
+        >
+          <span aria-hidden="true">×</span>
+          <span class="sr-only">Custom logo</span>
+        </button>
+      </div>
       <span class="logo-picker-custom-label">Custom URL</span>
     </div>
   </div>
@@ -44,8 +59,9 @@
 import { computed, onMounted, ref } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
 import { getPublicSettings as fetchPublicSettings } from '@/api/auth'
-import { appendCustomAILogoPreset } from '@/api/aiLogoPresets'
+import { appendCustomAILogoPreset, deleteCustomAILogoPreset } from '@/api/aiLogoPresets'
 import {
+  getCustomAILogoPresets,
   getMergedAILogoPresets,
   isSystemAILogoPresetURL,
   rememberCustomAILogoPreset,
@@ -123,6 +139,32 @@ function selectPreset(url: string) {
   emit('update:modelValue', url)
 }
 
+function isCustomPreset(url: string) {
+  return getCustomAILogoPresets().some((preset) => preset.url === url)
+}
+
+async function deletePreset(url: string) {
+  try {
+    const result = await deleteCustomAILogoPreset(url)
+    setAILogoRuntimeConfig({
+      custom_ai_logo_presets: result.custom_ai_logo_presets,
+    })
+    if (normalizedValue.value === url) {
+      emit('update:modelValue', '')
+    }
+  } catch {
+    setAILogoRuntimeConfig({
+      custom_ai_logo_presets: getCustomAILogoPresets()
+        .filter((preset) => preset.url !== url)
+        .map((preset) => preset.url),
+    })
+    if (normalizedValue.value === url) {
+      emit('update:modelValue', '')
+    }
+  }
+  refreshMergedLogoPresets()
+}
+
 onMounted(() => {
   void refreshLogoRuntimeConfig()
 })
@@ -134,8 +176,12 @@ onMounted(() => {
   flex: 0 0 100%;
 }
 
+.logo-picker-preset-frame {
+  @apply relative aspect-square;
+}
+
 .logo-picker-preset {
-  @apply flex aspect-square items-center justify-center rounded-md border border-gray-200 bg-white p-1 transition dark:border-dark-700 dark:bg-dark-800;
+  @apply flex h-full w-full items-center justify-center rounded-md border border-gray-200 bg-white p-1 transition dark:border-dark-700 dark:bg-dark-800;
 }
 
 .logo-picker-preset:hover,
@@ -146,6 +192,10 @@ onMounted(() => {
 
 .logo-picker-preset img {
   @apply h-full w-full object-contain;
+}
+
+.logo-picker-preset-delete {
+  @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white text-[11px] font-semibold leading-none text-gray-500 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-red-500 dark:hover:text-red-300;
 }
 
 .logo-picker-preview-image {
