@@ -37,3 +37,7 @@ func normalizeLiustSubscriptionAPIBaseURL(raw string) string {
 func (s *SettingService) GetLiustSubscriptionSettings(ctx context.Context) (LiustSubscriptionSettings, error) {
 	return s.getExternalSubscriptionSettings(ctx, liustSubscriptionProviderConfig())
 }
+
+func (s *LiustSubscriptionService) GetStatus(ctx context.Context) (*LiustSubscriptionStatus, error) {
+	return s.getNewAPIConsoleSubscriptionStatus(ctx, liustSubscriptionProviderConfig())
+}
