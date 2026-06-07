@@ -44,6 +44,7 @@ func ProvideAdminHandlers(
 	tcdmxSubscriptionHandler *admin.TCDMXSubscriptionHandler,
 	qlhazycoderSubscriptionHandler *admin.QLHazyCoderSubscriptionHandler,
 	xhyapiSubscriptionHandler *admin.XHYAPISubscriptionHandler,
+	pixelSubscriptionHandler *admin.PixelSubscriptionHandler,
 	liustSubscriptionHandler *admin.LiustSubscriptionHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
@@ -82,6 +83,7 @@ func ProvideAdminHandlers(
 		TCDMXSubscription:       tcdmxSubscriptionHandler,
 		QLHazyCoderSubscription: qlhazycoderSubscriptionHandler,
 		XHYAPISubscription:      xhyapiSubscriptionHandler,
+		PixelSubscription:       pixelSubscriptionHandler,
 		LiustSubscription:       liustSubscriptionHandler,
 	}
 }
@@ -215,6 +217,7 @@ var ProviderSet = wire.NewSet(
 	admin.NewTCDMXSubscriptionHandler,
 	admin.NewQLHazyCoderSubscriptionHandler,
 	admin.NewXHYAPISubscriptionHandler,
+	admin.NewPixelSubscriptionHandler,
 	admin.NewLiustSubscriptionHandler,
 
 	// AdminHandlers and Handlers constructors

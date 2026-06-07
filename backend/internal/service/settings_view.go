@@ -250,6 +250,14 @@ type SystemSettings struct {
 	XHYAPISubscriptionAPITokenConfigured bool
 	XHYAPISubscriptionRefreshConfigured  bool
 
+	// Pixel subscription display
+	PixelSubscriptionEnabled            bool
+	PixelSubscriptionAPIBaseURL         string
+	PixelSubscriptionAPIToken           string
+	PixelSubscriptionRefreshToken       string
+	PixelSubscriptionAPITokenConfigured bool
+	PixelSubscriptionRefreshConfigured  bool
+
 	// liust subscription display
 	LiustSubscriptionEnabled            bool
 	LiustSubscriptionAPIBaseURL         string

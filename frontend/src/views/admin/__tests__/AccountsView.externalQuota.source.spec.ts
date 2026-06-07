@@ -6,11 +6,12 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
-  it('loads BuzzAI, TCDMX, qlhazycoder, XHYAPI, and liust quota summaries for matching account cards', () => {
+  it('loads BuzzAI, TCDMX, qlhazycoder, XHYAPI, Pixel, and liust quota summaries for matching account cards', () => {
     expect(source).toContain("import buzzBalanceAPI")
     expect(source).toContain("import tcdmxSubscriptionAPI")
     expect(source).toContain("import qlhazycoderSubscriptionAPI")
     expect(source).toContain("import xhyapiSubscriptionAPI")
+    expect(source).toContain("import pixelSubscriptionAPI")
     expect(source).toContain("import liustSubscriptionAPI")
     expect(source).toContain("fetchExternalQuotaSummaries")
     expect(source).toContain("getAccountExternalQuota")
@@ -32,6 +33,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("const defaultTCDMXURL = 'https://tcdmx.com'")
     expect(source).toContain("const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'")
     expect(source).toContain("const defaultXHYAPIURL = 'https://xhyapi.com'")
+    expect(source).toContain("const defaultPixelURL = 'https://ai-pixel.online'")
     expect(source).toContain("const defaultLiustURL = 'https://liust.xyz'")
     expect(source).not.toContain("https://buzzai.cc/dashboard/billing")
     expect(source).not.toContain("https://tcdmx.com/subscriptions")
@@ -51,10 +53,14 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('canShowXHYAPIExternalQuota')
     expect(source).toContain('xhyapiSubscription.value?.enabled')
     expect(source).toContain('xhyapiSubscription.value?.configured')
+    expect(source).toContain('canShowPixelExternalQuota')
+    expect(source).toContain('pixelSubscription.value?.enabled')
+    expect(source).toContain('pixelSubscription.value?.configured')
     expect(source).toContain('canShowLiustExternalQuota')
     expect(source).toContain('liustSubscription.value?.enabled')
     expect(source).toContain('liustSubscription.value?.configured')
     expect(source).toContain("if (provider === 'liust' && canShowLiustExternalQuota())")
+    expect(source).toContain("if (provider === 'pixel' && canShowPixelExternalQuota())")
     expect(source).toContain("if (provider === 'xhyapi' && canShowXHYAPIExternalQuota())")
     expect(source).toContain("if (provider === 'tcdmx' && canShowTCDMXExternalQuota())")
     expect(source).toContain("if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota())")
@@ -82,6 +88,14 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("label: 'XHY'")
     expect(source).toContain('xhyapiSubscription.value?.expires_at')
     expect(source).toContain("text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')")
+  })
+
+  it('formats Pixel account card quota with the shared external subscription display', () => {
+    expect(source).toContain("formatExternalAmount(pixelSubscription.value?.remaining_usd, pixelSubscription.value?.currency)")
+    expect(source).toContain("formatExternalAmount(pixelSubscription.value?.total_limit_usd, pixelSubscription.value?.currency)")
+    expect(source).toContain("label: 'Pixel'")
+    expect(source).toContain('pixelSubscription.value?.expires_at')
+    expect(source).toContain("text.includes('ai-pixel.online') || text.includes('pixel')")
   })
 
   it('formats liust account card quota with the shared external subscription display', () => {

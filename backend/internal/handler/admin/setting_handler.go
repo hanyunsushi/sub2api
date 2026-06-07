@@ -287,6 +287,10 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		XHYAPISubscriptionUserID:               settings.XHYAPISubscriptionUserID,
 		XHYAPISubscriptionAPITokenConfigured:   settings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    settings.XHYAPISubscriptionRefreshConfigured,
+		PixelSubscriptionEnabled:               settings.PixelSubscriptionEnabled,
+		PixelSubscriptionAPIBaseURL:            settings.PixelSubscriptionAPIBaseURL,
+		PixelSubscriptionAPITokenConfigured:    settings.PixelSubscriptionAPITokenConfigured,
+		PixelSubscriptionRefreshConfigured:     settings.PixelSubscriptionRefreshConfigured,
 		LiustSubscriptionEnabled:               settings.LiustSubscriptionEnabled,
 		LiustSubscriptionAPIBaseURL:            settings.LiustSubscriptionAPIBaseURL,
 		LiustSubscriptionUserID:                settings.LiustSubscriptionUserID,
@@ -649,6 +653,10 @@ type UpdateSettingsRequest struct {
 	XHYAPISubscriptionAPIToken          string                  `json:"xhyapi_subscription_api_token"`
 	XHYAPISubscriptionUserID            *string                 `json:"xhyapi_subscription_user_id"`
 	XHYAPISubscriptionRefreshToken      string                  `json:"xhyapi_subscription_refresh_token"`
+	PixelSubscriptionEnabled            *bool                   `json:"pixel_subscription_enabled"`
+	PixelSubscriptionAPIBaseURL         *string                 `json:"pixel_subscription_api_base_url"`
+	PixelSubscriptionAPIToken           string                  `json:"pixel_subscription_api_token"`
+	PixelSubscriptionRefreshToken       string                  `json:"pixel_subscription_refresh_token"`
 	LiustSubscriptionEnabled            *bool                   `json:"liust_subscription_enabled"`
 	LiustSubscriptionAPIBaseURL         *string                 `json:"liust_subscription_api_base_url"`
 	LiustSubscriptionAPIToken           string                  `json:"liust_subscription_api_token"`
@@ -1579,6 +1587,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		req.XHYAPISubscriptionUserID = &normalized
 	}
 	req.XHYAPISubscriptionRefreshToken = strings.TrimSpace(req.XHYAPISubscriptionRefreshToken)
+	if req.PixelSubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.PixelSubscriptionAPIBaseURL)
+		req.PixelSubscriptionAPIBaseURL = &normalized
+	}
+	req.PixelSubscriptionAPIToken = strings.TrimSpace(req.PixelSubscriptionAPIToken)
+	req.PixelSubscriptionRefreshToken = strings.TrimSpace(req.PixelSubscriptionRefreshToken)
 	if req.LiustSubscriptionAPIBaseURL != nil {
 		normalized := strings.TrimSpace(*req.LiustSubscriptionAPIBaseURL)
 		req.LiustSubscriptionAPIBaseURL = &normalized
@@ -1937,6 +1951,20 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			return previousSettings.XHYAPISubscriptionUserID
 		}(),
 		XHYAPISubscriptionRefreshToken: req.XHYAPISubscriptionRefreshToken,
+		PixelSubscriptionEnabled: func() bool {
+			if req.PixelSubscriptionEnabled != nil {
+				return *req.PixelSubscriptionEnabled
+			}
+			return previousSettings.PixelSubscriptionEnabled
+		}(),
+		PixelSubscriptionAPIBaseURL: func() string {
+			if req.PixelSubscriptionAPIBaseURL != nil {
+				return *req.PixelSubscriptionAPIBaseURL
+			}
+			return previousSettings.PixelSubscriptionAPIBaseURL
+		}(),
+		PixelSubscriptionAPIToken:     req.PixelSubscriptionAPIToken,
+		PixelSubscriptionRefreshToken: req.PixelSubscriptionRefreshToken,
 		LiustSubscriptionEnabled: func() bool {
 			if req.LiustSubscriptionEnabled != nil {
 				return *req.LiustSubscriptionEnabled
@@ -2315,6 +2343,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		XHYAPISubscriptionUserID:               updatedSettings.XHYAPISubscriptionUserID,
 		XHYAPISubscriptionAPITokenConfigured:   updatedSettings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    updatedSettings.XHYAPISubscriptionRefreshConfigured,
+		PixelSubscriptionEnabled:               updatedSettings.PixelSubscriptionEnabled,
+		PixelSubscriptionAPIBaseURL:            updatedSettings.PixelSubscriptionAPIBaseURL,
+		PixelSubscriptionAPITokenConfigured:    updatedSettings.PixelSubscriptionAPITokenConfigured,
+		PixelSubscriptionRefreshConfigured:     updatedSettings.PixelSubscriptionRefreshConfigured,
 		LiustSubscriptionEnabled:               updatedSettings.LiustSubscriptionEnabled,
 		LiustSubscriptionAPIBaseURL:            updatedSettings.LiustSubscriptionAPIBaseURL,
 		LiustSubscriptionUserID:                updatedSettings.LiustSubscriptionUserID,
@@ -2860,6 +2892,18 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.XHYAPISubscriptionRefreshToken != "" {
 		changed = append(changed, "xhyapi_subscription_refresh_token")
+	}
+	if before.PixelSubscriptionEnabled != after.PixelSubscriptionEnabled {
+		changed = append(changed, "pixel_subscription_enabled")
+	}
+	if before.PixelSubscriptionAPIBaseURL != after.PixelSubscriptionAPIBaseURL {
+		changed = append(changed, "pixel_subscription_api_base_url")
+	}
+	if req.PixelSubscriptionAPIToken != "" {
+		changed = append(changed, "pixel_subscription_api_token")
+	}
+	if req.PixelSubscriptionRefreshToken != "" {
+		changed = append(changed, "pixel_subscription_refresh_token")
 	}
 	if before.LiustSubscriptionEnabled != after.LiustSubscriptionEnabled {
 		changed = append(changed, "liust_subscription_enabled")

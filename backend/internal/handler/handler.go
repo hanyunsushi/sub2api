@@ -41,6 +41,7 @@ type AdminHandlers struct {
 	TCDMXSubscription       *admin.TCDMXSubscriptionHandler
 	QLHazyCoderSubscription *admin.QLHazyCoderSubscriptionHandler
 	XHYAPISubscription      *admin.XHYAPISubscriptionHandler
+	PixelSubscription       *admin.PixelSubscriptionHandler
 	LiustSubscription       *admin.LiustSubscriptionHandler
 }
 

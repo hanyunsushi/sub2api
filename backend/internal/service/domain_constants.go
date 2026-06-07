@@ -466,6 +466,12 @@ const (
 	SettingKeyXHYAPISubscriptionUserID       = "xhyapi_subscription_user_id"
 	SettingKeyXHYAPISubscriptionRefreshToken = "xhyapi_subscription_refresh_token"
 
+	// Pixel subscription display
+	SettingKeyPixelSubscriptionEnabled      = "pixel_subscription_enabled"
+	SettingKeyPixelSubscriptionAPIBaseURL   = "pixel_subscription_api_base_url"
+	SettingKeyPixelSubscriptionAPIToken     = "pixel_subscription_api_token"
+	SettingKeyPixelSubscriptionRefreshToken = "pixel_subscription_refresh_token"
+
 	// liust subscription display
 	SettingKeyLiustSubscriptionEnabled      = "liust_subscription_enabled"
 	SettingKeyLiustSubscriptionAPIBaseURL   = "liust_subscription_api_base_url"

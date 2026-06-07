@@ -589,6 +589,7 @@ var ProviderSet = wire.NewSet(
 	NewTCDMXSubscriptionService,
 	NewQLHazyCoderSubscriptionService,
 	NewXHYAPISubscriptionService,
+	NewPixelSubscriptionService,
 	NewLiustSubscriptionService,
 	NewAISearchConfigService,
 	ProvideAISearchService,

@@ -113,6 +113,9 @@ func RegisterAdminRoutes(
 		// XHYAPI 订阅额度
 		registerXHYAPISubscriptionRoutes(admin, h)
 
+		// Pixel 订阅额度
+		registerPixelSubscriptionRoutes(admin, h)
+
 		// liust 订阅额度
 		registerLiustSubscriptionRoutes(admin, h)
 	}
@@ -143,6 +146,13 @@ func registerXHYAPISubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handler
 	xhyapi := admin.Group("/xhyapi")
 	{
 		xhyapi.GET("/subscription", h.Admin.XHYAPISubscription.GetStatus)
+	}
+}
+
+func registerPixelSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	pixel := admin.Group("/pixel")
+	{
+		pixel.GET("/subscription", h.Admin.PixelSubscription.GetStatus)
 	}
 }
 
