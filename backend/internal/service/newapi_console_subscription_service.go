@@ -18,6 +18,9 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleSubscriptionStatus(ctx con
 		return nil, err
 	}
 	auth := normalizeQLHazyCoderSubscriptionAuth(settings.APIToken)
+	if auth.UserID == "" {
+		auth.UserID = strings.TrimSpace(settings.UserID)
+	}
 	settings.APIToken = auth.Token
 
 	result := &ExternalSubscriptionStatus{

@@ -3926,7 +3926,7 @@
                   <Toggle v-model="form.qlhazycoder_subscription_enabled" />
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 md:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3971,6 +3971,28 @@
                       }}
                     </p>
                   </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("qlhazycoder 用户 ID", "qlhazycoder user ID") }}
+                    </label>
+                    <input
+                      v-model="form.qlhazycoder_subscription_user_id"
+                      type="text"
+                      class="input font-mono text-sm"
+                      placeholder="New-API-User"
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
+                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
+                        )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
@@ -3993,7 +4015,7 @@
                   <Toggle v-model="form.xhyapi_subscription_enabled" />
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 md:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4038,6 +4060,28 @@
                       }}
                     </p>
                   </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("XHYAPI 用户 ID", "XHYAPI user ID") }}
+                    </label>
+                    <input
+                      v-model="form.xhyapi_subscription_user_id"
+                      type="text"
+                      class="input font-mono text-sm"
+                      placeholder="New-API-User"
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
+                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
+                        )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
@@ -4060,7 +4104,7 @@
                   <Toggle v-model="form.liust_subscription_enabled" />
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 md:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4102,6 +4146,28 @@
                               "普通 sk- 调用密钥只能调用模型接口，不能读取 liust 余额和订阅。登录 liust New API 控制台后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
                               "A normal sk- model API key can only call model APIs and cannot read liust balance or subscriptions. After logging in to the liust New API console, open personal settings and use reset/regenerate token to get the user token; if the API requires a user header, you can also paste {id, token} JSON.",
                             )
+                      }}
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("liust 用户 ID", "liust user ID") }}
+                    </label>
+                    <input
+                      v-model="form.liust_subscription_user_id"
+                      type="text"
+                      class="input font-mono text-sm"
+                      placeholder="New-API-User"
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        localText(
+                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
+                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
+                        )
                       }}
                     </p>
                   </div>
@@ -7803,14 +7869,17 @@ const form = reactive<SettingsForm>({
   tcdmx_subscription_refresh_token_configured: false,
   qlhazycoder_subscription_enabled: false,
   qlhazycoder_subscription_api_base_url: "https://api.qlhazycoder.top",
+  qlhazycoder_subscription_user_id: "",
   qlhazycoder_subscription_api_token: "",
   qlhazycoder_subscription_api_token_configured: false,
   xhyapi_subscription_enabled: false,
   xhyapi_subscription_api_base_url: "https://xhyapi.com",
+  xhyapi_subscription_user_id: "",
   xhyapi_subscription_api_token: "",
   xhyapi_subscription_api_token_configured: false,
   liust_subscription_enabled: false,
   liust_subscription_api_base_url: "https://liust.xyz",
+  liust_subscription_user_id: "",
   liust_subscription_api_token: "",
   liust_subscription_api_token_configured: false,
   subscription_expiry_notify_enabled: true,
@@ -9079,16 +9148,22 @@ async function saveSettings() {
         form.qlhazycoder_subscription_api_base_url?.trim() || "https://api.qlhazycoder.top",
       qlhazycoder_subscription_api_token:
         form.qlhazycoder_subscription_api_token || undefined,
+      qlhazycoder_subscription_user_id:
+        form.qlhazycoder_subscription_user_id?.trim() || "",
       xhyapi_subscription_enabled: form.xhyapi_subscription_enabled,
       xhyapi_subscription_api_base_url:
         form.xhyapi_subscription_api_base_url?.trim() || "https://xhyapi.com",
       xhyapi_subscription_api_token:
         form.xhyapi_subscription_api_token || undefined,
+      xhyapi_subscription_user_id:
+        form.xhyapi_subscription_user_id?.trim() || "",
       liust_subscription_enabled: form.liust_subscription_enabled,
       liust_subscription_api_base_url:
         form.liust_subscription_api_base_url?.trim() || "https://liust.xyz",
       liust_subscription_api_token:
         form.liust_subscription_api_token || undefined,
+      liust_subscription_user_id:
+        form.liust_subscription_user_id?.trim() || "",
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,

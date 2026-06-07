@@ -456,18 +456,21 @@ const (
 	SettingKeyQLHazyCoderSubscriptionEnabled      = "qlhazycoder_subscription_enabled"
 	SettingKeyQLHazyCoderSubscriptionAPIBaseURL   = "qlhazycoder_subscription_api_base_url"
 	SettingKeyQLHazyCoderSubscriptionAPIToken     = "qlhazycoder_subscription_api_token"
+	SettingKeyQLHazyCoderSubscriptionUserID       = "qlhazycoder_subscription_user_id"
 	SettingKeyQLHazyCoderSubscriptionRefreshToken = "qlhazycoder_subscription_refresh_token"
 
 	// XHYAPI subscription display
 	SettingKeyXHYAPISubscriptionEnabled      = "xhyapi_subscription_enabled"
 	SettingKeyXHYAPISubscriptionAPIBaseURL   = "xhyapi_subscription_api_base_url"
 	SettingKeyXHYAPISubscriptionAPIToken     = "xhyapi_subscription_api_token"
+	SettingKeyXHYAPISubscriptionUserID       = "xhyapi_subscription_user_id"
 	SettingKeyXHYAPISubscriptionRefreshToken = "xhyapi_subscription_refresh_token"
 
 	// liust subscription display
 	SettingKeyLiustSubscriptionEnabled      = "liust_subscription_enabled"
 	SettingKeyLiustSubscriptionAPIBaseURL   = "liust_subscription_api_base_url"
 	SettingKeyLiustSubscriptionAPIToken     = "liust_subscription_api_token"
+	SettingKeyLiustSubscriptionUserID       = "liust_subscription_user_id"
 	SettingKeyLiustSubscriptionRefreshToken = "liust_subscription_refresh_token"
 
 	// AI logo library

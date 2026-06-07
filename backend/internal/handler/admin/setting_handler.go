@@ -279,14 +279,17 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		TCDMXSubscriptionRefreshConfigured:     settings.TCDMXSubscriptionRefreshConfigured,
 		QLHazyCoderSubscriptionEnabled:         settings.QLHazyCoderSubscriptionEnabled,
 		QLHazyCoderSubscriptionAPIBaseURL:      settings.QLHazyCoderSubscriptionAPIBaseURL,
+		QLHazyCoderSubscriptionUserID:          settings.QLHazyCoderSubscriptionUserID,
 		QLHazyCoderAPITokenConfigured:          settings.QLHazyCoderSubscriptionAPITokenConfigured,
 		QLHazyCoderRefreshConfigured:           settings.QLHazyCoderSubscriptionRefreshConfigured,
 		XHYAPISubscriptionEnabled:              settings.XHYAPISubscriptionEnabled,
 		XHYAPISubscriptionAPIBaseURL:           settings.XHYAPISubscriptionAPIBaseURL,
+		XHYAPISubscriptionUserID:               settings.XHYAPISubscriptionUserID,
 		XHYAPISubscriptionAPITokenConfigured:   settings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    settings.XHYAPISubscriptionRefreshConfigured,
 		LiustSubscriptionEnabled:               settings.LiustSubscriptionEnabled,
 		LiustSubscriptionAPIBaseURL:            settings.LiustSubscriptionAPIBaseURL,
+		LiustSubscriptionUserID:                settings.LiustSubscriptionUserID,
 		LiustSubscriptionAPITokenConfigured:    settings.LiustSubscriptionAPITokenConfigured,
 		LiustSubscriptionRefreshConfigured:     settings.LiustSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
@@ -639,14 +642,17 @@ type UpdateSettingsRequest struct {
 	QLHazyCoderSubscriptionEnabled      *bool                   `json:"qlhazycoder_subscription_enabled"`
 	QLHazyCoderSubscriptionAPIBaseURL   *string                 `json:"qlhazycoder_subscription_api_base_url"`
 	QLHazyCoderSubscriptionAPIToken     string                  `json:"qlhazycoder_subscription_api_token"`
+	QLHazyCoderSubscriptionUserID       *string                 `json:"qlhazycoder_subscription_user_id"`
 	QLHazyCoderSubscriptionRefreshToken string                  `json:"qlhazycoder_subscription_refresh_token"`
 	XHYAPISubscriptionEnabled           *bool                   `json:"xhyapi_subscription_enabled"`
 	XHYAPISubscriptionAPIBaseURL        *string                 `json:"xhyapi_subscription_api_base_url"`
 	XHYAPISubscriptionAPIToken          string                  `json:"xhyapi_subscription_api_token"`
+	XHYAPISubscriptionUserID            *string                 `json:"xhyapi_subscription_user_id"`
 	XHYAPISubscriptionRefreshToken      string                  `json:"xhyapi_subscription_refresh_token"`
 	LiustSubscriptionEnabled            *bool                   `json:"liust_subscription_enabled"`
 	LiustSubscriptionAPIBaseURL         *string                 `json:"liust_subscription_api_base_url"`
 	LiustSubscriptionAPIToken           string                  `json:"liust_subscription_api_token"`
+	LiustSubscriptionUserID             *string                 `json:"liust_subscription_user_id"`
 	LiustSubscriptionRefreshToken       string                  `json:"liust_subscription_refresh_token"`
 	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
@@ -1558,18 +1564,30 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		req.QLHazyCoderSubscriptionAPIBaseURL = &normalized
 	}
 	req.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(req.QLHazyCoderSubscriptionAPIToken)
+	if req.QLHazyCoderSubscriptionUserID != nil {
+		normalized := strings.TrimSpace(*req.QLHazyCoderSubscriptionUserID)
+		req.QLHazyCoderSubscriptionUserID = &normalized
+	}
 	req.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(req.QLHazyCoderSubscriptionRefreshToken)
 	if req.XHYAPISubscriptionAPIBaseURL != nil {
 		normalized := strings.TrimSpace(*req.XHYAPISubscriptionAPIBaseURL)
 		req.XHYAPISubscriptionAPIBaseURL = &normalized
 	}
 	req.XHYAPISubscriptionAPIToken = strings.TrimSpace(req.XHYAPISubscriptionAPIToken)
+	if req.XHYAPISubscriptionUserID != nil {
+		normalized := strings.TrimSpace(*req.XHYAPISubscriptionUserID)
+		req.XHYAPISubscriptionUserID = &normalized
+	}
 	req.XHYAPISubscriptionRefreshToken = strings.TrimSpace(req.XHYAPISubscriptionRefreshToken)
 	if req.LiustSubscriptionAPIBaseURL != nil {
 		normalized := strings.TrimSpace(*req.LiustSubscriptionAPIBaseURL)
 		req.LiustSubscriptionAPIBaseURL = &normalized
 	}
 	req.LiustSubscriptionAPIToken = strings.TrimSpace(req.LiustSubscriptionAPIToken)
+	if req.LiustSubscriptionUserID != nil {
+		normalized := strings.TrimSpace(*req.LiustSubscriptionUserID)
+		req.LiustSubscriptionUserID = &normalized
+	}
 	req.LiustSubscriptionRefreshToken = strings.TrimSpace(req.LiustSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
@@ -1891,7 +1909,13 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.QLHazyCoderSubscriptionAPIBaseURL
 		}(),
-		QLHazyCoderSubscriptionAPIToken:     req.QLHazyCoderSubscriptionAPIToken,
+		QLHazyCoderSubscriptionAPIToken: req.QLHazyCoderSubscriptionAPIToken,
+		QLHazyCoderSubscriptionUserID: func() string {
+			if req.QLHazyCoderSubscriptionUserID != nil {
+				return *req.QLHazyCoderSubscriptionUserID
+			}
+			return previousSettings.QLHazyCoderSubscriptionUserID
+		}(),
 		QLHazyCoderSubscriptionRefreshToken: req.QLHazyCoderSubscriptionRefreshToken,
 		XHYAPISubscriptionEnabled: func() bool {
 			if req.XHYAPISubscriptionEnabled != nil {
@@ -1905,7 +1929,13 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.XHYAPISubscriptionAPIBaseURL
 		}(),
-		XHYAPISubscriptionAPIToken:     req.XHYAPISubscriptionAPIToken,
+		XHYAPISubscriptionAPIToken: req.XHYAPISubscriptionAPIToken,
+		XHYAPISubscriptionUserID: func() string {
+			if req.XHYAPISubscriptionUserID != nil {
+				return *req.XHYAPISubscriptionUserID
+			}
+			return previousSettings.XHYAPISubscriptionUserID
+		}(),
 		XHYAPISubscriptionRefreshToken: req.XHYAPISubscriptionRefreshToken,
 		LiustSubscriptionEnabled: func() bool {
 			if req.LiustSubscriptionEnabled != nil {
@@ -1919,7 +1949,13 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.LiustSubscriptionAPIBaseURL
 		}(),
-		LiustSubscriptionAPIToken:     req.LiustSubscriptionAPIToken,
+		LiustSubscriptionAPIToken: req.LiustSubscriptionAPIToken,
+		LiustSubscriptionUserID: func() string {
+			if req.LiustSubscriptionUserID != nil {
+				return *req.LiustSubscriptionUserID
+			}
+			return previousSettings.LiustSubscriptionUserID
+		}(),
 		LiustSubscriptionRefreshToken: req.LiustSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
@@ -2271,14 +2307,17 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TCDMXSubscriptionRefreshConfigured:     updatedSettings.TCDMXSubscriptionRefreshConfigured,
 		QLHazyCoderSubscriptionEnabled:         updatedSettings.QLHazyCoderSubscriptionEnabled,
 		QLHazyCoderSubscriptionAPIBaseURL:      updatedSettings.QLHazyCoderSubscriptionAPIBaseURL,
+		QLHazyCoderSubscriptionUserID:          updatedSettings.QLHazyCoderSubscriptionUserID,
 		QLHazyCoderAPITokenConfigured:          updatedSettings.QLHazyCoderSubscriptionAPITokenConfigured,
 		QLHazyCoderRefreshConfigured:           updatedSettings.QLHazyCoderSubscriptionRefreshConfigured,
 		XHYAPISubscriptionEnabled:              updatedSettings.XHYAPISubscriptionEnabled,
 		XHYAPISubscriptionAPIBaseURL:           updatedSettings.XHYAPISubscriptionAPIBaseURL,
+		XHYAPISubscriptionUserID:               updatedSettings.XHYAPISubscriptionUserID,
 		XHYAPISubscriptionAPITokenConfigured:   updatedSettings.XHYAPISubscriptionAPITokenConfigured,
 		XHYAPISubscriptionRefreshConfigured:    updatedSettings.XHYAPISubscriptionRefreshConfigured,
 		LiustSubscriptionEnabled:               updatedSettings.LiustSubscriptionEnabled,
 		LiustSubscriptionAPIBaseURL:            updatedSettings.LiustSubscriptionAPIBaseURL,
+		LiustSubscriptionUserID:                updatedSettings.LiustSubscriptionUserID,
 		LiustSubscriptionAPITokenConfigured:    updatedSettings.LiustSubscriptionAPITokenConfigured,
 		LiustSubscriptionRefreshConfigured:     updatedSettings.LiustSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
@@ -2801,6 +2840,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	if req.QLHazyCoderSubscriptionAPIToken != "" {
 		changed = append(changed, "qlhazycoder_subscription_api_token")
 	}
+	if before.QLHazyCoderSubscriptionUserID != after.QLHazyCoderSubscriptionUserID {
+		changed = append(changed, "qlhazycoder_subscription_user_id")
+	}
 	if req.QLHazyCoderSubscriptionRefreshToken != "" {
 		changed = append(changed, "qlhazycoder_subscription_refresh_token")
 	}
@@ -2813,6 +2855,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	if req.XHYAPISubscriptionAPIToken != "" {
 		changed = append(changed, "xhyapi_subscription_api_token")
 	}
+	if before.XHYAPISubscriptionUserID != after.XHYAPISubscriptionUserID {
+		changed = append(changed, "xhyapi_subscription_user_id")
+	}
 	if req.XHYAPISubscriptionRefreshToken != "" {
 		changed = append(changed, "xhyapi_subscription_refresh_token")
 	}
@@ -2824,6 +2869,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.LiustSubscriptionAPIToken != "" {
 		changed = append(changed, "liust_subscription_api_token")
+	}
+	if before.LiustSubscriptionUserID != after.LiustSubscriptionUserID {
+		changed = append(changed, "liust_subscription_user_id")
 	}
 	if req.LiustSubscriptionRefreshToken != "" {
 		changed = append(changed, "liust_subscription_refresh_token")

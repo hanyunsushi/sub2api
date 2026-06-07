@@ -18,6 +18,7 @@ type ExternalSubscriptionSettings struct {
 	Enabled      bool
 	APIBaseURL   string
 	APIToken     string
+	UserID       string
 	RefreshToken string
 }
 
@@ -59,6 +60,7 @@ type externalSubscriptionProviderConfig struct {
 	EnabledKey        string
 	APIBaseURLKey     string
 	APITokenKey       string
+	UserIDKey         string
 	RefreshTokenKey   string
 }
 
@@ -122,12 +124,16 @@ func normalizeExternalSubscriptionAPIBaseURL(raw string, fallback string) string
 }
 
 func (s *SettingService) getExternalSubscriptionSettings(ctx context.Context, cfg externalSubscriptionProviderConfig) (ExternalSubscriptionSettings, error) {
-	values, err := s.settingRepo.GetMultiple(ctx, []string{
+	keys := []string{
 		cfg.EnabledKey,
 		cfg.APIBaseURLKey,
 		cfg.APITokenKey,
 		cfg.RefreshTokenKey,
-	})
+	}
+	if strings.TrimSpace(cfg.UserIDKey) != "" {
+		keys = append(keys, cfg.UserIDKey)
+	}
+	values, err := s.settingRepo.GetMultiple(ctx, keys)
 	if err != nil {
 		return ExternalSubscriptionSettings{}, fmt.Errorf("get %s subscription settings: %w", cfg.Provider, err)
 	}
@@ -135,6 +141,7 @@ func (s *SettingService) getExternalSubscriptionSettings(ctx context.Context, cf
 		Enabled:      values[cfg.EnabledKey] == "true",
 		APIBaseURL:   normalizeExternalSubscriptionAPIBaseURL(values[cfg.APIBaseURLKey], cfg.DefaultAPIBaseURL),
 		APIToken:     strings.TrimSpace(values[cfg.APITokenKey]),
+		UserID:       strings.TrimSpace(values[cfg.UserIDKey]),
 		RefreshToken: strings.TrimSpace(values[cfg.RefreshTokenKey]),
 	}, nil
 }

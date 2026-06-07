@@ -244,14 +244,17 @@ type SystemSettings struct {
 	TCDMXSubscriptionRefreshConfigured   bool               `json:"tcdmx_subscription_refresh_token_configured"`
 	QLHazyCoderSubscriptionEnabled       bool               `json:"qlhazycoder_subscription_enabled"`
 	QLHazyCoderSubscriptionAPIBaseURL    string             `json:"qlhazycoder_subscription_api_base_url"`
+	QLHazyCoderSubscriptionUserID        string             `json:"qlhazycoder_subscription_user_id"`
 	QLHazyCoderAPITokenConfigured        bool               `json:"qlhazycoder_subscription_api_token_configured"`
 	QLHazyCoderRefreshConfigured         bool               `json:"qlhazycoder_subscription_refresh_token_configured"`
 	XHYAPISubscriptionEnabled            bool               `json:"xhyapi_subscription_enabled"`
 	XHYAPISubscriptionAPIBaseURL         string             `json:"xhyapi_subscription_api_base_url"`
+	XHYAPISubscriptionUserID             string             `json:"xhyapi_subscription_user_id"`
 	XHYAPISubscriptionAPITokenConfigured bool               `json:"xhyapi_subscription_api_token_configured"`
 	XHYAPISubscriptionRefreshConfigured  bool               `json:"xhyapi_subscription_refresh_token_configured"`
 	LiustSubscriptionEnabled             bool               `json:"liust_subscription_enabled"`
 	LiustSubscriptionAPIBaseURL          string             `json:"liust_subscription_api_base_url"`
+	LiustSubscriptionUserID              string             `json:"liust_subscription_user_id"`
 	LiustSubscriptionAPITokenConfigured  bool               `json:"liust_subscription_api_token_configured"`
 	LiustSubscriptionRefreshConfigured   bool               `json:"liust_subscription_refresh_token_configured"`
 	SubscriptionExpiryNotifyEnabled      bool               `json:"subscription_expiry_notify_enabled"`
