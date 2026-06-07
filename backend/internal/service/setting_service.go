@@ -2188,6 +2188,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken) != "" {
 		updates[SettingKeyQLHazyCoderSubscriptionAPIToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken)
 	}
+	updates[SettingKeyQLHazyCoderSubscriptionUserID] = strings.TrimSpace(settings.QLHazyCoderSubscriptionUserID)
 	if strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken) != "" {
 		updates[SettingKeyQLHazyCoderSubscriptionRefreshToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken)
 	}
@@ -2196,6 +2197,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.XHYAPISubscriptionAPIToken) != "" {
 		updates[SettingKeyXHYAPISubscriptionAPIToken] = strings.TrimSpace(settings.XHYAPISubscriptionAPIToken)
 	}
+	updates[SettingKeyXHYAPISubscriptionUserID] = strings.TrimSpace(settings.XHYAPISubscriptionUserID)
 	if strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken) != "" {
 		updates[SettingKeyXHYAPISubscriptionRefreshToken] = strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken)
 	}
@@ -2204,6 +2206,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.LiustSubscriptionAPIToken) != "" {
 		updates[SettingKeyLiustSubscriptionAPIToken] = strings.TrimSpace(settings.LiustSubscriptionAPIToken)
 	}
+	updates[SettingKeyLiustSubscriptionUserID] = strings.TrimSpace(settings.LiustSubscriptionUserID)
 	if strings.TrimSpace(settings.LiustSubscriptionRefreshToken) != "" {
 		updates[SettingKeyLiustSubscriptionRefreshToken] = strings.TrimSpace(settings.LiustSubscriptionRefreshToken)
 	}
@@ -3140,12 +3143,15 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyTCDMXSubscriptionRefreshToken:       "",
 		SettingKeyQLHazyCoderSubscriptionEnabled:      "false",
 		SettingKeyQLHazyCoderSubscriptionAPIBaseURL:   DefaultQLHazyCoderSubscriptionAPIBaseURL,
+		SettingKeyQLHazyCoderSubscriptionUserID:       "",
 		SettingKeyQLHazyCoderSubscriptionRefreshToken: "",
 		SettingKeyXHYAPISubscriptionEnabled:           "false",
 		SettingKeyXHYAPISubscriptionAPIBaseURL:        DefaultXHYAPISubscriptionAPIBaseURL,
+		SettingKeyXHYAPISubscriptionUserID:            "",
 		SettingKeyXHYAPISubscriptionRefreshToken:      "",
 		SettingKeyLiustSubscriptionEnabled:            "false",
 		SettingKeyLiustSubscriptionAPIBaseURL:         DefaultLiustSubscriptionAPIBaseURL,
+		SettingKeyLiustSubscriptionUserID:             "",
 		SettingKeyLiustSubscriptionRefreshToken:       "",
 		SettingKeyAllowUserViewErrorRequests:          "false",
 	}
@@ -3701,18 +3707,21 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.QLHazyCoderSubscriptionEnabled = settings[SettingKeyQLHazyCoderSubscriptionEnabled] == "true"
 	result.QLHazyCoderSubscriptionAPIBaseURL = normalizeQLHazyCoderSubscriptionAPIBaseURL(settings[SettingKeyQLHazyCoderSubscriptionAPIBaseURL])
 	result.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionAPIToken])
+	result.QLHazyCoderSubscriptionUserID = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionUserID])
 	result.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionRefreshToken])
 	result.QLHazyCoderSubscriptionAPITokenConfigured = result.QLHazyCoderSubscriptionAPIToken != ""
 	result.QLHazyCoderSubscriptionRefreshConfigured = result.QLHazyCoderSubscriptionRefreshToken != ""
 	result.XHYAPISubscriptionEnabled = settings[SettingKeyXHYAPISubscriptionEnabled] == "true"
 	result.XHYAPISubscriptionAPIBaseURL = normalizeXHYAPISubscriptionAPIBaseURL(settings[SettingKeyXHYAPISubscriptionAPIBaseURL])
 	result.XHYAPISubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionAPIToken])
+	result.XHYAPISubscriptionUserID = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionUserID])
 	result.XHYAPISubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionRefreshToken])
 	result.XHYAPISubscriptionAPITokenConfigured = result.XHYAPISubscriptionAPIToken != ""
 	result.XHYAPISubscriptionRefreshConfigured = result.XHYAPISubscriptionRefreshToken != ""
 	result.LiustSubscriptionEnabled = settings[SettingKeyLiustSubscriptionEnabled] == "true"
 	result.LiustSubscriptionAPIBaseURL = normalizeLiustSubscriptionAPIBaseURL(settings[SettingKeyLiustSubscriptionAPIBaseURL])
 	result.LiustSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionAPIToken])
+	result.LiustSubscriptionUserID = strings.TrimSpace(settings[SettingKeyLiustSubscriptionUserID])
 	result.LiustSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionRefreshToken])
 	result.LiustSubscriptionAPITokenConfigured = result.LiustSubscriptionAPIToken != ""
 	result.LiustSubscriptionRefreshConfigured = result.LiustSubscriptionRefreshToken != ""

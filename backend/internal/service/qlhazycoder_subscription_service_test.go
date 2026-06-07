@@ -147,6 +147,48 @@ func TestQLHazyCoderSubscriptionService_GetStatusNormalizesCopiedUserToken(t *te
 	require.Equal(t, []string{"707", "707"}, userHeaders)
 }
 
+func TestQLHazyCoderSubscriptionService_GetStatusUsesConfiguredUserIDWithBareToken(t *testing.T) {
+	var authHeaders []string
+	var userHeaders []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/status" {
+			authHeaders = append(authHeaders, r.Header.Get("Authorization"))
+			userHeaders = append(userHeaders, r.Header.Get("New-API-User"))
+		}
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota": 500000, "used_quota": 0}}`))
+		case "/api/subscription/self":
+			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"subscriptions": [], "all_subscriptions": []}}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: server.URL,
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "0123456789abcdef0123456789abcdef",
+		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+	}}
+	svc := NewQLHazyCoderSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.True(t, got.Configured)
+	require.Equal(t, []string{
+		"Bearer 0123456789abcdef0123456789abcdef",
+		"Bearer 0123456789abcdef0123456789abcdef",
+	}, authHeaders)
+	require.Equal(t, []string{"707", "707"}, userHeaders)
+}
+
 func TestQLHazyCoderSubscriptionService_GetStatusFallsBackToUserQuotaWhenNoActiveSubscription(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

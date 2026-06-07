@@ -20,6 +20,7 @@ func xhyapiSubscriptionProviderConfig() externalSubscriptionProviderConfig {
 		EnabledKey:        SettingKeyXHYAPISubscriptionEnabled,
 		APIBaseURLKey:     SettingKeyXHYAPISubscriptionAPIBaseURL,
 		APITokenKey:       SettingKeyXHYAPISubscriptionAPIToken,
+		UserIDKey:         SettingKeyXHYAPISubscriptionUserID,
 		RefreshTokenKey:   SettingKeyXHYAPISubscriptionRefreshToken,
 	}
 }

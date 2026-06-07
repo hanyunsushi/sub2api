@@ -20,6 +20,7 @@ func liustSubscriptionProviderConfig() externalSubscriptionProviderConfig {
 		EnabledKey:        SettingKeyLiustSubscriptionEnabled,
 		APIBaseURLKey:     SettingKeyLiustSubscriptionAPIBaseURL,
 		APITokenKey:       SettingKeyLiustSubscriptionAPIToken,
+		UserIDKey:         SettingKeyLiustSubscriptionUserID,
 		RefreshTokenKey:   SettingKeyLiustSubscriptionRefreshToken,
 	}
 }

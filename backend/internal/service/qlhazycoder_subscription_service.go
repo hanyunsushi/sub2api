@@ -28,6 +28,7 @@ func qlhazycoderSubscriptionProviderConfig() externalSubscriptionProviderConfig 
 		EnabledKey:        SettingKeyQLHazyCoderSubscriptionEnabled,
 		APIBaseURLKey:     SettingKeyQLHazyCoderSubscriptionAPIBaseURL,
 		APITokenKey:       SettingKeyQLHazyCoderSubscriptionAPIToken,
+		UserIDKey:         SettingKeyQLHazyCoderSubscriptionUserID,
 		RefreshTokenKey:   SettingKeyQLHazyCoderSubscriptionRefreshToken,
 	}
 }
@@ -136,6 +137,9 @@ func (s *QLHazyCoderSubscriptionService) GetStatus(ctx context.Context) (*QLHazy
 		return nil, err
 	}
 	auth := normalizeQLHazyCoderSubscriptionAuth(settings.APIToken)
+	if auth.UserID == "" {
+		auth.UserID = strings.TrimSpace(settings.UserID)
+	}
 	settings.APIToken = auth.Token
 
 	result := &ExternalSubscriptionStatus{

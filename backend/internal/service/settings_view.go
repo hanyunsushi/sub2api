@@ -236,6 +236,7 @@ type SystemSettings struct {
 	QLHazyCoderSubscriptionEnabled            bool
 	QLHazyCoderSubscriptionAPIBaseURL         string
 	QLHazyCoderSubscriptionAPIToken           string
+	QLHazyCoderSubscriptionUserID             string
 	QLHazyCoderSubscriptionRefreshToken       string
 	QLHazyCoderSubscriptionAPITokenConfigured bool
 	QLHazyCoderSubscriptionRefreshConfigured  bool
@@ -244,6 +245,7 @@ type SystemSettings struct {
 	XHYAPISubscriptionEnabled            bool
 	XHYAPISubscriptionAPIBaseURL         string
 	XHYAPISubscriptionAPIToken           string
+	XHYAPISubscriptionUserID             string
 	XHYAPISubscriptionRefreshToken       string
 	XHYAPISubscriptionAPITokenConfigured bool
 	XHYAPISubscriptionRefreshConfigured  bool
@@ -252,6 +254,7 @@ type SystemSettings struct {
 	LiustSubscriptionEnabled            bool
 	LiustSubscriptionAPIBaseURL         string
 	LiustSubscriptionAPIToken           string
+	LiustSubscriptionUserID             string
 	LiustSubscriptionRefreshToken       string
 	LiustSubscriptionAPITokenConfigured bool
 	LiustSubscriptionRefreshConfigured  bool
