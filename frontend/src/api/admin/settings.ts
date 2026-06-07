@@ -625,6 +625,10 @@ export interface SystemSettings {
   xhyapi_subscription_user_id: string;
   xhyapi_subscription_api_token_configured: boolean;
   xhyapi_subscription_refresh_token_configured: boolean;
+  pixel_subscription_enabled: boolean;
+  pixel_subscription_api_base_url: string;
+  pixel_subscription_api_token_configured: boolean;
+  pixel_subscription_refresh_token_configured: boolean;
   liust_subscription_enabled: boolean;
   liust_subscription_api_base_url: string;
   liust_subscription_user_id: string;
@@ -883,6 +887,10 @@ export interface UpdateSettingsRequest {
   xhyapi_subscription_api_token?: string;
   xhyapi_subscription_user_id?: string;
   xhyapi_subscription_refresh_token?: string;
+  pixel_subscription_enabled?: boolean;
+  pixel_subscription_api_base_url?: string;
+  pixel_subscription_api_token?: string;
+  pixel_subscription_refresh_token?: string;
   liust_subscription_enabled?: boolean;
   liust_subscription_api_base_url?: string;
   liust_subscription_api_token?: string;

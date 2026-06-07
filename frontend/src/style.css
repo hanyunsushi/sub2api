@@ -5844,9 +5844,15 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
+.balance-chip-xhyapi,
+.balance-chip-pixel,
+.balance-chip-liust,
 .balance-chip-tcdmx,
 .balance-row-buzz,
 .balance-row-qlhazycoder,
+.balance-row-xhyapi,
+.balance-row-pixel,
+.balance-row-liust,
 .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
   background: var(--atelier-material-dust) !important;
@@ -5855,6 +5861,9 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .app-header-atelier .balance-chip-buzz,
 .app-header-atelier .balance-chip-qlhazycoder,
+.app-header-atelier .balance-chip-xhyapi,
+.app-header-atelier .balance-chip-pixel,
+.app-header-atelier .balance-chip-liust,
 .app-header-atelier .balance-chip-tcdmx,
 .app-header-atelier .balance-chip-system {
   border: 0 !important;
@@ -5867,6 +5876,9 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .app-header-atelier .balance-chip-buzz:hover,
 .app-header-atelier .balance-chip-qlhazycoder:hover,
+.app-header-atelier .balance-chip-xhyapi:hover,
+.app-header-atelier .balance-chip-pixel:hover,
+.app-header-atelier .balance-chip-liust:hover,
 .app-header-atelier .balance-chip-tcdmx:hover,
 .app-header-atelier .balance-chip-system:hover {
   border-color: color-mix(in srgb, var(--atelier-ink) 28%, var(--atelier-line-strong)) !important;
@@ -5876,12 +5888,18 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .balance-buzz-text,
 .balance-qlhazycoder-text,
+.balance-xhyapi-text,
+.balance-pixel-text,
+.balance-liust-text,
 .balance-tcdmx-text {
   color: var(--atelier-dust) !important;
 }
 
 .app-header-atelier .balance-buzz-text,
 .app-header-atelier .balance-qlhazycoder-text,
+.app-header-atelier .balance-xhyapi-text,
+.app-header-atelier .balance-pixel-text,
+.app-header-atelier .balance-liust-text,
 .app-header-atelier .balance-tcdmx-text,
 .app-header-atelier .balance-system-text {
   color: var(--atelier-ink) !important;
@@ -5889,9 +5907,15 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .dark .balance-chip-buzz,
 .dark .balance-chip-qlhazycoder,
+.dark .balance-chip-xhyapi,
+.dark .balance-chip-pixel,
+.dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
+.dark .balance-row-xhyapi,
+.dark .balance-row-pixel,
+.dark .balance-row-liust,
 .dark .balance-row-tcdmx {
   border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
   background: rgba(199, 154, 58, 0.18) !important;
@@ -5899,6 +5923,9 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 .dark .balance-buzz-text,
 .dark .balance-qlhazycoder-text,
+.dark .balance-xhyapi-text,
+.dark .balance-pixel-text,
+.dark .balance-liust-text,
 .dark .balance-tcdmx-text {
   color: #e9c96c !important;
 }

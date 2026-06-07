@@ -2,71 +2,45 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-func TestXHYAPISubscriptionService_GetStatusReadsNewAPIConsoleSubscriptionQuota(t *testing.T) {
+func TestXHYAPISubscriptionService_GetStatusUsesExternalSubscriptionsEndpoint(t *testing.T) {
 	var requestedPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
-		if r.URL.Path != "/api/status" {
-			require.Equal(t, "Bearer xhyapi-secret", r.Header.Get("Authorization"))
-		}
+		require.Equal(t, "Bearer xhy-subscription-token", r.Header.Get("Authorization"))
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.URL.Path {
-		case "/api/status":
+		case "/api/v1/subscriptions/active":
 			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"quota_display_type": "CNY",
-					"quota_per_unit": 500000,
-					"usd_exchange_rate": 1
-				}
-			}`))
-		case "/api/user/self":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"id": 909,
-					"quota": 0,
-					"used_quota": 2250000,
-					"request_count": 17
-				}
-			}`))
-		case "/api/subscription/self":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"billing_preference": "subscription_first",
-					"subscriptions": [
-						{
-							"subscription": {
-								"id": 19,
-								"plan_id": 17,
-								"status": "active",
-								"start_time": 1780171016,
-								"end_time": 1811707016,
-								"amount_total": 45000000,
-								"amount_used": 2250000
-							},
-							"plan": {
-								"id": 17,
-								"title": "XHYAPI Pro"
-							}
+				"code": 0,
+				"message": "success",
+				"data": [
+					{
+						"id": 19,
+						"group_id": 17,
+						"status": "active",
+						"daily_usage_usd": 2.25,
+						"weekly_usage_usd": 4.5,
+						"monthly_usage_usd": 13.5,
+						"expires_at": "2026-08-09T00:00:00Z",
+						"group": {
+							"id": 17,
+							"name": "XHYAPI Pro",
+							"daily_limit_usd": 20,
+							"weekly_limit_usd": 60,
+							"monthly_limit_usd": 80
 						}
-					],
-					"all_subscriptions": []
-				}
+					}
+				]
 			}`))
 		default:
 			http.NotFound(w, r)
@@ -77,49 +51,77 @@ func TestXHYAPISubscriptionService_GetStatusReadsNewAPIConsoleSubscriptionQuota(
 	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
 		SettingKeyXHYAPISubscriptionEnabled:    "true",
 		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   "xhyapi-secret",
+		SettingKeyXHYAPISubscriptionAPIToken:   "xhy-subscription-token",
 	}}
 	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
 
 	got, err := svc.GetStatus(context.Background())
 	require.NoError(t, err)
 
-	require.Equal(t, []string{"/api/status", "/api/user/self", "/api/subscription/self"}, requestedPaths)
+	require.Equal(t, []string{"/api/v1/subscriptions/active"}, requestedPaths)
 	require.True(t, got.Enabled)
 	require.True(t, got.Configured)
 	require.Equal(t, "xhyapi", got.Provider)
+	require.Equal(t, "USD", got.Currency)
 	require.Equal(t, server.URL, got.SiteURL)
-	require.Equal(t, "CNY", got.Currency)
 	require.Equal(t, 1, got.ActiveCount)
 	require.NotNil(t, got.TotalLimitUSD)
-	require.InDelta(t, 90, *got.TotalLimitUSD, 0.0001)
-	require.InDelta(t, 4.5, got.UsedUSD, 0.0001)
+	require.InDelta(t, 80, *got.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 13.5, got.UsedUSD, 0.0001)
 	require.NotNil(t, got.RemainingUSD)
-	require.InDelta(t, 85.5, *got.RemainingUSD, 0.0001)
+	require.InDelta(t, 66.5, *got.RemainingUSD, 0.0001)
 	require.NotNil(t, got.ExpiresAt)
-	require.Equal(t, time.Unix(1811707016, 0).UTC(), got.ExpiresAt.UTC())
+	require.Equal(t, "2026-08-09T00:00:00Z", got.ExpiresAt.UTC().Format("2006-01-02T15:04:05Z"))
 	require.Len(t, got.Subscriptions, 1)
 	require.Equal(t, "XHYAPI Pro", got.Subscriptions[0].GroupName)
-	require.Equal(t, "subscription", got.Subscriptions[0].Window)
+	require.Equal(t, "monthly", got.Subscriptions[0].Window)
 }
 
-func TestXHYAPISubscriptionService_GetStatusNormalizesCopiedUserToken(t *testing.T) {
-	var authHeaders []string
-	var userHeaders []string
+func TestXHYAPISubscriptionService_GetStatusRefreshesExpiredSubscriptionToken(t *testing.T) {
+	var requestedPaths []string
+	var activeAuthorization []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/status" {
-			authHeaders = append(authHeaders, r.Header.Get("Authorization"))
-			userHeaders = append(userHeaders, r.Header.Get("New-API-User"))
-		}
+		requestedPaths = append(requestedPaths, r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.URL.Path {
-		case "/api/status":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
-		case "/api/user/self":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota": 500000, "used_quota": 0}}`))
-		case "/api/subscription/self":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"subscriptions": [], "all_subscriptions": []}}`))
+		case "/api/v1/subscriptions/active":
+			activeAuthorization = append(activeAuthorization, r.Header.Get("Authorization"))
+			if len(activeAuthorization) == 1 {
+				w.WriteHeader(http.StatusUnauthorized)
+				_, _ = w.Write([]byte(`{"code":"INVALID_TOKEN","message":"Invalid token"}`))
+				return
+			}
+			require.Equal(t, "Bearer fresh-xhy-token", r.Header.Get("Authorization"))
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": [
+					{
+						"id": 20,
+						"group_id": 18,
+						"status": "active",
+						"monthly_usage_usd": 1,
+						"group": {
+							"name": "XHY refreshed",
+							"monthly_limit_usd": 10
+						}
+					}
+				]
+			}`))
+		case "/api/v1/auth/refresh":
+			var payload map[string]string
+			require.NoError(t, json.NewDecoder(r.Body).Decode(&payload))
+			require.Equal(t, "xhy-refresh-token", payload["refresh_token"])
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"access_token": "fresh-xhy-token",
+					"refresh_token": "fresh-xhy-refresh",
+					"expires_in": 3600
+				}
+			}`))
 		default:
 			http.NotFound(w, r)
 		}
@@ -127,149 +129,31 @@ func TestXHYAPISubscriptionService_GetStatusNormalizesCopiedUserToken(t *testing
 	defer server.Close()
 
 	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
-		SettingKeyXHYAPISubscriptionEnabled:    "true",
-		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   `{"success":true,"data":{"token":"Bearer xhyapi-secret","id":909}}`,
+		SettingKeyXHYAPISubscriptionEnabled:      "true",
+		SettingKeyXHYAPISubscriptionAPIBaseURL:   server.URL,
+		SettingKeyXHYAPISubscriptionAPIToken:     "expired-xhy-token",
+		SettingKeyXHYAPISubscriptionRefreshToken: "xhy-refresh-token",
 	}}
 	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
 
 	got, err := svc.GetStatus(context.Background())
 	require.NoError(t, err)
 
-	require.True(t, got.Configured)
-	require.Equal(t, []string{"Bearer xhyapi-secret", "Bearer xhyapi-secret"}, authHeaders)
-	require.Equal(t, []string{"909", "909"}, userHeaders)
-}
-
-func TestXHYAPISubscriptionService_GetStatusUsesConfiguredUserIDWithBareToken(t *testing.T) {
-	var authHeaders []string
-	var userHeaders []string
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/status" {
-			authHeaders = append(authHeaders, r.Header.Get("Authorization"))
-			userHeaders = append(userHeaders, r.Header.Get("New-API-User"))
-		}
-		w.Header().Set("Content-Type", "application/json")
-
-		switch r.URL.Path {
-		case "/api/status":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
-		case "/api/user/self":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota": 500000, "used_quota": 0}}`))
-		case "/api/subscription/self":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"subscriptions": [], "all_subscriptions": []}}`))
-		default:
-			http.NotFound(w, r)
-		}
-	}))
-	defer server.Close()
-
-	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
-		SettingKeyXHYAPISubscriptionEnabled:    "true",
-		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   "abcdef0123456789abcdef0123456789",
-		SettingKeyXHYAPISubscriptionUserID:     "909",
-	}}
-	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
-
-	got, err := svc.GetStatus(context.Background())
-	require.NoError(t, err)
-
-	require.True(t, got.Configured)
 	require.Equal(t, []string{
-		"Bearer abcdef0123456789abcdef0123456789",
-		"Bearer abcdef0123456789abcdef0123456789",
-	}, authHeaders)
-	require.Equal(t, []string{"909", "909"}, userHeaders)
-}
-
-func TestXHYAPISubscriptionService_GetStatusUsesNewAPIUnauthorizedEnvelope(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		switch r.URL.Path {
-		case "/api/status":
-			_, _ = w.Write([]byte(`{"success": true, "message": "", "data": {"quota_display_type": "CNY", "quota_per_unit": 500000}}`))
-		case "/api/user/self":
-			w.WriteHeader(http.StatusUnauthorized)
-			_, _ = w.Write([]byte(`{"success": false, "message": "Unauthorized, not logged in and no access token provided"}`))
-		default:
-			http.NotFound(w, r)
-		}
-	}))
-	defer server.Close()
-
-	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
-		SettingKeyXHYAPISubscriptionEnabled:    "true",
-		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   "xhyapi-secret",
-	}}
-	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
-
-	got, err := svc.GetStatus(context.Background())
-	require.NoError(t, err)
-
-	require.Equal(t, "401", got.ErrorCode)
-	require.Equal(t, "Unauthorized, not logged in and no access token provided", got.ErrorMessage)
-	require.Equal(t, 0, got.ActiveCount)
-}
-
-func TestXHYAPISubscriptionService_GetStatusFallsBackToUserQuotaWhenNoActiveSubscription(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		switch r.URL.Path {
-		case "/api/status":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"quota_display_type": "CNY",
-					"quota_per_unit": 500000,
-					"usd_exchange_rate": 1
-				}
-			}`))
-		case "/api/user/self":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"quota": 3000000,
-					"used_quota": 1000000
-				}
-			}`))
-		case "/api/subscription/self":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"subscriptions": [],
-					"all_subscriptions": []
-				}
-			}`))
-		default:
-			http.NotFound(w, r)
-		}
-	}))
-	defer server.Close()
-
-	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
-		SettingKeyXHYAPISubscriptionEnabled:    "true",
-		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   "xhyapi-secret",
-	}}
-	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
-
-	got, err := svc.GetStatus(context.Background())
-	require.NoError(t, err)
-
-	require.Equal(t, 0, got.ActiveCount)
-	require.InDelta(t, 2, got.UsedUSD, 0.0001)
-	require.NotNil(t, got.RemainingUSD)
-	require.InDelta(t, 6, *got.RemainingUSD, 0.0001)
-	require.Nil(t, got.TotalLimitUSD)
-	require.Nil(t, got.ExpiresAt)
-	require.Equal(t, "CNY", got.Currency)
+		"/api/v1/subscriptions/active",
+		"/api/v1/auth/refresh",
+		"/api/v1/subscriptions/active",
+	}, requestedPaths)
+	require.Equal(t, []string{
+		"Bearer expired-xhy-token",
+		"Bearer fresh-xhy-token",
+	}, activeAuthorization)
 	require.Empty(t, got.ErrorCode)
+	require.Equal(t, 1, got.ActiveCount)
+	require.Equal(t, "fresh-xhy-token", repo.values[SettingKeyXHYAPISubscriptionAPIToken])
+	require.Equal(t, "fresh-xhy-refresh", repo.values[SettingKeyXHYAPISubscriptionRefreshToken])
 }
+
 func TestXHYAPISubscriptionService_GetStatusSkipsUpstreamWhenDisabled(t *testing.T) {
 	called := false
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -281,7 +165,7 @@ func TestXHYAPISubscriptionService_GetStatusSkipsUpstreamWhenDisabled(t *testing
 	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
 		SettingKeyXHYAPISubscriptionEnabled:    "false",
 		SettingKeyXHYAPISubscriptionAPIBaseURL: server.URL,
-		SettingKeyXHYAPISubscriptionAPIToken:   "xhyapi-secret",
+		SettingKeyXHYAPISubscriptionAPIToken:   "xhy-secret",
 	}}
 	svc := NewXHYAPISubscriptionService(NewSettingService(repo, &config.Config{}))
 

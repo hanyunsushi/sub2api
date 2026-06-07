@@ -310,6 +310,7 @@ const (
 	DefaultTCDMXSubscriptionAPIBaseURL       = "https://tcdmx.com"
 	DefaultQLHazyCoderSubscriptionAPIBaseURL = "https://api.qlhazycoder.top"
 	DefaultXHYAPISubscriptionAPIBaseURL      = "https://xhyapi.com"
+	DefaultPixelSubscriptionAPIBaseURL       = "https://ai-pixel.online"
 	DefaultLiustSubscriptionAPIBaseURL       = "https://liust.xyz"
 	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
@@ -2201,6 +2202,14 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken) != "" {
 		updates[SettingKeyXHYAPISubscriptionRefreshToken] = strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken)
 	}
+	updates[SettingKeyPixelSubscriptionEnabled] = strconv.FormatBool(settings.PixelSubscriptionEnabled)
+	updates[SettingKeyPixelSubscriptionAPIBaseURL] = normalizePixelSubscriptionAPIBaseURL(settings.PixelSubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.PixelSubscriptionAPIToken) != "" {
+		updates[SettingKeyPixelSubscriptionAPIToken] = strings.TrimSpace(settings.PixelSubscriptionAPIToken)
+	}
+	if strings.TrimSpace(settings.PixelSubscriptionRefreshToken) != "" {
+		updates[SettingKeyPixelSubscriptionRefreshToken] = strings.TrimSpace(settings.PixelSubscriptionRefreshToken)
+	}
 	updates[SettingKeyLiustSubscriptionEnabled] = strconv.FormatBool(settings.LiustSubscriptionEnabled)
 	updates[SettingKeyLiustSubscriptionAPIBaseURL] = normalizeLiustSubscriptionAPIBaseURL(settings.LiustSubscriptionAPIBaseURL)
 	if strings.TrimSpace(settings.LiustSubscriptionAPIToken) != "" {
@@ -3149,6 +3158,9 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyXHYAPISubscriptionAPIBaseURL:        DefaultXHYAPISubscriptionAPIBaseURL,
 		SettingKeyXHYAPISubscriptionUserID:            "",
 		SettingKeyXHYAPISubscriptionRefreshToken:      "",
+		SettingKeyPixelSubscriptionEnabled:            "false",
+		SettingKeyPixelSubscriptionAPIBaseURL:         DefaultPixelSubscriptionAPIBaseURL,
+		SettingKeyPixelSubscriptionRefreshToken:       "",
 		SettingKeyLiustSubscriptionEnabled:            "false",
 		SettingKeyLiustSubscriptionAPIBaseURL:         DefaultLiustSubscriptionAPIBaseURL,
 		SettingKeyLiustSubscriptionUserID:             "",
@@ -3718,6 +3730,12 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.XHYAPISubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionRefreshToken])
 	result.XHYAPISubscriptionAPITokenConfigured = result.XHYAPISubscriptionAPIToken != ""
 	result.XHYAPISubscriptionRefreshConfigured = result.XHYAPISubscriptionRefreshToken != ""
+	result.PixelSubscriptionEnabled = settings[SettingKeyPixelSubscriptionEnabled] == "true"
+	result.PixelSubscriptionAPIBaseURL = normalizePixelSubscriptionAPIBaseURL(settings[SettingKeyPixelSubscriptionAPIBaseURL])
+	result.PixelSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyPixelSubscriptionAPIToken])
+	result.PixelSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyPixelSubscriptionRefreshToken])
+	result.PixelSubscriptionAPITokenConfigured = result.PixelSubscriptionAPIToken != ""
+	result.PixelSubscriptionRefreshConfigured = result.PixelSubscriptionRefreshToken != ""
 	result.LiustSubscriptionEnabled = settings[SettingKeyLiustSubscriptionEnabled] == "true"
 	result.LiustSubscriptionAPIBaseURL = normalizeLiustSubscriptionAPIBaseURL(settings[SettingKeyLiustSubscriptionAPIBaseURL])
 	result.LiustSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionAPIToken])

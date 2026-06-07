@@ -40,5 +40,5 @@ func (s *SettingService) GetXHYAPISubscriptionSettings(ctx context.Context) (XHY
 }
 
 func (s *XHYAPISubscriptionService) GetStatus(ctx context.Context) (*XHYAPISubscriptionStatus, error) {
-	return s.getNewAPIConsoleSubscriptionStatus(ctx, xhyapiSubscriptionProviderConfig())
+	return s.ExternalSubscriptionService.GetStatus(ctx)
 }

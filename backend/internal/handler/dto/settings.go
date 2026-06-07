@@ -252,6 +252,10 @@ type SystemSettings struct {
 	XHYAPISubscriptionUserID             string             `json:"xhyapi_subscription_user_id"`
 	XHYAPISubscriptionAPITokenConfigured bool               `json:"xhyapi_subscription_api_token_configured"`
 	XHYAPISubscriptionRefreshConfigured  bool               `json:"xhyapi_subscription_refresh_token_configured"`
+	PixelSubscriptionEnabled             bool               `json:"pixel_subscription_enabled"`
+	PixelSubscriptionAPIBaseURL          string             `json:"pixel_subscription_api_base_url"`
+	PixelSubscriptionAPITokenConfigured  bool               `json:"pixel_subscription_api_token_configured"`
+	PixelSubscriptionRefreshConfigured   bool               `json:"pixel_subscription_refresh_token_configured"`
 	LiustSubscriptionEnabled             bool               `json:"liust_subscription_enabled"`
 	LiustSubscriptionAPIBaseURL          string             `json:"liust_subscription_api_base_url"`
 	LiustSubscriptionUserID              string             `json:"liust_subscription_user_id"`

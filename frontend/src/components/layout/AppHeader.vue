@@ -97,6 +97,12 @@
               XHY {{ formattedXHYAPIBalance }}
             </span>
             <span
+              v-else-if="showPixelSubscriptionInChip"
+              class="balance-pixel-text text-sm font-semibold"
+            >
+              Pixel {{ formattedPixelBalance }}
+            </span>
+            <span
               v-else-if="showLiustSubscriptionInChip"
               class="balance-liust-text text-sm font-semibold"
             >
@@ -192,6 +198,19 @@
                   </div>
                   <div class="balance-expiry-text text-[11px] leading-4">
                     {{ formattedXHYAPIExpiry }}
+                  </div>
+                </div>
+              </div>
+              <div class="balance-row balance-row-pixel flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+                <div class="balance-pixel-text text-xs font-medium">
+                  Pixel
+                </div>
+                <div class="text-right">
+                  <div class="balance-pixel-text text-sm font-semibold">
+                    {{ formattedPixelBalance }}
+                  </div>
+                  <div class="balance-expiry-text text-[11px] leading-4">
+                    {{ formattedPixelExpiry }}
                   </div>
                 </div>
               </div>
@@ -372,6 +391,7 @@ import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
 import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
 import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
+import pixelSubscriptionAPI, { type PixelSubscriptionStatus } from '@/api/admin/pixelSubscription'
 import liustSubscriptionAPI, { type LiustSubscriptionStatus } from '@/api/admin/liustSubscription'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
@@ -399,11 +419,13 @@ const buzzBalance = ref<BuzzBalance | null>(null)
 const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
 const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
 const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
+const pixelSubscription = ref<PixelSubscriptionStatus | null>(null)
 const liustSubscription = ref<LiustSubscriptionStatus | null>(null)
 const buzzBalanceLoading = ref(false)
 const tcdmxSubscriptionLoading = ref(false)
 const qlhazycoderSubscriptionLoading = ref(false)
 const xhyapiSubscriptionLoading = ref(false)
+const pixelSubscriptionLoading = ref(false)
 const liustSubscriptionLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
@@ -479,12 +501,21 @@ const canShowLiustSubscription = computed(() => {
   )
 })
 
+const canShowPixelSubscription = computed(() => {
+  return Boolean(
+    authStore.isAdmin &&
+    pixelSubscription.value?.enabled &&
+    pixelSubscription.value?.configured
+  )
+})
+
 const balanceSlotCount = computed(() => {
   return 1 +
     (canShowBuzzBalance.value ? 1 : 0) +
     (canShowTCDMXSubscription.value ? 1 : 0) +
     (canShowQLHazyCoderSubscription.value ? 1 : 0) +
     (canShowXHYAPISubscription.value ? 1 : 0) +
+    (canShowPixelSubscription.value ? 1 : 0) +
     (canShowLiustSubscription.value ? 1 : 0)
 })
 
@@ -520,6 +551,17 @@ const showXHYAPISubscriptionInChip = computed(() => {
 
 const showLiustSubscriptionInChip = computed(() => {
   if (!canShowLiustSubscription.value) return false
+  let slot = 1
+  if (canShowBuzzBalance.value) slot += 1
+  if (canShowTCDMXSubscription.value) slot += 1
+  if (canShowQLHazyCoderSubscription.value) slot += 1
+  if (canShowXHYAPISubscription.value) slot += 1
+  if (canShowPixelSubscription.value) slot += 1
+  return currentBalanceSlot.value === slot
+})
+
+const showPixelSubscriptionInChip = computed(() => {
+  if (!canShowPixelSubscription.value) return false
   let slot = 1
   if (canShowBuzzBalance.value) slot += 1
   if (canShowTCDMXSubscription.value) slot += 1
@@ -578,12 +620,25 @@ const formattedLiustExpiry = computed(() => {
   return formatExternalSubscriptionExpiry(liustSubscription.value, canShowLiustSubscription.value)
 })
 
+const formattedPixelBalance = computed(() => {
+  return formatExternalSubscriptionBalance(pixelSubscription.value, canShowPixelSubscription.value, {
+    walletOnly: true,
+  })
+})
+
+const formattedPixelExpiry = computed(() => {
+  return formatExternalSubscriptionExpiry(pixelSubscription.value, canShowPixelSubscription.value)
+})
+
 const balanceChipClass = computed(() => {
   if (showQLHazyCoderSubscriptionInChip.value) {
     return 'balance-chip-qlhazycoder'
   }
   if (showXHYAPISubscriptionInChip.value) {
     return 'balance-chip-xhyapi'
+  }
+  if (showPixelSubscriptionInChip.value) {
+    return 'balance-chip-pixel'
   }
   if (showLiustSubscriptionInChip.value) {
     return 'balance-chip-liust'
@@ -603,6 +658,9 @@ const balanceIconClass = computed(() => {
   }
   if (showXHYAPISubscriptionInChip.value) {
     return 'balance-xhyapi-text'
+  }
+  if (showPixelSubscriptionInChip.value) {
+    return 'balance-pixel-text'
   }
   if (showLiustSubscriptionInChip.value) {
     return 'balance-liust-text'
@@ -756,8 +814,21 @@ async function fetchLiustSubscription() {
   }
 }
 
+async function fetchPixelSubscription() {
+  if (!authStore.isAdmin || pixelSubscriptionLoading.value) return
+  pixelSubscriptionLoading.value = true
+  try {
+    pixelSubscription.value = await pixelSubscriptionAPI.getStatus()
+  } catch (error) {
+    pixelSubscription.value = null
+    console.error('Failed to fetch Pixel subscription:', error)
+  } finally {
+    pixelSubscriptionLoading.value = false
+  }
+}
+
 function formatExternalSubscriptionBalance(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | LiustSubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | PixelSubscriptionStatus | LiustSubscriptionStatus | null,
   canShow = false,
   options: { walletOnly?: boolean } = {},
 ) {
@@ -787,7 +858,7 @@ function formatExternalSubscriptionMoney(value: number, currency?: string | null
 }
 
 function formatExternalSubscriptionExpiry(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | LiustSubscriptionStatus | null,
+  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | PixelSubscriptionStatus | LiustSubscriptionStatus | null,
   canShow = false,
 ) {
   if (!canShow || !subscription) return '期限未配置'
@@ -855,6 +926,7 @@ onMounted(() => {
   void fetchTCDMXSubscription()
   void fetchQLHazyCoderSubscription()
   void fetchXHYAPISubscription()
+  void fetchPixelSubscription()
   void fetchLiustSubscription()
   startBalanceCarousel()
 })
@@ -873,11 +945,13 @@ watch(
     tcdmxSubscription.value = null
     qlhazycoderSubscription.value = null
     xhyapiSubscription.value = null
+    pixelSubscription.value = null
     liustSubscription.value = null
     void fetchBuzzBalance()
     void fetchTCDMXSubscription()
     void fetchQLHazyCoderSubscription()
     void fetchXHYAPISubscription()
+    void fetchPixelSubscription()
     void fetchLiustSubscription()
   }
 )
@@ -985,6 +1059,7 @@ watch(
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
 .balance-chip-xhyapi,
+.balance-chip-pixel,
 .balance-chip-liust,
 .balance-chip-tcdmx {
   border: 0;
@@ -1002,6 +1077,7 @@ watch(
 .balance-chip-buzz:hover,
 .balance-chip-qlhazycoder:hover,
 .balance-chip-xhyapi:hover,
+.balance-chip-pixel:hover,
 .balance-chip-liust:hover,
 .balance-chip-tcdmx:hover {
   background: var(--atelier-ui-hover-surface);
@@ -1020,6 +1096,7 @@ watch(
 .balance-row-buzz,
 .balance-row-qlhazycoder,
 .balance-row-xhyapi,
+.balance-row-pixel,
 .balance-row-liust,
 .balance-row-tcdmx {
   background: var(--atelier-butter-soft);
@@ -1032,6 +1109,7 @@ watch(
 .balance-buzz-text,
 .balance-qlhazycoder-text,
 .balance-xhyapi-text,
+.balance-pixel-text,
 .balance-liust-text,
 .balance-tcdmx-text {
   color: var(--atelier-ink);
@@ -1050,11 +1128,13 @@ watch(
 .dark .balance-chip-buzz,
 .dark .balance-chip-qlhazycoder,
 .dark .balance-chip-xhyapi,
+.dark .balance-chip-pixel,
 .dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
 .dark .balance-row-xhyapi,
+.dark .balance-row-pixel,
 .dark .balance-row-liust,
 .dark .balance-row-tcdmx {
   background: transparent;
@@ -1064,6 +1144,7 @@ watch(
 .dark .balance-chip-buzz:hover,
 .dark .balance-chip-qlhazycoder:hover,
 .dark .balance-chip-xhyapi:hover,
+.dark .balance-chip-pixel:hover,
 .dark .balance-chip-liust:hover,
 .dark .balance-chip-tcdmx:hover {
   background: var(--buzz-balance-yellow-soft-dark);
@@ -1076,6 +1157,7 @@ watch(
 .dark .balance-buzz-text,
 .dark .balance-qlhazycoder-text,
 .dark .balance-xhyapi-text,
+.dark .balance-pixel-text,
 .dark .balance-liust-text,
 .dark .balance-tcdmx-text {
   color: var(--atelier-ink);

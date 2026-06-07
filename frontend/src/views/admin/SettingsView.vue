@@ -4006,8 +4006,8 @@
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
-                          "读取 XHYAPI New API 控制台的余额、订阅额度和到期时间，显示在余额栏和对应账号卡片。",
-                          "Read XHYAPI New API console balance, subscription quota, and expiry for the balance panel and matching account cards.",
+                          "启用后服务端读取 XHYAPI 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
+                          "When enabled, the server reads XHYAPI quota and expiry for the balance panel and matching account cards.",
                         )
                       }}
                     </p>
@@ -4015,7 +4015,7 @@
                   <Toggle v-model="form.xhyapi_subscription_enabled" />
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-3">
+                <div class="grid gap-4 md:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4033,7 +4033,7 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("XHYAPI 用户令牌", "XHYAPI user token") }}
+                      {{ localText("XHYAPI 订阅访问 Token", "XHYAPI subscription access token") }}
                     </label>
                     <input
                       v-model="form.xhyapi_subscription_api_token"
@@ -4042,7 +4042,7 @@
                       :placeholder="
                         form.xhyapi_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
+                          : localText('粘贴可访问 XHYAPI 订阅接口的 Token', 'Paste a token that can access XHYAPI subscription APIs')
                       "
                       autocomplete="off"
                     />
@@ -4054,8 +4054,8 @@
                               "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取 XHYAPI 余额和订阅。登录 XHYAPI New API 控制台后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
-                              "A normal sk- model API key can only call model APIs and cannot read XHYAPI balance or subscriptions. After logging in to the XHYAPI New API console, open personal settings and use reset/regenerate token to get the user token; if the API requires a user header, you can also paste {id, token} JSON.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 XHYAPI 订阅接口的 Token。",
+                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access XHYAPI subscription APIs.",
                             )
                       }}
                     </p>
@@ -4064,21 +4064,128 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("XHYAPI 用户 ID", "XHYAPI user ID") }}
+                      {{ localText("XHYAPI refresh_token", "XHYAPI refresh_token") }}
                     </label>
                     <input
-                      v-model="form.xhyapi_subscription_user_id"
-                      type="text"
+                      v-model="form.xhyapi_subscription_refresh_token"
+                      type="password"
                       class="input font-mono text-sm"
-                      placeholder="New-API-User"
+                      :placeholder="
+                        form.xhyapi_subscription_refresh_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴 XHYAPI 登录态 refresh_token', 'Paste the XHYAPI login refresh_token')
+                      "
                       autocomplete="off"
                     />
                     <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
+                        form.xhyapi_subscription_refresh_token_configured
+                          ? localText(
+                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
+                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
+                            )
+                          : localText(
+                              "这是登录续期凭证，不是 sk- API 密钥。",
+                              "This is a login renewal credential, not an sk- API key.",
+                            )
+                      }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                  <div>
+                    <label
+                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("启用 Pixel 订阅额度", "Enable Pixel subscription quota") }}
+                    </label>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
                         localText(
-                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
-                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
+                          "启用后服务端读取 Pixel 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
+                          "When enabled, the server reads Pixel quota and expiry for the balance panel and matching account cards.",
                         )
+                      }}
+                    </p>
+                  </div>
+                  <Toggle v-model="form.pixel_subscription_enabled" />
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("Pixel API Base URL", "Pixel API Base URL") }}
+                    </label>
+                    <input
+                      v-model="form.pixel_subscription_api_base_url"
+                      type="url"
+                      class="input font-mono text-sm"
+                      placeholder="https://ai-pixel.online"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("Pixel 订阅访问 Token", "Pixel subscription access token") }}
+                    </label>
+                    <input
+                      v-model="form.pixel_subscription_api_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.pixel_subscription_api_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴可访问 Pixel 订阅接口的 Token', 'Paste a token that can access Pixel subscription APIs')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.pixel_subscription_api_token_configured
+                          ? localText(
+                              "已保存 Token 不会回显，前端只拿到额度摘要。",
+                              "Saved token is never echoed; the frontend receives only the quota summary.",
+                            )
+                          : localText(
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 Pixel 订阅接口的 Token。",
+                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access Pixel subscription APIs.",
+                            )
+                      }}
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ localText("Pixel refresh_token", "Pixel refresh_token") }}
+                    </label>
+                    <input
+                      v-model="form.pixel_subscription_refresh_token"
+                      type="password"
+                      class="input font-mono text-sm"
+                      :placeholder="
+                        form.pixel_subscription_refresh_token_configured
+                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
+                          : localText('粘贴 Pixel 登录态 refresh_token', 'Paste the Pixel login refresh_token')
+                      "
+                      autocomplete="off"
+                    />
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        form.pixel_subscription_refresh_token_configured
+                          ? localText(
+                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
+                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
+                            )
+                          : localText(
+                              "这是登录续期凭证，不是 sk- API 密钥。",
+                              "This is a login renewal credential, not an sk- API key.",
+                            )
                       }}
                     </p>
                   </div>
@@ -7625,7 +7732,6 @@ type SettingsForm = Omit<
   | "wechat_connect_open_enabled"
   | "wechat_connect_mp_enabled"
   | "wechat_connect_mobile_enabled"
-  | "xhyapi_subscription_refresh_token_configured"
   | "liust_subscription_refresh_token_configured"
 > & {
   smtp_password: string;
@@ -7649,6 +7755,9 @@ type SettingsForm = Omit<
   tcdmx_subscription_refresh_token: string;
   qlhazycoder_subscription_api_token: string;
   xhyapi_subscription_api_token: string;
+  xhyapi_subscription_refresh_token: string;
+  pixel_subscription_api_token: string;
+  pixel_subscription_refresh_token: string;
   liust_subscription_api_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
@@ -7877,6 +7986,14 @@ const form = reactive<SettingsForm>({
   xhyapi_subscription_user_id: "",
   xhyapi_subscription_api_token: "",
   xhyapi_subscription_api_token_configured: false,
+  xhyapi_subscription_refresh_token: "",
+  xhyapi_subscription_refresh_token_configured: false,
+  pixel_subscription_enabled: false,
+  pixel_subscription_api_base_url: "https://ai-pixel.online",
+  pixel_subscription_api_token: "",
+  pixel_subscription_api_token_configured: false,
+  pixel_subscription_refresh_token: "",
+  pixel_subscription_refresh_token_configured: false,
   liust_subscription_enabled: false,
   liust_subscription_api_base_url: "https://liust.xyz",
   liust_subscription_user_id: "",
@@ -8602,6 +8719,9 @@ async function loadSettings() {
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
+    form.xhyapi_subscription_refresh_token = "";
+    form.pixel_subscription_api_token = "";
+    form.pixel_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
@@ -8918,6 +9038,9 @@ async function saveSettings() {
     if (!isValidHttpUrl(form.xhyapi_subscription_api_base_url)) {
       form.xhyapi_subscription_api_base_url = "https://xhyapi.com";
     }
+    if (!isValidHttpUrl(form.pixel_subscription_api_base_url)) {
+      form.pixel_subscription_api_base_url = "https://ai-pixel.online";
+    }
     if (!isValidHttpUrl(form.liust_subscription_api_base_url)) {
       form.liust_subscription_api_base_url = "https://liust.xyz";
     }
@@ -9155,8 +9278,15 @@ async function saveSettings() {
         form.xhyapi_subscription_api_base_url?.trim() || "https://xhyapi.com",
       xhyapi_subscription_api_token:
         form.xhyapi_subscription_api_token || undefined,
-      xhyapi_subscription_user_id:
-        form.xhyapi_subscription_user_id?.trim() || "",
+      xhyapi_subscription_refresh_token:
+        form.xhyapi_subscription_refresh_token || undefined,
+      pixel_subscription_enabled: form.pixel_subscription_enabled,
+      pixel_subscription_api_base_url:
+        form.pixel_subscription_api_base_url?.trim() || "https://ai-pixel.online",
+      pixel_subscription_api_token:
+        form.pixel_subscription_api_token || undefined,
+      pixel_subscription_refresh_token:
+        form.pixel_subscription_refresh_token || undefined,
       liust_subscription_enabled: form.liust_subscription_enabled,
       liust_subscription_api_base_url:
         form.liust_subscription_api_base_url?.trim() || "https://liust.xyz",
@@ -9247,6 +9377,9 @@ async function saveSettings() {
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
+    form.xhyapi_subscription_refresh_token = "";
+    form.pixel_subscription_api_token = "";
+    form.pixel_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
