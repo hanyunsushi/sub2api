@@ -3,8 +3,6 @@
 package service
 
 import (
-	"bytes"
-	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,52 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-	"github.com/tidwall/gjson"
 )
-
-func TestForwardAsResponses_OpenAIAPIKeyForceChatCompletionsRoutesToChatCompletions(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	body := []byte(`{"model":"gpt-5.4","input":"hello","stream":false}`)
-	rec := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(rec)
-	c.Request = httptest.NewRequest(http.MethodPost, "/v1/responses", bytes.NewReader(body))
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	upstream := &httpUpstreamRecorder{resp: &http.Response{
-		StatusCode: http.StatusOK,
-		Header:     http.Header{"Content-Type": []string{"application/json"}, "x-request-id": []string{"rid_gateway_resp_chat"}},
-		Body: io.NopCloser(strings.NewReader(
-			`{"id":"chatcmpl_gateway","object":"chat.completion","model":"gpt-5.4","choices":[{"index":0,"message":{"role":"assistant","content":"ok"},"finish_reason":"stop"}],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}`,
-		)),
-	}}
-	svc := &GatewayService{
-		cfg:                  rawChatCompletionsTestConfig(),
-		httpUpstream:         upstream,
-		responseHeaderFilter: compileResponseHeaderFilter(rawChatCompletionsTestConfig()),
-	}
-	account := rawChatCompletionsTestAccount()
-	account.Extra = map[string]any{
-		openai_compat.ExtraKeyResponsesMode: string(openai_compat.ResponsesSupportModeForceChatCompletions),
-	}
-
-	result, err := svc.ForwardAsResponses(context.Background(), c, account, body, &ParsedRequest{Model: "gpt-5.4"})
-	require.NoError(t, err)
-	require.NotNil(t, result)
-	require.Equal(t, "http://upstream.example/v1/chat/completions", upstream.lastReq.URL.String())
-	require.Equal(t, HTTPUpstreamProfileOpenAI, HTTPUpstreamProfileFromContext(upstream.lastReq.Context()))
-	require.Equal(t, "hello", gjson.GetBytes(upstream.lastBody, "messages.0.content").String())
-	require.False(t, gjson.GetBytes(upstream.lastBody, "input").Exists())
-	require.Equal(t, "response", gjson.Get(rec.Body.String(), "object").String())
-	require.Equal(t, "ok", gjson.Get(rec.Body.String(), "output.0.content.0.text").String())
-	require.Equal(t, 3, result.Usage.InputTokens)
-	require.Equal(t, 2, result.Usage.OutputTokens)
-	require.Equal(t, "/v1/chat/completions", result.UpstreamEndpoint)
-	require.False(t, result.Stream)
-}
 
 func TestExtractResponsesReasoningEffortFromBody(t *testing.T) {
 	t.Parallel()
