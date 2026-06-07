@@ -196,6 +196,99 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsBothTemplates(t *testin
 	require.InDelta(t, 13.5, *active.RemainingUSD, 0.0001)
 }
 
+func TestExternalSubscriptionConfigServiceGetStatusesRunsCreditTemplates(t *testing.T) {
+	openRouterServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/credits", r.URL.Path)
+		require.Equal(t, "Bearer openrouter-key", r.Header.Get("Authorization"))
+		_, _ = w.Write([]byte(`{"data":{"total_credits":25.5,"total_usage":4.25}}`))
+	}))
+	defer openRouterServer.Close()
+
+	cloudflareServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/accounts/cf-account/ai-gateway/billing/credit-balance", r.URL.Path)
+		require.Equal(t, "Bearer cf-token", r.Header.Get("Authorization"))
+		_, _ = w.Write([]byte(`{"success":true,"result":{"balance":12.75}}`))
+	}))
+	defer cloudflareServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    openRouterServer.URL,
+			APIToken:      "openrouter-key",
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+		{
+			ID:            "cloudflare",
+			Name:          "Cloudflare AI Gateway",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+			APIBaseURL:    cloudflareServer.URL,
+			APIToken:      "cf-token",
+			UserID:        "cf-account",
+			MatchKeywords: []string{"cloudflare", "ai-gateway"},
+			SortOrder:     80,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+
+	openRouter := requireExternalSubscriptionStatus(t, statuses, "openrouter")
+	require.Equal(t, "OpenRouter", openRouter.Name)
+	require.Equal(t, ExternalSubscriptionTemplateOpenRouterCredits, openRouter.Template)
+	require.Equal(t, "USD", openRouter.Currency)
+	require.InDelta(t, 25.5, *openRouter.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 4.25, openRouter.UsedUSD, 0.0001)
+	require.InDelta(t, 21.25, *openRouter.RemainingUSD, 0.0001)
+	require.Equal(t, 0, openRouter.ActiveCount)
+
+	cloudflare := requireExternalSubscriptionStatus(t, statuses, "cloudflare")
+	require.Equal(t, "Cloudflare AI Gateway", cloudflare.Name)
+	require.Equal(t, ExternalSubscriptionTemplateCloudflareAIGatewayCredits, cloudflare.Template)
+	require.Equal(t, "USD", cloudflare.Currency)
+	require.Nil(t, cloudflare.TotalLimitUSD)
+	require.InDelta(t, 12.75, *cloudflare.RemainingUSD, 0.0001)
+	require.Equal(t, "cf-account", requireStoredExternalSubscriptionProvider(t, mustStoredExternalSubscriptionProviders(t, repo), "cloudflare").UserID)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesCachesExternalCallsBriefly(t *testing.T) {
+	calls := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		_, _ = w.Write([]byte(`{"data":{"total_credits":10,"total_usage":1}}`))
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    server.URL,
+			APIToken:      "openrouter-key",
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	first, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+	second, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, 1, calls)
+	require.Equal(t, first[0].RefreshedAt, second[0].RefreshedAt)
+	require.InDelta(t, 9, *second[0].RemainingUSD, 0.0001)
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesPersistsRefreshedActiveTemplateToken(t *testing.T) {
 	activeCalls := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -281,6 +374,13 @@ func requireStoredExternalSubscriptionProvider(t *testing.T, providers []externa
 	}
 	require.Failf(t, "stored provider not found", "id=%s providers=%v", id, providers)
 	return externalSubscriptionStoredProvider{}
+}
+
+func mustStoredExternalSubscriptionProviders(t *testing.T, repo *externalSubscriptionConfigRepoStub) []externalSubscriptionStoredProvider {
+	t.Helper()
+	var stored []externalSubscriptionStoredProvider
+	require.NoError(t, json.Unmarshal([]byte(repo.values[SettingKeyExternalSubscriptionProviders]), &stored))
+	return stored
 }
 
 func newExternalSubscriptionConfigRepo(values map[string]string) *externalSubscriptionConfigRepoStub {

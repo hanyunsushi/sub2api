@@ -1110,7 +1110,18 @@
     letter-spacing: 0;
   }
 
+  .sidebar .sidebar-system-child-link {
+    font-size: 0.75rem;
+    min-height: 2.125rem;
+    letter-spacing: 0;
+  }
+
   .sidebar .sidebar-channel-child-link :where(svg, .sidebar-svg-icon) {
+    height: 0.875rem;
+    width: 0.875rem;
+  }
+
+  .sidebar .sidebar-system-child-link :where(svg, .sidebar-svg-icon) {
     height: 0.875rem;
     width: 0.875rem;
   }
@@ -5849,6 +5860,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .balance-chip-pixel,
 .balance-chip-liust,
 .balance-chip-tcdmx,
+.balance-chip-openrouter,
+.balance-chip-cloudflare,
 .balance-chip-external,
 .balance-row-buzz,
 .balance-row-qlhazycoder,
@@ -5857,6 +5870,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .balance-row-pixel,
 .balance-row-liust,
 .balance-row-tcdmx,
+.balance-row-openrouter,
+.balance-row-cloudflare,
 .balance-row-external {
   border-color: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge)) !important;
   background: var(--atelier-material-dust) !important;
@@ -5870,6 +5885,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .app-header-atelier .balance-chip-pixel,
 .app-header-atelier .balance-chip-liust,
 .app-header-atelier .balance-chip-tcdmx,
+.app-header-atelier .balance-chip-openrouter,
+.app-header-atelier .balance-chip-cloudflare,
 .app-header-atelier .balance-chip-external,
 .app-header-atelier .balance-chip-system {
   border: 0 !important;
@@ -5887,6 +5904,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .app-header-atelier .balance-chip-pixel:hover,
 .app-header-atelier .balance-chip-liust:hover,
 .app-header-atelier .balance-chip-tcdmx:hover,
+.app-header-atelier .balance-chip-openrouter:hover,
+.app-header-atelier .balance-chip-cloudflare:hover,
 .app-header-atelier .balance-chip-external:hover,
 .app-header-atelier .balance-chip-system:hover {
   border-color: color-mix(in srgb, var(--atelier-ink) 28%, var(--atelier-line-strong)) !important;
@@ -5901,6 +5920,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .balance-pixel-text,
 .balance-liust-text,
 .balance-tcdmx-text,
+.balance-openrouter-text,
+.balance-cloudflare-text,
 .balance-external-text {
   color: var(--atelier-dust) !important;
 }
@@ -5912,6 +5933,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .app-header-atelier .balance-pixel-text,
 .app-header-atelier .balance-liust-text,
 .app-header-atelier .balance-tcdmx-text,
+.app-header-atelier .balance-openrouter-text,
+.app-header-atelier .balance-cloudflare-text,
 .app-header-atelier .balance-external-text,
 .app-header-atelier .balance-system-text {
   color: var(--atelier-ink) !important;
@@ -5924,6 +5947,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .dark .balance-chip-pixel,
 .dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
+.dark .balance-chip-openrouter,
+.dark .balance-chip-cloudflare,
 .dark .balance-chip-external,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
@@ -5932,6 +5957,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .dark .balance-row-pixel,
 .dark .balance-row-liust,
 .dark .balance-row-tcdmx,
+.dark .balance-row-openrouter,
+.dark .balance-row-cloudflare,
 .dark .balance-row-external {
   border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
   background: rgba(199, 154, 58, 0.18) !important;
@@ -5944,6 +5971,8 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .dark .balance-pixel-text,
 .dark .balance-liust-text,
 .dark .balance-tcdmx-text,
+.dark .balance-openrouter-text,
+.dark .balance-cloudflare-text,
 .dark .balance-external-text {
   color: #e9c96c !important;
 }

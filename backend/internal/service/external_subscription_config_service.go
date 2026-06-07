@@ -8,13 +8,20 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
+	"golang.org/x/sync/singleflight"
 )
 
 const (
-	ExternalSubscriptionTemplateNewAPIConsole       = "newapi_console"
-	ExternalSubscriptionTemplateActiveSubscriptions = "active_subscriptions"
+	ExternalSubscriptionTemplateNewAPIConsole              = "newapi_console"
+	ExternalSubscriptionTemplateActiveSubscriptions        = "active_subscriptions"
+	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
+	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
+
+	externalSubscriptionStatusCacheTTL = 60 * time.Second
 )
 
 var externalSubscriptionIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{1,63}$`)
@@ -72,6 +79,15 @@ type externalSubscriptionStoredProvider struct {
 
 type ExternalSubscriptionConfigService struct {
 	settingService *SettingService
+	statusCacheMu  sync.Mutex
+	statusCache    *externalSubscriptionStatusCache
+	statusSF       singleflight.Group
+}
+
+type externalSubscriptionStatusCache struct {
+	fingerprint string
+	expiresAt   time.Time
+	statuses    []ExternalSubscriptionProviderStatus
 }
 
 func NewExternalSubscriptionConfigService(settingService *SettingService) *ExternalSubscriptionConfigService {
@@ -104,6 +120,7 @@ func (s *ExternalSubscriptionConfigService) CreateProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, stored); err != nil {
 		return ExternalSubscriptionProvider{}, err
 	}
+	s.clearStatusesCache()
 	return publicExternalSubscriptionProvider(next), nil
 }
 
@@ -126,6 +143,7 @@ func (s *ExternalSubscriptionConfigService) UpdateProvider(ctx context.Context, 
 		if err := s.saveStoredProviders(ctx, stored); err != nil {
 			return ExternalSubscriptionProvider{}, err
 		}
+		s.clearStatusesCache()
 		return publicExternalSubscriptionProvider(next), nil
 	}
 	return ExternalSubscriptionProvider{}, infraerrors.NotFound("EXTERNAL_SUBSCRIPTION_PROVIDER_NOT_FOUND", "external subscription provider not found")
@@ -149,7 +167,11 @@ func (s *ExternalSubscriptionConfigService) DeleteProvider(ctx context.Context, 
 	if !deleted {
 		return infraerrors.NotFound("EXTERNAL_SUBSCRIPTION_PROVIDER_NOT_FOUND", "external subscription provider not found")
 	}
-	return s.saveStoredProviders(ctx, next)
+	if err := s.saveStoredProviders(ctx, next); err != nil {
+		return err
+	}
+	s.clearStatusesCache()
+	return nil
 }
 
 func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context) ([]ExternalSubscriptionProviderStatus, error) {
@@ -157,6 +179,24 @@ func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context) ([]
 	if err != nil {
 		return nil, err
 	}
+	fingerprint := externalSubscriptionProvidersFingerprint(stored)
+	if cached := s.getCachedStatuses(fingerprint); cached != nil {
+		return cached, nil
+	}
+
+	value, err, _ := s.statusSF.Do(fingerprint, func() (any, error) {
+		if cached := s.getCachedStatuses(fingerprint); cached != nil {
+			return cached, nil
+		}
+		return s.getStatusesUncached(ctx, stored, fingerprint)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return cloneExternalSubscriptionProviderStatuses(value.([]ExternalSubscriptionProviderStatus)), nil
+}
+
+func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Context, stored []externalSubscriptionStoredProvider, fingerprint string) ([]ExternalSubscriptionProviderStatus, error) {
 	statuses := make([]ExternalSubscriptionProviderStatus, 0, len(stored))
 	updated := false
 	for index := range stored {
@@ -186,7 +226,8 @@ func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context) ([]
 		}
 	}
 	sortExternalSubscriptionStatuses(statuses)
-	return statuses, nil
+	s.setCachedStatuses(fingerprint, statuses)
+	return cloneExternalSubscriptionProviderStatuses(statuses), nil
 }
 
 func (s *ExternalSubscriptionConfigService) getStatusForStoredProvider(ctx context.Context, provider externalSubscriptionStoredProvider) (*ExternalSubscriptionStatus, *externalSubscriptionStoredProvider, error) {
@@ -213,6 +254,10 @@ func (s *ExternalSubscriptionConfigService) getStatusForStoredProvider(ctx conte
 		status, err = runner.getNewAPIConsoleSubscriptionStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateActiveSubscriptions:
 		status, err = runner.GetStatus(ctx)
+	case ExternalSubscriptionTemplateOpenRouterCredits:
+		status, err = runner.getOpenRouterCreditsStatus(ctx, cfg)
+	case ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
+		status, err = runner.getCloudflareAIGatewayCreditsStatus(ctx, cfg)
 	default:
 		return nil, nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
 	}
@@ -292,6 +337,26 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 			SortOrder:     item.order,
 		})
 	}
+	providers = append(providers,
+		externalSubscriptionStoredProvider{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
+			MatchKeywords: []string{"openrouter", "openrouter.ai"},
+			SortOrder:     70,
+		},
+		externalSubscriptionStoredProvider{
+			ID:            "cloudflare",
+			Name:          "Cloudflare AI Gateway",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+			APIBaseURL:    DefaultCloudflareAIGatewayCreditsAPIBaseURL,
+			MatchKeywords: []string{"cloudflare", "ai-gateway", "workers-ai"},
+			SortOrder:     80,
+		},
+	)
 	return providers, nil
 }
 
@@ -342,7 +407,7 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_PROVIDER_NAME_REQUIRED", "external subscription provider name is required")
 	}
 	provider.Template = strings.TrimSpace(provider.Template)
-	if provider.Template != ExternalSubscriptionTemplateNewAPIConsole && provider.Template != ExternalSubscriptionTemplateActiveSubscriptions {
+	if !isExternalSubscriptionTemplate(provider.Template) {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
 	}
 	provider.APIBaseURL = normalizeExternalSubscriptionAPIBaseURL(provider.APIBaseURL, strings.TrimSpace(provider.APIBaseURL))
@@ -357,6 +422,101 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		provider.MatchKeywords = []string{provider.ID, strings.ToLower(provider.Name)}
 	}
 	return provider, nil
+}
+
+func isExternalSubscriptionTemplate(template string) bool {
+	switch template {
+	case ExternalSubscriptionTemplateNewAPIConsole,
+		ExternalSubscriptionTemplateActiveSubscriptions,
+		ExternalSubscriptionTemplateOpenRouterCredits,
+		ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
+		return true
+	default:
+		return false
+	}
+}
+
+func externalSubscriptionProvidersFingerprint(providers []externalSubscriptionStoredProvider) string {
+	raw, err := json.Marshal(providers)
+	if err != nil {
+		return fmt.Sprintf("%p:%d", providers, len(providers))
+	}
+	return string(raw)
+}
+
+func (s *ExternalSubscriptionConfigService) getCachedStatuses(fingerprint string) []ExternalSubscriptionProviderStatus {
+	s.statusCacheMu.Lock()
+	defer s.statusCacheMu.Unlock()
+	if s.statusCache == nil || s.statusCache.fingerprint != fingerprint || time.Now().After(s.statusCache.expiresAt) {
+		return nil
+	}
+	return cloneExternalSubscriptionProviderStatuses(s.statusCache.statuses)
+}
+
+func (s *ExternalSubscriptionConfigService) setCachedStatuses(fingerprint string, statuses []ExternalSubscriptionProviderStatus) {
+	s.statusCacheMu.Lock()
+	defer s.statusCacheMu.Unlock()
+	s.statusCache = &externalSubscriptionStatusCache{
+		fingerprint: fingerprint,
+		expiresAt:   time.Now().Add(externalSubscriptionStatusCacheTTL),
+		statuses:    cloneExternalSubscriptionProviderStatuses(statuses),
+	}
+}
+
+func (s *ExternalSubscriptionConfigService) clearStatusesCache() {
+	s.statusCacheMu.Lock()
+	defer s.statusCacheMu.Unlock()
+	s.statusCache = nil
+}
+
+func cloneExternalSubscriptionProviderStatuses(input []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {
+	out := make([]ExternalSubscriptionProviderStatus, len(input))
+	for i, item := range input {
+		out[i] = item
+		out[i].MatchKeywords = append([]string(nil), item.MatchKeywords...)
+		out[i].Subscriptions = cloneExternalSubscriptionItems(item.Subscriptions)
+		out[i].TotalLimitUSD = cloneFloat64Pointer(item.TotalLimitUSD)
+		out[i].RemainingUSD = cloneFloat64Pointer(item.RemainingUSD)
+		out[i].ExpiresAt = cloneTimePointer(item.ExpiresAt)
+		out[i].DaysRemaining = cloneIntPointer(item.DaysRemaining)
+	}
+	return out
+}
+
+func cloneExternalSubscriptionItems(input []ExternalSubscriptionItem) []ExternalSubscriptionItem {
+	out := make([]ExternalSubscriptionItem, len(input))
+	for i, item := range input {
+		out[i] = item
+		out[i].LimitUSD = cloneFloat64Pointer(item.LimitUSD)
+		out[i].RemainingUSD = cloneFloat64Pointer(item.RemainingUSD)
+		out[i].ExpiresAt = cloneTimePointer(item.ExpiresAt)
+		out[i].DaysRemaining = cloneIntPointer(item.DaysRemaining)
+	}
+	return out
+}
+
+func cloneFloat64Pointer(value *float64) *float64 {
+	if value == nil {
+		return nil
+	}
+	next := *value
+	return &next
+}
+
+func cloneIntPointer(value *int) *int {
+	if value == nil {
+		return nil
+	}
+	next := *value
+	return &next
+}
+
+func cloneTimePointer(value *time.Time) *time.Time {
+	if value == nil {
+		return nil
+	}
+	next := *value
+	return &next
 }
 
 func normalizeExternalSubscriptionKeywords(input []string) []string {

@@ -43,125 +43,146 @@
       </template>
 
       <template #table>
-        <DataTable
-          :columns="columns"
-          :data="filteredProviders"
-          :loading="loading"
-          row-key="id"
-          default-sort-key="sort_order"
-          default-sort-order="asc"
+        <div
+          v-if="loading"
+          class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
         >
-          <template #cell-name="{ row }">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="font-medium text-gray-900 dark:text-white">{{ row.name }}</span>
-                <span
-                  :class="[
-                    'semantic-badge',
-                    row.enabled ? 'semantic-badge--success' : 'semantic-badge--neutral'
-                  ]"
+          <div
+            v-for="index in 6"
+            :key="index"
+            class="external-subscription-card rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
+          >
+            <div class="h-4 w-28 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+            <div class="mt-3 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+            <div class="mt-5 h-10 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+          </div>
+        </div>
+
+        <div
+          v-else-if="filteredProviders.length > 0"
+          class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+        >
+          <article
+            v-for="provider in filteredProviders"
+            :key="provider.id"
+            class="external-subscription-card flex min-h-[13rem] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-primary-200 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-primary-800"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex min-w-0 items-center gap-2">
+                  <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                    {{ provider.name }}
+                  </h3>
+                  <span
+                    :class="[
+                      'semantic-badge',
+                      provider.enabled ? 'semantic-badge--success' : 'semantic-badge--neutral'
+                    ]"
+                  >
+                    {{ provider.enabled ? localText('启用', 'Enabled') : localText('停用', 'Disabled') }}
+                  </span>
+                </div>
+                <div class="mt-1 font-mono text-xs text-gray-400">
+                  {{ provider.id }}
+                </div>
+              </div>
+              <div class="flex flex-shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  class="btn-ghost btn-icon"
+                  :title="t('common.edit')"
+                  @click="openEditDialog(provider)"
                 >
-                  {{ row.enabled ? localText('启用', 'Enabled') : localText('停用', 'Disabled') }}
-                </span>
-              </div>
-              <div class="mt-1 font-mono text-xs text-gray-400">{{ row.id }}</div>
-              <a
-                class="mt-1 block max-w-64 truncate text-xs text-primary-600 hover:text-primary-700 dark:text-primary-300"
-                :href="row.api_base_url"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ row.api_base_url }}
-              </a>
-            </div>
-          </template>
-
-          <template #cell-template="{ row }">
-            <div class="space-y-1">
-              <span class="semantic-badge semantic-badge--info">
-                {{ templateLabel(row.template) }}
-              </span>
-              <div
-                v-if="row.template === 'newapi_console' && row.user_id"
-                class="font-mono text-xs text-gray-400"
-              >
-                UID {{ row.user_id }}
+                  <Icon name="edit" size="sm" />
+                </button>
+                <button
+                  type="button"
+                  class="btn-ghost btn-icon text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  :title="t('common.delete')"
+                  @click="openDeleteDialog(provider)"
+                >
+                  <Icon name="trash" size="sm" />
+                </button>
               </div>
             </div>
-          </template>
 
-          <template #cell-config="{ row }">
-            <div class="space-y-1 text-xs">
-              <div class="flex items-center gap-2">
-                <span :class="row.api_token_configured ? 'text-green-600 dark:text-green-400' : 'text-gray-400'">
-                  API Token
-                </span>
-                <Icon :name="row.api_token_configured ? 'check' : 'x'" size="xs" />
+            <a
+              class="mt-3 block truncate font-mono text-xs text-primary-600 hover:text-primary-700 dark:text-primary-300"
+              :href="provider.api_base_url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ provider.api_base_url }}
+            </a>
+
+            <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
+                <div class="text-gray-400">{{ localText('模板', 'Template') }}</div>
+                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                  {{ templateLabel(provider.template) }}
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span :class="row.refresh_token_configured ? 'text-green-600 dark:text-green-400' : 'text-gray-400'">
-                  Refresh Token
-                </span>
-                <Icon :name="row.refresh_token_configured ? 'check' : 'x'" size="xs" />
+              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
+                <div class="text-gray-400">{{ localText('排序', 'Sort') }}</div>
+                <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
+                  {{ provider.sort_order }}
+                </div>
+              </div>
+              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
+                <div class="text-gray-400">{{ localText('余额', 'Balance') }}</div>
+                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                  {{ formatStatusBalance(statusMap[provider.id]) }}
+                </div>
+              </div>
+              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
+                <div class="text-gray-400">{{ localText('订阅期限', 'Expiry') }}</div>
+                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                  {{ formatStatusExpiry(statusMap[provider.id]) }}
+                </div>
               </div>
             </div>
-          </template>
 
-          <template #cell-balance="{ row }">
-            <div class="text-sm text-gray-700 dark:text-gray-200">
-              {{ formatStatusBalance(statusMap[row.id]) }}
-            </div>
-          </template>
-
-          <template #cell-expires_at="{ row }">
-            <div class="text-sm text-gray-600 dark:text-gray-300">
-              {{ formatStatusExpiry(statusMap[row.id]) }}
-            </div>
-          </template>
-
-          <template #cell-match_keywords="{ row }">
-            <div class="flex max-w-72 flex-wrap gap-1">
+            <div class="mt-4 flex flex-wrap gap-1">
               <span
-                v-for="keyword in row.match_keywords"
+                :class="provider.api_token_configured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
+              >
+                API Token
+              </span>
+              <span
+                v-if="provider.template === 'active_subscriptions'"
+                :class="provider.refresh_token_configured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
+              >
+                Refresh Token
+              </span>
+              <span
+                v-if="provider.user_id"
+                class="semantic-badge semantic-badge--info"
+              >
+                {{ provider.template === 'cloudflare_ai_gateway_credits' ? 'Account ID' : 'UID' }}
+                {{ provider.user_id }}
+              </span>
+            </div>
+
+            <div class="mt-auto flex flex-wrap gap-1 pt-4">
+              <span
+                v-for="keyword in provider.match_keywords"
                 :key="keyword"
                 class="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-[11px] text-gray-600 dark:bg-dark-700 dark:text-dark-300"
               >
                 {{ keyword }}
               </span>
-              <span v-if="row.match_keywords.length === 0" class="text-sm text-gray-400">-</span>
+              <span v-if="provider.match_keywords.length === 0" class="text-xs text-gray-400">-</span>
             </div>
-          </template>
+          </article>
+        </div>
 
-          <template #cell-actions="{ row }">
-            <div class="flex items-center gap-1">
-              <button
-                type="button"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
-                @click="openEditDialog(row)"
-              >
-                <Icon name="edit" size="sm" />
-                <span class="text-xs">{{ t('common.edit') }}</span>
-              </button>
-              <button
-                type="button"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                @click="openDeleteDialog(row)"
-              >
-                <Icon name="trash" size="sm" />
-                <span class="text-xs">{{ t('common.delete') }}</span>
-              </button>
-            </div>
-          </template>
-
-          <template #empty>
-            <EmptyState
-              :title="localText('暂无外部订阅', 'No External Subscriptions')"
-              :description="localText('新增一个 provider 后，它会进入右上角余额和匹配账号卡片。', 'Add a provider to show it in the header balance and matching account cards.')"
-              :action-text="localText('新增订阅', 'Add Provider')"
-              @action="openCreateDialog"
-            />
-          </template>
-        </DataTable>
+        <EmptyState
+          v-else
+          :title="localText('暂无外部订阅', 'No External Subscriptions')"
+          :description="localText('新增一个 provider 后，它会进入右上角余额和匹配账号卡片。', 'Add a provider to show it in the header balance and matching account cards.')"
+          :action-text="localText('新增订阅', 'Add Provider')"
+          @action="openCreateDialog"
+        />
       </template>
     </TablePageLayout>
 
@@ -172,7 +193,7 @@
       @close="closeDialog"
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <button
             type="button"
             class="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-left transition-colors hover:border-primary-300 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
@@ -191,6 +212,26 @@
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">Active Subscriptions</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
+            </div>
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            @click="applyPreset('openrouter_credits')"
+          >
+            <div class="text-sm font-semibold text-sky-700 dark:text-sky-300">OpenRouter Credits</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
+            </div>
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left transition-colors hover:border-orange-300 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-900/20 dark:hover:bg-orange-900/30"
+            @click="applyPreset('cloudflare_ai_gateway_credits')"
+          >
+            <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">Cloudflare AI Gateway</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
             </div>
           </button>
         </div>
@@ -257,14 +298,14 @@
               type="password"
               class="input"
               autocomplete="new-password"
-              :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : 'sk-...'"
+              :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
           </div>
-          <div v-if="form.template === 'newapi_console'">
-            <label class="input-label">{{ localText('用户 ID', 'User ID') }}</label>
-            <input v-model="form.user_id" type="text" class="input" placeholder="707" />
+          <div v-if="requiresUserId">
+            <label class="input-label">{{ userIdLabel }}</label>
+            <input v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
           </div>
-          <div v-else>
+          <div v-if="requiresRefreshToken">
             <label class="input-label">
               Refresh Token
               <span v-if="editingProvider?.refresh_token_configured" class="ml-1 text-xs font-normal text-gray-400">
@@ -329,10 +370,8 @@ import externalSubscriptionsAPI, {
   type ExternalSubscriptionStatus,
   type ExternalSubscriptionTemplate,
 } from '@/api/admin/externalSubscriptions'
-import type { Column } from '@/components/common/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
-import DataTable from '@/components/common/DataTable.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -373,21 +412,35 @@ const form = reactive({
   sort_order: 50,
 })
 
-const columns = computed<Column[]>(() => [
-  { key: 'name', label: localText('名称', 'Name'), sortable: true },
-  { key: 'template', label: localText('模板', 'Template'), sortable: true },
-  { key: 'config', label: localText('配置', 'Config') },
-  { key: 'balance', label: localText('余额', 'Balance') },
-  { key: 'expires_at', label: localText('订阅期限', 'Expiry') },
-  { key: 'match_keywords', label: localText('匹配关键字', 'Keywords') },
-  { key: 'sort_order', label: localText('排序', 'Sort'), sortable: true },
-  { key: 'actions', label: localText('操作', 'Actions') },
-])
-
 const templateOptions = computed(() => [
   { value: 'newapi_console', label: 'NewAPI Console' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
+  { value: 'openrouter_credits', label: 'OpenRouter Credits' },
+  { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
 ])
+
+const requiresUserId = computed(() => (
+  form.template === 'newapi_console' ||
+  form.template === 'cloudflare_ai_gateway_credits'
+))
+
+const requiresRefreshToken = computed(() => form.template === 'active_subscriptions')
+
+const userIdLabel = computed(() => (
+  form.template === 'cloudflare_ai_gateway_credits'
+    ? 'Account ID'
+    : localText('用户 ID', 'User ID')
+))
+
+const userIdPlaceholder = computed(() => (
+  form.template === 'cloudflare_ai_gateway_credits' ? 'Cloudflare account id' : '707'
+))
+
+const apiTokenPlaceholder = computed(() => {
+  if (form.template === 'openrouter_credits') return 'sk-or-...'
+  if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
+  return 'sk-...'
+})
 
 const templateFilterOptions = computed(() => [
   { value: '', label: localText('全部模板', 'All Templates') },
@@ -429,7 +482,16 @@ function refreshStatusMap(items: ExternalSubscriptionStatus[]) {
 }
 
 function templateLabel(template: ExternalSubscriptionTemplate) {
-  return template === 'active_subscriptions' ? 'Active Subscriptions' : 'NewAPI Console'
+  switch (template) {
+    case 'active_subscriptions':
+      return 'Active Subscriptions'
+    case 'openrouter_credits':
+      return 'OpenRouter Credits'
+    case 'cloudflare_ai_gateway_credits':
+      return 'Cloudflare AI Gateway'
+    default:
+      return 'NewAPI Console'
+  }
 }
 
 function parseKeywords(value: string) {
@@ -460,11 +522,29 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!form.name) form.name = 'NewAPI'
     if (!form.id) form.id = 'newapi-provider'
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'newapi\napi.example.com'
-  } else {
+    return
+  }
+  if (template === 'active_subscriptions') {
     if (!form.api_base_url) form.api_base_url = 'https://example.com'
     if (!form.name) form.name = 'Active Subscription'
     if (!form.id) form.id = 'active-provider'
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'example.com\nactive-provider'
+    return
+  }
+  if (template === 'openrouter_credits') {
+    if (!form.api_base_url) form.api_base_url = 'https://openrouter.ai'
+    if (!form.name) form.name = 'OpenRouter'
+    if (!form.id) form.id = 'openrouter'
+    if (form.sort_order === 50) form.sort_order = 70
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'openrouter\nopenrouter.ai'
+    return
+  }
+  if (template === 'cloudflare_ai_gateway_credits') {
+    if (!form.api_base_url) form.api_base_url = 'https://api.cloudflare.com/client/v4'
+    if (!form.name) form.name = 'Cloudflare AI Gateway'
+    if (!form.id) form.id = 'cloudflare'
+    if (form.sort_order === 50) form.sort_order = 80
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'cloudflare\nai-gateway\nworkers-ai'
   }
 }
 
@@ -508,8 +588,8 @@ function buildPayload(): ExternalSubscriptionProviderInput {
     template: form.template,
     api_base_url: form.api_base_url.trim(),
     api_token: form.api_token.trim(),
-    user_id: form.user_id.trim(),
-    refresh_token: form.refresh_token.trim(),
+    user_id: requiresUserId.value ? form.user_id.trim() : '',
+    refresh_token: requiresRefreshToken.value ? form.refresh_token.trim() : '',
     match_keywords: parseKeywords(keywordsDraft.value),
     sort_order: Number.isFinite(form.sort_order) ? Number(form.sort_order) : 50,
   }
