@@ -37,3 +37,7 @@ func normalizeXHYAPISubscriptionAPIBaseURL(raw string) string {
 func (s *SettingService) GetXHYAPISubscriptionSettings(ctx context.Context) (XHYAPISubscriptionSettings, error) {
 	return s.getExternalSubscriptionSettings(ctx, xhyapiSubscriptionProviderConfig())
 }
+
+func (s *XHYAPISubscriptionService) GetStatus(ctx context.Context) (*XHYAPISubscriptionStatus, error) {
+	return s.getNewAPIConsoleSubscriptionStatus(ctx, xhyapiSubscriptionProviderConfig())
+}

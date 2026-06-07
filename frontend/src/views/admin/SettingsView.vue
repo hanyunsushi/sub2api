@@ -3984,8 +3984,8 @@
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
-                          "读取 XHYAPI New API 控制台的订阅额度和到期时间，显示在余额栏和对应账号卡片。",
-                          "Read XHYAPI New API subscription quota and expiry for the balance panel and matching account cards.",
+                          "读取 XHYAPI New API 控制台的余额、订阅额度和到期时间，显示在余额栏和对应账号卡片。",
+                          "Read XHYAPI New API console balance, subscription quota, and expiry for the balance panel and matching account cards.",
                         )
                       }}
                     </p>
@@ -4011,7 +4011,7 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("XHYAPI 订阅访问 Token", "XHYAPI subscription access token") }}
+                      {{ localText("XHYAPI 用户令牌", "XHYAPI user token") }}
                     </label>
                     <input
                       v-model="form.xhyapi_subscription_api_token"
@@ -4020,7 +4020,7 @@
                       :placeholder="
                         form.xhyapi_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 XHYAPI 订阅接口的 Token', 'Paste a token that can access XHYAPI subscription APIs')
+                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
                       "
                       autocomplete="off"
                     />
@@ -4032,39 +4032,8 @@
                               "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "普通模型调用密钥可能不能读取订阅额度；这里需要可访问 XHYAPI 订阅接口的登录访问 Token。",
-                              "A normal model API key may not read subscription quota; this field needs a login access token that can access XHYAPI subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("XHYAPI refresh_token", "XHYAPI refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.xhyapi_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.xhyapi_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 XHYAPI 登录态 refresh_token', 'Paste the XHYAPI login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.xhyapi_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 access token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews the access token automatically after expiry.",
-                            )
-                          : localText(
-                              "这是登录续期凭证，不是普通 sk- 模型 API 密钥。",
-                              "This is a login renewal credential, not a normal sk- model API key.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取 XHYAPI 余额和订阅。登录 XHYAPI New API 控制台后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
+                              "A normal sk- model API key can only call model APIs and cannot read XHYAPI balance or subscriptions. After logging in to the XHYAPI New API console, open personal settings and use reset/regenerate token to get the user token; if the API requires a user header, you can also paste {id, token} JSON.",
                             )
                       }}
                     </p>
@@ -4082,8 +4051,8 @@
                     <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
-                          "读取 liust New API 控制台的订阅额度和到期时间，显示在余额栏和对应账号卡片。",
-                          "Read liust New API subscription quota and expiry for the balance panel and matching account cards.",
+                          "读取 liust New API 控制台的余额、订阅额度和到期时间，显示在余额栏和对应账号卡片。",
+                          "Read liust New API console balance, subscription quota, and expiry for the balance panel and matching account cards.",
                         )
                       }}
                     </p>
@@ -4109,7 +4078,7 @@
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
-                      {{ localText("liust 订阅访问 Token", "liust subscription access token") }}
+                      {{ localText("liust 用户令牌", "liust user token") }}
                     </label>
                     <input
                       v-model="form.liust_subscription_api_token"
@@ -4118,7 +4087,7 @@
                       :placeholder="
                         form.liust_subscription_api_token_configured
                           ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 liust 订阅接口的 Token', 'Paste a token that can access liust subscription APIs')
+                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
                       "
                       autocomplete="off"
                     />
@@ -4130,39 +4099,8 @@
                               "Saved token is never echoed; the frontend receives only the quota summary.",
                             )
                           : localText(
-                              "普通模型调用密钥可能不能读取订阅额度；这里需要可访问 liust 订阅接口的登录访问 Token。",
-                              "A normal model API key may not read subscription quota; this field needs a login access token that can access liust subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("liust refresh_token", "liust refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.liust_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.liust_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 liust 登录态 refresh_token', 'Paste the liust login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.liust_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 access token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews the access token automatically after expiry.",
-                            )
-                          : localText(
-                              "这是登录续期凭证，不是普通 sk- 模型 API 密钥。",
-                              "This is a login renewal credential, not a normal sk- model API key.",
+                              "普通 sk- 调用密钥只能调用模型接口，不能读取 liust 余额和订阅。登录 liust New API 控制台后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
+                              "A normal sk- model API key can only call model APIs and cannot read liust balance or subscriptions. After logging in to the liust New API console, open personal settings and use reset/regenerate token to get the user token; if the API requires a user header, you can also paste {id, token} JSON.",
                             )
                       }}
                     </p>
@@ -7621,6 +7559,8 @@ type SettingsForm = Omit<
   | "wechat_connect_open_enabled"
   | "wechat_connect_mp_enabled"
   | "wechat_connect_mobile_enabled"
+  | "xhyapi_subscription_refresh_token_configured"
+  | "liust_subscription_refresh_token_configured"
 > & {
   smtp_password: string;
   turnstile_secret_key: string;
@@ -7643,9 +7583,7 @@ type SettingsForm = Omit<
   tcdmx_subscription_refresh_token: string;
   qlhazycoder_subscription_api_token: string;
   xhyapi_subscription_api_token: string;
-  xhyapi_subscription_refresh_token: string;
   liust_subscription_api_token: string;
-  liust_subscription_refresh_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7871,14 +7809,10 @@ const form = reactive<SettingsForm>({
   xhyapi_subscription_api_base_url: "https://xhyapi.com",
   xhyapi_subscription_api_token: "",
   xhyapi_subscription_api_token_configured: false,
-  xhyapi_subscription_refresh_token: "",
-  xhyapi_subscription_refresh_token_configured: false,
   liust_subscription_enabled: false,
   liust_subscription_api_base_url: "https://liust.xyz",
   liust_subscription_api_token: "",
   liust_subscription_api_token_configured: false,
-  liust_subscription_refresh_token: "",
-  liust_subscription_refresh_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -8599,9 +8533,7 @@ async function loadSettings() {
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
-    form.xhyapi_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
-    form.liust_subscription_refresh_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -9152,15 +9084,11 @@ async function saveSettings() {
         form.xhyapi_subscription_api_base_url?.trim() || "https://xhyapi.com",
       xhyapi_subscription_api_token:
         form.xhyapi_subscription_api_token || undefined,
-      xhyapi_subscription_refresh_token:
-        form.xhyapi_subscription_refresh_token || undefined,
       liust_subscription_enabled: form.liust_subscription_enabled,
       liust_subscription_api_base_url:
         form.liust_subscription_api_base_url?.trim() || "https://liust.xyz",
       liust_subscription_api_token:
         form.liust_subscription_api_token || undefined,
-      liust_subscription_refresh_token:
-        form.liust_subscription_refresh_token || undefined,
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -9244,9 +9172,7 @@ async function saveSettings() {
     form.tcdmx_subscription_refresh_token = "";
     form.qlhazycoder_subscription_api_token = "";
     form.xhyapi_subscription_api_token = "";
-    form.xhyapi_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
-    form.liust_subscription_refresh_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,
