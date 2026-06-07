@@ -15,7 +15,6 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/pkg/apicompat"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/claude"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
-	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"github.com/Wei-Shaw/sub2api/internal/util/responseheaders"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -36,10 +35,6 @@ func (s *GatewayService) ForwardAsResponses(
 	body []byte,
 	parsed *ParsedRequest,
 ) (*ForwardResult, error) {
-	if shouldForwardResponsesViaOpenAIChatCompletions(account) {
-		return s.forwardOpenAIResponsesViaChatCompletions(ctx, c, account, body)
-	}
-
 	startTime := time.Now()
 
 	// 1. Parse Responses request
@@ -191,69 +186,6 @@ func (s *GatewayService) ForwardAsResponses(
 	}
 
 	return result, handleErr
-}
-
-func shouldForwardResponsesViaOpenAIChatCompletions(account *Account) bool {
-	return account != nil &&
-		account.Platform == PlatformOpenAI &&
-		account.Type == AccountTypeAPIKey &&
-		!openai_compat.ShouldUseResponsesAPI(account.Extra)
-}
-
-func (s *GatewayService) forwardOpenAIResponsesViaChatCompletions(
-	ctx context.Context,
-	c *gin.Context,
-	account *Account,
-	body []byte,
-) (*ForwardResult, error) {
-	openaiSvc := &OpenAIGatewayService{
-		cfg:                  s.cfg,
-		httpUpstream:         s.httpUpstream,
-		rateLimitService:     s.rateLimitService,
-		settingService:       s.settingService,
-		responseHeaderFilter: s.responseHeaderFilter,
-	}
-	result, err := openaiSvc.forwardResponsesViaRawChatCompletions(ctx, c, account, body)
-	if err != nil {
-		return nil, err
-	}
-	return forwardResultFromOpenAI(result), nil
-}
-
-func forwardResultFromOpenAI(result *OpenAIForwardResult) *ForwardResult {
-	if result == nil {
-		return nil
-	}
-	upstreamModel := result.UpstreamModel
-	if upstreamModel == "" && result.BillingModel != "" && result.BillingModel != result.Model {
-		upstreamModel = result.BillingModel
-	}
-	return &ForwardResult{
-		RequestID: result.RequestID,
-		Usage: ClaudeUsage{
-			InputTokens:              result.Usage.InputTokens,
-			OutputTokens:             result.Usage.OutputTokens,
-			CacheCreationInputTokens: result.Usage.CacheCreationInputTokens,
-			CacheReadInputTokens:     result.Usage.CacheReadInputTokens,
-			ImageOutputTokens:        result.Usage.ImageOutputTokens,
-		},
-		Model:              result.Model,
-		BillingModel:       result.BillingModel,
-		UpstreamModel:      upstreamModel,
-		UpstreamEndpoint:   "/v1/chat/completions",
-		Stream:             result.Stream,
-		Duration:           result.Duration,
-		FirstTokenMs:       result.FirstTokenMs,
-		ClientDisconnect:   result.ClientDisconnect,
-		ReasoningEffort:    result.ReasoningEffort,
-		ImageCount:         result.ImageCount,
-		ImageSize:          result.ImageSize,
-		ImageInputSize:     result.ImageInputSize,
-		ImageOutputSize:    result.ImageOutputSize,
-		ImageOutputSizes:   result.ImageOutputSizes,
-		ImageSizeSource:    result.ImageSizeSource,
-		ImageSizeBreakdown: result.ImageSizeBreakdown,
-	}
 }
 
 // ExtractResponsesReasoningEffortFromBody reads Responses API reasoning.effort
