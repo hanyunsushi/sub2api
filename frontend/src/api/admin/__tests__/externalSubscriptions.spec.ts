@@ -1,0 +1,136 @@
+import { describe, expect, it, vi } from 'vitest'
+
+import { apiClient } from '@/api/client'
+import externalSubscriptionsAPI from '@/api/admin/externalSubscriptions'
+
+vi.mock('@/api/client', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
+}))
+
+describe('admin external subscriptions api', () => {
+  it('lists configurable providers without exposing secrets', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          id: 'qlhazycoder',
+          name: 'qlhazycoder',
+          enabled: true,
+          template: 'newapi_console',
+          api_base_url: 'https://api.qlhazycoder.top',
+          api_token_configured: true,
+          user_id: '707',
+          refresh_token_configured: false,
+          match_keywords: ['qlhazycoder'],
+          sort_order: 20,
+        },
+      ],
+    })
+
+    const result = await externalSubscriptionsAPI.listProviders()
+
+    expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions')
+    expect(result[0].id).toBe('qlhazycoder')
+    expect(result[0]).not.toHaveProperty('api_token')
+    expect(result[0]).not.toHaveProperty('refresh_token')
+  })
+
+  it('creates and updates providers through the generic endpoint', async () => {
+    vi.mocked(apiClient.post).mockResolvedValueOnce({
+      data: {
+        id: 'custom-newapi',
+        name: 'Custom NewAPI',
+        enabled: true,
+        template: 'newapi_console',
+        api_base_url: 'https://newapi.example',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['newapi.example'],
+        sort_order: 70,
+      },
+    })
+    vi.mocked(apiClient.put).mockResolvedValueOnce({
+      data: {
+        id: 'custom-newapi',
+        name: 'Renamed NewAPI',
+        enabled: true,
+        template: 'newapi_console',
+        api_base_url: 'https://renamed.example',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['renamed.example'],
+        sort_order: 70,
+      },
+    })
+
+    await externalSubscriptionsAPI.createProvider({
+      id: 'custom-newapi',
+      name: 'Custom NewAPI',
+      enabled: true,
+      template: 'newapi_console',
+      api_base_url: 'https://newapi.example',
+      api_token: 'secret',
+      match_keywords: ['newapi.example'],
+      sort_order: 70,
+    })
+    await externalSubscriptionsAPI.updateProvider('custom-newapi', {
+      name: 'Renamed NewAPI',
+      enabled: true,
+      template: 'newapi_console',
+      api_base_url: 'https://renamed.example',
+      match_keywords: ['renamed.example'],
+      sort_order: 70,
+    })
+
+    expect(apiClient.post).toHaveBeenCalledWith('/admin/external-subscriptions', expect.objectContaining({
+      id: 'custom-newapi',
+      template: 'newapi_console',
+    }))
+    expect(apiClient.put).toHaveBeenCalledWith('/admin/external-subscriptions/custom-newapi', expect.objectContaining({
+      name: 'Renamed NewAPI',
+    }))
+  })
+
+  it('loads all provider statuses for the header and account cards', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          provider: 'packycode',
+          name: 'PackyCode',
+          template: 'newapi_console',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['packycode'],
+          sort_order: 60,
+          currency: 'CNY',
+          site_url: 'https://www.packyapi.com',
+          used_usd: 31.2,
+          remaining_usd: 88.8,
+          active_count: 1,
+          subscriptions: [],
+        },
+      ],
+    })
+
+    const result = await externalSubscriptionsAPI.getStatuses()
+
+    expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/statuses')
+    expect(result[0].provider).toBe('packycode')
+    expect(result[0].remaining_usd).toBe(88.8)
+    expect(result[0]).not.toHaveProperty('api_token')
+  })
+
+  it('deletes a provider by id', async () => {
+    vi.mocked(apiClient.delete).mockResolvedValueOnce({ data: { deleted: true } })
+
+    await externalSubscriptionsAPI.deleteProvider('custom-provider')
+
+    expect(apiClient.delete).toHaveBeenCalledWith('/admin/external-subscriptions/custom-provider')
+  })
+})

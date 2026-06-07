@@ -6,15 +6,18 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
-  it('loads BuzzAI, TCDMX, qlhazycoder, XHYAPI, Pixel, and liust quota summaries for matching account cards', () => {
+  it('loads BuzzAI and generic external subscription quota summaries for matching account cards', () => {
     expect(source).toContain("import buzzBalanceAPI")
-    expect(source).toContain("import tcdmxSubscriptionAPI")
-    expect(source).toContain("import qlhazycoderSubscriptionAPI")
-    expect(source).toContain("import xhyapiSubscriptionAPI")
-    expect(source).toContain("import pixelSubscriptionAPI")
-    expect(source).toContain("import liustSubscriptionAPI")
+    expect(source).toContain("import externalSubscriptionsAPI")
+    expect(source).toContain("type ExternalSubscriptionStatus")
     expect(source).toContain("fetchExternalQuotaSummaries")
     expect(source).toContain("getAccountExternalQuota")
+    expect(source).not.toContain("import tcdmxSubscriptionAPI")
+    expect(source).not.toContain("import qlhazycoderSubscriptionAPI")
+    expect(source).not.toContain("import xhyapiSubscriptionAPI")
+    expect(source).not.toContain("import pixelSubscriptionAPI")
+    expect(source).not.toContain("import liustSubscriptionAPI")
+    expect(source).not.toContain("import packycodeSubscriptionAPI")
   })
 
   it('renders external quota details inside the account card name area with provider links', () => {
@@ -28,82 +31,22 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain("localText('打开', 'Open')")
   })
 
-  it('uses external provider base URLs instead of provider subpages for account card links', () => {
-    expect(source).toContain("const defaultBuzzURL = 'https://buzzai.cc'")
-    expect(source).toContain("const defaultTCDMXURL = 'https://tcdmx.com'")
-    expect(source).toContain("const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'")
-    expect(source).toContain("const defaultXHYAPIURL = 'https://xhyapi.com'")
-    expect(source).toContain("const defaultPixelURL = 'https://ai-pixel.online'")
-    expect(source).toContain("const defaultLiustURL = 'https://liust.xyz'")
-    expect(source).not.toContain("https://buzzai.cc/dashboard/billing")
-    expect(source).not.toContain("https://tcdmx.com/subscriptions")
-    expect(source).not.toContain("https://shop.qlhazycoder.top")
+  it('matches generic external subscriptions from provider match_keywords instead of hardcoded provider branches', () => {
+    expect(source).toContain('externalSubscriptionStatuses')
+    expect(source).toContain('getMatchedExternalSubscription')
+    expect(source).toContain('match_keywords')
+    expect(source).toContain('buildExternalSearchText(account)')
+    expect(source).not.toContain('canShowTCDMXExternalQuota')
+    expect(source).not.toContain('canShowQLHazyCoderExternalQuota')
+    expect(source).not.toContain("if (provider === 'packycode'")
+    expect(source).not.toContain("text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')")
   })
 
-  it('only shows provider quota cards after that provider summary is enabled and configured', () => {
-    expect(source).toContain('canShowBuzzExternalQuota')
-    expect(source).toContain('buzzBalance.value?.enabled')
-    expect(source).toContain('buzzBalance.value?.configured')
-    expect(source).toContain('canShowTCDMXExternalQuota')
-    expect(source).toContain('tcdmxSubscription.value?.enabled')
-    expect(source).toContain('tcdmxSubscription.value?.configured')
-    expect(source).toContain('canShowQLHazyCoderExternalQuota')
-    expect(source).toContain('qlhazycoderSubscription.value?.enabled')
-    expect(source).toContain('qlhazycoderSubscription.value?.configured')
-    expect(source).toContain('canShowXHYAPIExternalQuota')
-    expect(source).toContain('xhyapiSubscription.value?.enabled')
-    expect(source).toContain('xhyapiSubscription.value?.configured')
-    expect(source).toContain('canShowPixelExternalQuota')
-    expect(source).toContain('pixelSubscription.value?.enabled')
-    expect(source).toContain('pixelSubscription.value?.configured')
-    expect(source).toContain('canShowLiustExternalQuota')
-    expect(source).toContain('liustSubscription.value?.enabled')
-    expect(source).toContain('liustSubscription.value?.configured')
-    expect(source).toContain("if (provider === 'liust' && canShowLiustExternalQuota())")
-    expect(source).toContain("if (provider === 'pixel' && canShowPixelExternalQuota())")
-    expect(source).toContain("if (provider === 'xhyapi' && canShowXHYAPIExternalQuota())")
-    expect(source).toContain("if (provider === 'tcdmx' && canShowTCDMXExternalQuota())")
-    expect(source).toContain("if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota())")
-    expect(source).toContain("if (provider === 'buzz' && canShowBuzzExternalQuota())")
-  })
-
-  it('keeps TCDMX, qlhazycoder, and XHYAPI account cards visible with a clear invalid-token state', () => {
-    expect(source).toContain('tcdmxSubscription.value?.error_code')
-    expect(source).toContain('qlhazycoderSubscription.value?.error_code')
-    expect(source).toContain('xhyapiSubscription.value?.error_code')
+  it('keeps invalid external subscription tokens visible with a clear state', () => {
+    expect(source).toContain('subscription.error_code')
+    expect(source).toContain('isExternalSubscriptionInvalidToken')
     expect(source).toContain("localText('Token 失效', 'Token invalid')")
     expect(source).toContain("localText('请更新 Token', 'Update token')")
-  })
-
-  it('formats qlhazycoder account card quota in CNY while keeping subscription expiry visible', () => {
-    expect(source).toContain("formatExternalAmount(qlhazycoderSubscription.value?.remaining_usd, qlhazycoderSubscription.value?.currency)")
-    expect(source).toContain("formatExternalAmount(qlhazycoderSubscription.value?.total_limit_usd, qlhazycoderSubscription.value?.currency)")
-    expect(source).toContain("label: 'QL'")
-    expect(source).toContain('qlhazycoderSubscription.value?.expires_at')
-  })
-
-  it('formats XHYAPI account card quota with the shared external subscription display', () => {
-    expect(source).toContain("formatExternalAmount(xhyapiSubscription.value?.remaining_usd, xhyapiSubscription.value?.currency)")
-    expect(source).toContain("formatExternalAmount(xhyapiSubscription.value?.total_limit_usd, xhyapiSubscription.value?.currency)")
-    expect(source).toContain("label: 'XHY'")
-    expect(source).toContain('xhyapiSubscription.value?.expires_at')
-    expect(source).toContain("text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')")
-  })
-
-  it('formats Pixel account card quota with the shared external subscription display', () => {
-    expect(source).toContain("formatExternalAmount(pixelSubscription.value?.remaining_usd, pixelSubscription.value?.currency)")
-    expect(source).toContain("formatExternalAmount(pixelSubscription.value?.total_limit_usd, pixelSubscription.value?.currency)")
-    expect(source).toContain("label: 'Pixel'")
-    expect(source).toContain('pixelSubscription.value?.expires_at')
-    expect(source).toContain("text.includes('ai-pixel.online') || text.includes('pixel')")
-  })
-
-  it('formats liust account card quota with the shared external subscription display', () => {
-    expect(source).toContain("formatExternalAmount(liustSubscription.value?.remaining_usd, liustSubscription.value?.currency)")
-    expect(source).toContain("formatExternalAmount(liustSubscription.value?.total_limit_usd, liustSubscription.value?.currency)")
-    expect(source).toContain("label: 'LIUST'")
-    expect(source).toContain('liustSubscription.value?.expires_at')
-    expect(source).toContain("text.includes('liust.xyz') || text.includes('liust')")
   })
 
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {

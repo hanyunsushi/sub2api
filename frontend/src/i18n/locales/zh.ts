@@ -370,6 +370,8 @@ export default {
     ops: '运维监控',
     promoCodes: '优惠码',
     settings: '系统设置',
+    settingsGeneral: '系统设置',
+    externalSubscriptions: '外部订阅',
     myAccount: '我的账户',
     lightMode: '浅色模式',
     darkMode: '深色模式',
@@ -5806,9 +5808,9 @@ export default {
             hint: '为所选用户统一设置专属返利比例。',
             placeholder: '例如 30',
             clearHint: '留空提交将清除所选用户的专属比例。',
-          },
         },
       },
+    },
       emailTabDisabledTitle: '邮箱验证未启用',
       emailTabDisabledHint: '请在「安全与认证」选项卡中启用邮箱验证后，再配置 SMTP 设置。',
       registration: {
@@ -6760,6 +6762,11 @@ export default {
       failedToSave: '保存设置失败',
       failedToTestSmtp: 'SMTP 连接测试失败',
       failedToSendTestEmail: '发送测试邮件失败'
+    },
+
+    externalSubscriptions: {
+      title: '外部订阅',
+      description: '管理外接站点的余额与订阅到期显示'
     },
 
     // Error Passthrough Rules

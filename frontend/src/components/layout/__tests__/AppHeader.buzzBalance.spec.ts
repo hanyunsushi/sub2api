@@ -4,11 +4,7 @@ import { nextTick } from "vue";
 
 import AppHeader from "../AppHeader.vue";
 import buzzBalanceAPI from "@/api/admin/buzzBalance";
-import qlhazycoderSubscriptionAPI from "@/api/admin/qlhazycoderSubscription";
-import tcdmxSubscriptionAPI from "@/api/admin/tcdmxSubscription";
-import xhyapiSubscriptionAPI from "@/api/admin/xhyapiSubscription";
-import pixelSubscriptionAPI from "@/api/admin/pixelSubscription";
-import liustSubscriptionAPI from "@/api/admin/liustSubscription";
+import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from "@/api/admin/externalSubscriptions";
 
 const authState = vi.hoisted(() => ({
   user: {
@@ -29,33 +25,9 @@ vi.mock("@/api/admin/buzzBalance", () => ({
   },
 }));
 
-vi.mock("@/api/admin/tcdmxSubscription", () => ({
+vi.mock("@/api/admin/externalSubscriptions", () => ({
   default: {
-    getStatus: vi.fn(),
-  },
-}));
-
-vi.mock("@/api/admin/qlhazycoderSubscription", () => ({
-  default: {
-    getStatus: vi.fn(),
-  },
-}));
-
-vi.mock("@/api/admin/xhyapiSubscription", () => ({
-  default: {
-    getStatus: vi.fn(),
-  },
-}));
-
-vi.mock("@/api/admin/pixelSubscription", () => ({
-  default: {
-    getStatus: vi.fn(),
-  },
-}));
-
-vi.mock("@/api/admin/liustSubscription", () => ({
-  default: {
-    getStatus: vi.fn(),
+    getStatuses: vi.fn(),
   },
 }));
 
@@ -115,6 +87,133 @@ vi.mock("vue-i18n", async () => {
   };
 });
 
+function defaultExternalStatuses(
+  overrides: Record<string, Partial<ExternalSubscriptionStatus>> = {},
+): ExternalSubscriptionStatus[] {
+  const items: ExternalSubscriptionStatus[] = [
+    {
+      provider: "tcdmx",
+      name: "TCDMX",
+      template: "active_subscriptions",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["tcdmx", "tcdmx.com"],
+      sort_order: 10,
+      currency: "USD",
+      site_url: "https://tcdmx.com/subscriptions",
+      total_limit_usd: 100,
+      used_usd: 12.25,
+      remaining_usd: 87.75,
+      expires_at: "2026-07-08T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "qlhazycoder",
+      name: "qlhazycoder",
+      template: "newapi_console",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["qlhazycoder", "qlhazy"],
+      sort_order: 20,
+      currency: "CNY",
+      site_url: "https://api.qlhazycoder.top",
+      used_usd: 48.75,
+      remaining_usd: 101.25,
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "packycode",
+      name: "PackyCode",
+      template: "newapi_console",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["packycode", "packy"],
+      sort_order: 30,
+      currency: "CNY",
+      site_url: "https://www.packyapi.com",
+      total_limit_usd: 120,
+      used_usd: 31.2,
+      remaining_usd: 88.8,
+      expires_at: "2026-11-12T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "xhyapi",
+      name: "XHYAPI",
+      template: "active_subscriptions",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["xhyapi", "xhy"],
+      sort_order: 40,
+      currency: "USD",
+      site_url: "https://xhyapi.com",
+      total_limit_usd: 80,
+      used_usd: 13.5,
+      remaining_usd: 66.5,
+      expires_at: "2026-08-09T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "pixel",
+      name: "Pixel",
+      template: "active_subscriptions",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["pixel", "ai-pixel.online"],
+      sort_order: 50,
+      currency: "USD",
+      site_url: "https://ai-pixel.online",
+      total_limit_usd: 70,
+      used_usd: 8.25,
+      remaining_usd: 61.75,
+      expires_at: "2026-10-11T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "liust",
+      name: "liust",
+      template: "newapi_console",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["liust"],
+      sort_order: 60,
+      currency: "USD",
+      site_url: "https://liust.xyz",
+      total_limit_usd: 90,
+      used_usd: 14.25,
+      remaining_usd: 75.75,
+      expires_at: "2026-09-10T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+  ];
+
+  return items.map((item) => ({ ...item, ...(overrides[item.provider] ?? {}) }));
+}
+
 describe("AppHeader BuzzAI balance", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -138,74 +237,7 @@ describe("AppHeader BuzzAI balance", () => {
       expires_at: "2026-06-30T00:00:00Z",
       refreshed_at: "2026-05-21T10:00:00Z",
     });
-    vi.mocked(tcdmxSubscriptionAPI.getStatus).mockResolvedValue({
-      provider: "tcdmx",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://tcdmx.com/subscriptions",
-      total_limit_usd: 100,
-      used_usd: 12.25,
-      remaining_usd: 87.75,
-      expires_at: "2026-07-08T00:00:00Z",
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
-    vi.mocked(qlhazycoderSubscriptionAPI.getStatus).mockResolvedValue({
-      provider: "qlhazycoder",
-      enabled: true,
-      configured: true,
-      currency: "CNY",
-      site_url: "https://api.qlhazycoder.top",
-      used_usd: 48.75,
-      remaining_usd: 101.25,
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
-    vi.mocked(xhyapiSubscriptionAPI.getStatus).mockResolvedValue({
-      provider: "xhyapi",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://xhyapi.com",
-      total_limit_usd: 80,
-      used_usd: 13.5,
-      remaining_usd: 66.5,
-      expires_at: "2026-08-09T00:00:00Z",
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
-    vi.mocked(pixelSubscriptionAPI.getStatus).mockResolvedValue({
-      provider: "pixel",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://ai-pixel.online",
-      total_limit_usd: 70,
-      used_usd: 8.25,
-      remaining_usd: 61.75,
-      expires_at: "2026-10-11T00:00:00Z",
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
-    vi.mocked(liustSubscriptionAPI.getStatus).mockResolvedValue({
-      provider: "liust",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://liust.xyz",
-      total_limit_usd: 90,
-      used_usd: 14.25,
-      remaining_usd: 75.75,
-      expires_at: "2026-09-10T00:00:00Z",
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValue(defaultExternalStatuses());
   });
 
   afterEach(() => {
@@ -274,6 +306,14 @@ describe("AppHeader BuzzAI balance", () => {
     await nextTick();
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("Packy");
+    expect(chip.text()).toContain("¥88.80");
+    expect(chip.classes().join(" ")).toContain("balance-chip-packycode");
+
+    await vi.advanceTimersByTimeAsync(7000);
+    await nextTick();
+
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("XHY");
     expect(chip.text()).toContain("$66.50");
     expect(chip.classes().join(" ")).toContain("balance-chip-xhyapi");
@@ -303,7 +343,7 @@ describe("AppHeader BuzzAI balance", () => {
     expect(chip.classes().join(" ")).toContain("balance-chip-system");
   });
 
-  it("shows system, BuzzAI, TCDMX, qlhazycoder, XHYAPI, Pixel, and liust balances in a display-only hover dropdown", async () => {
+  it("shows system, BuzzAI, TCDMX, qlhazycoder, PackyCode, XHYAPI, Pixel, and liust balances in a display-only hover dropdown", async () => {
     const wrapper = mountHeader();
     await nextTick();
     await Promise.resolve();
@@ -324,6 +364,9 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("QL");
     expect(dropdown.text()).toContain("¥101.25");
     expect(dropdown.text()).toContain("长期");
+    expect(dropdown.text()).toContain("Packy");
+    expect(dropdown.text()).toContain("¥88.80");
+    expect(dropdown.text()).toContain("2026-11-12");
     expect(dropdown.text()).toContain("XHY");
     expect(dropdown.text()).toContain("$66.50");
     expect(dropdown.text()).toContain("2026-08-09");
@@ -338,19 +381,9 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows long-term when an external quota expiry is not returned", async () => {
-    vi.mocked(tcdmxSubscriptionAPI.getStatus).mockResolvedValueOnce({
-      provider: "tcdmx",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://tcdmx.com/subscriptions",
-      total_limit_usd: 100,
-      used_usd: 12.25,
-      remaining_usd: 87.75,
-      active_count: 1,
-      subscriptions: [],
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      tcdmx: { expires_at: undefined },
+    }));
 
     const wrapper = mountHeader();
     await nextTick();
@@ -367,19 +400,17 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("keeps TCDMX visible when the saved subscription token is invalid", async () => {
-    vi.mocked(tcdmxSubscriptionAPI.getStatus).mockResolvedValueOnce({
-      provider: "tcdmx",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://tcdmx.com",
-      used_usd: 0,
-      active_count: 0,
-      subscriptions: [],
-      error_code: "INVALID_TOKEN",
-      error_message: "Invalid token",
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      tcdmx: {
+        site_url: "https://tcdmx.com",
+        used_usd: 0,
+        remaining_usd: undefined,
+        total_limit_usd: undefined,
+        active_count: 0,
+        error_code: "INVALID_TOKEN",
+        error_message: "Invalid token",
+      },
+    }));
 
     const wrapper = mountHeader();
     await nextTick();
@@ -396,19 +427,16 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows qlhazycoder web login token failures as token expiry", async () => {
-    vi.mocked(qlhazycoderSubscriptionAPI.getStatus).mockResolvedValueOnce({
-      provider: "qlhazycoder",
-      enabled: true,
-      configured: true,
-      currency: "CNY",
-      site_url: "https://api.qlhazycoder.top",
-      used_usd: 0,
-      active_count: 0,
-      subscriptions: [],
-      error_code: "401",
-      error_message: "缺少 Authorization header",
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      qlhazycoder: {
+        used_usd: 0,
+        remaining_usd: undefined,
+        total_limit_usd: undefined,
+        active_count: 0,
+        error_code: "401",
+        error_message: "缺少 Authorization header",
+      },
+    }));
 
     const wrapper = mountHeader();
     await nextTick();
@@ -425,19 +453,16 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows XHYAPI web login token failures as token expiry", async () => {
-    vi.mocked(xhyapiSubscriptionAPI.getStatus).mockResolvedValueOnce({
-      provider: "xhyapi",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://xhyapi.com",
-      used_usd: 0,
-      active_count: 0,
-      subscriptions: [],
-      error_code: "401",
-      error_message: "Authorization header is required",
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      xhyapi: {
+        used_usd: 0,
+        remaining_usd: undefined,
+        total_limit_usd: undefined,
+        active_count: 0,
+        error_code: "401",
+        error_message: "Authorization header is required",
+      },
+    }));
 
     const wrapper = mountHeader();
     await nextTick();
@@ -454,19 +479,16 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows Pixel subscription token failures as token expiry", async () => {
-    vi.mocked(pixelSubscriptionAPI.getStatus).mockResolvedValueOnce({
-      provider: "pixel",
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      site_url: "https://ai-pixel.online",
-      used_usd: 0,
-      active_count: 0,
-      subscriptions: [],
-      error_code: "INVALID_TOKEN",
-      error_message: "Invalid token",
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
+    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      pixel: {
+        used_usd: 0,
+        remaining_usd: undefined,
+        total_limit_usd: undefined,
+        active_count: 0,
+        error_code: "INVALID_TOKEN",
+        error_message: "Invalid token",
+      },
+    }));
 
     const wrapper = mountHeader();
     await nextTick();

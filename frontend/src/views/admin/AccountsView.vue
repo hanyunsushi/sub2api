@@ -451,11 +451,7 @@ import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
-import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
-import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
-import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
-import pixelSubscriptionAPI, { type PixelSubscriptionStatus } from '@/api/admin/pixelSubscription'
-import liustSubscriptionAPI, { type LiustSubscriptionStatus } from '@/api/admin/liustSubscription'
+import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
@@ -632,11 +628,7 @@ const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
-const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
-const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
-const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
-const pixelSubscription = ref<PixelSubscriptionStatus | null>(null)
-const liustSubscription = ref<LiustSubscriptionStatus | null>(null)
+const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -764,11 +756,6 @@ interface AccountExternalQuota {
 }
 
 const defaultBuzzURL = 'https://buzzai.cc'
-const defaultTCDMXURL = 'https://tcdmx.com'
-const defaultQLHazyCoderURL = 'https://api.qlhazycoder.top'
-const defaultXHYAPIURL = 'https://xhyapi.com'
-const defaultPixelURL = 'https://ai-pixel.online'
-const defaultLiustURL = 'https://liust.xyz'
 
 const formatExternalAmount = (value?: number | null, currency?: string | null) => {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
@@ -807,17 +794,6 @@ const buildExternalSearchText = (account: Account) => {
     .toLowerCase()
 }
 
-const getAccountExternalProvider = (account: Account): 'buzz' | 'tcdmx' | 'qlhazycoder' | 'xhyapi' | 'pixel' | 'liust' | null => {
-  const text = buildExternalSearchText(account)
-  if (text.includes('api.qlhazycoder.top') || text.includes('qlhazycoder') || text.includes('qlhazy')) return 'qlhazycoder'
-  if (text.includes('liust.xyz') || text.includes('liust')) return 'liust'
-  if (text.includes('ai-pixel.online') || text.includes('pixel')) return 'pixel'
-  if (text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')) return 'xhyapi'
-  if (text.includes('tcdmx.com') || text.includes('tcdmx')) return 'tcdmx'
-  if (text.includes('buzzai.cc') || text.includes('buzzai') || /\bbuzz\b/.test(text)) return 'buzz'
-  return null
-}
-
 const isExternalSubscriptionInvalidToken = (code?: string | null) => {
   const normalized = (code || '').trim().toUpperCase()
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
@@ -834,180 +810,71 @@ const buildBuzzExternalQuota = (): AccountExternalQuota => {
   }
 }
 
-const buildTCDMXExternalQuota = (): AccountExternalQuota => {
-  if (tcdmxSubscription.value?.error_code) {
-    return {
-      label: 'TCDMX',
-      url: tcdmxSubscription.value?.site_url || defaultTCDMXURL,
-      formattedBalance: tcdmxSubscription.value.error_code === 'INVALID_TOKEN'
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: tcdmxSubscription.value.error_code === 'INVALID_TOKEN'
-        ? localText('请更新 Token', 'Update token')
-        : (tcdmxSubscription.value.error_message || localText('请检查配置', 'Check settings'))
-    }
-  }
-  const total = formatExternalAmount(tcdmxSubscription.value?.total_limit_usd)
-  const remaining = formatExternalAmount(tcdmxSubscription.value?.remaining_usd)
-  const activeCount = tcdmxSubscription.value?.active_count ?? 0
-  return {
-    label: 'TCDMX',
-    url: tcdmxSubscription.value?.site_url || defaultTCDMXURL,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
-    formattedExpiry: formatExternalDate(tcdmxSubscription.value?.expires_at)
-  }
-}
-
-const buildQLHazyCoderExternalQuota = (): AccountExternalQuota => {
-  if (qlhazycoderSubscription.value?.error_code) {
-    const isInvalidToken = qlhazycoderSubscription.value.error_code === '401' ||
-      qlhazycoderSubscription.value.error_code === 'INVALID_TOKEN' ||
-      qlhazycoderSubscription.value.error_code === 'TOKEN_EXPIRED'
-    return {
-      label: 'QL',
-      url: qlhazycoderSubscription.value?.site_url || defaultQLHazyCoderURL,
-      formattedBalance: isInvalidToken
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: isInvalidToken
-        ? localText('请更新 Token', 'Update token')
-        : (qlhazycoderSubscription.value.error_message || localText('请检查配置', 'Check settings'))
-    }
-  }
-  const total = formatExternalAmount(qlhazycoderSubscription.value?.total_limit_usd, qlhazycoderSubscription.value?.currency)
-  const remaining = formatExternalAmount(qlhazycoderSubscription.value?.remaining_usd, qlhazycoderSubscription.value?.currency)
-  const activeCount = qlhazycoderSubscription.value?.active_count ?? 0
-  return {
-    label: 'QL',
-    url: qlhazycoderSubscription.value?.site_url || defaultQLHazyCoderURL,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
-    formattedExpiry: formatExternalDate(qlhazycoderSubscription.value?.expires_at)
-  }
-}
-
-const buildXHYAPIExternalQuota = (): AccountExternalQuota => {
-  if (xhyapiSubscription.value?.error_code) {
-    const isInvalidToken = isExternalSubscriptionInvalidToken(xhyapiSubscription.value.error_code)
-    return {
-      label: 'XHY',
-      url: xhyapiSubscription.value?.site_url || defaultXHYAPIURL,
-      formattedBalance: isInvalidToken
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: isInvalidToken
-        ? localText('请更新 Token', 'Update token')
-        : (xhyapiSubscription.value.error_message || localText('请检查配置', 'Check settings'))
-    }
-  }
-  const total = formatExternalAmount(xhyapiSubscription.value?.total_limit_usd, xhyapiSubscription.value?.currency)
-  const remaining = formatExternalAmount(xhyapiSubscription.value?.remaining_usd, xhyapiSubscription.value?.currency)
-  const activeCount = xhyapiSubscription.value?.active_count ?? 0
-  return {
-    label: 'XHY',
-    url: xhyapiSubscription.value?.site_url || defaultXHYAPIURL,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
-    formattedExpiry: formatExternalDate(xhyapiSubscription.value?.expires_at)
-  }
-}
-
-const buildPixelExternalQuota = (): AccountExternalQuota => {
-  if (pixelSubscription.value?.error_code) {
-    const isInvalidToken = isExternalSubscriptionInvalidToken(pixelSubscription.value.error_code)
-    return {
-      label: 'Pixel',
-      url: pixelSubscription.value?.site_url || defaultPixelURL,
-      formattedBalance: isInvalidToken
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: isInvalidToken
-        ? localText('请更新 Token', 'Update token')
-        : (pixelSubscription.value.error_message || localText('请检查配置', 'Check settings'))
-    }
-  }
-  const total = formatExternalAmount(pixelSubscription.value?.total_limit_usd, pixelSubscription.value?.currency)
-  const remaining = formatExternalAmount(pixelSubscription.value?.remaining_usd, pixelSubscription.value?.currency)
-  const activeCount = pixelSubscription.value?.active_count ?? 0
-  return {
-    label: 'Pixel',
-    url: pixelSubscription.value?.site_url || defaultPixelURL,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
-    formattedExpiry: formatExternalDate(pixelSubscription.value?.expires_at)
-  }
-}
-
-const buildLiustExternalQuota = (): AccountExternalQuota => {
-  if (liustSubscription.value?.error_code) {
-    const isInvalidToken = isExternalSubscriptionInvalidToken(liustSubscription.value.error_code)
-    return {
-      label: 'LIUST',
-      url: liustSubscription.value?.site_url || defaultLiustURL,
-      formattedBalance: isInvalidToken
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: isInvalidToken
-        ? localText('请更新 Token', 'Update token')
-        : (liustSubscription.value.error_message || localText('请检查配置', 'Check settings'))
-    }
-  }
-  const total = formatExternalAmount(liustSubscription.value?.total_limit_usd, liustSubscription.value?.currency)
-  const remaining = formatExternalAmount(liustSubscription.value?.remaining_usd, liustSubscription.value?.currency)
-  const activeCount = liustSubscription.value?.active_count ?? 0
-  return {
-    label: 'LIUST',
-    url: liustSubscription.value?.site_url || defaultLiustURL,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
-    formattedExpiry: formatExternalDate(liustSubscription.value?.expires_at)
-  }
-}
-
 const canShowBuzzExternalQuota = () => Boolean(
   buzzBalance.value?.enabled &&
   buzzBalance.value?.configured
 )
 
-const canShowTCDMXExternalQuota = () => Boolean(
-  tcdmxSubscription.value?.enabled &&
-  tcdmxSubscription.value?.configured
-)
+const externalSubscriptionLabels: Record<string, string> = {
+  qlhazycoder: 'QL',
+  packycode: 'Packy',
+  xhyapi: 'XHY',
+  pixel: 'Pixel',
+  liust: 'LIUST',
+  tcdmx: 'TCDMX'
+}
 
-const canShowQLHazyCoderExternalQuota = () => Boolean(
-  qlhazycoderSubscription.value?.enabled &&
-  qlhazycoderSubscription.value?.configured
-)
+const getExternalSubscriptionLabel = (subscription: ExternalSubscriptionStatus) => {
+  return externalSubscriptionLabels[subscription.provider] || subscription.name || subscription.provider
+}
 
-const canShowXHYAPIExternalQuota = () => Boolean(
-  xhyapiSubscription.value?.enabled &&
-  xhyapiSubscription.value?.configured
-)
+const getMatchedExternalSubscription = (account: Account) => {
+  const text = buildExternalSearchText(account)
+  if (!text) return null
+  return externalSubscriptionStatuses.value.find((subscription) => {
+    if (!subscription.enabled || !subscription.configured) return false
+    return subscription.match_keywords.some((keyword) => {
+      const normalized = keyword.trim().toLowerCase()
+      return normalized !== '' && text.includes(normalized)
+    })
+  }) ?? null
+}
 
-const canShowPixelExternalQuota = () => Boolean(
-  pixelSubscription.value?.enabled &&
-  pixelSubscription.value?.configured
-)
+const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus): AccountExternalQuota => {
+  if (subscription.error_code) {
+    const isInvalidToken = isExternalSubscriptionInvalidToken(subscription.error_code)
+    return {
+      label: getExternalSubscriptionLabel(subscription),
+      url: subscription.site_url,
+      formattedBalance: isInvalidToken
+        ? localText('Token 失效', 'Token invalid')
+        : localText('读取失败', 'Read failed'),
+      formattedExpiry: isInvalidToken
+        ? localText('请更新 Token', 'Update token')
+        : (subscription.error_message || localText('请检查配置', 'Check settings'))
+    }
+  }
 
-const canShowLiustExternalQuota = () => Boolean(
-  liustSubscription.value?.enabled &&
-  liustSubscription.value?.configured
-)
+  const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
+  const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
+  const activeCount = subscription.active_count ?? 0
+  return {
+    label: getExternalSubscriptionLabel(subscription),
+    url: subscription.site_url,
+    formattedBalance: remaining && total
+      ? `${remaining} / ${total}`
+      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
+    formattedExpiry: formatExternalDate(subscription.expires_at)
+  }
+}
 
 const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
-  const provider = getAccountExternalProvider(account)
-  if (provider === 'liust' && canShowLiustExternalQuota()) return buildLiustExternalQuota()
-  if (provider === 'pixel' && canShowPixelExternalQuota()) return buildPixelExternalQuota()
-  if (provider === 'xhyapi' && canShowXHYAPIExternalQuota()) return buildXHYAPIExternalQuota()
-  if (provider === 'tcdmx' && canShowTCDMXExternalQuota()) return buildTCDMXExternalQuota()
-  if (provider === 'qlhazycoder' && canShowQLHazyCoderExternalQuota()) return buildQLHazyCoderExternalQuota()
-  if (provider === 'buzz' && canShowBuzzExternalQuota()) return buildBuzzExternalQuota()
+  const text = buildExternalSearchText(account)
+  if ((text.includes('buzzai.cc') || text.includes('buzzai') || /\bbuzz\b/.test(text)) && canShowBuzzExternalQuota()) {
+    return buildBuzzExternalQuota()
+  }
+  const subscription = getMatchedExternalSubscription(account)
+  if (subscription) return buildExternalSubscriptionQuota(subscription)
   return null
 }
 
@@ -1045,13 +912,9 @@ const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(
 
 const fetchExternalQuotaSummaries = async () => {
   if (!authStore.isAdmin) return
-  const [buzzResult, tcdmxResult, qlhazycoderResult, xhyapiResult, pixelResult, liustResult] = await Promise.allSettled([
+  const [buzzResult, externalResult] = await Promise.allSettled([
     buzzBalanceAPI.getBalance(),
-    tcdmxSubscriptionAPI.getStatus(),
-    qlhazycoderSubscriptionAPI.getStatus(),
-    xhyapiSubscriptionAPI.getStatus(),
-    pixelSubscriptionAPI.getStatus(),
-    liustSubscriptionAPI.getStatus()
+    externalSubscriptionsAPI.getStatuses()
   ])
   if (buzzResult.status === 'fulfilled') {
     buzzBalance.value = buzzResult.value
@@ -1059,35 +922,11 @@ const fetchExternalQuotaSummaries = async () => {
     buzzBalance.value = null
     console.error('Failed to load BuzzAI quota summary:', buzzResult.reason)
   }
-  if (tcdmxResult.status === 'fulfilled') {
-    tcdmxSubscription.value = tcdmxResult.value
+  if (externalResult.status === 'fulfilled') {
+    externalSubscriptionStatuses.value = externalResult.value
   } else {
-    tcdmxSubscription.value = null
-    console.error('Failed to load TCDMX quota summary:', tcdmxResult.reason)
-  }
-  if (qlhazycoderResult.status === 'fulfilled') {
-    qlhazycoderSubscription.value = qlhazycoderResult.value
-  } else {
-    qlhazycoderSubscription.value = null
-    console.error('Failed to load qlhazycoder quota summary:', qlhazycoderResult.reason)
-  }
-  if (xhyapiResult.status === 'fulfilled') {
-    xhyapiSubscription.value = xhyapiResult.value
-  } else {
-    xhyapiSubscription.value = null
-    console.error('Failed to load XHYAPI quota summary:', xhyapiResult.reason)
-  }
-  if (pixelResult.status === 'fulfilled') {
-    pixelSubscription.value = pixelResult.value
-  } else {
-    pixelSubscription.value = null
-    console.error('Failed to load Pixel quota summary:', pixelResult.reason)
-  }
-  if (liustResult.status === 'fulfilled') {
-    liustSubscription.value = liustResult.value
-  } else {
-    liustSubscription.value = null
-    console.error('Failed to load liust quota summary:', liustResult.reason)
+    externalSubscriptionStatuses.value = []
+    console.error('Failed to load external subscription quota summaries:', externalResult.reason)
   }
 }
 

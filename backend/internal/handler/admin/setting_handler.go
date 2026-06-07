@@ -296,6 +296,11 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		LiustSubscriptionUserID:                settings.LiustSubscriptionUserID,
 		LiustSubscriptionAPITokenConfigured:    settings.LiustSubscriptionAPITokenConfigured,
 		LiustSubscriptionRefreshConfigured:     settings.LiustSubscriptionRefreshConfigured,
+		PackyCodeSubscriptionEnabled:           settings.PackyCodeSubscriptionEnabled,
+		PackyCodeSubscriptionAPIBaseURL:        settings.PackyCodeSubscriptionAPIBaseURL,
+		PackyCodeSubscriptionUserID:            settings.PackyCodeSubscriptionUserID,
+		PackyCodeAPITokenConfigured:            settings.PackyCodeSubscriptionAPITokenConfigured,
+		PackyCodeRefreshConfigured:             settings.PackyCodeSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -662,6 +667,11 @@ type UpdateSettingsRequest struct {
 	LiustSubscriptionAPIToken           string                  `json:"liust_subscription_api_token"`
 	LiustSubscriptionUserID             *string                 `json:"liust_subscription_user_id"`
 	LiustSubscriptionRefreshToken       string                  `json:"liust_subscription_refresh_token"`
+	PackyCodeSubscriptionEnabled        *bool                   `json:"packycode_subscription_enabled"`
+	PackyCodeSubscriptionAPIBaseURL     *string                 `json:"packycode_subscription_api_base_url"`
+	PackyCodeSubscriptionAPIToken       string                  `json:"packycode_subscription_api_token"`
+	PackyCodeSubscriptionUserID         *string                 `json:"packycode_subscription_user_id"`
+	PackyCodeSubscriptionRefreshToken   string                  `json:"packycode_subscription_refresh_token"`
 	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails            *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
@@ -1603,6 +1613,16 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		req.LiustSubscriptionUserID = &normalized
 	}
 	req.LiustSubscriptionRefreshToken = strings.TrimSpace(req.LiustSubscriptionRefreshToken)
+	if req.PackyCodeSubscriptionAPIBaseURL != nil {
+		normalized := strings.TrimSpace(*req.PackyCodeSubscriptionAPIBaseURL)
+		req.PackyCodeSubscriptionAPIBaseURL = &normalized
+	}
+	req.PackyCodeSubscriptionAPIToken = strings.TrimSpace(req.PackyCodeSubscriptionAPIToken)
+	if req.PackyCodeSubscriptionUserID != nil {
+		normalized := strings.TrimSpace(*req.PackyCodeSubscriptionUserID)
+		req.PackyCodeSubscriptionUserID = &normalized
+	}
+	req.PackyCodeSubscriptionRefreshToken = strings.TrimSpace(req.PackyCodeSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1985,6 +2005,26 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			return previousSettings.LiustSubscriptionUserID
 		}(),
 		LiustSubscriptionRefreshToken: req.LiustSubscriptionRefreshToken,
+		PackyCodeSubscriptionEnabled: func() bool {
+			if req.PackyCodeSubscriptionEnabled != nil {
+				return *req.PackyCodeSubscriptionEnabled
+			}
+			return previousSettings.PackyCodeSubscriptionEnabled
+		}(),
+		PackyCodeSubscriptionAPIBaseURL: func() string {
+			if req.PackyCodeSubscriptionAPIBaseURL != nil {
+				return *req.PackyCodeSubscriptionAPIBaseURL
+			}
+			return previousSettings.PackyCodeSubscriptionAPIBaseURL
+		}(),
+		PackyCodeSubscriptionAPIToken: req.PackyCodeSubscriptionAPIToken,
+		PackyCodeSubscriptionUserID: func() string {
+			if req.PackyCodeSubscriptionUserID != nil {
+				return *req.PackyCodeSubscriptionUserID
+			}
+			return previousSettings.PackyCodeSubscriptionUserID
+		}(),
+		PackyCodeSubscriptionRefreshToken: req.PackyCodeSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2352,6 +2392,11 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		LiustSubscriptionUserID:                updatedSettings.LiustSubscriptionUserID,
 		LiustSubscriptionAPITokenConfigured:    updatedSettings.LiustSubscriptionAPITokenConfigured,
 		LiustSubscriptionRefreshConfigured:     updatedSettings.LiustSubscriptionRefreshConfigured,
+		PackyCodeSubscriptionEnabled:           updatedSettings.PackyCodeSubscriptionEnabled,
+		PackyCodeSubscriptionAPIBaseURL:        updatedSettings.PackyCodeSubscriptionAPIBaseURL,
+		PackyCodeSubscriptionUserID:            updatedSettings.PackyCodeSubscriptionUserID,
+		PackyCodeAPITokenConfigured:            updatedSettings.PackyCodeSubscriptionAPITokenConfigured,
+		PackyCodeRefreshConfigured:             updatedSettings.PackyCodeSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2919,6 +2964,21 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if req.LiustSubscriptionRefreshToken != "" {
 		changed = append(changed, "liust_subscription_refresh_token")
+	}
+	if before.PackyCodeSubscriptionEnabled != after.PackyCodeSubscriptionEnabled {
+		changed = append(changed, "packycode_subscription_enabled")
+	}
+	if before.PackyCodeSubscriptionAPIBaseURL != after.PackyCodeSubscriptionAPIBaseURL {
+		changed = append(changed, "packycode_subscription_api_base_url")
+	}
+	if req.PackyCodeSubscriptionAPIToken != "" {
+		changed = append(changed, "packycode_subscription_api_token")
+	}
+	if before.PackyCodeSubscriptionUserID != after.PackyCodeSubscriptionUserID {
+		changed = append(changed, "packycode_subscription_user_id")
+	}
+	if req.PackyCodeSubscriptionRefreshToken != "" {
+		changed = append(changed, "packycode_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

@@ -479,6 +479,16 @@ const (
 	SettingKeyLiustSubscriptionUserID       = "liust_subscription_user_id"
 	SettingKeyLiustSubscriptionRefreshToken = "liust_subscription_refresh_token"
 
+	// PackyCode subscription display
+	SettingKeyPackyCodeSubscriptionEnabled      = "packycode_subscription_enabled"
+	SettingKeyPackyCodeSubscriptionAPIBaseURL   = "packycode_subscription_api_base_url"
+	SettingKeyPackyCodeSubscriptionAPIToken     = "packycode_subscription_api_token"
+	SettingKeyPackyCodeSubscriptionUserID       = "packycode_subscription_user_id"
+	SettingKeyPackyCodeSubscriptionRefreshToken = "packycode_subscription_refresh_token"
+
+	// Generic external subscription display providers.
+	SettingKeyExternalSubscriptionProviders = "external_subscription_providers"
+
 	// AI logo library
 	SettingKeyAILogoCDNBaseURL         = "ai_logo_cdn_base_url"
 	SettingKeyCustomAILogoPresets      = "custom_ai_logo_presets"

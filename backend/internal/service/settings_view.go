@@ -267,6 +267,15 @@ type SystemSettings struct {
 	LiustSubscriptionAPITokenConfigured bool
 	LiustSubscriptionRefreshConfigured  bool
 
+	// PackyCode subscription display
+	PackyCodeSubscriptionEnabled            bool
+	PackyCodeSubscriptionAPIBaseURL         string
+	PackyCodeSubscriptionAPIToken           string
+	PackyCodeSubscriptionUserID             string
+	PackyCodeSubscriptionRefreshToken       string
+	PackyCodeSubscriptionAPITokenConfigured bool
+	PackyCodeSubscriptionRefreshConfigured  bool
+
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

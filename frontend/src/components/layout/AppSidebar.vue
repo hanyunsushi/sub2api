@@ -64,7 +64,8 @@
                   class="sidebar-link mb-0.5 py-1.5 text-sm"
                   :class="{
                     'sidebar-link-active': route.path === child.path,
-                    'sidebar-channel-child-link': item.path === '/admin/channels'
+                    'sidebar-channel-child-link': item.path === '/admin/channels',
+                    'sidebar-system-child-link': item.path === '/admin/settings'
                   }"
                   @click="handleMenuItemClick(child.path)"
                 >
@@ -774,6 +775,19 @@ const customMenuItemsForAdmin = computed(() => {
     .sort((a, b) => a.sort_order - b.sort_order)
 })
 
+function systemSettingsNavItem(): NavItem {
+  return {
+    path: '/admin/settings',
+    label: t('nav.settings'),
+    icon: CogIcon,
+    expandOnly: true,
+    children: [
+      { path: '/admin/settings', label: t('nav.settingsGeneral'), icon: CogIcon },
+      { path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions'), icon: CreditCardIcon },
+    ],
+  }
+}
+
 // Admin navigation items
 const adminNavItems = computed((): NavItem[] => {
   const baseItems: NavItem[] = [
@@ -835,14 +849,14 @@ const adminNavItems = computed((): NavItem[] => {
   if (authStore.isSimpleMode) {
     const filtered = visible.filter(item => !item.hideInSimpleMode)
     filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon })
-    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+    filtered.push(systemSettingsNavItem())
     for (const cm of customMenuItemsForAdmin.value) {
       filtered.push(customMenuNavItem(cm))
     }
     return filtered
   }
 
-  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+  visible.push(systemSettingsNavItem())
   for (const cm of customMenuItemsForAdmin.value) {
     visible.push(customMenuNavItem(cm))
   }

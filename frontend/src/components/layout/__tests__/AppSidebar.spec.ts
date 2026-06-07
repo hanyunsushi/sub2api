@@ -41,6 +41,17 @@ describe('AppSidebar custom menu open mode', () => {
   })
 })
 
+describe('AppSidebar system settings group', () => {
+  it('renders system settings as an expandable parent with the external subscriptions child route', () => {
+    expect(componentSource).toContain('function systemSettingsNavItem')
+    expect(componentSource).toContain('expandOnly: true')
+    expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
+    expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
+    expect(componentSource).toContain('systemSettingsNavItem()')
+    expect(componentSource).toContain("'sidebar-system-child-link': item.path === '/admin/settings'")
+  })
+})
+
 describe('AppSidebar header styles', () => {
   it('links only the top-left logo to the public welcome page', () => {
     const homeLinkMatch = componentSource.match(/<router-link[^>]*to="\/home"[^>]*>[\s\S]*?<\/router-link>/)
