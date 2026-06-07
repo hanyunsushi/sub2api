@@ -251,16 +251,15 @@ func (s *OpenAIGatewayService) bufferChatCompletionsAsResponses(
 	c.JSON(http.StatusOK, responsesResp)
 
 	return &OpenAIForwardResult{
-		RequestID:        requestID,
-		Usage:            usage,
-		Model:            originalModel,
-		BillingModel:     billingModel,
-		UpstreamModel:    upstreamModel,
-		UpstreamEndpoint: "/v1/chat/completions",
-		ReasoningEffort:  reasoningEffort,
-		ServiceTier:      serviceTier,
-		Stream:           false,
-		Duration:         time.Since(startTime),
+		RequestID:       requestID,
+		Usage:           usage,
+		Model:           originalModel,
+		BillingModel:    billingModel,
+		UpstreamModel:   upstreamModel,
+		ReasoningEffort: reasoningEffort,
+		ServiceTier:     serviceTier,
+		Stream:          false,
+		Duration:        time.Since(startTime),
 	}, nil
 }
 
@@ -372,17 +371,16 @@ func (s *OpenAIGatewayService) streamChatCompletionsAsResponses(
 			)
 		}
 		return &OpenAIForwardResult{
-			RequestID:        requestID,
-			Usage:            usage,
-			Model:            originalModel,
-			BillingModel:     billingModel,
-			UpstreamModel:    upstreamModel,
-			UpstreamEndpoint: "/v1/chat/completions",
-			ReasoningEffort:  reasoningEffort,
-			ServiceTier:      serviceTier,
-			Stream:           true,
-			Duration:         time.Since(startTime),
-			FirstTokenMs:     firstTokenMs,
+			RequestID:       requestID,
+			Usage:           usage,
+			Model:           originalModel,
+			BillingModel:    billingModel,
+			UpstreamModel:   upstreamModel,
+			ReasoningEffort: reasoningEffort,
+			ServiceTier:     serviceTier,
+			Stream:          true,
+			Duration:        time.Since(startTime),
+			FirstTokenMs:    firstTokenMs,
 		}, fmt.Errorf("stream usage incomplete: %w", err)
 	}
 
