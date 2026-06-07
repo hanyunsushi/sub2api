@@ -7,6 +7,7 @@ import buzzBalanceAPI from "@/api/admin/buzzBalance";
 import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from "@/api/admin/externalSubscriptions";
 
 const authState = vi.hoisted(() => ({
+  nextUserId: 1,
   user: {
     id: 1,
     username: "admin",
@@ -190,6 +191,43 @@ function defaultExternalStatuses(
       refreshed_at: "2026-05-21T10:00:00Z",
     },
     {
+      provider: "openrouter",
+      name: "OpenRouter",
+      template: "openrouter_credits",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["openrouter"],
+      sort_order: 70,
+      currency: "USD",
+      site_url: "https://openrouter.ai",
+      total_limit_usd: 25.5,
+      used_usd: 4.25,
+      remaining_usd: 21.25,
+      active_count: 0,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
+      provider: "cloudflare",
+      name: "Cloudflare AI Gateway",
+      template: "cloudflare_ai_gateway_credits",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["cloudflare", "ai-gateway"],
+      sort_order: 80,
+      currency: "USD",
+      site_url: "https://api.cloudflare.com/client/v4",
+      used_usd: 0,
+      remaining_usd: 12.75,
+      active_count: 0,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
+    {
       provider: "liust",
       name: "liust",
       template: "newapi_console",
@@ -219,7 +257,7 @@ describe("AppHeader BuzzAI balance", () => {
     vi.useFakeTimers();
     vi.clearAllMocks();
     authState.user = {
-      id: 1,
+      id: authState.nextUserId++,
       username: "admin",
       email: "admin@example.com",
       role: "admin",
@@ -330,6 +368,22 @@ describe("AppHeader BuzzAI balance", () => {
     await nextTick();
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("OpenRouter");
+    expect(chip.text()).toContain("$21.25");
+    expect(chip.classes().join(" ")).toContain("balance-chip-openrouter");
+
+    await vi.advanceTimersByTimeAsync(7000);
+    await nextTick();
+
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("Cloudflare");
+    expect(chip.text()).toContain("$12.75");
+    expect(chip.classes().join(" ")).toContain("balance-chip-cloudflare");
+
+    await vi.advanceTimersByTimeAsync(7000);
+    await nextTick();
+
+    chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("LIUST");
     expect(chip.text()).toContain("$75.75");
     expect(chip.classes().join(" ")).toContain("balance-chip-liust");
@@ -343,7 +397,7 @@ describe("AppHeader BuzzAI balance", () => {
     expect(chip.classes().join(" ")).toContain("balance-chip-system");
   });
 
-  it("shows system, BuzzAI, TCDMX, qlhazycoder, PackyCode, XHYAPI, Pixel, and liust balances in a display-only hover dropdown", async () => {
+  it("shows system, BuzzAI, TCDMX, qlhazycoder, PackyCode, XHYAPI, Pixel, OpenRouter, Cloudflare, and liust balances in a display-only hover dropdown", async () => {
     const wrapper = mountHeader();
     await nextTick();
     await Promise.resolve();
@@ -373,6 +427,10 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("Pixel");
     expect(dropdown.text()).toContain("$61.75");
     expect(dropdown.text()).toContain("2026-10-11");
+    expect(dropdown.text()).toContain("OpenRouter");
+    expect(dropdown.text()).toContain("$21.25");
+    expect(dropdown.text()).toContain("Cloudflare");
+    expect(dropdown.text()).toContain("$12.75");
     expect(dropdown.text()).toContain("LIUST");
     expect(dropdown.text()).toContain("$75.75");
     expect(dropdown.text()).toContain("2026-09-10");
@@ -518,5 +576,29 @@ describe("AppHeader BuzzAI balance", () => {
     expect(contextStrip.text()).not.toContain("$87.66");
     expect(contextStrip.text()).not.toContain("SYS");
     expect(contextStrip.text()).not.toContain("Buzz");
+  });
+
+  it("reuses cached external statuses across header remounts before the cache expires", async () => {
+    const first = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await Promise.resolve();
+    await nextTick();
+
+    expect(externalSubscriptionsAPI.getStatuses).toHaveBeenCalledTimes(1);
+    await first.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+    expect(first.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
+    first.unmount();
+
+    const second = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    expect(externalSubscriptionsAPI.getStatuses).toHaveBeenCalledTimes(1);
+    await second.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+    expect(second.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
   });
 });

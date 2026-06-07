@@ -126,6 +126,15 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar .sidebar-channel-child-link :where(svg, .sidebar-svg-icon)')
   })
 
+  it('uses a smaller dedicated font size for the system-settings children', () => {
+    expect(componentSource).toContain("'sidebar-system-child-link': item.path === '/admin/settings'")
+    expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
+    expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
+    expect(styleSource).toContain('.sidebar .sidebar-system-child-link')
+    expect(styleSource).toContain('font-size: 0.75rem;')
+    expect(styleSource).toContain('.sidebar .sidebar-system-child-link :where(svg, .sidebar-svg-icon)')
+  })
+
   it('keeps active sidebar descendants readable when the selected item is hovered', () => {
     expect(styleSource).toContain('.sidebar .sidebar-link-active:hover')
     expect(styleSource).toContain('.sidebar .sidebar-link-active:hover :where(svg, .sidebar-svg-icon, .sidebar-label, span)')

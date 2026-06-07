@@ -1,6 +1,10 @@
 import { apiClient } from '@/api/client'
 
-export type ExternalSubscriptionTemplate = 'newapi_console' | 'active_subscriptions'
+export type ExternalSubscriptionTemplate =
+  | 'newapi_console'
+  | 'active_subscriptions'
+  | 'openrouter_credits'
+  | 'cloudflare_ai_gateway_credits'
 
 export interface ExternalSubscriptionItem {
   id: number

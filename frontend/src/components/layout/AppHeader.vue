@@ -313,6 +313,21 @@
   </header>
 </template>
 
+<script lang="ts">
+import type { ExternalSubscriptionStatus as CachedExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
+
+const EXTERNAL_SUBSCRIPTIONS_CACHE_TTL_MS = 60_000
+let externalSubscriptionsCache: {
+  userId: number | string | null
+  expiresAt: number
+  statuses: CachedExternalSubscriptionStatus[]
+} | null = null
+let externalSubscriptionsRequest: {
+  userId: number | string | null
+  promise: Promise<CachedExternalSubscriptionStatus[]>
+} | null = null
+</script>
+
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -533,13 +548,52 @@ async function fetchBuzzBalance() {
 
 async function fetchExternalSubscriptions() {
   if (!authStore.isAdmin || externalSubscriptionsLoading.value) return
+  const userId = user.value?.id ?? null
+  const now = Date.now()
+  if (
+    externalSubscriptionsCache &&
+    externalSubscriptionsCache.userId === userId &&
+    externalSubscriptionsCache.expiresAt > now
+  ) {
+    externalSubscriptions.value = externalSubscriptionsCache.statuses.map(subscription => ({ ...subscription }))
+    return
+  }
+  if (
+    externalSubscriptionsRequest &&
+    externalSubscriptionsRequest.userId === userId
+  ) {
+    try {
+      externalSubscriptions.value = (await externalSubscriptionsRequest.promise).map(subscription => ({ ...subscription }))
+    } catch {
+      // The owning request already logs and falls back; avoid duplicate noise here.
+    }
+    return
+  }
   externalSubscriptionsLoading.value = true
+  const request = externalSubscriptionsAPI.getStatuses()
+  externalSubscriptionsRequest = { userId, promise: request }
   try {
-    externalSubscriptions.value = await externalSubscriptionsAPI.getStatuses()
+    const statuses = await request
+    externalSubscriptions.value = statuses
+    externalSubscriptionsCache = {
+      userId,
+      expiresAt: now + EXTERNAL_SUBSCRIPTIONS_CACHE_TTL_MS,
+      statuses: statuses.map(subscription => ({ ...subscription })),
+    }
   } catch (error) {
-    externalSubscriptions.value = []
+    if (
+      externalSubscriptionsCache &&
+      externalSubscriptionsCache.userId === userId
+    ) {
+      externalSubscriptions.value = externalSubscriptionsCache.statuses.map(subscription => ({ ...subscription }))
+    } else {
+      externalSubscriptions.value = []
+    }
     console.error('Failed to fetch external subscriptions:', error)
   } finally {
+    if (externalSubscriptionsRequest?.promise === request) {
+      externalSubscriptionsRequest = null
+    }
     externalSubscriptionsLoading.value = false
   }
 }
@@ -551,6 +605,8 @@ const externalSubscriptionLabels: Record<string, string> = {
   pixel: 'Pixel',
   liust: 'LIUST',
   tcdmx: 'TCDMX',
+  openrouter: 'OpenRouter',
+  cloudflare: 'Cloudflare',
 }
 
 function providerClassSuffix(provider?: string | null) {
@@ -561,6 +617,8 @@ function providerClassSuffix(provider?: string | null) {
   if (normalized === 'pixel') return 'pixel'
   if (normalized === 'liust') return 'liust'
   if (normalized === 'tcdmx') return 'tcdmx'
+  if (normalized === 'openrouter') return 'openrouter'
+  if (normalized === 'cloudflare') return 'cloudflare'
   return 'external'
 }
 
@@ -796,6 +854,8 @@ watch(
 .balance-chip-pixel,
 .balance-chip-liust,
 .balance-chip-tcdmx,
+.balance-chip-openrouter,
+.balance-chip-cloudflare,
 .balance-chip-external {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
@@ -816,6 +876,8 @@ watch(
 .balance-chip-pixel:hover,
 .balance-chip-liust:hover,
 .balance-chip-tcdmx:hover,
+.balance-chip-openrouter:hover,
+.balance-chip-cloudflare:hover,
 .balance-chip-external:hover {
   background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
@@ -837,6 +899,8 @@ watch(
 .balance-row-pixel,
 .balance-row-liust,
 .balance-row-tcdmx,
+.balance-row-openrouter,
+.balance-row-cloudflare,
 .balance-row-external {
   background: var(--atelier-butter-soft);
 }
@@ -852,6 +916,8 @@ watch(
 .balance-pixel-text,
 .balance-liust-text,
 .balance-tcdmx-text,
+.balance-openrouter-text,
+.balance-cloudflare-text,
 .balance-external-text {
   color: var(--atelier-ink);
 }
@@ -873,6 +939,8 @@ watch(
 .dark .balance-chip-pixel,
 .dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
+.dark .balance-chip-openrouter,
+.dark .balance-chip-cloudflare,
 .dark .balance-chip-external,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
@@ -881,6 +949,8 @@ watch(
 .dark .balance-row-pixel,
 .dark .balance-row-liust,
 .dark .balance-row-tcdmx,
+.dark .balance-row-openrouter,
+.dark .balance-row-cloudflare,
 .dark .balance-row-external {
   background: transparent;
 }
@@ -893,6 +963,8 @@ watch(
 .dark .balance-chip-pixel:hover,
 .dark .balance-chip-liust:hover,
 .dark .balance-chip-tcdmx:hover,
+.dark .balance-chip-openrouter:hover,
+.dark .balance-chip-cloudflare:hover,
 .dark .balance-chip-external:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
@@ -908,6 +980,8 @@ watch(
 .dark .balance-pixel-text,
 .dark .balance-liust-text,
 .dark .balance-tcdmx-text,
+.dark .balance-openrouter-text,
+.dark .balance-cloudflare-text,
 .dark .balance-external-text {
   color: var(--atelier-ink);
 }

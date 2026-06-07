@@ -60,8 +60,9 @@ const title = computed(() => props.provider || props.model || 'Provider')
 const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
 const transparentSystemLogoIds = ['openai', 'claude', 'anthropic']
 const shouldUseTransparentShell = computed(() => {
-  if (imageMode.value !== 'system') return false
-  const value = `${props.provider || ''} ${props.model || ''} ${brand.value.iconUrl || ''}`.toLowerCase()
+  const usesTransparentSystemLogo = imageMode.value === 'system' || Boolean(brand.value.iconModel)
+  if (!usesTransparentSystemLogo) return false
+  const value = `${props.provider || ''} ${props.model || ''} ${brand.value.iconModel || ''} ${brand.value.iconUrl || ''}`.toLowerCase()
   return transparentSystemLogoIds.some((id) => value.includes(id))
 })
 </script>
