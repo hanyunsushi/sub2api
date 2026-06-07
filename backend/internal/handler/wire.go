@@ -41,11 +41,13 @@ func ProvideAdminHandlers(
 	affiliateHandler *admin.AffiliateHandler,
 	codexMetadataHandler *admin.CodexMetadataHandler,
 	buzzBalanceHandler *admin.BuzzBalanceHandler,
+	externalSubscriptionHandler *admin.ExternalSubscriptionConfigHandler,
 	tcdmxSubscriptionHandler *admin.TCDMXSubscriptionHandler,
 	qlhazycoderSubscriptionHandler *admin.QLHazyCoderSubscriptionHandler,
 	xhyapiSubscriptionHandler *admin.XHYAPISubscriptionHandler,
 	pixelSubscriptionHandler *admin.PixelSubscriptionHandler,
 	liustSubscriptionHandler *admin.LiustSubscriptionHandler,
+	packycodeSubscriptionHandler *admin.PackyCodeSubscriptionHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
 		Dashboard:               dashboardHandler,
@@ -80,11 +82,13 @@ func ProvideAdminHandlers(
 		Affiliate:               affiliateHandler,
 		CodexMetadata:           codexMetadataHandler,
 		BuzzBalance:             buzzBalanceHandler,
+		ExternalSubscription:    externalSubscriptionHandler,
 		TCDMXSubscription:       tcdmxSubscriptionHandler,
 		QLHazyCoderSubscription: qlhazycoderSubscriptionHandler,
 		XHYAPISubscription:      xhyapiSubscriptionHandler,
 		PixelSubscription:       pixelSubscriptionHandler,
 		LiustSubscription:       liustSubscriptionHandler,
+		PackyCodeSubscription:   packycodeSubscriptionHandler,
 	}
 }
 
@@ -214,11 +218,13 @@ var ProviderSet = wire.NewSet(
 	admin.NewAffiliateHandler,
 	admin.NewCodexMetadataHandler,
 	admin.NewBuzzBalanceHandler,
+	admin.NewExternalSubscriptionConfigHandler,
 	admin.NewTCDMXSubscriptionHandler,
 	admin.NewQLHazyCoderSubscriptionHandler,
 	admin.NewXHYAPISubscriptionHandler,
 	admin.NewPixelSubscriptionHandler,
 	admin.NewLiustSubscriptionHandler,
+	admin.NewPackyCodeSubscriptionHandler,
 
 	// AdminHandlers and Handlers constructors
 	ProvideAdminHandlers,

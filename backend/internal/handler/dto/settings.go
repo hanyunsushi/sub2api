@@ -261,6 +261,11 @@ type SystemSettings struct {
 	LiustSubscriptionUserID              string             `json:"liust_subscription_user_id"`
 	LiustSubscriptionAPITokenConfigured  bool               `json:"liust_subscription_api_token_configured"`
 	LiustSubscriptionRefreshConfigured   bool               `json:"liust_subscription_refresh_token_configured"`
+	PackyCodeSubscriptionEnabled         bool               `json:"packycode_subscription_enabled"`
+	PackyCodeSubscriptionAPIBaseURL      string             `json:"packycode_subscription_api_base_url"`
+	PackyCodeSubscriptionUserID          string             `json:"packycode_subscription_user_id"`
+	PackyCodeAPITokenConfigured          bool               `json:"packycode_subscription_api_token_configured"`
+	PackyCodeRefreshConfigured           bool               `json:"packycode_subscription_refresh_token_configured"`
 	SubscriptionExpiryNotifyEnabled      bool               `json:"subscription_expiry_notify_enabled"`
 	AccountQuotaNotifyEnabled            bool               `json:"account_quota_notify_enabled"`
 	AccountQuotaNotifyEmails             []NotifyEmailEntry `json:"account_quota_notify_emails"`

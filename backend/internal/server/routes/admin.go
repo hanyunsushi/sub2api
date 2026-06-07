@@ -104,6 +104,9 @@ func RegisterAdminRoutes(
 		// BuzzAI 余额
 		registerBuzzBalanceRoutes(admin, h)
 
+		// 外部订阅展示配置
+		registerExternalSubscriptionRoutes(admin, h)
+
 		// TCDMX 订阅额度
 		registerTCDMXSubscriptionRoutes(admin, h)
 
@@ -118,6 +121,9 @@ func RegisterAdminRoutes(
 
 		// liust 订阅额度
 		registerLiustSubscriptionRoutes(admin, h)
+
+		// PackyCode 订阅额度
+		registerPackyCodeSubscriptionRoutes(admin, h)
 	}
 }
 
@@ -125,6 +131,17 @@ func registerBuzzBalanceRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 	buzz := admin.Group("/buzz")
 	{
 		buzz.GET("/balance", h.Admin.BuzzBalance.GetBalance)
+	}
+}
+
+func registerExternalSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	externalSubscriptions := admin.Group("/external-subscriptions")
+	{
+		externalSubscriptions.GET("", h.Admin.ExternalSubscription.ListProviders)
+		externalSubscriptions.POST("", h.Admin.ExternalSubscription.CreateProvider)
+		externalSubscriptions.GET("/statuses", h.Admin.ExternalSubscription.GetStatuses)
+		externalSubscriptions.PUT("/:id", h.Admin.ExternalSubscription.UpdateProvider)
+		externalSubscriptions.DELETE("/:id", h.Admin.ExternalSubscription.DeleteProvider)
 	}
 }
 
@@ -160,6 +177,13 @@ func registerLiustSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers
 	liust := admin.Group("/liust")
 	{
 		liust.GET("/subscription", h.Admin.LiustSubscription.GetStatus)
+	}
+}
+
+func registerPackyCodeSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	packycode := admin.Group("/packycode")
+	{
+		packycode.GET("/subscription", h.Admin.PackyCodeSubscription.GetStatus)
 	}
 }
 

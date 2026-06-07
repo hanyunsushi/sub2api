@@ -312,6 +312,7 @@ const (
 	DefaultXHYAPISubscriptionAPIBaseURL      = "https://xhyapi.com"
 	DefaultPixelSubscriptionAPIBaseURL       = "https://ai-pixel.online"
 	DefaultLiustSubscriptionAPIBaseURL       = "https://liust.xyz"
+	DefaultPackyCodeSubscriptionAPIBaseURL   = "https://www.packyapi.com"
 	DefaultAILogoCDNBaseURL                  = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                 = "open"
 	defaultWeChatConnectScopes               = "snsapi_login"
@@ -2219,6 +2220,15 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	if strings.TrimSpace(settings.LiustSubscriptionRefreshToken) != "" {
 		updates[SettingKeyLiustSubscriptionRefreshToken] = strings.TrimSpace(settings.LiustSubscriptionRefreshToken)
 	}
+	updates[SettingKeyPackyCodeSubscriptionEnabled] = strconv.FormatBool(settings.PackyCodeSubscriptionEnabled)
+	updates[SettingKeyPackyCodeSubscriptionAPIBaseURL] = normalizePackyCodeSubscriptionAPIBaseURL(settings.PackyCodeSubscriptionAPIBaseURL)
+	if strings.TrimSpace(settings.PackyCodeSubscriptionAPIToken) != "" {
+		updates[SettingKeyPackyCodeSubscriptionAPIToken] = strings.TrimSpace(settings.PackyCodeSubscriptionAPIToken)
+	}
+	updates[SettingKeyPackyCodeSubscriptionUserID] = strings.TrimSpace(settings.PackyCodeSubscriptionUserID)
+	if strings.TrimSpace(settings.PackyCodeSubscriptionRefreshToken) != "" {
+		updates[SettingKeyPackyCodeSubscriptionRefreshToken] = strings.TrimSpace(settings.PackyCodeSubscriptionRefreshToken)
+	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -3165,6 +3175,10 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyLiustSubscriptionAPIBaseURL:         DefaultLiustSubscriptionAPIBaseURL,
 		SettingKeyLiustSubscriptionUserID:             "",
 		SettingKeyLiustSubscriptionRefreshToken:       "",
+		SettingKeyPackyCodeSubscriptionEnabled:        "false",
+		SettingKeyPackyCodeSubscriptionAPIBaseURL:     DefaultPackyCodeSubscriptionAPIBaseURL,
+		SettingKeyPackyCodeSubscriptionUserID:         "",
+		SettingKeyPackyCodeSubscriptionRefreshToken:   "",
 		SettingKeyAllowUserViewErrorRequests:          "false",
 	}
 
@@ -3743,6 +3757,13 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.LiustSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionRefreshToken])
 	result.LiustSubscriptionAPITokenConfigured = result.LiustSubscriptionAPIToken != ""
 	result.LiustSubscriptionRefreshConfigured = result.LiustSubscriptionRefreshToken != ""
+	result.PackyCodeSubscriptionEnabled = settings[SettingKeyPackyCodeSubscriptionEnabled] == "true"
+	result.PackyCodeSubscriptionAPIBaseURL = normalizePackyCodeSubscriptionAPIBaseURL(settings[SettingKeyPackyCodeSubscriptionAPIBaseURL])
+	result.PackyCodeSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionAPIToken])
+	result.PackyCodeSubscriptionUserID = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionUserID])
+	result.PackyCodeSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionRefreshToken])
+	result.PackyCodeSubscriptionAPITokenConfigured = result.PackyCodeSubscriptionAPIToken != ""
+	result.PackyCodeSubscriptionRefreshConfigured = result.PackyCodeSubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

@@ -38,11 +38,13 @@ type AdminHandlers struct {
 	Affiliate               *admin.AffiliateHandler
 	CodexMetadata           *admin.CodexMetadataHandler
 	BuzzBalance             *admin.BuzzBalanceHandler
+	ExternalSubscription    *admin.ExternalSubscriptionConfigHandler
 	TCDMXSubscription       *admin.TCDMXSubscriptionHandler
 	QLHazyCoderSubscription *admin.QLHazyCoderSubscriptionHandler
 	XHYAPISubscription      *admin.XHYAPISubscriptionHandler
 	PixelSubscription       *admin.PixelSubscriptionHandler
 	LiustSubscription       *admin.LiustSubscriptionHandler
+	PackyCodeSubscription   *admin.PackyCodeSubscriptionHandler
 }
 
 // Handlers contains all HTTP handlers

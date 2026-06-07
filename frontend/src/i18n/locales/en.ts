@@ -370,6 +370,8 @@ export default {
     ops: 'Ops',
     promoCodes: 'Promo Codes',
     settings: 'Settings',
+    settingsGeneral: 'System Settings',
+    externalSubscriptions: 'External Subscriptions',
     myAccount: 'My Account',
     lightMode: 'Light Mode',
     darkMode: 'Dark Mode',
@@ -5646,9 +5648,9 @@ export default {
             hint: 'Apply the same exclusive rebate rate to all selected users.',
             placeholder: 'e.g. 30',
             clearHint: 'Submitting empty will clear the exclusive rate for selected users.',
-          },
         },
       },
+    },
       emailTabDisabledTitle: 'Email Verification Not Enabled',
       emailTabDisabledHint: 'Enable email verification in the Security tab to configure SMTP settings.',
       registration: {
@@ -6605,6 +6607,11 @@ export default {
       failedToSave: 'Failed to save settings',
       failedToTestSmtp: 'SMTP connection test failed',
       failedToSendTestEmail: 'Failed to send test email'
+    },
+
+    externalSubscriptions: {
+      title: 'External Subscriptions',
+      description: 'Manage external site balance and subscription expiry displays'
     },
 
     // Error Passthrough Rules

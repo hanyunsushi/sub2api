@@ -634,6 +634,11 @@ export interface SystemSettings {
   liust_subscription_user_id: string;
   liust_subscription_api_token_configured: boolean;
   liust_subscription_refresh_token_configured: boolean;
+  packycode_subscription_enabled: boolean;
+  packycode_subscription_api_base_url: string;
+  packycode_subscription_user_id: string;
+  packycode_subscription_api_token_configured: boolean;
+  packycode_subscription_refresh_token_configured: boolean;
   subscription_expiry_notify_enabled: boolean;
   account_quota_notify_enabled: boolean;
   account_quota_notify_emails: NotifyEmailEntry[];
@@ -896,6 +901,11 @@ export interface UpdateSettingsRequest {
   liust_subscription_api_token?: string;
   liust_subscription_user_id?: string;
   liust_subscription_refresh_token?: string;
+  packycode_subscription_enabled?: boolean;
+  packycode_subscription_api_base_url?: string;
+  packycode_subscription_api_token?: string;
+  packycode_subscription_user_id?: string;
+  packycode_subscription_refresh_token?: string;
   subscription_expiry_notify_enabled?: boolean;
   account_quota_notify_enabled?: boolean;
   account_quota_notify_emails?: NotifyEmailEntry[];

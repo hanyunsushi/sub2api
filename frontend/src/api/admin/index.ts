@@ -32,11 +32,13 @@ import adminPaymentAPI from './payment'
 import affiliatesAPI from './affiliates'
 import riskControlAPI from './riskControl'
 import buzzBalanceAPI from './buzzBalance'
+import externalSubscriptionsAPI from './externalSubscriptions'
 import tcdmxSubscriptionAPI from './tcdmxSubscription'
 import qlhazycoderSubscriptionAPI from './qlhazycoderSubscription'
 import xhyapiSubscriptionAPI from './xhyapiSubscription'
 import pixelSubscriptionAPI from './pixelSubscription'
 import liustSubscriptionAPI from './liustSubscription'
+import packycodeSubscriptionAPI from './packycodeSubscription'
 
 /**
  * Unified admin API object for convenient access
@@ -71,11 +73,13 @@ export const adminAPI = {
   affiliates: affiliatesAPI,
   riskControl: riskControlAPI,
   buzzBalance: buzzBalanceAPI,
+  externalSubscriptions: externalSubscriptionsAPI,
   tcdmxSubscription: tcdmxSubscriptionAPI,
   qlhazycoderSubscription: qlhazycoderSubscriptionAPI,
   xhyapiSubscription: xhyapiSubscriptionAPI,
   pixelSubscription: pixelSubscriptionAPI,
-  liustSubscription: liustSubscriptionAPI
+  liustSubscription: liustSubscriptionAPI,
+  packycodeSubscription: packycodeSubscriptionAPI
 }
 
 export {
@@ -108,11 +112,13 @@ export {
   affiliatesAPI,
   riskControlAPI,
   buzzBalanceAPI,
+  externalSubscriptionsAPI,
   tcdmxSubscriptionAPI,
   qlhazycoderSubscriptionAPI,
   xhyapiSubscriptionAPI,
   pixelSubscriptionAPI,
-  liustSubscriptionAPI
+  liustSubscriptionAPI,
+  packycodeSubscriptionAPI
 }
 
 export default adminAPI
@@ -124,8 +130,16 @@ export type { BackupAgentHealth, DataManagementConfig } from './dataManagement'
 export type { TLSFingerprintProfile, CreateProfileRequest, UpdateProfileRequest } from './tlsFingerprintProfile'
 export type { ContentModerationConfig, ContentModerationLog, ModerationMode } from './riskControl'
 export type { BuzzBalance } from './buzzBalance'
+export type {
+  ExternalSubscriptionProvider,
+  ExternalSubscriptionProviderInput,
+  ExternalSubscriptionStatus,
+  ExternalSubscriptionItem,
+  ExternalSubscriptionTemplate,
+} from './externalSubscriptions'
 export type { TCDMXSubscriptionStatus, TCDMXSubscriptionItem } from './tcdmxSubscription'
 export type { QLHazyCoderSubscriptionStatus, QLHazyCoderSubscriptionItem } from './qlhazycoderSubscription'
 export type { XHYAPISubscriptionStatus, XHYAPISubscriptionItem } from './xhyapiSubscription'
 export type { PixelSubscriptionStatus, PixelSubscriptionItem } from './pixelSubscription'
 export type { LiustSubscriptionStatus, LiustSubscriptionItem } from './liustSubscription'
+export type { PackyCodeSubscriptionStatus, PackyCodeSubscriptionItem } from './packycodeSubscription'

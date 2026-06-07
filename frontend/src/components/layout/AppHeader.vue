@@ -85,40 +85,17 @@
               />
             </svg>
             <span
-              v-if="showQLHazyCoderSubscriptionInChip"
-              class="balance-qlhazycoder-text text-sm font-semibold"
+              v-if="currentExternalSubscriptionInChip"
+              :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'text-sm font-semibold']"
             >
-              QL {{ formattedQLHazyCoderBalance }}
-            </span>
-            <span
-              v-else-if="showXHYAPISubscriptionInChip"
-              class="balance-xhyapi-text text-sm font-semibold"
-            >
-              XHY {{ formattedXHYAPIBalance }}
-            </span>
-            <span
-              v-else-if="showPixelSubscriptionInChip"
-              class="balance-pixel-text text-sm font-semibold"
-            >
-              Pixel {{ formattedPixelBalance }}
-            </span>
-            <span
-              v-else-if="showLiustSubscriptionInChip"
-              class="balance-liust-text text-sm font-semibold"
-            >
-              LIUST {{ formattedLiustBalance }}
+              {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
+              {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
             </span>
             <span
               v-else-if="showBuzzBalanceInChip"
               class="balance-buzz-text text-sm font-semibold"
             >
               Buzz {{ formattedBuzzBalance }}
-            </span>
-            <span
-              v-else-if="showTCDMXSubscriptionInChip"
-              class="balance-tcdmx-text text-sm font-semibold"
-            >
-              TCDMX {{ formattedTCDMXBalance }}
             </span>
             <span
               v-else
@@ -162,68 +139,23 @@
                   </div>
                 </div>
               </div>
-              <div class="balance-row balance-row-tcdmx flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-tcdmx-text text-xs font-medium">
-                  TCDMX
+              <div
+                v-for="subscription in visibleExternalSubscriptions"
+                :key="subscription.provider"
+                :class="[
+                  'balance-row balance-row-external flex items-center justify-between gap-4 rounded-lg px-3 py-2',
+                  `balance-row-${providerClassSuffix(subscription.provider)}`
+                ]"
+              >
+                <div :class="[balanceProviderTextClass(subscription), 'text-xs font-medium']">
+                  {{ externalSubscriptionChipLabel(subscription) }}
                 </div>
                 <div class="text-right">
-                  <div class="balance-tcdmx-text text-sm font-semibold">
-                    {{ formattedTCDMXBalance }}
+                  <div :class="[balanceProviderTextClass(subscription), 'text-sm font-semibold']">
+                    {{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}
                   </div>
                   <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedTCDMXExpiry }}
-                  </div>
-                </div>
-              </div>
-              <div class="balance-row balance-row-qlhazycoder flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-qlhazycoder-text text-xs font-medium">
-                  QL
-                </div>
-                <div class="text-right">
-                  <div class="balance-qlhazycoder-text text-sm font-semibold">
-                    {{ formattedQLHazyCoderBalance }}
-                  </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedQLHazyCoderExpiry }}
-                  </div>
-                </div>
-              </div>
-              <div class="balance-row balance-row-xhyapi flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-xhyapi-text text-xs font-medium">
-                  XHY
-                </div>
-                <div class="text-right">
-                  <div class="balance-xhyapi-text text-sm font-semibold">
-                    {{ formattedXHYAPIBalance }}
-                  </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedXHYAPIExpiry }}
-                  </div>
-                </div>
-              </div>
-              <div class="balance-row balance-row-pixel flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-pixel-text text-xs font-medium">
-                  Pixel
-                </div>
-                <div class="text-right">
-                  <div class="balance-pixel-text text-sm font-semibold">
-                    {{ formattedPixelBalance }}
-                  </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedPixelExpiry }}
-                  </div>
-                </div>
-              </div>
-              <div class="balance-row balance-row-liust flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-liust-text text-xs font-medium">
-                  LIUST
-                </div>
-                <div class="text-right">
-                  <div class="balance-liust-text text-sm font-semibold">
-                    {{ formattedLiustBalance }}
-                  </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedLiustExpiry }}
+                    {{ formatExternalSubscriptionExpiry(subscription, true) }}
                   </div>
                 </div>
               </div>
@@ -388,11 +320,7 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
 import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
-import tcdmxSubscriptionAPI, { type TCDMXSubscriptionStatus } from '@/api/admin/tcdmxSubscription'
-import qlhazycoderSubscriptionAPI, { type QLHazyCoderSubscriptionStatus } from '@/api/admin/qlhazycoderSubscription'
-import xhyapiSubscriptionAPI, { type XHYAPISubscriptionStatus } from '@/api/admin/xhyapiSubscription'
-import pixelSubscriptionAPI, { type PixelSubscriptionStatus } from '@/api/admin/pixelSubscription'
-import liustSubscriptionAPI, { type LiustSubscriptionStatus } from '@/api/admin/liustSubscription'
+import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
@@ -416,17 +344,9 @@ const balanceChipRef = ref<HTMLElement | null>(null)
 const balanceDropdownOpen = ref(false)
 const balanceCarouselIndex = ref(0)
 const buzzBalance = ref<BuzzBalance | null>(null)
-const tcdmxSubscription = ref<TCDMXSubscriptionStatus | null>(null)
-const qlhazycoderSubscription = ref<QLHazyCoderSubscriptionStatus | null>(null)
-const xhyapiSubscription = ref<XHYAPISubscriptionStatus | null>(null)
-const pixelSubscription = ref<PixelSubscriptionStatus | null>(null)
-const liustSubscription = ref<LiustSubscriptionStatus | null>(null)
+const externalSubscriptions = ref<ExternalSubscriptionStatus[]>([])
 const buzzBalanceLoading = ref(false)
-const tcdmxSubscriptionLoading = ref(false)
-const qlhazycoderSubscriptionLoading = ref(false)
-const xhyapiSubscriptionLoading = ref(false)
-const pixelSubscriptionLoading = ref(false)
-const liustSubscriptionLoading = ref(false)
+const externalSubscriptionsLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
@@ -469,54 +389,13 @@ const canShowBuzzBalance = computed(() => {
   )
 })
 
-const canShowTCDMXSubscription = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    tcdmxSubscription.value?.enabled &&
-    tcdmxSubscription.value?.configured
-  )
-})
-
-const canShowQLHazyCoderSubscription = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    qlhazycoderSubscription.value?.enabled &&
-    qlhazycoderSubscription.value?.configured
-  )
-})
-
-const canShowXHYAPISubscription = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    xhyapiSubscription.value?.enabled &&
-    xhyapiSubscription.value?.configured
-  )
-})
-
-const canShowLiustSubscription = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    liustSubscription.value?.enabled &&
-    liustSubscription.value?.configured
-  )
-})
-
-const canShowPixelSubscription = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    pixelSubscription.value?.enabled &&
-    pixelSubscription.value?.configured
-  )
+const visibleExternalSubscriptions = computed(() => {
+  if (!authStore.isAdmin) return []
+  return externalSubscriptions.value.filter(subscription => subscription.enabled && subscription.configured)
 })
 
 const balanceSlotCount = computed(() => {
-  return 1 +
-    (canShowBuzzBalance.value ? 1 : 0) +
-    (canShowTCDMXSubscription.value ? 1 : 0) +
-    (canShowQLHazyCoderSubscription.value ? 1 : 0) +
-    (canShowXHYAPISubscription.value ? 1 : 0) +
-    (canShowPixelSubscription.value ? 1 : 0) +
-    (canShowLiustSubscription.value ? 1 : 0)
+  return 1 + (canShowBuzzBalance.value ? 1 : 0) + visibleExternalSubscriptions.value.length
 })
 
 const currentBalanceSlot = computed(() => {
@@ -527,47 +406,11 @@ const showBuzzBalanceInChip = computed(() => {
   return canShowBuzzBalance.value && currentBalanceSlot.value === 1
 })
 
-const showTCDMXSubscriptionInChip = computed(() => {
-  if (!canShowTCDMXSubscription.value) return false
-  return currentBalanceSlot.value === (canShowBuzzBalance.value ? 2 : 1)
-})
-
-const showQLHazyCoderSubscriptionInChip = computed(() => {
-  if (!canShowQLHazyCoderSubscription.value) return false
-  let slot = 1
-  if (canShowBuzzBalance.value) slot += 1
-  if (canShowTCDMXSubscription.value) slot += 1
-  return currentBalanceSlot.value === slot
-})
-
-const showXHYAPISubscriptionInChip = computed(() => {
-  if (!canShowXHYAPISubscription.value) return false
-  let slot = 1
-  if (canShowBuzzBalance.value) slot += 1
-  if (canShowTCDMXSubscription.value) slot += 1
-  if (canShowQLHazyCoderSubscription.value) slot += 1
-  return currentBalanceSlot.value === slot
-})
-
-const showLiustSubscriptionInChip = computed(() => {
-  if (!canShowLiustSubscription.value) return false
-  let slot = 1
-  if (canShowBuzzBalance.value) slot += 1
-  if (canShowTCDMXSubscription.value) slot += 1
-  if (canShowQLHazyCoderSubscription.value) slot += 1
-  if (canShowXHYAPISubscription.value) slot += 1
-  if (canShowPixelSubscription.value) slot += 1
-  return currentBalanceSlot.value === slot
-})
-
-const showPixelSubscriptionInChip = computed(() => {
-  if (!canShowPixelSubscription.value) return false
-  let slot = 1
-  if (canShowBuzzBalance.value) slot += 1
-  if (canShowTCDMXSubscription.value) slot += 1
-  if (canShowQLHazyCoderSubscription.value) slot += 1
-  if (canShowXHYAPISubscription.value) slot += 1
-  return currentBalanceSlot.value === slot
+const currentExternalSubscriptionInChip = computed(() => {
+  const offset = 1 + (canShowBuzzBalance.value ? 1 : 0)
+  const externalIndex = currentBalanceSlot.value - offset
+  if (externalIndex < 0) return null
+  return visibleExternalSubscriptions.value[externalIndex] ?? null
 })
 
 const formattedBuzzBalance = computed(() => {
@@ -580,96 +423,22 @@ const formattedBuzzExpiry = computed(() => {
   return formatExternalExpiry(buzzBalance.value.expires_at)
 })
 
-const formattedTCDMXBalance = computed(() => {
-  return formatExternalSubscriptionBalance(tcdmxSubscription.value, canShowTCDMXSubscription.value, {
-    walletOnly: true,
-  })
-})
-
-const formattedTCDMXExpiry = computed(() => {
-  return formatExternalSubscriptionExpiry(tcdmxSubscription.value, canShowTCDMXSubscription.value)
-})
-
-const formattedQLHazyCoderBalance = computed(() => {
-  return formatExternalSubscriptionBalance(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value, {
-    walletOnly: true,
-  })
-})
-
-const formattedQLHazyCoderExpiry = computed(() => {
-  return formatExternalSubscriptionExpiry(qlhazycoderSubscription.value, canShowQLHazyCoderSubscription.value)
-})
-
-const formattedXHYAPIBalance = computed(() => {
-  return formatExternalSubscriptionBalance(xhyapiSubscription.value, canShowXHYAPISubscription.value, {
-    walletOnly: true,
-  })
-})
-
-const formattedXHYAPIExpiry = computed(() => {
-  return formatExternalSubscriptionExpiry(xhyapiSubscription.value, canShowXHYAPISubscription.value)
-})
-
-const formattedLiustBalance = computed(() => {
-  return formatExternalSubscriptionBalance(liustSubscription.value, canShowLiustSubscription.value, {
-    walletOnly: true,
-  })
-})
-
-const formattedLiustExpiry = computed(() => {
-  return formatExternalSubscriptionExpiry(liustSubscription.value, canShowLiustSubscription.value)
-})
-
-const formattedPixelBalance = computed(() => {
-  return formatExternalSubscriptionBalance(pixelSubscription.value, canShowPixelSubscription.value, {
-    walletOnly: true,
-  })
-})
-
-const formattedPixelExpiry = computed(() => {
-  return formatExternalSubscriptionExpiry(pixelSubscription.value, canShowPixelSubscription.value)
-})
-
 const balanceChipClass = computed(() => {
-  if (showQLHazyCoderSubscriptionInChip.value) {
-    return 'balance-chip-qlhazycoder'
-  }
-  if (showXHYAPISubscriptionInChip.value) {
-    return 'balance-chip-xhyapi'
-  }
-  if (showPixelSubscriptionInChip.value) {
-    return 'balance-chip-pixel'
-  }
-  if (showLiustSubscriptionInChip.value) {
-    return 'balance-chip-liust'
+  if (currentExternalSubscriptionInChip.value) {
+    return `balance-chip-${providerClassSuffix(currentExternalSubscriptionInChip.value.provider)}`
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-chip-buzz'
-  }
-  if (showTCDMXSubscriptionInChip.value) {
-    return 'balance-chip-tcdmx'
   }
   return 'balance-chip-system'
 })
 
 const balanceIconClass = computed(() => {
-  if (showQLHazyCoderSubscriptionInChip.value) {
-    return 'balance-qlhazycoder-text'
-  }
-  if (showXHYAPISubscriptionInChip.value) {
-    return 'balance-xhyapi-text'
-  }
-  if (showPixelSubscriptionInChip.value) {
-    return 'balance-pixel-text'
-  }
-  if (showLiustSubscriptionInChip.value) {
-    return 'balance-liust-text'
+  if (currentExternalSubscriptionInChip.value) {
+    return balanceProviderTextClass(currentExternalSubscriptionInChip.value)
   }
   if (showBuzzBalanceInChip.value) {
     return 'balance-buzz-text'
-  }
-  if (showTCDMXSubscriptionInChip.value) {
-    return 'balance-tcdmx-text'
   }
   return 'balance-system-text'
 })
@@ -762,73 +531,49 @@ async function fetchBuzzBalance() {
   }
 }
 
-async function fetchTCDMXSubscription() {
-  if (!authStore.isAdmin || tcdmxSubscriptionLoading.value) return
-  tcdmxSubscriptionLoading.value = true
+async function fetchExternalSubscriptions() {
+  if (!authStore.isAdmin || externalSubscriptionsLoading.value) return
+  externalSubscriptionsLoading.value = true
   try {
-    tcdmxSubscription.value = await tcdmxSubscriptionAPI.getStatus()
+    externalSubscriptions.value = await externalSubscriptionsAPI.getStatuses()
   } catch (error) {
-    tcdmxSubscription.value = null
-    console.error('Failed to fetch TCDMX subscription:', error)
+    externalSubscriptions.value = []
+    console.error('Failed to fetch external subscriptions:', error)
   } finally {
-    tcdmxSubscriptionLoading.value = false
+    externalSubscriptionsLoading.value = false
   }
 }
 
-async function fetchQLHazyCoderSubscription() {
-  if (!authStore.isAdmin || qlhazycoderSubscriptionLoading.value) return
-  qlhazycoderSubscriptionLoading.value = true
-  try {
-    qlhazycoderSubscription.value = await qlhazycoderSubscriptionAPI.getStatus()
-  } catch (error) {
-    qlhazycoderSubscription.value = null
-    console.error('Failed to fetch qlhazycoder subscription:', error)
-  } finally {
-    qlhazycoderSubscriptionLoading.value = false
-  }
+const externalSubscriptionLabels: Record<string, string> = {
+  qlhazycoder: 'QL',
+  packycode: 'Packy',
+  xhyapi: 'XHY',
+  pixel: 'Pixel',
+  liust: 'LIUST',
+  tcdmx: 'TCDMX',
 }
 
-async function fetchXHYAPISubscription() {
-  if (!authStore.isAdmin || xhyapiSubscriptionLoading.value) return
-  xhyapiSubscriptionLoading.value = true
-  try {
-    xhyapiSubscription.value = await xhyapiSubscriptionAPI.getStatus()
-  } catch (error) {
-    xhyapiSubscription.value = null
-    console.error('Failed to fetch XHYAPI subscription:', error)
-  } finally {
-    xhyapiSubscriptionLoading.value = false
-  }
+function providerClassSuffix(provider?: string | null) {
+  const normalized = (provider || '').trim().toLowerCase()
+  if (normalized === 'qlhazycoder') return 'qlhazycoder'
+  if (normalized === 'packycode') return 'packycode'
+  if (normalized === 'xhyapi') return 'xhyapi'
+  if (normalized === 'pixel') return 'pixel'
+  if (normalized === 'liust') return 'liust'
+  if (normalized === 'tcdmx') return 'tcdmx'
+  return 'external'
 }
 
-async function fetchLiustSubscription() {
-  if (!authStore.isAdmin || liustSubscriptionLoading.value) return
-  liustSubscriptionLoading.value = true
-  try {
-    liustSubscription.value = await liustSubscriptionAPI.getStatus()
-  } catch (error) {
-    liustSubscription.value = null
-    console.error('Failed to fetch liust subscription:', error)
-  } finally {
-    liustSubscriptionLoading.value = false
-  }
+function externalSubscriptionChipLabel(subscription: ExternalSubscriptionStatus) {
+  return externalSubscriptionLabels[subscription.provider] || subscription.name || subscription.provider
 }
 
-async function fetchPixelSubscription() {
-  if (!authStore.isAdmin || pixelSubscriptionLoading.value) return
-  pixelSubscriptionLoading.value = true
-  try {
-    pixelSubscription.value = await pixelSubscriptionAPI.getStatus()
-  } catch (error) {
-    pixelSubscription.value = null
-    console.error('Failed to fetch Pixel subscription:', error)
-  } finally {
-    pixelSubscriptionLoading.value = false
-  }
+function balanceProviderTextClass(subscription: ExternalSubscriptionStatus) {
+  return `balance-${providerClassSuffix(subscription.provider)}-text`
 }
 
 function formatExternalSubscriptionBalance(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | PixelSubscriptionStatus | LiustSubscriptionStatus | null,
+  subscription?: ExternalSubscriptionStatus | null,
   canShow = false,
   options: { walletOnly?: boolean } = {},
 ) {
@@ -858,7 +603,7 @@ function formatExternalSubscriptionMoney(value: number, currency?: string | null
 }
 
 function formatExternalSubscriptionExpiry(
-  subscription?: TCDMXSubscriptionStatus | QLHazyCoderSubscriptionStatus | XHYAPISubscriptionStatus | PixelSubscriptionStatus | LiustSubscriptionStatus | null,
+  subscription?: ExternalSubscriptionStatus | null,
   canShow = false,
 ) {
   if (!canShow || !subscription) return '期限未配置'
@@ -923,11 +668,7 @@ function handleClickOutside(event: MouseEvent) {
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   void fetchBuzzBalance()
-  void fetchTCDMXSubscription()
-  void fetchQLHazyCoderSubscription()
-  void fetchXHYAPISubscription()
-  void fetchPixelSubscription()
-  void fetchLiustSubscription()
+  void fetchExternalSubscriptions()
   startBalanceCarousel()
 })
 
@@ -942,17 +683,9 @@ watch(
   () => {
     balanceCarouselIndex.value = 0
     buzzBalance.value = null
-    tcdmxSubscription.value = null
-    qlhazycoderSubscription.value = null
-    xhyapiSubscription.value = null
-    pixelSubscription.value = null
-    liustSubscription.value = null
+    externalSubscriptions.value = []
     void fetchBuzzBalance()
-    void fetchTCDMXSubscription()
-    void fetchQLHazyCoderSubscription()
-    void fetchXHYAPISubscription()
-    void fetchPixelSubscription()
-    void fetchLiustSubscription()
+    void fetchExternalSubscriptions()
   }
 )
 </script>
@@ -1058,10 +791,12 @@ watch(
 
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
+.balance-chip-packycode,
 .balance-chip-xhyapi,
 .balance-chip-pixel,
 .balance-chip-liust,
-.balance-chip-tcdmx {
+.balance-chip-tcdmx,
+.balance-chip-external {
   border: 0;
   border-left: 1px dotted var(--atelier-line-strong);
   border-radius: 0;
@@ -1076,10 +811,12 @@ watch(
 .balance-chip-system:hover,
 .balance-chip-buzz:hover,
 .balance-chip-qlhazycoder:hover,
+.balance-chip-packycode:hover,
 .balance-chip-xhyapi:hover,
 .balance-chip-pixel:hover,
 .balance-chip-liust:hover,
-.balance-chip-tcdmx:hover {
+.balance-chip-tcdmx:hover,
+.balance-chip-external:hover {
   background: var(--atelier-ui-hover-surface);
   color: var(--atelier-ink);
 }
@@ -1095,10 +832,12 @@ watch(
 
 .balance-row-buzz,
 .balance-row-qlhazycoder,
+.balance-row-packycode,
 .balance-row-xhyapi,
 .balance-row-pixel,
 .balance-row-liust,
-.balance-row-tcdmx {
+.balance-row-tcdmx,
+.balance-row-external {
   background: var(--atelier-butter-soft);
 }
 
@@ -1108,10 +847,12 @@ watch(
 
 .balance-buzz-text,
 .balance-qlhazycoder-text,
+.balance-packycode-text,
 .balance-xhyapi-text,
 .balance-pixel-text,
 .balance-liust-text,
-.balance-tcdmx-text {
+.balance-tcdmx-text,
+.balance-external-text {
   color: var(--atelier-ink);
 }
 
@@ -1127,26 +868,32 @@ watch(
 
 .dark .balance-chip-buzz,
 .dark .balance-chip-qlhazycoder,
+.dark .balance-chip-packycode,
 .dark .balance-chip-xhyapi,
 .dark .balance-chip-pixel,
 .dark .balance-chip-liust,
 .dark .balance-chip-tcdmx,
+.dark .balance-chip-external,
 .dark .balance-row-buzz,
 .dark .balance-row-qlhazycoder,
+.dark .balance-row-packycode,
 .dark .balance-row-xhyapi,
 .dark .balance-row-pixel,
 .dark .balance-row-liust,
-.dark .balance-row-tcdmx {
+.dark .balance-row-tcdmx,
+.dark .balance-row-external {
   background: transparent;
 }
 
 .dark .balance-chip-system:hover,
 .dark .balance-chip-buzz:hover,
 .dark .balance-chip-qlhazycoder:hover,
+.dark .balance-chip-packycode:hover,
 .dark .balance-chip-xhyapi:hover,
 .dark .balance-chip-pixel:hover,
 .dark .balance-chip-liust:hover,
-.dark .balance-chip-tcdmx:hover {
+.dark .balance-chip-tcdmx:hover,
+.dark .balance-chip-external:hover {
   background: var(--buzz-balance-yellow-soft-dark);
 }
 
@@ -1156,10 +903,12 @@ watch(
 
 .dark .balance-buzz-text,
 .dark .balance-qlhazycoder-text,
+.dark .balance-packycode-text,
 .dark .balance-xhyapi-text,
 .dark .balance-pixel-text,
 .dark .balance-liust-text,
-.dark .balance-tcdmx-text {
+.dark .balance-tcdmx-text,
+.dark .balance-external-text {
   color: var(--atelier-ink);
 }
 </style>

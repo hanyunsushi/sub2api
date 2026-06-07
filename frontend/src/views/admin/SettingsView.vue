@@ -3724,561 +3724,43 @@
             </div>
           </div>
 
-          <!-- BuzzAI Balance Settings -->
+          <!-- External Subscription Settings -->
           <div class="card">
-            <div
-              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
-            >
+            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ localText("外部订阅", "External subscriptions") }}
               </h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{
                   localText(
-                    "后端保存 BuzzAI API Key，用于右上角余额轮播和悬停展示。",
-                    "Store the BuzzAI API key server-side for the header balance carousel and hover display.",
+                    "外部余额与订阅额度已拆分为独立子页面，新增供应商会自动进入右上角余额和匹配账号卡片。",
+                    "External balances and subscription quotas now live on a dedicated subpage. New providers automatically appear in the header balance area and matching account cards.",
                   )
                 }}
               </p>
             </div>
-            <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between gap-4">
+            <div class="p-6">
+              <div class="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-900/40 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <label
-                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    {{ localText("启用 BuzzAI 余额", "Enable BuzzAI balance") }}
-                  </label>
-                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ localText("统一管理外部订阅源", "Manage external subscription providers") }}
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{
                       localText(
-                        "启用后管理员顶部余额会每 7 秒在系统余额和 Buzz 余额间轮播。",
-                        "When enabled, admin header balance rotates between system and Buzz every 7 seconds.",
+                        "支持 NewAPI 控制台和 Active Subscriptions 两种预设模板，可配置 Token、用户 ID、匹配关键词和显示顺序。",
+                        "Supports NewAPI console and Active Subscriptions presets with token, user ID, match keywords, and display order settings.",
                       )
                     }}
                   </p>
                 </div>
-                <Toggle v-model="form.buzz_balance_enabled" />
-              </div>
-
-              <div class="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label
-                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    {{ localText("BuzzAI API Base URL", "BuzzAI API Base URL") }}
-                  </label>
-                  <input
-                    v-model="form.buzz_balance_api_base_url"
-                    type="url"
-                    class="input font-mono text-sm"
-                    placeholder="https://buzzai.cc"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    {{ localText("BuzzAI API Key", "BuzzAI API Key") }}
-                  </label>
-                  <input
-                    v-model="form.buzz_balance_api_token"
-                    type="password"
-                    class="input font-mono text-sm"
-                    :placeholder="
-                      form.buzz_balance_api_token_configured
-                        ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                        : localText('粘贴 BuzzAI API Key', 'Paste BuzzAI API key')
-                    "
-                    autocomplete="off"
-                  />
-                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    {{
-                      form.buzz_balance_api_token_configured
-                        ? localText(
-                            "已保存密钥不会回显，前端不会收到原始 token。",
-                            "Saved key is never echoed; the frontend never receives the raw token.",
-                          )
-                        : localText(
-                            "密钥只写入后端设置，用于服务端查询余额。",
-                            "The key is stored only in backend settings for server-side balance queries.",
-                          )
-                    }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <label
-                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("启用 TCDMX 订阅额度", "Enable TCDMX subscription quota") }}
-                    </label>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "启用后服务端读取 TCDMX 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
-                          "When enabled, the server reads TCDMX quota and expiry for the balance panel and matching account cards.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.tcdmx_subscription_enabled" />
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("TCDMX API Base URL", "TCDMX API Base URL") }}
-                    </label>
-                    <input
-                      v-model="form.tcdmx_subscription_api_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://tcdmx.com"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("TCDMX 订阅访问 Token", "TCDMX subscription access token") }}
-                    </label>
-                    <input
-                      v-model="form.tcdmx_subscription_api_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.tcdmx_subscription_api_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 TCDMX 订阅接口的 Token', 'Paste a token that can access TCDMX subscription APIs')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.tcdmx_subscription_api_token_configured
-                          ? localText(
-                              "已保存 Token 不会回显，前端只拿到额度摘要。",
-                              "Saved token is never echoed; the frontend receives only the quota summary.",
-                            )
-                          : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 TCDMX 订阅接口的 Token。",
-                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access TCDMX subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("TCDMX refresh_token", "TCDMX refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.tcdmx_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.tcdmx_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 TCDMX 登录态 refresh_token', 'Paste the TCDMX login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.tcdmx_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
-                            )
-                          : localText(
-                              "从 TCDMX 已登录浏览器 localStorage 复制 refresh_token；这是登录续期凭证，不是 sk- API 密钥。",
-                              "Copy refresh_token from a logged-in TCDMX browser localStorage; this is a login renewal credential, not an sk- API key.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <label
-                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("启用 qlhazycoder 订阅额度", "Enable qlhazycoder subscription quota") }}
-                    </label>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "读取 qlhazycoder New API 控制台的余额、订阅额度和到期时间；该控制台使用个人设置里的用户令牌，不需要单独 refresh_token。",
-                          "Read qlhazycoder New API console balance, subscription quota, and expiry; this console uses the user token from personal settings and does not need a separate refresh_token.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.qlhazycoder_subscription_enabled" />
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-3">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("qlhazycoder API Base URL", "qlhazycoder API Base URL") }}
-                    </label>
-                    <input
-                      v-model="form.qlhazycoder_subscription_api_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://api.qlhazycoder.top"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("qlhazycoder 用户令牌", "qlhazycoder user token") }}
-                    </label>
-                    <input
-                      v-model="form.qlhazycoder_subscription_api_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.qlhazycoder_subscription_api_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.qlhazycoder_subscription_api_token_configured
-                          ? localText(
-                              "已保存 Token 不会回显，前端只拿到额度摘要。",
-                              "Saved token is never echoed; the frontend receives only the quota summary.",
-                            )
-                          : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取 qlhazycoder 余额和订阅。登录 api.qlhazycoder.top/console 后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
-                              "A normal sk- model API key can call model endpoints but cannot read qlhazycoder balance and subscriptions. After logging in to api.qlhazycoder.top/console, open personal settings and generate the user token; if the API requires a user header, a {id, token} JSON value is also accepted.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("qlhazycoder 用户 ID", "qlhazycoder user ID") }}
-                    </label>
-                    <input
-                      v-model="form.qlhazycoder_subscription_user_id"
-                      type="text"
-                      class="input font-mono text-sm"
-                      placeholder="New-API-User"
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
-                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <label
-                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("启用 XHYAPI 订阅额度", "Enable XHYAPI subscription quota") }}
-                    </label>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "启用后服务端读取 XHYAPI 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
-                          "When enabled, the server reads XHYAPI quota and expiry for the balance panel and matching account cards.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.xhyapi_subscription_enabled" />
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("XHYAPI API Base URL", "XHYAPI API Base URL") }}
-                    </label>
-                    <input
-                      v-model="form.xhyapi_subscription_api_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://xhyapi.com"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("XHYAPI 订阅访问 Token", "XHYAPI subscription access token") }}
-                    </label>
-                    <input
-                      v-model="form.xhyapi_subscription_api_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.xhyapi_subscription_api_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 XHYAPI 订阅接口的 Token', 'Paste a token that can access XHYAPI subscription APIs')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.xhyapi_subscription_api_token_configured
-                          ? localText(
-                              "已保存 Token 不会回显，前端只拿到额度摘要。",
-                              "Saved token is never echoed; the frontend receives only the quota summary.",
-                            )
-                          : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 XHYAPI 订阅接口的 Token。",
-                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access XHYAPI subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("XHYAPI refresh_token", "XHYAPI refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.xhyapi_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.xhyapi_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 XHYAPI 登录态 refresh_token', 'Paste the XHYAPI login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.xhyapi_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
-                            )
-                          : localText(
-                              "这是登录续期凭证，不是 sk- API 密钥。",
-                              "This is a login renewal credential, not an sk- API key.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <label
-                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("启用 Pixel 订阅额度", "Enable Pixel subscription quota") }}
-                    </label>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "启用后服务端读取 Pixel 订阅额度与到期时间，显示在余额栏和对应账号卡片。",
-                          "When enabled, the server reads Pixel quota and expiry for the balance panel and matching account cards.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.pixel_subscription_enabled" />
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("Pixel API Base URL", "Pixel API Base URL") }}
-                    </label>
-                    <input
-                      v-model="form.pixel_subscription_api_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://ai-pixel.online"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("Pixel 订阅访问 Token", "Pixel subscription access token") }}
-                    </label>
-                    <input
-                      v-model="form.pixel_subscription_api_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.pixel_subscription_api_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴可访问 Pixel 订阅接口的 Token', 'Paste a token that can access Pixel subscription APIs')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.pixel_subscription_api_token_configured
-                          ? localText(
-                              "已保存 Token 不会回显，前端只拿到额度摘要。",
-                              "Saved token is never echoed; the frontend receives only the quota summary.",
-                            )
-                          : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取订阅额度；这里需要可访问 Pixel 订阅接口的 Token。",
-                              "A normal sk- model API key can call model endpoints but cannot read subscription quota; this field needs a token that can access Pixel subscription APIs.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("Pixel refresh_token", "Pixel refresh_token") }}
-                    </label>
-                    <input
-                      v-model="form.pixel_subscription_refresh_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.pixel_subscription_refresh_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴 Pixel 登录态 refresh_token', 'Paste the Pixel login refresh_token')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.pixel_subscription_refresh_token_configured
-                          ? localText(
-                              "已保存 refresh_token 不会回显，用于 auth_token 过期后自动刷新。",
-                              "Saved refresh_token is never echoed; it renews auth_token automatically after expiry.",
-                            )
-                          : localText(
-                              "这是登录续期凭证，不是 sk- API 密钥。",
-                              "This is a login renewal credential, not an sk- API key.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="border-t border-gray-100 pt-5 dark:border-dark-700">
-                <div class="mb-4 flex items-center justify-between gap-4">
-                  <div>
-                    <label
-                      class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("启用 liust 订阅额度", "Enable liust subscription quota") }}
-                    </label>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "读取 liust New API 控制台的余额、订阅额度和到期时间，显示在余额栏和对应账号卡片。",
-                          "Read liust New API console balance, subscription quota, and expiry for the balance panel and matching account cards.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.liust_subscription_enabled" />
-                </div>
-
-                <div class="grid gap-4 md:grid-cols-3">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("liust API Base URL", "liust API Base URL") }}
-                    </label>
-                    <input
-                      v-model="form.liust_subscription_api_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://liust.xyz"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("liust 用户令牌", "liust user token") }}
-                    </label>
-                    <input
-                      v-model="form.liust_subscription_api_token"
-                      type="password"
-                      class="input font-mono text-sm"
-                      :placeholder="
-                        form.liust_subscription_api_token_configured
-                          ? localText('已配置，留空则不修改', 'Configured, leave blank to keep')
-                          : localText('粘贴个人设置里重置并复制的用户令牌', 'Paste the user token reset and copied from personal settings')
-                      "
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        form.liust_subscription_api_token_configured
-                          ? localText(
-                              "已保存 Token 不会回显，前端只拿到额度摘要。",
-                              "Saved token is never echoed; the frontend receives only the quota summary.",
-                            )
-                          : localText(
-                              "普通 sk- 调用密钥只能调用模型接口，不能读取 liust 余额和订阅。登录 liust New API 控制台后，进入个人设置，使用“生成/重新生成令牌”得到用户令牌；若接口要求用户头，也可粘贴 {id, token} JSON。",
-                              "A normal sk- model API key can only call model APIs and cannot read liust balance or subscriptions. After logging in to the liust New API console, open personal settings and use reset/regenerate token to get the user token; if the API requires a user header, you can also paste {id, token} JSON.",
-                            )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    >
-                      {{ localText("liust 用户 ID", "liust user ID") }}
-                    </label>
-                    <input
-                      v-model="form.liust_subscription_user_id"
-                      type="text"
-                      class="input font-mono text-sm"
-                      placeholder="New-API-User"
-                      autocomplete="off"
-                    />
-                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      {{
-                        localText(
-                          "源站只给 32 位用户令牌时，在这里填控制台用户 ID；请求余额和订阅时会作为 New-API-User 发送。若令牌已粘贴 {id, token} JSON，可留空。",
-                          "When the source only gives a 32-character user token, enter the console user ID here; balance and subscription requests send it as New-API-User. Leave blank if the token field already contains {id, token} JSON.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                </div>
+                <router-link
+                  to="/admin/settings/external-subscriptions"
+                  class="btn btn-primary shrink-0"
+                >
+                  <Icon name="creditCard" size="sm" class="mr-2" />
+                  {{ localText("管理外部订阅", "Manage external subscriptions") }}
+                </router-link>
               </div>
             </div>
           </div>
@@ -7733,6 +7215,7 @@ type SettingsForm = Omit<
   | "wechat_connect_mp_enabled"
   | "wechat_connect_mobile_enabled"
   | "liust_subscription_refresh_token_configured"
+  | "packycode_subscription_refresh_token_configured"
 > & {
   smtp_password: string;
   turnstile_secret_key: string;
@@ -7759,6 +7242,7 @@ type SettingsForm = Omit<
   pixel_subscription_api_token: string;
   pixel_subscription_refresh_token: string;
   liust_subscription_api_token: string;
+  packycode_subscription_api_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7999,6 +7483,11 @@ const form = reactive<SettingsForm>({
   liust_subscription_user_id: "",
   liust_subscription_api_token: "",
   liust_subscription_api_token_configured: false,
+  packycode_subscription_enabled: false,
+  packycode_subscription_api_base_url: "https://www.packyapi.com",
+  packycode_subscription_user_id: "",
+  packycode_subscription_api_token: "",
+  packycode_subscription_api_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -8723,6 +8212,7 @@ async function loadSettings() {
     form.pixel_subscription_api_token = "";
     form.pixel_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
+    form.packycode_subscription_api_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -9044,6 +8534,9 @@ async function saveSettings() {
     if (!isValidHttpUrl(form.liust_subscription_api_base_url)) {
       form.liust_subscription_api_base_url = "https://liust.xyz";
     }
+    if (!isValidHttpUrl(form.packycode_subscription_api_base_url)) {
+      form.packycode_subscription_api_base_url = "https://www.packyapi.com";
+    }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -9294,6 +8787,13 @@ async function saveSettings() {
         form.liust_subscription_api_token || undefined,
       liust_subscription_user_id:
         form.liust_subscription_user_id?.trim() || "",
+      packycode_subscription_enabled: form.packycode_subscription_enabled,
+      packycode_subscription_api_base_url:
+        form.packycode_subscription_api_base_url?.trim() || "https://www.packyapi.com",
+      packycode_subscription_api_token:
+        form.packycode_subscription_api_token || undefined,
+      packycode_subscription_user_id:
+        form.packycode_subscription_user_id?.trim() || "",
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -9381,6 +8881,7 @@ async function saveSettings() {
     form.pixel_subscription_api_token = "";
     form.pixel_subscription_refresh_token = "";
     form.liust_subscription_api_token = "";
+    form.packycode_subscription_api_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

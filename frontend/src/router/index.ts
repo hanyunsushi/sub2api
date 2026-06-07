@@ -563,6 +563,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/admin/settings/external-subscriptions',
+    name: 'AdminExternalSubscriptions',
+    component: () => import('@/views/admin/ExternalSubscriptionsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'External Subscriptions',
+      titleKey: 'admin.externalSubscriptions.title',
+      descriptionKey: 'admin.externalSubscriptions.description'
+    }
+  },
+  {
     path: '/admin/risk-control',
     name: 'AdminRiskControl',
     component: () => import('@/views/admin/RiskControlView.vue'),
