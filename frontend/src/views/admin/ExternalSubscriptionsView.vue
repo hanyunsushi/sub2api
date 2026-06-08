@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout :scroll-mode="'page'" class="external-subscriptions-page">
       <template #filters>
         <div class="table-filter-shell flex flex-wrap items-center gap-3">
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
@@ -43,169 +43,177 @@
       </template>
 
       <template #table>
-        <div
-          v-if="loading"
-          class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-        >
+        <div class="external-subscription-card-shell">
           <div
-            v-for="index in 6"
-            :key="index"
-            class="external-subscription-card rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
+            v-if="isInitialLoading"
+            class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            <div class="h-4 w-28 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
-            <div class="mt-3 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
-            <div class="mt-5 h-10 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
-          </div>
-        </div>
-
-        <div
-          v-else-if="filteredProviders.length > 0"
-          class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-        >
-          <article
-            v-for="provider in filteredProviders"
-            :key="provider.id"
-            class="external-subscription-card flex min-h-[14rem] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-primary-200 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-primary-800"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex min-w-0 items-start gap-3">
-                <div
-                  data-testid="external-subscription-logo"
-                  class="external-subscription-logo"
-                  :title="provider.name"
-                >
-                  <ProviderBrandIcon
-                    :provider="buildProviderLogoText(provider)"
-                    :model="provider.name"
-                  />
-                </div>
-                <div class="min-w-0">
-                  <div class="flex min-w-0 items-center gap-2">
-                    <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                      {{ provider.name }}
-                    </h3>
-                    <span
-                      :class="[
-                        'semantic-badge',
-                        provider.enabled ? 'semantic-badge--success' : 'semantic-badge--neutral'
-                      ]"
-                    >
-                      {{ provider.enabled ? localText('启用', 'Enabled') : localText('停用', 'Disabled') }}
-                    </span>
-                  </div>
-                  <div class="mt-1 font-mono text-xs text-gray-400">
-                    {{ provider.id }}
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-shrink-0 items-center gap-1">
-                <button
-                  type="button"
-                  class="btn-ghost btn-icon"
-                  :title="t('common.edit')"
-                  @click="openEditDialog(provider)"
-                >
-                  <Icon name="edit" size="sm" />
-                </button>
-                <button
-                  type="button"
-                  class="btn-ghost btn-icon text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                  :title="t('common.delete')"
-                  @click="openDeleteDialog(provider)"
-                >
-                  <Icon name="trash" size="sm" />
-                </button>
-              </div>
-            </div>
-
-            <a
-              class="mt-3 block truncate font-mono text-xs text-primary-600 hover:text-primary-700 dark:text-primary-300"
-              :href="provider.api_base_url"
-              target="_blank"
-              rel="noopener noreferrer"
+            <div
+              v-for="index in 6"
+              :key="index"
+              class="external-subscription-card external-subscription-card-main"
             >
-              {{ provider.api_base_url }}
-            </a>
+              <div class="h-10 w-10 animate-pulse rounded-lg bg-gray-100 dark:bg-dark-700"></div>
+              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+              <div class="mt-6 h-12 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+            </div>
+          </div>
 
-            <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-3 dark:border-dark-700/60 dark:bg-dark-800/70">
+          <div
+            v-else-if="filteredCards.length > 0"
+            class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            <article
+              v-for="card in filteredCards"
+              :key="card.id"
+              class="external-subscription-card external-subscription-card-main"
+            >
+              <span
+                v-if="card.id === 'buzz'"
+                data-testid="external-subscription-buzz-card"
+                class="sr-only"
+              >
+                BuzzAI
+              </span>
+
               <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <div class="text-[11px] font-medium text-gray-400">{{ localText('余额', 'Balance') }}</div>
+                <div class="flex min-w-0 items-start gap-3">
                   <div
-                    class="external-subscription-balance-value mt-1 truncate font-mono text-xl font-semibold leading-6 text-gray-900 dark:text-gray-100"
-                    :title="formatStatusBalance(statusMap[provider.id])"
+                    data-testid="external-subscription-logo"
+                    class="external-subscription-logo"
+                    :title="card.name"
                   >
-                    {{ formatStatusBalance(statusMap[provider.id]) }}
+                    <ProviderBrandIcon
+                      :provider="card.logoText"
+                      :model="card.name"
+                    />
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex min-w-0 items-center gap-2">
+                      <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                        {{ card.name }}
+                      </h3>
+                      <span :class="cardStatusBadgeClass(card)">
+                        {{ cardStatusBadgeText(card) }}
+                      </span>
+                    </div>
+                    <div class="mt-1 font-mono text-xs text-gray-400">
+                      {{ card.id }}
+                    </div>
                   </div>
                 </div>
-                <span :class="statusBadgeClass(statusMap[provider.id])">
-                  {{ statusBadgeText(statusMap[provider.id]) }}
+                <div v-if="card.providerConfig" class="flex flex-shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    class="btn-ghost btn-icon"
+                    :title="t('common.edit')"
+                    @click="openEditDialog(card.providerConfig)"
+                  >
+                    <Icon name="edit" size="sm" />
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-ghost btn-icon text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    :title="t('common.delete')"
+                    @click="openDeleteDialog(card.providerConfig)"
+                  >
+                    <Icon name="trash" size="sm" />
+                  </button>
+                </div>
+              </div>
+
+              <a
+                class="external-subscription-card-link mt-3 block truncate font-mono text-xs"
+                :href="card.siteUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ card.siteUrl }}
+              </a>
+
+              <div class="external-subscription-card-metric mt-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
+                    <div
+                      class="external-subscription-balance-value mt-1 truncate font-mono text-xl font-semibold leading-6"
+                      :title="formatCardBalance(card)"
+                    >
+                      {{ formatCardBalance(card) }}
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="external-subscription-card-label">{{ localText('订阅', 'Subs') }}</div>
+                    <div class="mt-1 font-mono text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      {{ card.activeCount }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
+                <div class="min-w-0">
+                  <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
+                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                    {{ formatCardExpiry(card) }}
+                  </div>
+                </div>
+                <div class="min-w-0">
+                  <div class="external-subscription-card-label">{{ localText('模板', 'Template') }}</div>
+                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                    {{ cardTemplateLabel(card) }}
+                  </div>
+                </div>
+                <div class="min-w-0">
+                  <div class="external-subscription-card-label">{{ localText('排序', 'Sort') }}</div>
+                  <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
+                    {{ card.sortOrder }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-wrap gap-1">
+                <span
+                  :class="card.apiTokenConfigured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
+                >
+                  API Token
+                </span>
+                <span
+                  v-if="card.template === 'active_subscriptions'"
+                  :class="card.refreshTokenConfigured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
+                >
+                  Refresh Token
+                </span>
+                <span
+                  v-if="card.readonly"
+                  class="semantic-badge semantic-badge--info"
+                >
+                  {{ localText('只读来源', 'Read-only') }}
                 </span>
               </div>
 
-              <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
-                <div class="min-w-0">
-                  <div class="text-gray-400">{{ localText('期限', 'Expiry') }}</div>
-                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                    {{ formatStatusExpiry(statusMap[provider.id]) }}
-                  </div>
-                </div>
-                <div class="min-w-0">
-                  <div class="text-gray-400">{{ localText('模板', 'Template') }}</div>
-                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                    {{ templateLabel(provider.template) }}
-                  </div>
-                </div>
-                <div class="min-w-0">
-                  <div class="text-gray-400">{{ localText('排序', 'Sort') }}</div>
-                  <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
-                    {{ provider.sort_order }}
-                  </div>
-                </div>
+              <div class="mt-auto flex flex-wrap gap-1 pt-4">
+                <span
+                  v-for="keyword in card.matchKeywords"
+                  :key="keyword"
+                  class="external-subscription-keyword"
+                >
+                  {{ keyword }}
+                </span>
+                <span v-if="card.matchKeywords.length === 0" class="text-xs text-gray-400">-</span>
               </div>
-            </div>
+            </article>
+          </div>
 
-            <div class="mt-4 flex flex-wrap gap-1">
-              <span
-                :class="provider.api_token_configured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
-              >
-                API Token
-              </span>
-              <span
-                v-if="provider.template === 'active_subscriptions'"
-                :class="provider.refresh_token_configured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
-              >
-                Refresh Token
-              </span>
-              <span
-                v-if="provider.user_id"
-                class="semantic-badge semantic-badge--info"
-              >
-                {{ provider.template === 'cloudflare_ai_gateway_credits' ? 'Account ID' : 'UID' }}
-                {{ provider.user_id }}
-              </span>
-            </div>
-
-            <div class="mt-auto flex flex-wrap gap-1 pt-4">
-              <span
-                v-for="keyword in provider.match_keywords"
-                :key="keyword"
-                class="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-[11px] text-gray-600 dark:bg-dark-700 dark:text-dark-300"
-              >
-                {{ keyword }}
-              </span>
-              <span v-if="provider.match_keywords.length === 0" class="text-xs text-gray-400">-</span>
-            </div>
-          </article>
+          <EmptyState
+            v-else
+            :title="localText('暂无外部订阅', 'No External Subscriptions')"
+            :description="localText('新增一个 provider 后，它会进入右上角余额和匹配账号卡片。', 'Add a provider to show it in the header balance and matching account cards.')"
+            :action-text="localText('新增订阅', 'Add Provider')"
+            @action="openCreateDialog"
+          />
         </div>
-
-        <EmptyState
-          v-else
-          :title="localText('暂无外部订阅', 'No External Subscriptions')"
-          :description="localText('新增一个 provider 后，它会进入右上角余额和匹配账号卡片。', 'Add a provider to show it in the header balance and matching account cards.')"
-          :action-text="localText('新增订阅', 'Add Provider')"
-          @action="openCreateDialog"
-        />
       </template>
     </TablePageLayout>
 
@@ -387,6 +395,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import externalSubscriptionsAPI, {
   type ExternalSubscriptionProvider,
   type ExternalSubscriptionProviderInput,
@@ -411,8 +420,10 @@ const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? z
 
 const providers = ref<ExternalSubscriptionProvider[]>([])
 const statuses = ref<ExternalSubscriptionStatus[]>([])
+const buzzBalance = ref<BuzzBalance | null>(null)
 const loading = ref(false)
 const statusLoading = ref(false)
+const buzzLoading = ref(false)
 const submitting = ref(false)
 const searchQuery = ref('')
 const templateFilter = ref<string>('')
@@ -477,33 +488,83 @@ const enabledFilterOptions = computed(() => [
   { value: 'disabled', label: localText('停用', 'Disabled') },
 ])
 
-const statusMap = computed<Record<string, ExternalSubscriptionStatus>>(() => refreshStatusMap(statuses.value))
+type ExternalSubscriptionCard = {
+  id: string
+  name: string
+  template: ExternalSubscriptionTemplate | 'buzz_balance'
+  enabled: boolean
+  configured: boolean
+  apiTokenConfigured: boolean
+  refreshTokenConfigured: boolean
+  matchKeywords: string[]
+  sortOrder: number
+  currency: string
+  siteUrl: string
+  balance: string
+  expiry: string
+  activeCount: number | string
+  errorCode?: string
+  errorMessage?: string
+  providerConfig?: ExternalSubscriptionProvider
+  readonly: boolean
+  logoText: string
+}
 
-const filteredProviders = computed(() => {
+const isInitialLoading = computed(() => (
+  loading.value && statusLoading.value && buzzLoading.value && displayCards.value.length === 0
+))
+
+const providerMap = computed<Record<string, ExternalSubscriptionProvider>>(() => (
+  providers.value.reduce<Record<string, ExternalSubscriptionProvider>>((acc, provider) => {
+    acc[provider.id.trim().toLowerCase()] = provider
+    return acc
+  }, {})
+))
+
+const displayCards = computed<ExternalSubscriptionCard[]>(() => {
+  const cards: ExternalSubscriptionCard[] = []
+  if (buzzBalance.value) {
+    cards.push(buildBuzzCard(buzzBalance.value))
+  }
+
+  const statusCards = statuses.value.map((status) => {
+    const id = status.provider.trim().toLowerCase()
+    return buildStatusCard(status, providerMap.value[id])
+  })
+  cards.push(...statusCards)
+
+  const displayed = new Set(cards.map(card => card.id))
+  for (const provider of providers.value) {
+    const id = provider.id.trim().toLowerCase()
+    if (displayed.has(id)) continue
+    cards.push(buildProviderOnlyCard(provider))
+  }
+
+  return cards.sort((left, right) => {
+    if (left.sortOrder !== right.sortOrder) return left.sortOrder - right.sortOrder
+    return left.name.localeCompare(right.name)
+  })
+})
+
+const filteredCards = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
-  return providers.value.filter((provider) => {
-    if (templateFilter.value && provider.template !== templateFilter.value) return false
-    if (enabledFilter.value === 'enabled' && !provider.enabled) return false
-    if (enabledFilter.value === 'disabled' && provider.enabled) return false
+  return displayCards.value.filter((card) => {
+    if (templateFilter.value && card.template !== templateFilter.value) return false
+    if (enabledFilter.value === 'enabled' && !card.enabled) return false
+    if (enabledFilter.value === 'disabled' && card.enabled) return false
     if (!query) return true
     const haystack = [
-      provider.id,
-      provider.name,
-      provider.template,
-      provider.api_base_url,
-      provider.user_id,
-      ...provider.match_keywords,
+      card.id,
+      card.name,
+      card.template,
+      card.siteUrl,
+      card.balance,
+      card.expiry,
+      ...card.matchKeywords,
     ].join(' ').toLowerCase()
     return haystack.includes(query)
   })
 })
-
-function refreshStatusMap(items: ExternalSubscriptionStatus[]) {
-  return items.reduce<Record<string, ExternalSubscriptionStatus>>((acc, item) => {
-    acc[item.provider.trim().toLowerCase()] = item
-    return acc
-  }, {})
-}
 
 function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
   return [
@@ -514,8 +575,10 @@ function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
   ].join(' ')
 }
 
-function templateLabel(template: ExternalSubscriptionTemplate) {
+function templateLabel(template: ExternalSubscriptionTemplate | 'buzz_balance') {
   switch (template) {
+    case 'buzz_balance':
+      return 'BuzzAI'
     case 'active_subscriptions':
       return 'Active Subscriptions'
     case 'openrouter_credits':
@@ -524,6 +587,82 @@ function templateLabel(template: ExternalSubscriptionTemplate) {
       return 'Cloudflare AI Gateway'
     default:
       return 'NewAPI Console'
+  }
+}
+
+function buildBuzzCard(balance: BuzzBalance): ExternalSubscriptionCard {
+  return {
+    id: 'buzz',
+    name: 'Buzz',
+    template: 'buzz_balance',
+    enabled: balance.enabled,
+    configured: balance.configured,
+    apiTokenConfigured: balance.configured,
+    refreshTokenConfigured: false,
+    matchKeywords: ['buzz', 'buzzai', 'buzzai.cc'],
+    sortOrder: 0,
+    currency: balance.currency,
+    siteUrl: balance.site_url || 'https://buzzai.cc',
+    balance: formatBuzzBalance(balance),
+    expiry: formatDate(balance.expires_at),
+    activeCount: balance.configured ? 1 : 0,
+    readonly: true,
+    logoText: 'buzz buzzai buzzai.cc',
+  }
+}
+
+function buildStatusCard(
+  status: ExternalSubscriptionStatus,
+  provider?: ExternalSubscriptionProvider,
+): ExternalSubscriptionCard {
+  const id = status.provider.trim().toLowerCase()
+  return {
+    id,
+    name: provider?.name || status.name || id,
+    template: provider?.template || status.template,
+    enabled: status.enabled,
+    configured: status.configured,
+    apiTokenConfigured: provider?.api_token_configured ?? status.api_token_configured,
+    refreshTokenConfigured: provider?.refresh_token_configured ?? status.refresh_token_configured,
+    matchKeywords: provider?.match_keywords?.length ? provider.match_keywords : status.match_keywords,
+    sortOrder: provider?.sort_order ?? status.sort_order,
+    currency: status.currency,
+    siteUrl: provider?.api_base_url || status.site_url,
+    balance: formatStatusBalance(status),
+    expiry: formatStatusExpiry(status),
+    activeCount: status.active_count,
+    errorCode: status.error_code,
+    errorMessage: status.error_message,
+    providerConfig: provider,
+    readonly: !provider,
+    logoText: provider ? buildProviderLogoText(provider) : [
+      id,
+      status.name,
+      status.site_url,
+      ...status.match_keywords,
+    ].join(' '),
+  }
+}
+
+function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): ExternalSubscriptionCard {
+  return {
+    id: provider.id,
+    name: provider.name,
+    template: provider.template,
+    enabled: provider.enabled,
+    configured: provider.api_token_configured || provider.refresh_token_configured || Boolean(provider.user_id),
+    apiTokenConfigured: provider.api_token_configured,
+    refreshTokenConfigured: provider.refresh_token_configured,
+    matchKeywords: provider.match_keywords,
+    sortOrder: provider.sort_order,
+    currency: 'USD',
+    siteUrl: provider.api_base_url,
+    balance: provider.enabled ? localText('未同步', 'Unsynced') : localText('停用', 'Disabled'),
+    expiry: '-',
+    activeCount: '-',
+    providerConfig: provider,
+    readonly: false,
+    logoText: buildProviderLogoText(provider),
   }
 }
 
@@ -644,15 +783,27 @@ async function loadStatuses() {
   try {
     statuses.value = await externalSubscriptionsAPI.getDisplayStatuses()
   } catch (error: any) {
-    statuses.value = []
+    if (statuses.value.length === 0) statuses.value = []
     appStore.showError(error?.message || localText('订阅状态读取失败', 'Failed to load subscription statuses'))
   } finally {
     statusLoading.value = false
   }
 }
 
+async function loadBuzzBalance() {
+  buzzLoading.value = true
+  try {
+    buzzBalance.value = await buzzBalanceAPI.getBalance()
+  } catch (error: any) {
+    if (!buzzBalance.value) buzzBalance.value = null
+    appStore.showError(error?.message || localText('Buzz 余额读取失败', 'Failed to load Buzz balance'))
+  } finally {
+    buzzLoading.value = false
+  }
+}
+
 async function refreshAll() {
-  await Promise.all([loadProviders(), loadStatuses()])
+  await Promise.all([loadProviders(), loadStatuses(), loadBuzzBalance()])
 }
 
 async function handleSubmit() {
@@ -696,23 +847,37 @@ function formatMoney(value?: number | null, currency?: string | null) {
   return `$${value.toFixed(2)}`
 }
 
+function formatDate(value?: string | null) {
+  if (!value) return localText('长期', 'Long-term')
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return localText('长期', 'Long-term')
+  return parsed.toISOString().slice(0, 10)
+}
+
 function isInvalidToken(code?: string | null) {
   const normalized = (code || '').trim().toUpperCase()
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
 }
 
-function statusBadgeClass(status?: ExternalSubscriptionStatus) {
-  if (!status || !status.enabled || !status.configured) return 'semantic-badge semantic-badge--neutral'
-  if (status.error_code) return 'semantic-badge semantic-badge--danger'
+function cardStatusBadgeClass(card: ExternalSubscriptionCard) {
+  if (!card.enabled || !card.configured) return 'semantic-badge semantic-badge--neutral'
+  if (card.errorCode) return 'semantic-badge semantic-badge--danger'
   return 'semantic-badge semantic-badge--success'
 }
 
-function statusBadgeText(status?: ExternalSubscriptionStatus) {
-  if (!status) return localText('未同步', 'Unsynced')
-  if (!status.enabled) return localText('停用', 'Disabled')
-  if (!status.configured) return localText('未配置', 'Not configured')
-  if (status.error_code) return isInvalidToken(status.error_code) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
+function cardStatusBadgeText(card: ExternalSubscriptionCard) {
+  if (!card.enabled) return localText('停用', 'Disabled')
+  if (!card.configured) return localText('未配置', 'Not configured')
+  if (card.errorCode) return isInvalidToken(card.errorCode) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
   return localText('正常', 'OK')
+}
+
+function formatBuzzBalance(balance: BuzzBalance) {
+  if (!balance.enabled || !balance.configured) return localText('未配置', 'Not configured')
+  const remaining = formatMoney(balance.remaining, balance.currency)
+  const total = formatMoney(balance.total, balance.currency)
+  if (remaining && total) return `${remaining} / ${total}`
+  return remaining || total || localText('未配置', 'Not configured')
 }
 
 function formatStatusBalance(status?: ExternalSubscriptionStatus) {
@@ -731,13 +896,172 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
 function formatStatusExpiry(status?: ExternalSubscriptionStatus) {
   if (!status) return '-'
   if (status.error_code) return isInvalidToken(status.error_code) ? localText('请更新 Token', 'Update token') : (status.error_message || localText('请检查配置', 'Check settings'))
-  if (!status.expires_at) return localText('长期', 'Long-term')
-  const parsed = new Date(status.expires_at)
-  if (Number.isNaN(parsed.getTime())) return localText('长期', 'Long-term')
-  return parsed.toISOString().slice(0, 10)
+  return formatDate(status.expires_at)
+}
+
+function formatCardBalance(card: ExternalSubscriptionCard) {
+  return card.balance
+}
+
+function formatCardExpiry(card: ExternalSubscriptionCard) {
+  return card.expiry
+}
+
+function cardTemplateLabel(card: ExternalSubscriptionCard) {
+  return templateLabel(card.template)
 }
 
 onMounted(() => {
   void refreshAll()
 })
 </script>
+
+<style scoped>
+.external-subscriptions-page :deep(.layout-section-scrollable),
+.external-subscriptions-page :deep(.table-scroll-container) {
+  flex: none;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+}
+
+.external-subscriptions-page :deep(.table-scroll-container) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.external-subscriptions-page :deep(.table-scroll-container)::before {
+  display: none;
+}
+
+.external-subscription-card-shell {
+  overflow: visible;
+  padding: 0.125rem;
+}
+
+.external-subscription-card-grid {
+  align-items: stretch;
+}
+
+.external-subscription-card {
+  position: relative;
+  display: flex;
+  min-height: 13.75rem;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
+  box-shadow: none;
+  padding: 1rem;
+  transition:
+    border-color 0.18s var(--atelier-ease),
+    transform 0.18s var(--atelier-ease),
+    box-shadow 0.18s var(--atelier-ease);
+}
+
+.external-subscription-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0.875rem;
+  left: 0.875rem;
+  height: 1px;
+  background: var(--atelier-console-rule);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.external-subscription-card:hover {
+  border-color: var(--atelier-material-edge-strong);
+  box-shadow: var(--atelier-material-shadow);
+  transform: translate3d(0, -1px, 0);
+}
+
+.external-subscription-logo {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex: 0 0 2.5rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--atelier-paper) 78%, transparent);
+}
+
+.external-subscription-logo :deep(.provider-brand-icon) {
+  height: 100% !important;
+  width: 100% !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  box-shadow: none !important;
+}
+
+.external-subscription-logo :deep(.provider-brand-image-system) {
+  height: 1.375rem !important;
+  width: 1.375rem !important;
+  object-fit: contain !important;
+}
+
+.external-subscription-logo :deep(.provider-brand-image-custom) {
+  height: 100% !important;
+  width: 100% !important;
+  object-fit: cover !important;
+}
+
+.external-subscription-card-link {
+  color: var(--atelier-blue);
+}
+
+.external-subscription-card-link:hover {
+  color: var(--atelier-blue-dark);
+}
+
+.external-subscription-card-metric {
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
+  padding: 0.875rem;
+}
+
+.external-subscription-card-label {
+  color: var(--atelier-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.external-subscription-balance-value {
+  color: var(--atelier-ink);
+}
+
+.external-subscription-keyword {
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--atelier-paper) 76%, transparent);
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.dark .external-subscription-card {
+  background: var(--atelier-paper-2);
+  box-shadow: none;
+}
+
+.dark .external-subscription-card-metric,
+.dark .external-subscription-keyword {
+  background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
+}
+
+@media (max-width: 1023px) {
+  .external-subscription-card-shell {
+    overflow: visible;
+  }
+}
+</style>

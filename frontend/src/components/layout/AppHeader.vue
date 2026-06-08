@@ -313,21 +313,6 @@
   </header>
 </template>
 
-<script lang="ts">
-import type { ExternalSubscriptionStatus as CachedExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
-
-const EXTERNAL_SUBSCRIPTIONS_CACHE_TTL_MS = 60_000
-let externalSubscriptionsCache: {
-  userId: number | string | null
-  expiresAt: number
-  statuses: CachedExternalSubscriptionStatus[]
-} | null = null
-let externalSubscriptionsRequest: {
-  userId: number | string | null
-  promise: Promise<CachedExternalSubscriptionStatus[]>
-} | null = null
-</script>
-
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -548,52 +533,18 @@ async function fetchBuzzBalance() {
 
 async function fetchExternalSubscriptions() {
   if (!authStore.isAdmin || externalSubscriptionsLoading.value) return
-  const userId = user.value?.id ?? null
-  const now = Date.now()
-  if (
-    externalSubscriptionsCache &&
-    externalSubscriptionsCache.userId === userId &&
-    externalSubscriptionsCache.expiresAt > now
-  ) {
-    externalSubscriptions.value = externalSubscriptionsCache.statuses.map(subscription => ({ ...subscription }))
-    return
-  }
-  if (
-    externalSubscriptionsRequest &&
-    externalSubscriptionsRequest.userId === userId
-  ) {
-    try {
-      externalSubscriptions.value = (await externalSubscriptionsRequest.promise).map(subscription => ({ ...subscription }))
-    } catch {
-      // The owning request already logs and falls back; avoid duplicate noise here.
-    }
-    return
-  }
   externalSubscriptionsLoading.value = true
-  const request = externalSubscriptionsAPI.getDisplayStatuses()
-  externalSubscriptionsRequest = { userId, promise: request }
   try {
-    const statuses = await request
-    externalSubscriptions.value = statuses
-    externalSubscriptionsCache = {
-      userId,
-      expiresAt: now + EXTERNAL_SUBSCRIPTIONS_CACHE_TTL_MS,
-      statuses: statuses.map(subscription => ({ ...subscription })),
+    const statuses = await externalSubscriptionsAPI.getDisplayStatuses()
+    if (statuses.length > 0 || externalSubscriptions.value.length === 0) {
+      externalSubscriptions.value = statuses
     }
   } catch (error) {
-    if (
-      externalSubscriptionsCache &&
-      externalSubscriptionsCache.userId === userId
-    ) {
-      externalSubscriptions.value = externalSubscriptionsCache.statuses.map(subscription => ({ ...subscription }))
-    } else {
+    if (externalSubscriptions.value.length === 0) {
       externalSubscriptions.value = []
     }
     console.error('Failed to fetch external subscriptions:', error)
   } finally {
-    if (externalSubscriptionsRequest?.promise === request) {
-      externalSubscriptionsRequest = null
-    }
     externalSubscriptionsLoading.value = false
   }
 }

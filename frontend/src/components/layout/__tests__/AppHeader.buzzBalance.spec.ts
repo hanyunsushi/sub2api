@@ -579,7 +579,7 @@ describe("AppHeader BuzzAI balance", () => {
     expect(contextStrip.text()).not.toContain("Buzz");
   });
 
-  it("reuses cached external statuses across header remounts before the cache expires", async () => {
+  it("uses the shared display-status API across header remounts", async () => {
     const first = mountHeader();
     await nextTick();
     await Promise.resolve();
@@ -597,9 +597,38 @@ describe("AppHeader BuzzAI balance", () => {
     await Promise.resolve();
     await nextTick();
 
-    expect(externalSubscriptionsAPI.getDisplayStatuses).toHaveBeenCalledTimes(1);
+    expect(externalSubscriptionsAPI.getDisplayStatuses).toHaveBeenCalledTimes(2);
     await second.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
     await nextTick();
     expect(second.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
+  });
+
+  it("keeps the last visible external balances when a later refresh fails", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+    expect(wrapper.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
+
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockRejectedValueOnce(new Error("temporary outage"));
+    authState.user = {
+      id: authState.nextUserId++,
+      username: "admin",
+      email: "admin@example.com",
+      role: "admin",
+      balance: 42.5,
+    };
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+    expect(wrapper.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
+    expect(wrapper.get('[data-testid="header-balance-dropdown"]').text()).toContain("$21.25");
   });
 });

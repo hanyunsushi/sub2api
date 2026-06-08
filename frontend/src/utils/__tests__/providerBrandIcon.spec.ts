@@ -64,6 +64,16 @@ describe('provider brand icon resolution', () => {
     expect(providerBrandInfo('groq')?.label).toBe('GQ')
   })
 
+  it('uses recognizable tiles for external subscription providers without shared AI logos', () => {
+    expect(providerBrandInfo('buzz buzzai.cc')?.label).toBe('BZ')
+    expect(providerBrandInfo('qlhazycoder api.qlhazycoder.top')?.label).toBe('QL')
+    expect(providerBrandInfo('packycode packyapi')?.label).toBe('PK')
+    expect(providerBrandInfo('tcdmx')?.label).toBe('TC')
+    expect(providerBrandInfo('xhyapi xhy')?.label).toBe('XH')
+    expect(providerBrandInfo('pixel ai-pixel.online')?.label).toBe('PX')
+    expect(providerBrandInfo('liust')?.label).toBe('LS')
+  })
+
   it('falls back to deterministic colored initials for unknown providers', () => {
     const brand = providerBrandInfo('new-provider-x')
     expect(brand.label).toBe('NP')

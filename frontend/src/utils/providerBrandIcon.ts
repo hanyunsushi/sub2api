@@ -256,6 +256,34 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
     { iconModel: 'openrouter', label: 'OR', background: '#F0F0FF', color: '#6566F1', border: '#C7C8FF' },
   ],
   [
+    ['buzzai', 'buzz'],
+    { iconModel: null, label: 'BZ', background: '#FFF8DB', color: '#9A6A00', border: '#E8C45B' },
+  ],
+  [
+    ['qlhazycoder', 'qlhazy'],
+    { iconModel: null, label: 'QL', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+  ],
+  [
+    ['packycode', 'packyapi', 'packy'],
+    { iconModel: null, label: 'PK', background: '#F0FDFA', color: '#0F766E', border: '#99F6E4' },
+  ],
+  [
+    ['tcdmx'],
+    { iconModel: null, label: 'TC', background: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
+  ],
+  [
+    ['xhyapi', 'xhy'],
+    { iconModel: null, label: 'XH', background: '#EEF2FF', color: '#4D6BFE', border: '#C7D2FE' },
+  ],
+  [
+    ['ai-pixel', 'pixel'],
+    { iconModel: null, label: 'PX', background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
+  ],
+  [
+    ['liust'],
+    { iconModel: null, label: 'LS', background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
+  ],
+  [
     ['mistral', 'codestral', 'mixtral'],
     { iconModel: 'mistral', label: 'MI', background: '#FFF8DB', color: '#A16207', border: '#F7D046' },
   ],

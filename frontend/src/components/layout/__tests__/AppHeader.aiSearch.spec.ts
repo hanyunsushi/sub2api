@@ -9,6 +9,7 @@ import tcdmxSubscriptionAPI from '@/api/admin/tcdmxSubscription'
 import xhyapiSubscriptionAPI from '@/api/admin/xhyapiSubscription'
 import pixelSubscriptionAPI from '@/api/admin/pixelSubscription'
 import liustSubscriptionAPI from '@/api/admin/liustSubscription'
+import packycodeSubscriptionAPI from '@/api/admin/packycodeSubscription'
 
 const authState = vi.hoisted(() => ({
   user: {
@@ -54,6 +55,12 @@ vi.mock('@/api/admin/pixelSubscription', () => ({
 }))
 
 vi.mock('@/api/admin/liustSubscription', () => ({
+  default: {
+    getStatus: vi.fn(),
+  },
+}))
+
+vi.mock('@/api/admin/packycodeSubscription', () => ({
   default: {
     getStatus: vi.fn(),
   },
@@ -170,6 +177,16 @@ describe('AppHeader AI Search placement', () => {
       configured: false,
       currency: 'USD',
       site_url: 'https://liust.xyz',
+      used_usd: 0,
+      active_count: 0,
+      subscriptions: [],
+    })
+    vi.mocked(packycodeSubscriptionAPI.getStatus).mockResolvedValue({
+      provider: 'packycode',
+      enabled: false,
+      configured: false,
+      currency: 'CNY',
+      site_url: 'https://www.packyapi.com',
       used_usd: 0,
       active_count: 0,
       subscriptions: [],
