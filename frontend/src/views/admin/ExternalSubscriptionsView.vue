@@ -79,16 +79,20 @@
                     <ProviderBrandIcon
                       :provider="card.logoText"
                       :model="card.name"
+                      :logo-url="card.logoUrl"
                     />
                   </div>
                   <div class="min-w-0">
-                    <div class="flex min-w-0 items-center gap-2">
+                    <div class="min-w-0">
                       <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
                         {{ card.name }}
                       </h3>
-                      <span :class="cardStatusBadgeClass(card)">
-                        {{ cardStatusBadgeText(card) }}
-                      </span>
+                      <div class="external-subscription-status-line">
+                        <span :class="cardStatusDotClass(card)" aria-hidden="true"></span>
+                        <span class="external-subscription-status-text truncate">
+                          {{ cardStatusText(card) }}
+                        </span>
+                      </div>
                     </div>
                     <div class="mt-1 flex min-w-0 items-center gap-2">
                       <span class="external-subscription-provider-id truncate font-mono">
@@ -152,11 +156,6 @@
                     {{ card.activeCount }}
                   </div>
                 </div>
-                <div class="external-subscription-fact external-subscription-token-fact min-w-0">
-                  <span :class="card.apiTokenConfigured ? 'external-subscription-token-state is-ready' : 'external-subscription-token-state'">
-                    {{ card.apiTokenConfigured ? 'API Token' : localText('未配置 Token', 'No Token') }}
-                  </span>
-                </div>
                 <div class="external-subscription-fact external-subscription-sort-fact min-w-0">
                   <span class="external-subscription-sort-value font-mono">
                     #{{ card.sortOrder }}
@@ -164,20 +163,19 @@
                 </div>
               </div>
 
-              <div
-                v-if="card.template === 'active_subscriptions' || card.readonly"
-                class="mt-4 flex flex-wrap gap-1"
-              >
+              <div class="external-subscription-config-meta mt-3">
+                <span>{{ formatTokenMeta(card) }}</span>
                 <span
                   v-if="card.template === 'active_subscriptions'"
-                  :class="card.refreshTokenConfigured ? 'external-subscription-token-state is-ready' : 'external-subscription-token-state'"
+                  class="external-subscription-config-separator"
+                  aria-hidden="true"
                 >
-                  Refresh Token
+                  /
                 </span>
-                <span
-                  v-if="card.readonly"
-                  class="semantic-badge semantic-badge--info"
-                >
+                <span v-if="card.template === 'active_subscriptions'">
+                  {{ formatRefreshTokenMeta(card) }}
+                </span>
+                <span v-if="card.readonly" class="external-subscription-config-readonly">
                   {{ localText('只读来源', 'Read-only') }}
                 </span>
               </div>
@@ -287,6 +285,13 @@
             <input v-model="form.name" type="text" class="input" required placeholder="PackyCode" />
           </div>
         </div>
+
+        <LogoPicker
+          v-model="form.logo_url"
+          :label="localText('Logo URL', 'Logo URL')"
+          :hint="localText('可填 Lobe Icons、Simple Icons 或自有图床地址；留空则按名称自动匹配。', 'Use a Lobe Icons, Simple Icons, or custom image URL; leave blank to auto-match by name.')"
+          input-test-id="external-subscription-logo-url"
+        />
 
         <div class="grid gap-4 sm:grid-cols-[1fr_12rem]">
           <div>
@@ -405,6 +410,7 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import Select from '@/components/common/Select.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
@@ -436,6 +442,7 @@ const form = reactive({
   enabled: true,
   template: 'newapi_console' as ExternalSubscriptionTemplate,
   api_base_url: '',
+  logo_url: '',
   api_token: '',
   user_id: '',
   refresh_token: '',
@@ -506,6 +513,7 @@ type ExternalSubscriptionCard = {
   providerConfig?: ExternalSubscriptionProvider
   readonly: boolean
   logoText: string
+  logoUrl: string
 }
 
 const isInitialLoading = computed(() => (
@@ -602,6 +610,7 @@ function buildStatusCard(
     sortOrder: provider?.sort_order ?? status.sort_order,
     currency: status.currency,
     siteUrl: provider?.api_base_url || status.site_url,
+    logoUrl: provider?.logo_url || status.logo_url || '',
     balance: formatStatusBalance(status),
     expiry: formatStatusExpiry(status),
     activeCount: status.active_count,
@@ -631,6 +640,7 @@ function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): External
     sortOrder: provider.sort_order,
     currency: 'USD',
     siteUrl: provider.api_base_url,
+    logoUrl: provider.logo_url || '',
     balance: provider.enabled ? localText('未同步', 'Unsynced') : localText('停用', 'Disabled'),
     expiry: '-',
     activeCount: '-',
@@ -653,6 +663,7 @@ function resetForm() {
   form.enabled = true
   form.template = 'newapi_console'
   form.api_base_url = ''
+  form.logo_url = ''
   form.api_token = ''
   form.user_id = ''
   form.refresh_token = ''
@@ -715,6 +726,7 @@ function openEditDialog(provider: ExternalSubscriptionProvider) {
   form.enabled = provider.enabled
   form.template = provider.template
   form.api_base_url = provider.api_base_url
+  form.logo_url = provider.logo_url || ''
   form.api_token = ''
   form.user_id = provider.user_id || ''
   form.refresh_token = ''
@@ -741,6 +753,7 @@ function buildPayload(): ExternalSubscriptionProviderInput {
     enabled: form.enabled,
     template: form.template,
     api_base_url: form.api_base_url.trim(),
+    logo_url: form.logo_url.trim(),
     api_token: form.api_token.trim(),
     user_id: requiresUserId.value ? form.user_id.trim() : '',
     refresh_token: requiresRefreshToken.value ? form.refresh_token.trim() : '',
@@ -829,17 +842,30 @@ function isInvalidToken(code?: string | null) {
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
 }
 
-function cardStatusBadgeClass(card: ExternalSubscriptionCard) {
-  if (!card.enabled || !card.configured) return 'semantic-badge semantic-badge--neutral'
-  if (card.errorCode) return 'semantic-badge semantic-badge--danger'
-  return 'semantic-badge semantic-badge--success'
+function cardStatusDotClass(card: ExternalSubscriptionCard) {
+  return [
+    'external-subscription-status-dot',
+    !card.enabled || !card.configured
+      ? 'is-muted'
+      : card.errorCode
+        ? 'is-error'
+        : 'is-ok',
+  ]
 }
 
-function cardStatusBadgeText(card: ExternalSubscriptionCard) {
+function cardStatusText(card: ExternalSubscriptionCard) {
   if (!card.enabled) return localText('停用', 'Disabled')
   if (!card.configured) return localText('未配置', 'Not configured')
   if (card.errorCode) return isInvalidToken(card.errorCode) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
   return localText('正常', 'OK')
+}
+
+function formatTokenMeta(card: ExternalSubscriptionCard) {
+  return card.apiTokenConfigured ? 'API Token ready' : localText('Token 未配置', 'Token missing')
+}
+
+function formatRefreshTokenMeta(card: ExternalSubscriptionCard) {
+  return card.refreshTokenConfigured ? 'Refresh Token ready' : localText('Refresh Token 未配置', 'Refresh Token missing')
 }
 
 function formatStatusBalance(status?: ExternalSubscriptionStatus) {
@@ -996,6 +1022,41 @@ onBeforeUnmount(() => {
   line-height: 1rem;
 }
 
+.external-subscription-status-line {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.1875rem;
+}
+
+.external-subscription-status-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  flex: 0 0 0.375rem;
+  border-radius: 999px;
+  background: var(--atelier-muted);
+}
+
+.external-subscription-status-dot.is-ok {
+  background: var(--atelier-green);
+}
+
+.external-subscription-status-dot.is-error {
+  background: #c2413d;
+}
+
+.external-subscription-status-dot.is-muted {
+  background: color-mix(in srgb, var(--atelier-muted) 56%, transparent);
+}
+
+.external-subscription-status-text {
+  color: var(--atelier-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1rem;
+}
+
 .external-subscription-template-chip {
   max-width: 9rem;
   border: 1px solid var(--atelier-material-edge);
@@ -1042,36 +1103,36 @@ onBeforeUnmount(() => {
   margin-top: 0.125rem;
 }
 
-.external-subscription-token-fact,
 .external-subscription-sort-fact {
   align-items: end;
   display: flex;
   justify-content: flex-end;
 }
 
-.external-subscription-token-state {
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 999px;
-  color: var(--atelier-muted);
-  font-size: 0.625rem;
-  font-weight: 600;
-  line-height: 1rem;
-  max-width: 7rem;
-  overflow: hidden;
-  padding: 0 0.375rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.external-subscription-token-state.is-ready {
-  border-color: color-mix(in srgb, var(--atelier-green) 32%, var(--atelier-material-edge));
-  color: #236346;
-}
-
 .external-subscription-sort-value {
   color: var(--atelier-muted);
   font-size: 0.6875rem;
   line-height: 1rem;
+}
+
+.external-subscription-config-meta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  color: color-mix(in srgb, var(--atelier-muted) 88%, transparent);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
+.external-subscription-config-separator {
+  color: color-mix(in srgb, var(--atelier-muted) 58%, transparent);
+}
+
+.external-subscription-config-readonly {
+  color: var(--atelier-blue);
 }
 
 .external-subscription-keyword {

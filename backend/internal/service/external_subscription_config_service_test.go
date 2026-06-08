@@ -110,6 +110,53 @@ func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets
 	require.Equal(t, "1002", raw.UserID)
 }
 
+func TestExternalSubscriptionConfigServiceProviderLogoURLPersistsToPublicProviderAndStatus(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/credits", r.URL.Path)
+		_, _ = w.Write([]byte(`{"data":{"total_credits":12,"total_usage":2}}`))
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
+		ID:            "logo-provider",
+		Name:          "Logo Provider",
+		Enabled:       true,
+		Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+		APIBaseURL:    server.URL,
+		APIToken:      "logo-token",
+		LogoURL:       "  https://cdn.example.com/logo.png  ",
+		MatchKeywords: []string{"logo-provider"},
+		SortOrder:     11,
+	})
+	require.NoError(t, err)
+	require.Equal(t, "https://cdn.example.com/logo.png", created.LogoURL)
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "https://cdn.example.com/logo.png", requireExternalSubscriptionProvider(t, providers, "logo-provider").LogoURL)
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	require.Equal(t, "https://cdn.example.com/logo.png", requireExternalSubscriptionStatus(t, statuses, "logo-provider").LogoURL)
+
+	updated, err := svc.UpdateProvider(context.Background(), "logo-provider", ExternalSubscriptionProviderInput{
+		Name:          "Logo Provider",
+		Enabled:       true,
+		Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+		APIBaseURL:    server.URL,
+		MatchKeywords: []string{"logo-provider"},
+		SortOrder:     11,
+	})
+	require.NoError(t, err)
+	require.Empty(t, updated.LogoURL)
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	require.Empty(t, requireStoredExternalSubscriptionProvider(t, stored, "logo-provider").LogoURL)
+}
+
 func TestExternalSubscriptionConfigServiceMergesLegacyKeywordsIntoStoredProvider(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{

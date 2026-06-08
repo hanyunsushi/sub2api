@@ -25,6 +25,7 @@ export interface ExternalSubscriptionProvider {
   enabled: boolean
   template: ExternalSubscriptionTemplate
   api_base_url: string
+  logo_url?: string
   api_token_configured: boolean
   user_id?: string
   refresh_token_configured: boolean
@@ -38,6 +39,7 @@ export interface ExternalSubscriptionProviderInput {
   enabled: boolean
   template: ExternalSubscriptionTemplate
   api_base_url: string
+  logo_url?: string
   api_token?: string
   user_id?: string
   refresh_token?: string
@@ -51,6 +53,7 @@ export interface ExternalSubscriptionStatus {
   template: ExternalSubscriptionTemplate
   enabled: boolean
   configured: boolean
+  logo_url?: string
   api_token_configured: boolean
   refresh_token_configured: boolean
   match_keywords: string[]
