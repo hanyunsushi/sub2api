@@ -12,6 +12,8 @@ const codexThemeSource = readFile('src/styles/codex-theme.css')
 const appearanceThemeSource = readFile('src/composables/useAppearanceTheme.ts')
 const themeSwitcherSource = readFile('src/components/common/ThemeSwitcher.vue')
 const settingsViewSource = readFile('src/views/admin/SettingsView.vue')
+const appHeaderSource = readFile('src/components/layout/AppHeader.vue')
+const monitorCapacitySource = readFile('src/components/user/monitor/MonitorCapacityOverview.vue')
 
 // Cloudflare brand palette
 const cfOrange = '#f6821f'
@@ -67,16 +69,19 @@ describe('Cloudflare appearance theme', () => {
   })
 
   it('hydrates the default theme from public settings when the user has no local override', () => {
-    expect(appearanceThemeSource).toContain('const DEFAULT_THEME_STORAGE_KEY')
+    expect(appearanceThemeSource).not.toContain('const STORAGE_KEY')
+    expect(appearanceThemeSource).not.toContain('localStorage.getItem(STORAGE_KEY)')
+    expect(appearanceThemeSource).not.toContain('localStorage.setItem(STORAGE_KEY')
     expect(appearanceThemeSource).toContain('getInjectedAppearanceThemeDefault')
-    expect(appearanceThemeSource).toContain('localStorage.getItem(STORAGE_KEY)')
     expect(appearanceThemeSource).toContain('window.__APP_CONFIG__?.appearance_theme_default')
     expect(appearanceThemeSource).toContain('updateAppearanceThemeDefault')
   })
 
-  it('uses the official Cloudflare logomark in the theme switcher without global publishing controls', () => {
+  it('uses branded logomarks in the admin-only global theme switcher', () => {
     expect(themeSwitcherSource).toContain('CloudflareLogoMark')
+    expect(themeSwitcherSource).toContain('ClaudeLogoMark')
     expect(themeSwitcherSource).toContain('<ThemeLogo :theme-id="currentTheme"')
+    expect(themeSwitcherSource).toContain('v-if="authStore.isAdmin"')
     expect(themeSwitcherSource).not.toContain('<CloudflareLogoMark class="h-5 w-5 flex-shrink-0" />')
     expect(themeSwitcherSource).toContain('viewBox: \'0 0 209.51 94.74\'')
     expect(themeSwitcherSource).toContain('M143.05 93.42')
@@ -84,11 +89,9 @@ describe('Cloudflare appearance theme', () => {
     expect(themeSwitcherSource).toContain('#F48120')
     expect(themeSwitcherSource).toContain('#FAAD3F')
     expect(themeSwitcherSource).not.toContain('<Icon name="book"')
-    expect(themeSwitcherSource).not.toContain('authStore.isAdmin')
     expect(themeSwitcherSource).not.toContain('applyGlobally')
     expect(themeSwitcherSource).not.toContain('所有人可见')
-    expect(themeSwitcherSource).not.toContain('updateAppearanceThemeDefault')
-    expect(themeSwitcherSource).not.toContain('adminAPI.settings.updateAppearanceThemeDefault')
+    expect(themeSwitcherSource).toContain('adminAPI.settings.updateAppearanceThemeDefault')
     expect(themeSwitcherSource).not.toContain('adminAPI.settings.updateSettings')
   })
 
@@ -96,6 +99,8 @@ describe('Cloudflare appearance theme', () => {
     expect(settingsViewSource).toContain('v-model="form.appearance_theme_default"')
     expect(settingsViewSource).toContain("admin.settings.site.defaultTheme")
     expect(settingsViewSource).toContain("admin.settings.site.defaultThemeHint")
+    expect(readFile('src/i18n/locales/zh.ts')).toContain('管理员选择后全站强制启用')
+    expect(readFile('src/i18n/locales/en.ts')).toContain('Forced site-wide')
     expect(settingsViewSource).toContain('<option value="newspaper">Newspaper</option>')
     expect(settingsViewSource).toContain('<option value="cloudflare">Cloudflare</option>')
     expect(settingsViewSource).toContain('<option value="anthropic">Anthropic</option>')
@@ -141,6 +146,46 @@ describe('Cloudflare appearance theme', () => {
     expect(anthropicBlock.toLowerCase()).not.toContain('#002fa7')
     expect(anthropicBlock).not.toContain('linear-gradient')
     expect(anthropicBlock).not.toContain('radial-gradient')
+  })
+
+  it('keeps ops toolbar dropdowns and health popovers readable on light themes', () => {
+    expect(styleSource).toContain('Theme readability patch')
+    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger')
+    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span)')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span)')
+    expect(styleSource).toContain(':root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu')
+    expect(styleSource).toContain(':root.theme-anthropic .select-dropdown-portal.ops-toolbar-select-menu')
+    expect(styleSource).toContain(':root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
+    expect(styleSource).toContain(':root.theme-anthropic body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
+    expect(styleSource).toContain(':root.theme-cloudflare .ops-diagnosis-popover')
+    expect(styleSource).toContain(':root.theme-anthropic .ops-diagnosis-popover')
+    expect(styleSource).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+  })
+
+  it('uses terracotta for enabled switch rails across the app', () => {
+    const toggleBlock = cssBlockFrom(styleSource, '#app .app-layout-content .toggle-switch.bg-primary-600')
+    expect(toggleBlock).toContain('background: var(--atelier-butter) !important;')
+    expect(toggleBlock).toContain('border-color: var(--atelier-butter-dark) !important;')
+    expect(toggleBlock).not.toContain('var(--atelier-ink)')
+  })
+
+  it('uses live provider logos in the shared balance chip and capacity cards', () => {
+    expect(appHeaderSource).toContain('ProviderBrandIcon')
+    expect(appHeaderSource).toContain('data-testid="header-balance-provider-logo"')
+    expect(appHeaderSource).toContain(':logo-url="currentExternalSubscriptionInChip.logo_url"')
+    expect(appHeaderSource).toContain(':data-logo-url="currentExternalSubscriptionInChip.logo_url || \'\'"')
+    expect(monitorCapacitySource).toContain(':logo-url="subscription.logo_url"')
+  })
+
+  it('keeps shared capacity status counts attached to their labels', () => {
+    expect(monitorCapacitySource).toContain('monitor-capacity-status-grid mt-3 grid grid-cols-2 gap-2')
+    expect(monitorCapacitySource).not.toContain('mt-3 grid grid-cols-4 gap-2')
+    const statusStatBlock = cssBlockFrom(monitorCapacitySource, '.monitor-capacity-status-stat')
+    expect(statusStatBlock).toContain('grid-template-columns: auto minmax(0, 1fr) auto;')
+    expect(statusStatBlock).toContain('white-space: nowrap;')
+    expect(monitorCapacitySource).toContain('.monitor-capacity-status-stat strong')
+    expect(monitorCapacitySource).toContain('justify-self: end;')
   })
 
   it('applies Anthropic beyond tokens with near-black actions, editorial type, and readable filters', () => {

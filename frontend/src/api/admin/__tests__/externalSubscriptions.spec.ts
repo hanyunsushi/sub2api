@@ -176,6 +176,64 @@ describe('admin external subscriptions api', () => {
     await expect(reloadedAfterChange.default.getDisplayStatuses()).rejects.toThrow('no stale provider after edit')
   })
 
+  it('refreshes display statuses immediately after provider logo changes', async () => {
+    vi.mocked(apiClient.put).mockResolvedValueOnce({
+      data: {
+        id: 'pixel',
+        name: 'Pixel',
+        enabled: true,
+        template: 'active_subscriptions',
+        balance_strategy: 'active_with_auth_me_balance',
+        api_base_url: 'https://ai-pixel.online',
+        logo_url: 'https://cdn.example.com/pixel-new.png',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['pixel'],
+        sort_order: 50,
+      },
+    })
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          provider: 'pixel',
+          name: 'Pixel',
+          template: 'active_subscriptions',
+          balance_strategy: 'active_with_auth_me_balance',
+          enabled: true,
+          configured: true,
+          logo_url: 'https://cdn.example.com/pixel-new.png',
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['pixel'],
+          sort_order: 50,
+          currency: 'USD',
+          site_url: 'https://ai-pixel.online',
+          used_usd: 8,
+          remaining_usd: 62,
+          active_count: 1,
+          subscriptions: [],
+        },
+      ],
+    })
+
+    await externalSubscriptionsAPI.updateProvider('pixel', {
+      name: 'Pixel',
+      enabled: true,
+      template: 'active_subscriptions',
+      balance_strategy: 'active_with_auth_me_balance',
+      api_base_url: 'https://ai-pixel.online',
+      logo_url: 'https://cdn.example.com/pixel-new.png',
+      match_keywords: ['pixel'],
+      sort_order: 50,
+    })
+    const refreshed = await externalSubscriptionsAPI.getDisplayStatuses()
+
+    expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/statuses', {
+      params: { refresh: 1, _: expect.any(Number) },
+    })
+    expect(refreshed[0].logo_url).toBe('https://cdn.example.com/pixel-new.png')
+  })
+
   it('loads all provider statuses for the header and account cards', async () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({
       data: [

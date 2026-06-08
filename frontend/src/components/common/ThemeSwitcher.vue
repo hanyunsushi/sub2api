@@ -1,5 +1,5 @@
 <template>
-  <div ref="dropdownRef" class="theme-switcher relative">
+  <div v-if="authStore.isAdmin" ref="dropdownRef" class="theme-switcher relative">
     <button
       ref="triggerRef"
       class="theme-switcher-trigger sidebar-link w-full"
@@ -50,9 +50,11 @@
 
 <script setup lang="ts">
 import { defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue'
+import { adminAPI } from '@/api/admin'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { type AppearanceThemeId, useAppearanceTheme } from '@/composables/useAppearanceTheme'
+import { useAppStore, useAuthStore } from '@/stores'
 
 withDefaults(defineProps<{
   collapsed?: boolean
@@ -60,7 +62,9 @@ withDefaults(defineProps<{
   collapsed: false,
 })
 
-const { currentTheme, currentThemeOption, themes, setAppearanceTheme } = useAppearanceTheme()
+const authStore = useAuthStore()
+const appStore = useAppStore()
+const { currentTheme, currentThemeOption, themes, setAppearanceTheme, updateAppearanceThemeDefault } = useAppearanceTheme()
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
@@ -69,9 +73,20 @@ function toggleDropdown() {
   isOpen.value = !isOpen.value
 }
 
-function selectTheme(theme: AppearanceThemeId) {
+async function selectTheme(theme: AppearanceThemeId) {
+  if (!authStore.isAdmin) {
+    isOpen.value = false
+    return
+  }
   setAppearanceTheme(theme)
   isOpen.value = false
+  try {
+    const updated = await adminAPI.settings.updateAppearanceThemeDefault(theme)
+    updateAppearanceThemeDefault(updated.appearance_theme_default)
+  } catch (error) {
+    appStore.showError((error as { message?: string })?.message || 'Failed to update appearance theme')
+    void appStore.fetchPublicSettings(true)
+  }
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -139,31 +154,18 @@ const NewspaperLogoMark = defineComponent({
   },
 })
 
-const AnthropicLogoMark = defineComponent({
-  name: 'AnthropicLogoMark',
+const ClaudeLogoMark = defineComponent({
+  name: 'ClaudeLogoMark',
   setup(_, { attrs }) {
     return () => h('svg', {
       ...attrs,
       viewBox: '0 0 24 24',
-      fill: 'none',
+      fill: 'currentColor',
       xmlns: 'http://www.w3.org/2000/svg',
       'aria-hidden': 'true',
     }, [
-      h('rect', {
-        x: '3.5',
-        y: '3.5',
-        width: '17',
-        height: '17',
-        rx: '4',
-        fill: 'currentColor',
-        opacity: '0.1',
-      }),
       h('path', {
-        d: 'M7.25 17.25 11.2 6.75h1.6l3.95 10.5M9 14h6',
-        stroke: 'currentColor',
-        'stroke-width': '1.7',
-        'stroke-linecap': 'round',
-        'stroke-linejoin': 'round',
+        d: 'M11.96 3.25 4.7 20.25h2.94l1.45-3.58h5.77l1.47 3.58h2.97L12.04 3.25h-.08Zm-1.88 10.96 1.89-4.68 1.91 4.68h-3.8Z',
       }),
     ])
   },
@@ -183,7 +185,7 @@ const ThemeLogo = defineComponent({
         return h(CloudflareLogoMark, { ...attrs, 'data-theme-logo': 'cloudflare' })
       }
       if (props.themeId === 'anthropic') {
-        return h(AnthropicLogoMark, { ...attrs, 'data-theme-logo': 'anthropic' })
+        return h(ClaudeLogoMark, { ...attrs, 'data-theme-logo': 'anthropic' })
       }
       return h(NewspaperLogoMark, { ...attrs, 'data-theme-logo': 'newspaper' })
     }

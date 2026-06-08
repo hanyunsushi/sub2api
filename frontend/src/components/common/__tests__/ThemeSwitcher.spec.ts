@@ -3,7 +3,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ThemeSwitcher from '../ThemeSwitcher.vue'
-import { setAppearanceTheme } from '@/composables/useAppearanceTheme'
+import { setAppearanceTheme, updateAppearanceThemeDefault } from '@/composables/useAppearanceTheme'
+import { adminAPI } from '@/api/admin'
 import { useAuthStore } from '@/stores/auth'
 
 vi.mock('@/api/admin', () => ({
@@ -22,10 +23,13 @@ describe('ThemeSwitcher', () => {
     document.documentElement.dataset.theme = ''
     document.documentElement.className = ''
     delete window.__APP_CONFIG__
-    setAppearanceTheme('newspaper')
+    updateAppearanceThemeDefault('newspaper')
+    vi.mocked(adminAPI.settings.updateAppearanceThemeDefault).mockResolvedValue({
+      appearance_theme_default: 'cloudflare',
+    })
   })
 
-  it('ordinary users only change their own local view', async () => {
+  it('does not render theme choices for ordinary users', () => {
     const authStore = useAuthStore()
     authStore.user = { id: 2, email: 'user@example.com', username: 'user', role: 'user' } as any
 
@@ -35,15 +39,14 @@ describe('ThemeSwitcher', () => {
       },
     })
 
-    await wrapper.find('button.theme-switcher-trigger').trigger('click')
-    await wrapper.findAll('button.theme-switcher-option').find((button) => button.text().includes('Cloudflare'))!.trigger('click')
-
-    expect(localStorage.getItem('appearance_theme')).toBe('cloudflare')
+    expect(wrapper.find('button.theme-switcher-trigger').exists()).toBe(false)
+    expect(wrapper.findAll('button.theme-switcher-option')).toHaveLength(0)
+    expect(localStorage.getItem('appearance_theme')).toBeNull()
   })
 
   it('renders the current theme logo on the trigger instead of always showing Cloudflare', () => {
     const authStore = useAuthStore()
-    authStore.user = { id: 2, email: 'user@example.com', username: 'user', role: 'user' } as any
+    authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
     setAppearanceTheme('newspaper')
 
     const wrapper = mount(ThemeSwitcher, {
@@ -59,7 +62,7 @@ describe('ThemeSwitcher', () => {
 
   it('renders the Anthropic logo when Anthropic is selected', () => {
     const authStore = useAuthStore()
-    authStore.user = { id: 2, email: 'user@example.com', username: 'user', role: 'user' } as any
+    authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
     setAppearanceTheme('anthropic')
 
     const wrapper = mount(ThemeSwitcher, {
@@ -90,7 +93,7 @@ describe('ThemeSwitcher', () => {
     expect(wrapper.find('input[type="checkbox"]').exists()).toBe(false)
   })
 
-  it('admins only change their own local view from the theme switcher', async () => {
+  it('admins publish the global theme from the sidebar switcher', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
     window.__APP_CONFIG__ = { site_name: 'Sub2API', appearance_theme_default: 'newspaper' } as any
@@ -104,8 +107,9 @@ describe('ThemeSwitcher', () => {
     await wrapper.find('button.theme-switcher-trigger').trigger('click')
     await wrapper.findAll('button.theme-switcher-option').find((button) => button.text().includes('Cloudflare'))!.trigger('click')
 
-    expect(localStorage.getItem('appearance_theme')).toBe('cloudflare')
+    expect(adminAPI.settings.updateAppearanceThemeDefault).toHaveBeenCalledWith('cloudflare')
+    expect(localStorage.getItem('appearance_theme')).toBeNull()
     expect(document.documentElement.dataset.theme).toBe('cloudflare')
-    expect(window.__APP_CONFIG__?.appearance_theme_default).toBe('newspaper')
+    expect(window.__APP_CONFIG__?.appearance_theme_default).toBe('cloudflare')
   })
 })

@@ -7,8 +7,8 @@ export interface AppearanceThemeOption {
   label: string
 }
 
-const STORAGE_KEY = 'appearance_theme'
 const DEFAULT_THEME_STORAGE_KEY = 'appearance_theme_default'
+const LEGACY_LOCAL_THEME_STORAGE_KEY = 'appearance_theme'
 
 export const appearanceThemeOptions: AppearanceThemeOption[] = [
   { id: 'newspaper', label: 'Newspaper' },
@@ -28,35 +28,45 @@ function getInjectedAppearanceThemeDefault(): AppearanceThemeId {
   return normalizeTheme(window.__APP_CONFIG__?.appearance_theme_default)
 }
 
-function applyTheme(theme: AppearanceThemeId, persist = true) {
+function clearLegacyLocalThemeOverride() {
+  try {
+    localStorage.removeItem(LEGACY_LOCAL_THEME_STORAGE_KEY)
+  } catch {
+    // Ignore storage failures; runtime theme still follows public settings.
+  }
+}
+
+function applyTheme(theme: AppearanceThemeId) {
   activeTheme.value = theme
   document.documentElement.dataset.theme = theme
   document.documentElement.classList.toggle('theme-newspaper', theme === 'newspaper')
   document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')
   document.documentElement.classList.toggle('theme-anthropic', theme === 'anthropic')
   document.documentElement.classList.remove('dark')
-  if (persist) {
-    localStorage.setItem(STORAGE_KEY, theme)
-  }
 }
 
 export function initAppearanceTheme() {
-  const localTheme = localStorage.getItem(STORAGE_KEY)
-  applyTheme(localTheme ? normalizeTheme(localTheme) : getInjectedAppearanceThemeDefault(), Boolean(localTheme))
+  clearLegacyLocalThemeOverride()
+  applyTheme(getInjectedAppearanceThemeDefault())
 }
 
 export function setAppearanceTheme(theme: AppearanceThemeId) {
-  applyTheme(theme)
+  clearLegacyLocalThemeOverride()
+  applyTheme(normalizeTheme(theme))
 }
 
 export function updateAppearanceThemeDefault(theme: AppearanceThemeId) {
   const normalized = normalizeTheme(theme)
-  localStorage.setItem(DEFAULT_THEME_STORAGE_KEY, normalized)
+  try {
+    localStorage.setItem(DEFAULT_THEME_STORAGE_KEY, normalized)
+  } catch {
+    // Ignore storage failures; the live DOM theme and public settings still win.
+  }
   if (window.__APP_CONFIG__) {
     window.__APP_CONFIG__.appearance_theme_default = normalized
   }
-  const localTheme = localStorage.getItem(STORAGE_KEY)
-  applyTheme(localTheme ? normalizeTheme(localTheme) : normalized, false)
+  clearLegacyLocalThemeOverride()
+  applyTheme(normalized)
 }
 
 export function useAppearanceTheme() {

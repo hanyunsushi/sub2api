@@ -28,6 +28,7 @@
             <ProviderBrandIcon
               :provider="statusLogoText(subscription)"
               :model="subscription.name"
+              :logo-url="subscription.logo_url"
             />
           </span>
         </div>
@@ -80,7 +81,7 @@
             :title="`${segment.label}: ${segment.count}`"
           ></span>
         </div>
-        <div class="mt-3 grid grid-cols-4 gap-2">
+        <div class="monitor-capacity-status-grid mt-3 grid grid-cols-2 gap-2">
           <div
             v-for="segment in card.statusSegments"
             :key="`${segment.key}-label`"
@@ -378,9 +379,16 @@ function formatBalance(value: number) {
   color: var(--atelier-muted);
   display: grid;
   font-size: 0.6875rem;
-  gap: 0.25rem;
+  gap: 0.25rem 0.375rem;
   grid-template-columns: auto minmax(0, 1fr) auto;
   min-width: 0;
+  white-space: nowrap;
+}
+
+.monitor-capacity-status-stat strong {
+  justify-self: end;
+  min-width: 1.25rem;
+  text-align: right;
 }
 
 .monitor-capacity-status-dot {
