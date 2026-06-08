@@ -22,6 +22,13 @@ const (
 	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
 
+	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
+	ExternalSubscriptionBalanceStrategyNewAPIUserQuota         = "newapi_user_quota"
+	ExternalSubscriptionBalanceStrategyNewAPISubscription      = "newapi_subscription"
+	ExternalSubscriptionBalanceStrategyActiveSubscriptions     = "active_subscriptions"
+	ExternalSubscriptionBalanceStrategyAuthMeBalance           = "auth_me_balance"
+	ExternalSubscriptionBalanceStrategyActiveWithAuthMeBalance = "active_with_auth_me_balance"
+
 	externalSubscriptionStatusCacheTTL             = 60 * time.Second
 	externalSubscriptionStatusStaleTTL             = 30 * time.Minute
 	externalSubscriptionStatusBackgroundRefreshTTL = 30 * time.Second
@@ -35,6 +42,7 @@ type ExternalSubscriptionProvider struct {
 	Name                   string   `json:"name"`
 	Enabled                bool     `json:"enabled"`
 	Template               string   `json:"template"`
+	BalanceStrategy        string   `json:"balance_strategy"`
 	APIBaseURL             string   `json:"api_base_url"`
 	LogoURL                string   `json:"logo_url,omitempty"`
 	APIToken               string   `json:"api_token,omitempty"`
@@ -47,22 +55,24 @@ type ExternalSubscriptionProvider struct {
 }
 
 type ExternalSubscriptionProviderInput struct {
-	ID            string   `json:"id"`
-	Name          string   `json:"name"`
-	Enabled       bool     `json:"enabled"`
-	Template      string   `json:"template"`
-	APIBaseURL    string   `json:"api_base_url"`
-	LogoURL       string   `json:"logo_url"`
-	APIToken      string   `json:"api_token"`
-	UserID        string   `json:"user_id"`
-	RefreshToken  string   `json:"refresh_token"`
-	MatchKeywords []string `json:"match_keywords"`
-	SortOrder     int      `json:"sort_order"`
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Enabled         bool     `json:"enabled"`
+	Template        string   `json:"template"`
+	BalanceStrategy string   `json:"balance_strategy"`
+	APIBaseURL      string   `json:"api_base_url"`
+	LogoURL         string   `json:"logo_url"`
+	APIToken        string   `json:"api_token"`
+	UserID          string   `json:"user_id"`
+	RefreshToken    string   `json:"refresh_token"`
+	MatchKeywords   []string `json:"match_keywords"`
+	SortOrder       int      `json:"sort_order"`
 }
 
 type ExternalSubscriptionProviderStatus struct {
 	Name                   string   `json:"name"`
 	Template               string   `json:"template"`
+	BalanceStrategy        string   `json:"balance_strategy"`
 	LogoURL                string   `json:"logo_url,omitempty"`
 	APITokenConfigured     bool     `json:"api_token_configured"`
 	RefreshTokenConfigured bool     `json:"refresh_token_configured"`
@@ -72,17 +82,18 @@ type ExternalSubscriptionProviderStatus struct {
 }
 
 type externalSubscriptionStoredProvider struct {
-	ID            string   `json:"id"`
-	Name          string   `json:"name"`
-	Enabled       bool     `json:"enabled"`
-	Template      string   `json:"template"`
-	APIBaseURL    string   `json:"api_base_url"`
-	LogoURL       string   `json:"logo_url,omitempty"`
-	APIToken      string   `json:"api_token"`
-	UserID        string   `json:"user_id,omitempty"`
-	RefreshToken  string   `json:"refresh_token,omitempty"`
-	MatchKeywords []string `json:"match_keywords"`
-	SortOrder     int      `json:"sort_order"`
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Enabled         bool     `json:"enabled"`
+	Template        string   `json:"template"`
+	BalanceStrategy string   `json:"balance_strategy,omitempty"`
+	APIBaseURL      string   `json:"api_base_url"`
+	LogoURL         string   `json:"logo_url,omitempty"`
+	APIToken        string   `json:"api_token"`
+	UserID          string   `json:"user_id,omitempty"`
+	RefreshToken    string   `json:"refresh_token,omitempty"`
+	MatchKeywords   []string `json:"match_keywords"`
+	SortOrder       int      `json:"sort_order"`
 }
 
 type ExternalSubscriptionConfigService struct {
@@ -276,6 +287,7 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		statuses = append(statuses, ExternalSubscriptionProviderStatus{
 			Name:                       publicProvider.Name,
 			Template:                   publicProvider.Template,
+			BalanceStrategy:            publicProvider.BalanceStrategy,
 			LogoURL:                    publicProvider.LogoURL,
 			APITokenConfigured:         publicProvider.APITokenConfigured,
 			RefreshTokenConfigured:     publicProvider.RefreshTokenConfigured,
@@ -313,6 +325,7 @@ func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientError
 		kept := previous
 		kept.Name = status.Name
 		kept.Template = status.Template
+		kept.BalanceStrategy = status.BalanceStrategy
 		kept.LogoURL = status.LogoURL
 		kept.Enabled = status.Enabled
 		kept.Configured = status.Configured
@@ -360,20 +373,7 @@ func (s *ExternalSubscriptionConfigService) getStatusForStoredProvider(ctx conte
 
 	var status *ExternalSubscriptionStatus
 	var err error
-	switch provider.Template {
-	case ExternalSubscriptionTemplateNewAPIConsole:
-		status, err = runner.getNewAPIConsoleSubscriptionStatus(ctx, cfg)
-	case ExternalSubscriptionTemplateActiveSubscriptions:
-		status, err = runner.GetStatus(ctx)
-	case ExternalSubscriptionTemplateBuzzBalance:
-		status, err = runner.getBuzzBalanceSubscriptionStatus(ctx, cfg)
-	case ExternalSubscriptionTemplateOpenRouterCredits:
-		status, err = runner.getOpenRouterCreditsStatus(ctx, cfg)
-	case ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
-		status, err = runner.getCloudflareAIGatewayCreditsStatus(ctx, cfg)
-	default:
-		return nil, nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
-	}
+	status, err = runner.getStatusWithBalanceStrategy(ctx, cfg, provider.Template, effectiveExternalSubscriptionBalanceStrategy(provider))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -558,14 +558,15 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 		return nil, err
 	}
 	providers = append(providers, externalSubscriptionStoredProvider{
-		ID:            "buzz",
-		Name:          "Buzz",
-		Enabled:       buzzSettings.Enabled,
-		Template:      ExternalSubscriptionTemplateBuzzBalance,
-		APIBaseURL:    buzzSettings.APIBaseURL,
-		APIToken:      buzzSettings.APIToken,
-		MatchKeywords: []string{"buzz", "buzzai", "buzzai.cc", "claude"},
-		SortOrder:     5,
+		ID:              "buzz",
+		Name:            "Buzz",
+		Enabled:         buzzSettings.Enabled,
+		Template:        ExternalSubscriptionTemplateBuzzBalance,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+		APIBaseURL:      buzzSettings.APIBaseURL,
+		APIToken:        buzzSettings.APIToken,
+		MatchKeywords:   []string{"buzz", "buzzai", "buzzai.cc", "claude"},
+		SortOrder:       5,
 	})
 	for _, item := range configs {
 		settings, err := s.settingService.getExternalSubscriptionSettings(ctx, item.cfg)
@@ -573,36 +574,39 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 			return nil, err
 		}
 		providers = append(providers, externalSubscriptionStoredProvider{
-			ID:            item.cfg.Provider,
-			Name:          item.cfg.DisplayName,
-			Enabled:       settings.Enabled,
-			Template:      item.template,
-			APIBaseURL:    settings.APIBaseURL,
-			APIToken:      settings.APIToken,
-			UserID:        settings.UserID,
-			RefreshToken:  settings.RefreshToken,
-			MatchKeywords: item.keywords,
-			SortOrder:     item.order,
+			ID:              item.cfg.Provider,
+			Name:            item.cfg.DisplayName,
+			Enabled:         settings.Enabled,
+			Template:        item.template,
+			BalanceStrategy: defaultExternalSubscriptionBalanceStrategy(item.cfg.Provider, item.template),
+			APIBaseURL:      settings.APIBaseURL,
+			APIToken:        settings.APIToken,
+			UserID:          settings.UserID,
+			RefreshToken:    settings.RefreshToken,
+			MatchKeywords:   item.keywords,
+			SortOrder:       item.order,
 		})
 	}
 	providers = append(providers,
 		externalSubscriptionStoredProvider{
-			ID:            "openrouter",
-			Name:          "OpenRouter",
-			Enabled:       false,
-			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
-			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
-			MatchKeywords: []string{"openrouter", "openrouter.ai"},
-			SortOrder:     70,
+			ID:              "openrouter",
+			Name:            "OpenRouter",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateOpenRouterCredits,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      DefaultOpenRouterCreditsAPIBaseURL,
+			MatchKeywords:   []string{"openrouter", "openrouter.ai"},
+			SortOrder:       70,
 		},
 		externalSubscriptionStoredProvider{
-			ID:            "cloudflare",
-			Name:          "Cloudflare AI Gateway",
-			Enabled:       false,
-			Template:      ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
-			APIBaseURL:    DefaultCloudflareAIGatewayCreditsAPIBaseURL,
-			MatchKeywords: []string{"cloudflare", "ai-gateway", "workers-ai"},
-			SortOrder:     80,
+			ID:              "cloudflare",
+			Name:            "Cloudflare AI Gateway",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      DefaultCloudflareAIGatewayCreditsAPIBaseURL,
+			MatchKeywords:   []string{"cloudflare", "ai-gateway", "workers-ai"},
+			SortOrder:       80,
 		},
 	)
 	return providers, nil
@@ -634,17 +638,18 @@ func (s *ExternalSubscriptionConfigService) saveStoredProviders(ctx context.Cont
 
 func normalizeExternalSubscriptionInput(input ExternalSubscriptionProviderInput, existing *externalSubscriptionStoredProvider) (externalSubscriptionStoredProvider, error) {
 	provider := externalSubscriptionStoredProvider{
-		ID:            strings.TrimSpace(strings.ToLower(input.ID)),
-		Name:          strings.TrimSpace(input.Name),
-		Enabled:       input.Enabled,
-		Template:      strings.TrimSpace(input.Template),
-		APIBaseURL:    normalizeExternalSubscriptionAPIBaseURL(input.APIBaseURL, strings.TrimSpace(input.APIBaseURL)),
-		LogoURL:       strings.TrimSpace(input.LogoURL),
-		APIToken:      strings.TrimSpace(input.APIToken),
-		UserID:        strings.TrimSpace(input.UserID),
-		RefreshToken:  strings.TrimSpace(input.RefreshToken),
-		MatchKeywords: normalizeExternalSubscriptionKeywords(input.MatchKeywords),
-		SortOrder:     input.SortOrder,
+		ID:              strings.TrimSpace(strings.ToLower(input.ID)),
+		Name:            strings.TrimSpace(input.Name),
+		Enabled:         input.Enabled,
+		Template:        strings.TrimSpace(input.Template),
+		BalanceStrategy: strings.TrimSpace(input.BalanceStrategy),
+		APIBaseURL:      normalizeExternalSubscriptionAPIBaseURL(input.APIBaseURL, strings.TrimSpace(input.APIBaseURL)),
+		LogoURL:         strings.TrimSpace(input.LogoURL),
+		APIToken:        strings.TrimSpace(input.APIToken),
+		UserID:          strings.TrimSpace(input.UserID),
+		RefreshToken:    strings.TrimSpace(input.RefreshToken),
+		MatchKeywords:   normalizeExternalSubscriptionKeywords(input.MatchKeywords),
+		SortOrder:       input.SortOrder,
 	}
 	if existing != nil {
 		provider.ID = existing.ID
@@ -671,6 +676,13 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	if !isExternalSubscriptionTemplate(provider.Template) {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
 	}
+	provider.BalanceStrategy = strings.TrimSpace(provider.BalanceStrategy)
+	if provider.BalanceStrategy == "" {
+		provider.BalanceStrategy = defaultExternalSubscriptionBalanceStrategy(provider.ID, provider.Template)
+	}
+	if !isExternalSubscriptionBalanceStrategy(provider.BalanceStrategy) {
+		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_BALANCE_STRATEGY_INVALID", "external subscription provider balance strategy is invalid")
+	}
 	provider.APIBaseURL = normalizeExternalSubscriptionAPIBaseURL(provider.APIBaseURL, strings.TrimSpace(provider.APIBaseURL))
 	if provider.APIBaseURL == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_API_BASE_URL_REQUIRED", "external subscription provider API base URL is required")
@@ -684,6 +696,45 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		provider.MatchKeywords = []string{provider.ID, strings.ToLower(provider.Name)}
 	}
 	return provider, nil
+}
+
+func defaultExternalSubscriptionBalanceStrategy(providerID, template string) string {
+	switch strings.TrimSpace(strings.ToLower(providerID)) {
+	case "packycode":
+		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
+	case "pixel":
+		return ExternalSubscriptionBalanceStrategyAuthMeBalance
+	}
+	switch strings.TrimSpace(template) {
+	case ExternalSubscriptionTemplateNewAPIConsole:
+		return ExternalSubscriptionBalanceStrategyNewAPISubscription
+	case ExternalSubscriptionTemplateActiveSubscriptions:
+		return ExternalSubscriptionBalanceStrategyActiveSubscriptions
+	default:
+		return ExternalSubscriptionBalanceStrategyAuto
+	}
+}
+
+func effectiveExternalSubscriptionBalanceStrategy(provider externalSubscriptionStoredProvider) string {
+	strategy := strings.TrimSpace(provider.BalanceStrategy)
+	if strategy == "" || strategy == ExternalSubscriptionBalanceStrategyAuto {
+		return defaultExternalSubscriptionBalanceStrategy(provider.ID, provider.Template)
+	}
+	return strategy
+}
+
+func isExternalSubscriptionBalanceStrategy(strategy string) bool {
+	switch strings.TrimSpace(strategy) {
+	case ExternalSubscriptionBalanceStrategyAuto,
+		ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+		ExternalSubscriptionBalanceStrategyNewAPISubscription,
+		ExternalSubscriptionBalanceStrategyActiveSubscriptions,
+		ExternalSubscriptionBalanceStrategyAuthMeBalance,
+		ExternalSubscriptionBalanceStrategyActiveWithAuthMeBalance:
+		return true
+	default:
+		return false
+	}
 }
 
 func isExternalSubscriptionTemplate(template string) bool {
@@ -842,6 +893,7 @@ func publicExternalSubscriptionProvider(provider externalSubscriptionStoredProvi
 		Name:                   provider.Name,
 		Enabled:                provider.Enabled,
 		Template:               provider.Template,
+		BalanceStrategy:        provider.BalanceStrategy,
 		APIBaseURL:             provider.APIBaseURL,
 		LogoURL:                provider.LogoURL,
 		APITokenConfigured:     strings.TrimSpace(provider.APIToken) != "",

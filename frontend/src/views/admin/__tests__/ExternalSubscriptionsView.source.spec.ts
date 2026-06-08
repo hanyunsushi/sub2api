@@ -34,6 +34,18 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('leave blank to keep')
   })
 
+  it('exposes a persistent balance strategy selector wired into provider payloads', () => {
+    expect(source).toContain('balance_strategy')
+    expect(source).toContain('balanceStrategyOptions')
+    expect(source).toContain('v-model="form.balance_strategy"')
+    expect(source).toContain("auth_me_balance")
+    expect(source).toContain("newapi_user_quota")
+    expect(source).toContain("newapi_subscription")
+    expect(source).toContain("active_subscriptions")
+    expect(source).toContain('balance_strategy: form.balance_strategy')
+    expect(source).toContain('form.balance_strategy = provider.balance_strategy')
+  })
+
   it('exposes matching keywords and sort order so new providers auto-match account cards and header ordering', () => {
     expect(source).toContain('match_keywords')
     expect(source).toContain('sort_order')

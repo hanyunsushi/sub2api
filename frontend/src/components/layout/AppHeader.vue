@@ -552,9 +552,11 @@ function formatExternalSubscriptionBalance(
   if (typeof remaining === 'number' && typeof total === 'number') {
     return `$${remaining.toFixed(2)} / $${total.toFixed(2)}`
   }
+  if (typeof remaining === 'number') {
+    return formatExternalSubscriptionMoney(remaining, subscription.currency)
+  }
   if (typeof total === 'number') return `限额 $${total.toFixed(2)}`
-  if (subscription.active_count > 0) return `${subscription.active_count} 个订阅`
-  return '无有效订阅'
+  return '余额未知'
 }
 
 function formatExternalSubscriptionMoney(value: number, currency?: string | null) {

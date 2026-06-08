@@ -6,6 +6,14 @@ export type ExternalSubscriptionTemplate =
   | 'openrouter_credits'
   | 'cloudflare_ai_gateway_credits'
 
+export type ExternalSubscriptionBalanceStrategy =
+  | 'auto'
+  | 'newapi_user_quota'
+  | 'newapi_subscription'
+  | 'active_subscriptions'
+  | 'auth_me_balance'
+  | 'active_with_auth_me_balance'
+
 export interface ExternalSubscriptionItem {
   id: number
   group_id: number
@@ -24,6 +32,7 @@ export interface ExternalSubscriptionProvider {
   name: string
   enabled: boolean
   template: ExternalSubscriptionTemplate
+  balance_strategy: ExternalSubscriptionBalanceStrategy
   api_base_url: string
   logo_url?: string
   api_token_configured: boolean
@@ -38,6 +47,7 @@ export interface ExternalSubscriptionProviderInput {
   name: string
   enabled: boolean
   template: ExternalSubscriptionTemplate
+  balance_strategy: ExternalSubscriptionBalanceStrategy
   api_base_url: string
   logo_url?: string
   api_token?: string
@@ -51,6 +61,7 @@ export interface ExternalSubscriptionStatus {
   provider: string
   name: string
   template: ExternalSubscriptionTemplate
+  balance_strategy: ExternalSubscriptionBalanceStrategy
   enabled: boolean
   configured: boolean
   logo_url?: string

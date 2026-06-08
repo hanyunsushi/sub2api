@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/stretchr/testify/require"
 )
 
-func TestPackyCodeSubscriptionService_GetStatusReadsNewAPIConsoleSubscriptionQuota(t *testing.T) {
+func TestPackyCodeSubscriptionService_GetStatusReadsNewAPIConsoleUserQuota(t *testing.T) {
 	var requestedPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
@@ -43,31 +42,7 @@ func TestPackyCodeSubscriptionService_GetStatusReadsNewAPIConsoleSubscriptionQuo
 				}
 			}`))
 		case "/api/subscription/self":
-			_, _ = w.Write([]byte(`{
-				"success": true,
-				"message": "",
-				"data": {
-					"billing_preference": "subscription_first",
-					"subscriptions": [
-						{
-							"subscription": {
-								"id": 33,
-								"plan_id": 19,
-								"status": "active",
-								"start_time": 1780171016,
-								"end_time": 1811707016,
-								"amount_total": 45000000,
-								"amount_used": 2000000
-							},
-							"plan": {
-								"id": 19,
-								"title": "PackyCode Pro"
-							}
-						}
-					],
-					"all_subscriptions": []
-				}
-			}`))
+			require.Fail(t, "PackyCode default status should use user quota instead of subscription quota")
 		default:
 			http.NotFound(w, r)
 		}
@@ -84,23 +59,84 @@ func TestPackyCodeSubscriptionService_GetStatusReadsNewAPIConsoleSubscriptionQuo
 	got, err := svc.GetStatus(context.Background())
 	require.NoError(t, err)
 
-	require.Equal(t, []string{"/api/status", "/api/user/self", "/api/subscription/self"}, requestedPaths)
+	require.Equal(t, []string{"/api/status", "/api/user/self"}, requestedPaths)
 	require.True(t, got.Enabled)
 	require.True(t, got.Configured)
 	require.Equal(t, "packycode", got.Provider)
 	require.Equal(t, server.URL, got.SiteURL)
 	require.Equal(t, "CNY", got.Currency)
-	require.Equal(t, 1, got.ActiveCount)
-	require.NotNil(t, got.TotalLimitUSD)
-	require.InDelta(t, 90, *got.TotalLimitUSD, 0.0001)
+	require.Equal(t, 0, got.ActiveCount)
+	require.Nil(t, got.TotalLimitUSD)
 	require.InDelta(t, 4, got.UsedUSD, 0.0001)
 	require.NotNil(t, got.RemainingUSD)
-	require.InDelta(t, 86, *got.RemainingUSD, 0.0001)
-	require.NotNil(t, got.ExpiresAt)
-	require.Equal(t, time.Unix(1811707016, 0).UTC(), got.ExpiresAt.UTC())
-	require.Len(t, got.Subscriptions, 1)
-	require.Equal(t, "PackyCode Pro", got.Subscriptions[0].GroupName)
-	require.Equal(t, "subscription", got.Subscriptions[0].Window)
+	require.InDelta(t, 0, *got.RemainingUSD, 0.0001)
+	require.Nil(t, got.ExpiresAt)
+	require.Empty(t, got.Subscriptions)
+}
+
+func TestPackyCodeSubscriptionService_GetStatusUsesUserQuotaWhenSubscriptionEndpointMissing(t *testing.T) {
+	var requestedPaths []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		if r.URL.Path != "/api/status" {
+			require.Equal(t, "Bearer packy-secret", r.Header.Get("Authorization"))
+			require.Equal(t, "138044", r.Header.Get("New-API-User"))
+		}
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"quota_display_type": "CNY",
+					"quota_per_unit": 500000,
+					"usd_exchange_rate": 1
+				}
+			}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{
+				"success": true,
+				"message": "",
+				"data": {
+					"id": 138044,
+					"quota": 413219,
+					"used_quota": 86781,
+					"request_count": 12
+				}
+			}`))
+		case "/api/subscription/self":
+			require.Fail(t, "PackyCode should use user quota by default instead of querying the missing subscription endpoint")
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyPackyCodeSubscriptionEnabled:    "true",
+		SettingKeyPackyCodeSubscriptionAPIBaseURL: server.URL,
+		SettingKeyPackyCodeSubscriptionAPIToken:   "packy-secret",
+		SettingKeyPackyCodeSubscriptionUserID:     "138044",
+	}}
+	svc := NewPackyCodeSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, []string{"/api/status", "/api/user/self"}, requestedPaths)
+	require.True(t, got.Enabled)
+	require.True(t, got.Configured)
+	require.Empty(t, got.ErrorCode)
+	require.Equal(t, "packycode", got.Provider)
+	require.Equal(t, "CNY", got.Currency)
+	require.Equal(t, 0, got.ActiveCount)
+	require.Nil(t, got.TotalLimitUSD)
+	require.InDelta(t, 0.173562, got.UsedUSD, 0.000001)
+	require.NotNil(t, got.RemainingUSD)
+	require.InDelta(t, 0.826438, *got.RemainingUSD, 0.000001)
+	require.Empty(t, got.Subscriptions)
 }
 
 func TestPackyCodeSubscriptionService_GetStatusNormalizesCopiedUserToken(t *testing.T) {
@@ -137,8 +173,8 @@ func TestPackyCodeSubscriptionService_GetStatusNormalizesCopiedUserToken(t *test
 	require.NoError(t, err)
 
 	require.True(t, got.Configured)
-	require.Equal(t, []string{"Bearer packy-secret", "Bearer packy-secret"}, authHeaders)
-	require.Equal(t, []string{"996", "996"}, userHeaders)
+	require.Equal(t, []string{"Bearer packy-secret"}, authHeaders)
+	require.Equal(t, []string{"996"}, userHeaders)
 }
 
 func TestPackyCodeSubscriptionService_GetStatusUsesConfiguredUserIDWithBareToken(t *testing.T) {
@@ -176,11 +212,8 @@ func TestPackyCodeSubscriptionService_GetStatusUsesConfiguredUserIDWithBareToken
 	require.NoError(t, err)
 
 	require.True(t, got.Configured)
-	require.Equal(t, []string{
-		"Bearer 0123456789abcdef0123456789abcdef",
-		"Bearer 0123456789abcdef0123456789abcdef",
-	}, authHeaders)
-	require.Equal(t, []string{"996", "996"}, userHeaders)
+	require.Equal(t, []string{"Bearer 0123456789abcdef0123456789abcdef"}, authHeaders)
+	require.Equal(t, []string{"996"}, userHeaders)
 }
 
 func TestPackyCodeSubscriptionService_GetStatusUsesNewAPIUnauthorizedEnvelope(t *testing.T) {
