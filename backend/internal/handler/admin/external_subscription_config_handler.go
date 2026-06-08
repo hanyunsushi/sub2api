@@ -60,7 +60,10 @@ func (h *ExternalSubscriptionConfigHandler) DeleteProvider(c *gin.Context) {
 }
 
 func (h *ExternalSubscriptionConfigHandler) GetStatuses(c *gin.Context) {
-	statuses, err := h.service.GetStatuses(c.Request.Context())
+	forceRefresh := c.Query("refresh") == "1" || c.Query("force") == "1"
+	statuses, err := h.service.GetStatuses(c.Request.Context(), service.ExternalSubscriptionStatusOptions{
+		ForceRefresh: forceRefresh,
+	})
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return

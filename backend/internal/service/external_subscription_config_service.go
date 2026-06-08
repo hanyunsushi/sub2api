@@ -22,7 +22,10 @@ const (
 	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
 
-	externalSubscriptionStatusCacheTTL = 60 * time.Second
+	externalSubscriptionStatusCacheTTL             = 60 * time.Second
+	externalSubscriptionStatusStaleTTL             = 30 * time.Minute
+	externalSubscriptionStatusBackgroundRefreshTTL = 30 * time.Second
+	externalSubscriptionProviderStatusTimeout      = 6 * time.Second
 )
 
 var externalSubscriptionIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{1,63}$`)
@@ -88,7 +91,12 @@ type ExternalSubscriptionConfigService struct {
 type externalSubscriptionStatusCache struct {
 	fingerprint string
 	expiresAt   time.Time
+	staleUntil  time.Time
 	statuses    []ExternalSubscriptionProviderStatus
+}
+
+type ExternalSubscriptionStatusOptions struct {
+	ForceRefresh bool
 }
 
 func NewExternalSubscriptionConfigService(settingService *SettingService) *ExternalSubscriptionConfigService {
@@ -175,19 +183,28 @@ func (s *ExternalSubscriptionConfigService) DeleteProvider(ctx context.Context, 
 	return nil
 }
 
-func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context) ([]ExternalSubscriptionProviderStatus, error) {
+func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context, options ...ExternalSubscriptionStatusOptions) ([]ExternalSubscriptionProviderStatus, error) {
 	stored, err := s.loadStoredProviders(ctx)
 	if err != nil {
 		return nil, err
 	}
 	fingerprint := externalSubscriptionProvidersFingerprint(stored)
-	if cached := s.getCachedStatuses(fingerprint); cached != nil {
-		return cached, nil
+	forceRefresh := len(options) > 0 && options[0].ForceRefresh
+	if !forceRefresh {
+		if cached := s.getFreshCachedStatuses(fingerprint); cached != nil {
+			return cached, nil
+		}
+		if cached := s.getStaleCachedStatuses(fingerprint); cached != nil {
+			s.refreshStatusesCacheAsync(fingerprint, stored)
+			return cached, nil
+		}
 	}
 
 	value, err, _ := s.statusSF.Do(fingerprint, func() (any, error) {
-		if cached := s.getCachedStatuses(fingerprint); cached != nil {
-			return cached, nil
+		if !forceRefresh {
+			if cached := s.getFreshCachedStatuses(fingerprint); cached != nil {
+				return cached, nil
+			}
 		}
 		return s.getStatusesUncached(ctx, stored, fingerprint)
 	})
@@ -197,20 +214,61 @@ func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context) ([]
 	return cloneExternalSubscriptionProviderStatuses(value.([]ExternalSubscriptionProviderStatus)), nil
 }
 
+func (s *ExternalSubscriptionConfigService) refreshStatusesCacheAsync(fingerprint string, stored []externalSubscriptionStoredProvider) {
+	stored = cloneExternalSubscriptionStoredProviders(stored)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), externalSubscriptionStatusBackgroundRefreshTTL)
+		defer cancel()
+		_, _, _ = s.statusSF.Do(fingerprint, func() (any, error) {
+			if cached := s.getFreshCachedStatuses(fingerprint); cached != nil {
+				return cached, nil
+			}
+			return s.getStatusesUncached(ctx, stored, fingerprint)
+		})
+	}()
+}
+
 func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Context, stored []externalSubscriptionStoredProvider, fingerprint string) ([]ExternalSubscriptionProviderStatus, error) {
+	type providerResult struct {
+		index        int
+		status       *ExternalSubscriptionStatus
+		nextProvider *externalSubscriptionStoredProvider
+		err          error
+	}
+
+	results := make([]providerResult, len(stored))
+	var wg sync.WaitGroup
+	for index := range stored {
+		wg.Add(1)
+		go func(index int) {
+			defer wg.Done()
+			providerCtx, cancel := context.WithTimeout(ctx, externalSubscriptionProviderStatusTimeout)
+			defer cancel()
+			provider := stored[index]
+			status, nextProvider, err := s.getStatusForStoredProvider(providerCtx, provider)
+			results[index] = providerResult{
+				index:        index,
+				status:       status,
+				nextProvider: nextProvider,
+				err:          err,
+			}
+		}(index)
+	}
+	wg.Wait()
+
 	statuses := make([]ExternalSubscriptionProviderStatus, 0, len(stored))
 	updated := false
-	for index := range stored {
-		provider := stored[index]
-		status, nextProvider, err := s.getStatusForStoredProvider(ctx, provider)
-		if err != nil {
-			status = externalSubscriptionProviderErrorStatus(provider, err)
+	for _, result := range results {
+		provider := stored[result.index]
+		status := result.status
+		if result.err != nil {
+			status = externalSubscriptionProviderErrorStatus(provider, result.err)
 		}
-		if nextProvider != nil {
-			stored[index] = *nextProvider
+		if result.nextProvider != nil {
+			stored[result.index] = *result.nextProvider
 			updated = true
 		}
-		publicProvider := publicExternalSubscriptionProvider(stored[index])
+		publicProvider := publicExternalSubscriptionProvider(stored[result.index])
 		statuses = append(statuses, ExternalSubscriptionProviderStatus{
 			Name:                       publicProvider.Name,
 			Template:                   publicProvider.Template,
@@ -227,8 +285,54 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		}
 	}
 	sortExternalSubscriptionStatuses(statuses)
+	statuses = s.mergeCachedStatusesForTransientErrors(fingerprint, statuses)
 	s.setCachedStatuses(fingerprint, statuses)
 	return cloneExternalSubscriptionProviderStatuses(statuses), nil
+}
+
+func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientErrors(fingerprint string, statuses []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {
+	cached := s.getAnyCachedStatuses(fingerprint)
+	if len(cached) == 0 {
+		return statuses
+	}
+	previousByProvider := make(map[string]ExternalSubscriptionProviderStatus, len(cached))
+	for _, status := range cached {
+		previousByProvider[status.Provider] = status
+	}
+	merged := cloneExternalSubscriptionProviderStatuses(statuses)
+	for index, status := range merged {
+		previous, ok := previousByProvider[status.Provider]
+		if !ok || !shouldKeepExternalSubscriptionPreviousStatus(status, previous) {
+			continue
+		}
+		kept := previous
+		kept.Name = status.Name
+		kept.Template = status.Template
+		kept.Enabled = status.Enabled
+		kept.Configured = status.Configured
+		kept.APITokenConfigured = status.APITokenConfigured
+		kept.RefreshTokenConfigured = status.RefreshTokenConfigured
+		kept.MatchKeywords = append([]string(nil), status.MatchKeywords...)
+		kept.SortOrder = status.SortOrder
+		kept.SiteURL = status.SiteURL
+		merged[index] = kept
+	}
+	return merged
+}
+
+func shouldKeepExternalSubscriptionPreviousStatus(next, previous ExternalSubscriptionProviderStatus) bool {
+	if strings.TrimSpace(next.ErrorCode) == "" || strings.TrimSpace(previous.ErrorCode) != "" {
+		return false
+	}
+	if isExternalSubscriptionInvalidStatusCode(next.ErrorCode) {
+		return false
+	}
+	return previous.RemainingUSD != nil || previous.TotalLimitUSD != nil || previous.ActiveCount > 0
+}
+
+func isExternalSubscriptionInvalidStatusCode(code string) bool {
+	normalized := strings.ToUpper(strings.TrimSpace(code))
+	return normalized == "401" || normalized == "INVALID_TOKEN" || normalized == "TOKEN_EXPIRED"
 }
 
 func (s *ExternalSubscriptionConfigService) getStatusForStoredProvider(ctx context.Context, provider externalSubscriptionStoredProvider) (*ExternalSubscriptionStatus, *externalSubscriptionStoredProvider, error) {
@@ -595,7 +699,7 @@ func externalSubscriptionProvidersFingerprint(providers []externalSubscriptionSt
 	return string(raw)
 }
 
-func (s *ExternalSubscriptionConfigService) getCachedStatuses(fingerprint string) []ExternalSubscriptionProviderStatus {
+func (s *ExternalSubscriptionConfigService) getFreshCachedStatuses(fingerprint string) []ExternalSubscriptionProviderStatus {
 	s.statusCacheMu.Lock()
 	defer s.statusCacheMu.Unlock()
 	if s.statusCache == nil || s.statusCache.fingerprint != fingerprint || time.Now().After(s.statusCache.expiresAt) {
@@ -604,12 +708,32 @@ func (s *ExternalSubscriptionConfigService) getCachedStatuses(fingerprint string
 	return cloneExternalSubscriptionProviderStatuses(s.statusCache.statuses)
 }
 
+func (s *ExternalSubscriptionConfigService) getStaleCachedStatuses(fingerprint string) []ExternalSubscriptionProviderStatus {
+	s.statusCacheMu.Lock()
+	defer s.statusCacheMu.Unlock()
+	if s.statusCache == nil || s.statusCache.fingerprint != fingerprint || time.Now().After(s.statusCache.staleUntil) {
+		return nil
+	}
+	return cloneExternalSubscriptionProviderStatuses(s.statusCache.statuses)
+}
+
+func (s *ExternalSubscriptionConfigService) getAnyCachedStatuses(fingerprint string) []ExternalSubscriptionProviderStatus {
+	s.statusCacheMu.Lock()
+	defer s.statusCacheMu.Unlock()
+	if s.statusCache == nil || s.statusCache.fingerprint != fingerprint {
+		return nil
+	}
+	return cloneExternalSubscriptionProviderStatuses(s.statusCache.statuses)
+}
+
 func (s *ExternalSubscriptionConfigService) setCachedStatuses(fingerprint string, statuses []ExternalSubscriptionProviderStatus) {
 	s.statusCacheMu.Lock()
 	defer s.statusCacheMu.Unlock()
+	now := time.Now()
 	s.statusCache = &externalSubscriptionStatusCache{
 		fingerprint: fingerprint,
-		expiresAt:   time.Now().Add(externalSubscriptionStatusCacheTTL),
+		expiresAt:   now.Add(externalSubscriptionStatusCacheTTL),
+		staleUntil:  now.Add(externalSubscriptionStatusStaleTTL),
 		statuses:    cloneExternalSubscriptionProviderStatuses(statuses),
 	}
 }
@@ -630,6 +754,15 @@ func cloneExternalSubscriptionProviderStatuses(input []ExternalSubscriptionProvi
 		out[i].RemainingUSD = cloneFloat64Pointer(item.RemainingUSD)
 		out[i].ExpiresAt = cloneTimePointer(item.ExpiresAt)
 		out[i].DaysRemaining = cloneIntPointer(item.DaysRemaining)
+	}
+	return out
+}
+
+func cloneExternalSubscriptionStoredProviders(input []externalSubscriptionStoredProvider) []externalSubscriptionStoredProvider {
+	out := make([]externalSubscriptionStoredProvider, len(input))
+	for i, item := range input {
+		out[i] = item
+		out[i].MatchKeywords = append([]string(nil), item.MatchKeywords...)
 	}
 	return out
 }

@@ -968,6 +968,10 @@ const fetchExternalQuotaSummaries = async () => {
   }
 }
 
+const unsubscribeExternalQuotaSummaries = externalSubscriptionsAPI.subscribeDisplayStatuses((statuses) => {
+  externalSubscriptionStatuses.value = statuses
+})
+
 if (typeof window !== 'undefined') {
   loadSavedColumns()
   loadSavedAutoRefresh()
@@ -2038,6 +2042,7 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll, true)
   document.removeEventListener('click', handleClickOutside)
+  unsubscribeExternalQuotaSummaries()
 })
 </script>
 

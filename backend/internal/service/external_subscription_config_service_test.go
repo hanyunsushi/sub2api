@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/stretchr/testify/require"
@@ -562,6 +565,110 @@ func TestExternalSubscriptionConfigServiceGetStatusesCachesExternalCallsBriefly(
 	require.InDelta(t, 9, *second[0].RemainingUSD, 0.0001)
 }
 
+func TestExternalSubscriptionConfigServiceGetStatusesReturnsStaleSnapshotWhileRefreshing(t *testing.T) {
+	t.Setenv("TZ", "UTC")
+
+	var credits atomic.Int64
+	credits.Store(10)
+	requests := make(chan struct{}, 8)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests <- struct{}{}
+		_, _ = w.Write([]byte(`{"data":{"total_credits":` + jsonNumber(credits.Load()) + `,"total_usage":1}}`))
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    server.URL,
+			APIToken:      "openrouter-key",
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	first, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+	require.InDelta(t, 9, *first[0].RemainingUSD, 0.0001)
+	<-requests
+
+	svc.statusCacheMu.Lock()
+	svc.statusCache.expiresAt = time.Now().Add(-time.Second)
+	svc.statusCache.staleUntil = time.Now().Add(time.Minute)
+	svc.statusCacheMu.Unlock()
+	credits.Store(25)
+
+	stale, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+	require.InDelta(t, 9, *stale[0].RemainingUSD, 0.0001)
+
+	require.Eventually(t, func() bool {
+		select {
+		case <-requests:
+			return true
+		default:
+			return false
+		}
+	}, time.Second, 10*time.Millisecond)
+
+	require.Eventually(t, func() bool {
+		latest, err := svc.GetStatuses(context.Background())
+		if err != nil || len(latest) != 1 || latest[0].RemainingUSD == nil {
+			return false
+		}
+		return *latest[0].RemainingUSD > 20
+	}, time.Second, 10*time.Millisecond)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesRunsProvidersConcurrently(t *testing.T) {
+	makeServer := func(delay time.Duration, total int64) *httptest.Server {
+		return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(delay)
+			_, _ = w.Write([]byte(`{"data":{"total_credits":` + jsonNumber(total) + `,"total_usage":1}}`))
+		}))
+	}
+	firstServer := makeServer(120*time.Millisecond, 10)
+	defer firstServer.Close()
+	secondServer := makeServer(120*time.Millisecond, 20)
+	defer secondServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "first-provider",
+			Name:          "First",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    firstServer.URL,
+			APIToken:      "first-key",
+			MatchKeywords: []string{"first"},
+			SortOrder:     10,
+		},
+		{
+			ID:            "second-provider",
+			Name:          "Second",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    secondServer.URL,
+			APIToken:      "second-key",
+			MatchKeywords: []string{"second"},
+			SortOrder:     20,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	started := time.Now()
+	statuses, err := svc.GetStatuses(context.Background())
+	elapsed := time.Since(started)
+
+	require.NoError(t, err)
+	require.Len(t, statuses, 2)
+	require.Less(t, elapsed, 220*time.Millisecond)
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesPersistsRefreshedActiveTemplateToken(t *testing.T) {
 	activeCalls := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -625,6 +732,10 @@ func requireExternalSubscriptionProvider(t *testing.T, providers []ExternalSubsc
 	}
 	require.Failf(t, "provider not found", "id=%s providers=%v", id, providers)
 	return ExternalSubscriptionProvider{}
+}
+
+func jsonNumber(value int64) string {
+	return strconv.FormatInt(value, 10)
 }
 
 func requireExternalSubscriptionStatus(t *testing.T, statuses []ExternalSubscriptionProviderStatus, id string) ExternalSubscriptionProviderStatus {

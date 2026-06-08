@@ -23,6 +23,7 @@ vi.mock("@/api/admin/externalSubscriptions", () => ({
   default: {
     getStatuses: vi.fn(),
     getDisplayStatuses: vi.fn(),
+    subscribeDisplayStatuses: vi.fn(() => vi.fn()),
   },
 }));
 

@@ -495,6 +495,12 @@ async function fetchExternalSubscriptions() {
   }
 }
 
+const unsubscribeExternalSubscriptions = externalSubscriptionsAPI.subscribeDisplayStatuses((statuses) => {
+  if (statuses.length > 0 || externalSubscriptions.value.length === 0) {
+    externalSubscriptions.value = statuses
+  }
+})
+
 const externalSubscriptionLabels: Record<string, string> = {
   qlhazycoder: 'QL',
   buzz: 'Buzz',
@@ -632,6 +638,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
   stopBalanceCarousel()
   cancelBalanceDropdownClose()
+  unsubscribeExternalSubscriptions()
 })
 
 watch(

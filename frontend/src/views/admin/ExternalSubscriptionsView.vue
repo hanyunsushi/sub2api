@@ -30,7 +30,7 @@
               class="btn btn-secondary"
               :disabled="loading || statusLoading"
               :title="t('common.refresh')"
-              @click="refreshAll"
+              @click="refreshAll(true)"
             >
               <Icon name="refresh" size="md" :class="loading || statusLoading ? 'animate-spin' : ''" />
             </button>
@@ -90,8 +90,13 @@
                         {{ cardStatusBadgeText(card) }}
                       </span>
                     </div>
-                    <div class="mt-1 font-mono text-xs text-gray-400">
-                      {{ card.id }}
+                    <div class="mt-1 flex min-w-0 items-center gap-2">
+                      <span class="external-subscription-provider-id truncate font-mono">
+                        {{ card.id }}
+                      </span>
+                      <span class="external-subscription-template-chip truncate">
+                        {{ cardTemplateLabel(card) }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -124,56 +129,48 @@
                 {{ card.siteUrl }}
               </a>
 
-              <div class="external-subscription-card-metric mt-4">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0">
-                    <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
-                    <div
-                      class="external-subscription-balance-value mt-1 truncate font-mono text-xl font-semibold leading-6"
-                      :title="formatCardBalance(card)"
-                    >
-                      {{ formatCardBalance(card) }}
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <div class="external-subscription-card-label">{{ localText('订阅', 'Subs') }}</div>
-                    <div class="mt-1 font-mono text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      {{ card.activeCount }}
-                    </div>
-                  </div>
+              <div class="external-subscription-balance-row mt-4">
+                <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
+                <div
+                  class="external-subscription-balance-value truncate font-mono"
+                  :title="formatCardBalance(card)"
+                >
+                  {{ formatCardBalance(card) }}
                 </div>
               </div>
 
-              <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
-                <div class="min-w-0">
+              <div class="external-subscription-card-facts mt-4">
+                <div class="external-subscription-fact min-w-0">
                   <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
-                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                  <div class="external-subscription-fact-value truncate">
                     {{ formatCardExpiry(card) }}
                   </div>
                 </div>
-                <div class="min-w-0">
-                  <div class="external-subscription-card-label">{{ localText('模板', 'Template') }}</div>
-                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                    {{ cardTemplateLabel(card) }}
+                <div class="external-subscription-fact min-w-0">
+                  <div class="external-subscription-card-label">{{ localText('订阅', 'Subs') }}</div>
+                  <div class="external-subscription-fact-value font-mono">
+                    {{ card.activeCount }}
                   </div>
                 </div>
-                <div class="min-w-0">
-                  <div class="external-subscription-card-label">{{ localText('排序', 'Sort') }}</div>
-                  <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
-                    {{ card.sortOrder }}
-                  </div>
+                <div class="external-subscription-fact external-subscription-token-fact min-w-0">
+                  <span :class="card.apiTokenConfigured ? 'external-subscription-token-state is-ready' : 'external-subscription-token-state'">
+                    {{ card.apiTokenConfigured ? 'API Token' : localText('未配置 Token', 'No Token') }}
+                  </span>
+                </div>
+                <div class="external-subscription-fact external-subscription-sort-fact min-w-0">
+                  <span class="external-subscription-sort-value font-mono">
+                    #{{ card.sortOrder }}
+                  </span>
                 </div>
               </div>
 
-              <div class="mt-4 flex flex-wrap gap-1">
-                <span
-                  :class="card.apiTokenConfigured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
-                >
-                  API Token
-                </span>
+              <div
+                v-if="card.template === 'active_subscriptions' || card.readonly"
+                class="mt-4 flex flex-wrap gap-1"
+              >
                 <span
                   v-if="card.template === 'active_subscriptions'"
-                  :class="card.refreshTokenConfigured ? 'semantic-badge semantic-badge--success' : 'semantic-badge semantic-badge--neutral'"
+                  :class="card.refreshTokenConfigured ? 'external-subscription-token-state is-ready' : 'external-subscription-token-state'"
                 >
                   Refresh Token
                 </span>
@@ -395,7 +392,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import externalSubscriptionsAPI, {
   type ExternalSubscriptionProvider,
@@ -763,10 +760,10 @@ async function loadProviders() {
   }
 }
 
-async function loadStatuses() {
+async function loadStatuses(force = false) {
   statusLoading.value = true
   try {
-    statuses.value = await externalSubscriptionsAPI.getDisplayStatuses()
+    statuses.value = await externalSubscriptionsAPI.getDisplayStatuses({ refresh: force })
   } catch (error: any) {
     if (statuses.value.length === 0) statuses.value = []
     appStore.showError(error?.message || localText('订阅状态读取失败', 'Failed to load subscription statuses'))
@@ -775,8 +772,8 @@ async function loadStatuses() {
   }
 }
 
-async function refreshAll() {
-  await Promise.all([loadProviders(), loadStatuses()])
+async function refreshAll(force = false) {
+  await Promise.all([loadProviders(), loadStatuses(force)])
 }
 
 async function handleSubmit() {
@@ -790,7 +787,7 @@ async function handleSubmit() {
     }
     appStore.showSuccess(t('common.success'))
     closeDialog()
-    await refreshAll()
+    await refreshAll(true)
   } catch (error: any) {
     appStore.showError(error?.message || t('common.error'))
   } finally {
@@ -805,7 +802,7 @@ async function confirmDelete() {
     appStore.showSuccess(t('common.success'))
     showDeleteDialog.value = false
     deletingProvider.value = null
-    await refreshAll()
+    await refreshAll(true)
   } catch (error: any) {
     appStore.showError(error?.message || t('common.error'))
   }
@@ -876,8 +873,16 @@ function cardTemplateLabel(card: ExternalSubscriptionCard) {
   return templateLabel(card.template)
 }
 
+const unsubscribeExternalSubscriptionStatuses = externalSubscriptionsAPI.subscribeDisplayStatuses((nextStatuses) => {
+  statuses.value = nextStatuses
+})
+
 onMounted(() => {
   void refreshAll()
+})
+
+onBeforeUnmount(() => {
+  unsubscribeExternalSubscriptionStatuses()
 })
 </script>
 
@@ -985,11 +990,26 @@ onMounted(() => {
   color: var(--atelier-blue-dark);
 }
 
-.external-subscription-card-metric {
+.external-subscription-provider-id {
+  color: var(--atelier-muted);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+}
+
+.external-subscription-template-chip {
+  max-width: 9rem;
   border: 1px solid var(--atelier-material-edge);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
-  padding: 0.875rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--atelier-paper) 76%, transparent);
+  color: var(--atelier-muted);
+  font-size: 0.625rem;
+  line-height: 1rem;
+  padding: 0 0.375rem;
+}
+
+.external-subscription-balance-row {
+  border-top: 1px solid var(--atelier-material-edge);
+  padding-top: 0.875rem;
 }
 
 .external-subscription-card-label {
@@ -1001,6 +1021,57 @@ onMounted(() => {
 
 .external-subscription-balance-value {
   color: var(--atelier-ink);
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.75rem;
+  margin-top: 0.125rem;
+}
+
+.external-subscription-card-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  row-gap: 0.625rem;
+  column-gap: 0.75rem;
+}
+
+.external-subscription-fact-value {
+  color: var(--atelier-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1rem;
+  margin-top: 0.125rem;
+}
+
+.external-subscription-token-fact,
+.external-subscription-sort-fact {
+  align-items: end;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.external-subscription-token-state {
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 999px;
+  color: var(--atelier-muted);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1rem;
+  max-width: 7rem;
+  overflow: hidden;
+  padding: 0 0.375rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.external-subscription-token-state.is-ready {
+  border-color: color-mix(in srgb, var(--atelier-green) 32%, var(--atelier-material-edge));
+  color: #236346;
+}
+
+.external-subscription-sort-value {
+  color: var(--atelier-muted);
+  font-size: 0.6875rem;
+  line-height: 1rem;
 }
 
 .external-subscription-keyword {
@@ -1019,7 +1090,6 @@ onMounted(() => {
   box-shadow: none;
 }
 
-.dark .external-subscription-card-metric,
 .dark .external-subscription-keyword {
   background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
 }
