@@ -48,4 +48,13 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('const columns = computed<Column[]>')
     expect(source).not.toContain("import DataTable")
   })
+
+  it('uses display statuses and provider logos so settings cards match header and account balance surfaces', () => {
+    expect(source).toContain("import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'")
+    expect(source).toContain('<ProviderBrandIcon')
+    expect(source).toContain('data-testid="external-subscription-logo"')
+    expect(source).toContain('externalSubscriptionsAPI.getDisplayStatuses()')
+    expect(source).not.toContain('externalSubscriptionsAPI.getStatuses()')
+    expect(source).toContain('external-subscription-balance-value')
+  })
 })

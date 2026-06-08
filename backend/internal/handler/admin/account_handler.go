@@ -132,6 +132,11 @@ type UpdateAccountRequest struct {
 	ConfirmMixedChannelRisk *bool          `json:"confirm_mixed_channel_risk"` // 用户确认混合渠道风险
 }
 
+// UpdateAccountRateMultiplierRequest represents a narrow account rate update request.
+type UpdateAccountRateMultiplierRequest struct {
+	RateMultiplier *float64 `json:"rate_multiplier" binding:"required"`
+}
+
 // BulkUpdateAccountsRequest represents the payload for bulk editing accounts
 type BulkUpdateAccountsRequest struct {
 	AccountIDs              []int64                   `json:"account_ids"`
@@ -649,6 +654,40 @@ func (h *AccountHandler) Update(c *gin.Context) {
 	// 异步执行，探测失败不影响账号更新响应。
 	if len(req.Credentials) > 0 {
 		h.scheduleOpenAIResponsesProbe(account)
+	}
+
+	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
+}
+
+// UpdateRateMultiplier handles updating only an account billing rate multiplier.
+// PUT /api/v1/admin/accounts/:id/rate-multiplier
+func (h *AccountHandler) UpdateRateMultiplier(c *gin.Context) {
+	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid account ID")
+		return
+	}
+
+	var req UpdateAccountRateMultiplierRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+	if req.RateMultiplier == nil {
+		response.BadRequest(c, "rate_multiplier is required")
+		return
+	}
+	if *req.RateMultiplier < 0 {
+		response.BadRequest(c, "rate_multiplier must be >= 0")
+		return
+	}
+
+	account, err := h.adminService.UpdateAccount(c.Request.Context(), accountID, &service.UpdateAccountInput{
+		RateMultiplier: req.RateMultiplier,
+	})
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
 	}
 
 	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))

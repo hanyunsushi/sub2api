@@ -65,25 +65,37 @@
           <article
             v-for="provider in filteredProviders"
             :key="provider.id"
-            class="external-subscription-card flex min-h-[13rem] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-primary-200 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-primary-800"
+            class="external-subscription-card flex min-h-[14rem] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-primary-200 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-primary-800"
           >
             <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <div class="flex min-w-0 items-center gap-2">
-                  <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                    {{ provider.name }}
-                  </h3>
-                  <span
-                    :class="[
-                      'semantic-badge',
-                      provider.enabled ? 'semantic-badge--success' : 'semantic-badge--neutral'
-                    ]"
-                  >
-                    {{ provider.enabled ? localText('启用', 'Enabled') : localText('停用', 'Disabled') }}
-                  </span>
+              <div class="flex min-w-0 items-start gap-3">
+                <div
+                  data-testid="external-subscription-logo"
+                  class="external-subscription-logo"
+                  :title="provider.name"
+                >
+                  <ProviderBrandIcon
+                    :provider="buildProviderLogoText(provider)"
+                    :model="provider.name"
+                  />
                 </div>
-                <div class="mt-1 font-mono text-xs text-gray-400">
-                  {{ provider.id }}
+                <div class="min-w-0">
+                  <div class="flex min-w-0 items-center gap-2">
+                    <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                      {{ provider.name }}
+                    </h3>
+                    <span
+                      :class="[
+                        'semantic-badge',
+                        provider.enabled ? 'semantic-badge--success' : 'semantic-badge--neutral'
+                      ]"
+                    >
+                      {{ provider.enabled ? localText('启用', 'Enabled') : localText('停用', 'Disabled') }}
+                    </span>
+                  </div>
+                  <div class="mt-1 font-mono text-xs text-gray-400">
+                    {{ provider.id }}
+                  </div>
                 </div>
               </div>
               <div class="flex flex-shrink-0 items-center gap-1">
@@ -115,29 +127,40 @@
               {{ provider.api_base_url }}
             </a>
 
-            <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
-              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
-                <div class="text-gray-400">{{ localText('模板', 'Template') }}</div>
-                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                  {{ templateLabel(provider.template) }}
+            <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-3 dark:border-dark-700/60 dark:bg-dark-800/70">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-[11px] font-medium text-gray-400">{{ localText('余额', 'Balance') }}</div>
+                  <div
+                    class="external-subscription-balance-value mt-1 truncate font-mono text-xl font-semibold leading-6 text-gray-900 dark:text-gray-100"
+                    :title="formatStatusBalance(statusMap[provider.id])"
+                  >
+                    {{ formatStatusBalance(statusMap[provider.id]) }}
+                  </div>
                 </div>
+                <span :class="statusBadgeClass(statusMap[provider.id])">
+                  {{ statusBadgeText(statusMap[provider.id]) }}
+                </span>
               </div>
-              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
-                <div class="text-gray-400">{{ localText('排序', 'Sort') }}</div>
-                <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
-                  {{ provider.sort_order }}
+
+              <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+                <div class="min-w-0">
+                  <div class="text-gray-400">{{ localText('期限', 'Expiry') }}</div>
+                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                    {{ formatStatusExpiry(statusMap[provider.id]) }}
+                  </div>
                 </div>
-              </div>
-              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
-                <div class="text-gray-400">{{ localText('余额', 'Balance') }}</div>
-                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                  {{ formatStatusBalance(statusMap[provider.id]) }}
+                <div class="min-w-0">
+                  <div class="text-gray-400">{{ localText('模板', 'Template') }}</div>
+                  <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
+                    {{ templateLabel(provider.template) }}
+                  </div>
                 </div>
-              </div>
-              <div class="rounded-md bg-gray-50 p-2 dark:bg-dark-800">
-                <div class="text-gray-400">{{ localText('订阅期限', 'Expiry') }}</div>
-                <div class="mt-1 truncate font-medium text-gray-700 dark:text-gray-200">
-                  {{ formatStatusExpiry(statusMap[provider.id]) }}
+                <div class="min-w-0">
+                  <div class="text-gray-400">{{ localText('排序', 'Sort') }}</div>
+                  <div class="mt-1 font-mono font-medium text-gray-700 dark:text-gray-200">
+                    {{ provider.sort_order }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -377,6 +400,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
 import Toggle from '@/components/common/Toggle.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
 
@@ -476,9 +500,18 @@ const filteredProviders = computed(() => {
 
 function refreshStatusMap(items: ExternalSubscriptionStatus[]) {
   return items.reduce<Record<string, ExternalSubscriptionStatus>>((acc, item) => {
-    acc[item.provider] = item
+    acc[item.provider.trim().toLowerCase()] = item
     return acc
   }, {})
+}
+
+function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
+  return [
+    provider.id,
+    provider.name,
+    provider.api_base_url,
+    ...provider.match_keywords,
+  ].join(' ')
 }
 
 function templateLabel(template: ExternalSubscriptionTemplate) {
@@ -609,7 +642,7 @@ async function loadProviders() {
 async function loadStatuses() {
   statusLoading.value = true
   try {
-    statuses.value = await externalSubscriptionsAPI.getStatuses()
+    statuses.value = await externalSubscriptionsAPI.getDisplayStatuses()
   } catch (error: any) {
     statuses.value = []
     appStore.showError(error?.message || localText('订阅状态读取失败', 'Failed to load subscription statuses'))
@@ -666,6 +699,20 @@ function formatMoney(value?: number | null, currency?: string | null) {
 function isInvalidToken(code?: string | null) {
   const normalized = (code || '').trim().toUpperCase()
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
+}
+
+function statusBadgeClass(status?: ExternalSubscriptionStatus) {
+  if (!status || !status.enabled || !status.configured) return 'semantic-badge semantic-badge--neutral'
+  if (status.error_code) return 'semantic-badge semantic-badge--danger'
+  return 'semantic-badge semantic-badge--success'
+}
+
+function statusBadgeText(status?: ExternalSubscriptionStatus) {
+  if (!status) return localText('未同步', 'Unsynced')
+  if (!status.enabled) return localText('停用', 'Disabled')
+  if (!status.configured) return localText('未配置', 'Not configured')
+  if (status.error_code) return isInvalidToken(status.error_code) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
+  return localText('正常', 'OK')
 }
 
 function formatStatusBalance(status?: ExternalSubscriptionStatus) {
