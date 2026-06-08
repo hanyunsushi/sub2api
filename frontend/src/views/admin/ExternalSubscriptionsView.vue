@@ -69,14 +69,6 @@
               :key="card.id"
               class="external-subscription-card external-subscription-card-main"
             >
-              <span
-                v-if="card.id === 'buzz'"
-                data-testid="external-subscription-buzz-card"
-                class="sr-only"
-              >
-                BuzzAI
-              </span>
-
               <div class="flex items-start justify-between gap-3">
                 <div class="flex min-w-0 items-start gap-3">
                   <div
@@ -224,7 +216,7 @@
       @close="closeDialog"
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <button
             type="button"
             class="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-left transition-colors hover:border-primary-300 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
@@ -243,6 +235,16 @@
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">Active Subscriptions</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
+            </div>
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            @click="applyPreset('buzz_balance')"
+          >
+            <div class="text-sm font-semibold text-sky-700 dark:text-sky-300">Buzz Balance</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
             </div>
           </button>
           <button
@@ -395,7 +397,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import externalSubscriptionsAPI, {
   type ExternalSubscriptionProvider,
   type ExternalSubscriptionProviderInput,
@@ -420,10 +421,8 @@ const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? z
 
 const providers = ref<ExternalSubscriptionProvider[]>([])
 const statuses = ref<ExternalSubscriptionStatus[]>([])
-const buzzBalance = ref<BuzzBalance | null>(null)
 const loading = ref(false)
 const statusLoading = ref(false)
-const buzzLoading = ref(false)
 const submitting = ref(false)
 const searchQuery = ref('')
 const templateFilter = ref<string>('')
@@ -450,6 +449,7 @@ const form = reactive({
 const templateOptions = computed(() => [
   { value: 'newapi_console', label: 'NewAPI Console' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
+  { value: 'buzz_balance', label: 'Buzz Balance' },
   { value: 'openrouter_credits', label: 'OpenRouter Credits' },
   { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
 ])
@@ -472,6 +472,7 @@ const userIdPlaceholder = computed(() => (
 ))
 
 const apiTokenPlaceholder = computed(() => {
+  if (form.template === 'buzz_balance') return 'Buzz API Token'
   if (form.template === 'openrouter_credits') return 'sk-or-...'
   if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
   return 'sk-...'
@@ -491,7 +492,7 @@ const enabledFilterOptions = computed(() => [
 type ExternalSubscriptionCard = {
   id: string
   name: string
-  template: ExternalSubscriptionTemplate | 'buzz_balance'
+  template: ExternalSubscriptionTemplate
   enabled: boolean
   configured: boolean
   apiTokenConfigured: boolean
@@ -511,7 +512,7 @@ type ExternalSubscriptionCard = {
 }
 
 const isInitialLoading = computed(() => (
-  loading.value && statusLoading.value && buzzLoading.value && displayCards.value.length === 0
+  loading.value && statusLoading.value && displayCards.value.length === 0
 ))
 
 const providerMap = computed<Record<string, ExternalSubscriptionProvider>>(() => (
@@ -523,9 +524,6 @@ const providerMap = computed<Record<string, ExternalSubscriptionProvider>>(() =>
 
 const displayCards = computed<ExternalSubscriptionCard[]>(() => {
   const cards: ExternalSubscriptionCard[] = []
-  if (buzzBalance.value) {
-    cards.push(buildBuzzCard(buzzBalance.value))
-  }
 
   const statusCards = statuses.value.map((status) => {
     const id = status.provider.trim().toLowerCase()
@@ -575,10 +573,10 @@ function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
   ].join(' ')
 }
 
-function templateLabel(template: ExternalSubscriptionTemplate | 'buzz_balance') {
+function templateLabel(template: ExternalSubscriptionTemplate) {
   switch (template) {
     case 'buzz_balance':
-      return 'BuzzAI'
+      return 'Buzz Balance'
     case 'active_subscriptions':
       return 'Active Subscriptions'
     case 'openrouter_credits':
@@ -587,27 +585,6 @@ function templateLabel(template: ExternalSubscriptionTemplate | 'buzz_balance') 
       return 'Cloudflare AI Gateway'
     default:
       return 'NewAPI Console'
-  }
-}
-
-function buildBuzzCard(balance: BuzzBalance): ExternalSubscriptionCard {
-  return {
-    id: 'buzz',
-    name: 'Buzz',
-    template: 'buzz_balance',
-    enabled: balance.enabled,
-    configured: balance.configured,
-    apiTokenConfigured: balance.configured,
-    refreshTokenConfigured: false,
-    matchKeywords: ['buzz', 'buzzai', 'buzzai.cc'],
-    sortOrder: 0,
-    currency: balance.currency,
-    siteUrl: balance.site_url || 'https://buzzai.cc',
-    balance: formatBuzzBalance(balance),
-    expiry: formatDate(balance.expires_at),
-    activeCount: balance.configured ? 1 : 0,
-    readonly: true,
-    logoText: 'buzz buzzai buzzai.cc',
   }
 }
 
@@ -703,6 +680,14 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'example.com\nactive-provider'
     return
   }
+  if (template === 'buzz_balance') {
+    if (!form.api_base_url) form.api_base_url = 'https://buzzai.cc'
+    if (!form.name) form.name = 'Buzz'
+    if (!form.id) form.id = 'buzz'
+    if (form.sort_order === 50) form.sort_order = 5
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'buzz\nbuzzai\nbuzzai.cc\nclaude'
+    return
+  }
   if (template === 'openrouter_credits') {
     if (!form.api_base_url) form.api_base_url = 'https://openrouter.ai'
     if (!form.name) form.name = 'OpenRouter'
@@ -790,20 +775,8 @@ async function loadStatuses() {
   }
 }
 
-async function loadBuzzBalance() {
-  buzzLoading.value = true
-  try {
-    buzzBalance.value = await buzzBalanceAPI.getBalance()
-  } catch (error: any) {
-    if (!buzzBalance.value) buzzBalance.value = null
-    appStore.showError(error?.message || localText('Buzz 余额读取失败', 'Failed to load Buzz balance'))
-  } finally {
-    buzzLoading.value = false
-  }
-}
-
 async function refreshAll() {
-  await Promise.all([loadProviders(), loadStatuses(), loadBuzzBalance()])
+  await Promise.all([loadProviders(), loadStatuses()])
 }
 
 async function handleSubmit() {
@@ -870,14 +843,6 @@ function cardStatusBadgeText(card: ExternalSubscriptionCard) {
   if (!card.configured) return localText('未配置', 'Not configured')
   if (card.errorCode) return isInvalidToken(card.errorCode) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
   return localText('正常', 'OK')
-}
-
-function formatBuzzBalance(balance: BuzzBalance) {
-  if (!balance.enabled || !balance.configured) return localText('未配置', 'Not configured')
-  const remaining = formatMoney(balance.remaining, balance.currency)
-  const total = formatMoney(balance.total, balance.currency)
-  if (remaining && total) return `${remaining} / ${total}`
-  return remaining || total || localText('未配置', 'Not configured')
 }
 
 function formatStatusBalance(status?: ExternalSubscriptionStatus) {

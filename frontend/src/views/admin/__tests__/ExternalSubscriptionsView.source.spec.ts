@@ -16,13 +16,15 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('loadStatuses')
   })
 
-  it('supports both provider presets/templates and keeps secrets write-only', () => {
+  it('supports all provider presets/templates and keeps secrets write-only', () => {
     expect(source).toContain("newapi_console")
     expect(source).toContain("active_subscriptions")
+    expect(source).toContain("buzz_balance")
     expect(source).toContain("openrouter_credits")
     expect(source).toContain("cloudflare_ai_gateway_credits")
     expect(source).toContain("applyPreset('newapi_console')")
     expect(source).toContain("applyPreset('active_subscriptions')")
+    expect(source).toContain("applyPreset('buzz_balance')")
     expect(source).toContain("applyPreset('openrouter_credits')")
     expect(source).toContain("applyPreset('cloudflare_ai_gateway_credits')")
     expect(source).toContain('form.api_token')
@@ -63,14 +65,12 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('overflow-y: auto;')
   })
 
-  it('uses display statuses, BuzzAI, and provider logos so settings cards match header and account balance surfaces', () => {
+  it('uses generic display statuses and provider logos so settings cards match header and account balance surfaces', () => {
     expect(source).toContain("import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'")
-    expect(source).toContain("import buzzBalanceAPI")
+    expect(source).not.toContain("import buzzBalanceAPI")
     expect(source).toContain('<ProviderBrandIcon')
     expect(source).toContain('data-testid="external-subscription-logo"')
-    expect(source).toContain('data-testid="external-subscription-buzz-card"')
     expect(source).toContain('externalSubscriptionsAPI.getDisplayStatuses()')
-    expect(source).toContain('buzzBalanceAPI.getBalance()')
     expect(source).not.toContain('externalSubscriptionsAPI.getStatuses()')
     expect(source).toContain('external-subscription-balance-value')
     expect(source).toContain('displayCards')

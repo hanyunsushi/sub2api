@@ -506,7 +506,6 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
-import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
@@ -696,7 +695,6 @@ const todayStatsError = ref<string | null>(null)
 const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
-const buzzBalance = ref<BuzzBalance | null>(null)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
 
 const buildDefaultTodayStats = (): WindowStats => ({
@@ -824,8 +822,6 @@ interface AccountExternalQuota {
   formattedExpiry: string
 }
 
-const defaultBuzzURL = 'https://buzzai.cc'
-
 const formatExternalAmount = (value?: number | null, currency?: string | null) => {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
   const normalized = (currency || '').trim().toUpperCase()
@@ -868,23 +864,8 @@ const isExternalSubscriptionInvalidToken = (code?: string | null) => {
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
 }
 
-const buildBuzzExternalQuota = (): AccountExternalQuota => {
-  const total = formatExternalAmount(buzzBalance.value?.total)
-  const remaining = formatExternalAmount(buzzBalance.value?.remaining)
-  return {
-    label: 'Buzz',
-    url: buzzBalance.value?.site_url || defaultBuzzURL,
-    formattedBalance: remaining && total ? `${remaining} / ${total}` : remaining || localText('未配置', 'Not configured'),
-    formattedExpiry: formatExternalDate(buzzBalance.value?.expires_at)
-  }
-}
-
-const canShowBuzzExternalQuota = () => Boolean(
-  buzzBalance.value?.enabled &&
-  buzzBalance.value?.configured
-)
-
 const externalSubscriptionLabels: Record<string, string> = {
+  buzz: 'Buzz',
   qlhazycoder: 'QL',
   packycode: 'Packy',
   xhyapi: 'XHY',
@@ -938,10 +919,6 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
 }
 
 const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
-  const text = buildExternalSearchText(account)
-  if ((text.includes('buzzai.cc') || text.includes('buzzai') || /\bbuzz\b/.test(text)) && canShowBuzzExternalQuota()) {
-    return buildBuzzExternalQuota()
-  }
   const subscription = getMatchedExternalSubscription(account)
   if (subscription) return buildExternalSubscriptionQuota(subscription)
   return null
@@ -981,21 +958,13 @@ const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(
 
 const fetchExternalQuotaSummaries = async () => {
   if (!authStore.isAdmin) return
-  const [buzzResult, externalResult] = await Promise.allSettled([
-    buzzBalanceAPI.getBalance(),
-    externalSubscriptionsAPI.getDisplayStatuses()
-  ])
-  if (buzzResult.status === 'fulfilled') {
-    buzzBalance.value = buzzResult.value
-  } else {
-    buzzBalance.value = null
-    console.error('Failed to load BuzzAI quota summary:', buzzResult.reason)
-  }
-  if (externalResult.status === 'fulfilled') {
-    externalSubscriptionStatuses.value = externalResult.value
-  } else {
-    externalSubscriptionStatuses.value = []
-    console.error('Failed to load external subscription quota summaries:', externalResult.reason)
+  try {
+    externalSubscriptionStatuses.value = await externalSubscriptionsAPI.getDisplayStatuses()
+  } catch (error) {
+    if (externalSubscriptionStatuses.value.length === 0) {
+      externalSubscriptionStatuses.value = []
+    }
+    console.error('Failed to load external subscription quota summaries:', error)
   }
 }
 

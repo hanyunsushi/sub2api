@@ -6,14 +6,17 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
-  it('loads BuzzAI and generic external subscription quota summaries for matching account cards', () => {
-    expect(source).toContain("import buzzBalanceAPI")
+  it('loads generic external subscription quota summaries for matching account cards', () => {
+    expect(source).not.toContain("import buzzBalanceAPI")
     expect(source).toContain("import externalSubscriptionsAPI")
     expect(source).toContain("type ExternalSubscriptionStatus")
     expect(source).toContain("fetchExternalQuotaSummaries")
     expect(source).toContain("externalSubscriptionsAPI.getDisplayStatuses()")
     expect(source).toContain("getAccountExternalQuota")
     expect(source).not.toContain("externalSubscriptionsAPI.getStatuses()")
+    expect(source).not.toContain("buzzBalanceAPI.getBalance()")
+    expect(source).not.toContain("buildBuzzExternalQuota")
+    expect(source).not.toContain("canShowBuzzExternalQuota")
   })
 
   it('renders external quota details inside the account card name area with provider links', () => {
@@ -34,6 +37,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('buildExternalSearchText(account)')
     expect(source).not.toContain('canShowTCDMXExternalQuota')
     expect(source).not.toContain('canShowQLHazyCoderExternalQuota')
+    expect(source).not.toContain("text.includes('buzzai.cc')")
     expect(source).not.toContain("if (provider === 'packycode'")
     expect(source).not.toContain("text.includes('xhyapi.com') || text.includes('xhyapi') || text.includes('xhy')")
   })

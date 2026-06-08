@@ -24,6 +24,9 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 		SettingKeyPackyCodeSubscriptionEnabled:      "true",
 		SettingKeyPackyCodeSubscriptionAPIToken:     "packy-token",
 		SettingKeyPackyCodeSubscriptionUserID:       "996",
+		SettingKeyBuzzBalanceEnabled:                "true",
+		SettingKeyBuzzBalanceAPIBaseURL:             "https://buzzai.cc",
+		SettingKeyBuzzBalanceAPIToken:               "buzz-token",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
@@ -53,6 +56,16 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 	require.True(t, packy.APITokenConfigured)
 	require.Equal(t, "996", packy.UserID)
 	require.Empty(t, packy.APIToken)
+
+	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
+	require.Equal(t, "Buzz", buzz.Name)
+	require.Equal(t, ExternalSubscriptionTemplateBuzzBalance, buzz.Template)
+	require.Equal(t, "https://buzzai.cc", buzz.APIBaseURL)
+	require.True(t, buzz.Enabled)
+	require.True(t, buzz.APITokenConfigured)
+	require.Empty(t, buzz.APIToken)
+	require.Contains(t, buzz.MatchKeywords, "buzzai.cc")
+	require.Contains(t, buzz.MatchKeywords, "claude")
 }
 
 func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets(t *testing.T) {
@@ -92,6 +105,39 @@ func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets
 	raw := requireStoredExternalSubscriptionProvider(t, stored, "custom-newapi")
 	require.Equal(t, "newapi-token", raw.APIToken)
 	require.Equal(t, "1002", raw.UserID)
+}
+
+func TestExternalSubscriptionConfigServiceMergesLegacyKeywordsIntoStoredProvider(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "buzz",
+			Name:          "Buzz",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateBuzzBalance,
+			APIBaseURL:    "https://buzzai.cc",
+			APIToken:      "buzz-token",
+			MatchKeywords: []string{"buzz"},
+			SortOrder:     5,
+		},
+	}, map[string]string{
+		SettingKeyBuzzBalanceEnabled:    "true",
+		SettingKeyBuzzBalanceAPIBaseURL: "https://buzzai.cc",
+		SettingKeyBuzzBalanceAPIToken:   "buzz-token",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+
+	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
+	require.Contains(t, buzz.MatchKeywords, "buzz")
+	require.Contains(t, buzz.MatchKeywords, "buzzai")
+	require.Contains(t, buzz.MatchKeywords, "buzzai.cc")
+	require.Contains(t, buzz.MatchKeywords, "claude")
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	raw := requireStoredExternalSubscriptionProvider(t, stored, "buzz")
+	require.Contains(t, raw.MatchKeywords, "claude")
 }
 
 func TestExternalSubscriptionConfigServiceMergesConfiguredLegacyProvidersIntoStoredProviders(t *testing.T) {
@@ -439,6 +485,49 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsCreditTemplates(t *test
 	require.Nil(t, cloudflare.TotalLimitUSD)
 	require.InDelta(t, 12.75, *cloudflare.RemainingUSD, 0.0001)
 	require.Equal(t, "cf-account", requireStoredExternalSubscriptionProvider(t, mustStoredExternalSubscriptionProviders(t, repo), "cloudflare").UserID)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesRunsBuzzBalanceTemplate(t *testing.T) {
+	buzzServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "Bearer buzz-key", r.Header.Get("Authorization"))
+		switch r.URL.Path {
+		case "/v1/dashboard/billing/subscription":
+			_, _ = w.Write([]byte(`{"soft_limit_usd":100,"expires_at":"2026-07-08T00:00:00Z"}`))
+		case "/v1/dashboard/billing/usage":
+			_, _ = w.Write([]byte(`{"total_usage":1234}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer buzzServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "buzz",
+			Name:          "Buzz",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateBuzzBalance,
+			APIBaseURL:    buzzServer.URL,
+			APIToken:      "buzz-key",
+			MatchKeywords: []string{"buzz", "buzzai.cc"},
+			SortOrder:     5,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+
+	buzz := requireExternalSubscriptionStatus(t, statuses, "buzz")
+	require.Equal(t, "Buzz", buzz.Name)
+	require.Equal(t, ExternalSubscriptionTemplateBuzzBalance, buzz.Template)
+	require.Equal(t, "USD", buzz.Currency)
+	require.InDelta(t, 100, *buzz.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 12.34, buzz.UsedUSD, 0.0001)
+	require.InDelta(t, 87.66, *buzz.RemainingUSD, 0.0001)
+	require.Equal(t, 1, buzz.ActiveCount)
+	require.Len(t, buzz.Subscriptions, 1)
+	require.Equal(t, "Buzz", buzz.Subscriptions[0].GroupName)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesCachesExternalCallsBriefly(t *testing.T) {

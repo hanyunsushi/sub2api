@@ -92,12 +92,6 @@
               {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
             </span>
             <span
-              v-else-if="showBuzzBalanceInChip"
-              class="balance-buzz-text text-sm font-semibold"
-            >
-              Buzz {{ formattedBuzzBalance }}
-            </span>
-            <span
               v-else
               class="balance-system-text text-sm font-semibold"
             >
@@ -110,7 +104,7 @@
             :trigger-el="balanceChipRef"
             placement="bottom-end"
             :offset="8"
-            panel-class="dropdown w-64"
+            panel-class="dropdown w-72 max-w-[calc(100vw-1.5rem)]"
           >
             <div
               data-testid="header-balance-dropdown"
@@ -118,7 +112,7 @@
               @mouseenter="cancelBalanceDropdownClose"
               @mouseleave="scheduleCloseBalanceDropdown"
             >
-              <div class="balance-row balance-row-system flex items-center justify-between gap-4 rounded-lg px-3 py-2">
+              <div class="balance-row balance-row-system flex min-w-0 items-center justify-between gap-4 rounded-lg px-3 py-2">
                 <div class="text-xs font-medium">
                   系统余额
                 </div>
@@ -126,35 +120,31 @@
                   {{ formattedSystemBalance }}
                 </div>
               </div>
-              <div class="balance-row balance-row-buzz flex items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="balance-buzz-text text-xs font-medium">
-                  Buzz
-                </div>
-                <div class="text-right">
-                  <div class="balance-buzz-text text-sm font-semibold">
-                    {{ formattedBuzzBalance }}
-                  </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
-                    {{ formattedBuzzExpiry }}
-                  </div>
-                </div>
-              </div>
               <div
                 v-for="subscription in visibleExternalSubscriptions"
                 :key="subscription.provider"
                 :class="[
-                  'balance-row balance-row-external flex items-center justify-between gap-4 rounded-lg px-3 py-2',
+                  'balance-row balance-row-external flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2',
                   `balance-row-${providerClassSuffix(subscription.provider)}`
                 ]"
               >
-                <div :class="[balanceProviderTextClass(subscription), 'text-xs font-medium']">
+                <div
+                  :class="[balanceProviderTextClass(subscription), 'min-w-0 flex-1 truncate text-xs font-medium']"
+                  :title="externalSubscriptionChipLabel(subscription)"
+                >
                   {{ externalSubscriptionChipLabel(subscription) }}
                 </div>
-                <div class="text-right">
-                  <div :class="[balanceProviderTextClass(subscription), 'text-sm font-semibold']">
+                <div class="min-w-0 max-w-[10rem] flex-shrink text-right">
+                  <div
+                    :class="[balanceProviderTextClass(subscription), 'truncate text-sm font-semibold']"
+                    :title="formatExternalSubscriptionBalance(subscription, true, { walletOnly: true })"
+                  >
                     {{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}
                   </div>
-                  <div class="balance-expiry-text text-[11px] leading-4">
+                  <div
+                    class="balance-expiry-text truncate text-[11px] leading-4"
+                    :title="formatExternalSubscriptionExpiry(subscription, true)"
+                  >
                     {{ formatExternalSubscriptionExpiry(subscription, true) }}
                   </div>
                 </div>
@@ -319,7 +309,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
-import buzzBalanceAPI, { type BuzzBalance } from '@/api/admin/buzzBalance'
 import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
@@ -343,9 +332,7 @@ const dropdownButtonRef = ref<HTMLElement | null>(null)
 const balanceChipRef = ref<HTMLElement | null>(null)
 const balanceDropdownOpen = ref(false)
 const balanceCarouselIndex = ref(0)
-const buzzBalance = ref<BuzzBalance | null>(null)
 const externalSubscriptions = ref<ExternalSubscriptionStatus[]>([])
-const buzzBalanceLoading = ref(false)
 const externalSubscriptionsLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
@@ -381,54 +368,29 @@ const formattedSystemBalance = computed(() => {
   return `$${(user.value?.balance ?? 0).toFixed(2)}`
 })
 
-const canShowBuzzBalance = computed(() => {
-  return Boolean(
-    authStore.isAdmin &&
-    buzzBalance.value?.enabled &&
-    buzzBalance.value?.configured
-  )
-})
-
 const visibleExternalSubscriptions = computed(() => {
   if (!authStore.isAdmin) return []
   return externalSubscriptions.value.filter(subscription => subscription.enabled && subscription.configured)
 })
 
 const balanceSlotCount = computed(() => {
-  return 1 + (canShowBuzzBalance.value ? 1 : 0) + visibleExternalSubscriptions.value.length
+  return 1 + visibleExternalSubscriptions.value.length
 })
 
 const currentBalanceSlot = computed(() => {
   return balanceCarouselIndex.value % balanceSlotCount.value
 })
 
-const showBuzzBalanceInChip = computed(() => {
-  return canShowBuzzBalance.value && currentBalanceSlot.value === 1
-})
-
 const currentExternalSubscriptionInChip = computed(() => {
-  const offset = 1 + (canShowBuzzBalance.value ? 1 : 0)
+  const offset = 1
   const externalIndex = currentBalanceSlot.value - offset
   if (externalIndex < 0) return null
   return visibleExternalSubscriptions.value[externalIndex] ?? null
 })
 
-const formattedBuzzBalance = computed(() => {
-  if (!canShowBuzzBalance.value || !buzzBalance.value) return '未配置'
-  return `$${buzzBalance.value.remaining.toFixed(2)}`
-})
-
-const formattedBuzzExpiry = computed(() => {
-  if (!canShowBuzzBalance.value || !buzzBalance.value) return '期限未配置'
-  return formatExternalExpiry(buzzBalance.value.expires_at)
-})
-
 const balanceChipClass = computed(() => {
   if (currentExternalSubscriptionInChip.value) {
     return `balance-chip-${providerClassSuffix(currentExternalSubscriptionInChip.value.provider)}`
-  }
-  if (showBuzzBalanceInChip.value) {
-    return 'balance-chip-buzz'
   }
   return 'balance-chip-system'
 })
@@ -436,9 +398,6 @@ const balanceChipClass = computed(() => {
 const balanceIconClass = computed(() => {
   if (currentExternalSubscriptionInChip.value) {
     return balanceProviderTextClass(currentExternalSubscriptionInChip.value)
-  }
-  if (showBuzzBalanceInChip.value) {
-    return 'balance-buzz-text'
   }
   return 'balance-system-text'
 })
@@ -518,19 +477,6 @@ function scheduleCloseBalanceDropdown() {
   }, 120)
 }
 
-async function fetchBuzzBalance() {
-  if (!authStore.isAdmin || buzzBalanceLoading.value) return
-  buzzBalanceLoading.value = true
-  try {
-    buzzBalance.value = await buzzBalanceAPI.getBalance()
-  } catch (error) {
-    buzzBalance.value = null
-    console.error('Failed to fetch BuzzAI balance:', error)
-  } finally {
-    buzzBalanceLoading.value = false
-  }
-}
-
 async function fetchExternalSubscriptions() {
   if (!authStore.isAdmin || externalSubscriptionsLoading.value) return
   externalSubscriptionsLoading.value = true
@@ -551,6 +497,7 @@ async function fetchExternalSubscriptions() {
 
 const externalSubscriptionLabels: Record<string, string> = {
   qlhazycoder: 'QL',
+  buzz: 'Buzz',
   packycode: 'Packy',
   xhyapi: 'XHY',
   pixel: 'Pixel',
@@ -562,6 +509,7 @@ const externalSubscriptionLabels: Record<string, string> = {
 
 function providerClassSuffix(provider?: string | null) {
   const normalized = (provider || '').trim().toLowerCase()
+  if (normalized === 'buzz') return 'buzz'
   if (normalized === 'qlhazycoder') return 'qlhazycoder'
   if (normalized === 'packycode') return 'packycode'
   if (normalized === 'xhyapi') return 'xhyapi'
@@ -676,7 +624,6 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  void fetchBuzzBalance()
   void fetchExternalSubscriptions()
   startBalanceCarousel()
 })
@@ -691,9 +638,7 @@ watch(
   () => [authStore.isAdmin, user.value?.id],
   () => {
     balanceCarouselIndex.value = 0
-    buzzBalance.value = null
     externalSubscriptions.value = []
-    void fetchBuzzBalance()
     void fetchExternalSubscriptions()
   }
 )

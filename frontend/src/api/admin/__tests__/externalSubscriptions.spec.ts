@@ -132,139 +132,121 @@ describe('admin external subscriptions api', () => {
     expect(result[0]).not.toHaveProperty('api_token')
   })
 
-  it('merges generic and legacy provider statuses while preferring generic provider configs', async () => {
+  it('loads display statuses from the unified generic endpoint only', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          provider: 'buzz',
+          name: 'Buzz',
+          template: 'buzz_balance',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['buzz', 'buzzai', 'claude'],
+          sort_order: 5,
+          currency: 'USD',
+          site_url: 'https://buzzai.cc',
+          total_limit_usd: 100,
+          used_usd: 12.34,
+          remaining_usd: 87.66,
+          active_count: 1,
+          subscriptions: [],
+        },
+        {
+          provider: 'qlhazycoder',
+          name: 'QLHazyCoder',
+          template: 'newapi_console',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['qlhazycoder'],
+          sort_order: 20,
+          currency: 'CNY',
+          site_url: 'https://api.qlhazycoder.top',
+          used_usd: 48,
+          remaining_usd: 101,
+          active_count: 1,
+          subscriptions: [],
+        },
+        {
+          provider: 'openrouter',
+          name: 'OpenRouter',
+          template: 'openrouter_credits',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['openrouter'],
+          sort_order: 70,
+          currency: 'USD',
+          site_url: 'https://openrouter.ai',
+          used_usd: 4,
+          remaining_usd: 21,
+          active_count: 0,
+          subscriptions: [],
+        },
+      ],
+    })
+
+    const result = await externalSubscriptionsAPI.getDisplayStatuses()
+
+    expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/statuses')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/buzz/balance')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/tcdmx/subscription')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/qlhazycoder/subscription')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/packycode/subscription')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/xhyapi/subscription')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/pixel/subscription')
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/liust/subscription')
+    expect(apiClient.get).toHaveBeenCalledTimes(1)
+    expect(result.map(status => status.provider)).toEqual([
+      'buzz',
+      'qlhazycoder',
+      'openrouter',
+    ])
+    expect(result.find(status => status.provider === 'buzz')?.remaining_usd).toBe(87.66)
+    expect(result.find(status => status.provider === 'qlhazycoder')?.remaining_usd).toBe(101)
+    expect(result.find(status => status.provider === 'openrouter')?.remaining_usd).toBe(21)
+  })
+
+  it('loads Buzz from the generic display-status contract instead of a separate balance API', async () => {
     vi.mocked(apiClient.get)
       .mockResolvedValueOnce({
         data: [
           {
-            provider: 'qlhazycoder',
-            name: 'QLHazyCoder',
-            template: 'newapi_console',
+            provider: 'buzz',
+            name: 'Buzz',
+            template: 'buzz_balance',
             enabled: true,
             configured: true,
             api_token_configured: true,
             refresh_token_configured: false,
-            match_keywords: ['qlhazycoder'],
-            sort_order: 20,
-            currency: 'CNY',
-            site_url: 'https://api.qlhazycoder.top',
-            used_usd: 48,
-            remaining_usd: 101,
+            match_keywords: ['buzz', 'buzzai', 'claude'],
+            sort_order: 5,
+            currency: 'USD',
+            site_url: 'https://buzzai.cc',
+            total_limit_usd: 100,
+            used_usd: 12.34,
+            remaining_usd: 87.66,
             active_count: 1,
             subscriptions: [],
           },
-          {
-            provider: 'openrouter',
-            name: 'OpenRouter',
-            template: 'openrouter_credits',
-            enabled: true,
-            configured: true,
-            api_token_configured: true,
-            refresh_token_configured: false,
-            match_keywords: ['openrouter'],
-            sort_order: 70,
-            currency: 'USD',
-            site_url: 'https://openrouter.ai',
-            used_usd: 4,
-            remaining_usd: 21,
-            active_count: 0,
-            subscriptions: [],
-          },
         ],
-      })
-      .mockResolvedValueOnce({
-        data: {
-          provider: 'tcdmx',
-          enabled: true,
-          configured: true,
-          currency: 'USD',
-          site_url: 'https://tcdmx.com',
-          used_usd: 12,
-          remaining_usd: 88,
-          active_count: 1,
-          subscriptions: [],
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          provider: 'qlhazycoder',
-          enabled: true,
-          configured: true,
-          currency: 'CNY',
-          site_url: 'https://api.qlhazycoder.top',
-          used_usd: 1,
-          remaining_usd: 1,
-          active_count: 1,
-          subscriptions: [],
-        },
-      })
-      .mockRejectedValueOnce(new Error('packy unavailable'))
-      .mockResolvedValueOnce({
-        data: {
-          provider: 'xhyapi',
-          enabled: true,
-          configured: true,
-          currency: 'USD',
-          site_url: 'https://xhyapi.com',
-          used_usd: 2,
-          remaining_usd: 66,
-          active_count: 1,
-          subscriptions: [],
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          provider: 'pixel',
-          enabled: true,
-          configured: true,
-          currency: 'USD',
-          site_url: 'https://ai-pixel.online',
-          used_usd: 3,
-          remaining_usd: 61,
-          active_count: 1,
-          subscriptions: [],
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          provider: 'liust',
-          enabled: true,
-          configured: true,
-          currency: 'USD',
-          site_url: 'https://liust.xyz',
-          used_usd: 4,
-          remaining_usd: 75,
-          active_count: 1,
-          subscriptions: [],
-        },
       })
 
     const result = await externalSubscriptionsAPI.getDisplayStatuses()
 
     expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/statuses')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/tcdmx/subscription')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/qlhazycoder/subscription')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/packycode/subscription')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/xhyapi/subscription')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/pixel/subscription')
-    expect(apiClient.get).toHaveBeenCalledWith('/admin/liust/subscription')
-    expect(apiClient.get).toHaveBeenCalledTimes(7)
-    expect(result.map(status => status.provider)).toEqual([
-      'tcdmx',
-      'qlhazycoder',
-      'xhyapi',
-      'pixel',
-      'liust',
-      'openrouter',
-    ])
-    expect(result.find(status => status.provider === 'qlhazycoder')?.remaining_usd).toBe(101)
-    expect(result.find(status => status.provider === 'xhyapi')?.remaining_usd).toBe(66)
-    expect(result.find(status => status.provider === 'openrouter')?.remaining_usd).toBe(21)
+    expect(apiClient.get).not.toHaveBeenCalledWith('/admin/buzz/balance')
+    expect(result.map(status => status.provider)).toEqual(['buzz'])
+    expect(result[0].template).toBe('buzz_balance')
+    expect(result[0].remaining_usd).toBe(87.66)
   })
 
   it('caches display statuses briefly so header and account cards do not refetch every provider', async () => {
-    vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
         data: [
           {
             provider: 'openrouter',
@@ -285,14 +267,13 @@ describe('admin external subscriptions api', () => {
           },
         ],
       })
-      .mockRejectedValue(new Error('legacy not configured'))
 
     const first = await externalSubscriptionsAPI.getDisplayStatuses()
     const second = await externalSubscriptionsAPI.getDisplayStatuses()
 
     expect(first.find(status => status.provider === 'openrouter')?.remaining_usd).toBe(21)
     expect(second.find(status => status.provider === 'openrouter')?.remaining_usd).toBe(21)
-    expect(apiClient.get).toHaveBeenCalledTimes(7)
+    expect(apiClient.get).toHaveBeenCalledTimes(1)
   })
 
   it('returns the last good display statuses when every source fails after cache expiry', async () => {
@@ -328,7 +309,7 @@ describe('admin external subscriptions api', () => {
 
     expect(first.map(status => status.provider)).toEqual(['openrouter'])
     expect(second.map(status => status.provider)).toEqual(['openrouter'])
-    expect(apiClient.get).toHaveBeenCalledTimes(14)
+    expect(apiClient.get).toHaveBeenCalledTimes(2)
   })
 
   it('deletes a provider by id', async () => {

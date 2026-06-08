@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 
 import AppHeader from "../AppHeader.vue";
-import buzzBalanceAPI from "@/api/admin/buzzBalance";
 import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from "@/api/admin/externalSubscriptions";
 
 const authState = vi.hoisted(() => ({
@@ -18,12 +17,6 @@ const authState = vi.hoisted(() => ({
   isAdmin: true,
   isSimpleMode: false,
   logout: vi.fn(),
-}));
-
-vi.mock("@/api/admin/buzzBalance", () => ({
-  default: {
-    getBalance: vi.fn(),
-  },
 }));
 
 vi.mock("@/api/admin/externalSubscriptions", () => ({
@@ -93,6 +86,26 @@ function defaultExternalStatuses(
   overrides: Record<string, Partial<ExternalSubscriptionStatus>> = {},
 ): ExternalSubscriptionStatus[] {
   const items: ExternalSubscriptionStatus[] = [
+    {
+      provider: "buzz",
+      name: "Buzz",
+      template: "buzz_balance",
+      enabled: true,
+      configured: true,
+      api_token_configured: true,
+      refresh_token_configured: false,
+      match_keywords: ["buzz", "buzzai", "buzzai.cc", "claude"],
+      sort_order: 5,
+      currency: "USD",
+      site_url: "https://buzzai.cc/dashboard/billing",
+      total_limit_usd: 100,
+      used_usd: 12.34,
+      remaining_usd: 87.66,
+      expires_at: "2026-06-30T00:00:00Z",
+      active_count: 1,
+      subscriptions: [],
+      refreshed_at: "2026-05-21T10:00:00Z",
+    },
     {
       provider: "tcdmx",
       name: "TCDMX",
@@ -265,17 +278,6 @@ describe("AppHeader BuzzAI balance", () => {
       balance: 42.5,
     };
     authState.isAdmin = true;
-    vi.mocked(buzzBalanceAPI.getBalance).mockResolvedValue({
-      enabled: true,
-      configured: true,
-      currency: "USD",
-      total: 100,
-      used: 12.34,
-      remaining: 87.66,
-      site_url: "https://buzzai.cc/dashboard/billing",
-      expires_at: "2026-06-30T00:00:00Z",
-      refreshed_at: "2026-05-21T10:00:00Z",
-    });
     vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValue(defaultExternalStatuses());
   });
 
@@ -601,6 +603,19 @@ describe("AppHeader BuzzAI balance", () => {
     await second.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
     await nextTick();
     expect(second.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
+  });
+
+  it("does not call a separate Buzz balance API because Buzz is part of display statuses", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+
+    expect(externalSubscriptionsAPI.getDisplayStatuses).toHaveBeenCalledTimes(1);
+    expect(wrapper.get('[data-testid="header-balance-dropdown"]').text()).toContain("Buzz");
   });
 
   it("keeps the last visible external balances when a later refresh fails", async () => {

@@ -56,6 +56,42 @@
           </div>
         </div>
       </div>
+
+      <div class="mt-4">
+        <div class="mb-2 flex items-center justify-between text-xs">
+          <span class="font-medium text-gray-500 dark:text-gray-400">
+            {{ localText('账号状态', 'Account status') }}
+          </span>
+          <span class="font-mono text-gray-400">
+            {{ card.monitorCount }}
+          </span>
+        </div>
+        <div
+          class="monitor-capacity-status-bar"
+          role="img"
+          :aria-label="statusBarLabel(card.statusSegments)"
+        >
+          <span
+            v-for="segment in card.statusSegments"
+            :key="segment.key"
+            class="monitor-capacity-status-segment"
+            :class="segment.className"
+            :style="{ width: `${segment.percent}%` }"
+            :title="`${segment.label}: ${segment.count}`"
+          ></span>
+        </div>
+        <div class="mt-3 grid grid-cols-4 gap-2">
+          <div
+            v-for="segment in card.statusSegments"
+            :key="`${segment.key}-label`"
+            class="monitor-capacity-status-stat"
+          >
+            <span class="monitor-capacity-status-dot" :class="segment.className"></span>
+            <span class="truncate">{{ segment.label }}</span>
+            <strong class="font-mono">{{ segment.count }}</strong>
+          </div>
+        </div>
+      </div>
     </article>
   </section>
 </template>
@@ -66,8 +102,20 @@ import { useI18n } from 'vue-i18n'
 import type { UserMonitorView } from '@/api/channelMonitor'
 import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import {
+  STATUS_DEGRADED,
+  STATUS_ERROR,
+  STATUS_FAILED,
+  STATUS_OPERATIONAL,
+} from '@/constants/channelMonitor'
 
 const GROUP_ORDER = ['gpt', 'claude', 'mimo', 'free']
+const groupExternalKeywords: Record<string, string[]> = {
+  gpt: ['gpt', 'openai', 'chatgpt'],
+  claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc'],
+  mimo: ['mimo'],
+  free: ['free'],
+}
 
 const props = defineProps<{
   items: UserMonitorView[]
@@ -85,6 +133,15 @@ type CapacityCard = {
   balanceSourceCount: number
   matchedStatuses: ExternalSubscriptionStatus[]
   previewStatuses: ExternalSubscriptionStatus[]
+  statusSegments: CapacityStatusSegment[]
+}
+
+type CapacityStatusSegment = {
+  key: 'available' | 'limited' | 'error' | 'disabled'
+  label: string
+  count: number
+  percent: number
+  className: string
 }
 
 const cards = computed<CapacityCard[]>(() => {
@@ -103,6 +160,7 @@ const cards = computed<CapacityCard[]>(() => {
         balanceSourceCount: balanceStatuses.length,
         matchedStatuses,
         previewStatuses: matchedStatuses.slice(0, 4),
+        statusSegments: buildStatusSegments(monitors),
       }
     })
 })
@@ -139,10 +197,12 @@ function matchStatusesForGroup(
   statuses: ExternalSubscriptionStatus[],
 ) {
   const monitorText = monitors.map(monitorSearchText).join(' ')
+  const groupKeywords = groupExternalKeywords[group] ?? [group]
   const candidates = statuses.filter(status => status.enabled && status.configured)
   const matches = candidates.filter((status) => {
     const statusText = statusSearchText(status)
     if (statusText.includes(group)) return true
+    if (groupKeywords.some(keyword => statusText.includes(keyword))) return true
     return status.match_keywords.some((keyword) => {
       const normalized = keyword.trim().toLowerCase()
       return normalized !== '' && monitorText.includes(normalized)
@@ -152,6 +212,72 @@ function matchStatusesForGroup(
     if (left.sort_order !== right.sort_order) return left.sort_order - right.sort_order
     return (left.name || left.provider).localeCompare(right.name || right.provider)
   })
+}
+
+function buildStatusSegments(monitors: UserMonitorView[]): CapacityStatusSegment[] {
+  const counts = {
+    available: 0,
+    limited: 0,
+    error: 0,
+    disabled: 0,
+  }
+  for (const monitor of monitors) {
+    switch (monitor.primary_status) {
+      case STATUS_OPERATIONAL:
+        counts.available += 1
+        break
+      case STATUS_DEGRADED:
+        counts.limited += 1
+        break
+      case STATUS_FAILED:
+      case STATUS_ERROR:
+        counts.error += 1
+        break
+      default:
+        counts.disabled += 1
+        break
+    }
+  }
+  const total = monitors.length || 1
+  return [
+    {
+      key: 'available',
+      label: localText('可用', 'Available'),
+      count: counts.available,
+      percent: segmentPercent(counts.available, total),
+      className: 'monitor-capacity-status-segment--available',
+    },
+    {
+      key: 'limited',
+      label: localText('限流', 'Limited'),
+      count: counts.limited,
+      percent: segmentPercent(counts.limited, total),
+      className: 'monitor-capacity-status-segment--limited',
+    },
+    {
+      key: 'error',
+      label: localText('错误', 'Error'),
+      count: counts.error,
+      percent: segmentPercent(counts.error, total),
+      className: 'monitor-capacity-status-segment--error',
+    },
+    {
+      key: 'disabled',
+      label: localText('停用', 'Disabled'),
+      count: counts.disabled,
+      percent: segmentPercent(counts.disabled, total),
+      className: 'monitor-capacity-status-segment--disabled',
+    },
+  ]
+}
+
+function segmentPercent(count: number, total: number) {
+  if (count <= 0) return 0
+  return (count / total) * 100
+}
+
+function statusBarLabel(segments: CapacityStatusSegment[]) {
+  return segments.map(segment => `${segment.label}: ${segment.count}`).join(', ')
 }
 
 function monitorSearchText(item: UserMonitorView) {
@@ -226,6 +352,58 @@ function formatBalance(value: number) {
   box-shadow: none !important;
   height: 100% !important;
   width: 100% !important;
+}
+
+.monitor-capacity-status-bar {
+  display: flex;
+  height: 0.625rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--atelier-dust) 20%, transparent);
+}
+
+.monitor-capacity-status-segment {
+  display: block;
+  min-width: 0;
+  transition: width 0.2s var(--atelier-ease);
+}
+
+.monitor-capacity-status-segment + .monitor-capacity-status-segment {
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.58);
+}
+
+.monitor-capacity-status-stat {
+  align-items: center;
+  color: var(--atelier-muted);
+  display: grid;
+  font-size: 0.6875rem;
+  gap: 0.25rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.monitor-capacity-status-dot {
+  border-radius: 999px;
+  display: inline-block;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+.monitor-capacity-status-segment--available {
+  background: #10a37f;
+}
+
+.monitor-capacity-status-segment--limited {
+  background: var(--atelier-butter);
+}
+
+.monitor-capacity-status-segment--error {
+  background: var(--atelier-red);
+}
+
+.monitor-capacity-status-segment--disabled {
+  background: var(--atelier-dust);
 }
 
 .dark .monitor-capacity-logo {
