@@ -92,6 +92,7 @@ let displayStatusesCache: {
   statuses: ExternalSubscriptionStatus[]
 } | null = null
 let displayStatusesRequest: Promise<ExternalSubscriptionStatus[]> | null = null
+let displayStatusesForceRefreshNext = false
 const displayStatusesListeners = new Set<(statuses: ExternalSubscriptionStatus[]) => void>()
 
 function cloneStatuses(statuses: ExternalSubscriptionStatus[]) {
@@ -185,11 +186,17 @@ export function clearDisplayStatusesCache() {
 
 export function clearStoredDisplayStatusesCache() {
   clearDisplayStatusesCache()
+  displayStatusesForceRefreshNext = false
   try {
     localStorage.removeItem(DISPLAY_STATUSES_STORAGE_KEY)
   } catch {
     // ignore storage failures
   }
+}
+
+function invalidateDisplayStatusesForConfigChange() {
+  clearStoredDisplayStatusesCache()
+  displayStatusesForceRefreshNext = true
 }
 
 export function subscribeDisplayStatuses(listener: (statuses: ExternalSubscriptionStatus[]) => void): () => void {
@@ -206,19 +213,19 @@ export async function listProviders(): Promise<ExternalSubscriptionProvider[]> {
 
 export async function createProvider(input: ExternalSubscriptionProviderInput): Promise<ExternalSubscriptionProvider> {
   const { data } = await apiClient.post<ExternalSubscriptionProvider>('/admin/external-subscriptions', input)
-  clearStoredDisplayStatusesCache()
+  invalidateDisplayStatusesForConfigChange()
   return data
 }
 
 export async function updateProvider(id: string, input: ExternalSubscriptionProviderInput): Promise<ExternalSubscriptionProvider> {
   const { data } = await apiClient.put<ExternalSubscriptionProvider>(`/admin/external-subscriptions/${encodeURIComponent(id)}`, input)
-  clearStoredDisplayStatusesCache()
+  invalidateDisplayStatusesForConfigChange()
   return data
 }
 
 export async function deleteProvider(id: string): Promise<void> {
   await apiClient.delete(`/admin/external-subscriptions/${encodeURIComponent(id)}`)
-  clearStoredDisplayStatusesCache()
+  invalidateDisplayStatusesForConfigChange()
 }
 
 export async function getStatuses(): Promise<ExternalSubscriptionStatus[]> {
@@ -228,14 +235,15 @@ export async function getStatuses(): Promise<ExternalSubscriptionStatus[]> {
 
 export async function getDisplayStatuses(options: { refresh?: boolean } = {}): Promise<ExternalSubscriptionStatus[]> {
   const now = Date.now()
-  if (!options.refresh && displayStatusesCache && displayStatusesCache.expiresAt > now) {
+  const forceRefresh = Boolean(options.refresh || displayStatusesForceRefreshNext)
+  if (!forceRefresh && displayStatusesCache && displayStatusesCache.expiresAt > now) {
     return cloneStatuses(displayStatusesCache.statuses)
   }
-  if (!options.refresh && displayStatusesCache?.statuses?.length) {
+  if (!forceRefresh && displayStatusesCache?.statuses?.length) {
     refreshDisplayStatusesInBackground()
     return cloneStatuses(displayStatusesCache.statuses)
   }
-  const hydrated = !options.refresh && !displayStatusesCache ? hydrateDisplayStatusesCache(now) : null
+  const hydrated = !forceRefresh && !displayStatusesCache ? hydrateDisplayStatusesCache(now) : null
   if (hydrated) {
     refreshDisplayStatusesInBackground()
     return hydrated
@@ -243,18 +251,21 @@ export async function getDisplayStatuses(options: { refresh?: boolean } = {}): P
   if (displayStatusesRequest) {
     return cloneStatuses(await displayStatusesRequest)
   }
-  displayStatusesRequest = loadDisplayStatuses(Boolean(options.refresh))
+  displayStatusesForceRefreshNext = false
+  displayStatusesRequest = loadDisplayStatuses(forceRefresh)
   try {
     const statuses = await displayStatusesRequest
-    if (statuses.length === 0) {
+    if (statuses.length === 0 && !forceRefresh) {
       const stale = staleDisplayStatuses() || hydrated
       if (stale) return stale
     }
     rememberDisplayStatuses(statuses, now)
     return cloneStatuses(statuses)
   } catch (error) {
-    const stale = staleDisplayStatuses() || hydrated
-    if (stale) return stale
+    if (!forceRefresh) {
+      const stale = staleDisplayStatuses() || hydrated
+      if (stale) return stale
+    }
     throw error
   } finally {
     displayStatusesRequest = null
@@ -276,7 +287,7 @@ export function refreshDisplayStatusesInBackground(options: { force?: boolean } 
 async function loadDisplayStatuses(forceRefresh = false): Promise<ExternalSubscriptionStatus[]> {
   if (!forceRefresh) return getStatuses()
   const { data } = await apiClient.get<ExternalSubscriptionStatus[]>('/admin/external-subscriptions/statuses', {
-    params: { refresh: 1 },
+    params: { refresh: 1, _: Date.now() },
   })
   return data
 }

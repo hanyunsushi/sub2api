@@ -356,7 +356,7 @@ describe('useAppStore', () => {
       expect(localStorage.getItem('table-page-size-source')).toBeNull()
     })
 
-    it('不覆盖用户本地主题选择', () => {
+    it('全站主题强制使用管理员公开设置并清理旧本地覆盖', () => {
       localStorage.setItem('appearance_theme', 'newspaper')
       const windowAny = window as any
       windowAny.__APP_CONFIG__ = {
@@ -367,8 +367,8 @@ describe('useAppStore', () => {
       const store = useAppStore()
       store.initFromInjectedConfig()
 
-      expect(useAppearanceTheme().currentTheme.value).toBe('newspaper')
-      expect(localStorage.getItem('appearance_theme')).toBe('newspaper')
+      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
+      expect(localStorage.getItem('appearance_theme')).toBeNull()
     })
   })
 })

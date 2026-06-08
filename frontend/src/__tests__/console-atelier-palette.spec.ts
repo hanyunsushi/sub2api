@@ -780,6 +780,8 @@ describe('console atelier palette restyle', () => {
     expect(styleSource).toContain('border-color: color-mix(in srgb, var(--atelier-ink) 24%, transparent) !important;')
     expect(styleSource).toContain('box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-ink) 14%, transparent) !important;')
     expect(styleSource).toContain('#app .app-layout-content .toggle-switch__thumb')
+    expect(styleSource).toContain('#app .app-layout-content .toggle-switch.bg-primary-600')
+    expect(styleSource).toContain('background: var(--atelier-butter) !important;')
   })
 
   it('wraps the current visual language as the Newspaper theme without moving layout', () => {
@@ -798,7 +800,7 @@ describe('console atelier palette restyle', () => {
     expect(appearanceThemeSource).toContain("{ id: 'newspaper', label: 'Newspaper' }")
     expect(appearanceThemeSource).toContain("{ id: 'cloudflare', label: 'Cloudflare' }")
     expect(appearanceThemeSource).toContain("{ id: 'anthropic', label: 'Anthropic' }")
-    expect(appearanceThemeSource).toContain("localStorage.setItem(STORAGE_KEY, theme)")
+    expect(appearanceThemeSource).not.toContain("localStorage.setItem(STORAGE_KEY, theme)")
     expect(appearanceThemeSource).toContain("document.documentElement.dataset.theme = theme")
     expect(appearanceThemeSource).toContain("document.documentElement.classList.remove('dark')")
     expect(styleSource).toContain('.sidebar .sidebar-label-collapsed')

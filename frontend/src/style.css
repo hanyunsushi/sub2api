@@ -7570,3 +7570,136 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
 }
+
+/* Theme readability patch: teleported menus and hover popovers must stay legible
+   after Cloudflare/Anthropic light themes flip the old dark slab tokens. */
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open,
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open,
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open,
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover,
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper) !important;
+  background-color: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.04) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span),
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span),
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span),
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger :where(.select-value, .select-icon, svg, path, span) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu,
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options),
+:root.theme-anthropic .select-dropdown-portal.ops-toolbar-select-menu,
+:root.theme-anthropic .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options),
+:root[data-theme="cloudflare"] .select-dropdown-portal.ops-toolbar-select-menu,
+:root[data-theme="cloudflare"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options),
+:root[data-theme="anthropic"] .select-dropdown-portal.ops-toolbar-select-menu,
+:root[data-theme="anthropic"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-search, .select-options),
+:root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
+:root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options),
+:root.theme-anthropic body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
+:root.theme-anthropic body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options),
+:root[data-theme="cloudflare"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
+:root[data-theme="cloudflare"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options),
+:root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
+:root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options) {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  background-color: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: 0 18px 48px rgba(20, 20, 19, 0.12) !important;
+}
+
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty, svg),
+:root.theme-anthropic .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty, svg),
+:root[data-theme="cloudflare"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty, svg),
+:root[data-theme="anthropic"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty, svg),
+:root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset, .date-picker-dropdown-portal .date-picker-label, .date-picker-dropdown-portal .date-picker-separator, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-input, .date-picker-dropdown-portal .date-picker-icon, .date-picker-dropdown-portal .date-picker-chevron, .select-dropdown-portal .select-option, .select-dropdown-portal .select-option-label, .select-dropdown-portal .select-empty, .select-dropdown-portal svg),
+:root.theme-anthropic body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset, .date-picker-dropdown-portal .date-picker-label, .date-picker-dropdown-portal .date-picker-separator, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-input, .date-picker-dropdown-portal .date-picker-icon, .date-picker-dropdown-portal .date-picker-chevron, .select-dropdown-portal .select-option, .select-dropdown-portal .select-option-label, .select-dropdown-portal .select-empty, .select-dropdown-portal svg),
+:root[data-theme="cloudflare"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset, .date-picker-dropdown-portal .date-picker-label, .date-picker-dropdown-portal .date-picker-separator, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-input, .date-picker-dropdown-portal .date-picker-icon, .date-picker-dropdown-portal .date-picker-chevron, .select-dropdown-portal .select-option, .select-dropdown-portal .select-option-label, .select-dropdown-portal .select-empty, .select-dropdown-portal svg),
+:root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset, .date-picker-dropdown-portal .date-picker-label, .date-picker-dropdown-portal .date-picker-separator, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-input, .date-picker-dropdown-portal .date-picker-icon, .date-picker-dropdown-portal .date-picker-chevron, .select-dropdown-portal .select-option, .select-dropdown-portal .select-option-label, .select-dropdown-portal .select-empty, .select-dropdown-portal svg) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+:root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected),
+:root.theme-anthropic .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected),
+:root[data-theme="cloudflare"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected),
+:root[data-theme="anthropic"] .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option:hover, .select-option-focused, .select-option-selected),
+:root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset:hover, .date-picker-dropdown-portal .date-picker-preset-active, .select-dropdown-portal .select-option:hover, .select-dropdown-portal .select-option-focused, .select-dropdown-portal .select-option-selected),
+:root.theme-anthropic body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset:hover, .date-picker-dropdown-portal .date-picker-preset-active, .select-dropdown-portal .select-option:hover, .select-dropdown-portal .select-option-focused, .select-dropdown-portal .select-option-selected),
+:root[data-theme="cloudflare"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset:hover, .date-picker-dropdown-portal .date-picker-preset-active, .select-dropdown-portal .select-option:hover, .select-dropdown-portal .select-option-focused, .select-dropdown-portal .select-option-selected),
+:root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-preset:hover, .date-picker-dropdown-portal .date-picker-preset-active, .select-dropdown-portal .select-option:hover, .select-dropdown-portal .select-option-focused, .select-dropdown-portal .select-option-selected) {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+:root.theme-cloudflare .ops-diagnosis-popover,
+:root.theme-cloudflare .ops-diagnosis-popover > div,
+:root.theme-anthropic .ops-diagnosis-popover,
+:root.theme-anthropic .ops-diagnosis-popover > div,
+:root[data-theme="cloudflare"] .ops-diagnosis-popover,
+:root[data-theme="cloudflare"] .ops-diagnosis-popover > div,
+:root[data-theme="anthropic"] .ops-diagnosis-popover,
+:root[data-theme="anthropic"] .ops-diagnosis-popover > div {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  background-color: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: 0 18px 48px rgba(20, 20, 19, 0.16) !important;
+}
+
+:root.theme-cloudflare .ops-diagnosis-popover :where(h4, div, span, p, svg, path),
+:root.theme-anthropic .ops-diagnosis-popover :where(h4, div, span, p, svg, path),
+:root[data-theme="cloudflare"] .ops-diagnosis-popover :where(h4, div, span, p, svg, path),
+:root[data-theme="anthropic"] .ops-diagnosis-popover :where(h4, div, span, p, svg, path) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .toggle-switch.bg-primary-500,
+#app .app-layout-content .toggle-switch.bg-primary-600,
+:root.theme-cloudflare #app .app-layout-content .toggle-switch.bg-primary-500,
+:root.theme-cloudflare #app .app-layout-content .toggle-switch.bg-primary-600,
+:root.theme-anthropic #app .app-layout-content .toggle-switch.bg-primary-500,
+:root.theme-anthropic #app .app-layout-content .toggle-switch.bg-primary-600,
+:root[data-theme="cloudflare"] #app .app-layout-content .toggle-switch.bg-primary-500,
+:root[data-theme="cloudflare"] #app .app-layout-content .toggle-switch.bg-primary-600,
+:root[data-theme="anthropic"] #app .app-layout-content .toggle-switch.bg-primary-500,
+:root[data-theme="anthropic"] #app .app-layout-content .toggle-switch.bg-primary-600,
+#app .app-layout-content [role="switch"].bg-primary-500,
+#app .app-layout-content [role="switch"].bg-primary-600,
+#app .app-layout-content button[aria-checked="true"].bg-primary-500,
+#app .app-layout-content button[aria-checked="true"].bg-primary-600 {
+  border-color: var(--atelier-butter-dark) !important;
+  background: var(--atelier-butter) !important;
+  background-color: var(--atelier-butter) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-butter-dark) 42%, transparent) !important;
+}
+
+#app .app-layout-content .peer:checked ~ .peer-checked\:bg-primary-600,
+#app .app-layout-content .peer:checked + .peer-checked\:bg-primary-600 {
+  background: var(--atelier-butter) !important;
+  background-color: var(--atelier-butter) !important;
+}

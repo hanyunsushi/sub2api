@@ -197,6 +197,7 @@ function defaultExternalStatuses(
       sort_order: 50,
       currency: "USD",
       site_url: "https://ai-pixel.online",
+      logo_url: "https://cdn.example.com/pixel.png",
       total_limit_usd: 70,
       used_usd: 8.25,
       remaining_usd: 61.75,
@@ -564,6 +565,21 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("Pixel");
     expect(dropdown.text()).toContain("Token 失效");
     expect(dropdown.text()).toContain("请更新 Token");
+  });
+
+  it("renders the active external subscription logo in the top-right balance chip", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await vi.advanceTimersByTimeAsync(42_000);
+    await nextTick();
+
+    const chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("Pixel");
+    const logo = chip.get('[data-testid="header-balance-provider-logo"]');
+    expect(logo.attributes("data-logo-url")).toBe("https://cdn.example.com/pixel.png");
   });
 
   it("keeps the console route context visible in the header", async () => {

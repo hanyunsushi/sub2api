@@ -70,7 +70,17 @@
             @mouseenter="openBalanceDropdown"
             @mouseleave="scheduleCloseBalanceDropdown"
           >
+            <ProviderBrandIcon
+              v-if="currentExternalSubscriptionInChip"
+              data-testid="header-balance-provider-logo"
+              class="header-balance-provider-logo h-4 w-4 flex-shrink-0"
+              :provider="externalSubscriptionLogoProvider(currentExternalSubscriptionInChip)"
+              :model="currentExternalSubscriptionInChip.name"
+              :logo-url="currentExternalSubscriptionInChip.logo_url"
+              :data-logo-url="currentExternalSubscriptionInChip.logo_url || ''"
+            />
             <svg
+              v-else
               class="h-4 w-4"
               :class="balanceIconClass"
               fill="none"
@@ -314,6 +324,7 @@ import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import AISearchBox from '@/components/layout/AISearchBox.vue'
 import Icon from '@/components/icons/Icon.vue'
 
@@ -529,6 +540,15 @@ function providerClassSuffix(provider?: string | null) {
 
 function externalSubscriptionChipLabel(subscription: ExternalSubscriptionStatus) {
   return externalSubscriptionLabels[subscription.provider] || subscription.name || subscription.provider
+}
+
+function externalSubscriptionLogoProvider(subscription: ExternalSubscriptionStatus) {
+  return [
+    subscription.provider,
+    subscription.name,
+    subscription.site_url,
+    ...subscription.match_keywords,
+  ].join(' ')
 }
 
 function balanceProviderTextClass(subscription: ExternalSubscriptionStatus) {
