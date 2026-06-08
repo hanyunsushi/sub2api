@@ -11,13 +11,9 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("import externalSubscriptionsAPI")
     expect(source).toContain("type ExternalSubscriptionStatus")
     expect(source).toContain("fetchExternalQuotaSummaries")
+    expect(source).toContain("externalSubscriptionsAPI.getDisplayStatuses()")
     expect(source).toContain("getAccountExternalQuota")
-    expect(source).not.toContain("import tcdmxSubscriptionAPI")
-    expect(source).not.toContain("import qlhazycoderSubscriptionAPI")
-    expect(source).not.toContain("import xhyapiSubscriptionAPI")
-    expect(source).not.toContain("import pixelSubscriptionAPI")
-    expect(source).not.toContain("import liustSubscriptionAPI")
-    expect(source).not.toContain("import packycodeSubscriptionAPI")
+    expect(source).not.toContain("externalSubscriptionsAPI.getStatuses()")
   })
 
   it('renders external quota details inside the account card name area with provider links', () => {
