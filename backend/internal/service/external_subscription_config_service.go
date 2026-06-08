@@ -36,6 +36,7 @@ type ExternalSubscriptionProvider struct {
 	Enabled                bool     `json:"enabled"`
 	Template               string   `json:"template"`
 	APIBaseURL             string   `json:"api_base_url"`
+	LogoURL                string   `json:"logo_url,omitempty"`
 	APIToken               string   `json:"api_token,omitempty"`
 	APITokenConfigured     bool     `json:"api_token_configured"`
 	UserID                 string   `json:"user_id,omitempty"`
@@ -51,6 +52,7 @@ type ExternalSubscriptionProviderInput struct {
 	Enabled       bool     `json:"enabled"`
 	Template      string   `json:"template"`
 	APIBaseURL    string   `json:"api_base_url"`
+	LogoURL       string   `json:"logo_url"`
 	APIToken      string   `json:"api_token"`
 	UserID        string   `json:"user_id"`
 	RefreshToken  string   `json:"refresh_token"`
@@ -61,6 +63,7 @@ type ExternalSubscriptionProviderInput struct {
 type ExternalSubscriptionProviderStatus struct {
 	Name                   string   `json:"name"`
 	Template               string   `json:"template"`
+	LogoURL                string   `json:"logo_url,omitempty"`
 	APITokenConfigured     bool     `json:"api_token_configured"`
 	RefreshTokenConfigured bool     `json:"refresh_token_configured"`
 	MatchKeywords          []string `json:"match_keywords"`
@@ -74,6 +77,7 @@ type externalSubscriptionStoredProvider struct {
 	Enabled       bool     `json:"enabled"`
 	Template      string   `json:"template"`
 	APIBaseURL    string   `json:"api_base_url"`
+	LogoURL       string   `json:"logo_url,omitempty"`
 	APIToken      string   `json:"api_token"`
 	UserID        string   `json:"user_id,omitempty"`
 	RefreshToken  string   `json:"refresh_token,omitempty"`
@@ -272,6 +276,7 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		statuses = append(statuses, ExternalSubscriptionProviderStatus{
 			Name:                       publicProvider.Name,
 			Template:                   publicProvider.Template,
+			LogoURL:                    publicProvider.LogoURL,
 			APITokenConfigured:         publicProvider.APITokenConfigured,
 			RefreshTokenConfigured:     publicProvider.RefreshTokenConfigured,
 			MatchKeywords:              publicProvider.MatchKeywords,
@@ -308,6 +313,7 @@ func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientError
 		kept := previous
 		kept.Name = status.Name
 		kept.Template = status.Template
+		kept.LogoURL = status.LogoURL
 		kept.Enabled = status.Enabled
 		kept.Configured = status.Configured
 		kept.APITokenConfigured = status.APITokenConfigured
@@ -633,6 +639,7 @@ func normalizeExternalSubscriptionInput(input ExternalSubscriptionProviderInput,
 		Enabled:       input.Enabled,
 		Template:      strings.TrimSpace(input.Template),
 		APIBaseURL:    normalizeExternalSubscriptionAPIBaseURL(input.APIBaseURL, strings.TrimSpace(input.APIBaseURL)),
+		LogoURL:       strings.TrimSpace(input.LogoURL),
 		APIToken:      strings.TrimSpace(input.APIToken),
 		UserID:        strings.TrimSpace(input.UserID),
 		RefreshToken:  strings.TrimSpace(input.RefreshToken),
@@ -668,6 +675,7 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	if provider.APIBaseURL == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_API_BASE_URL_REQUIRED", "external subscription provider API base URL is required")
 	}
+	provider.LogoURL = strings.TrimSpace(provider.LogoURL)
 	provider.APIToken = strings.TrimSpace(provider.APIToken)
 	provider.UserID = strings.TrimSpace(provider.UserID)
 	provider.RefreshToken = strings.TrimSpace(provider.RefreshToken)
@@ -835,6 +843,7 @@ func publicExternalSubscriptionProvider(provider externalSubscriptionStoredProvi
 		Enabled:                provider.Enabled,
 		Template:               provider.Template,
 		APIBaseURL:             provider.APIBaseURL,
+		LogoURL:                provider.LogoURL,
 		APITokenConfigured:     strings.TrimSpace(provider.APIToken) != "",
 		UserID:                 provider.UserID,
 		RefreshTokenConfigured: strings.TrimSpace(provider.RefreshToken) != "",

@@ -29,6 +29,7 @@ describe('admin external subscriptions api', () => {
           enabled: true,
           template: 'newapi_console',
           api_base_url: 'https://api.qlhazycoder.top',
+          logo_url: 'https://cdn.example.com/qlhazy.png',
           api_token_configured: true,
           user_id: '707',
           refresh_token_configured: false,
@@ -42,6 +43,7 @@ describe('admin external subscriptions api', () => {
 
     expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions')
     expect(result[0].id).toBe('qlhazycoder')
+    expect(result[0].logo_url).toBe('https://cdn.example.com/qlhazy.png')
     expect(result[0]).not.toHaveProperty('api_token')
     expect(result[0]).not.toHaveProperty('refresh_token')
   })
@@ -54,6 +56,7 @@ describe('admin external subscriptions api', () => {
         enabled: true,
         template: 'newapi_console',
         api_base_url: 'https://newapi.example',
+        logo_url: 'https://cdn.example.com/custom.png',
         api_token_configured: true,
         refresh_token_configured: false,
         match_keywords: ['newapi.example'],
@@ -67,6 +70,7 @@ describe('admin external subscriptions api', () => {
         enabled: true,
         template: 'newapi_console',
         api_base_url: 'https://renamed.example',
+        logo_url: 'https://cdn.example.com/renamed.png',
         api_token_configured: true,
         refresh_token_configured: false,
         match_keywords: ['renamed.example'],
@@ -80,6 +84,7 @@ describe('admin external subscriptions api', () => {
       enabled: true,
       template: 'newapi_console',
       api_base_url: 'https://newapi.example',
+      logo_url: 'https://cdn.example.com/custom.png',
       api_token: 'secret',
       match_keywords: ['newapi.example'],
       sort_order: 70,
@@ -89,6 +94,7 @@ describe('admin external subscriptions api', () => {
       enabled: true,
       template: 'newapi_console',
       api_base_url: 'https://renamed.example',
+      logo_url: 'https://cdn.example.com/renamed.png',
       match_keywords: ['renamed.example'],
       sort_order: 70,
     })
@@ -96,9 +102,11 @@ describe('admin external subscriptions api', () => {
     expect(apiClient.post).toHaveBeenCalledWith('/admin/external-subscriptions', expect.objectContaining({
       id: 'custom-newapi',
       template: 'newapi_console',
+      logo_url: 'https://cdn.example.com/custom.png',
     }))
     expect(apiClient.put).toHaveBeenCalledWith('/admin/external-subscriptions/custom-newapi', expect.objectContaining({
       name: 'Renamed NewAPI',
+      logo_url: 'https://cdn.example.com/renamed.png',
     }))
   })
 
@@ -169,6 +177,7 @@ describe('admin external subscriptions api', () => {
           template: 'newapi_console',
           enabled: true,
           configured: true,
+          logo_url: 'https://cdn.example.com/packy.png',
           api_token_configured: true,
           refresh_token_configured: false,
           match_keywords: ['packycode'],
@@ -187,6 +196,7 @@ describe('admin external subscriptions api', () => {
 
     expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/statuses')
     expect(result[0].provider).toBe('packycode')
+    expect(result[0].logo_url).toBe('https://cdn.example.com/packy.png')
     expect(result[0].remaining_usd).toBe(88.8)
     expect(result[0]).not.toHaveProperty('api_token')
   })
