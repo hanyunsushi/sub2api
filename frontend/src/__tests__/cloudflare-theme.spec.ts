@@ -42,6 +42,10 @@ const cloudflareBlock = cssBlockFrom(
   styleSource,
   ':root[data-theme="cloudflare"],\n:root.theme-cloudflare {',
 )
+const anthropicBlock = cssBlockFrom(
+  styleSource,
+  ':root[data-theme="anthropic"],\n:root.theme-anthropic {',
+)
 
 // Every --atelier-* / font token declared by the Newspaper theme must also be
 // declared by the Cloudflare theme, so the new theme fully re-skins the app.
@@ -50,11 +54,15 @@ const declaredTokens = (block: string) =>
 
 describe('Cloudflare appearance theme', () => {
   it('registers Cloudflare as a selectable theme option without removing Newspaper', () => {
-    expect(appearanceThemeSource).toContain("export type AppearanceThemeId = 'newspaper' | 'cloudflare'")
+    expect(appearanceThemeSource).toContain("export type AppearanceThemeId = 'newspaper' | 'cloudflare' | 'anthropic'")
     expect(appearanceThemeSource).toContain("{ id: 'newspaper', label: 'Newspaper' }")
     expect(appearanceThemeSource).toContain("{ id: 'cloudflare', label: 'Cloudflare' }")
+    expect(appearanceThemeSource).toContain("{ id: 'anthropic', label: 'Anthropic' }")
     expect(appearanceThemeSource).toContain(
       "document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')",
+    )
+    expect(appearanceThemeSource).toContain(
+      "document.documentElement.classList.toggle('theme-anthropic', theme === 'anthropic')",
     )
   })
 
@@ -90,6 +98,7 @@ describe('Cloudflare appearance theme', () => {
     expect(settingsViewSource).toContain("admin.settings.site.defaultThemeHint")
     expect(settingsViewSource).toContain('<option value="newspaper">Newspaper</option>')
     expect(settingsViewSource).toContain('<option value="cloudflare">Cloudflare</option>')
+    expect(settingsViewSource).toContain('<option value="anthropic">Anthropic</option>')
     expect(settingsViewSource).toContain('appearance_theme_default: form.appearance_theme_default')
   })
 
@@ -103,6 +112,33 @@ describe('Cloudflare appearance theme', () => {
     const cloudflareTokens = new Set(declaredTokens(cloudflareBlock))
     const missing = newspaperTokens.filter((token) => !cloudflareTokens.has(token))
     expect(missing, `Cloudflare theme is missing tokens: ${missing.join(', ')}`).toEqual([])
+  })
+
+  it('defines an Anthropic theme token block covering every Newspaper token', () => {
+    expect(styleSource).toContain('Anthropic appearance theme')
+    expect(styleSource).toContain(':root[data-theme="anthropic"]')
+    expect(styleSource).toContain(':root.theme-anthropic')
+    expect(anthropicBlock).toContain('--app-theme-name: "Anthropic";')
+
+    const newspaperTokens = declaredTokens(newspaperBlock)
+    const anthropicTokens = new Set(declaredTokens(anthropicBlock))
+    const missing = newspaperTokens.filter((token) => !anthropicTokens.has(token))
+    expect(missing, `Anthropic theme is missing tokens: ${missing.join(', ')}`).toEqual([])
+  })
+
+  it('uses the Anthropic warm editorial palette from the Obsidian design guide', () => {
+    expect(anthropicBlock).toContain('--atelier-paper: #f5f4ed;')
+    expect(anthropicBlock).toContain('--atelier-paper-2: #faf9f5;')
+    expect(anthropicBlock).toContain('--atelier-ink: #141413;')
+    expect(anthropicBlock).toContain('--atelier-muted: #5e5d59;')
+    expect(anthropicBlock).toContain('--atelier-blue: #c96442;')
+    expect(anthropicBlock).toContain('--atelier-butter: #d97757;')
+    expect(anthropicBlock).toContain('--atelier-line: #f0eee6;')
+    expect(anthropicBlock).toContain('--atelier-font-serif: var(--serif);')
+    expect(anthropicBlock).toMatch(/--serif:\s*Georgia/)
+    expect(anthropicBlock.toLowerCase()).not.toContain('#002fa7')
+    expect(anthropicBlock).not.toContain('linear-gradient')
+    expect(anthropicBlock).not.toContain('radial-gradient')
   })
 
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {

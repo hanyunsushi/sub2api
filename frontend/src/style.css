@@ -216,6 +216,118 @@
 }
 /* Cloudflare appearance theme end */
 
+/* Anthropic appearance theme */
+:root[data-theme="anthropic"],
+:root.theme-anthropic {
+  --app-theme-name: "Anthropic";
+  --atelier-paper: #f5f4ed;
+  --atelier-paper-2: #faf9f5;
+  --atelier-ink: #141413;
+  --atelier-muted: #5e5d59;
+  --atelier-lime: #5e5d59;
+  --atelier-line: #f0eee6;
+  --atelier-line-strong: #d1cfc5;
+  --atelier-blue: #c96442;
+  --atelier-blue-dark: #a64f34;
+  --atelier-butter: #d97757;
+  --atelier-butter-dark: #c96442;
+  --atelier-dust: #87867f;
+  --atelier-white: #ffffff;
+  --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 14%, var(--atelier-paper));
+  --atelier-butter-soft: #d97757;
+  --atelier-surface: var(--atelier-paper);
+  --atelier-surface-strong: var(--atelier-white);
+  --atelier-surface-muted: #e8e6dc;
+  --atelier-shadow: rgba(20, 20, 19, 0.14);
+  --atelier-component-muted: var(--atelier-dust);
+  --atelier-component-warning: var(--atelier-butter-dark);
+  --atelier-red: #b53333;
+  --atelier-green: #64735b;
+  --atelier-orange: #d97757;
+  --atelier-canvas: var(--atelier-paper);
+  --atelier-surface-panel: var(--atelier-paper-2);
+  --atelier-surface-cool: var(--atelier-paper-2);
+  --atelier-surface-dust: #e8e6dc;
+  --atelier-surface-blue: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
+  --atelier-material-1: var(--atelier-paper-2);
+  --atelier-material-2: var(--atelier-paper-2);
+  --atelier-material-blue: var(--atelier-surface-blue);
+  --atelier-material-dust: var(--atelier-surface-dust);
+  --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 5%, var(--atelier-paper-2));
+  --atelier-material-edge: #f0eee6;
+  --atelier-material-edge-strong: #d1cfc5;
+  --atelier-material-shadow: 0 4px 18px rgba(20, 20, 19, 0.025);
+  --atelier-material-shadow-hover: 0 12px 42px rgba(20, 20, 19, 0.055);
+  --atelier-material-grid: none;
+  --atelier-material-grid-dark: none;
+  --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 18%, var(--atelier-paper));
+  --atelier-material-dust-strong: color-mix(in srgb, var(--atelier-dust) 24%, var(--atelier-paper));
+  --atelier-material-butter-strong: color-mix(in srgb, var(--atelier-butter) 28%, var(--atelier-paper));
+  --atelier-material-green: #dfe6dc;
+  --atelier-material-red: #efd8d4;
+  --atelier-material-active: var(--atelier-blue);
+  --atelier-ui-hover-surface: #e8e6dc;
+  --atelier-filter-action-surface: var(--atelier-paper-2);
+  --atelier-slab-surface: var(--atelier-paper-2);
+  --atelier-slab-field: var(--atelier-paper);
+  --atelier-slab-text: var(--atelier-ink);
+  --atelier-slab-edge: var(--atelier-material-edge);
+  --atelier-slab-edge-soft: var(--atelier-line);
+  --atelier-slab-muted: var(--atelier-muted);
+  --atelier-slab-field-hover: var(--atelier-ui-hover-surface);
+  --atelier-console-grid-line: rgba(20, 20, 19, 0.026);
+  --atelier-console-grid-line-soft: rgba(20, 20, 19, 0.018);
+  --atelier-console-grid-size: 32px 32px;
+  --atelier-console-rule: none;
+  --atelier-console-rule-invert: none;
+  --atelier-console-rule-vertical: none;
+  --atelier-console-rule-vertical-invert: none;
+  --atelier-filter-stitch-horizontal: var(--atelier-console-rule);
+  --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
+  --atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);
+  --atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);
+  --atelier-scrollbar: #87867f;
+  --atelier-scrollbar-hover: #5e5d59;
+  --atelier-scrollbar-track: #f0eee6;
+  --atelier-module-enter-duration: 0.9s;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", "STSong", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --atelier-font-sans: var(--sans);
+  --atelier-font-serif: var(--serif);
+  --atelier-font-mono: var(--mono);
+}
+
+:root.theme-anthropic body,
+:root[data-theme="anthropic"] body {
+  background-image: none;
+}
+
+:root.theme-anthropic .btn-primary,
+:root[data-theme="anthropic"] .btn-primary {
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
+}
+
+:root.theme-anthropic .ai-search-chat,
+:root[data-theme="anthropic"] .ai-search-chat {
+  --search-snippet-focus-ring: rgba(201, 100, 66, 0.14);
+}
+
+:root.theme-anthropic ::selection,
+:root[data-theme="anthropic"] ::selection {
+  background: rgba(201, 100, 66, 0.18);
+  color: var(--atelier-ink);
+}
+
+:root.theme-anthropic .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"]),
+:root.theme-anthropic :where(.btn-primary, .btn-success, .btn-stripe, .date-picker-apply, .codex-button--primary) {
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.12) !important;
+}
+/* Anthropic appearance theme end */
+
 @layer base {
   * {
     @apply border-gray-200 dark:border-dark-700;

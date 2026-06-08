@@ -55,6 +55,16 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('displayCards')
   })
 
+  it('keeps subscription count and sort order out of the visible card chrome', () => {
+    expect(source).not.toContain("localText('订阅', 'Subs')")
+    expect(source).not.toContain('{{ card.activeCount }}')
+    expect(source).not.toContain('external-subscription-sort-fact')
+    expect(source).not.toContain('external-subscription-sort-value')
+    expect(source).toContain('sortOrder: number')
+    expect(source).toContain('left.sortOrder - right.sortOrder')
+    expect(source).toContain('v-model.number="form.sort_order"')
+  })
+
   it('renders providers as compact cards instead of the old horizontal data table', () => {
     expect(source).toContain(':scroll-mode="')
     expect(source).toContain('class="external-subscriptions-page"')
@@ -72,6 +82,15 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('<DataTable')
     expect(source).not.toContain('const columns = computed<Column[]>')
     expect(source).not.toContain("import DataTable")
+  })
+
+  it('uses compact card dimensions to reduce blank space in the external subscription grid', () => {
+    expect(source).toContain('min-height: 10.5rem;')
+    expect(source).toContain('padding: 0.875rem;')
+    expect(source).toContain('gap-3 md:grid-cols-2 xl:grid-cols-4')
+    expect(source).not.toContain('min-height: 13.75rem;')
+    expect(source).not.toContain('padding: 1rem;')
+    expect(source).not.toContain('grid gap-4 md:grid-cols-2 xl:grid-cols-3')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

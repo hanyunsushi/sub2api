@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-export type AppearanceThemeId = 'newspaper' | 'cloudflare'
+export type AppearanceThemeId = 'newspaper' | 'cloudflare' | 'anthropic'
 
 export interface AppearanceThemeOption {
   id: AppearanceThemeId
@@ -13,6 +13,7 @@ const DEFAULT_THEME_STORAGE_KEY = 'appearance_theme_default'
 export const appearanceThemeOptions: AppearanceThemeOption[] = [
   { id: 'newspaper', label: 'Newspaper' },
   { id: 'cloudflare', label: 'Cloudflare' },
+  { id: 'anthropic', label: 'Anthropic' },
 ]
 
 const activeTheme = ref<AppearanceThemeId>('newspaper')
@@ -32,6 +33,7 @@ function applyTheme(theme: AppearanceThemeId, persist = true) {
   document.documentElement.dataset.theme = theme
   document.documentElement.classList.toggle('theme-newspaper', theme === 'newspaper')
   document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')
+  document.documentElement.classList.toggle('theme-anthropic', theme === 'anthropic')
   document.documentElement.classList.remove('dark')
   if (persist) {
     localStorage.setItem(STORAGE_KEY, theme)
