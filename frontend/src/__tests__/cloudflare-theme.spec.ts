@@ -130,15 +130,61 @@ describe('Cloudflare appearance theme', () => {
     expect(anthropicBlock).toContain('--atelier-paper: #f5f4ed;')
     expect(anthropicBlock).toContain('--atelier-paper-2: #faf9f5;')
     expect(anthropicBlock).toContain('--atelier-ink: #141413;')
+    expect(anthropicBlock).toContain('--atelier-dark: #30302e;')
     expect(anthropicBlock).toContain('--atelier-muted: #5e5d59;')
     expect(anthropicBlock).toContain('--atelier-blue: #c96442;')
     expect(anthropicBlock).toContain('--atelier-butter: #d97757;')
+    expect(anthropicBlock).toContain('--atelier-focus: #3898ec;')
     expect(anthropicBlock).toContain('--atelier-line: #f0eee6;')
     expect(anthropicBlock).toContain('--atelier-font-serif: var(--serif);')
     expect(anthropicBlock).toMatch(/--serif:\s*Georgia/)
     expect(anthropicBlock.toLowerCase()).not.toContain('#002fa7')
     expect(anthropicBlock).not.toContain('linear-gradient')
     expect(anthropicBlock).not.toContain('radial-gradient')
+  })
+
+  it('applies Anthropic beyond tokens with near-black actions, editorial type, and readable filters', () => {
+    expect(styleSource).toContain('Anthropic theme — editorial component pass')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content :where(.page-title, .modal-title, .dialog-header h2')
+    expect(styleSource).toContain('font-family: var(--atelier-font-serif) !important;')
+    expect(styleSource).toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary)')
+    expect(styleSource).toContain('background: var(--atelier-ink) !important;')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
+    expect(styleSource).toContain(':where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)')
+    expect(styleSource).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+    expect(styleSource).toContain(':root.theme-anthropic body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal)')
+    expect(styleSource).toContain(':root.theme-anthropic .select-dropdown-portal')
+    expect(styleSource).toContain('--select-option-stable-text: var(--atelier-ink);')
+    expect(styleSource).toContain('--select-option-selected-surface: var(--atelier-sand);')
+  })
+
+  it('keeps Anthropic filter primary actions near-black without repainting plain filter buttons', () => {
+    const legacySlabIndex = styleSource.indexOf(
+      '#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
+        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
+        '  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled)',
+    )
+    const anthropicPrimaryIndex = styleSource.indexOf(
+      ':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
+        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
+        '  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)',
+    )
+
+    expect(legacySlabIndex).toBeGreaterThan(-1)
+    expect(anthropicPrimaryIndex).toBeGreaterThan(legacySlabIndex)
+
+    const primaryFilterRule = cssBlockFrom(
+      styleSource,
+      ':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
+        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
+        '  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)',
+    )
+    expect(primaryFilterRule).toContain('background: var(--atelier-ink) !important;')
+    expect(primaryFilterRule).toContain('color: var(--atelier-paper-2) !important;')
+    expect(primaryFilterRule).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
+    expect(primaryFilterRule).not.toContain(':where(button)')
+    expect(primaryFilterRule).not.toContain('var(--atelier-slab-field)')
   })
 
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {
