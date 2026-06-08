@@ -139,6 +139,36 @@ const NewspaperLogoMark = defineComponent({
   },
 })
 
+const AnthropicLogoMark = defineComponent({
+  name: 'AnthropicLogoMark',
+  setup(_, { attrs }) {
+    return () => h('svg', {
+      ...attrs,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg',
+      'aria-hidden': 'true',
+    }, [
+      h('rect', {
+        x: '3.5',
+        y: '3.5',
+        width: '17',
+        height: '17',
+        rx: '4',
+        fill: 'currentColor',
+        opacity: '0.1',
+      }),
+      h('path', {
+        d: 'M7.25 17.25 11.2 6.75h1.6l3.95 10.5M9 14h6',
+        stroke: 'currentColor',
+        'stroke-width': '1.7',
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }),
+    ])
+  },
+})
+
 const ThemeLogo = defineComponent({
   name: 'ThemeLogo',
   props: {
@@ -148,9 +178,15 @@ const ThemeLogo = defineComponent({
     },
   },
   setup(props, { attrs }) {
-    return () => props.themeId === 'cloudflare'
-      ? h(CloudflareLogoMark, { ...attrs, 'data-theme-logo': 'cloudflare' })
-      : h(NewspaperLogoMark, { ...attrs, 'data-theme-logo': 'newspaper' })
+    return () => {
+      if (props.themeId === 'cloudflare') {
+        return h(CloudflareLogoMark, { ...attrs, 'data-theme-logo': 'cloudflare' })
+      }
+      if (props.themeId === 'anthropic') {
+        return h(AnthropicLogoMark, { ...attrs, 'data-theme-logo': 'anthropic' })
+      }
+      return h(NewspaperLogoMark, { ...attrs, 'data-theme-logo': 'newspaper' })
+    }
   },
 })
 </script>

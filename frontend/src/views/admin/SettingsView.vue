@@ -4548,6 +4548,7 @@
                   >
                     <option value="newspaper">Newspaper</option>
                     <option value="cloudflare">Cloudflare</option>
+                    <option value="anthropic">Anthropic</option>
                   </select>
                   <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.defaultThemeHint") }}
@@ -7502,6 +7503,13 @@ const form = reactive<SettingsForm>({
   allow_user_view_error_requests: false,
 });
 
+const appearanceThemeIds = ["newspaper", "cloudflare", "anthropic"] as const;
+type AppearanceThemeId = (typeof appearanceThemeIds)[number];
+
+function isAppearanceThemeId(value: unknown): value is AppearanceThemeId {
+  return typeof value === "string" && appearanceThemeIds.includes(value as AppearanceThemeId);
+}
+
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
   buildAuthSourceDefaultsState({}),
 );
@@ -8141,10 +8149,9 @@ async function loadSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
-    form.appearance_theme_default =
-      settings.appearance_theme_default === "cloudflare"
-        ? "cloudflare"
-        : "newspaper";
+    form.appearance_theme_default = isAppearanceThemeId(settings.appearance_theme_default)
+      ? settings.appearance_theme_default
+      : "newspaper";
     form.custom_menu_items = Array.isArray(settings.custom_menu_items)
       ? settings.custom_menu_items.map((item) => ({
           ...item,
@@ -8398,10 +8405,9 @@ async function saveSettings() {
 
     form.table_default_page_size = normalizedTableDefaultPageSize;
     form.table_page_size_options = normalizedTablePageSizeOptions;
-    form.appearance_theme_default =
-      form.appearance_theme_default === "cloudflare"
-        ? "cloudflare"
-        : "newspaper";
+    form.appearance_theme_default = isAppearanceThemeId(form.appearance_theme_default)
+      ? form.appearance_theme_default
+      : "newspaper";
 
     const normalizedLoginAgreementDocuments =
       normalizeLoginAgreementDocumentsForSave();

@@ -46,7 +46,7 @@
         <div class="external-subscription-card-shell">
           <div
             v-if="isInitialLoading"
-            class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+            class="external-subscription-card-grid grid gap-3 md:grid-cols-2 xl:grid-cols-4"
           >
             <div
               v-for="index in 6"
@@ -62,7 +62,7 @@
 
           <div
             v-else-if="filteredCards.length > 0"
-            class="external-subscription-card-grid grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+            class="external-subscription-card-grid grid gap-3 md:grid-cols-2 xl:grid-cols-4"
           >
             <article
               v-for="card in filteredCards"
@@ -125,7 +125,7 @@
               </div>
 
               <a
-                class="external-subscription-card-link mt-3 block truncate font-mono text-xs"
+                class="external-subscription-card-link mt-2 block truncate font-mono text-xs"
                 :href="card.siteUrl"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -133,7 +133,7 @@
                 {{ card.siteUrl }}
               </a>
 
-              <div class="external-subscription-balance-row mt-4">
+              <div class="external-subscription-balance-row mt-3">
                 <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
                 <div
                   class="external-subscription-balance-value truncate font-mono"
@@ -143,27 +143,16 @@
                 </div>
               </div>
 
-              <div class="external-subscription-card-facts mt-4">
+              <div class="external-subscription-card-facts mt-3">
                 <div class="external-subscription-fact min-w-0">
                   <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
                   <div class="external-subscription-fact-value truncate">
                     {{ formatCardExpiry(card) }}
                   </div>
                 </div>
-                <div class="external-subscription-fact min-w-0">
-                  <div class="external-subscription-card-label">{{ localText('订阅', 'Subs') }}</div>
-                  <div class="external-subscription-fact-value font-mono">
-                    {{ card.activeCount }}
-                  </div>
-                </div>
-                <div class="external-subscription-fact external-subscription-sort-fact min-w-0">
-                  <span class="external-subscription-sort-value font-mono">
-                    #{{ card.sortOrder }}
-                  </span>
-                </div>
               </div>
 
-              <div class="external-subscription-config-meta mt-3">
+              <div class="external-subscription-config-meta mt-2">
                 <span>{{ formatTokenMeta(card) }}</span>
                 <span
                   v-if="card.template === 'active_subscriptions'"
@@ -180,7 +169,7 @@
                 </span>
               </div>
 
-              <div class="mt-auto flex flex-wrap gap-1 pt-4">
+              <div class="mt-auto flex flex-wrap gap-1 pt-3">
                 <span
                   v-for="keyword in card.matchKeywords"
                   :key="keyword"
@@ -522,7 +511,6 @@ type ExternalSubscriptionCard = {
   siteUrl: string
   balance: string
   expiry: string
-  activeCount: number | string
   errorCode?: string
   errorMessage?: string
   providerConfig?: ExternalSubscriptionProvider
@@ -628,7 +616,6 @@ function buildStatusCard(
     logoUrl: provider?.logo_url || status.logo_url || '',
     balance: formatStatusBalance(status),
     expiry: formatStatusExpiry(status),
-    activeCount: status.active_count,
     errorCode: status.error_code,
     errorMessage: status.error_message,
     providerConfig: provider,
@@ -658,7 +645,6 @@ function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): External
     logoUrl: provider.logo_url || '',
     balance: provider.enabled ? localText('未同步', 'Unsynced') : localText('停用', 'Disabled'),
     expiry: '-',
-    activeCount: '-',
     providerConfig: provider,
     readonly: false,
     logoText: buildProviderLogoText(provider),
@@ -965,14 +951,14 @@ onBeforeUnmount(() => {
 .external-subscription-card {
   position: relative;
   display: flex;
-  min-height: 13.75rem;
+  min-height: 10.5rem;
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--atelier-material-edge);
   border-radius: 8px;
   background: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
   box-shadow: none;
-  padding: 1rem;
+  padding: 0.875rem;
   transition:
     border-color 0.18s var(--atelier-ease),
     transform 0.18s var(--atelier-ease),
@@ -999,9 +985,9 @@ onBeforeUnmount(() => {
 
 .external-subscription-logo {
   display: inline-flex;
-  height: 2.5rem;
-  width: 2.5rem;
-  flex: 0 0 2.5rem;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex: 0 0 2.25rem;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -1019,8 +1005,8 @@ onBeforeUnmount(() => {
 }
 
 .external-subscription-logo :deep(.provider-brand-image-system) {
-  height: 1.375rem !important;
-  width: 1.375rem !important;
+  height: 1.25rem !important;
+  width: 1.25rem !important;
   object-fit: contain !important;
 }
 
@@ -1092,7 +1078,7 @@ onBeforeUnmount(() => {
 
 .external-subscription-balance-row {
   border-top: 1px solid var(--atelier-material-edge);
-  padding-top: 0.875rem;
+  padding-top: 0.7rem;
 }
 
 .external-subscription-card-label {
@@ -1104,17 +1090,16 @@ onBeforeUnmount(() => {
 
 .external-subscription-balance-value {
   color: var(--atelier-ink);
-  font-size: 1.375rem;
+  font-size: 1.2rem;
   font-weight: 650;
-  line-height: 1.75rem;
+  line-height: 1.55rem;
   margin-top: 0.125rem;
 }
 
 .external-subscription-card-facts {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  row-gap: 0.625rem;
-  column-gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0.25rem;
 }
 
 .external-subscription-fact-value {
@@ -1123,18 +1108,6 @@ onBeforeUnmount(() => {
   font-weight: 500;
   line-height: 1rem;
   margin-top: 0.125rem;
-}
-
-.external-subscription-sort-fact {
-  align-items: end;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.external-subscription-sort-value {
-  color: var(--atelier-muted);
-  font-size: 0.6875rem;
-  line-height: 1rem;
 }
 
 .external-subscription-config-meta {

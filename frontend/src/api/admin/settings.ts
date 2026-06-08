@@ -364,6 +364,8 @@ export function deriveWeChatConnectStoredMode(
 /**
  * System settings interface
  */
+export type AppearanceThemeDefault = "newspaper" | "cloudflare" | "anthropic";
+
 export interface SystemSettings {
   // Registration settings
   registration_enabled: boolean;
@@ -442,7 +444,7 @@ export interface SystemSettings {
   doc_url: string;
   home_content: string;
   hide_ccs_import_button: boolean;
-  appearance_theme_default: "newspaper" | "cloudflare";
+  appearance_theme_default: AppearanceThemeDefault;
   ai_logo_cdn_base_url: string;
   custom_ai_logo_presets: string[];
   custom_menu_svg_icon_presets: string[];
@@ -734,7 +736,7 @@ export interface UpdateSettingsRequest {
   doc_url?: string;
   home_content?: string;
   hide_ccs_import_button?: boolean;
-  appearance_theme_default?: "newspaper" | "cloudflare";
+  appearance_theme_default?: AppearanceThemeDefault;
   ai_logo_cdn_base_url?: string;
   custom_ai_logo_presets?: string[];
   custom_menu_svg_icon_presets?: string[];
@@ -951,10 +953,10 @@ export async function updateSettings(
 }
 
 export async function updateAppearanceThemeDefault(
-  appearanceThemeDefault: "newspaper" | "cloudflare",
-): Promise<{ appearance_theme_default: "newspaper" | "cloudflare" }> {
+  appearanceThemeDefault: AppearanceThemeDefault,
+): Promise<{ appearance_theme_default: AppearanceThemeDefault }> {
   const { data } = await apiClient.put<{
-    appearance_theme_default: "newspaper" | "cloudflare";
+    appearance_theme_default: AppearanceThemeDefault;
   }>("/admin/settings/appearance-theme-default", {
     appearance_theme_default: appearanceThemeDefault,
   });

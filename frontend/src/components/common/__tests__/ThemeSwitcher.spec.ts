@@ -57,6 +57,23 @@ describe('ThemeSwitcher', () => {
     expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
   })
 
+  it('renders the Anthropic logo when Anthropic is selected', () => {
+    const authStore = useAuthStore()
+    authStore.user = { id: 2, email: 'user@example.com', username: 'user', role: 'user' } as any
+    setAppearanceTheme('anthropic')
+
+    const wrapper = mount(ThemeSwitcher, {
+      global: {
+        stubs: { FloatingDropdown: { template: '<div><slot /></div>' } },
+      },
+    })
+
+    const trigger = wrapper.find('button.theme-switcher-trigger')
+    expect(trigger.find('[data-theme-logo="anthropic"]').exists()).toBe(true)
+    expect(trigger.find('[data-theme-logo="newspaper"]').exists()).toBe(false)
+    expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
+  })
+
   it('does not render the old global visibility control for admins', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
