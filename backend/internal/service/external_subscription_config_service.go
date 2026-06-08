@@ -18,6 +18,7 @@ import (
 const (
 	ExternalSubscriptionTemplateNewAPIConsole              = "newapi_console"
 	ExternalSubscriptionTemplateActiveSubscriptions        = "active_subscriptions"
+	ExternalSubscriptionTemplateBuzzBalance                = "buzz_balance"
 	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
 
@@ -254,6 +255,8 @@ func (s *ExternalSubscriptionConfigService) getStatusForStoredProvider(ctx conte
 		status, err = runner.getNewAPIConsoleSubscriptionStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateActiveSubscriptions:
 		status, err = runner.GetStatus(ctx)
+	case ExternalSubscriptionTemplateBuzzBalance:
+		status, err = runner.getBuzzBalanceSubscriptionStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateOpenRouterCredits:
 		status, err = runner.getOpenRouterCreditsStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
@@ -375,11 +378,27 @@ func mergeLegacySubscriptionProvider(target *externalSubscriptionStoredProvider,
 		target.APIBaseURL = legacy.APIBaseURL
 		updated = true
 	}
-	if len(target.MatchKeywords) == 0 && len(legacy.MatchKeywords) > 0 {
-		target.MatchKeywords = append([]string(nil), legacy.MatchKeywords...)
+	if mergedKeywords := mergeExternalSubscriptionKeywords(target.MatchKeywords, legacy.MatchKeywords); len(mergedKeywords) != len(target.MatchKeywords) {
+		target.MatchKeywords = mergedKeywords
 		updated = true
 	}
 	return updated
+}
+
+func mergeExternalSubscriptionKeywords(current []string, defaults []string) []string {
+	merged := normalizeExternalSubscriptionKeywords(current)
+	seen := make(map[string]struct{}, len(merged))
+	for _, keyword := range merged {
+		seen[keyword] = struct{}{}
+	}
+	for _, keyword := range normalizeExternalSubscriptionKeywords(defaults) {
+		if _, ok := seen[keyword]; ok {
+			continue
+		}
+		seen[keyword] = struct{}{}
+		merged = append(merged, keyword)
+	}
+	return merged
 }
 
 func externalSubscriptionProviderErrorStatus(provider externalSubscriptionStoredProvider, err error) *ExternalSubscriptionStatus {
@@ -424,6 +443,20 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 		{packycodeSubscriptionProviderConfig(), ExternalSubscriptionTemplateNewAPIConsole, []string{"packyapi.com", "packycode", "packy"}, 60},
 	}
 	providers := make([]externalSubscriptionStoredProvider, 0, len(configs))
+	buzzSettings, err := s.settingService.GetBuzzBalanceSettings(ctx)
+	if err != nil {
+		return nil, err
+	}
+	providers = append(providers, externalSubscriptionStoredProvider{
+		ID:            "buzz",
+		Name:          "Buzz",
+		Enabled:       buzzSettings.Enabled,
+		Template:      ExternalSubscriptionTemplateBuzzBalance,
+		APIBaseURL:    buzzSettings.APIBaseURL,
+		APIToken:      buzzSettings.APIToken,
+		MatchKeywords: []string{"buzz", "buzzai", "buzzai.cc", "claude"},
+		SortOrder:     5,
+	})
 	for _, item := range configs {
 		settings, err := s.settingService.getExternalSubscriptionSettings(ctx, item.cfg)
 		if err != nil {
@@ -471,7 +504,19 @@ func (s *ExternalSubscriptionConfigService) saveStoredProviders(ctx context.Cont
 	if err != nil {
 		return fmt.Errorf("marshal external subscription providers: %w", err)
 	}
-	if err := s.settingService.settingRepo.Set(ctx, SettingKeyExternalSubscriptionProviders, string(raw)); err != nil {
+	updates := map[string]string{
+		SettingKeyExternalSubscriptionProviders: string(raw),
+	}
+	if buzz, ok := findBuzzStoredProvider(providers); ok {
+		updates[SettingKeyBuzzBalanceEnabled] = fmt.Sprintf("%t", buzz.Enabled)
+		updates[SettingKeyBuzzBalanceAPIBaseURL] = normalizeBuzzBalanceAPIBaseURL(buzz.APIBaseURL)
+		updates[SettingKeyBuzzBalanceAPIToken] = strings.TrimSpace(buzz.APIToken)
+	} else {
+		updates[SettingKeyBuzzBalanceEnabled] = "false"
+		updates[SettingKeyBuzzBalanceAPIBaseURL] = DefaultBuzzBalanceAPIBaseURL
+		updates[SettingKeyBuzzBalanceAPIToken] = ""
+	}
+	if err := s.settingService.settingRepo.SetMultiple(ctx, updates); err != nil {
 		return fmt.Errorf("save external subscription providers: %w", err)
 	}
 	return nil
@@ -533,6 +578,7 @@ func isExternalSubscriptionTemplate(template string) bool {
 	switch template {
 	case ExternalSubscriptionTemplateNewAPIConsole,
 		ExternalSubscriptionTemplateActiveSubscriptions,
+		ExternalSubscriptionTemplateBuzzBalance,
 		ExternalSubscriptionTemplateOpenRouterCredits,
 		ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
 		return true
@@ -665,6 +711,12 @@ func publicExternalSubscriptionProvider(provider externalSubscriptionStoredProvi
 }
 
 func externalSubscriptionRuntimeConfig(provider externalSubscriptionStoredProvider) externalSubscriptionProviderConfig {
+	if isBuzzBalanceProviderID(provider.ID) {
+		cfg := buzzBalanceProviderConfig()
+		cfg.DisplayName = provider.Name
+		cfg.DefaultAPIBaseURL = provider.APIBaseURL
+		return cfg
+	}
 	return externalSubscriptionProviderConfig{
 		Provider:          provider.ID,
 		DisplayName:       provider.Name,
@@ -675,6 +727,15 @@ func externalSubscriptionRuntimeConfig(provider externalSubscriptionStoredProvid
 		UserIDKey:         provider.ID + "_user_id",
 		RefreshTokenKey:   provider.ID + "_refresh_token",
 	}
+}
+
+func findBuzzStoredProvider(providers []externalSubscriptionStoredProvider) (externalSubscriptionStoredProvider, bool) {
+	for _, provider := range providers {
+		if isBuzzBalanceProviderID(provider.ID) {
+			return provider, true
+		}
+	}
+	return externalSubscriptionStoredProvider{}, false
 }
 
 func sortExternalSubscriptionStoredProviders(providers []externalSubscriptionStoredProvider) {
