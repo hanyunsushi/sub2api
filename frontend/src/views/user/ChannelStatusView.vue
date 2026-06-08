@@ -156,6 +156,11 @@ async function loadExternalSubscriptions() {
   }
 }
 
+const unsubscribeExternalSubscriptions = externalSubscriptionsAPI.subscribeDisplayStatuses((statuses) => {
+  externalSubscriptionStatuses.value = statuses
+  externalSubscriptionsLoading.value = false
+})
+
 async function ensureDetailsForWindow() {
   if (currentWindow.value === '7d') return
   await Promise.all(items.value.map(it => loadDetail(it.id)))
@@ -198,5 +203,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (abortController) abortController.abort()
+  unsubscribeExternalSubscriptions()
 })
 </script>

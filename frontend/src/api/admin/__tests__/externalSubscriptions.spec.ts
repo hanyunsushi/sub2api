@@ -16,7 +16,8 @@ describe('admin external subscriptions api', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.clearAllMocks()
-    externalSubscriptionsAPI.clearDisplayStatusesCache()
+    localStorage.clear()
+    externalSubscriptionsAPI.clearStoredDisplayStatusesCache()
   })
 
   it('lists configurable providers without exposing secrets', async () => {
@@ -99,6 +100,64 @@ describe('admin external subscriptions api', () => {
     expect(apiClient.put).toHaveBeenCalledWith('/admin/external-subscriptions/custom-newapi', expect.objectContaining({
       name: 'Renamed NewAPI',
     }))
+  })
+
+  it('clears stored display snapshots after provider configuration changes', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          provider: 'openrouter',
+          name: 'OpenRouter',
+          template: 'openrouter_credits',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['openrouter'],
+          sort_order: 70,
+          currency: 'USD',
+          site_url: 'https://openrouter.ai',
+          used_usd: 4,
+          remaining_usd: 21,
+          active_count: 0,
+          subscriptions: [],
+        },
+      ],
+    })
+    vi.mocked(apiClient.post).mockResolvedValueOnce({
+      data: {
+        id: 'custom-newapi',
+        name: 'Custom NewAPI',
+        enabled: true,
+        template: 'newapi_console',
+        api_base_url: 'https://newapi.example',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['newapi.example'],
+        sort_order: 70,
+      },
+    })
+
+    await externalSubscriptionsAPI.getDisplayStatuses()
+    vi.resetModules()
+    const reloadedBeforeChange = await import('@/api/admin/externalSubscriptions')
+    expect((await reloadedBeforeChange.default.getDisplayStatuses()).map(status => status.provider)).toEqual(['openrouter'])
+
+    await reloadedBeforeChange.default.createProvider({
+      id: 'custom-newapi',
+      name: 'Custom NewAPI',
+      enabled: true,
+      template: 'newapi_console',
+      api_base_url: 'https://newapi.example',
+      api_token: 'secret',
+      match_keywords: ['newapi.example'],
+      sort_order: 70,
+    })
+    vi.resetModules()
+    vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('no stale provider after edit'))
+    const reloadedAfterChange = await import('@/api/admin/externalSubscriptions')
+
+    await expect(reloadedAfterChange.default.getDisplayStatuses()).rejects.toThrow('no stale provider after edit')
   })
 
   it('loads all provider statuses for the header and account cards', async () => {
@@ -276,6 +335,64 @@ describe('admin external subscriptions api', () => {
     expect(apiClient.get).toHaveBeenCalledTimes(1)
   })
 
+  it('returns expired in-memory display statuses immediately and refreshes in the background', async () => {
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({
+        data: [
+          {
+            provider: 'openrouter',
+            name: 'OpenRouter',
+            template: 'openrouter_credits',
+            enabled: true,
+            configured: true,
+            api_token_configured: true,
+            refresh_token_configured: false,
+            match_keywords: ['openrouter'],
+            sort_order: 70,
+            currency: 'USD',
+            site_url: 'https://openrouter.ai',
+            used_usd: 4,
+            remaining_usd: 21,
+            active_count: 0,
+            subscriptions: [],
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            provider: 'openrouter',
+            name: 'OpenRouter',
+            template: 'openrouter_credits',
+            enabled: true,
+            configured: true,
+            api_token_configured: true,
+            refresh_token_configured: false,
+            match_keywords: ['openrouter'],
+            sort_order: 70,
+            currency: 'USD',
+            site_url: 'https://openrouter.ai',
+            used_usd: 5,
+            remaining_usd: 30,
+            active_count: 0,
+            subscriptions: [],
+          },
+        ],
+      })
+
+    const first = await externalSubscriptionsAPI.getDisplayStatuses()
+    vi.advanceTimersByTime(60_001)
+    const second = await externalSubscriptionsAPI.getDisplayStatuses()
+    await Promise.resolve()
+    await Promise.resolve()
+    const third = await externalSubscriptionsAPI.getDisplayStatuses()
+
+    expect(first[0].remaining_usd).toBe(21)
+    expect(second[0].remaining_usd).toBe(21)
+    expect(third[0].remaining_usd).toBe(30)
+    expect(apiClient.get).toHaveBeenCalledTimes(2)
+  })
+
   it('returns the last good display statuses when every source fails after cache expiry', async () => {
     vi.mocked(apiClient.get)
       .mockResolvedValueOnce({
@@ -310,6 +427,42 @@ describe('admin external subscriptions api', () => {
     expect(first.map(status => status.provider)).toEqual(['openrouter'])
     expect(second.map(status => status.provider)).toEqual(['openrouter'])
     expect(apiClient.get).toHaveBeenCalledTimes(2)
+  })
+
+  it('hydrates display statuses from localStorage after a hard page refresh', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({
+      data: [
+        {
+          provider: 'liust',
+          name: 'LIUST',
+          template: 'newapi_console',
+          enabled: true,
+          configured: true,
+          api_token_configured: true,
+          refresh_token_configured: false,
+          match_keywords: ['liust'],
+          sort_order: 50,
+          currency: 'CNY',
+          site_url: 'https://liust.xyz',
+          used_usd: 2,
+          remaining_usd: 14.33,
+          active_count: 1,
+          subscriptions: [],
+        },
+      ],
+    })
+
+    const first = await externalSubscriptionsAPI.getDisplayStatuses()
+    expect(first[0].provider).toBe('liust')
+
+    vi.resetModules()
+    vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('slow upstream'))
+    const reloaded = await import('@/api/admin/externalSubscriptions')
+
+    const second = await reloaded.default.getDisplayStatuses()
+
+    expect(second.map(status => status.provider)).toEqual(['liust'])
+    expect(second[0].remaining_usd).toBe(14.33)
   })
 
   it('deletes a provider by id', async () => {
