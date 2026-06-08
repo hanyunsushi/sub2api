@@ -147,6 +147,16 @@ export async function update(id: number, updates: UpdateAccountRequest): Promise
 }
 
 /**
+ * Update only an account billing rate multiplier.
+ */
+export async function updateRateMultiplier(id: number, rateMultiplier: number): Promise<Account> {
+  const { data } = await apiClient.put<Account>(`/admin/accounts/${id}/rate-multiplier`, {
+    rate_multiplier: rateMultiplier
+  })
+  return data
+}
+
+/**
  * Check mixed-channel risk for account-group binding.
  */
 export async function checkMixedChannelRisk(
@@ -701,6 +711,7 @@ export const accountsAPI = {
   getById,
   create,
   update,
+  updateRateMultiplier,
   checkMixedChannelRisk,
   delete: deleteAccount,
   toggleStatus,

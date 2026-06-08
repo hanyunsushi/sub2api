@@ -203,7 +203,7 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		provider := stored[index]
 		status, nextProvider, err := s.getStatusForStoredProvider(ctx, provider)
 		if err != nil {
-			return nil, err
+			status = externalSubscriptionProviderErrorStatus(provider, err)
 		}
 		if nextProvider != nil {
 			stored[index] = *nextProvider
@@ -301,7 +301,112 @@ func (s *ExternalSubscriptionConfigService) loadStoredProviders(ctx context.Cont
 		normalized = append(normalized, next)
 	}
 	sortExternalSubscriptionStoredProviders(normalized)
+	merged, updated, err := s.mergeConfiguredLegacyProviders(ctx, normalized)
+	if err != nil {
+		return nil, err
+	}
+	if updated {
+		if err := s.saveStoredProviders(ctx, merged); err != nil {
+			return nil, err
+		}
+		return merged, nil
+	}
 	return normalized, nil
+}
+
+func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx context.Context, stored []externalSubscriptionStoredProvider) ([]externalSubscriptionStoredProvider, bool, error) {
+	legacy, err := s.buildLegacyProviders(ctx)
+	if err != nil {
+		return nil, false, err
+	}
+	byID := make(map[string]int, len(stored))
+	for index, provider := range stored {
+		byID[provider.ID] = index
+	}
+	updated := false
+	for _, legacyProvider := range legacy {
+		if !legacyProvider.hasSubscriptionCredential() {
+			continue
+		}
+		if index, ok := byID[legacyProvider.ID]; ok {
+			if mergeLegacySubscriptionProvider(&stored[index], legacyProvider) {
+				updated = true
+			}
+			continue
+		}
+		stored = append(stored, legacyProvider)
+		byID[legacyProvider.ID] = len(stored) - 1
+		updated = true
+	}
+	if updated {
+		sortExternalSubscriptionStoredProviders(stored)
+	}
+	return stored, updated, nil
+}
+
+func (p externalSubscriptionStoredProvider) hasSubscriptionCredential() bool {
+	return strings.TrimSpace(p.APIToken) != "" ||
+		strings.TrimSpace(p.RefreshToken) != "" ||
+		strings.TrimSpace(p.UserID) != ""
+}
+
+func mergeLegacySubscriptionProvider(target *externalSubscriptionStoredProvider, legacy externalSubscriptionStoredProvider) bool {
+	if target == nil {
+		return false
+	}
+	updated := false
+	if !target.Enabled && legacy.Enabled && legacy.hasSubscriptionCredential() {
+		target.Enabled = true
+		updated = true
+	}
+	if strings.TrimSpace(target.APIToken) == "" && strings.TrimSpace(legacy.APIToken) != "" {
+		target.APIToken = legacy.APIToken
+		updated = true
+	}
+	if strings.TrimSpace(target.RefreshToken) == "" && strings.TrimSpace(legacy.RefreshToken) != "" {
+		target.RefreshToken = legacy.RefreshToken
+		updated = true
+	}
+	if strings.TrimSpace(target.UserID) == "" && strings.TrimSpace(legacy.UserID) != "" {
+		target.UserID = legacy.UserID
+		updated = true
+	}
+	if strings.TrimSpace(target.APIBaseURL) == "" && strings.TrimSpace(legacy.APIBaseURL) != "" {
+		target.APIBaseURL = legacy.APIBaseURL
+		updated = true
+	}
+	if len(target.MatchKeywords) == 0 && len(legacy.MatchKeywords) > 0 {
+		target.MatchKeywords = append([]string(nil), legacy.MatchKeywords...)
+		updated = true
+	}
+	return updated
+}
+
+func externalSubscriptionProviderErrorStatus(provider externalSubscriptionStoredProvider, err error) *ExternalSubscriptionStatus {
+	code := fmt.Sprintf("%s_SUBSCRIPTION_STATUS_ERROR", strings.ToUpper(provider.ID))
+	message := "external subscription status check failed"
+	if err != nil {
+		message = err.Error()
+		if upstreamErr, ok := err.(*externalSubscriptionUpstreamError); ok {
+			if strings.TrimSpace(upstreamErr.Code) != "" {
+				code = upstreamErr.Code
+			}
+			if strings.TrimSpace(upstreamErr.Message) != "" {
+				message = upstreamErr.Message
+			}
+		}
+	}
+	return &ExternalSubscriptionStatus{
+		Provider:      provider.ID,
+		Enabled:       provider.Enabled,
+		Configured:    strings.TrimSpace(provider.APIToken) != "" || strings.TrimSpace(provider.RefreshToken) != "" || strings.TrimSpace(provider.UserID) != "",
+		Currency:      "USD",
+		SiteURL:       normalizeExternalSubscriptionAPIBaseURL(provider.APIBaseURL, provider.APIBaseURL),
+		ErrorCode:     code,
+		ErrorMessage:  message,
+		Subscriptions: []ExternalSubscriptionItem{},
+		RefreshedAt:   time.Now().UTC(),
+	}
 }
 
 func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Context) ([]externalSubscriptionStoredProvider, error) {

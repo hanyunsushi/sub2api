@@ -94,6 +94,137 @@ func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets
 	require.Equal(t, "1002", raw.UserID)
 }
 
+func TestExternalSubscriptionConfigServiceMergesConfiguredLegacyProvidersIntoStoredProviders(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "xhyapi",
+			Name:          "XHYAPI",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateActiveSubscriptions,
+			APIBaseURL:    "https://xhyapi.com",
+			MatchKeywords: []string{"xhyapi"},
+			SortOrder:     30,
+		},
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+	}, map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: "https://api.qlhazycoder.top",
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
+		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+		SettingKeyXHYAPISubscriptionEnabled:         "true",
+		SettingKeyXHYAPISubscriptionAPIBaseURL:      "https://xhyapi.com",
+		SettingKeyXHYAPISubscriptionAPIToken:        "legacy-xhy-token",
+		SettingKeyXHYAPISubscriptionRefreshToken:    "legacy-xhy-refresh",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+
+	qlhazy := requireExternalSubscriptionProvider(t, providers, "qlhazycoder")
+	require.True(t, qlhazy.Enabled)
+	require.True(t, qlhazy.APITokenConfigured)
+	require.Equal(t, "707", qlhazy.UserID)
+
+	xhyapi := requireExternalSubscriptionProvider(t, providers, "xhyapi")
+	require.True(t, xhyapi.APITokenConfigured)
+	require.True(t, xhyapi.RefreshTokenConfigured)
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	require.Equal(t, "legacy-ql-token", requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder").APIToken)
+	xhyRaw := requireStoredExternalSubscriptionProvider(t, stored, "xhyapi")
+	require.Equal(t, "legacy-xhy-token", xhyRaw.APIToken)
+	require.Equal(t, "legacy-xhy-refresh", xhyRaw.RefreshToken)
+}
+
+func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagIntoStoredProvider(t *testing.T) {
+	newAPIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success":true,"message":"","data":{"quota_display_type":"CNY","quota_per_unit":500000}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success":true,"message":"","data":{"quota":2500000,"used_quota":0}}`))
+		case "/api/subscription/self":
+			_, _ = w.Write([]byte(`{"success":true,"message":"","data":{"subscriptions":[],"all_subscriptions":[]}}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer newAPIServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "qlhazycoder",
+			Name:          "qlhazycoder",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateNewAPIConsole,
+			APIBaseURL:    newAPIServer.URL,
+			MatchKeywords: []string{"qlhazycoder"},
+			SortOrder:     20,
+		},
+	}, map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: newAPIServer.URL,
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
+		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+
+	qlhazy := requireExternalSubscriptionStatus(t, statuses, "qlhazycoder")
+	require.True(t, qlhazy.Enabled)
+	require.True(t, qlhazy.Configured)
+	require.NotNil(t, qlhazy.RemainingUSD)
+	require.InDelta(t, 5, *qlhazy.RemainingUSD, 0.0001)
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	qlhazyRaw := requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder")
+	require.True(t, qlhazyRaw.Enabled)
+	require.Equal(t, "legacy-ql-token", qlhazyRaw.APIToken)
+	require.Equal(t, "707", qlhazyRaw.UserID)
+}
+
+func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagAfterPreviousSecretMerge(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "qlhazycoder",
+			Name:          "qlhazycoder",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateNewAPIConsole,
+			APIBaseURL:    "https://api.qlhazycoder.top",
+			APIToken:      "legacy-ql-token",
+			UserID:        "707",
+			MatchKeywords: []string{"qlhazycoder"},
+			SortOrder:     20,
+		},
+	}, map[string]string{
+		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
+		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: "https://api.qlhazycoder.top",
+		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
+		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+
+	qlhazy := requireExternalSubscriptionProvider(t, providers, "qlhazycoder")
+	require.True(t, qlhazy.Enabled)
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	require.True(t, requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder").Enabled)
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesRunsBothTemplates(t *testing.T) {
 	activeServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/v1/subscriptions/active", r.URL.Path)
@@ -194,6 +325,59 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsBothTemplates(t *testin
 	require.Equal(t, "Active Provider", active.Name)
 	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, active.Template)
 	require.InDelta(t, 13.5, *active.RemainingUSD, 0.0001)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {
+	goodServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/credits", r.URL.Path)
+		_, _ = w.Write([]byte(`{"data":{"total_credits":10,"total_usage":1}}`))
+	}))
+	defer goodServer.Close()
+
+	badServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"error":"upstream offline"}`))
+	}))
+	defer badServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "bad-provider",
+			Name:          "Bad Provider",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    badServer.URL,
+			APIToken:      "bad-key",
+			MatchKeywords: []string{"bad"},
+			SortOrder:     10,
+		},
+		{
+			ID:            "good-provider",
+			Name:          "Good Provider",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    goodServer.URL,
+			APIToken:      "good-key",
+			MatchKeywords: []string{"good"},
+			SortOrder:     20,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+	require.Len(t, statuses, 2)
+
+	bad := requireExternalSubscriptionStatus(t, statuses, "bad-provider")
+	require.True(t, bad.Enabled)
+	require.True(t, bad.Configured)
+	require.NotEmpty(t, bad.ErrorCode)
+	require.NotEmpty(t, bad.ErrorMessage)
+
+	good := requireExternalSubscriptionStatus(t, statuses, "good-provider")
+	require.Empty(t, good.ErrorCode)
+	require.InDelta(t, 9, *good.RemainingUSD, 0.0001)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesRunsCreditTemplates(t *testing.T) {
@@ -398,6 +582,14 @@ func newExternalSubscriptionConfigRepoWithProviders(providers []externalSubscrip
 	return newExternalSubscriptionConfigRepo(map[string]string{
 		SettingKeyExternalSubscriptionProviders: string(raw),
 	})
+}
+
+func newExternalSubscriptionConfigRepoWithProvidersAndValues(providers []externalSubscriptionStoredProvider, values map[string]string) *externalSubscriptionConfigRepoStub {
+	repo := newExternalSubscriptionConfigRepoWithProviders(providers)
+	for key, value := range values {
+		repo.values[key] = value
+	}
+	return repo
 }
 
 type externalSubscriptionConfigRepoStub struct {

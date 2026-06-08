@@ -403,6 +403,18 @@
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
                 <span class="text-xs">{{ t('common.more') }}</span>
               </button>
+              <button
+                data-testid="account-rate-quick-adjust"
+                type="button"
+                class="account-rate-quick-adjust flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-300"
+                :title="localText('调整账号倍率', 'Adjust account rate multiplier')"
+                @click.stop="openRateMultiplierMenu(row, $event)"
+              >
+                <span class="font-mono text-[11px] font-semibold leading-4">
+                  x{{ formatAccountRateMultiplier(row.rate_multiplier) }}
+                </span>
+                <span class="text-xs">{{ localText('倍率', 'Rate') }}</span>
+              </button>
             </div>
           </template>
         </DataTable>
@@ -417,6 +429,50 @@
     <AccountStatsModal :show="showStats" :account="statsAcc" @close="closeStatsModal" />
     <ScheduledTestsPanel :show="showSchedulePanel" :account-id="scheduleAcc?.id ?? null" :model-options="scheduleModelOptions" @close="closeSchedulePanel" />
     <AccountActionMenu :show="menu.show" :account="menu.acc" :position="menu.pos" @close="menu.show = false" @test="handleTest" @stats="handleViewStats" @schedule="handleSchedule" @reauth="handleReAuth" @refresh-token="handleRefresh" @recover-state="handleRecoverState" @reset-quota="handleResetQuota" @set-privacy="handleSetPrivacy" />
+    <FloatingDropdown
+      :show="rateMultiplierMenu.show"
+      :trigger-el="rateMultiplierMenu.triggerEl"
+      placement="bottom-end"
+      :offset="6"
+      panel-class="account-rate-menu w-56 rounded-lg border border-gray-200 bg-white p-3 shadow-xl dark:border-dark-700 dark:bg-dark-900"
+    >
+      <form class="space-y-2" @submit.prevent="handleRateMultiplierSave">
+        <div class="flex items-center justify-between gap-3">
+          <label class="text-xs font-semibold text-gray-500 dark:text-dark-300">
+            {{ localText('账号倍率', 'Account rate') }}
+          </label>
+          <span class="font-mono text-[11px] text-gray-400">
+            {{ rateMultiplierMenu.account?.name }}
+          </span>
+        </div>
+        <input
+          v-model="rateMultiplierMenu.value"
+          type="number"
+          min="0"
+          step="0.01"
+          class="input h-9 font-mono text-sm"
+          autocomplete="off"
+          :disabled="rateMultiplierMenu.saving"
+        />
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary px-2 py-1 text-xs"
+            :disabled="rateMultiplierMenu.saving"
+            @click="closeRateMultiplierMenu"
+          >
+            <Icon name="x" size="xs" />
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary px-2 py-1 text-xs"
+            :disabled="rateMultiplierMenu.saving"
+          >
+            <Icon name="check" size="xs" />
+          </button>
+        </div>
+      </form>
+    </FloatingDropdown>
     <SyncFromCrsModal :show="showSync" @close="showSync = false" @synced="reload" />
     <ImportDataModal :show="showImportData" @close="showImportData = false" @imported="handleDataImported" />
     <BulkEditAccountModal
@@ -562,6 +618,19 @@ const scheduleAcc = ref<Account | null>(null)
 const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
 const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null}>({ show: false, acc: null, pos: null })
+const rateMultiplierMenu = reactive<{
+  show: boolean
+  account: Account | null
+  triggerEl: HTMLElement | null
+  value: string
+  saving: boolean
+}>({
+  show: false,
+  account: null,
+  triggerEl: null,
+  value: '1.00',
+  saving: false
+})
 const exportingData = ref(false)
 
 // Account tools dropdown
@@ -1166,6 +1235,7 @@ const syncAccountRefs = (nextAccount: Account) => {
   if (tempUnschedAcc.value?.id === nextAccount.id) tempUnschedAcc.value = nextAccount
   if (deletingAcc.value?.id === nextAccount.id) deletingAcc.value = nextAccount
   if (menu.acc?.id === nextAccount.id) menu.acc = nextAccount
+  if (rateMultiplierMenu.account?.id === nextAccount.id) rateMultiplierMenu.account = nextAccount
 }
 
 const mergeAccountsIncrementally = (nextRows: Account[]) => {
@@ -1285,7 +1355,7 @@ const { pause: pauseAutoRefresh, resume: resumeAutoRefresh } = useIntervalFn(
     if (document.hidden) return
     if (loading.value || autoRefreshFetching.value) return
     if (isAnyModalOpen.value) return
-    if (menu.show || showAccountToolsDropdown.value || showAutoRefreshDropdown.value) return
+    if (menu.show || rateMultiplierMenu.show || showAccountToolsDropdown.value || showAutoRefreshDropdown.value) return
     if (inAutoRefreshSilentWindow()) {
       autoRefreshCountdown.value = Math.max(
         0,
@@ -1430,6 +1500,7 @@ const cols = computed(() =>
 const handleEdit = (a: Account) => { edAcc.value = a; showEdit.value = true }
 const openMenu = (a: Account, e: MouseEvent) => {
   menu.acc = a
+  closeRateMultiplierMenu()
 
   const target = e.currentTarget as HTMLElement
   if (target) {
@@ -1479,6 +1550,49 @@ const openMenu = (a: Account, e: MouseEvent) => {
 
   menu.show = true
 }
+
+const formatAccountRateMultiplier = (value?: number | null) => {
+  const normalized = typeof value === 'number' && Number.isFinite(value) ? value : 1
+  return normalized.toFixed(2)
+}
+
+const closeRateMultiplierMenu = () => {
+  rateMultiplierMenu.show = false
+  rateMultiplierMenu.account = null
+  rateMultiplierMenu.triggerEl = null
+  rateMultiplierMenu.value = '1.00'
+  rateMultiplierMenu.saving = false
+}
+
+const openRateMultiplierMenu = (account: Account, event: MouseEvent) => {
+  menu.show = false
+  rateMultiplierMenu.account = account
+  rateMultiplierMenu.triggerEl = event.currentTarget as HTMLElement
+  rateMultiplierMenu.value = formatAccountRateMultiplier(account.rate_multiplier)
+  rateMultiplierMenu.saving = false
+  rateMultiplierMenu.show = true
+}
+
+const handleRateMultiplierSave = async () => {
+  if (!rateMultiplierMenu.account || rateMultiplierMenu.saving) return
+  const nextValue = Number(rateMultiplierMenu.value)
+  if (!Number.isFinite(nextValue) || nextValue < 0) {
+    appStore.showError(localText('倍率必须大于等于 0', 'Rate multiplier must be >= 0'))
+    return
+  }
+  rateMultiplierMenu.saving = true
+  try {
+    const updated = await adminAPI.accounts.updateRateMultiplier(rateMultiplierMenu.account.id, nextValue)
+    patchAccountInList(updated)
+    enterAutoRefreshSilentWindow()
+    appStore.showSuccess(t('common.success'))
+    closeRateMultiplierMenu()
+  } catch (error: any) {
+    appStore.showError(error?.message || t('common.error'))
+    rateMultiplierMenu.saving = false
+  }
+}
+
 const toggleSelectAllVisible = (event: Event) => {
   const target = event.target as HTMLInputElement
   toggleVisible(target.checked)
@@ -1912,11 +2026,15 @@ const isExpired = (value: number | null) => {
 // 滚动时关闭操作菜单（不关闭列设置下拉菜单）
 const handleScroll = () => {
   menu.show = false
+  rateMultiplierMenu.show = false
 }
 
 // 点击外部关闭顶部下拉菜单
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement
+  if (rateMultiplierMenu.show && rateMultiplierMenu.triggerEl && !rateMultiplierMenu.triggerEl.contains(target)) {
+    closeRateMultiplierMenu()
+  }
   if (accountToolsDropdownRef.value && !accountToolsDropdownRef.value.contains(target)) {
     showAccountToolsDropdown.value = false
   }

@@ -57,4 +57,14 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('logo_url')
     expect(source).not.toContain("import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'")
   })
+
+  it('adds a compact quick rate multiplier control next to the account more action without using full account edit payloads', () => {
+    expect(source).toContain('data-testid="account-rate-quick-adjust"')
+    expect(source).toContain('rateMultiplierMenu')
+    expect(source).toContain('openRateMultiplierMenu(row, $event)')
+    expect(source).toContain('adminAPI.accounts.updateRateMultiplier')
+    expect(source).toContain('handleRateMultiplierSave')
+    expect(source).toContain('rate_multiplier')
+    expect(source).not.toContain('adminAPI.accounts.update(row.id, { rate_multiplier')
+  })
 })
