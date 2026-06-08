@@ -914,7 +914,7 @@ const fetchExternalQuotaSummaries = async () => {
   if (!authStore.isAdmin) return
   const [buzzResult, externalResult] = await Promise.allSettled([
     buzzBalanceAPI.getBalance(),
-    externalSubscriptionsAPI.getStatuses()
+    externalSubscriptionsAPI.getDisplayStatuses()
   ])
   if (buzzResult.status === 'fulfilled') {
     buzzBalance.value = buzzResult.value

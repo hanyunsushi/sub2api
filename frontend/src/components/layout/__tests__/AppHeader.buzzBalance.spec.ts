@@ -29,6 +29,7 @@ vi.mock("@/api/admin/buzzBalance", () => ({
 vi.mock("@/api/admin/externalSubscriptions", () => ({
   default: {
     getStatuses: vi.fn(),
+    getDisplayStatuses: vi.fn(),
   },
 }));
 
@@ -275,7 +276,7 @@ describe("AppHeader BuzzAI balance", () => {
       expires_at: "2026-06-30T00:00:00Z",
       refreshed_at: "2026-05-21T10:00:00Z",
     });
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValue(defaultExternalStatuses());
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValue(defaultExternalStatuses());
   });
 
   afterEach(() => {
@@ -439,7 +440,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows long-term when an external quota expiry is not returned", async () => {
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       tcdmx: { expires_at: undefined },
     }));
 
@@ -458,7 +459,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("keeps TCDMX visible when the saved subscription token is invalid", async () => {
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       tcdmx: {
         site_url: "https://tcdmx.com",
         used_usd: 0,
@@ -485,7 +486,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows qlhazycoder web login token failures as token expiry", async () => {
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       qlhazycoder: {
         used_usd: 0,
         remaining_usd: undefined,
@@ -511,7 +512,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows XHYAPI web login token failures as token expiry", async () => {
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       xhyapi: {
         used_usd: 0,
         remaining_usd: undefined,
@@ -537,7 +538,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   it("shows Pixel subscription token failures as token expiry", async () => {
-    vi.mocked(externalSubscriptionsAPI.getStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       pixel: {
         used_usd: 0,
         remaining_usd: undefined,
@@ -585,7 +586,7 @@ describe("AppHeader BuzzAI balance", () => {
     await Promise.resolve();
     await nextTick();
 
-    expect(externalSubscriptionsAPI.getStatuses).toHaveBeenCalledTimes(1);
+    expect(externalSubscriptionsAPI.getDisplayStatuses).toHaveBeenCalledTimes(1);
     await first.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
     await nextTick();
     expect(first.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");
@@ -596,7 +597,7 @@ describe("AppHeader BuzzAI balance", () => {
     await Promise.resolve();
     await nextTick();
 
-    expect(externalSubscriptionsAPI.getStatuses).toHaveBeenCalledTimes(1);
+    expect(externalSubscriptionsAPI.getDisplayStatuses).toHaveBeenCalledTimes(1);
     await second.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
     await nextTick();
     expect(second.get('[data-testid="header-balance-dropdown"]').text()).toContain("OpenRouter");

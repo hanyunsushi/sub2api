@@ -570,7 +570,7 @@ async function fetchExternalSubscriptions() {
     return
   }
   externalSubscriptionsLoading.value = true
-  const request = externalSubscriptionsAPI.getStatuses()
+  const request = externalSubscriptionsAPI.getDisplayStatuses()
   externalSubscriptionsRequest = { userId, promise: request }
   try {
     const statuses = await request
