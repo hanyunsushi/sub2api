@@ -907,13 +907,12 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
 
   const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
   const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
-  const activeCount = subscription.active_count ?? 0
   return {
     label: getExternalSubscriptionLabel(subscription),
     url: subscription.site_url,
     formattedBalance: remaining && total
       ? `${remaining} / ${total}`
-      : remaining || total || (activeCount > 0 ? localText(`${activeCount} 个订阅`, `${activeCount} subscriptions`) : localText('未配置', 'Not configured')),
+      : remaining || total || localText('余额未知', 'Balance unknown'),
     formattedExpiry: formatExternalDate(subscription.expires_at)
   }
 }

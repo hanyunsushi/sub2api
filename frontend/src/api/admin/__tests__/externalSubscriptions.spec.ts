@@ -28,6 +28,7 @@ describe('admin external subscriptions api', () => {
           name: 'qlhazycoder',
           enabled: true,
           template: 'newapi_console',
+          balance_strategy: 'newapi_user_quota',
           api_base_url: 'https://api.qlhazycoder.top',
           logo_url: 'https://cdn.example.com/qlhazy.png',
           api_token_configured: true,
@@ -43,6 +44,7 @@ describe('admin external subscriptions api', () => {
 
     expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions')
     expect(result[0].id).toBe('qlhazycoder')
+    expect(result[0].balance_strategy).toBe('newapi_user_quota')
     expect(result[0].logo_url).toBe('https://cdn.example.com/qlhazy.png')
     expect(result[0]).not.toHaveProperty('api_token')
     expect(result[0]).not.toHaveProperty('refresh_token')
@@ -55,6 +57,7 @@ describe('admin external subscriptions api', () => {
         name: 'Custom NewAPI',
         enabled: true,
         template: 'newapi_console',
+        balance_strategy: 'newapi_user_quota',
         api_base_url: 'https://newapi.example',
         logo_url: 'https://cdn.example.com/custom.png',
         api_token_configured: true,
@@ -69,6 +72,7 @@ describe('admin external subscriptions api', () => {
         name: 'Renamed NewAPI',
         enabled: true,
         template: 'newapi_console',
+        balance_strategy: 'newapi_subscription',
         api_base_url: 'https://renamed.example',
         logo_url: 'https://cdn.example.com/renamed.png',
         api_token_configured: true,
@@ -83,6 +87,7 @@ describe('admin external subscriptions api', () => {
       name: 'Custom NewAPI',
       enabled: true,
       template: 'newapi_console',
+      balance_strategy: 'newapi_user_quota',
       api_base_url: 'https://newapi.example',
       logo_url: 'https://cdn.example.com/custom.png',
       api_token: 'secret',
@@ -93,6 +98,7 @@ describe('admin external subscriptions api', () => {
       name: 'Renamed NewAPI',
       enabled: true,
       template: 'newapi_console',
+      balance_strategy: 'newapi_subscription',
       api_base_url: 'https://renamed.example',
       logo_url: 'https://cdn.example.com/renamed.png',
       match_keywords: ['renamed.example'],
@@ -102,10 +108,12 @@ describe('admin external subscriptions api', () => {
     expect(apiClient.post).toHaveBeenCalledWith('/admin/external-subscriptions', expect.objectContaining({
       id: 'custom-newapi',
       template: 'newapi_console',
+      balance_strategy: 'newapi_user_quota',
       logo_url: 'https://cdn.example.com/custom.png',
     }))
     expect(apiClient.put).toHaveBeenCalledWith('/admin/external-subscriptions/custom-newapi', expect.objectContaining({
       name: 'Renamed NewAPI',
+      balance_strategy: 'newapi_subscription',
       logo_url: 'https://cdn.example.com/renamed.png',
     }))
   })

@@ -40,5 +40,5 @@ func (s *SettingService) GetPackyCodeSubscriptionSettings(ctx context.Context) (
 }
 
 func (s *PackyCodeSubscriptionService) GetStatus(ctx context.Context) (*PackyCodeSubscriptionStatus, error) {
-	return s.getNewAPIConsoleSubscriptionStatus(ctx, packycodeSubscriptionProviderConfig())
+	return s.getNewAPIConsoleUserQuotaStatus(ctx, packycodeSubscriptionProviderConfig())
 }

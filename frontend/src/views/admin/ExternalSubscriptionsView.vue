@@ -306,10 +306,14 @@
           </div>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-4 sm:grid-cols-3">
           <div>
             <label class="input-label">{{ localText('模板', 'Template') }}</label>
             <Select v-model="form.template" :options="templateOptions" />
+          </div>
+          <div>
+            <label class="input-label">{{ localText('余额策略', 'Balance Strategy') }}</label>
+            <Select v-model="form.balance_strategy" :options="balanceStrategyOptions" />
           </div>
           <div class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-700">
             <div>
@@ -400,6 +404,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import externalSubscriptionsAPI, {
+  type ExternalSubscriptionBalanceStrategy,
   type ExternalSubscriptionProvider,
   type ExternalSubscriptionProviderInput,
   type ExternalSubscriptionStatus,
@@ -441,6 +446,7 @@ const form = reactive({
   name: '',
   enabled: true,
   template: 'newapi_console' as ExternalSubscriptionTemplate,
+  balance_strategy: 'auto' as ExternalSubscriptionBalanceStrategy,
   api_base_url: '',
   logo_url: '',
   api_token: '',
@@ -456,6 +462,15 @@ const templateOptions = computed(() => [
   { value: 'buzz_balance', label: 'Buzz Balance' },
   { value: 'openrouter_credits', label: 'OpenRouter Credits' },
   { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
+])
+
+const balanceStrategyOptions = computed(() => [
+  { value: 'auto', label: localText('自动', 'Auto') },
+  { value: 'newapi_user_quota', label: 'NewAPI User Quota' },
+  { value: 'newapi_subscription', label: 'NewAPI Subscription' },
+  { value: 'active_subscriptions', label: 'Active Subscriptions' },
+  { value: 'auth_me_balance', label: 'Auth Me Balance' },
+  { value: 'active_with_auth_me_balance', label: 'Active + Auth Me' },
 ])
 
 const requiresUserId = computed(() => (
@@ -662,6 +677,7 @@ function resetForm() {
   form.name = ''
   form.enabled = true
   form.template = 'newapi_console'
+  form.balance_strategy = 'auto'
   form.api_base_url = ''
   form.logo_url = ''
   form.api_token = ''
@@ -675,6 +691,7 @@ function resetForm() {
 function applyPreset(template: ExternalSubscriptionTemplate) {
   form.template = template
   if (template === 'newapi_console') {
+    if (form.balance_strategy === 'auto') form.balance_strategy = 'newapi_subscription'
     if (!form.api_base_url) form.api_base_url = 'https://api.example.com'
     if (!form.name) form.name = 'NewAPI'
     if (!form.id) form.id = 'newapi-provider'
@@ -682,6 +699,7 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     return
   }
   if (template === 'active_subscriptions') {
+    if (form.balance_strategy === 'auto') form.balance_strategy = 'active_subscriptions'
     if (!form.api_base_url) form.api_base_url = 'https://example.com'
     if (!form.name) form.name = 'Active Subscription'
     if (!form.id) form.id = 'active-provider'
@@ -689,6 +707,7 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     return
   }
   if (template === 'buzz_balance') {
+    form.balance_strategy = 'auto'
     if (!form.api_base_url) form.api_base_url = 'https://buzzai.cc'
     if (!form.name) form.name = 'Buzz'
     if (!form.id) form.id = 'buzz'
@@ -697,6 +716,7 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     return
   }
   if (template === 'openrouter_credits') {
+    form.balance_strategy = 'auto'
     if (!form.api_base_url) form.api_base_url = 'https://openrouter.ai'
     if (!form.name) form.name = 'OpenRouter'
     if (!form.id) form.id = 'openrouter'
@@ -705,6 +725,7 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     return
   }
   if (template === 'cloudflare_ai_gateway_credits') {
+    form.balance_strategy = 'auto'
     if (!form.api_base_url) form.api_base_url = 'https://api.cloudflare.com/client/v4'
     if (!form.name) form.name = 'Cloudflare AI Gateway'
     if (!form.id) form.id = 'cloudflare'
@@ -725,6 +746,7 @@ function openEditDialog(provider: ExternalSubscriptionProvider) {
   form.name = provider.name
   form.enabled = provider.enabled
   form.template = provider.template
+  form.balance_strategy = provider.balance_strategy
   form.api_base_url = provider.api_base_url
   form.logo_url = provider.logo_url || ''
   form.api_token = ''
@@ -752,6 +774,7 @@ function buildPayload(): ExternalSubscriptionProviderInput {
     name: form.name.trim(),
     enabled: form.enabled,
     template: form.template,
+    balance_strategy: form.balance_strategy,
     api_base_url: form.api_base_url.trim(),
     logo_url: form.logo_url.trim(),
     api_token: form.api_token.trim(),
@@ -877,8 +900,7 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
   if (remaining && total) return `${remaining} / ${total}`
   if (remaining) return remaining
   if (total) return total
-  if (status.active_count > 0) return localText(`${status.active_count} 个订阅`, `${status.active_count} subscriptions`)
-  return localText('无有效订阅', 'No active subscriptions')
+  return localText('余额未知', 'Balance unknown')
 }
 
 function formatStatusExpiry(status?: ExternalSubscriptionStatus) {

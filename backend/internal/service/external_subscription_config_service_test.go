@@ -56,13 +56,19 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 
 	packy := requireExternalSubscriptionProvider(t, providers, "packycode")
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, packy.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, packy.BalanceStrategy)
 	require.True(t, packy.APITokenConfigured)
 	require.Equal(t, "996", packy.UserID)
 	require.Empty(t, packy.APIToken)
 
+	pixel := requireExternalSubscriptionProvider(t, providers, "pixel")
+	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, pixel.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, pixel.BalanceStrategy)
+
 	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
 	require.Equal(t, "Buzz", buzz.Name)
 	require.Equal(t, ExternalSubscriptionTemplateBuzzBalance, buzz.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuto, buzz.BalanceStrategy)
 	require.Equal(t, "https://buzzai.cc", buzz.APIBaseURL)
 	require.True(t, buzz.Enabled)
 	require.True(t, buzz.APITokenConfigured)
@@ -76,30 +82,34 @@ func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
 	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
-		ID:            "custom-newapi",
-		Name:          "Custom NewAPI",
-		Enabled:       true,
-		Template:      ExternalSubscriptionTemplateNewAPIConsole,
-		APIBaseURL:    "https://newapi.example/api",
-		APIToken:      "newapi-token",
-		UserID:        "1001",
-		MatchKeywords: []string{"newapi.example", "custom-newapi"},
+		ID:              "custom-newapi",
+		Name:            "Custom NewAPI",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPISubscription,
+		APIBaseURL:      "https://newapi.example/api",
+		APIToken:        "newapi-token",
+		UserID:          "1001",
+		MatchKeywords:   []string{"newapi.example", "custom-newapi"},
 	})
 	require.NoError(t, err)
 	require.Equal(t, "custom-newapi", created.ID)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPISubscription, created.BalanceStrategy)
 	require.True(t, created.APITokenConfigured)
 	require.Empty(t, created.APIToken)
 
 	updated, err := svc.UpdateProvider(context.Background(), "custom-newapi", ExternalSubscriptionProviderInput{
-		Name:          "Renamed NewAPI",
-		Enabled:       true,
-		Template:      ExternalSubscriptionTemplateNewAPIConsole,
-		APIBaseURL:    "https://renamed.example",
-		UserID:        "1002",
-		MatchKeywords: []string{"renamed.example"},
+		Name:            "Renamed NewAPI",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+		APIBaseURL:      "https://renamed.example",
+		UserID:          "1002",
+		MatchKeywords:   []string{"renamed.example"},
 	})
 	require.NoError(t, err)
 	require.Equal(t, "Renamed NewAPI", updated.Name)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, updated.BalanceStrategy)
 	require.True(t, updated.APITokenConfigured)
 	require.Empty(t, updated.APIToken)
 
@@ -107,6 +117,7 @@ func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets
 	require.NoError(t, json.Unmarshal([]byte(repo.values[SettingKeyExternalSubscriptionProviders]), &stored))
 	raw := requireStoredExternalSubscriptionProvider(t, stored, "custom-newapi")
 	require.Equal(t, "newapi-token", raw.APIToken)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, raw.BalanceStrategy)
 	require.Equal(t, "1002", raw.UserID)
 }
 
@@ -155,6 +166,58 @@ func TestExternalSubscriptionConfigServiceProviderLogoURLPersistsToPublicProvide
 
 	stored := mustStoredExternalSubscriptionProviders(t, repo)
 	require.Empty(t, requireStoredExternalSubscriptionProvider(t, stored, "logo-provider").LogoURL)
+}
+
+func TestExternalSubscriptionConfigServiceBalanceStrategyPersistsToPublicProviderAndStatus(t *testing.T) {
+	var requestedPaths []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		require.Equal(t, "Bearer pixel-token", r.Header.Get("Authorization"))
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/api/v1/auth/me":
+			_, _ = w.Write([]byte(`{"code":0,"message":"success","data":{"balance":9.82210284,"points_balance":0}}`))
+		case "/api/v1/subscriptions/active":
+			require.Fail(t, "auth_me_balance strategy should not query active subscriptions")
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
+		ID:              "pixel-wallet",
+		Name:            "Pixel Wallet",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateActiveSubscriptions,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyAuthMeBalance,
+		APIBaseURL:      server.URL,
+		APIToken:        "pixel-token",
+		MatchKeywords:   []string{"pixel"},
+		SortOrder:       40,
+	})
+	require.NoError(t, err)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, created.BalanceStrategy)
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, requireExternalSubscriptionProvider(t, providers, "pixel-wallet").BalanceStrategy)
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	pixel := requireExternalSubscriptionStatus(t, statuses, "pixel-wallet")
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, pixel.BalanceStrategy)
+	require.InDelta(t, 9.82210284, *pixel.RemainingUSD, 0.00000001)
+	require.Equal(t, 0, pixel.ActiveCount)
+	require.Empty(t, pixel.Subscriptions)
+	require.Equal(t, []string{"/api/v1/auth/me"}, requestedPaths)
+
+	stored := mustStoredExternalSubscriptionProviders(t, repo)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, requireStoredExternalSubscriptionProvider(t, stored, "pixel-wallet").BalanceStrategy)
 }
 
 func TestExternalSubscriptionConfigServiceMergesLegacyKeywordsIntoStoredProvider(t *testing.T) {

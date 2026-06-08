@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPixelSubscriptionService_GetStatusUsesExternalSubscriptionsEndpoint(t *testing.T) {
+func TestPixelSubscriptionService_GetActiveSubscriptionsStatusUsesExternalSubscriptionsEndpoint(t *testing.T) {
 	var requestedPath string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPath = r.URL.Path
@@ -48,7 +48,7 @@ func TestPixelSubscriptionService_GetStatusUsesExternalSubscriptionsEndpoint(t *
 	}}
 	svc := NewPixelSubscriptionService(NewSettingService(repo, &config.Config{}))
 
-	got, err := svc.GetStatus(context.Background())
+	got, err := svc.ExternalSubscriptionService.GetStatus(context.Background())
 	require.NoError(t, err)
 
 	require.Equal(t, "/api/v1/subscriptions/active", requestedPath)
@@ -70,9 +70,67 @@ func TestPixelSubscriptionService_GetStatusUsesExternalSubscriptionsEndpoint(t *
 	require.Equal(t, "monthly", got.Subscriptions[0].Window)
 }
 
+func TestPixelSubscriptionService_GetStatusUsesWalletBalanceInsteadOfActiveSubscriptionCount(t *testing.T) {
+	var requestedPaths []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		require.Equal(t, "Bearer pixel-subscription-token", r.Header.Get("Authorization"))
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/api/v1/auth/me":
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"id": 88,
+					"balance": 9.82210284,
+					"points_balance": 0,
+					"total_recharged": 10
+				}
+			}`))
+		case "/api/v1/subscriptions/active":
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": [
+					{"id":1,"group_id":1,"status":"active","group":{"name":"A"}},
+					{"id":2,"group_id":2,"status":"active","group":{"name":"B"}},
+					{"id":3,"group_id":3,"status":"active","group":{"name":"C"}},
+					{"id":4,"group_id":4,"status":"active","group":{"name":"D"}}
+				]
+			}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyPixelSubscriptionEnabled:    "true",
+		SettingKeyPixelSubscriptionAPIBaseURL: server.URL,
+		SettingKeyPixelSubscriptionAPIToken:   "pixel-subscription-token",
+	}}
+	svc := NewPixelSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, []string{"/api/v1/auth/me"}, requestedPaths)
+	require.True(t, got.Enabled)
+	require.True(t, got.Configured)
+	require.Equal(t, "pixel", got.Provider)
+	require.Equal(t, "USD", got.Currency)
+	require.NotNil(t, got.RemainingUSD)
+	require.InDelta(t, 9.82210284, *got.RemainingUSD, 0.00000001)
+	require.Nil(t, got.TotalLimitUSD)
+	require.Equal(t, 0, got.ActiveCount)
+	require.Empty(t, got.Subscriptions)
+}
+
 func TestPixelSubscriptionService_GetStatusReturnsInvalidTokenState(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, "/api/v1/subscriptions/active", r.URL.Path)
+		require.Equal(t, "/api/v1/auth/me", r.URL.Path)
 		require.Equal(t, "Bearer invalid-pixel-token", r.Header.Get("Authorization"))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)

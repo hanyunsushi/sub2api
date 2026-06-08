@@ -37,3 +37,7 @@ func normalizePixelSubscriptionAPIBaseURL(raw string) string {
 func (s *SettingService) GetPixelSubscriptionSettings(ctx context.Context) (PixelSubscriptionSettings, error) {
 	return s.getExternalSubscriptionSettings(ctx, pixelSubscriptionProviderConfig())
 }
+
+func (s *PixelSubscriptionService) GetStatus(ctx context.Context) (*PixelSubscriptionStatus, error) {
+	return s.getAuthMeBalanceStatus(ctx, pixelSubscriptionProviderConfig())
+}
