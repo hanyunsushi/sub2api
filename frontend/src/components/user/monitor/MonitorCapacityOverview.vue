@@ -20,15 +20,15 @@
         </div>
         <div class="flex -space-x-2">
           <span
-            v-for="subscription in card.previewStatuses"
-            :key="subscription.provider"
+            v-for="logo in card.previewLogos"
+            :key="logo.key"
             class="monitor-capacity-logo"
-            :title="subscription.name || subscription.provider"
+            :title="logo.title"
           >
             <ProviderBrandIcon
-              :provider="statusLogoText(subscription)"
-              :model="subscription.name"
-              :logo-url="subscription.logo_url"
+              :provider="logo.provider"
+              :model="logo.model"
+              :logo-url="logo.logoUrl"
             />
           </span>
         </div>
@@ -133,8 +133,16 @@ type CapacityCard = {
   balanceTotal: number
   balanceSourceCount: number
   matchedStatuses: ExternalSubscriptionStatus[]
-  previewStatuses: ExternalSubscriptionStatus[]
+  previewLogos: CapacityLogoItem[]
   statusSegments: CapacityStatusSegment[]
+}
+
+type CapacityLogoItem = {
+  key: string
+  provider: string
+  model: string
+  logoUrl: string
+  title: string
 }
 
 type CapacityStatusSegment = {
@@ -160,7 +168,7 @@ const cards = computed<CapacityCard[]>(() => {
         balanceTotal,
         balanceSourceCount: balanceStatuses.length,
         matchedStatuses,
-        previewStatuses: matchedStatuses.slice(0, 4),
+        previewLogos: buildPreviewLogos(matchedStatuses, monitors),
         statusSegments: buildStatusSegments(monitors),
       }
     })
@@ -308,6 +316,56 @@ function statusLogoText(status: ExternalSubscriptionStatus) {
     status.name,
     status.site_url,
     ...status.match_keywords,
+  ].join(' ')
+}
+
+function buildPreviewLogos(
+  statuses: ExternalSubscriptionStatus[],
+  monitors: UserMonitorView[],
+) {
+  const logos: CapacityLogoItem[] = []
+  const seen = new Set<string>()
+  const appendLogo = (logo: CapacityLogoItem) => {
+    const normalizedKey = logo.key.trim().toLowerCase()
+    if (!normalizedKey || seen.has(normalizedKey)) return
+    seen.add(normalizedKey)
+    logos.push(logo)
+  }
+
+  for (const status of statuses) {
+    const logoUrl = status.logo_url || ''
+    appendLogo({
+      key: `status:${status.provider}:${status.name || status.site_url || logoUrl}`,
+      provider: statusLogoText(status),
+      model: status.name,
+      logoUrl,
+      title: status.name || status.provider,
+    })
+    if (logos.length >= 4) return logos
+  }
+
+  for (const item of monitors) {
+    const logoUrl = item.logo_url.trim()
+    if (!logoUrl) continue
+    appendLogo({
+      key: `monitor:${logoUrl || item.provider}:${item.name}:${item.primary_model}`,
+      provider: monitorLogoText(item),
+      model: item.primary_model || item.name,
+      logoUrl,
+      title: item.name || item.provider,
+    })
+    if (logos.length >= 4) return logos
+  }
+
+  return logos
+}
+
+function monitorLogoText(item: UserMonitorView) {
+  return [
+    item.provider,
+    item.name,
+    item.group_name,
+    item.primary_model,
   ].join(' ')
 }
 

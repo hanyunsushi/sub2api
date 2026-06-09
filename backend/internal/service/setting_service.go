@@ -1288,8 +1288,8 @@ func DefaultWeChatConnectScopesForMode(mode string) string {
 
 func normalizeAppearanceThemeDefault(value string) string {
 	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "cloudflare":
-		return "cloudflare"
+	case "cloudflare", "anthropic":
+		return strings.ToLower(strings.TrimSpace(value))
 	default:
 		return "newspaper"
 	}
@@ -1481,7 +1481,7 @@ func (s *SettingService) AppendCustomMenuSVGIconPreset(ctx context.Context, rawU
 func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
 	normalized := normalizeAppearanceThemeDefault(theme)
 	if normalized != strings.ToLower(strings.TrimSpace(theme)) {
-		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper or cloudflare")
+		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper, cloudflare, or anthropic")
 	}
 	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyAppearanceThemeDefault: normalized}); err != nil {
 		return "", err
@@ -2051,7 +2051,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	rawThemeDefault := strings.ToLower(strings.TrimSpace(settings.AppearanceThemeDefault))
 	themeDefault := normalizeAppearanceThemeDefault(rawThemeDefault)
 	if rawThemeDefault != "" && themeDefault != rawThemeDefault {
-		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper or cloudflare")
+		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper, cloudflare, or anthropic")
 	}
 	settings.AppearanceThemeDefault = themeDefault
 	updates[SettingKeyAppearanceThemeDefault] = themeDefault
