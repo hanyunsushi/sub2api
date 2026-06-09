@@ -182,6 +182,8 @@ QLHazyCoder Mimo replace challenge mismatch
 	require.NotContains(t, uploadedContent, "密钥")
 	require.NotContains(t, uploadedContent, "凭据")
 	require.NotContains(t, uploadedContent, "敏感值")
+	require.NotContains(t, uploadedContent, "访问令牌")
+	require.NotContains(t, uploadedContent, "刷新令牌")
 	require.NotContains(t, uploadedContent, "API key")
 	require.NotContains(t, uploadedContent, "API Key")
 }

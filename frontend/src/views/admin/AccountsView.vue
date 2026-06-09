@@ -391,13 +391,25 @@
             />
           </template>
           <template #cell-proxy="{ row }">
-            <div v-if="row.proxy" class="flex items-center gap-2">
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{ row.proxy.name }}</span>
-              <span v-if="row.proxy.country_code" class="text-xs text-gray-500 dark:text-gray-400">
-                ({{ row.proxy.country_code }})
-              </span>
+            <div class="flex flex-col gap-1">
+              <div v-if="row.proxy" class="flex items-center gap-2">
+                <span class="text-sm text-gray-700 dark:text-gray-300">{{ row.proxy.name }}</span>
+                <span v-if="row.proxy.country_code" class="text-xs text-gray-500 dark:text-gray-400">
+                  ({{ row.proxy.country_code }})
+                </span>
+              </div>
+              <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+              <div v-if="row.proxy && row.proxy.expires_at" class="flex items-center gap-2 text-xs">
+                <span class="text-gray-600 dark:text-gray-300">{{ formatDateTime(row.proxy.expires_at) }}</span>
+                <span :class="proxyExpiryBadge(row.proxy)">{{ proxyExpiryText(row.proxy) }}</span>
+              </div>
+              <div v-if="row.proxy_fallback_origin_id" class="flex items-center gap-1">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" :title="t('admin.accounts.fallbackActiveTip', { origin: row.proxy_fallback_origin_name })">
+                  {{ t('admin.accounts.fallbackActive') }}
+                </span>
+                <button class="text-xs px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
+              </div>
             </div>
-            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
           <template #cell-rate_multiplier="{ row }">
             <span class="text-sm font-mono text-gray-700 dark:text-gray-300">
@@ -572,6 +584,7 @@ import ErrorPassthroughRulesModal from '@/components/admin/ErrorPassthroughRules
 import TLSFingerprintProfilesModal from '@/components/admin/TLSFingerprintProfilesModal.vue'
 import { buildOpenAIUsageRefreshKey } from '@/utils/accountUsageRefresh'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
+import { proxyExpiryBadgeClass, proxyExpiryLabelKey } from '@/utils/proxyExpiry'
 import type { Account, AccountPlatform, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel } from '@/types'
 
 const { t, locale } = useI18n()
@@ -720,6 +733,7 @@ const autoRefreshCountdown = ref(0)
 const autoRefreshETag = ref<string | null>(null)
 const autoRefreshFetching = ref(false)
 const AUTO_REFRESH_SILENT_WINDOW_MS = 15000
+const ACCOUNT_CALLING_GRACE_MS = 60_000
 const autoRefreshSilentUntil = ref(0)
 const hasPendingListSync = ref(false)
 const todayStatsByAccountId = ref<Record<string, WindowStats>>({})
@@ -729,6 +743,9 @@ const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
+const accountCallingGraceUntil = reactive(new Map<number, number>())
+const accountCallingNow = ref(Date.now())
+let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -1191,6 +1208,18 @@ watch(loading, (isLoading, wasLoading) => {
   }
 })
 
+watch(
+  () => accounts.value.map(account => [
+    account.id,
+    account.current_concurrency ?? 0,
+    account.active_sessions ?? 0
+  ]),
+  () => {
+    syncAccountCallingGrace()
+  },
+  { immediate: true }
+)
+
 const isAnyModalOpen = computed(() => {
   return (
     showCreate.value ||
@@ -1565,8 +1594,43 @@ const normalizeAccountPriority = (value?: number | null) => {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
 }
 
-const isAccountCalling = (row: Account) => {
+const hasLiveAccountActivity = (row: Account) => {
   return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
+}
+
+const syncAccountCallingGrace = () => {
+  const now = Date.now()
+  accountCallingNow.value = now
+  const liveAccountIds = new Set<number>()
+
+  for (const account of accounts.value) {
+    if (!hasLiveAccountActivity(account)) continue
+    liveAccountIds.add(account.id)
+    accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)
+  }
+
+  for (const [accountId, graceUntil] of accountCallingGraceUntil) {
+    if (liveAccountIds.has(accountId)) continue
+    if (graceUntil <= now) accountCallingGraceUntil.delete(accountId)
+  }
+}
+
+const startAccountCallingGraceTicker = () => {
+  if (accountCallingGraceTimer) return
+  syncAccountCallingGrace()
+  accountCallingGraceTimer = setInterval(syncAccountCallingGrace, 1000)
+}
+
+const stopAccountCallingGraceTicker = () => {
+  if (!accountCallingGraceTimer) return
+  clearInterval(accountCallingGraceTimer)
+  accountCallingGraceTimer = null
+}
+
+const isAccountCalling = (row: Account) => {
+  if (hasLiveAccountActivity(row)) return true
+  const graceUntil = accountCallingGraceUntil.get(row.id) ?? 0
+  return graceUntil > accountCallingNow.value
 }
 
 const getAccountRowClass = (row: Account) => {
@@ -2015,6 +2079,16 @@ const handleSetPrivacy = async (a: Account) => {
     appStore.showError(error?.response?.data?.message || t('admin.accounts.privacyFailed'))
   }
 }
+const onRevertFallback = async (a: Account) => {
+  try {
+    await adminAPI.accounts.revertProxyFallback(a.id)
+    appStore.showSuccess(t('admin.accounts.revertProxySuccess'))
+    reload()
+  } catch (error: any) {
+    console.error('Failed to revert proxy fallback:', error)
+    appStore.showError(error?.response?.data?.message || t('admin.accounts.revertProxyFailed'))
+  }
+}
 const handleDelete = (a: Account) => { deletingAcc.value = a; showDeleteDialog.value = true }
 const confirmDelete = async () => { if(!deletingAcc.value) return; try { await adminAPI.accounts.delete(deletingAcc.value.id); showDeleteDialog.value = false; deletingAcc.value = null; reload() } catch (error) { console.error('Failed to delete account:', error) } }
 const handleToggleSchedulable = async (a: Account) => {
@@ -2057,6 +2131,12 @@ const isExpired = (value: number | null) => {
   if (!value) return false
   return value * 1000 <= Date.now()
 }
+// 所绑定代理的有效期(逻辑同 /admin/proxies,见 utils/proxyExpiry)
+const proxyExpiryBadge = (p: AccountProxy): string => proxyExpiryBadgeClass(p.expires_at, p.status)
+const proxyExpiryText = (p: AccountProxy): string => {
+  const { key, params } = proxyExpiryLabelKey(p.expires_at, p.status)
+  return params ? t(key, params) : t(key)
+}
 
 // 滚动时关闭操作菜单（不关闭列设置下拉菜单）
 const handleScroll = () => {
@@ -2079,6 +2159,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 onMounted(async () => {
+  startAccountCallingGraceTicker()
   load()
   fetchExternalQuotaSummaries().catch((error) => {
     console.error('Failed to load external quota summaries:', error)
@@ -2104,6 +2185,7 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll, true)
   document.removeEventListener('click', handleClickOutside)
+  stopAccountCallingGraceTicker()
   unsubscribeExternalQuotaSummaries()
 })
 </script>

@@ -18,7 +18,7 @@ FORBIDDEN_PATTERNS: list[tuple[str, str]] = [
     (r"\b[0-9a-f]{40}\b", "git commit hash or secret-like token"),
     (r"\bd1cf0f9a11253d72f2dde108713d5e76\b", "Cloudflare account id"),
     (r"(?i)\b(api token|api key|secret access key|authorization:\s*bearer|jwt\.secret)\b", "secret term"),
-    (r"(密钥|凭据|敏感值)", "secret term"),
+    (r"(密钥|凭据|敏感值|访问令牌|刷新令牌)", "secret term"),
     (r"(?i)\b(docker compose|cherry-pick|worktree|image digest)\b", "deployment implementation term"),
     (r"(开发仓|正式运行源码|运行镜像|备份镜像|容器镜像|提交并推送)", "deployment implementation term"),
 ]
@@ -101,7 +101,7 @@ def build_markdown(source: str) -> str:
         "",
         "本站模型可来自 OpenAI、Anthropic、Gemini、Antigravity、Codex、Claude Code 兼容链路以及其他管理员接入的上游。用户能否调用某个模型，取决于分组、账号池、渠道、模型映射和价格配置。",
         "QLHazyCoder 订阅展示读取 qlhazycoder New API 控制台的余额、订阅额度和到期时间。它使用控制台个人设置里的用户令牌，不使用普通模型调用令牌读取订阅。",
-        "TCDMX 订阅展示需要可访问 TCDMX 订阅接口的访问令牌或登录续期信息。普通模型调用令牌通常只能调用模型接口，不能读取订阅额度。",
+        "TCDMX 订阅展示需要可访问 TCDMX 订阅接口的后台连接信息或登录续期信息。普通模型调用令牌通常只能调用模型接口，不能读取订阅额度。",
         "BuzzAI 展示用于读取 Buzz 余额或订阅摘要，连接信息由后端保存，前端只显示配置状态、余额和到期摘要。",
         "Mimo 当前主要作为模型调用和账号展示来源；如果没有稳定公开的余额或订阅期限查询接口，就不会作为自动余额来源。",
         "",

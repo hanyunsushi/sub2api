@@ -51,6 +51,8 @@ class GenerateAISearchKnowledgeTest(unittest.TestCase):
         self.assertNotIn("密钥", markdown)
         self.assertNotIn("凭据", markdown)
         self.assertNotIn("敏感值", markdown)
+        self.assertNotIn("访问令牌", markdown)
+        self.assertNotIn("刷新令牌", markdown)
         self.assertNotIn("API key", markdown)
         self.assertNotIn("API Key", markdown)
 

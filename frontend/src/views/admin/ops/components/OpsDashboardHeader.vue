@@ -1000,7 +1000,7 @@ function handleToolbarRefresh() {
             <div
               class="ops-diagnosis-popover pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 md:left-full md:top-0 md:ml-2 md:mt-0 md:translate-x-0"
             >
-              <div class="rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
+              <div class="ops-diagnosis-popover-panel rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
                 <h4 class="mb-3 border-b border-gray-100 pb-2 text-sm font-bold text-gray-900 dark:border-gray-700 dark:text-white flex items-center gap-2">
                   <Icon name="brain" size="sm" class="text-primary-600" />
                   {{ t('admin.ops.diagnosis.title') }}

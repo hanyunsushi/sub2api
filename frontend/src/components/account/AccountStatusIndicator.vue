@@ -315,24 +315,27 @@ const overloadCountdown = computed(() => {
 
 // Computed: status badge class
 const statusClass = computed(() => {
+  if (!props.account.status) {
+    return 'semantic-badge semantic-badge--neutral account-status-badge account-status-badge--neutral'
+  }
   if (hasError.value) {
-    return 'semantic-badge semantic-badge--danger'
+    return 'semantic-badge semantic-badge--danger account-status-badge account-status-badge--danger'
   }
   if (isTempUnschedulable.value) {
-    return 'semantic-badge semantic-badge--warning'
+    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
   }
   if (props.account.status !== 'active') {
     return props.account.status === 'error'
-      ? 'semantic-badge semantic-badge--danger'
-      : 'semantic-badge semantic-badge--neutral'
+      ? 'semantic-badge semantic-badge--danger account-status-badge account-status-badge--danger'
+      : 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
   }
   if (isQuotaExceeded.value) {
-    return 'semantic-badge semantic-badge--warning'
+    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
   }
   if (!props.account.schedulable) {
-    return 'semantic-badge semantic-badge--neutral'
+    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
   }
-  return 'semantic-badge semantic-badge--success'
+  return 'semantic-badge semantic-badge--success account-status-badge account-status-badge--success'
 })
 
 // Computed: status text

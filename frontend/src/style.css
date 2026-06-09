@@ -6091,6 +6091,66 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   --semantic-badge-ink: #f2c2a5;
 }
 
+/* Account status badges are semantic indicators; do not theme-shift their traffic-light colors. */
+.account-status-badge {
+  border: 1px solid var(--account-status-edge, rgba(107, 114, 128, 0.34)) !important;
+  background: var(--account-status-surface, rgba(107, 114, 128, 0.12)) !important;
+  color: var(--account-status-color, #6b7280) !important;
+  -webkit-text-fill-color: var(--account-status-color, #6b7280) !important;
+}
+
+.account-status-badge--success {
+  --account-status-color: #10a37f;
+  --account-status-surface: rgba(16, 163, 127, 0.13);
+  --account-status-edge: rgba(16, 163, 127, 0.38);
+}
+
+.account-status-badge--warning {
+  --account-status-color: #d97706;
+  --account-status-surface: rgba(217, 119, 6, 0.14);
+  --account-status-edge: rgba(217, 119, 6, 0.4);
+}
+
+.account-status-badge--danger {
+  --account-status-color: #dc2626;
+  --account-status-surface: rgba(220, 38, 38, 0.12);
+  --account-status-edge: rgba(220, 38, 38, 0.38);
+}
+
+.account-status-badge--neutral {
+  --account-status-color: #6b7280;
+  --account-status-surface: rgba(107, 114, 128, 0.12);
+  --account-status-edge: rgba(107, 114, 128, 0.34);
+}
+
+.dark .account-status-badge {
+  background: var(--account-status-surface, rgba(107, 114, 128, 0.18)) !important;
+}
+
+.dark .account-status-badge--success {
+  --account-status-color: #10a37f;
+  --account-status-surface: rgba(16, 163, 127, 0.22);
+  --account-status-edge: rgba(16, 163, 127, 0.46);
+}
+
+.dark .account-status-badge--warning {
+  --account-status-color: #d97706;
+  --account-status-surface: rgba(217, 119, 6, 0.24);
+  --account-status-edge: rgba(217, 119, 6, 0.48);
+}
+
+.dark .account-status-badge--danger {
+  --account-status-color: #dc2626;
+  --account-status-surface: rgba(220, 38, 38, 0.22);
+  --account-status-edge: rgba(220, 38, 38, 0.46);
+}
+
+.dark .account-status-badge--neutral {
+  --account-status-color: #6b7280;
+  --account-status-surface: rgba(107, 114, 128, 0.24);
+  --account-status-edge: rgba(209, 213, 219, 0.34);
+}
+
 .balance-chip-buzz,
 .balance-chip-qlhazycoder,
 .balance-chip-packycode,
@@ -7798,6 +7858,38 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 :root[data-theme="anthropic"] .ops-diagnosis-popover :where(h4, div, span, p, svg, path) {
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel,
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel,
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel,
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel,
+:root.theme-cloudflare .ops-diagnosis-popover-panel,
+:root.theme-anthropic .ops-diagnosis-popover-panel,
+:root[data-theme="cloudflare"] .ops-diagnosis-popover-panel,
+:root[data-theme="anthropic"] .ops-diagnosis-popover-panel,
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel {
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  background-color: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: 0 18px 48px rgba(20, 20, 19, 0.16) !important;
+}
+
+:root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root.theme-anthropic #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root[data-theme="cloudflare"] #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root[data-theme="anthropic"] #app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root.theme-cloudflare .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root.theme-anthropic .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root[data-theme="cloudflare"] .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+:root[data-theme="anthropic"] .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path),
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover-panel :where(h4, div, span, p, svg, path) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  fill: currentColor !important;
   stroke: currentColor !important;
 }
 
