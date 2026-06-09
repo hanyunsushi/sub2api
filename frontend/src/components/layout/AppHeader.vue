@@ -65,7 +65,7 @@
           <div
             ref="balanceChipRef"
             data-testid="header-balance-chip"
-            class="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors"
+            class="header-balance-chip-fixed flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors"
             :class="balanceChipClass"
             @mouseenter="openBalanceDropdown"
             @mouseleave="scheduleCloseBalanceDropdown"
@@ -96,14 +96,14 @@
             </svg>
             <span
               v-if="currentExternalSubscriptionInChip"
-              :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'text-sm font-semibold']"
+              :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'min-w-0 truncate text-sm font-semibold']"
             >
               {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
               {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
             </span>
             <span
               v-else
-              class="balance-system-text text-sm font-semibold"
+              class="balance-system-text min-w-0 truncate text-sm font-semibold"
             >
               {{ formattedSystemBalance }}
             </span>
@@ -771,6 +771,21 @@ watch(
 .user-avatar {
   background: var(--atelier-blue);
   box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.62);
+}
+
+.header-balance-chip-fixed {
+  width: 18rem;
+  min-width: 18rem;
+  max-width: 18rem;
+  justify-content: flex-end;
+}
+
+.header-balance-chip-fixed .header-balance-provider-logo {
+  margin-left: auto;
+}
+
+.header-balance-chip-fixed :where(.balance-system-text, .balance-buzz-text, .balance-qlhazycoder-text, .balance-packycode-text, .balance-xhyapi-text, .balance-pixel-text, .balance-liust-text, .balance-tcdmx-text, .balance-openrouter-text, .balance-cloudflare-text, .balance-external-text) {
+  max-width: 10rem;
 }
 
 .balance-chip-system {

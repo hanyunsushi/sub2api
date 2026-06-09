@@ -315,6 +315,7 @@ describe("AppHeader BuzzAI balance", () => {
     await nextTick();
 
     let chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.classes()).toContain("header-balance-chip-fixed");
     expect(chip.text()).toContain("$42.50");
     expect(chip.text()).not.toContain("Buzz");
     expect(chip.classes().join(" ")).toContain("balance-chip-system");
@@ -323,6 +324,7 @@ describe("AppHeader BuzzAI balance", () => {
     await nextTick();
 
     chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.classes()).toContain("header-balance-chip-fixed");
     expect(chip.text()).toContain("Buzz");
     expect(chip.text()).toContain("$87.66");
     expect(chip.text()).not.toContain("$42.50");

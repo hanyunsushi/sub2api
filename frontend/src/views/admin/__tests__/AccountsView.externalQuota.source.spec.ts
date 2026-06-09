@@ -121,4 +121,17 @@ describe('AccountsView external quota card metadata', () => {
     expect(styleSource).not.toContain('account-electric-border-spin')
     expect(styleSource).not.toContain('conic-gradient(')
   })
+
+  it('keeps the active account border alive for one minute after a short activity gap', () => {
+    expect(source).toContain('const ACCOUNT_CALLING_GRACE_MS = 60_000')
+    expect(source).toContain('accountCallingGraceUntil')
+    expect(source).toContain('accountCallingNow')
+    expect(source).toContain('hasLiveAccountActivity(row)')
+    expect(source).toContain('syncAccountCallingGrace')
+    expect(source).toContain('startAccountCallingGraceTicker')
+    expect(source).toContain('stopAccountCallingGraceTicker')
+    expect(source).toContain('accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)')
+    expect(source).toContain('return graceUntil > accountCallingNow.value')
+    expect(source).toContain('watch(')
+  })
 })

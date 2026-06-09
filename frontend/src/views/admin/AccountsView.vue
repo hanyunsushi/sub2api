@@ -720,6 +720,7 @@ const autoRefreshCountdown = ref(0)
 const autoRefreshETag = ref<string | null>(null)
 const autoRefreshFetching = ref(false)
 const AUTO_REFRESH_SILENT_WINDOW_MS = 15000
+const ACCOUNT_CALLING_GRACE_MS = 60_000
 const autoRefreshSilentUntil = ref(0)
 const hasPendingListSync = ref(false)
 const todayStatsByAccountId = ref<Record<string, WindowStats>>({})
@@ -729,6 +730,9 @@ const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
+const accountCallingGraceUntil = reactive(new Map<number, number>())
+const accountCallingNow = ref(Date.now())
+let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
 
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
@@ -1191,6 +1195,18 @@ watch(loading, (isLoading, wasLoading) => {
   }
 })
 
+watch(
+  () => accounts.value.map(account => [
+    account.id,
+    account.current_concurrency ?? 0,
+    account.active_sessions ?? 0
+  ]),
+  () => {
+    syncAccountCallingGrace()
+  },
+  { immediate: true }
+)
+
 const isAnyModalOpen = computed(() => {
   return (
     showCreate.value ||
@@ -1565,8 +1581,43 @@ const normalizeAccountPriority = (value?: number | null) => {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
 }
 
-const isAccountCalling = (row: Account) => {
+const hasLiveAccountActivity = (row: Account) => {
   return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
+}
+
+const syncAccountCallingGrace = () => {
+  const now = Date.now()
+  accountCallingNow.value = now
+  const liveAccountIds = new Set<number>()
+
+  for (const account of accounts.value) {
+    if (!hasLiveAccountActivity(account)) continue
+    liveAccountIds.add(account.id)
+    accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)
+  }
+
+  for (const [accountId, graceUntil] of accountCallingGraceUntil) {
+    if (liveAccountIds.has(accountId)) continue
+    if (graceUntil <= now) accountCallingGraceUntil.delete(accountId)
+  }
+}
+
+const startAccountCallingGraceTicker = () => {
+  if (accountCallingGraceTimer) return
+  syncAccountCallingGrace()
+  accountCallingGraceTimer = setInterval(syncAccountCallingGrace, 1000)
+}
+
+const stopAccountCallingGraceTicker = () => {
+  if (!accountCallingGraceTimer) return
+  clearInterval(accountCallingGraceTimer)
+  accountCallingGraceTimer = null
+}
+
+const isAccountCalling = (row: Account) => {
+  if (hasLiveAccountActivity(row)) return true
+  const graceUntil = accountCallingGraceUntil.get(row.id) ?? 0
+  return graceUntil > accountCallingNow.value
 }
 
 const getAccountRowClass = (row: Account) => {
@@ -2079,6 +2130,7 @@ const handleClickOutside = (event: MouseEvent) => {
 }
 
 onMounted(async () => {
+  startAccountCallingGraceTicker()
   load()
   fetchExternalQuotaSummaries().catch((error) => {
     console.error('Failed to load external quota summaries:', error)
@@ -2104,6 +2156,7 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll, true)
   document.removeEventListener('click', handleClickOutside)
+  stopAccountCallingGraceTicker()
   unsubscribeExternalQuotaSummaries()
 })
 </script>
