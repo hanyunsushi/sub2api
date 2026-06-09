@@ -7619,6 +7619,9 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 :root[data-theme="cloudflare"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options),
 :root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal),
 :root[data-theme="anthropic"] body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal .date-picker-presets, .date-picker-dropdown-portal .date-picker-actions, .date-picker-dropdown-portal .date-picker-custom, .date-picker-dropdown-portal .date-picker-divider, .select-dropdown-portal .select-search, .select-dropdown-portal .select-options) {
+  --select-menu-plain-text: var(--atelier-ink);
+  --date-picker-plain-text: var(--atelier-ink);
+  --date-picker-muted-text: var(--atelier-ink);
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
   background-color: var(--atelier-paper-2) !important;
