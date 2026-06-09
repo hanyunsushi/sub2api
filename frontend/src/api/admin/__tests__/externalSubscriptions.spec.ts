@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 import { apiClient } from '@/api/client'
 import externalSubscriptionsAPI from '@/api/admin/externalSubscriptions'
@@ -210,6 +212,12 @@ describe('admin external subscriptions api', () => {
     const reloadedAfterChange = await import('@/api/admin/externalSubscriptions')
 
     await expect(reloadedAfterChange.default.getDisplayStatuses()).rejects.toThrow('no stale provider after edit')
+  })
+
+  it('uses a fresh display status storage namespace after RawChat balance parsing changes', () => {
+    expect(readFileSync(resolve(__dirname, '../externalSubscriptions.ts'), 'utf8')).toContain(
+      'sub2api.externalSubscriptionDisplayStatuses.v2',
+    )
   })
 
   it('refreshes display statuses immediately after provider logo changes', async () => {
