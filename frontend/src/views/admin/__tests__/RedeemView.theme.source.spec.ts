@@ -1,0 +1,18 @@
+import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const source = readFileSync(resolve(__dirname, '../RedeemView.vue'), 'utf8')
+
+describe('RedeemView theme source', () => {
+  it('uses the shared terracotta accent for the invitation hint instead of blue utility classes', () => {
+    expect(source).toContain('redeem-invitation-hint')
+    expect(source).toContain('redeem-invitation-hint-text')
+    expect(source).toContain('background: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper-2));')
+    expect(source).toContain('color: var(--atelier-blue-dark);')
+    expect(source).not.toContain('bg-blue-50')
+    expect(source).not.toContain('text-blue-700')
+    expect(source).not.toContain('dark:bg-blue-900/20')
+    expect(source).not.toContain('dark:text-blue-300')
+  })
+})
