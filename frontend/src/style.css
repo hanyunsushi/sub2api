@@ -5548,13 +5548,13 @@ body:has(.ops-dashboard-atelier) .ops-diagnosis-popover :where(h4, div, span, p,
 }
 
 body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal) {
-  --select-menu-plain-text: var(--atelier-paper);
+  --select-menu-plain-text: var(--atelier-slab-text);
   --select-menu-active-surface: var(--atelier-ui-hover-surface);
   --select-menu-active-text: var(--atelier-ink);
   --select-menu-selected-surface: var(--atelier-ui-hover-surface);
   --select-menu-selected-text: var(--atelier-ink);
-  --date-picker-plain-text: var(--atelier-paper);
-  --date-picker-muted-text: var(--atelier-paper);
+  --date-picker-plain-text: var(--atelier-slab-text);
+  --date-picker-muted-text: var(--atelier-slab-text);
   --date-picker-hover-surface: var(--atelier-ui-hover-surface);
   --date-picker-hover-text: var(--atelier-ink);
   --date-picker-active-surface: var(--atelier-ui-hover-surface);
