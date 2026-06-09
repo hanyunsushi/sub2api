@@ -4040,6 +4040,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="usage"] {
   grid-column: 1 / -1;
+  padding-right: 2rem !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex {
@@ -7492,25 +7493,33 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary),
 :root.theme-anthropic .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]),
+:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled),
 :root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary),
-:root[data-theme="anthropic"] .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]) {
-  border-color: var(--atelier-ink) !important;
-  background: var(--atelier-ink) !important;
+:root[data-theme="anthropic"] .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]),
+:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) {
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  background-color: var(--atelier-blue) !important;
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
-  box-shadow: 0 12px 42px rgba(20, 20, 19, 0.12) !important;
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.16) !important;
 }
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
-:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary):hover:not(:disabled) {
-  border-color: var(--atelier-dark) !important;
-  background: var(--atelier-dark) !important;
+:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled):hover,
+:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
+:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled):hover {
+  border-color: var(--atelier-blue-dark) !important;
+  background: var(--atelier-blue-dark) !important;
+  background-color: var(--atelier-blue-dark) !important;
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
 }
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary) :where(svg, path, span),
-:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary) :where(svg, path, span) {
+:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary) :where(svg, path, span),
+:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
   stroke: currentColor !important;
@@ -7523,6 +7532,23 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   color: var(--atelier-text) !important;
   -webkit-text-fill-color: var(--atelier-text) !important;
   box-shadow: 0 0 0 1px var(--atelier-ring) !important;
+}
+
+:root.theme-anthropic #app .app-layout-content .auto-refresh-button,
+:root[data-theme="anthropic"] #app .app-layout-content .auto-refresh-button {
+  border-color: var(--atelier-ring) !important;
+  background: var(--atelier-sand) !important;
+  background-color: var(--atelier-sand) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: 0 0 0 1px var(--atelier-ring) !important;
+}
+
+:root.theme-anthropic #app .app-layout-content .auto-refresh-button :where(svg, path, span),
+:root[data-theme="anthropic"] #app .app-layout-content .auto-refresh-button :where(svg, path, span) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
 }
 
 :root.theme-anthropic #app .app-layout-content :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell),
@@ -7593,11 +7619,12 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   :where(.btn-primary, .btn-success):not(:disabled),
 :root[data-theme="anthropic"] #app .app-layout-content :where(.user-keys-atelier .keys-filter-actions, .user-usage-atelier .usage-filter-actions, .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions, .global-pricing-filter-actions)
   :where(.btn-primary, .btn-success):not(:disabled) {
-  border-color: var(--atelier-ink) !important;
-  background: var(--atelier-ink) !important;
+  border-color: var(--atelier-blue) !important;
+  background: var(--atelier-blue) !important;
+  background-color: var(--atelier-blue) !important;
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
-  box-shadow: 0 12px 42px rgba(20, 20, 19, 0.12) !important;
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.16) !important;
 }
 
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
@@ -7614,8 +7641,9 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
   :where(.btn-primary, .btn-success):not(:disabled):hover,
 :root[data-theme="anthropic"] #app .app-layout-content :where(.user-keys-atelier .keys-filter-actions, .user-usage-atelier .usage-filter-actions, .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions, .global-pricing-filter-actions)
   :where(.btn-primary, .btn-success):not(:disabled):hover {
-  border-color: var(--atelier-dark) !important;
-  background: var(--atelier-dark) !important;
+  border-color: var(--atelier-blue-dark) !important;
+  background: var(--atelier-blue-dark) !important;
+  background-color: var(--atelier-blue-dark) !important;
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
 }

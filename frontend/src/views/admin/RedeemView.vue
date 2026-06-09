@@ -294,8 +294,8 @@
               />
             </div>
             <!-- 邀请码类型：显示提示信息 -->
-            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-              <p class="text-sm text-blue-700 dark:text-blue-300">
+            <div v-if="generateForm.type === 'invitation'" class="redeem-invitation-hint rounded-lg p-3">
+              <p class="redeem-invitation-hint-text text-sm">
                 {{ t('admin.redeem.invitationHint') }}
               </p>
             </div>
@@ -1195,3 +1195,14 @@ onUnmounted(() => {
   abortController?.abort()
 })
 </script>
+
+<style scoped>
+.redeem-invitation-hint {
+  border: 1px solid color-mix(in srgb, var(--atelier-blue) 18%, var(--atelier-line));
+  background: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper-2));
+}
+
+.redeem-invitation-hint-text {
+  color: var(--atelier-blue-dark);
+}
+</style>

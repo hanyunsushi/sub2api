@@ -110,12 +110,13 @@ import {
   STATUS_OPERATIONAL,
 } from '@/constants/channelMonitor'
 
-const GROUP_ORDER = ['gpt', 'claude', 'mimo', 'free']
+const GROUP_ORDER = ['gpt', 'claude', 'mimo', 'rawchat', 'free']
 const groupExternalKeywords: Record<string, string[]> = {
   gpt: ['gpt', 'openai', 'chatgpt'],
   claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc'],
   mimo: ['mimo'],
-  free: ['free', 'rawchat', 'rawchat.cn', 'codex'],
+  rawchat: ['rawchat', 'rawchat.cn', 'rawc', 'codex'],
+  free: ['free'],
 }
 
 const props = defineProps<{
@@ -156,13 +157,13 @@ type CapacityStatusSegment = {
 const cards = computed<CapacityCard[]>(() => {
   const groups = buildMonitorGroups(props.items)
   return GROUP_ORDER
-    .filter(group => groups.has(group))
-    .map((group) => {
+    .flatMap((group) => {
       const monitors = groups.get(group) ?? []
       const matchedStatuses = matchStatusesForGroup(group, monitors, props.statuses)
+      if (!shouldRenderCapacityGroup(group, monitors, matchedStatuses)) return []
       const balanceStatuses = matchedStatuses.filter(hasUsableBalance)
       const balanceTotal = balanceStatuses.reduce((sum, status) => sum + (status.remaining_usd ?? 0), 0)
-      return {
+      return [{
         group,
         monitorCount: monitors.length,
         balanceTotal,
@@ -170,7 +171,7 @@ const cards = computed<CapacityCard[]>(() => {
         matchedStatuses,
         previewLogos: buildPreviewLogos(matchedStatuses, monitors),
         statusSegments: buildStatusSegments(monitors),
-      }
+      }]
     })
 })
 
@@ -187,7 +188,18 @@ function buildMonitorGroups(items: UserMonitorView[]) {
 }
 
 function normalizeGroupName(value?: string | null) {
-  return (value || '').trim().toLowerCase()
+  const normalized = (value || '').trim().toLowerCase()
+  if (['rawchat', 'rawchat.cn', 'rawc', 'codex'].includes(normalized)) return 'rawchat'
+  return normalized
+}
+
+function shouldRenderCapacityGroup(
+  group: string,
+  monitors: UserMonitorView[],
+  matchedStatuses: ExternalSubscriptionStatus[],
+) {
+  if (!GROUP_ORDER.includes(group)) return false
+  return monitors.length > 0 || matchedStatuses.some(hasUsableBalance)
 }
 
 function hasUsableBalance(status: ExternalSubscriptionStatus) {

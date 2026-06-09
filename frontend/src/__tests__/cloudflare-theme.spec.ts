@@ -213,12 +213,12 @@ describe('Cloudflare appearance theme', () => {
     expect(monitorCapacitySource).toContain('justify-self: end;')
   })
 
-  it('applies Anthropic beyond tokens with near-black actions, editorial type, and readable filters', () => {
+  it('applies Anthropic beyond tokens with terracotta actions, editorial type, and readable filters', () => {
     expect(styleSource).toContain('Anthropic theme — editorial component pass')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content :where(.page-title, .modal-title, .dialog-header h2')
     expect(styleSource).toContain('font-family: var(--atelier-font-serif) !important;')
     expect(styleSource).toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary)')
-    expect(styleSource).toContain('background: var(--atelier-ink) !important;')
+    expect(styleSource).toContain('background: var(--atelier-blue) !important;')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
     expect(styleSource).toContain(':where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)')
@@ -229,7 +229,7 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain('--select-option-selected-surface: var(--atelier-sand);')
   })
 
-  it('keeps Anthropic filter primary actions near-black without repainting plain filter buttons', () => {
+  it('keeps Anthropic top-right primary actions terracotta without repainting plain filter buttons', () => {
     const legacySlabIndex = styleSource.indexOf(
       '#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
         '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
@@ -250,11 +250,29 @@ describe('Cloudflare appearance theme', () => {
         '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
         '  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)',
     )
-    expect(primaryFilterRule).toContain('background: var(--atelier-ink) !important;')
+    expect(primaryFilterRule).toContain('background: var(--atelier-blue) !important;')
     expect(primaryFilterRule).toContain('color: var(--atelier-paper-2) !important;')
     expect(primaryFilterRule).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
     expect(primaryFilterRule).not.toContain(':where(button)')
     expect(primaryFilterRule).not.toContain('var(--atelier-slab-field)')
+  })
+
+  it('left-aligns the rotating header balance chip like the dropdown rows', () => {
+    const headerBalanceBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-fixed')
+    expect(headerBalanceBlock).toContain('justify-content: flex-start;')
+    expect(headerBalanceBlock).not.toContain('justify-content: flex-end;')
+    expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo {\n  margin-left: auto;')
+    expect(appHeaderSource).toContain('flex: 0 0 auto;')
+    expect(appHeaderSource).toContain('flex: 1 1 auto;')
+  })
+
+  it('keeps channel status and dashboard top-right controls readable under Anthropic', () => {
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .auto-refresh-button')
+    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled)')
+    expect(styleSource).toContain('background: var(--atelier-blue) !important;')
+    expect(styleSource).toContain('color: var(--atelier-paper-2) !important;')
+    expect(styleSource).toContain('.auto-refresh-button :where(svg, path, span)')
+    expect(styleSource).toContain('color: var(--atelier-ink) !important;')
   })
 
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {

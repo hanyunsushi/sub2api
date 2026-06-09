@@ -777,15 +777,17 @@ watch(
   width: 18rem;
   min-width: 18rem;
   max-width: 18rem;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .header-balance-chip-fixed .header-balance-provider-logo {
-  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 .header-balance-chip-fixed :where(.balance-system-text, .balance-buzz-text, .balance-qlhazycoder-text, .balance-packycode-text, .balance-xhyapi-text, .balance-pixel-text, .balance-liust-text, .balance-tcdmx-text, .balance-openrouter-text, .balance-cloudflare-text, .balance-external-text) {
-  max-width: 10rem;
+  flex: 1 1 auto;
+  max-width: 14.75rem;
+  text-align: left;
 }
 
 .balance-chip-system {
