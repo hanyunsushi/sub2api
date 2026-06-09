@@ -44,6 +44,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('getMatchedExternalSubscription')
     expect(source).toContain('match_keywords')
     expect(source).toContain('buildExternalSearchText(account)')
+    expect(source).toContain("rawchat: 'RawChat'")
     expect(source).not.toContain('canShowTCDMXExternalQuota')
     expect(source).not.toContain('canShowQLHazyCoderExternalQuota')
     expect(source).not.toContain("text.includes('buzzai.cc')")
