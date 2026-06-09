@@ -127,10 +127,11 @@
               <a
                 class="external-subscription-card-link mt-2 block truncate font-mono text-xs"
                 :href="card.siteUrl"
+                :title="card.siteUrl"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {{ card.siteUrl }}
+                {{ localText('前往官网', 'Official site') }}
               </a>
 
               <div class="external-subscription-balance-row mt-3">
@@ -877,12 +878,15 @@ function isInvalidToken(code?: string | null) {
 function cardStatusDotClass(card: ExternalSubscriptionCard) {
   return [
     'external-subscription-status-dot',
-    !card.enabled || !card.configured
-      ? 'is-muted'
-      : card.errorCode
-        ? 'is-error'
-        : 'is-ok',
+    `external-subscription-status-dot--${cardStatusTone(card)}`,
   ]
+}
+
+function cardStatusTone(card: ExternalSubscriptionCard) {
+  if (!card.enabled) return 'neutral'
+  if (!card.configured) return 'warning'
+  if (card.errorCode) return 'danger'
+  return 'success'
 }
 
 function cardStatusText(card: ExternalSubscriptionCard) {
@@ -1070,16 +1074,20 @@ onBeforeUnmount(() => {
   background: var(--atelier-muted);
 }
 
-.external-subscription-status-dot.is-ok {
-  background: var(--atelier-green);
+.external-subscription-status-dot--success {
+  background: #10a37f;
 }
 
-.external-subscription-status-dot.is-error {
-  background: #c2413d;
+.external-subscription-status-dot--warning {
+  background: #d97706;
 }
 
-.external-subscription-status-dot.is-muted {
-  background: color-mix(in srgb, var(--atelier-muted) 56%, transparent);
+.external-subscription-status-dot--danger {
+  background: #dc2626;
+}
+
+.external-subscription-status-dot--neutral {
+  background: #6b7280;
 }
 
 .external-subscription-status-text {

@@ -123,6 +123,28 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('filteredCards')
   })
 
+  it('uses account-card style official links instead of showing raw site URLs on provider cards', () => {
+    expect(source).toContain("localText('前往官网', 'Official site')")
+    expect(source).toContain(':title="card.siteUrl"')
+    expect(source).not.toContain('{{ card.siteUrl }}')
+  })
+
+  it('uses fixed semantic traffic-light status colors instead of theme accent colors', () => {
+    expect(source).toContain('external-subscription-status-dot--success')
+    expect(source).toContain('external-subscription-status-dot--warning')
+    expect(source).toContain('external-subscription-status-dot--danger')
+    expect(source).toContain('external-subscription-status-dot--neutral')
+    expect(source).toContain('#10a37f')
+    expect(source).toContain('#d97706')
+    expect(source).toContain('#dc2626')
+    expect(source).toContain('#6b7280')
+    expect(source).not.toContain('external-subscription-status-dot.is-ok')
+    expect(source).not.toContain('external-subscription-status-dot.is-error')
+    expect(source).not.toContain('external-subscription-status-dot.is-muted')
+    expect(source).not.toContain("? 'is-error'")
+    expect(source).not.toContain("? 'is-muted'")
+  })
+
   it('does not present package total as the remaining balance when upstream remaining is unknown', () => {
     expect(source).toContain("const unknown = localText('余额未知', 'Balance unknown')")
     expect(source).toContain('if (total) return `${unknown} / ${total}`')

@@ -921,7 +921,8 @@ const externalSubscriptionLabels: Record<string, string> = {
   xhyapi: 'XHY',
   pixel: 'Pixel',
   liust: 'LIUST',
-  tcdmx: 'TCDMX'
+  tcdmx: 'TCDMX',
+  rawchat: 'RawChat'
 }
 
 const getExternalSubscriptionLabel = (subscription: ExternalSubscriptionStatus) => {

@@ -115,7 +115,7 @@ const groupExternalKeywords: Record<string, string[]> = {
   gpt: ['gpt', 'openai', 'chatgpt'],
   claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc'],
   mimo: ['mimo'],
-  free: ['free'],
+  free: ['free', 'rawchat', 'rawchat.cn', 'codex'],
 }
 
 const props = defineProps<{
@@ -324,11 +324,16 @@ function buildPreviewLogos(
   monitors: UserMonitorView[],
 ) {
   const logos: CapacityLogoItem[] = []
-  const seen = new Set<string>()
+  const seenVisualKeys = new Set<string>()
+  const seenProviderKeys = new Set<string>()
   const appendLogo = (logo: CapacityLogoItem) => {
     const normalizedKey = logoVisualKey(logo)
-    if (!normalizedKey || seen.has(normalizedKey)) return
-    seen.add(normalizedKey)
+    const providerKey = logoProviderKey(logo)
+    if (!normalizedKey && !providerKey) return
+    if (normalizedKey && seenVisualKeys.has(normalizedKey)) return
+    if (providerKey && seenProviderKeys.has(providerKey)) return
+    if (normalizedKey) seenVisualKeys.add(normalizedKey)
+    if (providerKey) seenProviderKeys.add(providerKey)
     logos.push(logo)
   }
 
@@ -361,7 +366,7 @@ function buildPreviewLogos(
 }
 
 function logoVisualKey(logo: CapacityLogoItem) {
-  const logoUrl = logo.logoUrl.trim().toLowerCase()
+  const logoUrl = normalizeLogoUrl(logo.logoUrl)
   if (logoUrl) return `url:${logoUrl}`
   return [
     'fallback',
@@ -369,6 +374,39 @@ function logoVisualKey(logo: CapacityLogoItem) {
     logo.model,
     logo.title,
   ].join(':').trim().toLowerCase()
+}
+
+function logoProviderKey(logo: CapacityLogoItem) {
+  const text = [
+    logo.provider,
+    logo.model,
+    logo.title,
+  ].join(' ').trim().toLowerCase()
+  if (!text) return ''
+  const knownAliases: Array<[string, string[]]> = [
+    ['codex', ['codex']],
+    ['rawchat', ['rawchat', 'rawchat.cn', 'rawc']],
+    ['free', ['free']],
+    ['openai', ['openai', 'chatgpt', 'gpt']],
+    ['claude', ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc']],
+    ['mimo', ['mimo']],
+  ]
+  const matched = knownAliases.find(([, aliases]) => aliases.some(alias => text.includes(alias)))
+  if (matched) return `provider:${matched[0]}`
+  return `provider:${text.replace(/https?:\/\/|www\.|[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, '-')}`
+}
+
+function normalizeLogoUrl(value: string) {
+  const raw = value.trim()
+  if (!raw) return ''
+  try {
+    const parsed = new URL(raw)
+    parsed.hash = ''
+    parsed.search = ''
+    return parsed.toString().replace(/\/+$/, '').toLowerCase()
+  } catch {
+    return raw.toLowerCase()
+  }
 }
 
 function monitorLogoText(item: UserMonitorView) {
