@@ -326,7 +326,7 @@ function buildPreviewLogos(
   const logos: CapacityLogoItem[] = []
   const seen = new Set<string>()
   const appendLogo = (logo: CapacityLogoItem) => {
-    const normalizedKey = logo.key.trim().toLowerCase()
+    const normalizedKey = logoVisualKey(logo)
     if (!normalizedKey || seen.has(normalizedKey)) return
     seen.add(normalizedKey)
     logos.push(logo)
@@ -358,6 +358,17 @@ function buildPreviewLogos(
   }
 
   return logos
+}
+
+function logoVisualKey(logo: CapacityLogoItem) {
+  const logoUrl = logo.logoUrl.trim().toLowerCase()
+  if (logoUrl) return `url:${logoUrl}`
+  return [
+    'fallback',
+    logo.provider,
+    logo.model,
+    logo.title,
+  ].join(':').trim().toLowerCase()
 }
 
 function monitorLogoText(item: UserMonitorView) {

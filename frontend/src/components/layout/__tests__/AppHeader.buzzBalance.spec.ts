@@ -582,6 +582,21 @@ describe("AppHeader BuzzAI balance", () => {
     expect(logo.attributes("data-logo-url")).toBe("https://cdn.example.com/pixel.png");
   });
 
+  it("renders external subscription logos in the balance dropdown rows", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+
+    const dropdown = wrapper.get('[data-testid="header-balance-dropdown"]');
+    const logos = dropdown.findAll('[data-testid="header-balance-dropdown-provider-logo"]');
+    expect(logos.length).toBeGreaterThan(0);
+    expect(logos.some((logo) => logo.attributes("data-logo-url") === "https://cdn.example.com/pixel.png")).toBe(true);
+  });
+
   it("keeps the console route context visible in the header", async () => {
     const wrapper = mountHeader();
     await nextTick();

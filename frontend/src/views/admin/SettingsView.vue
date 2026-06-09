@@ -4542,14 +4542,28 @@
                   >
                     {{ t("admin.settings.site.defaultTheme") }}
                   </label>
-                  <select
-                    v-model="form.appearance_theme_default"
-                    class="input"
-                  >
-                    <option value="newspaper">Newspaper</option>
-                    <option value="cloudflare">Cloudflare</option>
-                    <option value="anthropic">Anthropic</option>
-                  </select>
+                  <div class="theme-default-picker" role="radiogroup">
+                    <button
+                      v-for="theme in appearanceThemeOptions"
+                      :key="theme.id"
+                      type="button"
+                      data-testid="settings-default-theme-option"
+                      class="theme-default-option"
+                      :class="form.appearance_theme_default === theme.id && 'theme-default-option-active'"
+                      :aria-checked="form.appearance_theme_default === theme.id"
+                      role="radio"
+                      @click="form.appearance_theme_default = theme.id"
+                    >
+                      <ThemeLogo :theme-id="theme.id" class="theme-default-option-logo" />
+                      <span>{{ theme.label }}</span>
+                      <Icon
+                        v-if="form.appearance_theme_default === theme.id"
+                        name="check"
+                        size="sm"
+                        class="theme-default-option-check"
+                      />
+                    </button>
+                  </div>
                   <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.defaultThemeHint") }}
                   </p>
@@ -6954,10 +6968,12 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
+import ThemeLogo from "@/components/common/ThemeLogo.vue";
 import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue';
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import { useClipboard } from "@/composables/useClipboard";
+import { appearanceThemeOptions, type AppearanceThemeId } from "@/composables/useAppearanceTheme";
 import { affiliatesAPI, type AffiliateAdminEntry, type SimpleUser as AffiliateSimpleUser } from "@/api/admin/affiliates";
 import { extractApiErrorMessage, extractI18nErrorMessage } from "@/utils/apiError";
 import { useAppStore } from "@/stores";
@@ -7503,8 +7519,7 @@ const form = reactive<SettingsForm>({
   allow_user_view_error_requests: false,
 });
 
-const appearanceThemeIds = ["newspaper", "cloudflare", "anthropic"] as const;
-type AppearanceThemeId = (typeof appearanceThemeIds)[number];
+const appearanceThemeIds = appearanceThemeOptions.map(theme => theme.id);
 
 function isAppearanceThemeId(value: unknown): value is AppearanceThemeId {
   return typeof value === "string" && appearanceThemeIds.includes(value as AppearanceThemeId);
@@ -10123,6 +10138,61 @@ watch(
 
 .default-sub-delete-btn {
   @apply h-[42px];
+}
+
+.theme-default-picker {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.theme-default-option {
+  align-items: center;
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 0.5rem;
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
+  display: flex;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 2.625rem;
+  min-width: 0;
+  padding: 0 0.75rem;
+  transition: background 0.18s var(--atelier-ease), border-color 0.18s var(--atelier-ease);
+}
+
+.theme-default-option:hover {
+  border-color: var(--atelier-line-strong);
+  background: var(--atelier-ui-hover-surface);
+}
+
+.theme-default-option-active,
+.theme-default-option-active:hover {
+  border-color: var(--atelier-blue);
+  background: var(--atelier-blue);
+  color: var(--atelier-white);
+}
+
+.theme-default-option-logo {
+  height: 1.125rem;
+  width: 1.125rem;
+  flex: 0 0 auto;
+}
+
+.theme-default-option-check {
+  flex: 0 0 auto;
+}
+
+.theme-default-option-active :where(.theme-default-option-logo, .theme-default-option-check, span) {
+  color: var(--atelier-white);
+}
+
+@media (max-width: 640px) {
+  .theme-default-picker {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ============ 系统设置 Tab 导航 ============ */

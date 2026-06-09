@@ -139,10 +139,22 @@
                 ]"
               >
                 <div
-                  :class="[balanceProviderTextClass(subscription), 'min-w-0 flex-1 truncate text-xs font-medium']"
-                  :title="externalSubscriptionChipLabel(subscription)"
+                  class="flex min-w-0 flex-1 items-center gap-2"
                 >
-                  {{ externalSubscriptionChipLabel(subscription) }}
+                  <ProviderBrandIcon
+                    data-testid="header-balance-dropdown-provider-logo"
+                    class="header-balance-provider-logo h-5 w-5 flex-shrink-0"
+                    :provider="externalSubscriptionLogoProvider(subscription)"
+                    :model="subscription.name"
+                    :logo-url="subscription.logo_url"
+                    :data-logo-url="subscription.logo_url || ''"
+                  />
+                  <div
+                    :class="[balanceProviderTextClass(subscription), 'min-w-0 truncate text-xs font-medium']"
+                    :title="externalSubscriptionChipLabel(subscription)"
+                  >
+                    {{ externalSubscriptionChipLabel(subscription) }}
+                  </div>
                 </div>
                 <div class="min-w-0 max-w-[10rem] flex-shrink text-right">
                   <div
