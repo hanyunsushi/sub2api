@@ -616,6 +616,59 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithCook
 	require.Equal(t, int64(201), rawchat.Subscriptions[0].ID)
 }
 
+func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithExplicitRemainingAndExpiryAliases(t *testing.T) {
+	rawChatServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/frontend-api/getUserSubscriptions", r.URL.Path)
+		require.Empty(t, r.Header.Get("Authorization"))
+		require.Equal(t, "__user_token__=rawchat-session", r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"code": 1,
+			"data": {
+				"list": [
+					{
+						"id": "301",
+						"packageName": "RawChat Balance",
+						"status": 1,
+						"limit": 60,
+						"remaining": "12.34",
+						"expireDate": "2026-08-09"
+					}
+				]
+			}
+		}`))
+	}))
+	defer rawChatServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    rawChatServer.URL,
+			APIToken:      "__user_token__=rawchat-session",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     65,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	rawchat := requireExternalSubscriptionStatus(t, statuses, "rawchat")
+	require.NotNil(t, rawchat.TotalLimitUSD)
+	require.InDelta(t, 60, *rawchat.TotalLimitUSD, 0.0001)
+	require.NotNil(t, rawchat.RemainingUSD)
+	require.InDelta(t, 12.34, *rawchat.RemainingUSD, 0.0001)
+	require.NotNil(t, rawchat.ExpiresAt)
+	require.Equal(t, "2026-08-09T00:00:00Z", rawchat.ExpiresAt.UTC().Format("2006-01-02T15:04:05Z"))
+	require.Len(t, rawchat.Subscriptions, 1)
+	require.InDelta(t, 12.34, *rawchat.Subscriptions[0].RemainingUSD, 0.0001)
+	require.NotNil(t, rawchat.Subscriptions[0].ExpiresAt)
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {
 	goodServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/v1/credits", r.URL.Path)

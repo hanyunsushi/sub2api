@@ -22,17 +22,35 @@ type rawChatSubscriptionsResponse struct {
 }
 
 type rawChatSubscription struct {
-	ID          json.RawMessage `json:"id"`
-	PackageID   json.RawMessage `json:"packageId"`
-	PackageName string          `json:"packageName"`
-	Name        string          `json:"name"`
-	Status      json.RawMessage `json:"status"`
-	BillingType string          `json:"billingType"`
-	Limit       json.RawMessage `json:"limit"`
-	Used        json.RawMessage `json:"used"`
-	UsedAmount  json.RawMessage `json:"usedAmount"`
-	ExpireTime  json.RawMessage `json:"expireTime"`
-	ExpiresAt   json.RawMessage `json:"expiresAt"`
+	ID               json.RawMessage `json:"id"`
+	PackageID        json.RawMessage `json:"packageId"`
+	PackageName      string          `json:"packageName"`
+	Name             string          `json:"name"`
+	Status           json.RawMessage `json:"status"`
+	BillingType      string          `json:"billingType"`
+	Limit            json.RawMessage `json:"limit"`
+	Used             json.RawMessage `json:"used"`
+	UsedAmount       json.RawMessage `json:"usedAmount"`
+	Remaining        json.RawMessage `json:"remaining"`
+	RemainingAmount  json.RawMessage `json:"remainingAmount"`
+	Remain           json.RawMessage `json:"remain"`
+	RemainAmount     json.RawMessage `json:"remainAmount"`
+	Balance          json.RawMessage `json:"balance"`
+	Available        json.RawMessage `json:"available"`
+	AvailableBalance json.RawMessage `json:"availableBalance"`
+	AvailableAmount  json.RawMessage `json:"availableAmount"`
+	Left             json.RawMessage `json:"left"`
+	LeftAmount       json.RawMessage `json:"leftAmount"`
+	Surplus          json.RawMessage `json:"surplus"`
+	ExpireTime       json.RawMessage `json:"expireTime"`
+	ExpiresAt        json.RawMessage `json:"expiresAt"`
+	ExpireDate       json.RawMessage `json:"expireDate"`
+	ExpiredAt        json.RawMessage `json:"expiredAt"`
+	ExpiredAtSnake   json.RawMessage `json:"expired_at"`
+	EndTime          json.RawMessage `json:"endTime"`
+	EndTimeSnake     json.RawMessage `json:"end_time"`
+	ValidUntil       json.RawMessage `json:"validUntil"`
+	ValidUntilSnake  json.RawMessage `json:"valid_until"`
 }
 
 func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.Context, cfg externalSubscriptionProviderConfig) (*ExternalSubscriptionStatus, error) {
@@ -67,6 +85,8 @@ func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.C
 
 	var totalLimit float64
 	var hasLimit bool
+	var remainingTotal float64
+	var hasRemaining bool
 	var earliestExpiry *time.Time
 	for _, subscription := range subscriptions {
 		if !isRawChatSubscriptionActive(subscription.Status) {
@@ -80,6 +100,10 @@ func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.C
 			totalLimit += *item.LimitUSD
 			hasLimit = true
 		}
+		if item.RemainingUSD != nil {
+			remainingTotal += *item.RemainingUSD
+			hasRemaining = true
+		}
 		if item.ExpiresAt != nil && (earliestExpiry == nil || item.ExpiresAt.Before(*earliestExpiry)) {
 			expiry := *item.ExpiresAt
 			earliestExpiry = &expiry
@@ -87,8 +111,9 @@ func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.C
 	}
 	if hasLimit {
 		result.TotalLimitUSD = &totalLimit
-		remaining := totalLimit - result.UsedUSD
-		result.RemainingUSD = &remaining
+	}
+	if hasRemaining {
+		result.RemainingUSD = &remainingTotal
 	}
 	if earliestExpiry != nil {
 		result.ExpiresAt = earliestExpiry
@@ -163,6 +188,25 @@ func rawChatSubscriptionItemFromAPI(subscription rawChatSubscription) ExternalSu
 	if !hasUsed {
 		used, hasUsed = rawChatNumber(subscription.UsedAmount)
 	}
+	remaining, hasRemaining := firstRawChatNumber(
+		subscription.Remaining,
+		subscription.RemainingAmount,
+		subscription.Remain,
+		subscription.RemainAmount,
+		subscription.Balance,
+		subscription.Available,
+		subscription.AvailableBalance,
+		subscription.AvailableAmount,
+		subscription.Left,
+		subscription.LeftAmount,
+		subscription.Surplus,
+	)
+	if !hasUsed && hasLimit && hasRemaining {
+		if computedUsed := limit - remaining; computedUsed >= 0 {
+			used = computedUsed
+			hasUsed = true
+		}
+	}
 	if !hasUsed {
 		used = 0
 	}
@@ -182,11 +226,25 @@ func rawChatSubscriptionItemFromAPI(subscription rawChatSubscription) ExternalSu
 		Status:    "active",
 		Window:    "subscription",
 		UsedUSD:   used,
-		ExpiresAt: firstExternalTime(subscription.ExpireTime, subscription.ExpiresAt),
+		ExpiresAt: firstExternalTime(
+			subscription.ExpireTime,
+			subscription.ExpiresAt,
+			subscription.ExpireDate,
+			subscription.ExpiredAt,
+			subscription.ExpiredAtSnake,
+			subscription.EndTime,
+			subscription.EndTimeSnake,
+			subscription.ValidUntil,
+			subscription.ValidUntilSnake,
+		),
 	}
 	item.DaysRemaining = daysRemainingFromNow(item.ExpiresAt)
 	if hasLimit {
 		item.LimitUSD = &limit
+	}
+	if hasRemaining {
+		item.RemainingUSD = &remaining
+	} else if hasLimit {
 		remaining := limit - used
 		item.RemainingUSD = &remaining
 	}
@@ -223,6 +281,15 @@ func rawChatNumber(raw json.RawMessage) (float64, bool) {
 	if err := json.Unmarshal(raw, &value); err == nil {
 		parsed, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
 		return parsed, err == nil
+	}
+	return 0, false
+}
+
+func firstRawChatNumber(values ...json.RawMessage) (float64, bool) {
+	for _, raw := range values {
+		if value, ok := rawChatNumber(raw); ok {
+			return value, true
+		}
 	}
 	return 0, false
 }
