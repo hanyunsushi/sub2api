@@ -200,7 +200,7 @@
       @close="closeDialog"
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <button
             type="button"
             class="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-left transition-colors hover:border-primary-300 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
@@ -249,6 +249,16 @@
             <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">Cloudflare AI Gateway</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
+            </div>
+          </button>
+          <button
+            type="button"
+            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
+            @click="applyPreset('rawchat_subscriptions')"
+          >
+            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">RawChat</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
             </div>
           </button>
         </div>
@@ -451,6 +461,7 @@ const templateOptions = computed(() => [
   { value: 'buzz_balance', label: 'Buzz Balance' },
   { value: 'openrouter_credits', label: 'OpenRouter Credits' },
   { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
+  { value: 'rawchat_subscriptions', label: 'RawChat' },
 ])
 
 const balanceStrategyOptions = computed(() => [
@@ -483,6 +494,7 @@ const apiTokenPlaceholder = computed(() => {
   if (form.template === 'buzz_balance') return 'Buzz API Token'
   if (form.template === 'openrouter_credits') return 'sk-or-...'
   if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
+  if (form.template === 'rawchat_subscriptions') return 'RawChat token'
   return 'sk-...'
 })
 
@@ -591,6 +603,8 @@ function templateLabel(template: ExternalSubscriptionTemplate) {
       return 'OpenRouter Credits'
     case 'cloudflare_ai_gateway_credits':
       return 'Cloudflare AI Gateway'
+    case 'rawchat_subscriptions':
+      return 'RawChat'
     default:
       return 'NewAPI Console'
   }
@@ -717,6 +731,15 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!form.id) form.id = 'cloudflare'
     if (form.sort_order === 50) form.sort_order = 80
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'cloudflare\nai-gateway\nworkers-ai'
+    return
+  }
+  if (template === 'rawchat_subscriptions') {
+    form.balance_strategy = 'auto'
+    if (!form.api_base_url) form.api_base_url = 'https://rawchat.cn'
+    if (!form.name) form.name = 'RawChat'
+    if (!form.id) form.id = 'rawchat'
+    if (form.sort_order === 50) form.sort_order = 90
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'rawchat\nrawchat.cn'
   }
 }
 

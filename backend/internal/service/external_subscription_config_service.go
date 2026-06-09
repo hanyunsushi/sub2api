@@ -21,6 +21,7 @@ const (
 	ExternalSubscriptionTemplateBuzzBalance                = "buzz_balance"
 	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
+	ExternalSubscriptionTemplateRawChatSubscriptions       = "rawchat_subscriptions"
 
 	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
 	ExternalSubscriptionBalanceStrategyNewAPIUserQuota         = "newapi_user_quota"
@@ -608,6 +609,16 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 			MatchKeywords:   []string{"cloudflare", "ai-gateway", "workers-ai"},
 			SortOrder:       80,
 		},
+		externalSubscriptionStoredProvider{
+			ID:              "rawchat",
+			Name:            "RawChat",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateRawChatSubscriptions,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      DefaultRawChatSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"rawchat", "rawchat.cn"},
+			SortOrder:       90,
+		},
 	)
 	return providers, nil
 }
@@ -743,7 +754,8 @@ func isExternalSubscriptionTemplate(template string) bool {
 		ExternalSubscriptionTemplateActiveSubscriptions,
 		ExternalSubscriptionTemplateBuzzBalance,
 		ExternalSubscriptionTemplateOpenRouterCredits,
-		ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
+		ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+		ExternalSubscriptionTemplateRawChatSubscriptions:
 		return true
 	default:
 		return false
