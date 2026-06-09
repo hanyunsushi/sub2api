@@ -175,7 +175,8 @@ describe('Cloudflare appearance theme', () => {
     expect(appHeaderSource).toContain('data-testid="header-balance-provider-logo"')
     expect(appHeaderSource).toContain(':logo-url="currentExternalSubscriptionInChip.logo_url"')
     expect(appHeaderSource).toContain(':data-logo-url="currentExternalSubscriptionInChip.logo_url || \'\'"')
-    expect(monitorCapacitySource).toContain(':logo-url="subscription.logo_url"')
+    expect(monitorCapacitySource).toContain(':logo-url="logo.logoUrl"')
+    expect(monitorCapacitySource).toContain('buildPreviewLogos(matchedStatuses, monitors)')
   })
 
   it('keeps shared capacity status counts attached to their labels', () => {

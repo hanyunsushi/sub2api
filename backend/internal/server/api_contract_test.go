@@ -1252,7 +1252,7 @@ func TestAPIContracts(t *testing.T) {
 			name:   "PUT /api/v1/admin/settings/appearance-theme-default",
 			method: http.MethodPut,
 			path:   "/api/v1/admin/settings/appearance-theme-default",
-			body:   `{"appearance_theme_default":"cloudflare"}`,
+			body:   `{"appearance_theme_default":"anthropic"}`,
 			headers: map[string]string{
 				"Content-Type": "application/json",
 			},
@@ -1261,7 +1261,7 @@ func TestAPIContracts(t *testing.T) {
 				"code": 0,
 				"message": "success",
 				"data": {
-					"appearance_theme_default": "cloudflare"
+					"appearance_theme_default": "anthropic"
 				}
 			}`,
 		},

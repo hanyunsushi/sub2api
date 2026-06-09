@@ -218,7 +218,7 @@ func TestSettingHandler_UpdateSettings_PersistsAppearanceThemeDefault(t *testing
 
 	body := map[string]any{
 		"promo_code_enabled":       true,
-		"appearance_theme_default": "cloudflare",
+		"appearance_theme_default": "anthropic",
 	}
 	rawBody, err := json.Marshal(body)
 	require.NoError(t, err)
@@ -231,13 +231,13 @@ func TestSettingHandler_UpdateSettings_PersistsAppearanceThemeDefault(t *testing
 	handler.UpdateSettings(c)
 
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, "cloudflare", repo.values[service.SettingKeyAppearanceThemeDefault])
+	require.Equal(t, "anthropic", repo.values[service.SettingKeyAppearanceThemeDefault])
 
 	var resp response.Response
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &resp))
 	data, ok := resp.Data.(map[string]any)
 	require.True(t, ok)
-	require.Equal(t, "cloudflare", data["appearance_theme_default"])
+	require.Equal(t, "anthropic", data["appearance_theme_default"])
 }
 
 func TestSettingHandler_UpdateAppearanceThemeDefault_OnlyPersistsThemeKey(t *testing.T) {
@@ -251,7 +251,7 @@ func TestSettingHandler_UpdateAppearanceThemeDefault_OnlyPersistsThemeKey(t *tes
 	handler := NewSettingHandler(svc, nil, nil, nil, nil, nil, nil)
 
 	rawBody, err := json.Marshal(map[string]any{
-		"appearance_theme_default": "cloudflare",
+		"appearance_theme_default": "anthropic",
 	})
 	require.NoError(t, err)
 
@@ -264,14 +264,14 @@ func TestSettingHandler_UpdateAppearanceThemeDefault_OnlyPersistsThemeKey(t *tes
 
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, map[string]string{
-		service.SettingKeyAppearanceThemeDefault: "cloudflare",
+		service.SettingKeyAppearanceThemeDefault: "anthropic",
 	}, repo.lastUpdates)
 
 	var resp response.Response
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &resp))
 	data, ok := resp.Data.(map[string]any)
 	require.True(t, ok)
-	require.Equal(t, "cloudflare", data["appearance_theme_default"])
+	require.Equal(t, "anthropic", data["appearance_theme_default"])
 	require.Equal(t, "true", repo.values[service.SettingKeyPromoCodeEnabled])
 }
 

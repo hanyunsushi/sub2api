@@ -28,6 +28,16 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).not.toContain("5h")
   })
 
+  it('falls back to monitor logo_url for capacity card logos when no external status matches', () => {
+    expect(componentSource).toContain('previewLogos')
+    expect(componentSource).toContain('buildPreviewLogos(matchedStatuses, monitors)')
+    expect(componentSource).toContain('function buildPreviewLogos(')
+    expect(componentSource).toContain('function monitorLogoText(')
+    expect(componentSource).toContain('item.logo_url')
+    expect(componentSource).toContain(':logo-url="logo.logoUrl"')
+    expect(componentSource).not.toContain('v-for="subscription in card.previewStatuses"')
+  })
+
   it('renders monitor status distribution bars like the reference monitor overview', () => {
     expect(componentSource).toContain('statusSegments')
     expect(componentSource).toContain('monitor-capacity-status-bar')
