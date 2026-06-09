@@ -180,6 +180,16 @@ func parseExternalTimeString(value string) *time.Time {
 	if parsed, err := time.Parse(time.RFC3339, trimmed); err == nil {
 		return &parsed
 	}
+	for _, layout := range []string{
+		"2006-01-02 15:04:05",
+		"2006-01-02 15:04",
+		"2006/01/02 15:04:05",
+		"2006/01/02 15:04",
+	} {
+		if parsed, err := time.ParseInLocation(layout, trimmed, time.UTC); err == nil {
+			return &parsed
+		}
+	}
 	if parsed, err := time.Parse("2006-01-02", trimmed); err == nil {
 		return &parsed
 	}

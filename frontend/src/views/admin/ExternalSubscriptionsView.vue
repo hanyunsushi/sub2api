@@ -908,8 +908,9 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
   const total = formatMoney(status.total_limit_usd, status.currency)
   if (remaining && total) return `${remaining} / ${total}`
   if (remaining) return remaining
-  if (total) return total
-  return localText('余额未知', 'Balance unknown')
+  const unknown = localText('余额未知', 'Balance unknown')
+  if (total) return `${unknown} / ${total}`
+  return unknown
 }
 
 function formatStatusExpiry(status?: ExternalSubscriptionStatus) {

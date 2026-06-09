@@ -86,7 +86,7 @@ export interface ExternalSubscriptionStatus {
 
 const DISPLAY_STATUSES_CACHE_TTL_MS = 60_000
 const DISPLAY_STATUSES_STORAGE_TTL_MS = 30 * 60_000
-const DISPLAY_STATUSES_STORAGE_KEY = 'sub2api.externalSubscriptionDisplayStatuses.v1'
+const DISPLAY_STATUSES_STORAGE_KEY = 'sub2api.externalSubscriptionDisplayStatuses.v2'
 
 let displayStatusesCache: {
   expiresAt: number

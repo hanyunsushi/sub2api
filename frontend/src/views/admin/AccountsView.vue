@@ -962,7 +962,7 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
     url: subscription.site_url,
     formattedBalance: remaining && total
       ? `${remaining} / ${total}`
-      : remaining || total || localText('余额未知', 'Balance unknown'),
+      : remaining || (total ? `${localText('余额未知', 'Balance unknown')} / ${total}` : localText('余额未知', 'Balance unknown')),
     formattedExpiry: formatExternalDate(subscription.expires_at)
   }
 }

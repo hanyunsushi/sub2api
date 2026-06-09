@@ -122,4 +122,10 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('displayCards')
     expect(source).toContain('filteredCards')
   })
+
+  it('does not present package total as the remaining balance when upstream remaining is unknown', () => {
+    expect(source).toContain("const unknown = localText('余额未知', 'Balance unknown')")
+    expect(source).toContain('if (total) return `${unknown} / ${total}`')
+    expect(source).not.toContain('if (total) return total')
+  })
 })

@@ -53,6 +53,8 @@ type rawChatSubscription struct {
 	ValidUntilSnake  json.RawMessage `json:"valid_until"`
 }
 
+const rawChatBrowserUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+
 func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.Context, cfg externalSubscriptionProviderConfig) (*ExternalSubscriptionStatus, error) {
 	settings, err := s.settingService.getExternalSubscriptionSettings(ctx, cfg)
 	if err != nil {
@@ -124,11 +126,16 @@ func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.C
 }
 
 func (s *ExternalSubscriptionService) getRawChatSubscriptionsJSON(ctx context.Context, settings ExternalSubscriptionSettings, cfg externalSubscriptionProviderConfig, out any) error {
+	origin := strings.TrimRight(settings.APIBaseURL, "/")
 	request := s.client.R().
 		SetContext(ctx).
 		SetHeader("Content-Type", "application/json").
+		SetHeader("Accept", "application/json, text/plain, */*").
+		SetHeader("User-Agent", rawChatBrowserUserAgent).
+		SetHeader("Origin", origin).
+		SetHeader("Referer", origin+"/pastel/").
 		SetHeader("ThemeId", "pastel").
-		SetHeader("Accept-Language", "zh-CN").
+		SetHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8").
 		SetBody(map[string]int{
 			"page": 1,
 			"size": 20,
@@ -244,7 +251,7 @@ func rawChatSubscriptionItemFromAPI(subscription rawChatSubscription) ExternalSu
 	}
 	if hasRemaining {
 		item.RemainingUSD = &remaining
-	} else if hasLimit {
+	} else if hasLimit && hasUsed {
 		remaining := limit - used
 		item.RemainingUSD = &remaining
 	}
