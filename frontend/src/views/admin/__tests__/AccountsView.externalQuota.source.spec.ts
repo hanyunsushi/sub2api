@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
+const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
+const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 
 describe('AccountsView external quota card metadata', () => {
   it('loads generic external subscription quota summaries for matching account cards', () => {
@@ -23,12 +26,17 @@ describe('AccountsView external quota card metadata', () => {
   it('renders external quota details inside the account card name area with provider links', () => {
     expect(source).toContain('data-testid="account-external-quota"')
     expect(source).toContain('account-external-quota-link')
+    expect(source).toContain('account-card-name-main')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedBalance')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedExpiry')
     expect(source).toContain("localText('前往官网', 'Official site')")
     expect(source).toContain("return localText('长期', 'Long-term')")
     expect(source).not.toContain("return localText('未返回', 'Not returned')")
     expect(source).not.toContain("localText('打开', 'Open')")
+    expect(styleSource).toContain('.account-card-name-main')
+    expect(styleSource).toContain('.account-external-quota')
+    expect(styleSource).toContain('width: 100%;')
+    expect(styleSource).not.toMatch(/td\[data-column-key="name"\]\s*\{\s*padding-right: 9\.25rem !important;/)
   })
 
   it('matches generic external subscriptions from provider match_keywords instead of hardcoded provider branches', () => {
@@ -84,7 +92,25 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain('adminAPI.accounts.update(row.id, { rate_multiplier')
   })
 
-  it('marks actively used account rows with an electric border treatment inspired by the pasted component', () => {
+  it('marks actively used account rows with the pasted canvas ElectricBorder treatment', () => {
+    expect(electricBorderSource).not.toBe('')
+    expect(electricBorderSource).toContain('canvas.getContext')
+    expect(electricBorderSource).toContain('octavedNoise')
+    expect(electricBorderSource).toContain('getRoundedRectPoint')
+    expect(electricBorderSource).toContain('ResizeObserver')
+    expect(electricBorderSource).toContain('requestAnimationFrame')
+    expect(electricBorderSource).toContain('eb-glow-1')
+    expect(electricBorderSource).toContain('ctx.lineWidth = 1')
+    expect(electricBorderSource).not.toContain('ctx.lineWidth = props.thickness')
+    expect(dataTableSource).toContain('name="row-overlay"')
+    expect(source).toContain("import ElectricBorder from '@/components/common/ElectricBorder.vue'")
+    expect(source).toContain('<template #row-overlay="{ row }">')
+    expect(source).toContain('<ElectricBorder')
+    expect(source).toContain('color="#c96442"')
+    expect(source).toContain(':speed="1.5"')
+    expect(source).toContain(':chaos="0.02"')
+    expect(source).toContain(':border-radius="16"')
+    expect(source).toContain(':thickness="2"')
     expect(source).toContain(':row-class="getAccountRowClass"')
     expect(source).toContain('getAccountRowClass')
     expect(source).toContain('isAccountCalling(row)')
@@ -92,8 +118,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('active_sessions')
     expect(source).toContain('codex-account-card-calling')
     expect(source).toContain('account-electric-border')
-    expect(styleSource).toContain('.accounts-table-page > .space-y-3 > .codex-account-card-calling')
-    expect(styleSource).toContain('.accounts-table-page > .space-y-3 > .account-electric-border::before')
-    expect(styleSource).toContain('padding-right: 9.25rem !important;')
+    expect(styleSource).not.toContain('account-electric-border-spin')
+    expect(styleSource).not.toContain('conic-gradient(')
   })
 })

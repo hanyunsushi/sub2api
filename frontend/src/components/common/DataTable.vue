@@ -40,6 +40,7 @@
           resolveRowClass(row, index)
         ]"
       >
+        <slot name="row-overlay" :row="row" :index="index"></slot>
         <div class="space-y-3">
           <div
             v-for="column in dataColumns"
@@ -168,6 +169,14 @@
             ]"
           >
             <td
+              v-if="$slots['row-overlay']"
+              :colspan="columns.length"
+              class="data-table-row-overlay-cell"
+              aria-hidden="true"
+            >
+              <slot name="row-overlay" :row="row" :index="rowIndex"></slot>
+            </td>
+            <td
               v-for="(column, colIndex) in columns"
               :key="column.key"
               :data-column-key="column.key"
@@ -207,6 +216,14 @@
               resolveRowClass(sortedData[virtualRow.index], virtualRow.index)
             ]"
           >
+            <td
+              v-if="$slots['row-overlay']"
+              :colspan="columns.length"
+              class="data-table-row-overlay-cell"
+              aria-hidden="true"
+            >
+              <slot name="row-overlay" :row="sortedData[virtualRow.index]" :index="virtualRow.index"></slot>
+            </td>
             <td
               v-for="(column, colIndex) in columns"
               :key="column.key"
