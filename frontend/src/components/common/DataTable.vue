@@ -35,7 +35,10 @@
       <div
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
-        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
+        :class="[
+          'rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900',
+          resolveRowClass(row, index)
+        ]"
       >
         <div class="space-y-3">
           <div
@@ -159,7 +162,10 @@
             :key="resolveRowKey(row, rowIndex)"
             :data-row-id="resolveRowKey(row, rowIndex)"
             :data-index="rowIndex"
-            class="hover:bg-gray-50 dark:hover:bg-dark-800"
+            :class="[
+              'hover:bg-gray-50 dark:hover:bg-dark-800',
+              resolveRowClass(row, rowIndex)
+            ]"
           >
             <td
               v-for="(column, colIndex) in columns"
@@ -196,7 +202,10 @@
             :data-row-id="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"
             :data-index="virtualRow.index"
             :ref="measureElement"
-            class="hover:bg-gray-50 dark:hover:bg-dark-800"
+            :class="[
+              'hover:bg-gray-50 dark:hover:bg-dark-800',
+              resolveRowClass(sortedData[virtualRow.index], virtualRow.index)
+            ]"
           >
             <td
               v-for="(column, colIndex) in columns"
@@ -399,6 +408,7 @@ interface Props {
   expandableActions?: boolean
   actionsCount?: number // 操作按钮总数，用于判断是否需要展开功能
   rowKey?: string | ((row: any) => string | number)
+  rowClass?: string | string[] | Record<string, boolean> | ((row: any, index: number) => string | string[] | Record<string, boolean> | undefined)
   /**
    * Default sort configuration (only applied when there is no persisted sort state)
    */
@@ -576,6 +586,11 @@ const resolveRowKey = (row: any, index: number) => {
   }
   const key = row?.id
   return key ?? index
+}
+
+const resolveRowClass = (row: any, index: number) => {
+  if (!props.rowClass) return undefined
+  return typeof props.rowClass === 'function' ? props.rowClass(row, index) : props.rowClass
 }
 
 const dataColumns = computed(() => props.columns.filter((column) => column.key !== 'actions'))

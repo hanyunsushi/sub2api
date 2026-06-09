@@ -192,13 +192,14 @@
           @toggle-schedulable="handleBulkToggleSchedulable"
         />
         <div ref="accountTableRef" class="account-card-table-frame flex min-h-fit flex-none flex-col overflow-visible">
-        <DataTable
-          ref="dataTableRef"
-          :columns="cols"
-          :data="accounts"
-          :loading="loading"
-          row-key="id"
-          :server-side-sort="true"
+          <DataTable
+            ref="dataTableRef"
+            :columns="cols"
+            :data="accounts"
+            :loading="loading"
+            :row-class="getAccountRowClass"
+            row-key="id"
+            :server-side-sort="true"
           @sort="handleSort"
           default-sort-key="name"
           default-sort-order="asc"
@@ -219,14 +220,43 @@
             />
           </template>
           <template #cell-select="{ row }">
-            <div class="inline-flex items-center gap-2">
-              <span
-                data-testid="account-card-priority"
-                class="inline-flex h-6 min-w-9 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-1.5 font-mono text-[11px] font-semibold leading-none text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300"
+            <div data-testid="account-card-controls" class="account-card-controls inline-flex items-center gap-1.5">
+              <button
+                data-testid="account-rate-quick-adjust"
+                type="button"
+                class="account-rate-quick-adjust inline-flex h-6 min-w-11 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-1.5 font-mono text-[11px] font-semibold leading-none text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-primary-700 dark:hover:bg-primary-900/20 dark:hover:text-primary-300"
+                :title="localText('调整账号倍率', 'Adjust account rate multiplier')"
+                @click.stop="openRateMultiplierMenu(row, $event)"
+              >
+                x{{ formatAccountRateMultiplier(row.rate_multiplier) }}
+              </button>
+              <div
+                data-testid="account-priority-quick-adjust"
+                class="account-priority-quick-adjust inline-flex h-6 items-center overflow-hidden rounded-md border border-gray-200 bg-gray-50 font-mono text-[11px] font-semibold leading-none text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300"
                 :title="t('admin.accounts.priority')"
               >
-                P{{ row.priority ?? '-' }}
-              </span>
+                <button
+                  type="button"
+                  class="account-priority-step"
+                  :title="localText('提高优先级', 'Raise priority')"
+                  :disabled="priorityUpdatingIds.has(row.id) || normalizeAccountPriority(row.priority) <= 0"
+                  @click.stop="handlePriorityQuickAdjust(row, -1)"
+                >
+                  <Icon name="chevronUp" size="xs" />
+                </button>
+                <span data-testid="account-card-priority" class="account-priority-value">
+                  P{{ row.priority ?? '-' }}
+                </span>
+                <button
+                  type="button"
+                  class="account-priority-step"
+                  :title="localText('降低优先级', 'Lower priority')"
+                  :disabled="priorityUpdatingIds.has(row.id)"
+                  @click.stop="handlePriorityQuickAdjust(row, 1)"
+                >
+                  <Icon name="chevronDown" size="xs" />
+                </button>
+              </div>
               <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             </div>
           </template>
@@ -402,18 +432,6 @@
               <button @click="openMenu(row, $event)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
                 <span class="text-xs">{{ t('common.more') }}</span>
-              </button>
-              <button
-                data-testid="account-rate-quick-adjust"
-                type="button"
-                class="account-rate-quick-adjust flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-300"
-                :title="localText('调整账号倍率', 'Adjust account rate multiplier')"
-                @click.stop="openRateMultiplierMenu(row, $event)"
-              >
-                <span class="font-mono text-[11px] font-semibold leading-4">
-                  x{{ formatAccountRateMultiplier(row.rate_multiplier) }}
-                </span>
-                <span class="text-xs">{{ localText('倍率', 'Rate') }}</span>
               </button>
             </div>
           </template>
@@ -616,6 +634,7 @@ const showSchedulePanel = ref(false)
 const scheduleAcc = ref<Account | null>(null)
 const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
+const priorityUpdatingIds = reactive<Set<number>>(new Set())
 const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null}>({ show: false, acc: null, pos: null })
 const rateMultiplierMenu = reactive<{
   show: boolean
@@ -1526,6 +1545,36 @@ const openMenu = (a: Account, e: MouseEvent) => {
 const formatAccountRateMultiplier = (value?: number | null) => {
   const normalized = typeof value === 'number' && Number.isFinite(value) ? value : 1
   return normalized.toFixed(2)
+}
+
+const normalizeAccountPriority = (value?: number | null) => {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
+}
+
+const isAccountCalling = (row: Account) => {
+  return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
+}
+
+const getAccountRowClass = (row: Account) => {
+  return isAccountCalling(row) ? 'codex-account-card-calling account-electric-border' : ''
+}
+
+const handlePriorityQuickAdjust = async (account: Account, delta: number) => {
+  if (priorityUpdatingIds.has(account.id)) return
+  const nextPriority = Math.max(0, normalizeAccountPriority(account.priority) + delta)
+  if (nextPriority === normalizeAccountPriority(account.priority)) return
+
+  priorityUpdatingIds.add(account.id)
+  try {
+    const updated = await adminAPI.accounts.update(account.id, { priority: nextPriority })
+    patchAccountInList(updated)
+    enterAutoRefreshSilentWindow()
+    appStore.showSuccess(t('common.success'))
+  } catch (error: any) {
+    appStore.showError(error?.message || t('common.error'))
+  } finally {
+    priorityUpdatingIds.delete(account.id)
+  }
 }
 
 const closeRateMultiplierMenu = () => {

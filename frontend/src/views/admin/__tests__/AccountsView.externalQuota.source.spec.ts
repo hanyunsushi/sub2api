@@ -62,13 +62,34 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain("import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'")
   })
 
-  it('adds a compact quick rate multiplier control next to the account more action without using full account edit payloads', () => {
+  it('keeps rate and priority together on the account card and supports quick priority edits', () => {
     expect(source).toContain('data-testid="account-rate-quick-adjust"')
+    expect(source).toContain('data-testid="account-priority-quick-adjust"')
+    expect(source).toContain('data-testid="account-card-controls"')
+    expect(source).toContain("localText('降低优先级', 'Lower priority')")
+    expect(source).toContain("localText('提高优先级', 'Raise priority')")
     expect(source).toContain('rateMultiplierMenu')
     expect(source).toContain('openRateMultiplierMenu(row, $event)')
     expect(source).toContain('adminAPI.accounts.updateRateMultiplier')
     expect(source).toContain('handleRateMultiplierSave')
+    expect(source).toContain('handlePriorityQuickAdjust')
+    expect(source).toContain('priorityUpdatingIds')
+    expect(source).toContain('adminAPI.accounts.update(account.id, { priority: nextPriority })')
     expect(source).toContain('rate_multiplier')
+    expect(source).not.toContain('account-rate-quick-adjust flex flex-col items-center')
+    expect(source.indexOf('data-testid="account-rate-quick-adjust"')).toBeLessThan(
+      source.indexOf('data-testid="account-priority-quick-adjust"')
+    )
     expect(source).not.toContain('adminAPI.accounts.update(row.id, { rate_multiplier')
+  })
+
+  it('marks actively used account rows with an electric border treatment inspired by the pasted component', () => {
+    expect(source).toContain(':row-class="getAccountRowClass"')
+    expect(source).toContain('getAccountRowClass')
+    expect(source).toContain('isAccountCalling(row)')
+    expect(source).toContain('current_concurrency')
+    expect(source).toContain('active_sessions')
+    expect(source).toContain('codex-account-card-calling')
+    expect(source).toContain('account-electric-border')
   })
 })
