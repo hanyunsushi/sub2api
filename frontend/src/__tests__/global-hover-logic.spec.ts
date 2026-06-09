@@ -22,12 +22,17 @@ const endpointDistributionSource = readFileSync(resolve(frontendRoot, 'component
 const marker = 'Global hover/highlight logic (all themes)'
 const cfFilterMarker = 'Cloudflare theme — complete de-slab pass'
 const stableHoverMarker = 'Global hover typography stability (all themes)'
+const sharedToggleMarker = 'Shared toggle visibility'
+const anthropicMarker = 'Anthropic theme — editorial component pass'
 const calmLayer = styleSource.slice(
   styleSource.indexOf(marker),
   styleSource.indexOf(cfFilterMarker),
 )
 const stableHoverLayer = styleSource.slice(styleSource.indexOf(stableHoverMarker))
-const finalStabilityLayer = styleSource.slice(styleSource.lastIndexOf(stableHoverMarker))
+const finalStabilityLayer = styleSource.slice(
+  styleSource.lastIndexOf(stableHoverMarker),
+  styleSource.indexOf(sharedToggleMarker),
+)
 const broadDropdownHoverBlock = stableHoverLayer.slice(
   stableHoverLayer.indexOf(':where(\n  .dropdown-item:hover'),
   stableHoverLayer.indexOf('.select-dropdown-portal {'),
@@ -257,7 +262,10 @@ describe('global hover logic — stable typography for neutral option controls',
 describe('Cloudflare theme — filter bars are not a black slab', () => {
   const cfMarker = 'Cloudflare theme — complete de-slab pass'
   const finalHoverMarker = 'Final authoritative CF hover for neutral filter-bar buttons'
-  const cfLayer = styleSource.slice(styleSource.indexOf(cfMarker))
+  const cfLayer = styleSource.slice(
+    styleSource.indexOf(cfMarker),
+    styleSource.indexOf(anthropicMarker),
+  )
 
   it('repaints ink-filled filter shells to a light panel under the Cloudflare theme', () => {
     expect(styleSource).toContain(cfMarker)

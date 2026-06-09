@@ -88,6 +88,8 @@ describe('SettingsView rounded settings tabs', () => {
     expect(settingsTabBlock).toContain('border-radius: 0.625rem !important;')
     expect(settingsTabBeforeBlock).toContain('border-radius: inherit !important;')
     expect(settingsTabActiveBlock).toContain('border-radius: 0.625rem !important;')
+    expect(styleSource).toContain('#app .app-layout-content .settings-tab-active:hover::before')
+    expect(styleSource).toContain('#app .app-layout-content .settings-tab-active:focus-visible::before')
     expect(settingsTabBlock).not.toContain('border-radius: 0 !important;')
   })
 })
