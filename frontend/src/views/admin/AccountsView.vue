@@ -210,6 +210,17 @@
           :estimate-row-height="72"
           :overscan="5"
         >
+          <template #row-overlay="{ row }">
+            <ElectricBorder
+              v-if="isAccountCalling(row)"
+              class="account-electric-border-canvas"
+              color="#c96442"
+              :speed="1.5"
+              :chaos="0.02"
+              :border-radius="16"
+              :thickness="2"
+            />
+          </template>
           <template #header-select>
             <input
               type="checkbox"
@@ -261,53 +272,55 @@
             </div>
           </template>
           <template #cell-name="{ row, value }">
-            <div class="flex min-w-0 items-start gap-2">
-              <div
-                data-testid="account-provider-logo"
-                class="account-provider-logo"
-                :title="getAccountLogoProvider(row)"
-              >
-                <ProviderBrandIcon
-                  :provider="getAccountLogoProvider(row)"
-                  :model="row.name || row.platform"
-                  :logo-url="getAccountCustomLogo(row)"
-                />
-              </div>
-              <div class="flex min-w-0 flex-1 flex-col">
-                <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
-                <span
-                  v-if="row.extra?.email_address || row.extra?.email || row.credentials?.email"
-                  class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
-                  :title="String(row.extra?.email_address || row.extra?.email || row.credentials?.email)"
-                >
-                  {{ row.extra?.email_address || row.extra?.email || row.credentials?.email }}
-                </span>
+            <div class="flex min-w-0 flex-1 flex-col">
+              <div class="account-card-name-main flex min-w-0 items-start gap-2">
                 <div
-                  v-if="getAccountExternalQuota(row)"
-                  data-testid="account-external-quota"
-                  class="mt-2 grid gap-1 rounded-md border border-gray-200/80 bg-white/50 px-2 py-1.5 text-[11px] leading-4 text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-300"
+                  data-testid="account-provider-logo"
+                  class="account-provider-logo"
+                  :title="getAccountLogoProvider(row)"
                 >
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="font-semibold text-gray-700 dark:text-gray-200">
-                      {{ getAccountExternalQuota(row)?.label }}
-                    </span>
-                    <a
-                      class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
-                      :href="getAccountExternalQuota(row)?.url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {{ localText('前往官网', 'Official site') }}
-                    </a>
-                  </div>
-                  <div class="flex items-center justify-between gap-2">
-                    <span>{{ localText('余额', 'Balance') }}</span>
-                    <span class="font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
-                  </div>
-                  <div class="flex items-center justify-between gap-2">
-                    <span>{{ localText('期限', 'Expiry') }}</span>
-                    <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
-                  </div>
+                  <ProviderBrandIcon
+                    :provider="getAccountLogoProvider(row)"
+                    :model="row.name || row.platform"
+                    :logo-url="getAccountCustomLogo(row)"
+                  />
+                </div>
+                <div class="flex min-w-0 flex-1 flex-col">
+                  <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+                  <span
+                    v-if="row.extra?.email_address || row.extra?.email || row.credentials?.email"
+                    class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
+                    :title="String(row.extra?.email_address || row.extra?.email || row.credentials?.email)"
+                  >
+                    {{ row.extra?.email_address || row.extra?.email || row.credentials?.email }}
+                  </span>
+                </div>
+              </div>
+              <div
+                v-if="getAccountExternalQuota(row)"
+                data-testid="account-external-quota"
+                class="account-external-quota mt-2 grid gap-1 rounded-md border border-gray-200/80 bg-white/50 px-2 py-1.5 text-[11px] leading-4 text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-300"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-semibold text-gray-700 dark:text-gray-200">
+                    {{ getAccountExternalQuota(row)?.label }}
+                  </span>
+                  <a
+                    class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
+                    :href="getAccountExternalQuota(row)?.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ localText('前往官网', 'Official site') }}
+                  </a>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ localText('余额', 'Balance') }}</span>
+                  <span class="font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ localText('期限', 'Expiry') }}</span>
+                  <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
                 </div>
               </div>
             </div>
@@ -531,6 +544,7 @@ import { useTableSelection } from '@/composables/useTableSelection'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import ElectricBorder from '@/components/common/ElectricBorder.vue'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
