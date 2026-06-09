@@ -3971,6 +3971,11 @@ body:has(.table-page-layout) :where(
     0 0 0 1px color-mix(in srgb, var(--account-electric-color) 34%, transparent);
 }
 
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr.account-electric-border {
+  isolation: isolate;
+  overflow: visible;
+}
+
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr.account-electric-border::before,
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr.account-electric-border::after {
   content: "";
@@ -4124,7 +4129,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"] {
-  padding-right: 2rem !important;
+  padding-right: 9.25rem !important;
   padding-bottom: 0.36rem !important;
   border-bottom: 1px dotted var(--atelier-material-edge) !important;
 }
@@ -4250,6 +4255,63 @@ body:has(.table-page-layout) :where(
   text-align: center;
   border-right: 1px solid color-mix(in srgb, var(--atelier-material-edge) 82%, transparent);
   border-left: 1px solid color-mix(in srgb, var(--atelier-material-edge) 82%, transparent);
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .codex-account-card-calling {
+  --account-electric-color: #c96442;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  border-color: color-mix(in srgb, var(--account-electric-color) 58%, var(--atelier-material-edge)) !important;
+  box-shadow:
+    0 18px 38px -28px rgba(201, 100, 66, 0.62),
+    0 0 0 1px color-mix(in srgb, var(--account-electric-color) 34%, transparent);
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border::before,
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border::before {
+  padding: 1px;
+  background:
+    conic-gradient(
+      from var(--account-electric-angle, 0deg),
+      transparent 0deg,
+      color-mix(in srgb, var(--account-electric-color) 18%, transparent) 36deg,
+      var(--account-electric-color) 78deg,
+      transparent 124deg,
+      transparent 232deg,
+      color-mix(in srgb, var(--account-electric-color) 26%, transparent) 292deg,
+      transparent 360deg
+    );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: account-electric-border-spin 2.4s linear infinite;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border::after {
+  inset: -4px;
+  opacity: 0.38;
+  background:
+    radial-gradient(circle at 18% 8%, color-mix(in srgb, var(--account-electric-color) 34%, transparent), transparent 32%),
+    radial-gradient(circle at 82% 92%, color-mix(in srgb, var(--account-electric-color) 26%, transparent), transparent 34%);
+  filter: blur(6px);
+  animation: account-electric-border-pulse 1.8s ease-in-out infinite;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border > * {
+  position: relative;
+  z-index: 1;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] > div {

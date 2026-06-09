@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 
 const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
+const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 
 describe('AccountsView external quota card metadata', () => {
   it('loads generic external subscription quota summaries for matching account cards', () => {
@@ -91,5 +92,8 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('active_sessions')
     expect(source).toContain('codex-account-card-calling')
     expect(source).toContain('account-electric-border')
+    expect(styleSource).toContain('.accounts-table-page > .space-y-3 > .codex-account-card-calling')
+    expect(styleSource).toContain('.accounts-table-page > .space-y-3 > .account-electric-border::before')
+    expect(styleSource).toContain('padding-right: 9.25rem !important;')
   })
 })
