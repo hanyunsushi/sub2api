@@ -5,6 +5,7 @@ export type ExternalSubscriptionTemplate =
   | 'buzz_balance'
   | 'openrouter_credits'
   | 'cloudflare_ai_gateway_credits'
+  | 'rawchat_subscriptions'
 
 export type ExternalSubscriptionBalanceStrategy =
   | 'auto'

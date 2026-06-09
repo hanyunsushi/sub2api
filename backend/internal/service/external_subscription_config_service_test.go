@@ -75,6 +75,15 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 	require.Empty(t, buzz.APIToken)
 	require.Contains(t, buzz.MatchKeywords, "buzzai.cc")
 	require.Contains(t, buzz.MatchKeywords, "claude")
+
+	rawchat := requireExternalSubscriptionProvider(t, providers, "rawchat")
+	require.Equal(t, "RawChat", rawchat.Name)
+	require.Equal(t, ExternalSubscriptionTemplateRawChatSubscriptions, rawchat.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuto, rawchat.BalanceStrategy)
+	require.Equal(t, DefaultRawChatSubscriptionAPIBaseURL, rawchat.APIBaseURL)
+	require.False(t, rawchat.Enabled)
+	require.False(t, rawchat.APITokenConfigured)
+	require.Contains(t, rawchat.MatchKeywords, "rawchat")
 }
 
 func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets(t *testing.T) {
@@ -484,6 +493,127 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsBothTemplates(t *testin
 	require.Equal(t, "Active Provider", active.Name)
 	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, active.Template)
 	require.InDelta(t, 13.5, *active.RemainingUSD, 0.0001)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplate(t *testing.T) {
+	rawChatServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/frontend-api/getUserSubscriptions", r.URL.Path)
+		require.Equal(t, http.MethodPost, r.Method)
+		require.Equal(t, "Bearer rawchat-token", r.Header.Get("Authorization"))
+		require.Equal(t, "application/json", r.Header.Get("Content-Type"))
+
+		var body struct {
+			Page int `json:"page"`
+			Size int `json:"size"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
+		require.Equal(t, 1, body.Page)
+		require.Equal(t, 20, body.Size)
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"code": 0,
+			"message": "success",
+			"data": {
+				"list": [
+					{
+						"id": 101,
+						"packageName": "RawChat Pro",
+						"status": 1,
+						"billingType": "amount",
+						"limit": 18.5,
+						"used": 3.25,
+						"startTime": "2026-06-01T00:00:00Z",
+						"expireTime": "2026-07-01T00:00:00Z"
+					},
+					{
+						"id": 102,
+						"packageName": "RawChat Expired",
+						"status": 2,
+						"billingType": "amount",
+						"limit": 99,
+						"used": 99,
+						"expireTime": "2026-05-01T00:00:00Z"
+					}
+				],
+				"total": 2
+			}
+		}`))
+	}))
+	defer rawChatServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    rawChatServer.URL,
+			APIToken:      "rawchat-token",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     65,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background())
+	require.NoError(t, err)
+
+	rawchat := requireExternalSubscriptionStatus(t, statuses, "rawchat")
+	require.Equal(t, "RawChat", rawchat.Name)
+	require.Equal(t, ExternalSubscriptionTemplateRawChatSubscriptions, rawchat.Template)
+	require.Equal(t, "USD", rawchat.Currency)
+	require.Equal(t, 1, rawchat.ActiveCount)
+	require.InDelta(t, 18.5, *rawchat.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 15.25, *rawchat.RemainingUSD, 0.0001)
+	require.Len(t, rawchat.Subscriptions, 1)
+	require.Equal(t, int64(101), rawchat.Subscriptions[0].ID)
+	require.Equal(t, "RawChat Pro", rawchat.Subscriptions[0].GroupName)
+	require.Equal(t, "active", rawchat.Subscriptions[0].Status)
+	require.Equal(t, "subscription", rawchat.Subscriptions[0].Window)
+	require.InDelta(t, 18.5, *rawchat.Subscriptions[0].LimitUSD, 0.0001)
+	require.InDelta(t, 3.25, rawchat.Subscriptions[0].UsedUSD, 0.0001)
+	require.InDelta(t, 15.25, *rawchat.Subscriptions[0].RemainingUSD, 0.0001)
+	require.NotNil(t, rawchat.ExpiresAt)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithCookieToken(t *testing.T) {
+	rawChatServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/frontend-api/getUserSubscriptions", r.URL.Path)
+		require.Empty(t, r.Header.Get("Authorization"))
+		require.Equal(t, "__user_token__=rawchat-session", r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"code": 1,
+			"data": {
+				"list": [
+					{"id": "201", "packageName": "RawChat Cookie", "status": "active", "limit": "8.5", "usedAmount": "1.5"}
+				]
+			}
+		}`))
+	}))
+	defer rawChatServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    rawChatServer.URL,
+			APIToken:      "Cookie: __user_token__=rawchat-session",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     65,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	rawchat := requireExternalSubscriptionStatus(t, statuses, "rawchat")
+	require.InDelta(t, 7, *rawchat.RemainingUSD, 0.0001)
+	require.Equal(t, int64(201), rawchat.Subscriptions[0].ID)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {

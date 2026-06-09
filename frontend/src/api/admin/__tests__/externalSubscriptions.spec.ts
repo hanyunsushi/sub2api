@@ -118,6 +118,42 @@ describe('admin external subscriptions api', () => {
     }))
   })
 
+  it('accepts the RawChat external subscription template in provider payloads', async () => {
+    vi.mocked(apiClient.post).mockResolvedValueOnce({
+      data: {
+        id: 'rawchat',
+        name: 'RawChat',
+        enabled: true,
+        template: 'rawchat_subscriptions',
+        balance_strategy: 'auto',
+        api_base_url: 'https://rawchat.cn',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['rawchat'],
+        sort_order: 65,
+      },
+    })
+
+    const created = await externalSubscriptionsAPI.createProvider({
+      id: 'rawchat',
+      name: 'RawChat',
+      enabled: true,
+      template: 'rawchat_subscriptions',
+      balance_strategy: 'auto',
+      api_base_url: 'https://rawchat.cn',
+      api_token: 'rawchat-token',
+      match_keywords: ['rawchat'],
+      sort_order: 65,
+    })
+
+    expect(apiClient.post).toHaveBeenCalledWith('/admin/external-subscriptions', expect.objectContaining({
+      id: 'rawchat',
+      template: 'rawchat_subscriptions',
+      api_base_url: 'https://rawchat.cn',
+    }))
+    expect(created.template).toBe('rawchat_subscriptions')
+  })
+
   it('clears stored display snapshots after provider configuration changes', async () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({
       data: [

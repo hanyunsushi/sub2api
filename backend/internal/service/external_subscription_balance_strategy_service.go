@@ -46,6 +46,8 @@ func (s *ExternalSubscriptionService) getStatusForTemplate(ctx context.Context, 
 		return s.getOpenRouterCreditsStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateCloudflareAIGatewayCredits:
 		return s.getCloudflareAIGatewayCreditsStatus(ctx, cfg)
+	case ExternalSubscriptionTemplateRawChatSubscriptions:
+		return s.getRawChatSubscriptionStatus(ctx, cfg)
 	default:
 		return nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
 	}
