@@ -11,6 +11,11 @@ describe('dashboard filter menu colors', () => {
     dashboardMenuStart,
     styleSource.indexOf('body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal)', dashboardMenuStart),
   )
+  const lightDashboardMenuStart = styleSource.indexOf(':root.theme-cloudflare body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
+  const lightDashboardMenuBlock = styleSource.slice(
+    lightDashboardMenuStart,
+    styleSource.indexOf(':root.theme-cloudflare .select-dropdown-portal.ops-toolbar-select-menu :where(.select-option, .select-option-label, .select-empty, svg)', lightDashboardMenuStart),
+  )
 
   it('keeps selected dropdown options readable with the same bright surface as hover', () => {
     expect(styleSource).toContain('body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
@@ -32,5 +37,15 @@ describe('dashboard filter menu colors', () => {
     expect(dashboardMenuBlock).not.toContain('--select-menu-plain-text: var(--atelier-paper);')
     expect(dashboardMenuBlock).not.toContain('--date-picker-plain-text: var(--atelier-paper);')
     expect(dashboardMenuBlock).not.toContain('--date-picker-muted-text: var(--atelier-paper);')
+  })
+
+  it('keeps the final light-theme dashboard portal override on ink text variables', () => {
+    expect(lightDashboardMenuStart).toBeGreaterThan(dashboardMenuStart)
+    expect(lightDashboardMenuBlock).toContain('--select-menu-plain-text: var(--atelier-ink);')
+    expect(lightDashboardMenuBlock).toContain('--date-picker-plain-text: var(--atelier-ink);')
+    expect(lightDashboardMenuBlock).toContain('--date-picker-muted-text: var(--atelier-ink);')
+    expect(lightDashboardMenuBlock).not.toContain('--select-menu-plain-text: var(--atelier-paper);')
+    expect(lightDashboardMenuBlock).not.toContain('--date-picker-plain-text: var(--atelier-paper);')
+    expect(lightDashboardMenuBlock).not.toContain('--date-picker-muted-text: var(--atelier-paper);')
   })
 })
