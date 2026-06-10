@@ -8114,3 +8114,44 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   color: var(--atelier-ink, #141413) !important;
   -webkit-text-fill-color: var(--atelier-ink, #141413) !important;
 }
+
+:root {
+  --atelier-terracotta-action: #c96442;
+  --atelier-terracotta-action-hover: #a64f34;
+}
+
+/* Console terracotta action pass. */
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-success, .users-filter-create):not(.btn-danger):not(:disabled),
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled) {
+  border-color: var(--atelier-terracotta-action) !important;
+  background: var(--atelier-terracotta-action) !important;
+  background-color: var(--atelier-terracotta-action) !important;
+  color: var(--atelier-paper-2) !important;
+  -webkit-text-fill-color: var(--atelier-paper-2) !important;
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.16) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-success, .users-filter-create):not(.btn-danger):not(:disabled):hover,
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled):hover {
+  border-color: var(--atelier-terracotta-action-hover) !important;
+  background: var(--atelier-terracotta-action-hover) !important;
+  background-color: var(--atelier-terracotta-action-hover) !important;
+  color: var(--atelier-paper-2) !important;
+  -webkit-text-fill-color: var(--atelier-paper-2) !important;
+}
+
+#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
+  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
+  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-success, .users-filter-create):not(.btn-danger):not(:disabled) :where(svg, path, span),
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
+  color: var(--atelier-paper-2) !important;
+  -webkit-text-fill-color: var(--atelier-paper-2) !important;
+  stroke: currentColor !important;
+}
