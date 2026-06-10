@@ -118,9 +118,7 @@ export const buildAccountExternalQuotaProgressMeta = (
 ): ExternalQuotaProgressMeta | null => {
   if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
 
-  const provider = providerKeyFromStatus(status)
-    ?? (preference.mode === 'custom_total' ? genericProviderKeyFromStatus(status) : null)
-  if (!provider) return null
+  const provider = providerKeyFromStatus(status) ?? genericProviderKeyFromStatus(status)
 
   const total = preference.mode === 'custom_total'
     ? Math.max(0, Number(preference.customTotal ?? 0))
