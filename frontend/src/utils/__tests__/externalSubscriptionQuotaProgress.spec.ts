@@ -177,7 +177,7 @@ describe('external subscription quota progress', () => {
     expect(meta?.percent).toBeCloseTo(75)
   })
 
-  it('does not build account quota progress for non-whitelisted providers without a custom total', () => {
+  it('builds account quota progress for non-whitelisted providers from provider total on account cards', () => {
     const meta = buildAccountExternalQuotaProgressMeta(status({
       provider: 'buzz',
       name: 'Buzz',
@@ -191,6 +191,13 @@ describe('external subscription quota progress', () => {
       customTotal: null,
     })
 
-    expect(meta).toBeNull()
+    expect(meta).toMatchObject({
+      provider: 'buzz',
+      total: 80,
+      remaining: 20,
+      used: 60,
+      tone: 'warning',
+    })
+    expect(meta?.percent).toBeCloseTo(75)
   })
 })

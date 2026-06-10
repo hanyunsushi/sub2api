@@ -113,7 +113,6 @@ import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptio
 import type { Account } from '@/types'
 import {
   buildAccountExternalQuotaProgressMeta,
-  supportsExternalQuotaProgress,
   type AccountExternalQuotaProgressPreference,
   type ExternalQuotaProgressMode,
 } from '@/utils/externalSubscriptionQuotaProgress'
@@ -166,7 +165,6 @@ const currentPreference = computed<AccountExternalQuotaProgressPreference>(() =>
 }))
 
 const hasStatusTotal = computed(() => (
-  supportsExternalQuotaProgress(props.subscription) &&
   hasProviderTotal(props.subscription)
 ))
 
