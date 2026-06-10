@@ -70,36 +70,39 @@
             @mouseenter="openBalanceDropdown"
             @mouseleave="scheduleCloseBalanceDropdown"
           >
-            <ProviderBrandIcon
-              v-if="currentExternalSubscriptionInChip"
-              data-testid="header-balance-provider-logo"
-              class="header-balance-provider-logo h-4 w-4 flex-shrink-0"
-              :provider="externalSubscriptionLogoProvider(currentExternalSubscriptionInChip)"
-              :model="currentExternalSubscriptionInChip.name"
-              :logo-url="currentExternalSubscriptionInChip.logo_url"
-              :data-logo-url="currentExternalSubscriptionInChip.logo_url || ''"
-            />
-            <svg
-              v-else
-              class="h-4 w-4"
-              :class="balanceIconClass"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+            <div class="header-balance-chip-identity">
+              <ProviderBrandIcon
+                v-if="currentExternalSubscriptionInChip"
+                data-testid="header-balance-provider-logo"
+                class="header-balance-provider-logo h-4 w-4 flex-shrink-0"
+                :provider="externalSubscriptionLogoProvider(currentExternalSubscriptionInChip)"
+                :model="currentExternalSubscriptionInChip.name"
+                :logo-url="currentExternalSubscriptionInChip.logo_url"
+                :data-logo-url="currentExternalSubscriptionInChip.logo_url || ''"
               />
-            </svg>
-            <template v-if="currentExternalSubscriptionInChip">
+              <svg
+                v-else
+                class="h-4 w-4 flex-shrink-0"
+                :class="balanceIconClass"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+                />
+              </svg>
               <span
+                v-if="currentExternalSubscriptionInChip"
                 :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-provider-name min-w-0 truncate text-sm font-semibold']"
               >
                 {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
               </span>
+            </div>
+            <template v-if="currentExternalSubscriptionInChip">
               <span
                 :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-chip-amount truncate text-sm font-semibold tabular-nums']"
               >
@@ -779,14 +782,27 @@ watch(
 }
 
 .header-balance-chip-fixed {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(5rem, auto) minmax(0, 1fr);
   width: 18rem;
   min-width: 18rem;
   max-width: 18rem;
-  justify-content: flex-start;
+  align-items: center;
+  column-gap: 0.5rem;
+  justify-content: stretch;
 }
 
 .header-balance-chip-fixed .header-balance-provider-logo {
   flex: 0 0 auto;
+}
+
+.header-balance-chip-identity {
+  grid-column: 1;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-self: start;
+  gap: 0.5rem;
 }
 
 .header-balance-provider-name {
@@ -796,15 +812,29 @@ watch(
 }
 
 .header-balance-chip-amount {
-  flex: 0 0 auto;
-  margin-left: auto;
+  grid-column: 2;
+  justify-self: center;
+  min-width: 0;
   max-width: 7rem;
-  text-align: right;
+  border: 0;
+  background: transparent;
+  background-color: transparent;
+  box-shadow: none;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .header-balance-system-amount {
-  flex: 1 1 auto;
-  text-align: right;
+  grid-column: 2;
+  justify-self: center;
+  min-width: 0;
+  max-width: 7rem;
+  border: 0;
+  background: transparent;
+  background-color: transparent;
+  box-shadow: none;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .balance-chip-system {
