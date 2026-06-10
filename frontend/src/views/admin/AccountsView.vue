@@ -553,6 +553,7 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
+import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
@@ -888,27 +889,6 @@ const formatExternalDate = (value?: string | null) => {
   return parsed.toISOString().slice(0, 10)
 }
 
-const buildExternalSearchText = (account: Account) => {
-  const credentials = account.credentials ?? {}
-  const extra = account.extra ?? {}
-  const parts = [
-    account.name,
-    account.notes,
-    account.platform,
-    account.type,
-    credentials.base_url,
-    credentials.api_base_url,
-    credentials.endpoint,
-    extra.custom_base_url,
-    extra.external_provider,
-    account.custom_base_url
-  ]
-  return parts
-    .filter((part): part is string => typeof part === 'string' && part.trim() !== '')
-    .join(' ')
-    .toLowerCase()
-}
-
 const isExternalSubscriptionInvalidToken = (code?: string | null) => {
   const normalized = (code || '').trim().toUpperCase()
   return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
@@ -930,15 +910,7 @@ const getExternalSubscriptionLabel = (subscription: ExternalSubscriptionStatus) 
 }
 
 const getMatchedExternalSubscription = (account: Account) => {
-  const text = buildExternalSearchText(account)
-  if (!text) return null
-  return externalSubscriptionStatuses.value.find((subscription) => {
-    if (!subscription.enabled || !subscription.configured) return false
-    return subscription.match_keywords.some((keyword) => {
-      const normalized = keyword.trim().toLowerCase()
-      return normalized !== '' && text.includes(normalized)
-    })
-  }) ?? null
+  return findMatchingExternalSubscription(account, externalSubscriptionStatuses.value)
 }
 
 const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus): AccountExternalQuota => {

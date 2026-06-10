@@ -8123,17 +8123,17 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 /* Console terracotta action pass. */
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
 #app .app-layout-content .admin-dashboard-atelier
   :where(.dashboard-filter-refresh):not(:disabled) {
   border-color: var(--atelier-terracotta-action) !important;
@@ -8146,17 +8146,17 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
 #app .app-layout-content .admin-dashboard-atelier
   :where(.dashboard-filter-refresh):not(:disabled):hover {
   border-color: var(--atelier-terracotta-action-hover) !important;
@@ -8168,21 +8168,47 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .admin-dashboard-atelier
   :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
+  stroke: currentColor !important;
+}
+
+/* Console readable light action fallback. */
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(
+  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),
+  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,
+  .user-keys-atelier .keys-filter-actions,
+  .user-usage-atelier .usage-filter-actions,
+  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+  .global-pricing-filter-actions
+) :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(
+  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),
+  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,
+  .user-keys-atelier .keys-filter-actions,
+  .user-usage-atelier .usage-filter-actions,
+  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+  .global-pricing-filter-actions
+) :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
   stroke: currentColor !important;
 }
 
