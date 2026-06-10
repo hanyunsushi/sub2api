@@ -8211,7 +8211,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 #app .app-layout-content .user-keys-atelier
   :where(button.rounded, button.rounded-lg)
   :where(svg, path) {
-  color: currentColor !important;
-  -webkit-text-fill-color: currentColor !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
   stroke: currentColor !important;
 }
