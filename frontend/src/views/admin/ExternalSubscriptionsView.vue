@@ -160,15 +160,14 @@
                     {{ formatCardQuotaUsage(card) }}
                   </span>
                 </div>
-                <div class="external-subscription-quota-progress-track" aria-hidden="true">
-                  <div
-                    :class="[
-                      'external-subscription-quota-progress-fill',
-                      externalQuotaProgressFillClass(getCardQuotaProgress(card)?.tone)
-                    ]"
-                    :style="{ width: `${getCardQuotaProgress(card)?.percent ?? 0}%` }"
-                  ></div>
-                </div>
+                <UsageProgressBar
+                  data-testid="external-subscription-quota-progress"
+                  label="EXT"
+                  :utilization="getCardQuotaProgress(card)?.percent ?? 0"
+                  :title="formatCardQuotaUsage(card)"
+                  color="emerald"
+                  :show-now-when-idle="false"
+                />
               </div>
 
               <div class="external-subscription-config-meta mt-2">
@@ -438,8 +437,12 @@ import Select from '@/components/common/Select.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
+import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import { useAppStore } from '@/stores/app'
-import { buildExternalQuotaProgressMeta, type ExternalQuotaProgressMeta } from '@/utils/externalSubscriptionQuotaProgress'
+import {
+  buildAccountExternalQuotaProgressMeta,
+  type AccountExternalQuotaProgressPreference,
+} from '@/utils/externalSubscriptionQuotaProgress'
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
@@ -474,6 +477,12 @@ const form = reactive({
   match_keywords: [] as string[],
   sort_order: 50,
 })
+
+const EXTERNAL_CARD_QUOTA_PROGRESS_PREFERENCE: AccountExternalQuotaProgressPreference = {
+  enabled: true,
+  mode: 'status_total',
+  customTotal: null,
+}
 
 const templateOptions = computed(() => [
   { value: 'newapi_console', label: 'NewAPI Console' },
@@ -955,7 +964,7 @@ function formatCardExpiry(card: ExternalSubscriptionCard) {
 
 function getCardQuotaProgress(card: ExternalSubscriptionCard) {
   if (!card.status) return null
-  return buildExternalQuotaProgressMeta(card.status)
+  return buildAccountExternalQuotaProgressMeta(card.status, EXTERNAL_CARD_QUOTA_PROGRESS_PREFERENCE)
 }
 
 function formatCardQuotaUsage(card: ExternalSubscriptionCard) {
@@ -964,12 +973,6 @@ function formatCardQuotaUsage(card: ExternalSubscriptionCard) {
   const used = formatMoney(progress.used, card.status.currency)
   const total = formatMoney(progress.total, card.status.currency)
   return used && total ? `${used} / ${total}` : '-'
-}
-
-function externalQuotaProgressFillClass(tone?: ExternalQuotaProgressMeta['tone']) {
-  if (tone === 'danger') return 'external-subscription-quota-progress-fill--danger'
-  if (tone === 'warning') return 'external-subscription-quota-progress-fill--warning'
-  return 'external-subscription-quota-progress-fill--safe'
 }
 
 function cardTemplateLabel(card: ExternalSubscriptionCard) {
@@ -1214,32 +1217,6 @@ onBeforeUnmount(() => {
   font-weight: 650;
 }
 
-.external-subscription-quota-progress-track {
-  height: 0.425rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(229, 231, 235, 0.92);
-}
-
-.external-subscription-quota-progress-fill {
-  height: 100%;
-  min-width: 0;
-  border-radius: inherit;
-  transition: width 0.2s var(--atelier-ease);
-}
-
-.external-subscription-quota-progress-fill--safe {
-  background: #22c55e;
-}
-
-.external-subscription-quota-progress-fill--warning {
-  background: #f59e0b;
-}
-
-.external-subscription-quota-progress-fill--danger {
-  background: #ef4444;
-}
-
 .external-subscription-keyword {
   border: 1px solid var(--atelier-material-edge);
   border-radius: 6px;
@@ -1258,10 +1235,6 @@ onBeforeUnmount(() => {
 
 .dark .external-subscription-keyword {
   background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
-}
-
-.dark .external-subscription-quota-progress-track {
-  background: rgba(55, 65, 81, 0.92);
 }
 
 @media (max-width: 1023px) {

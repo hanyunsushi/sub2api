@@ -83,7 +83,7 @@
           v-if="previewMeta"
           label="EXT"
           :utilization="previewMeta.percent"
-          color="amber"
+          color="emerald"
           :show-now-when-idle="false"
         />
         <div v-else class="h-6 rounded bg-gray-100 dark:bg-dark-800"></div>
