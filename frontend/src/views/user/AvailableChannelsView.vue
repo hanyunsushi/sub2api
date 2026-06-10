@@ -3,7 +3,7 @@
     <TablePageLayout>
       <template #filters>
         <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
-          <div class="flex flex-1 flex-wrap items-center gap-3">
+          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-80">
               <Icon
                 name="search"
@@ -19,7 +19,7 @@
             </div>
           </div>
 
-          <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button
               @click="loadChannels"
               :disabled="loading"

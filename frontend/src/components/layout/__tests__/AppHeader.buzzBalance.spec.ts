@@ -464,6 +464,37 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).not.toContain("期限未返回");
   });
 
+  it("does not present a provider total limit as a usable balance", async () => {
+    vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
+      tcdmx: {
+        remaining_usd: undefined,
+        used_usd: undefined,
+        total_limit_usd: 60,
+      },
+    }));
+
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    await wrapper.get('[data-testid="header-balance-chip"]').trigger("mouseenter");
+    await nextTick();
+
+    const dropdown = wrapper.get('[data-testid="header-balance-dropdown"]');
+    expect(dropdown.text()).toContain("TCDMX");
+    expect(dropdown.text()).toContain("余额未知");
+    expect(dropdown.text()).not.toContain("限额 $60.00");
+
+    await vi.advanceTimersByTimeAsync(14_000);
+    await nextTick();
+
+    const chip = wrapper.get('[data-testid="header-balance-chip"]');
+    expect(chip.text()).toContain("TCDMX");
+    expect(chip.text()).toContain("余额未知");
+    expect(chip.text()).not.toContain("限额 $60.00");
+  });
+
   it("keeps TCDMX visible when the saved subscription token is invalid", async () => {
     vi.mocked(externalSubscriptionsAPI.getDisplayStatuses).mockResolvedValueOnce(defaultExternalStatuses({
       tcdmx: {

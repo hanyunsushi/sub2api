@@ -414,6 +414,7 @@ function logoProviderKey(logo: CapacityLogoItem) {
     ['codex', ['codex']],
     ['rawchat', ['rawchat', 'rawchat.cn', 'rawc']],
     ['free', ['free']],
+    ['cloudflare', ['cloudflare', 'cf', 'ai-gateway', 'workers ai']],
     ['openai', ['openai', 'chatgpt', 'gpt']],
     ['claude', ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc']],
     ['mimo', ['mimo']],

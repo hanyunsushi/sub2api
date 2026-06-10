@@ -94,16 +94,21 @@
                 d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
               />
             </svg>
-            <span
-              v-if="currentExternalSubscriptionInChip"
-              :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'min-w-0 truncate text-sm font-semibold']"
-            >
-              {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
-              {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
-            </span>
+            <template v-if="currentExternalSubscriptionInChip">
+              <span
+                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-provider-name min-w-0 truncate text-sm font-semibold']"
+              >
+                {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
+              </span>
+              <span
+                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-chip-amount truncate text-sm font-semibold tabular-nums']"
+              >
+                {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
+              </span>
+            </template>
             <span
               v-else
-              class="balance-system-text min-w-0 truncate text-sm font-semibold"
+              class="balance-system-text header-balance-system-amount min-w-0 truncate text-sm font-semibold tabular-nums"
             >
               {{ formattedSystemBalance }}
             </span>
@@ -114,7 +119,7 @@
             :trigger-el="balanceChipRef"
             placement="bottom-end"
             :offset="8"
-            panel-class="dropdown w-72 max-w-[calc(100vw-1.5rem)]"
+            panel-class="dropdown header-balance-dropdown-panel w-72 max-w-[calc(100vw-1.5rem)]"
           >
             <div
               data-testid="header-balance-dropdown"
@@ -587,7 +592,7 @@ function formatExternalSubscriptionBalance(
   if (typeof remaining === 'number') {
     return formatExternalSubscriptionMoney(remaining, subscription.currency)
   }
-  if (typeof total === 'number') return `限额 $${total.toFixed(2)}`
+  if (typeof total === 'number') return '余额未知'
   return '余额未知'
 }
 
@@ -784,10 +789,22 @@ watch(
   flex: 0 0 auto;
 }
 
-.header-balance-chip-fixed :where(.balance-system-text, .balance-buzz-text, .balance-qlhazycoder-text, .balance-packycode-text, .balance-xhyapi-text, .balance-pixel-text, .balance-liust-text, .balance-tcdmx-text, .balance-openrouter-text, .balance-cloudflare-text, .balance-external-text) {
+.header-balance-provider-name {
   flex: 1 1 auto;
-  max-width: 14.75rem;
+  max-width: 9.5rem;
   text-align: left;
+}
+
+.header-balance-chip-amount {
+  flex: 0 0 auto;
+  margin-left: auto;
+  max-width: 7rem;
+  text-align: right;
+}
+
+.header-balance-system-amount {
+  flex: 1 1 auto;
+  text-align: right;
 }
 
 .balance-chip-system {
