@@ -48,6 +48,7 @@ func ProvideAdminHandlers(
 	pixelSubscriptionHandler *admin.PixelSubscriptionHandler,
 	liustSubscriptionHandler *admin.LiustSubscriptionHandler,
 	packycodeSubscriptionHandler *admin.PackyCodeSubscriptionHandler,
+	complianceHandler *admin.ComplianceHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
 		Dashboard:               dashboardHandler,
@@ -89,6 +90,7 @@ func ProvideAdminHandlers(
 		PixelSubscription:       pixelSubscriptionHandler,
 		LiustSubscription:       liustSubscriptionHandler,
 		PackyCodeSubscription:   packycodeSubscriptionHandler,
+		Compliance:              complianceHandler,
 	}
 }
 
@@ -225,6 +227,7 @@ var ProviderSet = wire.NewSet(
 	admin.NewPixelSubscriptionHandler,
 	admin.NewLiustSubscriptionHandler,
 	admin.NewPackyCodeSubscriptionHandler,
+	admin.NewComplianceHandler,
 
 	// AdminHandlers and Handlers constructors
 	ProvideAdminHandlers,

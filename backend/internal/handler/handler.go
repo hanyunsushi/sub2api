@@ -45,6 +45,7 @@ type AdminHandlers struct {
 	PixelSubscription       *admin.PixelSubscriptionHandler
 	LiustSubscription       *admin.LiustSubscriptionHandler
 	PackyCodeSubscription   *admin.PackyCodeSubscriptionHandler
+	Compliance              *admin.ComplianceHandler
 }
 
 // Handlers contains all HTTP handlers
