@@ -6,6 +6,7 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
+const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 
@@ -42,8 +43,12 @@ describe('AccountsView external quota card metadata', () => {
   it('matches generic external subscriptions from provider match_keywords instead of hardcoded provider branches', () => {
     expect(source).toContain('externalSubscriptionStatuses')
     expect(source).toContain('getMatchedExternalSubscription')
-    expect(source).toContain('match_keywords')
-    expect(source).toContain('buildExternalSearchText(account)')
+    expect(source).toContain("import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'")
+    expect(source).toContain('findMatchingExternalSubscription(account, externalSubscriptionStatuses.value)')
+    expect(externalSubscriptionMatchSource).toContain('match_keywords')
+    expect(externalSubscriptionMatchSource).toContain('GENERIC_MODEL_KEYWORDS')
+    expect(externalSubscriptionMatchSource).toContain('buildExternalSubscriptionSearchText(account)')
+    expect(source).not.toContain('buildExternalSearchText(account)')
     expect(source).toContain("rawchat: 'RawChat'")
     expect(source).not.toContain('canShowTCDMXExternalQuota')
     expect(source).not.toContain('canShowQLHazyCoderExternalQuota')

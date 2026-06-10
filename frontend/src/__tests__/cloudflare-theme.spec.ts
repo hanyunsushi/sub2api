@@ -39,6 +39,14 @@ const cssBlockFrom = (source: string, selectorText: string) => {
   throw new Error(`CSS block not closed for ${selectorText}`)
 }
 
+const cssRuleFrom = (source: string, markerText: string) => {
+  const markerIndex = source.indexOf(markerText)
+  expect(markerIndex, `CSS marker not found: ${markerText}`).toBeGreaterThan(-1)
+  const nextRuleIndex = source.indexOf('\n\n', markerIndex + markerText.length)
+  const ruleEnd = nextRuleIndex === -1 ? source.length : nextRuleIndex
+  return source.slice(markerIndex, ruleEnd)
+}
+
 const newspaperBlock = cssBlockFrom(
   styleSource,
   ':root,\n:root[data-theme="newspaper"],\n:root.theme-newspaper {',
@@ -262,7 +270,7 @@ describe('Cloudflare appearance theme', () => {
   it('keeps the rotating balance provider left-aligned while centering the amount without a painted text band', () => {
     const headerBalanceBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-fixed')
     expect(headerBalanceBlock).toContain('display: grid !important;')
-    expect(headerBalanceBlock).toContain('grid-template-columns: minmax(0, 1fr) minmax(5rem, auto) minmax(0, 1fr);')
+    expect(headerBalanceBlock).toContain('grid-template-columns: minmax(0, auto) minmax(0, 1fr);')
     expect(headerBalanceBlock).toContain('justify-content: stretch;')
     expect(headerBalanceBlock).not.toContain('justify-content: flex-end;')
     expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo {\n  margin-left: auto;')
@@ -274,11 +282,15 @@ describe('Cloudflare appearance theme', () => {
     expect(appHeaderSource).toContain('header-balance-provider-name')
     expect(appHeaderSource).toContain('header-balance-chip-amount')
     const amountBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-amount')
+    expect(amountBlock).toContain('grid-column: 2;')
+    expect(amountBlock).toContain('justify-self: stretch;')
     expect(amountBlock).toContain('text-align: center;')
     expect(amountBlock).toContain('background: transparent;')
     expect(amountBlock).not.toContain('margin-left: auto;')
     expect(amountBlock).not.toContain('text-align: right;')
     const systemAmountBlock = cssBlockFrom(appHeaderSource, '.header-balance-system-amount')
+    expect(systemAmountBlock).toContain('grid-column: 2;')
+    expect(systemAmountBlock).toContain('justify-self: stretch;')
     expect(systemAmountBlock).toContain('text-align: center;')
     expect(systemAmountBlock).toContain('background: transparent;')
     expect(systemAmountBlock).not.toContain('text-align: right;')
@@ -321,10 +333,20 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain('.global-pricing-filter-actions')
     expect(styleSource).toContain('.table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions')
     const actionBlock = cssBlockFrom(styleSource, '/* Console terracotta action pass. */')
+    const actionRule = cssRuleFrom(styleSource, '/* Console terracotta action pass. */')
     expect(actionBlock).toContain('background: var(--atelier-terracotta-action) !important;')
     expect(actionBlock).toContain('color: var(--atelier-paper-2) !important;')
     expect(actionBlock).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
-    expect(styleSource).toContain(':where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled)')
+    expect(actionRule).toContain(':where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled)')
+    expect(actionBlock).not.toContain(':where(.btn, button, [role="button"])')
+    expect(actionRule).not.toContain(':where(.btn, button, [role="button"])')
+    const readableFilterButtonBlock = cssBlockFrom(styleSource, '/* Console readable light action fallback. */')
+    const readableFilterButtonRule = cssRuleFrom(styleSource, '/* Console readable light action fallback. */')
+    expect(readableFilterButtonBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(readableFilterButtonBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+    expect(readableFilterButtonBlock).not.toContain('background: var(--atelier-terracotta-action)')
+    expect(readableFilterButtonRule).toContain(':where(.btn, button, [role="button"])')
+    expect(readableFilterButtonRule).toContain(':not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh)')
     expect(actionBlock).not.toContain('var(--atelier-slab-field)')
   })
 

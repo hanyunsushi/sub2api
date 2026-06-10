@@ -783,7 +783,7 @@ watch(
 
 .header-balance-chip-fixed {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(5rem, auto) minmax(0, 1fr);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   width: 18rem;
   min-width: 18rem;
   max-width: 18rem;
@@ -800,6 +800,7 @@ watch(
   grid-column: 1;
   display: flex;
   min-width: 0;
+  max-width: 10.5rem;
   align-items: center;
   justify-self: start;
   gap: 0.5rem;
@@ -817,9 +818,10 @@ watch(
 
 .header-balance-chip-amount {
   grid-column: 2;
-  justify-self: center;
+  width: 100%;
+  justify-self: stretch;
   min-width: 0;
-  max-width: 7rem;
+  max-width: none;
   border: 0;
   background: transparent;
   background-color: transparent;
@@ -830,9 +832,10 @@ watch(
 
 .header-balance-system-amount {
   grid-column: 2;
-  justify-self: center;
+  width: 100%;
+  justify-self: stretch;
   min-width: 0;
-  max-width: 7rem;
+  max-width: none;
   border: 0;
   background: transparent;
   background-color: transparent;
