@@ -5,7 +5,7 @@
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
         <div class="flex flex-wrap items-start justify-between gap-4">
           <!-- Left: Fuzzy user search + filters (wrap to multiple lines) -->
-          <div class="flex flex-1 flex-wrap items-center gap-3">
+          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <!-- User Search -->
             <div
               class="relative w-full sm:w-64"
@@ -95,7 +95,7 @@
           </div>
 
           <!-- Right: Actions -->
-          <div class="ml-auto flex flex-wrap items-center justify-end gap-3">
+          <div class="table-filter-actions ml-auto flex flex-wrap items-center justify-end gap-3">
             <button
               @click="loadSubscriptions"
               :disabled="loading"

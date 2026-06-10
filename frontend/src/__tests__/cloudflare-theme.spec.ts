@@ -15,6 +15,8 @@ const themeLogoSource = readFile('src/components/common/ThemeLogo.vue')
 const settingsViewSource = readFile('src/views/admin/SettingsView.vue')
 const appHeaderSource = readFile('src/components/layout/AppHeader.vue')
 const monitorCapacitySource = readFile('src/components/user/monitor/MonitorCapacityOverview.vue')
+const adminSubscriptionsSource = readFile('src/views/admin/SubscriptionsView.vue')
+const availableChannelsSource = readFile('src/views/user/AvailableChannelsView.vue')
 
 // Cloudflare brand palette
 const cfOrange = '#f6821f'
@@ -257,13 +259,17 @@ describe('Cloudflare appearance theme', () => {
     expect(primaryFilterRule).not.toContain('var(--atelier-slab-field)')
   })
 
-  it('left-aligns the rotating header balance chip like the dropdown rows', () => {
+  it('keeps the rotating balance provider left-aligned while the amount stays right-aligned', () => {
     const headerBalanceBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-fixed')
     expect(headerBalanceBlock).toContain('justify-content: flex-start;')
     expect(headerBalanceBlock).not.toContain('justify-content: flex-end;')
     expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo {\n  margin-left: auto;')
     expect(appHeaderSource).toContain('flex: 0 0 auto;')
-    expect(appHeaderSource).toContain('flex: 1 1 auto;')
+    expect(appHeaderSource).toContain('header-balance-provider-name')
+    expect(appHeaderSource).toContain('header-balance-chip-amount')
+    const amountBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-amount')
+    expect(amountBlock).toContain('margin-left: auto;')
+    expect(amountBlock).toContain('text-align: right;')
   })
 
   it('keeps channel status and dashboard top-right controls readable under Anthropic', () => {
@@ -273,6 +279,15 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain('color: var(--atelier-paper-2) !important;')
     expect(styleSource).toContain('.auto-refresh-button :where(svg, path, span)')
     expect(styleSource).toContain('color: var(--atelier-ink) !important;')
+  })
+
+  it('marks generic table filter panes so Anthropic keeps a single paper header and terracotta actions', () => {
+    expect(adminSubscriptionsSource).toContain('table-filter-left')
+    expect(adminSubscriptionsSource).toContain('table-filter-actions')
+    expect(availableChannelsSource).toContain('table-filter-left')
+    expect(availableChannelsSource).toContain('table-filter-actions')
+    expect(styleSource).toContain('Anthropic theme — final table filter action pass')
+    expect(styleSource).toContain(':where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled)')
   })
 
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {

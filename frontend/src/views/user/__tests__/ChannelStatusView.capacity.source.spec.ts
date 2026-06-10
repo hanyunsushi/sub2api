@@ -48,6 +48,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain('logoProviderKey(logo)')
     expect(componentSource).toContain('return `url:${logoUrl}`')
     expect(componentSource).toContain('seenProviderKeys')
+    expect(componentSource).toContain("['cloudflare', ['cloudflare'")
     expect(componentSource).toContain('item.logo_url')
     expect(componentSource).toContain(':logo-url="logo.logoUrl"')
     expect(componentSource).not.toContain('v-for="subscription in card.previewStatuses"')
