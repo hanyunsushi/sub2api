@@ -39,6 +39,7 @@ import xhyapiSubscriptionAPI from './xhyapiSubscription'
 import pixelSubscriptionAPI from './pixelSubscription'
 import liustSubscriptionAPI from './liustSubscription'
 import packycodeSubscriptionAPI from './packycodeSubscription'
+import adminComplianceAPI from './compliance'
 
 /**
  * Unified admin API object for convenient access
@@ -79,7 +80,8 @@ export const adminAPI = {
   xhyapiSubscription: xhyapiSubscriptionAPI,
   pixelSubscription: pixelSubscriptionAPI,
   liustSubscription: liustSubscriptionAPI,
-  packycodeSubscription: packycodeSubscriptionAPI
+  packycodeSubscription: packycodeSubscriptionAPI,
+  compliance: adminComplianceAPI
 }
 
 export {
@@ -118,7 +120,8 @@ export {
   xhyapiSubscriptionAPI,
   pixelSubscriptionAPI,
   liustSubscriptionAPI,
-  packycodeSubscriptionAPI
+  packycodeSubscriptionAPI,
+  adminComplianceAPI
 }
 
 export default adminAPI
