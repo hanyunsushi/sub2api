@@ -6,7 +6,7 @@
   >
     <article
       v-for="card in cards"
-      :key="card.group"
+      :key="card.groupKey"
       class="monitor-capacity-card rounded-2xl border border-gray-200/80 bg-white/75 p-4 shadow-card dark:border-dark-700/70 dark:bg-dark-800/60"
     >
       <div class="flex items-start justify-between gap-3">
@@ -110,14 +110,15 @@ import {
   STATUS_OPERATIONAL,
 } from '@/constants/channelMonitor'
 
-const GROUP_ORDER = ['gpt', 'claude', 'mimo', 'rawchat', 'free']
-const groupExternalKeywords: Record<string, string[]> = {
+const knownGroupExternalKeywords: Record<string, string[]> = {
   gpt: ['gpt', 'openai', 'chatgpt'],
   claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc'],
   mimo: ['mimo'],
-  rawchat: ['rawchat', 'rawchat.cn', 'rawc', 'codex'],
-  free: ['free'],
 }
+
+const dynamicProviderAliases: string[][] = [
+  ['rawchat', 'rawchat.cn', 'rawc', 'codex'],
+]
 
 const props = defineProps<{
   items: UserMonitorView[]
@@ -129,6 +130,7 @@ const { locale } = useI18n()
 const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? zh : en
 
 type CapacityCard = {
+  groupKey: string
   group: string
   monitorCount: number
   balanceTotal: number
@@ -154,52 +156,54 @@ type CapacityStatusSegment = {
   className: string
 }
 
+type MonitorCapacityGroup = {
+  key: string
+  label: string
+  monitors: UserMonitorView[]
+}
+
 const cards = computed<CapacityCard[]>(() => {
   const groups = buildMonitorGroups(props.items)
-  return GROUP_ORDER
-    .flatMap((group) => {
-      const monitors = groups.get(group) ?? []
-      const matchedStatuses = matchStatusesForGroup(group, monitors, props.statuses)
-      if (!shouldRenderCapacityGroup(group, monitors, matchedStatuses)) return []
+  return groups
+    .map((group) => {
+      const monitors = group.monitors
+      const matchedStatuses = matchStatusesForGroup(group.key, monitors, props.statuses)
       const balanceStatuses = matchedStatuses.filter(hasUsableBalance)
       const balanceTotal = balanceStatuses.reduce((sum, status) => sum + (status.remaining_usd ?? 0), 0)
-      return [{
-        group,
+      return {
+        groupKey: group.key,
+        group: group.label,
         monitorCount: monitors.length,
         balanceTotal,
         balanceSourceCount: balanceStatuses.length,
         matchedStatuses,
         previewLogos: buildPreviewLogos(matchedStatuses, monitors),
         statusSegments: buildStatusSegments(monitors),
-      }]
+      }
     })
 })
 
 function buildMonitorGroups(items: UserMonitorView[]) {
-  const groups = new Map<string, UserMonitorView[]>()
+  const groups = new Map<string, MonitorCapacityGroup>()
   for (const item of items) {
-    const group = normalizeGroupName(item.group_name)
-    if (!GROUP_ORDER.includes(group)) continue
-    const next = groups.get(group) ?? []
-    next.push(item)
-    groups.set(group, next)
+    const key = normalizeGroupName(item.group_name)
+    if (!key) continue
+    const existing = groups.get(key)
+    if (existing) {
+      existing.monitors.push(item)
+      continue
+    }
+    groups.set(key, {
+      key,
+      label: item.group_name.trim() || key,
+      monitors: [item],
+    })
   }
-  return groups
+  return Array.from(groups.values())
 }
 
 function normalizeGroupName(value?: string | null) {
-  const normalized = (value || '').trim().toLowerCase()
-  if (['rawchat', 'rawchat.cn', 'rawc', 'codex'].includes(normalized)) return 'rawchat'
-  return normalized
-}
-
-function shouldRenderCapacityGroup(
-  group: string,
-  monitors: UserMonitorView[],
-  matchedStatuses: ExternalSubscriptionStatus[],
-) {
-  if (!GROUP_ORDER.includes(group)) return false
-  return monitors.length > 0 || matchedStatuses.some(hasUsableBalance)
+  return (value || '').trim().toLowerCase()
 }
 
 function hasUsableBalance(status: ExternalSubscriptionStatus) {
@@ -218,7 +222,7 @@ function matchStatusesForGroup(
   statuses: ExternalSubscriptionStatus[],
 ) {
   const monitorText = monitors.map(monitorSearchText).join(' ')
-  const groupKeywords = groupExternalKeywords[group] ?? [group]
+  const groupKeywords = resolveGroupExternalKeywords(group, monitors)
   const candidates = statuses.filter(status => status.enabled && status.configured)
   const matches = candidates.filter((status) => {
     const statusText = statusSearchText(status)
@@ -233,6 +237,17 @@ function matchStatusesForGroup(
     if (left.sort_order !== right.sort_order) return left.sort_order - right.sort_order
     return (left.name || left.provider).localeCompare(right.name || right.provider)
   })
+}
+
+function resolveGroupExternalKeywords(group: string, monitors: UserMonitorView[]) {
+  const keywords = new Set<string>([group, ...(knownGroupExternalKeywords[group] ?? [])])
+  const groupAndMonitorText = [group, ...monitors.map(monitorSearchText)].join(' ')
+  for (const aliases of dynamicProviderAliases) {
+    if (aliases.some(alias => groupAndMonitorText.includes(alias))) {
+      aliases.forEach(alias => keywords.add(alias))
+    }
+  }
+  return Array.from(keywords).filter(Boolean)
 }
 
 function buildStatusSegments(monitors: UserMonitorView[]): CapacityStatusSegment[] {
