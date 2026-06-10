@@ -269,6 +269,8 @@ describe('Cloudflare appearance theme', () => {
     expect(appHeaderSource).toContain('flex: 0 0 auto;')
     const identityBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-identity')
     expect(identityBlock).toContain('justify-self: start;')
+    expect(identityBlock).toContain('background: transparent;')
+    expect(identityBlock).toContain('box-shadow: none;')
     expect(appHeaderSource).toContain('header-balance-provider-name')
     expect(appHeaderSource).toContain('header-balance-chip-amount')
     const amountBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-amount')

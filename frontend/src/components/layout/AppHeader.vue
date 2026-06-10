@@ -803,6 +803,10 @@ watch(
   align-items: center;
   justify-self: start;
   gap: 0.5rem;
+  border: 0;
+  background: transparent;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .header-balance-provider-name {
