@@ -93,6 +93,15 @@ describe('AccountsView external quota card metadata', () => {
     expect(styleSource).not.toContain('.account-external-quota-progress-track')
   })
 
+  it('keeps account calling helpers hoisted before the immediate watcher runs', () => {
+    expect(source).toContain('function hasLiveAccountActivity(row: Account)')
+    expect(source).toContain('function syncAccountCallingGrace()')
+    expect(source).not.toContain('const syncAccountCallingGrace = () =>')
+    expect(source.indexOf('function syncAccountCallingGrace()')).toBeLessThan(
+      source.indexOf('{ immediate: true }')
+    )
+  })
+
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {
     expect(source).toContain('data-testid="account-provider-logo"')
     expect(source).toContain("import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'")

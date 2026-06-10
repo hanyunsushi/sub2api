@@ -802,6 +802,27 @@ const accountCallingGraceUntil = reactive(new Map<number, number>())
 const accountCallingNow = ref(Date.now())
 let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
 
+function hasLiveAccountActivity(row: Account) {
+  return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
+}
+
+function syncAccountCallingGrace() {
+  const now = Date.now()
+  accountCallingNow.value = now
+  const liveAccountIds = new Set<number>()
+
+  for (const account of accounts.value) {
+    if (!hasLiveAccountActivity(account)) continue
+    liveAccountIds.add(account.id)
+    accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)
+  }
+
+  for (const [accountId, graceUntil] of accountCallingGraceUntil) {
+    if (liveAccountIds.has(accountId)) continue
+    if (graceUntil <= now) accountCallingGraceUntil.delete(accountId)
+  }
+}
+
 const buildDefaultTodayStats = (): WindowStats => ({
   requests: 0,
   tokens: 0,
@@ -1656,27 +1677,6 @@ const formatAccountRateMultiplier = (value?: number | null) => {
 
 const normalizeAccountPriority = (value?: number | null) => {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
-}
-
-const hasLiveAccountActivity = (row: Account) => {
-  return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
-}
-
-const syncAccountCallingGrace = () => {
-  const now = Date.now()
-  accountCallingNow.value = now
-  const liveAccountIds = new Set<number>()
-
-  for (const account of accounts.value) {
-    if (!hasLiveAccountActivity(account)) continue
-    liveAccountIds.add(account.id)
-    accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)
-  }
-
-  for (const [accountId, graceUntil] of accountCallingGraceUntil) {
-    if (liveAccountIds.has(accountId)) continue
-    if (graceUntil <= now) accountCallingGraceUntil.delete(accountId)
-  }
 }
 
 const startAccountCallingGraceTicker = () => {

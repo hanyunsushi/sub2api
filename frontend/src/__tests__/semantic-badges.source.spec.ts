@@ -8,6 +8,8 @@ const redeemSource = readFileSync(resolve(__dirname, '../views/admin/RedeemView.
 const promoSource = readFileSync(resolve(__dirname, '../views/admin/PromoCodesView.vue'), 'utf8')
 const announcementsSource = readFileSync(resolve(__dirname, '../views/admin/AnnouncementsView.vue'), 'utf8')
 const usersSource = readFileSync(resolve(__dirname, '../views/admin/UsersView.vue'), 'utf8')
+const keysSource = readFileSync(resolve(__dirname, '../views/user/KeysView.vue'), 'utf8')
+const groupBadgeSource = readFileSync(resolve(__dirname, '../components/common/GroupBadge.vue'), 'utf8')
 const accountStatusSource = readFileSync(resolve(__dirname, '../components/account/AccountStatusIndicator.vue'), 'utf8')
 const monitorSource = readFileSync(resolve(__dirname, '../views/admin/ChannelMonitorView.vue'), 'utf8')
 const monitorCellSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorPrimaryModelCell.vue'), 'utf8')
@@ -94,5 +96,24 @@ describe('semantic badges', () => {
     expect(styleSource).toContain('.account-status-badge--neutral')
     expect(styleSource).toContain('.dark .account-status-badge--neutral {\n  --account-status-color: #6b7280;')
     expect(styleSource).not.toContain('.account-status-badge--success {\n  --account-status-color: var(--atelier')
+  })
+
+  it('keeps API key group and status badges on official semantic colors', () => {
+    const apiKeyBadgeIndex = styleSource.indexOf('API key group and status badges keep official semantic colors')
+    expect(apiKeyBadgeIndex).toBeGreaterThan(
+      styleSource.indexOf(':where(.badge, [class*="badge"], [class*="pill"], [class*="chip"])')
+    )
+
+    expect(groupBadgeSource).toContain('group-badge')
+    expect(groupBadgeSource).toContain('group-badge--openai')
+    expect(groupBadgeSource).toContain('group-badge--anthropic')
+    expect(groupBadgeSource).toContain('group-badge--gemini')
+    expect(keysSource).toContain("'api-key-status-badge'")
+
+    expect(styleSource).toContain('.user-keys-atelier .group-badge--openai')
+    expect(styleSource).toContain('--api-key-group-color: #15803d;')
+    expect(styleSource).toContain('.user-keys-atelier .api-key-status-badge.badge-success')
+    expect(styleSource).toContain('--api-key-status-color: #166534;')
+    expect(styleSource).not.toContain('.user-keys-atelier .group-badge--openai {\n  --api-key-group-color: var(--atelier')
   })
 })

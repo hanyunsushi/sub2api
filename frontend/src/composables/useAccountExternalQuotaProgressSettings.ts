@@ -11,7 +11,7 @@ const STORAGE_KEY = 'sub2api.accountExternalQuotaProgress.v1'
 type AccountExternalQuotaProgressSettings = Record<string, AccountExternalQuotaProgressPreference>
 
 const DEFAULT_PREFERENCE: AccountExternalQuotaProgressPreference = {
-  enabled: false,
+  enabled: true,
   mode: 'status_total',
   customTotal: null,
 }
@@ -28,7 +28,7 @@ const normalizeCustomTotal = (value: unknown): number | null => {
 const normalizePreference = (
   preference?: Partial<AccountExternalQuotaProgressPreference> | null,
 ): AccountExternalQuotaProgressPreference => ({
-  enabled: preference?.enabled === true,
+  enabled: preference?.enabled ?? DEFAULT_PREFERENCE.enabled,
   mode: normalizeMode(preference?.mode),
   customTotal: normalizeCustomTotal(preference?.customTotal),
 })
