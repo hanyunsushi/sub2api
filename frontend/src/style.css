@@ -8185,3 +8185,33 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
   stroke: currentColor !important;
 }
+
+/* Header balance chip paint reset.
+   Scoped component CSS loses to late global balance/background rules in the
+   compiled cascade, so keep the rotating identity and amount cells unpainted. */
+#app .app-header-atelier .header-balance-chip-fixed :where(
+  .header-balance-chip-identity,
+  .header-balance-chip-amount,
+  .header-balance-system-amount
+) {
+  border-color: transparent !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-header-atelier .header-balance-chip-fixed
+  :where(.header-balance-chip-identity, .header-balance-chip-amount, .header-balance-system-amount)
+  :where(svg, path, span) {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier
+  :where(button.rounded, button.rounded-lg)
+  :where(svg, path) {
+  color: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+  stroke: currentColor !important;
+}
