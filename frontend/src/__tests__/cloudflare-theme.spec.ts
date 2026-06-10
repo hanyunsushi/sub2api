@@ -290,6 +290,20 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain(':where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled)')
   })
 
+  it('keeps top-right action buttons terracotta across all console themes', () => {
+    expect(styleSource).toContain('Console terracotta action pass')
+    expect(styleSource).toContain('--atelier-terracotta-action: #c96442;')
+    expect(styleSource).toContain('--atelier-terracotta-action-hover: #a64f34;')
+    expect(styleSource).toContain('.table-filter-actions')
+    expect(styleSource).toContain('.users-filter-create')
+    expect(styleSource).toContain('.dashboard-filter-refresh')
+    const actionBlock = cssBlockFrom(styleSource, '/* Console terracotta action pass. */')
+    expect(actionBlock).toContain('background: var(--atelier-terracotta-action) !important;')
+    expect(actionBlock).toContain('color: var(--atelier-paper-2) !important;')
+    expect(actionBlock).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
+    expect(actionBlock).not.toContain('var(--atelier-slab-field)')
+  })
+
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {
     expect(cloudflareBlock).toContain('--atelier-paper: #ffffff;')
     expect(cloudflareBlock).toContain(`--atelier-blue: ${cfOrange};`)
