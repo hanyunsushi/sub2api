@@ -7,6 +7,7 @@ const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
+const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../../components/admin/account/ExternalQuotaProgressSettingsModal.vue'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 
@@ -77,6 +78,9 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("localText('额度条', 'Quota bar')")
     expect(source).toContain('<ExternalQuotaProgressSettingsModal')
     expect(source).toContain(':settings="externalQuotaProgressSettings.current"')
+    expect(externalQuotaSettingsModalSource).toContain('supportsExternalQuotaProgress')
+    expect(externalQuotaSettingsModalSource).toContain('supportsExternalQuotaProgress(props.subscription)')
+    expect(externalQuotaSettingsModalSource).toContain("form.mode = next.mode === 'custom_total' || hasStatusTotal.value")
     expect(source).not.toContain("import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'")
     expect(source).not.toContain('setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)')
     expect(source).not.toContain("localText('显示额度进度条', 'Show quota progress')")

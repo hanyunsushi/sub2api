@@ -113,6 +113,7 @@ import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptio
 import type { Account } from '@/types'
 import {
   buildAccountExternalQuotaProgressMeta,
+  supportsExternalQuotaProgress,
   type AccountExternalQuotaProgressPreference,
   type ExternalQuotaProgressMode,
 } from '@/utils/externalSubscriptionQuotaProgress'
@@ -164,7 +165,10 @@ const currentPreference = computed<AccountExternalQuotaProgressPreference>(() =>
   customTotal: parseCustomTotal(),
 }))
 
-const hasStatusTotal = computed(() => hasProviderTotal(props.subscription))
+const hasStatusTotal = computed(() => (
+  supportsExternalQuotaProgress(props.subscription) &&
+  hasProviderTotal(props.subscription)
+))
 
 const subscriptionLabel = computed(() => props.subscription?.name || props.subscription?.provider || '-')
 const balanceText = computed(() => formatAmount(props.subscription?.remaining_usd, props.subscription?.currency))
@@ -184,7 +188,7 @@ watch(
     if (!props.show) return
     const next = props.settings ?? { enabled: false, mode: 'status_total', customTotal: null }
     form.enabled = next.enabled === true
-    form.mode = next.mode === 'custom_total' || hasProviderTotal(props.subscription)
+    form.mode = next.mode === 'custom_total' || hasStatusTotal.value
       ? next.mode
       : 'custom_total'
     form.customTotal = typeof next.customTotal === 'number' && Number.isFinite(next.customTotal)
