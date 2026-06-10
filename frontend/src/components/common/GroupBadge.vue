@@ -1,7 +1,7 @@
 <template>
   <span
     :class="[
-      'group-badge inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
+      'group-token inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
       badgeClass
     ]"
   >
@@ -128,15 +128,15 @@ const labelClass = computed(() => {
 })
 
 const platformClass = computed(() => {
-  if (props.platform === 'anthropic') return 'group-badge--anthropic'
-  if (props.platform === 'openai') return 'group-badge--openai'
-  if (props.platform === 'gemini') return 'group-badge--gemini'
-  return 'group-badge--fallback'
+  if (props.platform === 'anthropic') return 'group-token--anthropic'
+  if (props.platform === 'openai') return 'group-token--openai'
+  if (props.platform === 'gemini') return 'group-token--gemini'
+  return 'group-token--fallback'
 })
 
 // Badge color based on platform and subscription type
 const badgeClass = computed(() => {
-  const base = `${platformClass.value} ${isSubscription.value ? 'group-badge--subscription' : 'group-badge--standard'}`
+  const base = `${platformClass.value} ${isSubscription.value ? 'group-token--subscription' : 'group-token--standard'}`
   if (props.platform === 'anthropic') {
     // Claude: orange theme
     return isSubscription.value

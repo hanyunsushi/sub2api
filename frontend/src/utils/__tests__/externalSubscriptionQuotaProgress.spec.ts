@@ -109,6 +109,27 @@ describe('external subscription quota progress', () => {
     expect(meta?.percent).toBeCloseTo(73.05)
   })
 
+  it('builds account quota progress from provider total and used quota when remaining is absent', () => {
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      total_limit_usd: 60,
+      used_usd: 12,
+      remaining_usd: undefined,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })
+
+    expect(meta).toMatchObject({
+      provider: 'rawchat',
+      total: 60,
+      used: 12,
+      remaining: 48,
+      tone: 'safe',
+    })
+    expect(meta?.percent).toBeCloseTo(20)
+  })
+
   it('builds account quota progress from a custom total when provider total is absent', () => {
     const preference: AccountExternalQuotaProgressPreference = {
       enabled: true,

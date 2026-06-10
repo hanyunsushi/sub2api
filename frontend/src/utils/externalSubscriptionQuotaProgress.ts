@@ -110,9 +110,8 @@ export const buildAccountExternalQuotaProgressMeta = (
   if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
 
   const provider = providerKeyFromStatus(status)
-  if (!provider || !isFiniteNumber(status.remaining_usd)) return null
+  if (!provider) return null
 
-  const remaining = Math.max(0, status.remaining_usd)
   const total = preference.mode === 'custom_total'
     ? Math.max(0, Number(preference.customTotal ?? 0))
     : isFiniteNumber(status.total_limit_usd)
@@ -121,7 +120,16 @@ export const buildAccountExternalQuotaProgressMeta = (
 
   if (!Number.isFinite(total) || total <= 0) return null
 
-  const used = Math.max(0, total - remaining)
+  const hasRemaining = isFiniteNumber(status.remaining_usd)
+  const hasUsed = isFiniteNumber(status.used_usd)
+  if (!hasRemaining && !hasUsed) return null
+
+  const remaining = hasRemaining
+    ? Math.max(0, status.remaining_usd as number)
+    : Math.max(0, total - Math.max(0, status.used_usd))
+  const used = hasRemaining
+    ? Math.max(0, total - remaining)
+    : Math.max(0, status.used_usd)
   const percent = clampPercent((used / total) * 100)
 
   return {
