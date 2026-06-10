@@ -322,6 +322,16 @@
                   <span>{{ localText('期限', 'Expiry') }}</span>
                   <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
                 </div>
+                <UsageProgressBar
+                  v-if="getAccountExternalQuota(row)?.progress"
+                  data-testid="account-external-quota-card-progress"
+                  class="account-external-quota-card-progress pt-1"
+                  label="EXT"
+                  :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0"
+                  :title="getAccountExternalQuota(row)?.formattedUsage"
+                  color="amber"
+                  :show-now-when-idle="false"
+                />
               </div>
             </div>
           </template>
@@ -2270,6 +2280,10 @@ onUnmounted(() => {
 }
 
 .account-external-quota-usage-progress {
+  min-width: 0;
+}
+
+.account-external-quota-card-progress {
   min-width: 0;
 }
 </style>

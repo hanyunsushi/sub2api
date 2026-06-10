@@ -8243,7 +8243,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 /* API key group and status badges keep official semantic colors outside theme paint. */
-#app .app-layout-content .user-keys-atelier .group-badge {
+#app .app-layout-content .user-keys-atelier .group-token {
   --api-key-group-color: #4b5563;
   --api-key-group-surface: #f3f4f6;
   --api-key-group-edge: #d1d5db;
@@ -8255,43 +8255,43 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   box-shadow: none !important;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge :where(span, svg, path) {
+#app .app-layout-content .user-keys-atelier .group-token :where(span, svg, path) {
   color: currentColor !important;
   -webkit-text-fill-color: currentColor !important;
   stroke: currentColor !important;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--openai {
+#app .app-layout-content .user-keys-atelier .group-token--openai {
   --api-key-group-color: #15803d;
   --api-key-group-surface: #f0fdf4;
   --api-key-group-edge: #bbf7d0;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--openai.group-badge--subscription {
+#app .app-layout-content .user-keys-atelier .group-token--openai.group-token--subscription {
   --api-key-group-color: #047857;
   --api-key-group-surface: #d1fae5;
   --api-key-group-edge: #6ee7b7;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--anthropic {
+#app .app-layout-content .user-keys-atelier .group-token--anthropic {
   --api-key-group-color: #b45309;
   --api-key-group-surface: #fffbeb;
   --api-key-group-edge: #fed7aa;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--anthropic.group-badge--subscription {
+#app .app-layout-content .user-keys-atelier .group-token--anthropic.group-token--subscription {
   --api-key-group-color: #c2410c;
   --api-key-group-surface: #ffedd5;
   --api-key-group-edge: #fdba74;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--gemini {
+#app .app-layout-content .user-keys-atelier .group-token--gemini {
   --api-key-group-color: #0369a1;
   --api-key-group-surface: #f0f9ff;
   --api-key-group-edge: #bae6fd;
 }
 
-#app .app-layout-content .user-keys-atelier .group-badge--gemini.group-badge--subscription {
+#app .app-layout-content .user-keys-atelier .group-token--gemini.group-token--subscription {
   --api-key-group-color: #1d4ed8;
   --api-key-group-surface: #dbeafe;
   --api-key-group-edge: #93c5fd;
