@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -27,19 +28,23 @@ type rawChatVibeCodeQuotaResponse struct {
 	Message string          `json:"message"`
 	Msg     string          `json:"msg"`
 	Data    struct {
-		Codex rawChatVibeCodeQuotaService `json:"codex"`
+		Codex         rawChatVibeCodeQuotaService  `json:"codex"`
+		Subscriptions *rawChatVibeCodeQuotaPlan    `json:"subscriptions"`
+		CurrentUsage  *rawChatVibeCodeCurrentUsage `json:"currentUsage"`
 	} `json:"data"`
 }
 
 type rawChatVibeCodeQuotaService struct {
-	IsAuth        bool                      `json:"isAuth"`
-	Error         string                    `json:"error"`
-	Subscriptions *rawChatVibeCodeQuotaPlan `json:"subscriptions"`
-	CurrentUsage  *struct {
-		TotalCost       json.RawMessage `json:"totalCost"`
-		TotalRequests   json.RawMessage `json:"totalRequests"`
-		LastRequestTime string          `json:"lastRequestTime"`
-	} `json:"currentUsage"`
+	IsAuth        bool                         `json:"isAuth"`
+	Error         string                       `json:"error"`
+	Subscriptions *rawChatVibeCodeQuotaPlan    `json:"subscriptions"`
+	CurrentUsage  *rawChatVibeCodeCurrentUsage `json:"currentUsage"`
+}
+
+type rawChatVibeCodeCurrentUsage struct {
+	TotalCost       json.RawMessage `json:"totalCost"`
+	TotalRequests   json.RawMessage `json:"totalRequests"`
+	LastRequestTime string          `json:"lastRequestTime"`
 }
 
 type rawChatVibeCodeQuotaPlan struct {
@@ -55,7 +60,7 @@ type rawChatVibeCodeQuotaPlan struct {
 	ExpireTime      json.RawMessage `json:"expireTime"`
 	Period          string          `json:"period"`
 	PeriodResetTime json.RawMessage `json:"periodResetTime"`
-	IsActive        bool            `json:"isActive"`
+	IsActive        *bool           `json:"isActive"`
 }
 
 type rawChatSubscription struct {
@@ -92,6 +97,8 @@ type rawChatSubscription struct {
 }
 
 const rawChatBrowserUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+
+var rawChatNumberPattern = regexp.MustCompile(`[-+]?\d+(?:\.\d+)?`)
 
 func (s *ExternalSubscriptionService) getRawChatSubscriptionStatus(ctx context.Context, cfg externalSubscriptionProviderConfig) (*ExternalSubscriptionStatus, error) {
 	settings, err := s.settingService.getExternalSubscriptionSettings(ctx, cfg)
@@ -238,7 +245,7 @@ func rawChatCookieHeader(token string) string {
 	if strings.HasPrefix(strings.ToLower(trimmed), "cookie:") {
 		return strings.TrimSpace(trimmed[len("cookie:"):])
 	}
-	if strings.Contains(trimmed, "=") && !strings.Contains(trimmed, " ") {
+	if strings.Contains(trimmed, "=") {
 		return trimmed
 	}
 	return ""
@@ -343,11 +350,12 @@ func rawChatStatusFromVibeCodeQuota(result *ExternalSubscriptionStatus, response
 }
 
 func applyRawChatVibeCodeQuota(result *ExternalSubscriptionStatus, response rawChatVibeCodeQuotaResponse) {
-	plan := response.Data.Codex.Subscriptions
-	if plan == nil || !plan.IsActive {
+	service := rawChatVibeCodeQuotaServiceFromResponse(response)
+	plan := service.Subscriptions
+	if plan == nil || !isRawChatVibeCodePlanActive(*plan) {
 		return
 	}
-	item := rawChatVibeCodeQuotaItemFromAPI(*plan)
+	item := rawChatVibeCodeQuotaItemFromAPI(*plan, service.CurrentUsage)
 	if item.ID != 0 {
 		for index := range result.Subscriptions {
 			if result.Subscriptions[index].ID == item.ID {
@@ -369,9 +377,12 @@ func applyRawChatVibeCodeQuota(result *ExternalSubscriptionStatus, response rawC
 	applyRawChatQuotaAggregate(result, item)
 }
 
-func rawChatVibeCodeQuotaItemFromAPI(plan rawChatVibeCodeQuotaPlan) ExternalSubscriptionItem {
+func rawChatVibeCodeQuotaItemFromAPI(plan rawChatVibeCodeQuotaPlan, usage *rawChatVibeCodeCurrentUsage) ExternalSubscriptionItem {
 	limit, hasLimit := firstRawChatNumber(plan.AmountLimit, plan.Limit)
 	used, hasUsed := rawChatNumber(plan.UsedAmount)
+	if !hasUsed && usage != nil {
+		used, hasUsed = rawChatNumber(usage.TotalCost)
+	}
 	remaining, hasRemaining := rawChatNumber(plan.RemainingAmount)
 	if !hasUsed && hasLimit && hasRemaining {
 		if computedUsed := limit - remaining; computedUsed >= 0 {
@@ -410,6 +421,27 @@ func rawChatVibeCodeQuotaItemFromAPI(plan rawChatVibeCodeQuotaPlan) ExternalSubs
 		item.RemainingUSD = &remaining
 	}
 	return item
+}
+
+func rawChatVibeCodeQuotaServiceFromResponse(response rawChatVibeCodeQuotaResponse) rawChatVibeCodeQuotaService {
+	service := response.Data.Codex
+	if service.Subscriptions == nil && response.Data.Subscriptions != nil {
+		service.Subscriptions = response.Data.Subscriptions
+	}
+	if service.CurrentUsage == nil && response.Data.CurrentUsage != nil {
+		service.CurrentUsage = response.Data.CurrentUsage
+	}
+	return service
+}
+
+func isRawChatVibeCodePlanActive(plan rawChatVibeCodeQuotaPlan) bool {
+	if plan.IsActive != nil {
+		return *plan.IsActive
+	}
+	if _, ok := firstRawChatNumber(plan.AmountLimit, plan.Limit, plan.UsedAmount, plan.RemainingAmount); ok {
+		return true
+	}
+	return firstExternalTime(plan.ExpireTime, plan.PeriodResetTime) != nil
 }
 
 func sameRawChatQuotaSubscription(existing ExternalSubscriptionItem, quota ExternalSubscriptionItem) bool {
@@ -489,7 +521,13 @@ func rawChatNumber(raw json.RawMessage) (float64, bool) {
 	}
 	var value string
 	if err := json.Unmarshal(raw, &value); err == nil {
-		parsed, err := strconv.ParseFloat(strings.TrimSpace(value), 64)
+		candidate := strings.TrimSpace(strings.ReplaceAll(value, ",", ""))
+		parsed, err := strconv.ParseFloat(candidate, 64)
+		if err != nil {
+			if match := rawChatNumberPattern.FindString(candidate); match != "" {
+				parsed, err = strconv.ParseFloat(match, 64)
+			}
+		}
 		return parsed, err == nil
 	}
 	return 0, false

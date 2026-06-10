@@ -25,6 +25,10 @@
           </div>
 
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
+            <label class="external-subscription-progress-toggle">
+              <span>{{ localText('额度进度', 'Quota progress') }}</span>
+              <Toggle v-model="externalQuotaProgressEnabled" />
+            </label>
             <button
               type="button"
               class="btn btn-secondary"
@@ -150,6 +154,24 @@
                   <div class="external-subscription-fact-value truncate">
                     {{ formatCardExpiry(card) }}
                   </div>
+                </div>
+              </div>
+
+              <div v-if="getCardQuotaProgress(card)" class="external-subscription-quota-progress mt-3">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="external-subscription-card-label">{{ localText('额度', 'Quota') }}</span>
+                  <span class="external-subscription-quota-progress-value font-mono">
+                    {{ formatCardQuotaUsage(card) }}
+                  </span>
+                </div>
+                <div class="external-subscription-quota-progress-track" aria-hidden="true">
+                  <div
+                    :class="[
+                      'external-subscription-quota-progress-fill',
+                      externalQuotaProgressFillClass(getCardQuotaProgress(card)?.tone)
+                    ]"
+                    :style="{ width: `${getCardQuotaProgress(card)?.percent ?? 0}%` }"
+                  ></div>
                 </div>
               </div>
 
@@ -421,6 +443,8 @@ import Toggle from '@/components/common/Toggle.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
+import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'
+import { buildExternalQuotaProgressMeta, type ExternalQuotaProgressMeta } from '@/utils/externalSubscriptionQuotaProgress'
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
@@ -440,6 +464,7 @@ const showDeleteDialog = ref(false)
 const editingProvider = ref<ExternalSubscriptionProvider | null>(null)
 const deletingProvider = ref<ExternalSubscriptionProvider | null>(null)
 const keywordsDraft = ref('')
+const { externalQuotaProgressEnabled } = useExternalQuotaProgressPreference()
 
 const form = reactive({
   id: '',
@@ -526,6 +551,7 @@ type ExternalSubscriptionCard = {
   expiry: string
   errorCode?: string
   errorMessage?: string
+  status?: ExternalSubscriptionStatus
   providerConfig?: ExternalSubscriptionProvider
   readonly: boolean
   logoText: string
@@ -633,6 +659,7 @@ function buildStatusCard(
     expiry: formatStatusExpiry(status),
     errorCode: status.error_code,
     errorMessage: status.error_message,
+    status,
     providerConfig: provider,
     readonly: !provider,
     logoText: provider ? buildProviderLogoText(provider) : [
@@ -660,6 +687,7 @@ function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): External
     logoUrl: provider.logo_url || '',
     balance: provider.enabled ? localText('未同步', 'Unsynced') : localText('停用', 'Disabled'),
     expiry: '-',
+    status: undefined,
     providerConfig: provider,
     readonly: false,
     logoText: buildProviderLogoText(provider),
@@ -931,6 +959,25 @@ function formatCardExpiry(card: ExternalSubscriptionCard) {
   return card.expiry
 }
 
+function getCardQuotaProgress(card: ExternalSubscriptionCard) {
+  if (!externalQuotaProgressEnabled.value || !card.status) return null
+  return buildExternalQuotaProgressMeta(card.status)
+}
+
+function formatCardQuotaUsage(card: ExternalSubscriptionCard) {
+  const progress = getCardQuotaProgress(card)
+  if (!progress || !card.status) return '-'
+  const used = formatMoney(progress.used, card.status.currency)
+  const total = formatMoney(progress.total, card.status.currency)
+  return used && total ? `${used} / ${total}` : '-'
+}
+
+function externalQuotaProgressFillClass(tone?: ExternalQuotaProgressMeta['tone']) {
+  if (tone === 'danger') return 'external-subscription-quota-progress-fill--danger'
+  if (tone === 'warning') return 'external-subscription-quota-progress-fill--warning'
+  return 'external-subscription-quota-progress-fill--safe'
+}
+
 function cardTemplateLabel(card: ExternalSubscriptionCard) {
   return templateLabel(card.template)
 }
@@ -974,6 +1021,21 @@ onBeforeUnmount(() => {
 
 .external-subscription-card-grid {
   align-items: stretch;
+}
+
+.external-subscription-progress-toggle {
+  align-items: center;
+  border: 1px solid var(--atelier-material-edge);
+  border-radius: 8px;
+  color: var(--atelier-muted);
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  line-height: 1rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.625rem;
+  white-space: nowrap;
 }
 
 .external-subscription-card {
@@ -1162,6 +1224,43 @@ onBeforeUnmount(() => {
   color: var(--atelier-blue);
 }
 
+.external-subscription-quota-progress {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.external-subscription-quota-progress-value {
+  color: var(--atelier-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.external-subscription-quota-progress-track {
+  height: 0.425rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(229, 231, 235, 0.92);
+}
+
+.external-subscription-quota-progress-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  transition: width 0.2s var(--atelier-ease);
+}
+
+.external-subscription-quota-progress-fill--safe {
+  background: #22c55e;
+}
+
+.external-subscription-quota-progress-fill--warning {
+  background: #f59e0b;
+}
+
+.external-subscription-quota-progress-fill--danger {
+  background: #ef4444;
+}
+
 .external-subscription-keyword {
   border: 1px solid var(--atelier-material-edge);
   border-radius: 6px;
@@ -1180,6 +1279,10 @@ onBeforeUnmount(() => {
 
 .dark .external-subscription-keyword {
   background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
+}
+
+.dark .external-subscription-quota-progress-track {
+  background: rgba(55, 65, 81, 0.92);
 }
 
 @media (max-width: 1023px) {
