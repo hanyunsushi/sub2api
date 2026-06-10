@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import {
+  buildAccountExternalQuotaProgressMeta,
   buildExternalQuotaProgressMeta,
   supportsExternalQuotaProgress,
+  type AccountExternalQuotaProgressPreference,
 } from '../externalSubscriptionQuotaProgress'
 
 const status = (overrides: Partial<ExternalSubscriptionStatus>): ExternalSubscriptionStatus => ({
@@ -72,5 +74,59 @@ describe('external subscription quota progress', () => {
       total_limit_usd: 60,
       remaining_usd: undefined,
     }))).toBeNull()
+  })
+
+  it('does not build account quota progress until the account setting is enabled', () => {
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      total_limit_usd: 60,
+      remaining_usd: 16.17,
+    }), {
+      enabled: false,
+      mode: 'status_total',
+      customTotal: null,
+    })
+
+    expect(meta).toBeNull()
+  })
+
+  it('builds account quota progress from provider total and remaining balance', () => {
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      total_limit_usd: 60,
+      remaining_usd: 16.17,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })
+
+    expect(meta).toMatchObject({
+      provider: 'rawchat',
+      total: 60,
+      remaining: 16.17,
+      used: 43.83,
+      tone: 'safe',
+    })
+    expect(meta?.percent).toBeCloseTo(73.05)
+  })
+
+  it('builds account quota progress from a custom total when provider total is absent', () => {
+    const preference: AccountExternalQuotaProgressPreference = {
+      enabled: true,
+      mode: 'custom_total',
+      customTotal: 100,
+    }
+
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      total_limit_usd: undefined,
+      remaining_usd: 42,
+    }), preference)
+
+    expect(meta).toMatchObject({
+      total: 100,
+      remaining: 42,
+      used: 58,
+      tone: 'safe',
+    })
+    expect(meta?.percent).toBeCloseTo(58)
   })
 })

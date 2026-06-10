@@ -64,6 +64,35 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("localText('请更新 Token', 'Update token')")
   })
 
+  it('uses per-account quota progress settings instead of a global account-page switch', () => {
+    expect(source).toContain("import ExternalQuotaProgressSettingsModal from '@/components/admin/account/ExternalQuotaProgressSettingsModal.vue'")
+    expect(source).toContain("import UsageProgressBar from '@/components/account/UsageProgressBar.vue'")
+    expect(source).toContain("import { useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'")
+    expect(source).toContain('getAccountExternalQuotaProgressPreference(account, subscription)')
+    expect(source).toContain('openExternalQuotaProgressSettings(row)')
+    expect(source).toContain('saveExternalQuotaProgressSettings')
+    expect(source).toContain('data-testid="account-external-quota-progress-action"')
+    expect(source).toContain("localText('额度条', 'Quota bar')")
+    expect(source).toContain('<ExternalQuotaProgressSettingsModal')
+    expect(source).toContain(':settings="externalQuotaProgressSettings.current"')
+    expect(source).not.toContain("import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'")
+    expect(source).not.toContain('setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)')
+    expect(source).not.toContain("localText('显示额度进度条', 'Show quota progress')")
+  })
+
+  it('places the external quota progress under the official usage window cell', () => {
+    const usageCellIndex = source.indexOf('<template #cell-usage="{ row }">')
+    const progressIndex = source.indexOf('data-testid="account-external-quota-usage-progress"')
+
+    expect(usageCellIndex).toBeGreaterThan(0)
+    expect(progressIndex).toBeGreaterThan(usageCellIndex)
+    expect(progressIndex).toBeLessThan(source.indexOf('<template #cell-proxy="{ row }">'))
+    expect(source.slice(usageCellIndex, progressIndex)).toContain('<AccountUsageCell')
+    expect(source.slice(usageCellIndex, source.indexOf('<template #cell-proxy="{ row }">'))).toContain('<UsageProgressBar')
+    expect(source).not.toContain('account-external-quota-progress-track')
+    expect(styleSource).not.toContain('.account-external-quota-progress-track')
+  })
+
   it('renders a provider logo before each account card name and supports custom logo URLs', () => {
     expect(source).toContain('data-testid="account-provider-logo"')
     expect(source).toContain("import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'")

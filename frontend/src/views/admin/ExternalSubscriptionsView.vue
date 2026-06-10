@@ -25,10 +25,6 @@
           </div>
 
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
-            <label class="external-subscription-progress-toggle">
-              <span>{{ localText('额度进度', 'Quota progress') }}</span>
-              <Toggle v-model="externalQuotaProgressEnabled" />
-            </label>
             <button
               type="button"
               class="btn btn-secondary"
@@ -443,7 +439,6 @@ import Toggle from '@/components/common/Toggle.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
-import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'
 import { buildExternalQuotaProgressMeta, type ExternalQuotaProgressMeta } from '@/utils/externalSubscriptionQuotaProgress'
 
 const { t, locale } = useI18n()
@@ -464,7 +459,6 @@ const showDeleteDialog = ref(false)
 const editingProvider = ref<ExternalSubscriptionProvider | null>(null)
 const deletingProvider = ref<ExternalSubscriptionProvider | null>(null)
 const keywordsDraft = ref('')
-const { externalQuotaProgressEnabled } = useExternalQuotaProgressPreference()
 
 const form = reactive({
   id: '',
@@ -960,7 +954,7 @@ function formatCardExpiry(card: ExternalSubscriptionCard) {
 }
 
 function getCardQuotaProgress(card: ExternalSubscriptionCard) {
-  if (!externalQuotaProgressEnabled.value || !card.status) return null
+  if (!card.status) return null
   return buildExternalQuotaProgressMeta(card.status)
 }
 
@@ -1021,21 +1015,6 @@ onBeforeUnmount(() => {
 
 .external-subscription-card-grid {
   align-items: stretch;
-}
-
-.external-subscription-progress-toggle {
-  align-items: center;
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 8px;
-  color: var(--atelier-muted);
-  display: inline-flex;
-  font-size: 0.75rem;
-  font-weight: 600;
-  gap: 0.5rem;
-  line-height: 1rem;
-  min-height: 2.25rem;
-  padding: 0.25rem 0.625rem;
-  white-space: nowrap;
 }
 
 .external-subscription-card {

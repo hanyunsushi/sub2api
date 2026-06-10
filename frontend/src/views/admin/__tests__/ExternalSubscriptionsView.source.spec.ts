@@ -123,6 +123,14 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('filteredCards')
   })
 
+  it('does not expose a global quota progress switch because account cards configure quota bars per account', () => {
+    expect(source).not.toContain('external-subscription-progress-toggle')
+    expect(source).not.toContain('externalQuotaProgressEnabled')
+    expect(source).not.toContain('useExternalQuotaProgressPreference')
+    expect(source).not.toContain("localText('额度进度', 'Quota progress')")
+    expect(source).toContain('return buildExternalQuotaProgressMeta(card.status)')
+  })
+
   it('uses account-card style official links instead of showing raw site URLs on provider cards', () => {
     expect(source).toContain("localText('前往官网', 'Official site')")
     expect(source).toContain(':title="card.siteUrl"')

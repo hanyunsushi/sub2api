@@ -160,22 +160,6 @@
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
                       </button>
                     </div>
-                    <div class="my-2 border-t border-gray-100 dark:border-gray-700"></div>
-                    <div class="px-2 py-2">
-                      <div class="flex items-center justify-between gap-3">
-                        <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-                          {{ localText('外部订阅', 'External subscriptions') }}
-                        </span>
-                        <Icon name="creditCard" size="sm" class="text-gray-400" />
-                      </div>
-                    </div>
-                    <button
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      @click="setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)"
-                    >
-                      <span class="truncate">{{ localText('显示额度进度条', 'Show quota progress') }}</span>
-                      <Icon v-if="externalQuotaProgressEnabled" name="check" size="sm" class="text-primary-500" />
-                    </button>
                   </div>
                 </FloatingDropdown>
               </div>
@@ -338,21 +322,6 @@
                   <span>{{ localText('期限', 'Expiry') }}</span>
                   <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
                 </div>
-                <div v-if="getAccountExternalQuota(row)?.progress" class="account-external-quota-progress">
-                  <div class="flex items-center justify-between gap-2">
-                    <span>{{ localText('额度', 'Quota') }}</span>
-                    <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedUsage }}</span>
-                  </div>
-                  <div class="account-external-quota-progress-track" aria-hidden="true">
-                    <div
-                      :class="[
-                        'account-external-quota-progress-fill',
-                        externalQuotaProgressFillClass(getAccountExternalQuota(row)?.progress?.tone)
-                      ]"
-                      :style="{ width: `${getAccountExternalQuota(row)?.progress?.percent ?? 0}%` }"
-                    ></div>
-                  </div>
-                </div>
               </div>
             </div>
           </template>
@@ -414,12 +383,24 @@
             </div>
           </template>
           <template #cell-usage="{ row }">
-            <AccountUsageCell
-              :account="row"
-              :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
-              :today-stats-loading="todayStatsLoading"
-              :manual-refresh-token="usageManualRefreshToken"
-            />
+            <div class="account-usage-stack">
+              <AccountUsageCell
+                :account="row"
+                :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
+                :today-stats-loading="todayStatsLoading"
+                :manual-refresh-token="usageManualRefreshToken"
+              />
+              <UsageProgressBar
+                v-if="getAccountExternalQuota(row)?.progress"
+                data-testid="account-external-quota-usage-progress"
+                class="account-external-quota-usage-progress"
+                label="EXT"
+                :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0"
+                :title="getAccountExternalQuota(row)?.formattedUsage"
+                color="amber"
+                :show-now-when-idle="false"
+              />
+            </div>
           </template>
           <template #cell-proxy="{ row }">
             <div class="flex flex-col gap-1">
@@ -489,6 +470,17 @@
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
                 <span class="text-xs">{{ t('common.more') }}</span>
               </button>
+              <button
+                v-if="getMatchedExternalSubscription(row)"
+                data-testid="account-external-quota-progress-action"
+                type="button"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-300"
+                :title="localText('额度条', 'Quota bar')"
+                @click="openExternalQuotaProgressSettings(row)"
+              >
+                <Icon name="chartBar" size="sm" />
+                <span class="text-xs">{{ localText('额度条', 'Quota bar') }}</span>
+              </button>
             </div>
           </template>
         </DataTable>
@@ -503,6 +495,14 @@
     <AccountStatsModal :show="showStats" :account="statsAcc" @close="closeStatsModal" />
     <ScheduledTestsPanel :show="showSchedulePanel" :account-id="scheduleAcc?.id ?? null" :model-options="scheduleModelOptions" @close="closeSchedulePanel" />
     <AccountActionMenu :show="menu.show" :account="menu.acc" :position="menu.pos" @close="menu.show = false" @test="handleTest" @stats="handleViewStats" @schedule="handleSchedule" @reauth="handleReAuth" @refresh-token="handleRefresh" @recover-state="handleRecoverState" @reset-quota="handleResetQuota" @set-privacy="handleSetPrivacy" />
+    <ExternalQuotaProgressSettingsModal
+      :show="externalQuotaProgressSettings.show"
+      :account="externalQuotaProgressSettings.account"
+      :subscription="externalQuotaProgressSettings.subscription"
+      :settings="externalQuotaProgressSettings.current"
+      @close="closeExternalQuotaProgressSettings"
+      @save="saveExternalQuotaProgressSettings"
+    />
     <FloatingDropdown
       :show="rateMultiplierMenu.show"
       :trigger-el="rateMultiplierMenu.triggerEl"
@@ -584,9 +584,13 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
-import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'
+import { useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'
 import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
-import { buildExternalQuotaProgressMeta, type ExternalQuotaProgressMeta } from '@/utils/externalSubscriptionQuotaProgress'
+import {
+  buildAccountExternalQuotaProgressMeta,
+  type AccountExternalQuotaProgressPreference,
+  type ExternalQuotaProgressMeta,
+} from '@/utils/externalSubscriptionQuotaProgress'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
@@ -605,9 +609,11 @@ import ReAuthAccountModal from '@/components/admin/account/ReAuthAccountModal.vu
 import AccountTestModal from '@/components/admin/account/AccountTestModal.vue'
 import AccountStatsModal from '@/components/admin/account/AccountStatsModal.vue'
 import ScheduledTestsPanel from '@/components/admin/account/ScheduledTestsPanel.vue'
+import ExternalQuotaProgressSettingsModal from '@/components/admin/account/ExternalQuotaProgressSettingsModal.vue'
 import type { SelectOption } from '@/components/common/Select.vue'
 import AccountStatusIndicator from '@/components/account/AccountStatusIndicator.vue'
 import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
+import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
 import AccountGroupsCell from '@/components/account/AccountGroupsCell.vue'
 import AccountCapacityCell from '@/components/account/AccountCapacityCell.vue'
@@ -778,9 +784,20 @@ const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
 const {
-  externalQuotaProgressEnabled,
-  setExternalQuotaProgressEnabled,
-} = useExternalQuotaProgressPreference()
+  getAccountExternalQuotaProgressPreference,
+  setAccountExternalQuotaProgressPreference,
+} = useAccountExternalQuotaProgressSettings()
+const externalQuotaProgressSettings = reactive<{
+  show: boolean
+  account: Account | null
+  subscription: ExternalSubscriptionStatus | null
+  current: AccountExternalQuotaProgressPreference | null
+}>({
+  show: false,
+  account: null,
+  subscription: null,
+  current: null,
+})
 const accountCallingGraceUntil = reactive(new Map<number, number>())
 const accountCallingNow = ref(Date.now())
 let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
@@ -952,7 +969,7 @@ const getMatchedExternalSubscription = (account: Account) => {
   return findMatchingExternalSubscription(account, externalSubscriptionStatuses.value)
 }
 
-const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus): AccountExternalQuota => {
+const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus, account: Account): AccountExternalQuota => {
   if (subscription.error_code) {
     const isInvalidToken = isExternalSubscriptionInvalidToken(subscription.error_code)
     return {
@@ -970,10 +987,10 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
 
   const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
   const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
-  const progress = externalQuotaProgressEnabled.value
-    ? buildExternalQuotaProgressMeta(subscription)
-    : null
+  const preference = getAccountExternalQuotaProgressPreference(account, subscription)
+  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference)
   const used = progress ? formatExternalAmount(progress.used, subscription.currency) : null
+  const progressTotal = progress ? formatExternalAmount(progress.total, subscription.currency) : null
   return {
     label: getExternalSubscriptionLabel(subscription),
     url: subscription.site_url,
@@ -981,21 +998,41 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
       ? `${remaining} / ${total}`
       : remaining || (total ? `${localText('余额未知', 'Balance unknown')} / ${total}` : localText('余额未知', 'Balance unknown')),
     formattedExpiry: formatExternalDate(subscription.expires_at),
-    formattedUsage: progress && used && total ? `${used} / ${total}` : undefined,
+    formattedUsage: progress && used && progressTotal ? `${used} / ${progressTotal}` : undefined,
     progress
   }
 }
 
 const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
   const subscription = getMatchedExternalSubscription(account)
-  if (subscription) return buildExternalSubscriptionQuota(subscription)
+  if (subscription) return buildExternalSubscriptionQuota(subscription, account)
   return null
 }
 
-const externalQuotaProgressFillClass = (tone?: ExternalQuotaProgressMeta['tone']) => {
-  if (tone === 'danger') return 'account-external-quota-progress-fill--danger'
-  if (tone === 'warning') return 'account-external-quota-progress-fill--warning'
-  return 'account-external-quota-progress-fill--safe'
+const closeExternalQuotaProgressSettings = () => {
+  externalQuotaProgressSettings.show = false
+  externalQuotaProgressSettings.account = null
+  externalQuotaProgressSettings.subscription = null
+  externalQuotaProgressSettings.current = null
+}
+
+const openExternalQuotaProgressSettings = (account: Account) => {
+  const subscription = getMatchedExternalSubscription(account)
+  if (!subscription) return
+  externalQuotaProgressSettings.account = account
+  externalQuotaProgressSettings.subscription = subscription
+  externalQuotaProgressSettings.current = getAccountExternalQuotaProgressPreference(account, subscription)
+  externalQuotaProgressSettings.show = true
+}
+
+const saveExternalQuotaProgressSettings = (settings: AccountExternalQuotaProgressPreference) => {
+  if (!externalQuotaProgressSettings.account || !externalQuotaProgressSettings.subscription) return
+  setAccountExternalQuotaProgressPreference(
+    externalQuotaProgressSettings.account,
+    externalQuotaProgressSettings.subscription,
+    settings,
+  )
+  closeExternalQuotaProgressSettings()
 }
 
 const buildAccountLogoSearchText = (account: Account) => {
@@ -1259,6 +1296,7 @@ const isAnyModalOpen = computed(() => {
     showTest.value ||
     showStats.value ||
     showSchedulePanel.value ||
+    externalQuotaProgressSettings.show ||
     showErrorPassthrough.value ||
     showTLSFingerprintProfiles.value
   )
@@ -1293,6 +1331,7 @@ const syncAccountRefs = (nextAccount: Account) => {
   if (reAuthAcc.value?.id === nextAccount.id) reAuthAcc.value = nextAccount
   if (tempUnschedAcc.value?.id === nextAccount.id) tempUnschedAcc.value = nextAccount
   if (deletingAcc.value?.id === nextAccount.id) deletingAcc.value = nextAccount
+  if (externalQuotaProgressSettings.account?.id === nextAccount.id) externalQuotaProgressSettings.account = nextAccount
   if (menu.acc?.id === nextAccount.id) menu.acc = nextAccount
   if (rateMultiplierMenu.account?.id === nextAccount.id) rateMultiplierMenu.account = nextAccount
 }
@@ -2224,38 +2263,13 @@ onUnmounted(() => {
   @apply inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md;
 }
 
-.account-external-quota-progress {
+.account-usage-stack {
   display: grid;
   gap: 0.25rem;
-}
-
-.account-external-quota-progress-track {
-  height: 0.375rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(229, 231, 235, 0.9);
-}
-
-.account-external-quota-progress-fill {
-  height: 100%;
   min-width: 0;
-  border-radius: inherit;
-  transition: width 0.2s ease;
 }
 
-.account-external-quota-progress-fill--safe {
-  background: #22c55e;
-}
-
-.account-external-quota-progress-fill--warning {
-  background: #f59e0b;
-}
-
-.account-external-quota-progress-fill--danger {
-  background: #ef4444;
-}
-
-.dark .account-external-quota-progress-track {
-  background: rgba(55, 65, 81, 0.9);
+.account-external-quota-usage-progress {
+  min-width: 0;
 }
 </style>
