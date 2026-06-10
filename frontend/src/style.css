@@ -8241,3 +8241,88 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   -webkit-text-fill-color: inherit !important;
   stroke: currentColor !important;
 }
+
+/* API key group and status badges keep official semantic colors outside theme paint. */
+#app .app-layout-content .user-keys-atelier .group-badge {
+  --api-key-group-color: #4b5563;
+  --api-key-group-surface: #f3f4f6;
+  --api-key-group-edge: #d1d5db;
+  border-color: var(--api-key-group-edge) !important;
+  background: var(--api-key-group-surface) !important;
+  background-color: var(--api-key-group-surface) !important;
+  color: var(--api-key-group-color) !important;
+  -webkit-text-fill-color: var(--api-key-group-color) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge :where(span, svg, path) {
+  color: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--openai {
+  --api-key-group-color: #15803d;
+  --api-key-group-surface: #f0fdf4;
+  --api-key-group-edge: #bbf7d0;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--openai.group-badge--subscription {
+  --api-key-group-color: #047857;
+  --api-key-group-surface: #d1fae5;
+  --api-key-group-edge: #6ee7b7;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--anthropic {
+  --api-key-group-color: #b45309;
+  --api-key-group-surface: #fffbeb;
+  --api-key-group-edge: #fed7aa;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--anthropic.group-badge--subscription {
+  --api-key-group-color: #c2410c;
+  --api-key-group-surface: #ffedd5;
+  --api-key-group-edge: #fdba74;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--gemini {
+  --api-key-group-color: #0369a1;
+  --api-key-group-surface: #f0f9ff;
+  --api-key-group-edge: #bae6fd;
+}
+
+#app .app-layout-content .user-keys-atelier .group-badge--gemini.group-badge--subscription {
+  --api-key-group-color: #1d4ed8;
+  --api-key-group-surface: #dbeafe;
+  --api-key-group-edge: #93c5fd;
+}
+
+#app .app-layout-content .user-keys-atelier .api-key-status-badge {
+  --api-key-status-color: #4b5563;
+  --api-key-status-surface: #f3f4f6;
+  --api-key-status-edge: #d1d5db;
+  border-color: var(--api-key-status-edge) !important;
+  background: var(--api-key-status-surface) !important;
+  background-color: var(--api-key-status-surface) !important;
+  color: var(--api-key-status-color) !important;
+  -webkit-text-fill-color: var(--api-key-status-color) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .api-key-status-badge.badge-success {
+  --api-key-status-color: #166534;
+  --api-key-status-surface: #dcfce7;
+  --api-key-status-edge: #86efac;
+}
+
+#app .app-layout-content .user-keys-atelier .api-key-status-badge.badge-warning {
+  --api-key-status-color: #92400e;
+  --api-key-status-surface: #fef3c7;
+  --api-key-status-edge: #fcd34d;
+}
+
+#app .app-layout-content .user-keys-atelier .api-key-status-badge.badge-danger {
+  --api-key-status-color: #991b1b;
+  --api-key-status-surface: #fee2e2;
+  --api-key-status-edge: #fca5a5;
+}

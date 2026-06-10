@@ -1,7 +1,7 @@
 <template>
   <span
     :class="[
-      'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
+      'group-badge inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
       badgeClass
     ]"
   >
@@ -127,27 +127,35 @@ const labelClass = computed(() => {
   return `${base} bg-primary-100 text-primary-800 dark:bg-primary-900/35 dark:text-primary-300`
 })
 
+const platformClass = computed(() => {
+  if (props.platform === 'anthropic') return 'group-badge--anthropic'
+  if (props.platform === 'openai') return 'group-badge--openai'
+  if (props.platform === 'gemini') return 'group-badge--gemini'
+  return 'group-badge--fallback'
+})
+
 // Badge color based on platform and subscription type
 const badgeClass = computed(() => {
+  const base = `${platformClass.value} ${isSubscription.value ? 'group-badge--subscription' : 'group-badge--standard'}`
   if (props.platform === 'anthropic') {
     // Claude: orange theme
     return isSubscription.value
-      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-      : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+      ? `${base} bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400`
+      : `${base} bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400`
   } else if (props.platform === 'openai') {
     // OpenAI: green theme
     return isSubscription.value
-      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-      : 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+      ? `${base} bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400`
+      : `${base} bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400`
   }
   if (props.platform === 'gemini') {
     return isSubscription.value
-      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-      : 'bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'
+      ? `${base} bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400`
+      : `${base} bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400`
   }
   // Fallback: match the warm system theme instead of introducing a new default hue.
   return isSubscription.value
-    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-    : 'bg-accent-100 text-accent-700 dark:bg-dark-700 dark:text-dark-300'
+    ? `${base} bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400`
+    : `${base} bg-accent-100 text-accent-700 dark:bg-dark-700 dark:text-dark-300`
 })
 </script>

@@ -299,6 +299,7 @@
           <template #cell-status="{ value }">
             <span :class="[
               'badge',
+              'api-key-status-badge',
               value === 'active' ? 'badge-success' :
               value === 'quota_exhausted' ? 'badge-warning' :
               value === 'expired' ? 'badge-danger' :
