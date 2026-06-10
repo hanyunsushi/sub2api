@@ -338,7 +338,7 @@ describe('Cloudflare appearance theme', () => {
         '  :where(button.rounded, button.rounded-lg)\n' +
         '  :where(svg, path)',
     )
-    expect(keyIconBlock).toContain('color: currentColor !important;')
+    expect(keyIconBlock).toContain('color: inherit !important;')
     expect(keyIconBlock).toContain('stroke: currentColor !important;')
   })
 
