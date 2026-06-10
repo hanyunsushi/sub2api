@@ -150,4 +150,47 @@ describe('external subscription quota progress', () => {
     })
     expect(meta?.percent).toBeCloseTo(58)
   })
+
+  it('builds account quota progress for non-whitelisted providers when a custom total is set', () => {
+    const preference: AccountExternalQuotaProgressPreference = {
+      enabled: true,
+      mode: 'custom_total',
+      customTotal: 80,
+    }
+
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      provider: 'buzz',
+      name: 'Buzz',
+      template: 'buzz_balance',
+      site_url: 'https://buzzai.cc',
+      remaining_usd: 20,
+      total_limit_usd: undefined,
+    }), preference)
+
+    expect(meta).toMatchObject({
+      provider: 'buzz',
+      total: 80,
+      remaining: 20,
+      used: 60,
+      tone: 'warning',
+    })
+    expect(meta?.percent).toBeCloseTo(75)
+  })
+
+  it('does not build account quota progress for non-whitelisted providers without a custom total', () => {
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      provider: 'buzz',
+      name: 'Buzz',
+      template: 'buzz_balance',
+      site_url: 'https://buzzai.cc',
+      remaining_usd: 20,
+      total_limit_usd: 80,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })
+
+    expect(meta).toBeNull()
+  })
 })

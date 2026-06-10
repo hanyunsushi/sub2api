@@ -4,7 +4,7 @@ export type ExternalQuotaProgressTone = 'safe' | 'warning' | 'danger'
 
 export interface ExternalQuotaProgressMeta {
   visible: boolean
-  provider: 'rawchat' | 'tcdmx' | 'openrouter'
+  provider: string
   used: number
   remaining: number
   total: number
@@ -20,7 +20,9 @@ export interface AccountExternalQuotaProgressPreference {
   customTotal?: number | null
 }
 
-const PROGRESS_PROVIDER_ALIASES: Record<ExternalQuotaProgressMeta['provider'], string[]> = {
+type KnownProgressProvider = 'rawchat' | 'tcdmx' | 'openrouter'
+
+const PROGRESS_PROVIDER_ALIASES: Record<KnownProgressProvider, string[]> = {
   rawchat: ['rawchat', 'rawchat.cn', 'rawc'],
   tcdmx: ['tcdmx'],
   openrouter: ['openrouter', 'openrouter.ai'],
@@ -40,7 +42,7 @@ const toneFromPercent = (percent: number): ExternalQuotaProgressTone => (
       : 'safe'
 )
 
-const providerKeyFromStatus = (status: ExternalSubscriptionStatus): ExternalQuotaProgressMeta['provider'] | null => {
+const providerKeyFromStatus = (status: ExternalSubscriptionStatus): KnownProgressProvider | null => {
   const text = [
     status.provider,
     status.name,
@@ -51,7 +53,7 @@ const providerKeyFromStatus = (status: ExternalSubscriptionStatus): ExternalQuot
 
   for (const [provider, aliases] of Object.entries(PROGRESS_PROVIDER_ALIASES)) {
     if (aliases.some(alias => text.includes(alias))) {
-      return provider as ExternalQuotaProgressMeta['provider']
+      return provider as KnownProgressProvider
     }
   }
 
@@ -59,6 +61,13 @@ const providerKeyFromStatus = (status: ExternalSubscriptionStatus): ExternalQuot
   if (status.template === 'openrouter_credits') return 'openrouter'
   return null
 }
+
+const genericProviderKeyFromStatus = (status: ExternalSubscriptionStatus) => (
+  status.provider ||
+  status.template ||
+  status.name ||
+  'external'
+)
 
 export const supportsExternalQuotaProgress = (status?: ExternalSubscriptionStatus | null) => {
   if (!status) return false
@@ -110,6 +119,7 @@ export const buildAccountExternalQuotaProgressMeta = (
   if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
 
   const provider = providerKeyFromStatus(status)
+    ?? (preference.mode === 'custom_total' ? genericProviderKeyFromStatus(status) : null)
   if (!provider) return null
 
   const total = preference.mode === 'custom_total'
