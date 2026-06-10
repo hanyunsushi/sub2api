@@ -282,6 +282,12 @@ describe('Cloudflare appearance theme', () => {
     expect(systemAmountBlock).toContain('text-align: center;')
     expect(systemAmountBlock).toContain('background: transparent;')
     expect(systemAmountBlock).not.toContain('text-align: right;')
+    expect(styleSource).toContain('.header-balance-chip-identity')
+    expect(styleSource).toContain('.header-balance-chip-amount')
+    expect(styleSource).toContain('.header-balance-system-amount')
+    const globalPaintResetBlock = cssBlockFrom(styleSource, '/* Header balance chip paint reset.')
+    expect(globalPaintResetBlock).toContain('background: transparent !important;')
+    expect(globalPaintResetBlock).toContain('box-shadow: none !important;')
   })
 
   it('keeps channel status and dashboard top-right controls readable under Anthropic', () => {
@@ -320,6 +326,20 @@ describe('Cloudflare appearance theme', () => {
     expect(actionBlock).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
     expect(styleSource).toContain(':where(.btn, button, [role="button"]):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled)')
     expect(actionBlock).not.toContain('var(--atelier-slab-field)')
+  })
+
+  it('keeps small user key table icons readable on paper buttons', () => {
+    expect(styleSource).toContain('#app .app-layout-content .user-keys-atelier')
+    expect(styleSource).toContain(':where(button.rounded, button.rounded-lg)')
+    expect(styleSource).toContain(':where(svg, path)')
+    const keyIconBlock = cssBlockFrom(
+      styleSource,
+      '#app .app-layout-content .user-keys-atelier\n' +
+        '  :where(button.rounded, button.rounded-lg)\n' +
+        '  :where(svg, path)',
+    )
+    expect(keyIconBlock).toContain('color: currentColor !important;')
+    expect(keyIconBlock).toContain('stroke: currentColor !important;')
   })
 
   it('uses the Cloudflare brand palette as the accent axis on a white canvas', () => {
