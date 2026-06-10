@@ -24,6 +24,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("matchedStatuses")
     expect(componentSource).toContain("knownGroupExternalKeywords")
     expect(componentSource).toContain("buzz")
+    expect(componentSource).toContain("qlhazycoder")
     expect(componentSource).toContain("rawchat.cn")
     expect(componentSource).toContain('matchStatusesForGroup(group.key, monitors, props.statuses)')
     expect(componentSource).toContain('resolveGroupExternalKeywords(group, monitors)')

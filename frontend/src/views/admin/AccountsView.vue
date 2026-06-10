@@ -160,6 +160,22 @@
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
                       </button>
                     </div>
+                    <div class="my-2 border-t border-gray-100 dark:border-gray-700"></div>
+                    <div class="px-2 py-2">
+                      <div class="flex items-center justify-between gap-3">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                          {{ localText('外部订阅', 'External subscriptions') }}
+                        </span>
+                        <Icon name="creditCard" size="sm" class="text-gray-400" />
+                      </div>
+                    </div>
+                    <button
+                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                      @click="setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)"
+                    >
+                      <span class="truncate">{{ localText('显示额度进度条', 'Show quota progress') }}</span>
+                      <Icon v-if="externalQuotaProgressEnabled" name="check" size="sm" class="text-primary-500" />
+                    </button>
                   </div>
                 </FloatingDropdown>
               </div>
@@ -321,6 +337,21 @@
                 <div class="flex items-center justify-between gap-2">
                   <span>{{ localText('期限', 'Expiry') }}</span>
                   <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
+                </div>
+                <div v-if="getAccountExternalQuota(row)?.progress" class="account-external-quota-progress">
+                  <div class="flex items-center justify-between gap-2">
+                    <span>{{ localText('额度', 'Quota') }}</span>
+                    <span class="font-mono">{{ getAccountExternalQuota(row)?.formattedUsage }}</span>
+                  </div>
+                  <div class="account-external-quota-progress-track" aria-hidden="true">
+                    <div
+                      :class="[
+                        'account-external-quota-progress-fill',
+                        externalQuotaProgressFillClass(getAccountExternalQuota(row)?.progress?.tone)
+                      ]"
+                      :style="{ width: `${getAccountExternalQuota(row)?.progress?.percent ?? 0}%` }"
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -553,7 +584,9 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
+import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'
 import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
+import { buildExternalQuotaProgressMeta, type ExternalQuotaProgressMeta } from '@/utils/externalSubscriptionQuotaProgress'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
@@ -744,6 +777,10 @@ const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
+const {
+  externalQuotaProgressEnabled,
+  setExternalQuotaProgressEnabled,
+} = useExternalQuotaProgressPreference()
 const accountCallingGraceUntil = reactive(new Map<number, number>())
 const accountCallingNow = ref(Date.now())
 let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
@@ -871,6 +908,8 @@ interface AccountExternalQuota {
   url: string
   formattedBalance: string
   formattedExpiry: string
+  formattedUsage?: string
+  progress?: ExternalQuotaProgressMeta | null
 }
 
 const formatExternalAmount = (value?: number | null, currency?: string | null) => {
@@ -924,19 +963,26 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
         : localText('读取失败', 'Read failed'),
       formattedExpiry: isInvalidToken
         ? localText('请更新 Token', 'Update token')
-        : (subscription.error_message || localText('请检查配置', 'Check settings'))
+        : (subscription.error_message || localText('请检查配置', 'Check settings')),
+      progress: null
     }
   }
 
   const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
   const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
+  const progress = externalQuotaProgressEnabled.value
+    ? buildExternalQuotaProgressMeta(subscription)
+    : null
+  const used = progress ? formatExternalAmount(progress.used, subscription.currency) : null
   return {
     label: getExternalSubscriptionLabel(subscription),
     url: subscription.site_url,
     formattedBalance: remaining && total
       ? `${remaining} / ${total}`
       : remaining || (total ? `${localText('余额未知', 'Balance unknown')} / ${total}` : localText('余额未知', 'Balance unknown')),
-    formattedExpiry: formatExternalDate(subscription.expires_at)
+    formattedExpiry: formatExternalDate(subscription.expires_at),
+    formattedUsage: progress && used && total ? `${used} / ${total}` : undefined,
+    progress
   }
 }
 
@@ -944,6 +990,12 @@ const getAccountExternalQuota = (account: Account): AccountExternalQuota | null 
   const subscription = getMatchedExternalSubscription(account)
   if (subscription) return buildExternalSubscriptionQuota(subscription)
   return null
+}
+
+const externalQuotaProgressFillClass = (tone?: ExternalQuotaProgressMeta['tone']) => {
+  if (tone === 'danger') return 'account-external-quota-progress-fill--danger'
+  if (tone === 'warning') return 'account-external-quota-progress-fill--warning'
+  return 'account-external-quota-progress-fill--safe'
 }
 
 const buildAccountLogoSearchText = (account: Account) => {
@@ -2170,5 +2222,40 @@ onUnmounted(() => {
 
 .account-tools-menu-icon {
   @apply inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md;
+}
+
+.account-external-quota-progress {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.account-external-quota-progress-track {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(229, 231, 235, 0.9);
+}
+
+.account-external-quota-progress-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.account-external-quota-progress-fill--safe {
+  background: #22c55e;
+}
+
+.account-external-quota-progress-fill--warning {
+  background: #f59e0b;
+}
+
+.account-external-quota-progress-fill--danger {
+  background: #ef4444;
+}
+
+.dark .account-external-quota-progress-track {
+  background: rgba(55, 65, 81, 0.9);
 }
 </style>

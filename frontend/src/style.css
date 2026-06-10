@@ -811,18 +811,18 @@
   }
 
   .badge-success {
-    background: var(--atelier-dust-soft);
-    color: var(--atelier-blue-dark);
+    background: #dcfce7;
+    color: #166534;
   }
 
   .badge-warning {
-    background: var(--atelier-dust-soft);
-    color: var(--atelier-blue-dark);
+    background: #fef3c7;
+    color: #92400e;
   }
 
   .badge-danger {
-    background: var(--atelier-material-red);
-    color: #8f3328;
+    background: #fee2e2;
+    color: #991b1b;
   }
 
   .badge-gray {
@@ -4326,15 +4326,15 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--safe {
-  background: var(--atelier-green) !important;
+  background: #22c55e !important;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--warning {
-  background: var(--atelier-butter) !important;
+  background: #f59e0b !important;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-fill--danger {
-  background: var(--atelier-red) !important;
+  background: #ef4444 !important;
 }
 
 #app .app-layout-content .accounts-table-page .account-groups-cell {
@@ -6002,39 +6002,39 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .semantic-badge--success {
-  --semantic-badge-edge: color-mix(in srgb, var(--atelier-green) 42%, var(--atelier-material-edge));
-  --semantic-badge-surface: color-mix(in srgb, var(--atelier-green) 16%, var(--atelier-paper));
-  --semantic-badge-ink: #236346;
+  --semantic-badge-edge: #86efac;
+  --semantic-badge-surface: #dcfce7;
+  --semantic-badge-ink: #166534;
 }
 
 .semantic-badge--warning {
-  --semantic-badge-edge: color-mix(in srgb, #a16207 42%, var(--atelier-material-edge));
-  --semantic-badge-surface: #efe2bf;
-  --semantic-badge-ink: #7a4d05;
+  --semantic-badge-edge: #fcd34d;
+  --semantic-badge-surface: #fef3c7;
+  --semantic-badge-ink: #92400e;
 }
 
 .semantic-badge--danger {
-  --semantic-badge-edge: color-mix(in srgb, var(--atelier-red) 46%, var(--atelier-material-edge));
-  --semantic-badge-surface: color-mix(in srgb, var(--atelier-red) 14%, var(--atelier-paper));
-  --semantic-badge-ink: #8f2f1c;
+  --semantic-badge-edge: #fca5a5;
+  --semantic-badge-surface: #fee2e2;
+  --semantic-badge-ink: #991b1b;
 }
 
 .semantic-badge--info {
-  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 38%, var(--atelier-material-edge));
-  --semantic-badge-surface: var(--atelier-material-blue);
-  --semantic-badge-ink: var(--atelier-blue-dark);
+  --semantic-badge-edge: #93c5fd;
+  --semantic-badge-surface: #dbeafe;
+  --semantic-badge-ink: #1d4ed8;
 }
 
 .semantic-badge--primary {
-  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 42%, var(--atelier-material-edge));
-  --semantic-badge-surface: color-mix(in srgb, var(--atelier-blue) 14%, var(--atelier-paper));
-  --semantic-badge-ink: var(--atelier-blue-dark);
+  --semantic-badge-edge: #bfdbfe;
+  --semantic-badge-surface: #dbeafe;
+  --semantic-badge-ink: #1d4ed8;
 }
 
 .semantic-badge--neutral {
-  --semantic-badge-edge: var(--atelier-material-edge);
-  --semantic-badge-surface: var(--atelier-material-dust);
-  --semantic-badge-ink: var(--atelier-muted);
+  --semantic-badge-edge: #d1d5db;
+  --semantic-badge-surface: #f3f4f6;
+  --semantic-badge-ink: #4b5563;
 }
 
 .semantic-badge--provider-openai {
@@ -6050,31 +6050,31 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 .semantic-badge--provider-gemini {
-  --semantic-badge-edge: color-mix(in srgb, var(--atelier-blue) 42%, var(--atelier-material-edge));
-  --semantic-badge-surface: color-mix(in srgb, var(--atelier-blue) 13%, var(--atelier-paper));
-  --semantic-badge-ink: var(--atelier-blue-dark);
+  --semantic-badge-edge: #93c5fd;
+  --semantic-badge-surface: #dbeafe;
+  --semantic-badge-ink: #1d4ed8;
 }
 
 .dark .semantic-badge--success {
-  --semantic-badge-surface: rgba(47, 125, 89, 0.2);
-  --semantic-badge-ink: #a7e4c1;
+  --semantic-badge-surface: rgba(34, 197, 94, 0.22);
+  --semantic-badge-ink: #86efac;
 }
 
 .dark .semantic-badge--warning {
-  --semantic-badge-surface: rgba(161, 98, 7, 0.22);
-  --semantic-badge-ink: #efd08a;
+  --semantic-badge-surface: rgba(245, 158, 11, 0.24);
+  --semantic-badge-ink: #fcd34d;
 }
 
 .dark .semantic-badge--danger {
-  --semantic-badge-surface: rgba(180, 69, 54, 0.22);
-  --semantic-badge-ink: #f0b3a7;
+  --semantic-badge-surface: rgba(239, 68, 68, 0.24);
+  --semantic-badge-ink: #fca5a5;
 }
 
 .dark .semantic-badge--info,
 .dark .semantic-badge--primary,
 .dark .semantic-badge--provider-gemini {
-  --semantic-badge-surface: rgba(37, 99, 235, 0.22);
-  --semantic-badge-ink: #b8cdfb;
+  --semantic-badge-surface: rgba(59, 130, 246, 0.24);
+  --semantic-badge-ink: #93c5fd;
 }
 
 .dark .semantic-badge--neutral {
@@ -6668,27 +6668,27 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 #app .app-layout-content .monitor-channel-card .monitor-status-operational {
   --monitor-status-color: #10a37f;
-  --monitor-status-surface: color-mix(in srgb, #10a37f 14%, var(--atelier-paper));
-  --monitor-status-edge: color-mix(in srgb, #10a37f 36%, var(--atelier-material-edge));
+  --monitor-status-surface: rgba(16, 163, 127, 0.14);
+  --monitor-status-edge: rgba(16, 163, 127, 0.36);
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-status-degraded {
-  --monitor-status-color: var(--atelier-butter);
-  --monitor-status-surface: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
-  --monitor-status-edge: color-mix(in srgb, var(--atelier-butter) 42%, var(--atelier-material-edge));
+  --monitor-status-color: #f59e0b;
+  --monitor-status-surface: rgba(245, 158, 11, 0.16);
+  --monitor-status-edge: rgba(245, 158, 11, 0.42);
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-status-failed,
 #app .app-layout-content .monitor-channel-card .monitor-status-error {
-  --monitor-status-color: var(--atelier-red);
-  --monitor-status-surface: color-mix(in srgb, var(--atelier-red) 14%, var(--atelier-paper));
-  --monitor-status-edge: color-mix(in srgb, var(--atelier-red) 38%, var(--atelier-material-edge));
+  --monitor-status-color: #ef4444;
+  --monitor-status-surface: rgba(239, 68, 68, 0.14);
+  --monitor-status-edge: rgba(239, 68, 68, 0.38);
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-status-unknown {
-  --monitor-status-color: var(--atelier-dust);
-  --monitor-status-surface: var(--atelier-material-dust);
-  --monitor-status-edge: var(--atelier-material-edge);
+  --monitor-status-color: #6b7280;
+  --monitor-status-surface: rgba(107, 114, 128, 0.14);
+  --monitor-status-edge: rgba(107, 114, 128, 0.34);
 }
 
 #app .app-layout-content .monitor-channel-card .monitor-provider-badge {

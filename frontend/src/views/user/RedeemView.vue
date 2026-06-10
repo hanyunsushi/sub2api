@@ -3,17 +3,17 @@
     <div class="mx-auto max-w-2xl space-y-6">
       <!-- Current Balance Card -->
       <div class="card overflow-hidden">
-        <div class="bg-gradient-to-br from-primary-500 to-primary-600 px-6 py-8 text-center">
+        <div class="redeem-balance-hero px-6 py-8 text-center">
           <div
             class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20"
           >
             <Icon name="creditCard" size="xl" class="text-white" />
           </div>
-          <p class="text-sm font-medium text-primary-100">{{ t('redeem.currentBalance') }}</p>
+          <p class="redeem-balance-hero-muted text-sm font-medium">{{ t('redeem.currentBalance') }}</p>
           <p class="mt-2 text-4xl font-bold text-white">
             ${{ user?.balance?.toFixed(2) || '0.00' }}
           </p>
-          <p class="mt-2 text-sm text-primary-100">
+          <p class="redeem-balance-hero-muted mt-2 text-sm">
             {{ t('redeem.concurrency') }}: {{ user?.concurrency || 0 }} {{ t('redeem.requests') }}
           </p>
         </div>
@@ -226,7 +226,7 @@
           </div>
 
           <!-- History List -->
-          <div v-else-if="history.length > 0" class="space-y-3">
+          <div v-else-if="history.length > 0" class="redeem-history-list space-y-3">
             <div
               v-for="item in history"
               :key="item.id"
@@ -486,6 +486,57 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.redeem-balance-hero {
+  background:
+    linear-gradient(135deg, var(--atelier-terracotta-action), var(--atelier-terracotta-action-hover));
+}
+
+.redeem-balance-hero-muted {
+  color: color-mix(in srgb, var(--atelier-paper-2) 82%, white);
+}
+
+.redeem-history-list :where(.bg-emerald-100, .dark\:bg-emerald-900\/30) {
+  background: #dcfce7 !important;
+}
+
+.redeem-history-list :where(.text-emerald-600, .dark\:text-emerald-400) {
+  color: #059669 !important;
+}
+
+.redeem-history-list :where(.bg-red-100, .dark\:bg-red-900\/30) {
+  background: #fee2e2 !important;
+}
+
+.redeem-history-list :where(.text-red-600, .dark\:text-red-400) {
+  color: #dc2626 !important;
+}
+
+.redeem-history-list :where(.bg-blue-100, .dark\:bg-blue-900\/30) {
+  background: #dbeafe !important;
+}
+
+.redeem-history-list :where(.text-blue-600, .dark\:text-blue-400) {
+  color: #2563eb !important;
+}
+
+.redeem-history-list :where(.bg-purple-100, .dark\:bg-purple-900\/30) {
+  background: #f3e8ff !important;
+}
+
+.redeem-history-list :where(.text-purple-600, .dark\:text-purple-400) {
+  color: #9333ea !important;
+}
+
+.redeem-history-list :where(.bg-orange-100, .dark\:bg-orange-900\/30) {
+  background: #ffedd5 !important;
+}
+
+.redeem-history-list :where(.text-orange-600, .dark\:text-orange-400) {
+  color: #ea580c !important;
+}
+</style>
 
 <style scoped>
 .fade-enter-active,

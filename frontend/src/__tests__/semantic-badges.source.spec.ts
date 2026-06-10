@@ -13,6 +13,22 @@ const monitorSource = readFileSync(resolve(__dirname, '../views/admin/ChannelMon
 const monitorCellSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorPrimaryModelCell.vue'), 'utf8')
 const monitorFormatSource = readFileSync(resolve(__dirname, '../composables/useChannelMonitorFormat.ts'), 'utf8')
 
+const cssBlock = (selector: string) => {
+  const selectorIndex = styleSource.indexOf(selector)
+  expect(selectorIndex, `selector not found: ${selector}`).toBeGreaterThan(-1)
+  const openBraceIndex = styleSource.indexOf('{', selectorIndex)
+  let depth = 0
+  for (let index = openBraceIndex; index < styleSource.length; index += 1) {
+    const char = styleSource[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return styleSource.slice(openBraceIndex + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
+}
+
 describe('semantic badges', () => {
   it('defines semantic badge colors after the generic badge restyle', () => {
     expect(styleSource.indexOf('.semantic-badge')).toBeGreaterThan(
@@ -26,6 +42,15 @@ describe('semantic badges', () => {
     expect(styleSource).toContain('.semantic-badge--provider-openai')
     expect(styleSource).toContain('.semantic-badge--provider-anthropic')
     expect(styleSource).toContain('.semantic-badge--provider-gemini')
+    expect(cssBlock('.badge-success')).toContain('background: #dcfce7;')
+    expect(cssBlock('.badge-success')).toContain('color: #166534;')
+    expect(cssBlock('.badge-warning')).toContain('background: #fef3c7;')
+    expect(cssBlock('.badge-warning')).toContain('color: #92400e;')
+    expect(cssBlock('.badge-danger')).toContain('background: #fee2e2;')
+    expect(cssBlock('.badge-danger')).toContain('color: #991b1b;')
+    expect(cssBlock('.semantic-badge--success')).not.toContain('var(--atelier')
+    expect(cssBlock('.semantic-badge--warning')).not.toContain('var(--atelier')
+    expect(cssBlock('.semantic-badge--danger')).not.toContain('var(--atelier')
   })
 
   it('uses semantic classes on requested admin/user status and type badges', () => {

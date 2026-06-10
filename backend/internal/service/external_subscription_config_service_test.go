@@ -843,6 +843,78 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithVibe
 	require.InDelta(t, 37.214125, *rawchat.Subscriptions[0].RemainingUSD, 0.000001)
 }
 
+func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithLooseCookieAndRootQuota(t *testing.T) {
+	var sawQuota bool
+	var rawChatServer *httptest.Server
+	rawChatServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Empty(t, r.Header.Get("Authorization"))
+		require.Equal(t, "theme=light; __user_token__=rawchat-session", r.Header.Get("Cookie"))
+		require.Equal(t, "application/json, text/plain, */*", r.Header.Get("Accept"))
+		require.Contains(t, r.Header.Get("User-Agent"), "Mozilla/5.0")
+		require.Equal(t, rawChatServer.URL, r.Header.Get("Origin"))
+		require.Equal(t, rawChatServer.URL+"/pastel/", r.Header.Get("Referer"))
+
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/frontend-api/vibe-code/quota":
+			sawQuota = true
+			_, _ = w.Write([]byte(`{
+				"code": 1,
+				"data": {
+					"subscriptions": {
+						"id": "701",
+						"subTypeName": "codex 每日60刀月卡",
+						"billingType": "amount",
+						"amountLimit": "60 USD",
+						"usedAmount": "22.5 USD",
+						"remainingAmount": "37.5 USD",
+						"expireTime": "2026-06-27T17:13:08.727+08:00",
+						"period": "24h"
+					},
+					"currentUsage": {
+						"totalCost": "22.5 USD"
+					}
+				}
+			}`))
+		case "/frontend-api/getUserSubscriptions":
+			w.WriteHeader(http.StatusBadGateway)
+			_, _ = w.Write([]byte(`{"code":502,"message":"subscription list temporarily unavailable"}`))
+		default:
+			require.Failf(t, "unexpected RawChat path", "path=%s", r.URL.Path)
+		}
+	}))
+	defer rawChatServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    rawChatServer.URL,
+			APIToken:      "theme=light; __user_token__=rawchat-session",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     65,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	require.True(t, sawQuota)
+
+	rawchat := requireExternalSubscriptionStatus(t, statuses, "rawchat")
+	require.Empty(t, rawchat.ErrorCode)
+	require.Equal(t, 1, rawchat.ActiveCount)
+	require.NotNil(t, rawchat.TotalLimitUSD)
+	require.InDelta(t, 60, *rawchat.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 22.5, rawchat.UsedUSD, 0.0001)
+	require.NotNil(t, rawchat.RemainingUSD)
+	require.InDelta(t, 37.5, *rawchat.RemainingUSD, 0.0001)
+	require.NotNil(t, rawchat.ExpiresAt)
+	require.Equal(t, "2026-06-27T09:13:08Z", rawchat.ExpiresAt.UTC().Format("2006-01-02T15:04:05Z"))
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {
 	goodServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/v1/credits", r.URL.Path)

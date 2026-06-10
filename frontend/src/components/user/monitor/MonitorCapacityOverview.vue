@@ -112,7 +112,7 @@ import {
 
 const knownGroupExternalKeywords: Record<string, string[]> = {
   gpt: ['gpt', 'openai', 'chatgpt'],
-  claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc'],
+  claude: ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc', 'qlhazycoder', 'qlhazycoder.top', 'qlhazy'],
   mimo: ['mimo'],
 }
 
@@ -538,15 +538,15 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-status-segment--limited {
-  background: var(--atelier-butter);
+  background: #f59e0b;
 }
 
 .monitor-capacity-status-segment--error {
-  background: var(--atelier-red);
+  background: #ef4444;
 }
 
 .monitor-capacity-status-segment--disabled {
-  background: var(--atelier-dust);
+  background: #6b7280;
 }
 
 .dark .monitor-capacity-logo {
