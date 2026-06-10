@@ -128,7 +128,19 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('externalQuotaProgressEnabled')
     expect(source).not.toContain('useExternalQuotaProgressPreference')
     expect(source).not.toContain("localText('额度进度', 'Quota progress')")
-    expect(source).toContain('return buildExternalQuotaProgressMeta(card.status)')
+    expect(source).toContain('buildAccountExternalQuotaProgressMeta(card.status, EXTERNAL_CARD_QUOTA_PROGRESS_PREFERENCE)')
+  })
+
+  it('renders external subscription card quota bars with the official usage progress component', () => {
+    expect(source).toContain("import UsageProgressBar from '@/components/account/UsageProgressBar.vue'")
+    expect(source).toContain('data-testid="external-subscription-quota-progress"')
+    expect(source).toContain('<UsageProgressBar')
+    expect(source).toContain('label="EXT"')
+    expect(source).toContain(':utilization="getCardQuotaProgress(card)?.percent ?? 0"')
+    expect(source).toContain('color="emerald"')
+    expect(source).not.toContain('external-subscription-quota-progress-track')
+    expect(source).not.toContain('external-subscription-quota-progress-fill')
+    expect(source).not.toContain('externalQuotaProgressFillClass')
   })
 
   it('uses account-card style official links instead of showing raw site URLs on provider cards', () => {
