@@ -17,7 +17,7 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg border border-accent-200 bg-white shadow-card dark:border-dark-700 dark:bg-dark-800'
+            'toast toast-themed pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg border shadow-card'
           ]"
         >
           <div class="p-4">
@@ -27,7 +27,7 @@
                 <Icon
                   :name="getToastIconName(toast.type)"
                   size="md"
-                  class="text-primary-600 dark:text-primary-300"
+                  class="toast-icon"
                   aria-hidden="true"
                 />
               </div>
@@ -52,7 +52,7 @@
               <!-- Close button -->
               <button
                 @click="removeToast(toast.id)"
-                class="-m-1 flex-shrink-0 rounded p-1 text-accent-500 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-dark-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-300"
+                class="toast-close -m-1 flex-shrink-0 rounded p-1 transition-colors"
                 aria-label="Close notification"
               >
                 <Icon name="x" size="sm" />
@@ -63,7 +63,7 @@
           <!-- Progress bar -->
           <div v-if="toast.duration" class="h-1 bg-gray-100 dark:bg-dark-700">
             <div
-              class="h-full toast-progress bg-primary-500"
+              class="h-full toast-progress"
               :style="{ animationDuration: `${toast.duration}ms` }"
             ></div>
           </div>
@@ -102,11 +102,42 @@ const removeToast = (id: string) => {
 </script>
 
 <style scoped>
+.toast-themed {
+  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 28%, transparent);
+  background: color-mix(in srgb, var(--atelier-paper-2, #fffaf0) 96%, var(--atelier-terracotta-action, #c96442));
+  color: var(--atelier-ink, #171512);
+  box-shadow: 0 18px 44px rgba(20, 20, 19, 0.14);
+}
+
+.toast-icon {
+  color: var(--atelier-terracotta-action, #c96442);
+}
+
+.toast-close {
+  color: color-mix(in srgb, var(--atelier-ink, #171512) 58%, transparent);
+}
+
+.toast-close:hover {
+  background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 12%, transparent);
+  color: var(--atelier-terracotta-action, #c96442);
+}
+
 .toast-progress {
   width: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--atelier-terracotta-action, #c96442),
+    var(--atelier-terracotta-action-hover, #d97757)
+  );
   animation-name: toast-progress-shrink;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
+}
+
+:root.dark .toast-themed {
+  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 42%, transparent);
+  background: color-mix(in srgb, var(--atelier-ink, #171512) 92%, var(--atelier-terracotta-action, #c96442));
+  color: var(--atelier-paper-2, #fffaf0);
 }
 
 @keyframes toast-progress-shrink {

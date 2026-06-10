@@ -12,6 +12,14 @@ export interface ExternalQuotaProgressMeta {
   tone: ExternalQuotaProgressTone
 }
 
+export type ExternalQuotaProgressMode = 'status_total' | 'custom_total'
+
+export interface AccountExternalQuotaProgressPreference {
+  enabled: boolean
+  mode: ExternalQuotaProgressMode
+  customTotal?: number | null
+}
+
 const PROGRESS_PROVIDER_ALIASES: Record<ExternalQuotaProgressMeta['provider'], string[]> = {
   rawchat: ['rawchat', 'rawchat.cn', 'rawc'],
   tcdmx: ['tcdmx'],
@@ -23,6 +31,14 @@ const isFiniteNumber = (value: unknown): value is number => (
 )
 
 const clampPercent = (value: number) => Math.max(0, Math.min(value, 100))
+
+const toneFromPercent = (percent: number): ExternalQuotaProgressTone => (
+  percent >= 90
+    ? 'danger'
+    : percent >= 75
+      ? 'warning'
+      : 'safe'
+)
 
 const providerKeyFromStatus = (status: ExternalSubscriptionStatus): ExternalQuotaProgressMeta['provider'] | null => {
   const text = [
@@ -74,11 +90,7 @@ export const buildExternalQuotaProgressMeta = (
   if (!Number.isFinite(total) || total <= 0 || !Number.isFinite(remaining)) return null
 
   const percent = clampPercent((used / total) * 100)
-  const tone: ExternalQuotaProgressTone = percent >= 90
-    ? 'danger'
-    : percent >= 75
-      ? 'warning'
-      : 'safe'
+  const tone = toneFromPercent(percent)
 
   return {
     visible: true,
@@ -88,5 +100,37 @@ export const buildExternalQuotaProgressMeta = (
     total,
     percent,
     tone,
+  }
+}
+
+export const buildAccountExternalQuotaProgressMeta = (
+  status: ExternalSubscriptionStatus | null | undefined,
+  preference: AccountExternalQuotaProgressPreference | null | undefined,
+): ExternalQuotaProgressMeta | null => {
+  if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
+
+  const provider = providerKeyFromStatus(status)
+  if (!provider || !isFiniteNumber(status.remaining_usd)) return null
+
+  const remaining = Math.max(0, status.remaining_usd)
+  const total = preference.mode === 'custom_total'
+    ? Math.max(0, Number(preference.customTotal ?? 0))
+    : isFiniteNumber(status.total_limit_usd)
+      ? Math.max(0, status.total_limit_usd)
+      : 0
+
+  if (!Number.isFinite(total) || total <= 0) return null
+
+  const used = Math.max(0, total - remaining)
+  const percent = clampPercent((used / total) * 100)
+
+  return {
+    visible: true,
+    provider,
+    used,
+    remaining,
+    total,
+    percent,
+    tone: toneFromPercent(percent),
   }
 }
