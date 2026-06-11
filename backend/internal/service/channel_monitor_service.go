@@ -59,8 +59,8 @@ type ChannelMonitorRepository interface {
 
 // ChannelMonitorService 渠道监控管理服务。
 type ChannelMonitorService struct {
-	repo      ChannelMonitorRepository
-	encryptor SecretEncryptor
+	repo                ChannelMonitorRepository
+	encryptor           SecretEncryptor
 	autoScheduleRepo    channelMonitorAccountScheduleRepository
 	autoScheduleRuntime channelMonitorScheduleAutomation
 	// scheduler 由 wire 通过 SetScheduler 注入；CRUD 后调用对应钩子即时同步任务。
@@ -71,6 +71,7 @@ type ChannelMonitorService struct {
 type channelMonitorAccountScheduleRepository interface {
 	SetSchedulable(ctx context.Context, id int64, schedulable bool) error
 	IsScheduleLocked(ctx context.Context, id int64) (bool, error)
+	ListByPlatform(ctx context.Context, platform string) ([]Account, error)
 }
 
 type channelMonitorScheduleAutomation interface {
@@ -317,19 +318,14 @@ func (s *ChannelMonitorService) SetAccountScheduleAutomation(repo channelMonitor
 }
 
 func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {
-	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil || m == nil || m.AccountID == nil || *m.AccountID <= 0 {
+	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil || m == nil {
 		return
 	}
 	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
 		return
 	}
-	locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, *m.AccountID)
-	if err != nil {
-		slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
-			"monitor_id", m.ID, "account_id", *m.AccountID, "error", err)
-		return
-	}
-	if locked {
+	accountIDs := s.resolveAutoScheduleAccountIDs(ctx, m)
+	if len(accountIDs) == 0 {
 		return
 	}
 	if len(results) == 0 {
@@ -345,10 +341,51 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 			break
 		}
 	}
-	if err := s.autoScheduleRepo.SetSchedulable(ctx, *m.AccountID, schedulable); err != nil {
-		slog.Warn("channel_monitor: account auto schedule update failed",
-			"monitor_id", m.ID, "account_id", *m.AccountID, "schedulable", schedulable, "error", err)
+	for _, accountID := range accountIDs {
+		locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, accountID)
+		if err != nil {
+			slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
+				"monitor_id", m.ID, "account_id", accountID, "error", err)
+			continue
+		}
+		if locked {
+			continue
+		}
+		if err := s.autoScheduleRepo.SetSchedulable(ctx, accountID, schedulable); err != nil {
+			slog.Warn("channel_monitor: account auto schedule update failed",
+				"monitor_id", m.ID, "account_id", accountID, "schedulable", schedulable, "error", err)
+		}
 	}
+}
+
+func (s *ChannelMonitorService) resolveAutoScheduleAccountIDs(ctx context.Context, m *ChannelMonitor) []int64 {
+	if m.AccountID != nil && *m.AccountID > 0 {
+		return []int64{*m.AccountID}
+	}
+	monitorName := normalizeMonitorAccountMatchName(m.Name)
+	if monitorName == "" || strings.TrimSpace(m.Provider) == "" {
+		return nil
+	}
+	accounts, err := s.autoScheduleRepo.ListByPlatform(ctx, strings.TrimSpace(m.Provider))
+	if err != nil {
+		slog.Warn("channel_monitor: skip account auto schedule, account name lookup failed",
+			"monitor_id", m.ID, "provider", m.Provider, "error", err)
+		return nil
+	}
+	matchedIDs := make([]int64, 0, 1)
+	for _, account := range accounts {
+		if normalizeMonitorAccountMatchName(account.Name) != monitorName {
+			continue
+		}
+		if account.ID > 0 {
+			matchedIDs = append(matchedIDs, account.ID)
+		}
+	}
+	return matchedIDs
+}
+
+func normalizeMonitorAccountMatchName(name string) string {
+	return strings.ToLower(strings.TrimSpace(name))
 }
 
 // runChecksConcurrent 对 primary + extra 模型并发执行检测。
