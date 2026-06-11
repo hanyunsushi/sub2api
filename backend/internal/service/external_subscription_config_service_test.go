@@ -370,6 +370,111 @@ func TestExternalSubscriptionConfigServiceMergesDefaultProvidersIntoExistingStor
 	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
 }
 
+func TestExternalSubscriptionConfigServiceDeleteDefaultProviderDoesNotRecreateMimo(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+		{
+			ID:            "cloudflare",
+			Name:          "Cloudflare AI Gateway",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+			APIBaseURL:    DefaultCloudflareAIGatewayCreditsAPIBaseURL,
+			MatchKeywords: []string{"cloudflare"},
+			SortOrder:     80,
+		},
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    DefaultRawChatSubscriptionAPIBaseURL,
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     90,
+		},
+		{
+			ID:            "mimo",
+			Name:          "Xiaomi MiMo",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateMimoTokenPlan,
+			APIBaseURL:    DefaultMimoTokenPlanAPIBaseURL,
+			MatchKeywords: []string{"mimo", "xiaomimimo"},
+			SortOrder:     95,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	ctx := context.Background()
+
+	require.NoError(t, svc.DeleteProvider(ctx, "mimo"))
+
+	providers, err := svc.ListProviders(ctx)
+	require.NoError(t, err)
+	requireNoExternalSubscriptionProvider(t, providers, "mimo")
+	require.Contains(t, repo.values[SettingKeyExternalSubscriptionDeletedDefaultProviders], "mimo")
+}
+
+func TestExternalSubscriptionConfigServiceCreateProviderClearsDeletedDefaultMarker(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+		{
+			ID:            "cloudflare",
+			Name:          "Cloudflare AI Gateway",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
+			APIBaseURL:    DefaultCloudflareAIGatewayCreditsAPIBaseURL,
+			MatchKeywords: []string{"cloudflare"},
+			SortOrder:     80,
+		},
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       false,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    DefaultRawChatSubscriptionAPIBaseURL,
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     90,
+		},
+	}, map[string]string{
+		SettingKeyExternalSubscriptionDeletedDefaultProviders: `["mimo"]`,
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	ctx := context.Background()
+
+	created, err := svc.CreateProvider(ctx, ExternalSubscriptionProviderInput{
+		ID:              "mimo",
+		Name:            "Xiaomi MiMo",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateMimoTokenPlan,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+		APIBaseURL:      DefaultMimoTokenPlanAPIBaseURL,
+		APIToken:        "mimo-token",
+		MatchKeywords:   []string{"mimo", "xiaomimimo"},
+		SortOrder:       95,
+	})
+	require.NoError(t, err)
+	require.Equal(t, "mimo", created.ID)
+	require.True(t, created.APITokenConfigured)
+
+	var deleted []string
+	require.NoError(t, json.Unmarshal([]byte(repo.values[SettingKeyExternalSubscriptionDeletedDefaultProviders]), &deleted))
+	require.NotContains(t, deleted, "mimo")
+}
+
 func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepo(nil)
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
@@ -1618,6 +1723,13 @@ func requireExternalSubscriptionProvider(t *testing.T, providers []ExternalSubsc
 	}
 	require.Failf(t, "provider not found", "id=%s providers=%v", id, providers)
 	return ExternalSubscriptionProvider{}
+}
+
+func requireNoExternalSubscriptionProvider(t *testing.T, providers []ExternalSubscriptionProvider, id string) {
+	t.Helper()
+	for _, provider := range providers {
+		require.NotEqual(t, id, provider.ID, "provider should not exist")
+	}
 }
 
 func testFloat64Ptr(value float64) *float64 {
