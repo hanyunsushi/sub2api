@@ -158,6 +158,11 @@ func (s *ExternalSubscriptionConfigService) CreateProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, stored); err != nil {
 		return ExternalSubscriptionProvider{}, err
 	}
+	if isDefaultExternalSubscriptionProvider(next.ID) {
+		if err := s.removeDeletedDefaultProvider(ctx, next.ID); err != nil {
+			return ExternalSubscriptionProvider{}, err
+		}
+	}
 	s.invalidateStatusesCache(ctx)
 	return publicExternalSubscriptionProvider(next), nil
 }
@@ -180,6 +185,11 @@ func (s *ExternalSubscriptionConfigService) UpdateProvider(ctx context.Context, 
 		stored[index] = next
 		if err := s.saveStoredProviders(ctx, stored); err != nil {
 			return ExternalSubscriptionProvider{}, err
+		}
+		if isDefaultExternalSubscriptionProvider(next.ID) {
+			if err := s.removeDeletedDefaultProvider(ctx, next.ID); err != nil {
+				return ExternalSubscriptionProvider{}, err
+			}
 		}
 		s.invalidateStatusesCache(ctx)
 		return publicExternalSubscriptionProvider(next), nil
@@ -207,6 +217,11 @@ func (s *ExternalSubscriptionConfigService) DeleteProvider(ctx context.Context, 
 	}
 	if err := s.saveStoredProviders(ctx, next); err != nil {
 		return err
+	}
+	if isDefaultExternalSubscriptionProvider(id) {
+		if err := s.addDeletedDefaultProvider(ctx, id); err != nil {
+			return err
+		}
 	}
 	s.invalidateStatusesCache(ctx)
 	return nil
@@ -508,6 +523,10 @@ func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx c
 	if err != nil {
 		return nil, false, err
 	}
+	deletedDefaults, err := s.loadDeletedDefaultProviders(ctx)
+	if err != nil {
+		return nil, false, err
+	}
 	byID := make(map[string]int, len(stored))
 	for index, provider := range stored {
 		byID[provider.ID] = index
@@ -515,7 +534,11 @@ func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx c
 	mergeDefaultProviders := shouldMergeDefaultExternalSubscriptionProviders(stored)
 	updated := false
 	for _, legacyProvider := range legacy {
-		if !legacyProvider.hasSubscriptionCredential() && !(mergeDefaultProviders && isDefaultExternalSubscriptionProvider(legacyProvider.ID)) {
+		hasCredential := legacyProvider.hasSubscriptionCredential()
+		if !hasCredential && deletedDefaults[legacyProvider.ID] {
+			continue
+		}
+		if !hasCredential && !(mergeDefaultProviders && isDefaultExternalSubscriptionProvider(legacyProvider.ID)) {
 			continue
 		}
 		if index, ok := byID[legacyProvider.ID]; ok {
@@ -589,6 +612,62 @@ func shouldMergeDefaultExternalSubscriptionProviders(providers []externalSubscri
 		}
 	}
 	return count >= 2
+}
+
+func (s *ExternalSubscriptionConfigService) loadDeletedDefaultProviders(ctx context.Context) (map[string]bool, error) {
+	raw, err := s.settingService.settingRepo.GetValue(ctx, SettingKeyExternalSubscriptionDeletedDefaultProviders)
+	if err != nil {
+		if errors.Is(err, ErrSettingNotFound) {
+			return map[string]bool{}, nil
+		}
+		return nil, fmt.Errorf("get deleted default external subscription providers: %w", err)
+	}
+	return decodeExternalSubscriptionDeletedDefaultProviders(raw)
+}
+
+func (s *ExternalSubscriptionConfigService) addDeletedDefaultProvider(ctx context.Context, id string) error {
+	deleted, err := s.loadDeletedDefaultProviders(ctx)
+	if err != nil {
+		return err
+	}
+	id = strings.TrimSpace(strings.ToLower(id))
+	if !isDefaultExternalSubscriptionProvider(id) || deleted[id] {
+		return nil
+	}
+	deleted[id] = true
+	return s.saveDeletedDefaultProviders(ctx, deleted)
+}
+
+func (s *ExternalSubscriptionConfigService) removeDeletedDefaultProvider(ctx context.Context, id string) error {
+	deleted, err := s.loadDeletedDefaultProviders(ctx)
+	if err != nil {
+		return err
+	}
+	id = strings.TrimSpace(strings.ToLower(id))
+	if !deleted[id] {
+		return nil
+	}
+	delete(deleted, id)
+	return s.saveDeletedDefaultProviders(ctx, deleted)
+}
+
+func (s *ExternalSubscriptionConfigService) saveDeletedDefaultProviders(ctx context.Context, deleted map[string]bool) error {
+	ids := make([]string, 0, len(deleted))
+	for id := range deleted {
+		id = strings.TrimSpace(strings.ToLower(id))
+		if isDefaultExternalSubscriptionProvider(id) {
+			ids = append(ids, id)
+		}
+	}
+	sort.Strings(ids)
+	raw, err := json.Marshal(ids)
+	if err != nil {
+		return fmt.Errorf("marshal deleted default external subscription providers: %w", err)
+	}
+	if err := s.settingService.settingRepo.Set(ctx, SettingKeyExternalSubscriptionDeletedDefaultProviders, string(raw)); err != nil {
+		return fmt.Errorf("save deleted default external subscription providers: %w", err)
+	}
+	return nil
 }
 
 func mergeExternalSubscriptionKeywords(current []string, defaults []string) []string {
@@ -919,6 +998,25 @@ func normalizeExternalSubscriptionAccountQuotaProgressPreference(preference Exte
 		TokenTotal:   tokenTotal,
 		TokenResetAt: tokenResetAt,
 	}
+}
+
+func decodeExternalSubscriptionDeletedDefaultProviders(raw string) (map[string]bool, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return map[string]bool{}, nil
+	}
+	var ids []string
+	if err := json.Unmarshal([]byte(raw), &ids); err != nil {
+		return nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_DELETED_DEFAULT_PROVIDERS_INVALID", "deleted default external subscription providers setting is invalid")
+	}
+	deleted := make(map[string]bool, len(ids))
+	for _, id := range ids {
+		id = strings.TrimSpace(strings.ToLower(id))
+		if isDefaultExternalSubscriptionProvider(id) {
+			deleted[id] = true
+		}
+	}
+	return deleted, nil
 }
 
 func externalSubscriptionProvidersFingerprint(providers []externalSubscriptionStoredProvider) string {
