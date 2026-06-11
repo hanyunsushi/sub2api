@@ -784,6 +784,7 @@ const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
 const {
+  loadAccountExternalQuotaProgressSettings,
   getAccountExternalQuotaProgressPreference,
   setAccountExternalQuotaProgressPreference,
 } = useAccountExternalQuotaProgressSettings()
@@ -1046,9 +1047,9 @@ const openExternalQuotaProgressSettings = (account: Account) => {
   externalQuotaProgressSettings.show = true
 }
 
-const saveExternalQuotaProgressSettings = (settings: AccountExternalQuotaProgressPreference) => {
+const saveExternalQuotaProgressSettings = async (settings: AccountExternalQuotaProgressPreference) => {
   if (!externalQuotaProgressSettings.account || !externalQuotaProgressSettings.subscription) return
-  setAccountExternalQuotaProgressPreference(
+  await setAccountExternalQuotaProgressPreference(
     externalQuotaProgressSettings.account,
     externalQuotaProgressSettings.subscription,
     settings,
@@ -2224,6 +2225,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(async () => {
   startAccountCallingGraceTicker()
+  void loadAccountExternalQuotaProgressSettings()
   load()
   fetchExternalQuotaSummaries().catch((error) => {
     console.error('Failed to load external quota summaries:', error)

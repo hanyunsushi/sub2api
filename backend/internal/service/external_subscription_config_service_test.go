@@ -84,6 +84,140 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 	require.False(t, rawchat.Enabled)
 	require.False(t, rawchat.APITokenConfigured)
 	require.Contains(t, rawchat.MatchKeywords, "rawchat")
+
+	mimo := requireExternalSubscriptionProvider(t, providers, "mimo")
+	require.Equal(t, "Xiaomi MiMo", mimo.Name)
+	require.Equal(t, ExternalSubscriptionTemplateMimoTokenPlan, mimo.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyAuto, mimo.BalanceStrategy)
+	require.Equal(t, DefaultMimoTokenPlanAPIBaseURL, mimo.APIBaseURL)
+	require.False(t, mimo.Enabled)
+	require.False(t, mimo.APITokenConfigured)
+	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
+}
+
+func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	ctx := context.Background()
+	settings := map[string]ExternalSubscriptionAccountQuotaProgressPreference{
+		"101:rawchat:rawchat_subscriptions:rawchat": {
+			Enabled:     true,
+			Mode:        ExternalSubscriptionAccountQuotaProgressModeCustomTotal,
+			CustomTotal: testFloat64Ptr(120),
+		},
+		"102:mimo:mimo_token_plan:xiaomi mimo": {
+			Enabled: false,
+			Mode:    ExternalSubscriptionAccountQuotaProgressModeStatusTotal,
+		},
+	}
+
+	saved, err := svc.UpdateAccountQuotaProgressSettings(ctx, settings)
+	require.NoError(t, err)
+	require.Equal(t, settings["101:rawchat:rawchat_subscriptions:rawchat"].Mode, saved["101:rawchat:rawchat_subscriptions:rawchat"].Mode)
+	require.NotContains(t, repo.values[SettingKeyExternalSubscriptionAccountQuotaProgress], "api_token")
+
+	reloadedService := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	reloaded, err := reloadedService.GetAccountQuotaProgressSettings(ctx)
+	require.NoError(t, err)
+	require.Equal(t, saved, reloaded)
+}
+
+func TestExternalSubscriptionConfigServicePersistsDisplayStatusSnapshot(t *testing.T) {
+	total := 60.0
+	remaining := 37.5
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	ctx := context.Background()
+	statuses := []ExternalSubscriptionProviderStatus{
+		{
+			Name:                   "RawChat",
+			Template:               ExternalSubscriptionTemplateRawChatSubscriptions,
+			BalanceStrategy:        ExternalSubscriptionBalanceStrategyAuto,
+			APITokenConfigured:     true,
+			RefreshTokenConfigured: false,
+			MatchKeywords:          []string{"rawchat"},
+			SortOrder:              90,
+			ExternalSubscriptionStatus: ExternalSubscriptionStatus{
+				Provider:      "rawchat",
+				Enabled:       true,
+				Configured:    true,
+				Currency:      "USD",
+				SiteURL:       DefaultRawChatSubscriptionAPIBaseURL,
+				TotalLimitUSD: &total,
+				UsedUSD:       22.5,
+				RemainingUSD:  &remaining,
+				Subscriptions: []ExternalSubscriptionItem{},
+				RefreshedAt:   time.Date(2026, 6, 11, 1, 2, 3, 0, time.UTC),
+			},
+		},
+	}
+
+	require.NoError(t, svc.SaveDisplayStatusesSnapshot(ctx, statuses))
+	require.NotContains(t, repo.values[SettingKeyExternalSubscriptionDisplayStatuses], "rawchat-secret")
+
+	reloadedService := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	reloaded, err := reloadedService.GetDisplayStatusesSnapshot(ctx)
+	require.NoError(t, err)
+	require.Len(t, reloaded, 1)
+	require.Equal(t, "rawchat", reloaded[0].Provider)
+	require.NotNil(t, reloaded[0].RemainingUSD)
+	require.InDelta(t, remaining, *reloaded[0].RemainingUSD, 0.0001)
+}
+
+func TestExternalSubscriptionConfigServiceConfigurationChangesInvalidateDisplayStatusSnapshot(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepo(map[string]string{
+		SettingKeyExternalSubscriptionDisplayStatuses: `[{"provider":"rawchat"}]`,
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	_, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
+		ID:              "custom-newapi",
+		Name:            "Custom NewAPI",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPISubscription,
+		APIBaseURL:      "https://newapi.example",
+		APIToken:        "newapi-token",
+		MatchKeywords:   []string{"custom-newapi"},
+	})
+	require.NoError(t, err)
+	require.NotContains(t, repo.values, SettingKeyExternalSubscriptionDisplayStatuses)
+}
+
+func TestExternalSubscriptionConfigServiceMergesDefaultProvidersIntoExistingStoredConfig(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    DefaultRawChatSubscriptionAPIBaseURL,
+			APIToken:      "rawchat-token",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     90,
+		},
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    DefaultOpenRouterCreditsAPIBaseURL,
+			APIToken:      "openrouter-key",
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+
+	mimo := requireExternalSubscriptionProvider(t, providers, "mimo")
+	require.Equal(t, "Xiaomi MiMo", mimo.Name)
+	require.Equal(t, ExternalSubscriptionTemplateMimoTokenPlan, mimo.Template)
+	require.False(t, mimo.Enabled)
+	require.False(t, mimo.APITokenConfigured)
+	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
 }
 
 func TestExternalSubscriptionConfigServiceUpdateProviderPreservesExistingSecrets(t *testing.T) {
@@ -915,6 +1049,94 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithLoos
 	require.Equal(t, "2026-06-27T09:13:08Z", rawchat.ExpiresAt.UTC().Format("2006-01-02T15:04:05Z"))
 }
 
+func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplate(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/tokenPlan/usage", r.URL.Path)
+		require.Equal(t, "mimo-session=abc", r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"code": 0,
+			"message": "ok",
+			"data": {
+				"totalAmount": "100",
+				"usedAmount": "32.5",
+				"remainingAmount": "67.5",
+				"expireTime": "2026-07-01 00:00:00"
+			}
+		}`))
+	}))
+	defer server.Close()
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "mimo",
+			Name:          "Xiaomi MiMo",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateMimoTokenPlan,
+			APIBaseURL:    server.URL,
+			APIToken:      "mimo-session=abc",
+			MatchKeywords: []string{"mimo", "xiaomi"},
+			SortOrder:     95,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	mimo := requireExternalSubscriptionStatus(t, statuses, "mimo")
+	require.Empty(t, mimo.ErrorCode)
+	require.Equal(t, ExternalSubscriptionTemplateMimoTokenPlan, mimo.Template)
+	require.NotNil(t, mimo.TotalLimitUSD)
+	require.InDelta(t, 100, *mimo.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 32.5, mimo.UsedUSD, 0.0001)
+	require.NotNil(t, mimo.RemainingUSD)
+	require.InDelta(t, 67.5, *mimo.RemainingUSD, 0.0001)
+	require.Equal(t, 1, mimo.ActiveCount)
+	require.Len(t, mimo.Subscriptions, 1)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplateWithUsagePercent(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/tokenPlan/usage", r.URL.Path)
+		require.Equal(t, "mimo-session=abc", r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"code": 0,
+			"data": {
+				"totalAmount": 200,
+				"usage": {"percent": 37.5},
+				"expired": false,
+				"planCode": "mimo-pro"
+			}
+		}`))
+	}))
+	defer server.Close()
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
+		{
+			ID:            "mimo",
+			Name:          "Xiaomi MiMo",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateMimoTokenPlan,
+			APIBaseURL:    server.URL,
+			APIToken:      "mimo-session=abc",
+			MatchKeywords: []string{"mimo", "xiaomi"},
+			SortOrder:     95,
+		},
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	mimo := requireExternalSubscriptionStatus(t, statuses, "mimo")
+	require.Empty(t, mimo.ErrorCode)
+	require.NotNil(t, mimo.TotalLimitUSD)
+	require.InDelta(t, 200, *mimo.TotalLimitUSD, 0.0001)
+	require.InDelta(t, 75, mimo.UsedUSD, 0.0001)
+	require.NotNil(t, mimo.RemainingUSD)
+	require.InDelta(t, 125, *mimo.RemainingUSD, 0.0001)
+}
+
 func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {
 	goodServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/v1/credits", r.URL.Path)
@@ -1271,6 +1493,10 @@ func requireExternalSubscriptionProvider(t *testing.T, providers []ExternalSubsc
 	}
 	require.Failf(t, "provider not found", "id=%s providers=%v", id, providers)
 	return ExternalSubscriptionProvider{}
+}
+
+func testFloat64Ptr(value float64) *float64 {
+	return &value
 }
 
 func jsonNumber(value int64) string {

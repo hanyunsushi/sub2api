@@ -146,6 +146,9 @@ func registerExternalSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handl
 		externalSubscriptions.GET("", h.Admin.ExternalSubscription.ListProviders)
 		externalSubscriptions.POST("", h.Admin.ExternalSubscription.CreateProvider)
 		externalSubscriptions.GET("/statuses", h.Admin.ExternalSubscription.GetStatuses)
+		externalSubscriptions.GET("/display-statuses-snapshot", h.Admin.ExternalSubscription.GetDisplayStatusesSnapshot)
+		externalSubscriptions.GET("/account-quota-progress-settings", h.Admin.ExternalSubscription.GetAccountQuotaProgressSettings)
+		externalSubscriptions.PUT("/account-quota-progress-settings", h.Admin.ExternalSubscription.UpdateAccountQuotaProgressSettings)
 		externalSubscriptions.PUT("/:id", h.Admin.ExternalSubscription.UpdateProvider)
 		externalSubscriptions.DELETE("/:id", h.Admin.ExternalSubscription.DeleteProvider)
 	}

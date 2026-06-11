@@ -71,6 +71,8 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("import ExternalQuotaProgressSettingsModal from '@/components/admin/account/ExternalQuotaProgressSettingsModal.vue'")
     expect(source).toContain("import UsageProgressBar from '@/components/account/UsageProgressBar.vue'")
     expect(source).toContain("import { useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'")
+    expect(source).toContain('loadAccountExternalQuotaProgressSettings')
+    expect(source).toContain('void loadAccountExternalQuotaProgressSettings()')
     expect(source).toContain('getAccountExternalQuotaProgressPreference(account, subscription)')
     expect(source).toContain('openExternalQuotaProgressSettings(row)')
     expect(source).toContain('saveExternalQuotaProgressSettings')

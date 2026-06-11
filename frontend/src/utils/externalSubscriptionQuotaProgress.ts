@@ -37,7 +37,7 @@ const clampPercent = (value: number) => Math.max(0, Math.min(value, 100))
 const toneFromPercent = (percent: number): ExternalQuotaProgressTone => (
   percent >= 90
     ? 'danger'
-    : percent >= 75
+    : percent >= 70
       ? 'warning'
       : 'safe'
 )

@@ -104,7 +104,7 @@ describe('external subscription quota progress', () => {
       total: 60,
       remaining: 16.17,
       used: 43.83,
-      tone: 'safe',
+      tone: 'warning',
     })
     expect(meta?.percent).toBeCloseTo(73.05)
   })
@@ -175,6 +175,44 @@ describe('external subscription quota progress', () => {
       tone: 'warning',
     })
     expect(meta?.percent).toBeCloseTo(75)
+  })
+
+  it('uses the official quota tone thresholds for external account quota bars', () => {
+    expect(buildAccountExternalQuotaProgressMeta(status({
+      provider: 'custom-provider',
+      name: 'Custom Provider',
+      template: 'newapi_console',
+      remaining_usd: 31,
+      total_limit_usd: 100,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })?.tone).toBe('safe')
+
+    expect(buildAccountExternalQuotaProgressMeta(status({
+      provider: 'custom-provider',
+      name: 'Custom Provider',
+      template: 'newapi_console',
+      remaining_usd: 30,
+      total_limit_usd: 100,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })?.tone).toBe('warning')
+
+    expect(buildAccountExternalQuotaProgressMeta(status({
+      provider: 'custom-provider',
+      name: 'Custom Provider',
+      template: 'newapi_console',
+      remaining_usd: 10,
+      total_limit_usd: 100,
+    }), {
+      enabled: true,
+      mode: 'status_total',
+      customTotal: null,
+    })?.tone).toBe('danger')
   })
 
   it('builds account quota progress for non-whitelisted providers from provider total on account cards', () => {

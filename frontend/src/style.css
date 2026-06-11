@@ -4337,6 +4337,18 @@ body:has(.table-page-layout) :where(
   background: #ef4444 !important;
 }
 
+#app .app-layout-content :where(.usage-progress-fill--safe) {
+  background: #22c55e !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill--warning) {
+  background: #f59e0b !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill--danger) {
+  background: #ef4444 !important;
+}
+
 #app .app-layout-content .accounts-table-page .account-groups-cell {
   width: 100% !important;
   max-width: 100% !important;
