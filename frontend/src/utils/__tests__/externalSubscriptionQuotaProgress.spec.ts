@@ -277,4 +277,34 @@ describe('external subscription quota progress', () => {
     })
     expect(meta?.percent).toBeCloseTo(25)
   })
+
+  it('builds token quota progress without an external subscription status', () => {
+    const preference: AccountExternalQuotaProgressPreference = {
+      enabled: true,
+      mode: 'token_total',
+      customTotal: null,
+      tokenTotal: 500_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    }
+
+    const meta = buildAccountExternalQuotaProgressMeta(null, preference, {
+      tokenStats: {
+        requests: 3,
+        tokens: 125_000,
+        cost: 0,
+        standard_cost: 0,
+        user_cost: 0,
+      },
+    })
+
+    expect(meta).toMatchObject({
+      provider: 'account',
+      total: 500_000,
+      used: 125_000,
+      remaining: 375_000,
+      tone: 'safe',
+      unit: 'tokens',
+    })
+    expect(meta?.percent).toBeCloseTo(25)
+  })
 })

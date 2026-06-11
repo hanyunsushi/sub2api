@@ -49,6 +49,9 @@ func (r *channelMonitorRepository) Create(ctx context.Context, m *service.Channe
 		SetCreatedBy(m.CreatedBy).
 		SetExtraHeaders(emptyHeadersIfNilRepo(m.ExtraHeaders)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode))
+	if m.AccountID != nil {
+		builder = builder.SetAccountID(*m.AccountID)
+	}
 	if m.TemplateID != nil {
 		builder = builder.SetTemplateID(*m.TemplateID)
 	}
@@ -92,6 +95,11 @@ func (r *channelMonitorRepository) Update(ctx context.Context, m *service.Channe
 		SetIntervalSeconds(m.IntervalSeconds).
 		SetExtraHeaders(emptyHeadersIfNilRepo(m.ExtraHeaders)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode))
+	if m.AccountID != nil {
+		updater = updater.SetAccountID(*m.AccountID)
+	} else {
+		updater = updater.ClearAccountID()
+	}
 	if m.TemplateID != nil {
 		updater = updater.SetTemplateID(*m.TemplateID)
 	} else {
@@ -723,6 +731,7 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 		IntervalSeconds:  row.IntervalSeconds,
 		LastCheckedAt:    row.LastCheckedAt,
 		CreatedBy:        row.CreatedBy,
+		AccountID:        row.AccountID,
 		CreatedAt:        row.CreatedAt,
 		UpdatedAt:        row.UpdatedAt,
 		ExtraHeaders:     headers,

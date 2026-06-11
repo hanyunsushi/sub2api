@@ -78,6 +78,12 @@ const genericProviderKeyFromStatus = (status: ExternalSubscriptionStatus) => (
   'external'
 )
 
+const providerKeyForAccountProgress = (status?: ExternalSubscriptionStatus | null) => (
+  status
+    ? providerKeyFromStatus(status) ?? genericProviderKeyFromStatus(status)
+    : 'account'
+)
+
 export const supportsExternalQuotaProgress = (status?: ExternalSubscriptionStatus | null) => {
   if (!status) return false
   return providerKeyFromStatus(status) !== null
@@ -127,9 +133,10 @@ export const buildAccountExternalQuotaProgressMeta = (
   preference: AccountExternalQuotaProgressPreference | null | undefined,
   options: AccountExternalQuotaProgressOptions = {},
 ): ExternalQuotaProgressMeta | null => {
-  if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
+  if (!preference?.enabled) return null
+  if (status && (!status.enabled || !status.configured || status.error_code)) return null
 
-  const provider = providerKeyFromStatus(status) ?? genericProviderKeyFromStatus(status)
+  const provider = providerKeyForAccountProgress(status)
 
   if (preference.mode === 'token_total') {
     const total = Math.max(0, Number(preference.tokenTotal ?? 0))
@@ -150,6 +157,8 @@ export const buildAccountExternalQuotaProgressMeta = (
       unit: 'tokens',
     }
   }
+
+  if (!status) return null
 
   const total = preference.mode === 'custom_total'
     ? Math.max(0, Number(preference.customTotal ?? 0))

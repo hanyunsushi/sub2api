@@ -46,6 +46,7 @@ export interface ChannelMonitor {
   extra_headers: Record<string, string>
   body_override_mode: BodyOverrideMode
   body_override: Record<string, unknown> | null
+  account_id: number | null
 }
 
 export interface ExtraModelStatus {
@@ -82,6 +83,7 @@ export interface CreateParams {
   group_name?: string
   enabled?: boolean
   interval_seconds: number
+  account_id?: number | null
   template_id?: number | null
   extra_headers?: Record<string, string>
   body_override_mode?: BodyOverrideMode
@@ -91,6 +93,7 @@ export interface CreateParams {
 // Update request: api_key 空串 = 不修改；clear_template=true 时把 template_id 置空
 export type UpdateParams = Partial<CreateParams> & {
   clear_template?: boolean
+  clear_account?: boolean
 }
 
 export interface CheckResult {

@@ -473,6 +473,13 @@ export async function setSchedulable(id: number, schedulable: boolean): Promise<
   return data
 }
 
+export async function setScheduleLocked(id: number, locked: boolean): Promise<Account> {
+  const { data } = await apiClient.post<Account>(`/admin/accounts/${id}/schedule-lock`, {
+    locked
+  })
+  return data
+}
+
 /**
  * Get available models for an account
  * @param id - Account ID
@@ -739,6 +746,7 @@ export const accountsAPI = {
   getTempUnschedulableStatus,
   resetTempUnschedulable,
   setSchedulable,
+  setScheduleLocked,
   getAvailableModels,
   syncUpstreamModels,
   syncUpstreamModelsPreview,

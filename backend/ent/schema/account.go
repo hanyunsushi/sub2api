@@ -147,6 +147,9 @@ func (Account) Fields() []ent.Field {
 		// false 表示账户暂时不参与请求分配（如正在刷新 token）
 		field.Bool("schedulable").
 			Default(true),
+		field.Bool("schedule_locked").
+			Default(false).
+			Comment("When true, channel monitor automation must not change schedulable."),
 
 		// rate_limited_at: 触发速率限制的时间
 		// 当收到 429 错误时记录
@@ -228,6 +231,7 @@ func (Account) Indexes() []ent.Index {
 		index.Fields("priority"),            // 按优先级排序
 		index.Fields("last_used_at"),        // 按最后使用时间排序
 		index.Fields("schedulable"),         // 筛选可调度账户
+		index.Fields("schedule_locked"),     // 筛选自动调度锁定账户
 		index.Fields("rate_limited_at"),     // 筛选速率限制账户
 		index.Fields("rate_limit_reset_at"), // 筛选速率限制解除时间
 		index.Fields("overload_until"),      // 筛选过载账户

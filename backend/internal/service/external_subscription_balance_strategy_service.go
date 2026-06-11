@@ -119,6 +119,26 @@ func (s *ExternalSubscriptionService) getAuthMeBalanceStatus(ctx context.Context
 	var account externalAuthMeBalanceResponse
 	if err := s.getJSON(ctx, settings, "/api/v1/auth/me", &account); err != nil {
 		if upstreamErr, ok := err.(*externalSubscriptionUpstreamError); ok {
+			if strings.TrimSpace(settings.RefreshToken) != "" && isExternalSubscriptionInvalidTokenError(upstreamErr) {
+				refreshedSettings, refreshErr := s.refreshAuthToken(ctx, settings)
+				if refreshErr == nil {
+					settings = refreshedSettings
+					if retryErr := s.getJSON(ctx, settings, "/api/v1/auth/me", &account); retryErr == nil {
+						balance := float64(account.Balance)
+						result.RemainingUSD = &balance
+						result.RefreshedAt = time.Now().UTC()
+						return result, nil
+					} else if retryUpstreamErr, ok := retryErr.(*externalSubscriptionUpstreamError); ok {
+						upstreamErr = retryUpstreamErr
+					} else {
+						return nil, retryErr
+					}
+				} else if refreshUpstreamErr, ok := refreshErr.(*externalSubscriptionUpstreamError); ok {
+					upstreamErr = refreshUpstreamErr
+				} else {
+					return nil, refreshErr
+				}
+			}
 			result.ErrorCode = upstreamErr.Code
 			if result.ErrorCode == "" {
 				result.ErrorCode = fmt.Sprintf("%s_SUBSCRIPTION_UPSTREAM_ERROR", strings.ToUpper(cfg.Provider))

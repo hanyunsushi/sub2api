@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/Wei-Shaw/sub2api/ent/account"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -244,6 +245,26 @@ func (_u *ChannelMonitorUpdate) AddCreatedBy(v int64) *ChannelMonitorUpdate {
 	return _u
 }
 
+// SetAccountID sets the "account_id" field.
+func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUpdate {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *ChannelMonitorUpdate) ClearAccountID() *ChannelMonitorUpdate {
+	_u.mutation.ClearAccountID()
+	return _u
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdate) SetTemplateID(v int64) *ChannelMonitorUpdate {
 	_u.mutation.SetTemplateID(v)
@@ -345,6 +366,11 @@ func (_u *ChannelMonitorUpdate) SetRequestTemplate(v *ChannelMonitorRequestTempl
 	return _u.SetRequestTemplateID(v.ID)
 }
 
+// SetAccount sets the "account" edge to the Account entity.
+func (_u *ChannelMonitorUpdate) SetAccount(v *Account) *ChannelMonitorUpdate {
+	return _u.SetAccountID(v.ID)
+}
+
 // Mutation returns the ChannelMonitorMutation object of the builder.
 func (_u *ChannelMonitorUpdate) Mutation() *ChannelMonitorMutation {
 	return _u.mutation
@@ -395,6 +421,12 @@ func (_u *ChannelMonitorUpdate) RemoveDailyRollups(v ...*ChannelMonitorDailyRoll
 // ClearRequestTemplate clears the "request_template" edge to the ChannelMonitorRequestTemplate entity.
 func (_u *ChannelMonitorUpdate) ClearRequestTemplate() *ChannelMonitorUpdate {
 	_u.mutation.ClearRequestTemplate()
+	return _u
+}
+
+// ClearAccount clears the "account" edge to the Account entity.
+func (_u *ChannelMonitorUpdate) ClearAccount() *ChannelMonitorUpdate {
+	_u.mutation.ClearAccount()
 	return _u
 }
 
@@ -686,6 +718,35 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.AccountCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   channelmonitor.AccountTable,
+			Columns: []string{channelmonitor.AccountColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AccountIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   channelmonitor.AccountTable,
+			Columns: []string{channelmonitor.AccountColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{channelmonitor.Label}
@@ -918,6 +979,26 @@ func (_u *ChannelMonitorUpdateOne) AddCreatedBy(v int64) *ChannelMonitorUpdateOn
 	return _u
 }
 
+// SetAccountID sets the "account_id" field.
+func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonitorUpdateOne {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *ChannelMonitorUpdateOne) ClearAccountID() *ChannelMonitorUpdateOne {
+	_u.mutation.ClearAccountID()
+	return _u
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdateOne) SetTemplateID(v int64) *ChannelMonitorUpdateOne {
 	_u.mutation.SetTemplateID(v)
@@ -1019,6 +1100,11 @@ func (_u *ChannelMonitorUpdateOne) SetRequestTemplate(v *ChannelMonitorRequestTe
 	return _u.SetRequestTemplateID(v.ID)
 }
 
+// SetAccount sets the "account" edge to the Account entity.
+func (_u *ChannelMonitorUpdateOne) SetAccount(v *Account) *ChannelMonitorUpdateOne {
+	return _u.SetAccountID(v.ID)
+}
+
 // Mutation returns the ChannelMonitorMutation object of the builder.
 func (_u *ChannelMonitorUpdateOne) Mutation() *ChannelMonitorMutation {
 	return _u.mutation
@@ -1069,6 +1155,12 @@ func (_u *ChannelMonitorUpdateOne) RemoveDailyRollups(v ...*ChannelMonitorDailyR
 // ClearRequestTemplate clears the "request_template" edge to the ChannelMonitorRequestTemplate entity.
 func (_u *ChannelMonitorUpdateOne) ClearRequestTemplate() *ChannelMonitorUpdateOne {
 	_u.mutation.ClearRequestTemplate()
+	return _u
+}
+
+// ClearAccount clears the "account" edge to the Account entity.
+func (_u *ChannelMonitorUpdateOne) ClearAccount() *ChannelMonitorUpdateOne {
+	_u.mutation.ClearAccount()
 	return _u
 }
 
@@ -1383,6 +1475,35 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(channelmonitorrequesttemplate.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AccountCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   channelmonitor.AccountTable,
+			Columns: []string{channelmonitor.AccountColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AccountIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   channelmonitor.AccountTable,
+			Columns: []string{channelmonitor.AccountColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

@@ -8,6 +8,7 @@ const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
 const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../../components/admin/account/ExternalQuotaProgressSettingsModal.vue'), 'utf8')
+const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 
@@ -77,9 +78,13 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('buildAccountExternalQuotaProgressPreferenceKey(account, subscription)')
     expect(source).toContain('account.external_quota_token_stats?.[preferenceKey]')
     expect(source).toContain('openExternalQuotaProgressSettings(row)')
+    expect(source).toContain('getAccountExternalQuotaProgressPreference(account, subscription ?? null)')
+    expect(source).toContain('setAccountExternalQuotaProgressPreference(')
+    expect(source).not.toContain('if (!subscription) return')
     expect(source).toContain('saveExternalQuotaProgressSettings')
     expect(source).toContain('data-testid="account-external-quota-progress-action"')
     expect(source).toContain("localText('额度条', 'Quota bar')")
+    expect(source).not.toContain('v-if="getMatchedExternalSubscription(row)"')
     expect(source).toContain('<ExternalQuotaProgressSettingsModal')
     expect(source).toContain(':settings="externalQuotaProgressSettings.current"')
     expect(externalQuotaSettingsModalSource).toContain('hasProviderTotal(props.subscription)')
@@ -90,13 +95,24 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain("localText('显示额度进度条', 'Show quota progress')")
   })
 
+  it('renders a per-account schedule lock next to the scheduling control without changing schedulable directly', () => {
+    expect(source).toContain('data-testid="account-schedule-lock-action"')
+    expect(source).toContain('row.schedule_locked')
+    expect(source).toContain('handleToggleScheduleLock(row)')
+    expect(source).toContain('togglingScheduleLock')
+    expect(source).toContain('adminAPI.accounts.setScheduleLocked')
+    expect(source).toContain('updateScheduleLockedInList([a.id], updated?.schedule_locked ?? nextLocked)')
+    expect(accountsAPISource).toContain('setScheduleLocked')
+    expect(accountsAPISource).toContain('/schedule-lock')
+  })
+
   it('adds a token quota progress template with account-local usage stats and refresh time', () => {
     expect(externalQuotaSettingsModalSource).toContain("value=\"token_total\"")
     expect(externalQuotaSettingsModalSource).toContain("localText('Token 用量 / 总量', 'Token usage / total')")
     expect(externalQuotaSettingsModalSource).toContain("localText('Token 总量', 'Token total')")
     expect(externalQuotaSettingsModalSource).toContain("localText('Token 刷新时间', 'Token refresh time')")
     expect(externalQuotaSettingsModalSource).toContain('type="datetime-local"')
-    expect(externalQuotaSettingsModalSource).toContain('buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription)')
+    expect(externalQuotaSettingsModalSource).toContain('buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription ?? null)')
     expect(externalQuotaSettingsModalSource).toContain('props.account.external_quota_token_stats?.[key]')
     expect(externalQuotaSettingsModalSource).toContain("next.mode === 'token_total'")
     expect(source).toContain('formatExternalTokens')

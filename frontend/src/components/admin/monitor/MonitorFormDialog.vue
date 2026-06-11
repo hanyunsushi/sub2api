@@ -111,6 +111,18 @@
       </div>
 
       <div>
+        <label class="input-label">{{ t('admin.channelMonitor.form.accountBinding') }}</label>
+        <Select
+          v-model="accountSelectValue"
+          :options="accountBindingOptions"
+          :placeholder="t('admin.channelMonitor.form.accountBindingPlaceholder')"
+        />
+        <p class="mt-1 text-xs text-gray-400">
+          {{ accountsForBindingLoading ? t('admin.channelMonitor.form.accountBindingLoading') : t('admin.channelMonitor.form.accountBindingHint') }}
+        </p>
+      </div>
+
+      <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-red-500">*</span></label>
         <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" />
         <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
@@ -200,7 +212,7 @@ import type {
   UpdateParams,
 } from '@/api/admin/channelMonitor'
 import type { ChannelMonitorTemplate } from '@/api/admin/channelMonitorTemplate'
-import type { ApiKey } from '@/types'
+import type { Account, ApiKey } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import Select from '@/components/common/Select.vue'
@@ -264,6 +276,7 @@ interface MonitorForm {
   group_name: string
   interval_seconds: number
   enabled: boolean
+  account_id: number | null
   // 高级设置快照
   template_id: number | null
   extra_headers: Record<string, string>
@@ -283,6 +296,7 @@ const form = reactive<MonitorForm>({
   group_name: '',
   interval_seconds: systemDefaultInterval.value,
   enabled: true,
+  account_id: null,
   template_id: null,
   extra_headers: {},
   body_override_mode: 'off',
@@ -294,6 +308,8 @@ let suppressFormWatchers = false
 // 可用模板列表（进入 dialog 时一次性拉取 cache；按 provider / api mode 过滤）。
 const templatesCache = ref<ChannelMonitorTemplate[]>([])
 const templatesLoading = ref(false)
+const accountsForBinding = ref<Account[]>([])
+const accountsForBindingLoading = ref(false)
 
 const templateOptions = computed(() => {
   const items = templatesCache.value.filter((t) => {
@@ -307,6 +323,27 @@ const templateOptions = computed(() => {
   ]
 })
 
+const accountBindingOptions = computed(() => [
+  { value: '', label: t('admin.channelMonitor.form.accountBindingNone') },
+  ...accountsForBinding.value.map((account) => ({
+    value: String(account.id),
+    label: `${account.name} · #${account.id}`,
+  })),
+])
+
+const accountSelectValue = computed<string>({
+  get: () => (form.account_id == null ? '' : String(form.account_id)),
+  set: (raw: string) => {
+    if (raw === '') {
+      form.account_id = null
+      return
+    }
+    const id = Number(raw)
+    if (!Number.isFinite(id) || id <= 0) return
+    form.account_id = id
+  },
+})
+
 async function loadTemplates() {
   if (templatesCache.value.length > 0) return
   templatesLoading.value = true
@@ -318,6 +355,19 @@ async function loadTemplates() {
     console.warn('load monitor templates failed', err)
   } finally {
     templatesLoading.value = false
+  }
+}
+
+async function loadAccountsForBinding() {
+  accountsForBindingLoading.value = true
+  try {
+    const res = await adminAPI.accounts.list(1, 100, { platform: form.provider })
+    accountsForBinding.value = res.items || []
+  } catch (err: unknown) {
+    accountsForBinding.value = []
+    console.warn('load channel monitor account binding options failed', err)
+  } finally {
+    accountsForBindingLoading.value = false
   }
 }
 
@@ -408,6 +458,8 @@ watch(() => form.provider, () => {
   if (form.provider !== PROVIDER_OPENAI) {
     form.api_mode = API_MODE_CHAT_COMPLETIONS
   }
+  form.account_id = null
+  void loadAccountsForBinding()
   clearRequestSnapshot()
 }, { flush: 'sync' })
 
@@ -431,6 +483,7 @@ function resetForm() {
   form.group_name = ''
   form.interval_seconds = systemDefaultInterval.value
   form.enabled = true
+  form.account_id = null
   form.template_id = null
   form.extra_headers = {}
   form.body_override_mode = 'off'
@@ -451,6 +504,7 @@ function loadFromMonitor(m: ChannelMonitor) {
   form.group_name = m.group_name || ''
   form.interval_seconds = m.interval_seconds || systemDefaultInterval.value
   form.enabled = m.enabled
+  form.account_id = m.account_id ?? null
   form.template_id = m.template_id ?? null
   form.extra_headers = { ...(m.extra_headers || {}) }
   form.body_override_mode = m.body_override_mode || 'off'
@@ -467,6 +521,7 @@ watch(
     void loadTemplates()
     if (m) loadFromMonitor(m)
     else resetForm()
+    void loadAccountsForBinding()
   },
   { immediate: true },
 )
@@ -517,6 +572,7 @@ function buildPayload(): CreateParams {
     group_name: form.group_name.trim(),
     enabled: form.enabled,
     interval_seconds: form.interval_seconds,
+    account_id: form.account_id,
     template_id: form.template_id,
     extra_headers: form.extra_headers,
     body_override_mode: form.body_override_mode,
@@ -547,6 +603,10 @@ async function handleSubmit() {
       if (form.template_id == null) {
         req.clear_template = true
         delete req.template_id
+      }
+      if (form.account_id == null) {
+        req.clear_account = true
+        delete req.account_id
       }
       await adminAPI.channelMonitor.update(target.id, req)
       appStore.showSuccess(t('admin.channelMonitor.updateSuccess'))

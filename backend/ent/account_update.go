@@ -370,6 +370,20 @@ func (_u *AccountUpdate) SetNillableSchedulable(v *bool) *AccountUpdate {
 	return _u
 }
 
+// SetScheduleLocked sets the "schedule_locked" field.
+func (_u *AccountUpdate) SetScheduleLocked(v bool) *AccountUpdate {
+	_u.mutation.SetScheduleLocked(v)
+	return _u
+}
+
+// SetNillableScheduleLocked sets the "schedule_locked" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableScheduleLocked(v *bool) *AccountUpdate {
+	if v != nil {
+		_u.SetScheduleLocked(*v)
+	}
+	return _u
+}
+
 // SetRateLimitedAt sets the "rate_limited_at" field.
 func (_u *AccountUpdate) SetRateLimitedAt(v time.Time) *AccountUpdate {
 	_u.mutation.SetRateLimitedAt(v)
@@ -794,6 +808,9 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Schedulable(); ok {
 		_spec.SetField(account.FieldSchedulable, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ScheduleLocked(); ok {
+		_spec.SetField(account.FieldScheduleLocked, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.RateLimitedAt(); ok {
 		_spec.SetField(account.FieldRateLimitedAt, field.TypeTime, value)
@@ -1333,6 +1350,20 @@ func (_u *AccountUpdateOne) SetNillableSchedulable(v *bool) *AccountUpdateOne {
 	return _u
 }
 
+// SetScheduleLocked sets the "schedule_locked" field.
+func (_u *AccountUpdateOne) SetScheduleLocked(v bool) *AccountUpdateOne {
+	_u.mutation.SetScheduleLocked(v)
+	return _u
+}
+
+// SetNillableScheduleLocked sets the "schedule_locked" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableScheduleLocked(v *bool) *AccountUpdateOne {
+	if v != nil {
+		_u.SetScheduleLocked(*v)
+	}
+	return _u
+}
+
 // SetRateLimitedAt sets the "rate_limited_at" field.
 func (_u *AccountUpdateOne) SetRateLimitedAt(v time.Time) *AccountUpdateOne {
 	_u.mutation.SetRateLimitedAt(v)
@@ -1787,6 +1818,9 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.Schedulable(); ok {
 		_spec.SetField(account.FieldSchedulable, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ScheduleLocked(); ok {
+		_spec.SetField(account.FieldScheduleLocked, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.RateLimitedAt(); ok {
 		_spec.SetField(account.FieldRateLimitedAt, field.TypeTime, value)

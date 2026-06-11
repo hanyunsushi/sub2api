@@ -61,9 +61,26 @@ type ChannelMonitorRepository interface {
 type ChannelMonitorService struct {
 	repo      ChannelMonitorRepository
 	encryptor SecretEncryptor
+	autoScheduleRepo    channelMonitorAccountScheduleRepository
+	autoScheduleRuntime channelMonitorScheduleAutomation
 	// scheduler 由 wire 通过 SetScheduler 注入；CRUD 后调用对应钩子即时同步任务。
 	// 测试或未注入场景下保持 nil，所有钩子调用变为 no-op。
 	scheduler MonitorScheduler
+}
+
+type channelMonitorAccountScheduleRepository interface {
+	SetSchedulable(ctx context.Context, id int64, schedulable bool) error
+	IsScheduleLocked(ctx context.Context, id int64) (bool, error)
+}
+
+type channelMonitorScheduleAutomation interface {
+	ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool
+}
+
+type channelMonitorScheduleAutomationFunc func(context.Context) bool
+
+func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool {
+	return f(ctx)
 }
 
 // NewChannelMonitorService 创建渠道监控服务实例。
@@ -130,6 +147,7 @@ func (s *ChannelMonitorService) Create(ctx context.Context, p ChannelMonitorCrea
 		Enabled:          p.Enabled,
 		IntervalSeconds:  p.IntervalSeconds,
 		CreatedBy:        p.CreatedBy,
+		AccountID:        normalizeOptionalID(p.AccountID),
 		TemplateID:       p.TemplateID,
 		ExtraHeaders:     emptyHeadersIfNil(p.ExtraHeaders),
 		BodyOverrideMode: defaultBodyMode(p.BodyOverrideMode),
@@ -289,6 +307,47 @@ func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *Chan
 	if err := s.repo.MarkChecked(ctx, m.ID, time.Now()); err != nil {
 		slog.Error("channel_monitor: mark checked failed",
 			"monitor_id", m.ID, "error", err)
+	}
+	s.applyAccountAutoSchedule(ctx, m, results)
+}
+
+func (s *ChannelMonitorService) SetAccountScheduleAutomation(repo channelMonitorAccountScheduleRepository, runtime channelMonitorScheduleAutomation) {
+	s.autoScheduleRepo = repo
+	s.autoScheduleRuntime = runtime
+}
+
+func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {
+	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil || m == nil || m.AccountID == nil || *m.AccountID <= 0 {
+		return
+	}
+	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
+		return
+	}
+	locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, *m.AccountID)
+	if err != nil {
+		slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
+			"monitor_id", m.ID, "account_id", *m.AccountID, "error", err)
+		return
+	}
+	if locked {
+		return
+	}
+	if len(results) == 0 {
+		return
+	}
+	schedulable := true
+	for _, r := range results {
+		if r == nil {
+			continue
+		}
+		if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
+			schedulable = false
+			break
+		}
+	}
+	if err := s.autoScheduleRepo.SetSchedulable(ctx, *m.AccountID, schedulable); err != nil {
+		slog.Warn("channel_monitor: account auto schedule update failed",
+			"monitor_id", m.ID, "account_id", *m.AccountID, "schedulable", schedulable, "error", err)
 	}
 }
 
@@ -513,6 +572,11 @@ func applyMonitorUpdate(existing *ChannelMonitor, p ChannelMonitorUpdateParams) 
 		}
 		existing.IntervalSeconds = *p.IntervalSeconds
 	}
+	if p.ClearAccount {
+		existing.AccountID = nil
+	} else if p.AccountID != nil {
+		existing.AccountID = normalizeOptionalID(p.AccountID)
+	}
 	return applyMonitorAdvancedUpdate(existing, p, providerChanged)
 }
 
@@ -557,4 +621,12 @@ func applyMonitorAdvancedUpdate(existing *ChannelMonitor, p ChannelMonitorUpdate
 	}
 	existing.APIMode = newAPIMode
 	return nil
+}
+
+func normalizeOptionalID(id *int64) *int64 {
+	if id == nil || *id <= 0 {
+		return nil
+	}
+	v := *id
+	return &v
 }

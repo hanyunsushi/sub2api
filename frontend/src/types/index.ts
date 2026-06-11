@@ -233,6 +233,7 @@ export interface PublicSettings {
   balance_low_notify_threshold: number
   channel_monitor_enabled: boolean
   channel_monitor_default_interval_seconds: number
+  channel_monitor_account_auto_schedule_enabled?: boolean
   available_channels_enabled: boolean
   service_quota_enabled: boolean
   affiliate_enabled: boolean
@@ -866,6 +867,7 @@ export interface Account {
 
   // Rate limit & scheduling fields
   schedulable: boolean
+  schedule_locked: boolean
   rate_limited_at: string | null
   rate_limit_reset_at: string | null
   overload_until: string | null

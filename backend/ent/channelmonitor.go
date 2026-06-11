@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/Wei-Shaw/sub2api/ent/account"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
 )
@@ -49,6 +50,8 @@ type ChannelMonitor struct {
 	LastCheckedAt *time.Time `json:"last_checked_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy int64 `json:"created_by,omitempty"`
+	// Linked account id for optional channel-monitor driven account scheduling.
+	AccountID *int64 `json:"account_id,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
 	TemplateID *int64 `json:"template_id,omitempty"`
 	// ExtraHeaders holds the value of the "extra_headers" field.
@@ -71,9 +74,11 @@ type ChannelMonitorEdges struct {
 	DailyRollups []*ChannelMonitorDailyRollup `json:"daily_rollups,omitempty"`
 	// RequestTemplate holds the value of the request_template edge.
 	RequestTemplate *ChannelMonitorRequestTemplate `json:"request_template,omitempty"`
+	// Account holds the value of the account edge.
+	Account *Account `json:"account,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // HistoryOrErr returns the History value or an error if the edge
@@ -105,6 +110,17 @@ func (e ChannelMonitorEdges) RequestTemplateOrErr() (*ChannelMonitorRequestTempl
 	return nil, &NotLoadedError{edge: "request_template"}
 }
 
+// AccountOrErr returns the Account value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ChannelMonitorEdges) AccountOrErr() (*Account, error) {
+	if e.Account != nil {
+		return e.Account, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: account.Label}
+	}
+	return nil, &NotLoadedError{edge: "account"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*ChannelMonitor) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -114,7 +130,7 @@ func (*ChannelMonitor) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case channelmonitor.FieldEnabled:
 			values[i] = new(sql.NullBool)
-		case channelmonitor.FieldID, channelmonitor.FieldIntervalSeconds, channelmonitor.FieldCreatedBy, channelmonitor.FieldTemplateID:
+		case channelmonitor.FieldID, channelmonitor.FieldIntervalSeconds, channelmonitor.FieldCreatedBy, channelmonitor.FieldAccountID, channelmonitor.FieldTemplateID:
 			values[i] = new(sql.NullInt64)
 		case channelmonitor.FieldName, channelmonitor.FieldLogoURL, channelmonitor.FieldProvider, channelmonitor.FieldAPIMode, channelmonitor.FieldEndpoint, channelmonitor.FieldAPIKeyEncrypted, channelmonitor.FieldPrimaryModel, channelmonitor.FieldGroupName, channelmonitor.FieldBodyOverrideMode:
 			values[i] = new(sql.NullString)
@@ -234,6 +250,13 @@ func (_m *ChannelMonitor) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedBy = value.Int64
 			}
+		case channelmonitor.FieldAccountID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field account_id", values[i])
+			} else if value.Valid {
+				_m.AccountID = new(int64)
+				*_m.AccountID = value.Int64
+			}
 		case channelmonitor.FieldTemplateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field template_id", values[i])
@@ -289,6 +312,11 @@ func (_m *ChannelMonitor) QueryDailyRollups() *ChannelMonitorDailyRollupQuery {
 // QueryRequestTemplate queries the "request_template" edge of the ChannelMonitor entity.
 func (_m *ChannelMonitor) QueryRequestTemplate() *ChannelMonitorRequestTemplateQuery {
 	return NewChannelMonitorClient(_m.config).QueryRequestTemplate(_m)
+}
+
+// QueryAccount queries the "account" edge of the ChannelMonitor entity.
+func (_m *ChannelMonitor) QueryAccount() *AccountQuery {
+	return NewChannelMonitorClient(_m.config).QueryAccount(_m)
 }
 
 // Update returns a builder for updating this ChannelMonitor.
@@ -359,6 +387,11 @@ func (_m *ChannelMonitor) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_by=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
+	builder.WriteString(", ")
+	if v := _m.AccountID; v != nil {
+		builder.WriteString("account_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	if v := _m.TemplateID; v != nil {
 		builder.WriteString("template_id=")

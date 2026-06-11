@@ -5461,6 +5461,18 @@
                 {{ t('admin.settings.features.channelMonitor.defaultIntervalHint') }}
               </p>
             </div>
+
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {{ t('admin.settings.features.channelMonitor.accountAutoSchedule') }}
+                </label>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  {{ t('admin.settings.features.channelMonitor.accountAutoScheduleHint') }}
+                </p>
+              </div>
+              <Toggle v-model="form.channel_monitor_account_auto_schedule_enabled" />
+            </div>
           </div>
         </div>
 
@@ -7511,6 +7523,7 @@ const form = reactive<SettingsForm>({
   // Channel Monitor feature switch
   channel_monitor_enabled: true,
   channel_monitor_default_interval_seconds: 60,
+  channel_monitor_account_auto_schedule_enabled: false,
   // Available Channels feature switch
   available_channels_enabled: false,
   // Affiliate (邀请返利) feature switch
@@ -8825,6 +8838,8 @@ async function saveSettings() {
       channel_monitor_enabled: form.channel_monitor_enabled,
       channel_monitor_default_interval_seconds:
         Number(form.channel_monitor_default_interval_seconds) || 60,
+      channel_monitor_account_auto_schedule_enabled:
+        form.channel_monitor_account_auto_schedule_enabled,
       // Available Channels feature switch
       available_channels_enabled: form.available_channels_enabled,
       // Affiliate (邀请返利) feature switch

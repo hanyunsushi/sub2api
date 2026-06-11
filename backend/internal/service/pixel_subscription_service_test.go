@@ -156,6 +156,63 @@ func TestPixelSubscriptionService_GetStatusReturnsInvalidTokenState(t *testing.T
 	require.Empty(t, got.Subscriptions)
 }
 
+func TestPixelSubscriptionService_GetStatusRefreshesExpiredAuthMeToken(t *testing.T) {
+	var requestedPaths []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/v1/auth/me":
+			if len(requestedPaths) == 1 {
+				require.Equal(t, "Bearer expired-pixel-token", r.Header.Get("Authorization"))
+				w.WriteHeader(http.StatusUnauthorized)
+				_, _ = w.Write([]byte(`{"code":"TOKEN_EXPIRED","message":"Token expired"}`))
+				return
+			}
+			require.Equal(t, "Bearer fresh-pixel-token", r.Header.Get("Authorization"))
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"balance": 12.5,
+					"points_balance": 0,
+					"total_recharged": 20
+				}
+			}`))
+		case "/api/v1/auth/refresh":
+			_, _ = w.Write([]byte(`{
+				"code": 0,
+				"message": "success",
+				"data": {
+					"access_token": "fresh-pixel-token",
+					"refresh_token": "fresh-pixel-refresh"
+				}
+			}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := &buzzBalanceSettingsRepoStub{values: map[string]string{
+		SettingKeyPixelSubscriptionEnabled:      "true",
+		SettingKeyPixelSubscriptionAPIBaseURL:   server.URL,
+		SettingKeyPixelSubscriptionAPIToken:     "expired-pixel-token",
+		SettingKeyPixelSubscriptionRefreshToken: "old-pixel-refresh",
+	}}
+	svc := NewPixelSubscriptionService(NewSettingService(repo, &config.Config{}))
+
+	got, err := svc.GetStatus(context.Background())
+	require.NoError(t, err)
+
+	require.Equal(t, []string{"/api/v1/auth/me", "/api/v1/auth/refresh", "/api/v1/auth/me"}, requestedPaths)
+	require.Empty(t, got.ErrorCode)
+	require.NotNil(t, got.RemainingUSD)
+	require.InDelta(t, 12.5, *got.RemainingUSD, 0.0001)
+	require.Equal(t, "fresh-pixel-token", repo.values[SettingKeyPixelSubscriptionAPIToken])
+	require.Equal(t, "fresh-pixel-refresh", repo.values[SettingKeyPixelSubscriptionRefreshToken])
+}
+
 func TestPixelSubscriptionService_GetStatusSkipsUpstreamWhenDisabled(t *testing.T) {
 	called := false
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Wei-Shaw/sub2api/ent/account"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -171,6 +172,20 @@ func (_c *ChannelMonitorCreate) SetCreatedBy(v int64) *ChannelMonitorCreate {
 	return _c
 }
 
+// SetAccountID sets the "account_id" field.
+func (_c *ChannelMonitorCreate) SetAccountID(v int64) *ChannelMonitorCreate {
+	_c.mutation.SetAccountID(v)
+	return _c
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_c *ChannelMonitorCreate) SetNillableAccountID(v *int64) *ChannelMonitorCreate {
+	if v != nil {
+		_c.SetAccountID(*v)
+	}
+	return _c
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_c *ChannelMonitorCreate) SetTemplateID(v int64) *ChannelMonitorCreate {
 	_c.mutation.SetTemplateID(v)
@@ -258,6 +273,11 @@ func (_c *ChannelMonitorCreate) SetNillableRequestTemplateID(id *int64) *Channel
 // SetRequestTemplate sets the "request_template" edge to the ChannelMonitorRequestTemplate entity.
 func (_c *ChannelMonitorCreate) SetRequestTemplate(v *ChannelMonitorRequestTemplate) *ChannelMonitorCreate {
 	return _c.SetRequestTemplateID(v.ID)
+}
+
+// SetAccount sets the "account" edge to the Account entity.
+func (_c *ChannelMonitorCreate) SetAccount(v *Account) *ChannelMonitorCreate {
+	return _c.SetAccountID(v.ID)
 }
 
 // Mutation returns the ChannelMonitorMutation object of the builder.
@@ -573,6 +593,23 @@ func (_c *ChannelMonitorCreate) createSpec() (*ChannelMonitor, *sqlgraph.CreateS
 		_node.TemplateID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := _c.mutation.AccountIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   channelmonitor.AccountTable,
+			Columns: []string{channelmonitor.AccountColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AccountID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -814,6 +851,24 @@ func (u *ChannelMonitorUpsert) UpdateCreatedBy() *ChannelMonitorUpsert {
 // AddCreatedBy adds v to the "created_by" field.
 func (u *ChannelMonitorUpsert) AddCreatedBy(v int64) *ChannelMonitorUpsert {
 	u.Add(channelmonitor.FieldCreatedBy, v)
+	return u
+}
+
+// SetAccountID sets the "account_id" field.
+func (u *ChannelMonitorUpsert) SetAccountID(v int64) *ChannelMonitorUpsert {
+	u.Set(channelmonitor.FieldAccountID, v)
+	return u
+}
+
+// UpdateAccountID sets the "account_id" field to the value that was provided on create.
+func (u *ChannelMonitorUpsert) UpdateAccountID() *ChannelMonitorUpsert {
+	u.SetExcluded(channelmonitor.FieldAccountID)
+	return u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (u *ChannelMonitorUpsert) ClearAccountID() *ChannelMonitorUpsert {
+	u.SetNull(channelmonitor.FieldAccountID)
 	return u
 }
 
@@ -1143,6 +1198,27 @@ func (u *ChannelMonitorUpsertOne) AddCreatedBy(v int64) *ChannelMonitorUpsertOne
 func (u *ChannelMonitorUpsertOne) UpdateCreatedBy() *ChannelMonitorUpsertOne {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.UpdateCreatedBy()
+	})
+}
+
+// SetAccountID sets the "account_id" field.
+func (u *ChannelMonitorUpsertOne) SetAccountID(v int64) *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetAccountID(v)
+	})
+}
+
+// UpdateAccountID sets the "account_id" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertOne) UpdateAccountID() *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateAccountID()
+	})
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (u *ChannelMonitorUpsertOne) ClearAccountID() *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.ClearAccountID()
 	})
 }
 
@@ -1648,6 +1724,27 @@ func (u *ChannelMonitorUpsertBulk) AddCreatedBy(v int64) *ChannelMonitorUpsertBu
 func (u *ChannelMonitorUpsertBulk) UpdateCreatedBy() *ChannelMonitorUpsertBulk {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.UpdateCreatedBy()
+	})
+}
+
+// SetAccountID sets the "account_id" field.
+func (u *ChannelMonitorUpsertBulk) SetAccountID(v int64) *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetAccountID(v)
+	})
+}
+
+// UpdateAccountID sets the "account_id" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertBulk) UpdateAccountID() *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateAccountID()
+	})
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (u *ChannelMonitorUpsertBulk) ClearAccountID() *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.ClearAccountID()
 	})
 }
 

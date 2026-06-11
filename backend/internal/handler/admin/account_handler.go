@@ -2088,6 +2088,10 @@ type SetSchedulableRequest struct {
 	Schedulable bool `json:"schedulable"`
 }
 
+type SetScheduleLockedRequest struct {
+	Locked bool `json:"locked"`
+}
+
 // SetSchedulable handles toggling account schedulable status
 // POST /api/v1/admin/accounts/:id/schedulable
 func (h *AccountHandler) SetSchedulable(c *gin.Context) {
@@ -2104,6 +2108,30 @@ func (h *AccountHandler) SetSchedulable(c *gin.Context) {
 	}
 
 	account, err := h.adminService.SetAccountSchedulable(c.Request.Context(), accountID, req.Schedulable)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
+}
+
+// SetScheduleLocked handles toggling account schedule automation lock
+// POST /api/v1/admin/accounts/:id/schedule-lock
+func (h *AccountHandler) SetScheduleLocked(c *gin.Context) {
+	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid account ID")
+		return
+	}
+
+	var req SetScheduleLockedRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	account, err := h.adminService.SetAccountScheduleLocked(c.Request.Context(), accountID, req.Locked)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return
