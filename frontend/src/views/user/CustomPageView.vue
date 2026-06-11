@@ -379,6 +379,11 @@ onUnmounted(() => {
   min-height: min(720px, calc(100dvh - 64px - 4rem));
 }
 
+.custom-page-layout--embed > .card {
+  display: flex;
+  min-height: 0;
+}
+
 .toc-sidebar {
   @apply flex flex-col h-full border-r border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800;
   width: min(240px, 30%);
@@ -398,8 +403,8 @@ onUnmounted(() => {
   }
 
   .custom-page-layout--embed {
-    height: calc(100dvh - 64px - 4rem);
-    min-height: min(720px, calc(100dvh - 64px - 4rem));
+    height: max(28rem, calc(100dvh - 64px - 2rem));
+    min-height: max(28rem, calc(100dvh - 64px - 2rem));
   }
 
   .custom-page-layout--embed > .card,
@@ -487,6 +492,7 @@ onUnmounted(() => {
   margin: 0;
   width: 100%;
   height: 100%;
+  min-height: inherit;
   border: 0;
   border-radius: 0;
   box-shadow: none;

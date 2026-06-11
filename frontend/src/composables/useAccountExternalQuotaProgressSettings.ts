@@ -78,11 +78,19 @@ const persist = () => {
   }
 }
 
-const persistRemote = async () => {
-  const saved = await externalSubscriptionsAPI.updateAccountQuotaProgressSettings(settings.value)
+const saveRemoteSettings = async (nextSettings: AccountExternalQuotaProgressSettings) => {
+  const saved = await externalSubscriptionsAPI.updateAccountQuotaProgressSettings(nextSettings)
   settings.value = normalizeSettings(saved)
   persist()
   return settings.value
+}
+
+const saveRemotePatch = async (patch: AccountExternalQuotaProgressSettings) => {
+  const remote = normalizeSettings(await externalSubscriptionsAPI.getAccountQuotaProgressSettings())
+  return saveRemoteSettings({
+    ...remote,
+    ...patch,
+  })
 }
 
 const normalizeSettings = (
@@ -120,7 +128,7 @@ export function useAccountExternalQuotaProgressSettings() {
         }
         if (Object.keys(local).length > 0) {
           settings.value = local
-          await persistRemote()
+          await saveRemoteSettings(settings.value)
           return settings.value
         }
         settings.value = {}
@@ -155,13 +163,14 @@ export function useAccountExternalQuotaProgressSettings() {
     preference: AccountExternalQuotaProgressPreference,
   ) => {
     const key = buildAccountExternalQuotaProgressPreferenceKey(account, status)
+    const normalizedPreference = normalizePreference(preference)
     settings.value = {
       ...settings.value,
-      [key]: normalizePreference(preference),
+      [key]: normalizedPreference,
     }
     persist()
     try {
-      await persistRemote()
+      await saveRemotePatch({ [key]: normalizedPreference })
     } catch {
       // Keep the local setting visible in the current browser if the backend is briefly unavailable.
     }

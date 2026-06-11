@@ -313,7 +313,7 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		}
 	}
 	sortExternalSubscriptionStatuses(statuses)
-	statuses = s.mergeCachedStatusesForTransientErrors(fingerprint, statuses)
+	statuses = s.mergeCachedStatusesForTransientErrors(ctx, fingerprint, statuses)
 	s.setCachedStatuses(fingerprint, statuses)
 	_ = s.SaveDisplayStatusesSnapshot(ctx, statuses)
 	return cloneExternalSubscriptionProviderStatuses(statuses), nil
@@ -376,10 +376,14 @@ func (s *ExternalSubscriptionConfigService) UpdateAccountQuotaProgressSettings(c
 	return settings, nil
 }
 
-func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientErrors(fingerprint string, statuses []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {
+func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientErrors(ctx context.Context, fingerprint string, statuses []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {
 	cached := s.getAnyCachedStatuses(fingerprint)
 	if len(cached) == 0 {
-		return statuses
+		snapshot, err := s.GetDisplayStatusesSnapshot(ctx)
+		if err != nil || len(snapshot) == 0 {
+			return statuses
+		}
+		cached = snapshot
 	}
 	previousByProvider := make(map[string]ExternalSubscriptionProviderStatus, len(cached))
 	for _, status := range cached {

@@ -8338,3 +8338,22 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   --api-key-status-surface: #fee2e2;
   --api-key-status-edge: #fca5a5;
 }
+
+/* Quota progress bars are fixed official semantic colors, not theme accents. */
+#app .app-layout-content :where(.usage-progress-fill.usage-progress-fill--safe),
+#app .app-layout-content :where(.usage-progress-fill--safe) {
+  background: #22c55e !important;
+  background-color: #22c55e !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill.usage-progress-fill--warning),
+#app .app-layout-content :where(.usage-progress-fill--warning) {
+  background: #f59e0b !important;
+  background-color: #f59e0b !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill.usage-progress-fill--danger),
+#app .app-layout-content :where(.usage-progress-fill--danger) {
+  background: #ef4444 !important;
+  background-color: #ef4444 !important;
+}
