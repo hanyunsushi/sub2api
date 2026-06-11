@@ -158,8 +158,10 @@ describe('ExternalSubscriptionsView source', () => {
 
   it('offers a Xiaomi MiMo preset without adding extra card information', () => {
     expect(source).toContain("{ value: 'mimo_token_plan', label: 'Xiaomi MiMo' }")
+    expect(source).toContain("case 'mimo_token_plan':")
     expect(source).toContain("form.id = 'mimo'")
     expect(source).toContain("form.api_base_url = 'https://platform.xiaomimimo.com'")
+    expect(source).toContain("return 'tp-xxxxx'")
     expect(source).toContain("keywordsDraft.value = 'mimo\\nxiaomi\\nxiaomimimo'")
   })
 
