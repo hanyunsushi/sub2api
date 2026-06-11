@@ -10,7 +10,12 @@ describe('channel monitor account auto scheduling source contract', () => {
   it('exposes an account binding on channel monitor API payloads and form', () => {
     expect(apiSource).toContain('account_id: number | null')
     expect(apiSource).toContain('account_id?: number | null')
-    expect(dialogSource).toContain('account_id')
+    expect(apiSource).toContain('account_ids: number[]')
+    expect(apiSource).toContain('account_ids?: number[]')
+    expect(dialogSource).toContain('account_ids')
+    expect(dialogSource).toContain('matchingAccountIDsForMonitorName')
+    expect(dialogSource).toContain('applyCreateAccountBindingSuggestion')
+    expect(dialogSource).toContain('toggleAccountBinding')
     expect(dialogSource).toContain('loadAccountsForBinding')
     expect(dialogSource).toContain("t('admin.channelMonitor.form.accountBinding')")
   })

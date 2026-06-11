@@ -215,6 +215,14 @@ export function isSystemAILogoPresetURL(rawURL?: string | null): boolean {
     || aiLogoPresets.some((preset) => preset.url === url)
 }
 
+export function systemAILogoPresetIDFromURL(rawURL?: string | null): string {
+  const url = normalizeLogoURL(rawURL)
+  if (!url) return ''
+  const preset = buildAILogoPresets().find((item) => item.url === url)
+    || aiLogoPresets.find((item) => item.url === url)
+  return preset?.id || ''
+}
+
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
   { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },

@@ -447,6 +447,7 @@ var (
 		{Name: "interval_seconds", Type: field.TypeInt},
 		{Name: "last_checked_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_by", Type: field.TypeInt64},
+		{Name: "account_ids", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
 		{Name: "extra_headers", Type: field.TypeJSON},
 		{Name: "body_override_mode", Type: field.TypeString, Size: 10, Default: "off"},
 		{Name: "body_override", Type: field.TypeJSON, Nullable: true},
@@ -461,13 +462,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "channel_monitors_channel_monitor_request_templates_request_template",
-				Columns:    []*schema.Column{ChannelMonitorsColumns[19]},
+				Columns:    []*schema.Column{ChannelMonitorsColumns[20]},
 				RefColumns: []*schema.Column{ChannelMonitorRequestTemplatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "channel_monitors_accounts_account",
-				Columns:    []*schema.Column{ChannelMonitorsColumns[20]},
+				Columns:    []*schema.Column{ChannelMonitorsColumns[21]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -496,12 +497,12 @@ var (
 			{
 				Name:    "channelmonitor_template_id",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[19]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[20]},
 			},
 			{
 				Name:    "channelmonitor_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[20]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[21]},
 			},
 		},
 	}

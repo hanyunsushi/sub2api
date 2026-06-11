@@ -48,6 +48,7 @@ type channelMonitorCreateRequest struct {
 	Enabled          *bool             `json:"enabled"`
 	IntervalSeconds  int               `json:"interval_seconds" binding:"required,min=15,max=3600"`
 	AccountID        *int64            `json:"account_id"`
+	AccountIDs       *[]int64          `json:"account_ids"`
 	TemplateID       *int64            `json:"template_id"`
 	ExtraHeaders     map[string]string `json:"extra_headers"`
 	BodyOverrideMode string            `json:"body_override_mode" binding:"omitempty,oneof=off merge replace"`
@@ -67,6 +68,7 @@ type channelMonitorUpdateRequest struct {
 	Enabled          *bool              `json:"enabled"`
 	IntervalSeconds  *int               `json:"interval_seconds" binding:"omitempty,min=15,max=3600"`
 	AccountID        *int64             `json:"account_id"`
+	AccountIDs       *[]int64           `json:"account_ids"`
 	ClearAccount     bool               `json:"clear_account"`
 	TemplateID       *int64             `json:"template_id"`
 	ClearTemplate    bool               `json:"clear_template"` // true 时把 template_id 置空，忽略 TemplateID
@@ -92,6 +94,7 @@ type channelMonitorResponse struct {
 	LastCheckedAt       *string                              `json:"last_checked_at"`
 	CreatedBy           int64                                `json:"created_by"`
 	AccountID           *int64                               `json:"account_id"`
+	AccountIDs          []int64                              `json:"account_ids"`
 	CreatedAt           string                               `json:"created_at"`
 	UpdatedAt           string                               `json:"updated_at"`
 	PrimaryStatus       string                               `json:"primary_status"`
@@ -160,6 +163,7 @@ func channelMonitorToResponse(m *service.ChannelMonitor) *channelMonitorResponse
 		IntervalSeconds:     m.IntervalSeconds,
 		CreatedBy:           m.CreatedBy,
 		AccountID:           m.AccountID,
+		AccountIDs:          responseAccountIDs(m.AccountIDs, m.AccountID),
 		CreatedAt:           m.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt:           m.UpdatedAt.UTC().Format(time.RFC3339),
 		TemplateID:          m.TemplateID,
@@ -173,6 +177,27 @@ func channelMonitorToResponse(m *service.ChannelMonitor) *channelMonitorResponse
 		resp.LastCheckedAt = &s
 	}
 	return resp
+}
+
+func responseAccountIDs(ids []int64, legacyID *int64) []int64 {
+	seen := make(map[int64]struct{}, len(ids)+1)
+	out := make([]int64, 0, len(ids)+1)
+	for _, id := range ids {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	if legacyID != nil && *legacyID > 0 {
+		if _, ok := seen[*legacyID]; !ok {
+			out = append(out, *legacyID)
+		}
+	}
+	return out
 }
 
 func checkResultToResponse(r *service.CheckResult) channelMonitorCheckResultResponse {
@@ -327,6 +352,7 @@ func (h *ChannelMonitorHandler) Create(c *gin.Context) {
 		IntervalSeconds:  req.IntervalSeconds,
 		CreatedBy:        subject.UserID,
 		AccountID:        req.AccountID,
+		AccountIDs:       req.AccountIDs,
 		TemplateID:       req.TemplateID,
 		ExtraHeaders:     req.ExtraHeaders,
 		BodyOverrideMode: req.BodyOverrideMode,
@@ -364,6 +390,7 @@ func (h *ChannelMonitorHandler) Update(c *gin.Context) {
 		Enabled:          req.Enabled,
 		IntervalSeconds:  req.IntervalSeconds,
 		AccountID:        req.AccountID,
+		AccountIDs:       req.AccountIDs,
 		ClearAccount:     req.ClearAccount,
 		TemplateID:       req.TemplateID,
 		ClearTemplate:    req.ClearTemplate,

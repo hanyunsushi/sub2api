@@ -220,7 +220,11 @@ describe('Cloudflare appearance theme', () => {
     expect(statusStatBlock).toContain('grid-template-columns: auto minmax(0, 1fr) auto;')
     expect(statusStatBlock).toContain('white-space: nowrap;')
     expect(monitorCapacitySource).toContain('.monitor-capacity-status-stat strong')
-    expect(monitorCapacitySource).toContain('justify-self: end;')
+    const statusCountBlock = cssBlockFrom(monitorCapacitySource, '.monitor-capacity-status-stat strong')
+    expect(statusCountBlock).toContain('justify-self: center;')
+    expect(statusCountBlock).toContain('text-align: center;')
+    expect(statusCountBlock).not.toContain('justify-self: end;')
+    expect(statusCountBlock).not.toContain('text-align: right;')
   })
 
   it('applies Anthropic beyond tokens with terracotta actions, editorial type, and readable filters', () => {
@@ -271,6 +275,9 @@ describe('Cloudflare appearance theme', () => {
     const headerBalanceBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-fixed')
     expect(headerBalanceBlock).toContain('display: grid !important;')
     expect(headerBalanceBlock).toContain('grid-template-columns: minmax(0, auto) minmax(0, 1fr);')
+    expect(headerBalanceBlock).toContain('width: 14.4rem;')
+    expect(headerBalanceBlock).toContain('min-width: 14.4rem;')
+    expect(headerBalanceBlock).toContain('max-width: 14.4rem;')
     expect(headerBalanceBlock).toContain('justify-content: stretch;')
     expect(headerBalanceBlock).not.toContain('justify-content: flex-end;')
     expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo {\n  margin-left: auto;')

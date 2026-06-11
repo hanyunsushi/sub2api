@@ -43,6 +43,7 @@ type ChannelMonitor struct {
 	LastCheckedAt   *time.Time
 	CreatedBy       int64
 	AccountID       *int64
+	AccountIDs      []int64
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 
@@ -81,6 +82,7 @@ type ChannelMonitorCreateParams struct {
 	IntervalSeconds  int
 	CreatedBy        int64
 	AccountID        *int64
+	AccountIDs       *[]int64
 	TemplateID       *int64
 	ExtraHeaders     map[string]string
 	BodyOverrideMode string
@@ -101,6 +103,7 @@ type ChannelMonitorUpdateParams struct {
 	Enabled         *bool
 	IntervalSeconds *int
 	AccountID       *int64
+	AccountIDs      *[]int64
 	ClearAccount    bool
 	// 自定义快照字段：指针为 nil 表示不更新，非 nil 覆盖
 	// TemplateID *(*int64)：用 ** 表达三态：nil=不更新；&nil=清空；&&id=设为 id。

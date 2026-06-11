@@ -543,12 +543,16 @@ func init() {
 	channelmonitorDescIntervalSeconds := channelmonitorFields[10].Descriptor()
 	// channelmonitor.IntervalSecondsValidator is a validator for the "interval_seconds" field. It is called by the builders before save.
 	channelmonitor.IntervalSecondsValidator = channelmonitorDescIntervalSeconds.Validators[0].(func(int) error)
+	// channelmonitorDescAccountIds is the schema descriptor for account_ids field.
+	channelmonitorDescAccountIds := channelmonitorFields[14].Descriptor()
+	// channelmonitor.DefaultAccountIds holds the default value on creation for the account_ids field.
+	channelmonitor.DefaultAccountIds = channelmonitorDescAccountIds.Default.([]int64)
 	// channelmonitorDescExtraHeaders is the schema descriptor for extra_headers field.
-	channelmonitorDescExtraHeaders := channelmonitorFields[15].Descriptor()
+	channelmonitorDescExtraHeaders := channelmonitorFields[16].Descriptor()
 	// channelmonitor.DefaultExtraHeaders holds the default value on creation for the extra_headers field.
 	channelmonitor.DefaultExtraHeaders = channelmonitorDescExtraHeaders.Default.(map[string]string)
 	// channelmonitorDescBodyOverrideMode is the schema descriptor for body_override_mode field.
-	channelmonitorDescBodyOverrideMode := channelmonitorFields[16].Descriptor()
+	channelmonitorDescBodyOverrideMode := channelmonitorFields[17].Descriptor()
 	// channelmonitor.DefaultBodyOverrideMode holds the default value on creation for the body_override_mode field.
 	channelmonitor.DefaultBodyOverrideMode = channelmonitorDescBodyOverrideMode.Default.(string)
 	// channelmonitor.BodyOverrideModeValidator is a validator for the "body_override_mode" field. It is called by the builders before save.

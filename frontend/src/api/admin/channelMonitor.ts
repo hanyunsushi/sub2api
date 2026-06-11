@@ -47,6 +47,7 @@ export interface ChannelMonitor {
   body_override_mode: BodyOverrideMode
   body_override: Record<string, unknown> | null
   account_id: number | null
+  account_ids: number[]
 }
 
 export interface ExtraModelStatus {
@@ -84,6 +85,7 @@ export interface CreateParams {
   enabled?: boolean
   interval_seconds: number
   account_id?: number | null
+  account_ids?: number[]
   template_id?: number | null
   extra_headers?: Record<string, string>
   body_override_mode?: BodyOverrideMode

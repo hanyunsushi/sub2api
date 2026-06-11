@@ -52,6 +52,8 @@ type ChannelMonitor struct {
 	CreatedBy int64 `json:"created_by,omitempty"`
 	// Linked account id for optional channel-monitor driven account scheduling.
 	AccountID *int64 `json:"account_id,omitempty"`
+	// Linked account ids for optional channel-monitor driven account scheduling.
+	AccountIds []int64 `json:"account_ids,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
 	TemplateID *int64 `json:"template_id,omitempty"`
 	// ExtraHeaders holds the value of the "extra_headers" field.
@@ -126,7 +128,7 @@ func (*ChannelMonitor) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case channelmonitor.FieldExtraModels, channelmonitor.FieldExtraHeaders, channelmonitor.FieldBodyOverride:
+		case channelmonitor.FieldExtraModels, channelmonitor.FieldAccountIds, channelmonitor.FieldExtraHeaders, channelmonitor.FieldBodyOverride:
 			values[i] = new([]byte)
 		case channelmonitor.FieldEnabled:
 			values[i] = new(sql.NullBool)
@@ -256,6 +258,14 @@ func (_m *ChannelMonitor) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.AccountID = new(int64)
 				*_m.AccountID = value.Int64
+			}
+		case channelmonitor.FieldAccountIds:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field account_ids", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.AccountIds); err != nil {
+					return fmt.Errorf("unmarshal field account_ids: %w", err)
+				}
 			}
 		case channelmonitor.FieldTemplateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -392,6 +402,9 @@ func (_m *ChannelMonitor) String() string {
 		builder.WriteString("account_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("account_ids=")
+	builder.WriteString(fmt.Sprintf("%v", _m.AccountIds))
 	builder.WriteString(", ")
 	if v := _m.TemplateID; v != nil {
 		builder.WriteString("template_id=")

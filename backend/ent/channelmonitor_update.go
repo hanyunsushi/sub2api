@@ -265,6 +265,18 @@ func (_u *ChannelMonitorUpdate) ClearAccountID() *ChannelMonitorUpdate {
 	return _u
 }
 
+// SetAccountIds sets the "account_ids" field.
+func (_u *ChannelMonitorUpdate) SetAccountIds(v []int64) *ChannelMonitorUpdate {
+	_u.mutation.SetAccountIds(v)
+	return _u
+}
+
+// AppendAccountIds appends value to the "account_ids" field.
+func (_u *ChannelMonitorUpdate) AppendAccountIds(v []int64) *ChannelMonitorUpdate {
+	_u.mutation.AppendAccountIds(v)
+	return _u
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdate) SetTemplateID(v int64) *ChannelMonitorUpdate {
 	_u.mutation.SetTemplateID(v)
@@ -586,6 +598,14 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
 		_spec.AddField(channelmonitor.FieldCreatedBy, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AccountIds(); ok {
+		_spec.SetField(channelmonitor.FieldAccountIds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedAccountIds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, channelmonitor.FieldAccountIds, value)
+		})
 	}
 	if value, ok := _u.mutation.ExtraHeaders(); ok {
 		_spec.SetField(channelmonitor.FieldExtraHeaders, field.TypeJSON, value)
@@ -999,6 +1019,18 @@ func (_u *ChannelMonitorUpdateOne) ClearAccountID() *ChannelMonitorUpdateOne {
 	return _u
 }
 
+// SetAccountIds sets the "account_ids" field.
+func (_u *ChannelMonitorUpdateOne) SetAccountIds(v []int64) *ChannelMonitorUpdateOne {
+	_u.mutation.SetAccountIds(v)
+	return _u
+}
+
+// AppendAccountIds appends value to the "account_ids" field.
+func (_u *ChannelMonitorUpdateOne) AppendAccountIds(v []int64) *ChannelMonitorUpdateOne {
+	_u.mutation.AppendAccountIds(v)
+	return _u
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdateOne) SetTemplateID(v int64) *ChannelMonitorUpdateOne {
 	_u.mutation.SetTemplateID(v)
@@ -1350,6 +1382,14 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
 		_spec.AddField(channelmonitor.FieldCreatedBy, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AccountIds(); ok {
+		_spec.SetField(channelmonitor.FieldAccountIds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedAccountIds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, channelmonitor.FieldAccountIds, value)
+		})
 	}
 	if value, ok := _u.mutation.ExtraHeaders(); ok {
 		_spec.SetField(channelmonitor.FieldExtraHeaders, field.TypeJSON, value)

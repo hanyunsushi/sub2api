@@ -148,12 +148,13 @@ func (s *ChannelMonitorService) Create(ctx context.Context, p ChannelMonitorCrea
 		Enabled:          p.Enabled,
 		IntervalSeconds:  p.IntervalSeconds,
 		CreatedBy:        p.CreatedBy,
-		AccountID:        normalizeOptionalID(p.AccountID),
 		TemplateID:       p.TemplateID,
 		ExtraHeaders:     emptyHeadersIfNil(p.ExtraHeaders),
 		BodyOverrideMode: defaultBodyMode(p.BodyOverrideMode),
 		BodyOverride:     p.BodyOverride,
 	}
+	m.AccountIDs = s.resolveCreateAccountIDs(ctx, m.Name, m.Provider, p.AccountIDs, p.AccountID)
+	m.AccountID = firstAccountID(m.AccountIDs)
 	if err := s.repo.Create(ctx, m); err != nil {
 		return nil, fmt.Errorf("create channel monitor: %w", err)
 	}
@@ -359,29 +360,11 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 }
 
 func (s *ChannelMonitorService) resolveAutoScheduleAccountIDs(ctx context.Context, m *ChannelMonitor) []int64 {
-	if m.AccountID != nil && *m.AccountID > 0 {
-		return []int64{*m.AccountID}
+	_ = ctx
+	if accountIDs := normalizeAccountIDs(m.AccountIDs); len(accountIDs) > 0 {
+		return accountIDs
 	}
-	monitorName := normalizeMonitorAccountMatchName(m.Name)
-	if monitorName == "" || strings.TrimSpace(m.Provider) == "" {
-		return nil
-	}
-	accounts, err := s.autoScheduleRepo.ListByPlatform(ctx, strings.TrimSpace(m.Provider))
-	if err != nil {
-		slog.Warn("channel_monitor: skip account auto schedule, account name lookup failed",
-			"monitor_id", m.ID, "provider", m.Provider, "error", err)
-		return nil
-	}
-	matchedIDs := make([]int64, 0, 1)
-	for _, account := range accounts {
-		if normalizeMonitorAccountMatchName(account.Name) != monitorName {
-			continue
-		}
-		if account.ID > 0 {
-			matchedIDs = append(matchedIDs, account.ID)
-		}
-	}
-	return matchedIDs
+	return normalizeAccountIDsFromOptional(m.AccountID)
 }
 
 func normalizeMonitorAccountMatchName(name string) string {
@@ -611,8 +594,13 @@ func applyMonitorUpdate(existing *ChannelMonitor, p ChannelMonitorUpdateParams) 
 	}
 	if p.ClearAccount {
 		existing.AccountID = nil
+		existing.AccountIDs = []int64{}
+	} else if p.AccountIDs != nil {
+		existing.AccountIDs = normalizeAccountIDs(*p.AccountIDs)
+		existing.AccountID = firstAccountID(existing.AccountIDs)
 	} else if p.AccountID != nil {
-		existing.AccountID = normalizeOptionalID(p.AccountID)
+		existing.AccountIDs = normalizeAccountIDsFromOptional(p.AccountID)
+		existing.AccountID = firstAccountID(existing.AccountIDs)
 	}
 	return applyMonitorAdvancedUpdate(existing, p, providerChanged)
 }
@@ -666,4 +654,70 @@ func normalizeOptionalID(id *int64) *int64 {
 	}
 	v := *id
 	return &v
+}
+
+func (s *ChannelMonitorService) resolveCreateAccountIDs(ctx context.Context, name, provider string, explicitIDs *[]int64, legacyID *int64) []int64 {
+	if explicitIDs != nil {
+		return normalizeAccountIDs(*explicitIDs)
+	}
+	if ids := normalizeAccountIDsFromOptional(legacyID); len(ids) > 0 {
+		return ids
+	}
+	if s == nil || s.autoScheduleRepo == nil {
+		return []int64{}
+	}
+	monitorName := normalizeMonitorAccountMatchName(name)
+	provider = strings.TrimSpace(provider)
+	if monitorName == "" || provider == "" {
+		return []int64{}
+	}
+	accounts, err := s.autoScheduleRepo.ListByPlatform(ctx, provider)
+	if err != nil {
+		slog.Warn("channel_monitor: skip create-time account binding lookup",
+			"provider", provider, "monitor_name", strings.TrimSpace(name), "error", err)
+		return []int64{}
+	}
+	matched := make([]int64, 0, 1)
+	for _, account := range accounts {
+		if normalizeMonitorAccountMatchName(account.Name) != monitorName {
+			continue
+		}
+		matched = append(matched, account.ID)
+	}
+	return normalizeAccountIDs(matched)
+}
+
+func normalizeAccountIDsFromOptional(id *int64) []int64 {
+	if id == nil {
+		return []int64{}
+	}
+	return normalizeAccountIDs([]int64{*id})
+}
+
+func normalizeAccountIDs(ids []int64) []int64 {
+	if len(ids) == 0 {
+		return []int64{}
+	}
+	seen := make(map[int64]struct{}, len(ids))
+	out := make([]int64, 0, len(ids))
+	for _, id := range ids {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	return out
+}
+
+func firstAccountID(ids []int64) *int64 {
+	ids = normalizeAccountIDs(ids)
+	if len(ids) == 0 {
+		return nil
+	}
+	id := ids[0]
+	return &id
 }
