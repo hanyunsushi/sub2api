@@ -70,3 +70,40 @@ func (h *ExternalSubscriptionConfigHandler) GetStatuses(c *gin.Context) {
 	}
 	response.Success(c, statuses)
 }
+
+func (h *ExternalSubscriptionConfigHandler) GetDisplayStatusesSnapshot(c *gin.Context) {
+	statuses, err := h.service.GetDisplayStatusesSnapshot(c.Request.Context())
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, statuses)
+}
+
+func (h *ExternalSubscriptionConfigHandler) GetAccountQuotaProgressSettings(c *gin.Context) {
+	settings, err := h.service.GetAccountQuotaProgressSettings(c.Request.Context())
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, gin.H{"settings": settings})
+}
+
+func (h *ExternalSubscriptionConfigHandler) UpdateAccountQuotaProgressSettings(c *gin.Context) {
+	var req struct {
+		Settings map[string]service.ExternalSubscriptionAccountQuotaProgressPreference `json:"settings"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	if req.Settings == nil {
+		req.Settings = map[string]service.ExternalSubscriptionAccountQuotaProgressPreference{}
+	}
+	settings, err := h.service.UpdateAccountQuotaProgressSettings(c.Request.Context(), req.Settings)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, gin.H{"settings": settings})
+}

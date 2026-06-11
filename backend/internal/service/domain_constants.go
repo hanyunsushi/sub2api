@@ -487,7 +487,9 @@ const (
 	SettingKeyPackyCodeSubscriptionRefreshToken = "packycode_subscription_refresh_token"
 
 	// Generic external subscription display providers.
-	SettingKeyExternalSubscriptionProviders = "external_subscription_providers"
+	SettingKeyExternalSubscriptionProviders            = "external_subscription_providers"
+	SettingKeyExternalSubscriptionDisplayStatuses      = "external_subscription_display_statuses"
+	SettingKeyExternalSubscriptionAccountQuotaProgress = "external_subscription_account_quota_progress"
 
 	// AI logo library
 	SettingKeyAILogoCDNBaseURL         = "ai_logo_cdn_base_url"

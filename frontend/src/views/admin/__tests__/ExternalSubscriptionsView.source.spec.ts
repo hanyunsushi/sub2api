@@ -4,6 +4,8 @@ import { resolve } from 'node:path'
 
 const sourcePath = resolve(__dirname, '../ExternalSubscriptionsView.vue')
 const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : ''
+const stylePath = resolve(__dirname, '../../../style.css')
+const styleSource = existsSync(stylePath) ? readFileSync(stylePath, 'utf8') : ''
 
 describe('ExternalSubscriptionsView source', () => {
   it('is a standalone admin settings subpage backed by the generic external subscriptions API', () => {
@@ -23,12 +25,14 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain("openrouter_credits")
     expect(source).toContain("cloudflare_ai_gateway_credits")
     expect(source).toContain("rawchat_subscriptions")
+    expect(source).toContain("mimo_token_plan")
     expect(source).toContain("applyPreset('newapi_console')")
     expect(source).toContain("applyPreset('active_subscriptions')")
     expect(source).toContain("applyPreset('buzz_balance')")
     expect(source).toContain("applyPreset('openrouter_credits')")
     expect(source).toContain("applyPreset('cloudflare_ai_gateway_credits')")
     expect(source).toContain("applyPreset('rawchat_subscriptions')")
+    expect(source).toContain("applyPreset('mimo_token_plan')")
     expect(source).toContain('form.api_token')
     expect(source).toContain('form.refresh_token')
     expect(source).toContain('api_token_configured')
@@ -141,6 +145,22 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('external-subscription-quota-progress-track')
     expect(source).not.toContain('external-subscription-quota-progress-fill')
     expect(source).not.toContain('externalQuotaProgressFillClass')
+  })
+
+  it('keeps quota progress fills on official semantic green amber red colors outside account cards', () => {
+    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--safe)')
+    expect(styleSource).toContain('background: #22c55e !important;')
+    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--warning)')
+    expect(styleSource).toContain('background: #f59e0b !important;')
+    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--danger)')
+    expect(styleSource).toContain('background: #ef4444 !important;')
+  })
+
+  it('offers a Xiaomi MiMo preset without adding extra card information', () => {
+    expect(source).toContain("{ value: 'mimo_token_plan', label: 'Xiaomi MiMo' }")
+    expect(source).toContain("form.id = 'mimo'")
+    expect(source).toContain("form.api_base_url = 'https://platform.xiaomimimo.com'")
+    expect(source).toContain("keywordsDraft.value = 'mimo\\nxiaomi\\nxiaomimimo'")
   })
 
   it('uses account-card style official links instead of showing raw site URLs on provider cards', () => {

@@ -316,6 +316,7 @@ const (
 	DefaultOpenRouterCreditsAPIBaseURL          = "https://openrouter.ai"
 	DefaultCloudflareAIGatewayCreditsAPIBaseURL = "https://api.cloudflare.com/client/v4"
 	DefaultRawChatSubscriptionAPIBaseURL        = "https://rawchat.cn"
+	DefaultMimoTokenPlanAPIBaseURL              = "https://platform.xiaomimimo.com"
 	DefaultAILogoCDNBaseURL                     = "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
 	defaultWeChatConnectMode                    = "open"
 	defaultWeChatConnectScopes                  = "snsapi_login"

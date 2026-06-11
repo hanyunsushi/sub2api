@@ -22,6 +22,7 @@ const (
 	ExternalSubscriptionTemplateOpenRouterCredits          = "openrouter_credits"
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
 	ExternalSubscriptionTemplateRawChatSubscriptions       = "rawchat_subscriptions"
+	ExternalSubscriptionTemplateMimoTokenPlan              = "mimo_token_plan"
 
 	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
 	ExternalSubscriptionBalanceStrategyNewAPIUserQuota         = "newapi_user_quota"
@@ -34,6 +35,9 @@ const (
 	externalSubscriptionStatusStaleTTL             = 30 * time.Minute
 	externalSubscriptionStatusBackgroundRefreshTTL = 30 * time.Second
 	externalSubscriptionProviderStatusTimeout      = 6 * time.Second
+
+	ExternalSubscriptionAccountQuotaProgressModeStatusTotal = "status_total"
+	ExternalSubscriptionAccountQuotaProgressModeCustomTotal = "custom_total"
 )
 
 var externalSubscriptionIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{1,63}$`)
@@ -115,6 +119,12 @@ type ExternalSubscriptionStatusOptions struct {
 	ForceRefresh bool
 }
 
+type ExternalSubscriptionAccountQuotaProgressPreference struct {
+	Enabled     bool     `json:"enabled"`
+	Mode        string   `json:"mode"`
+	CustomTotal *float64 `json:"customTotal,omitempty"`
+}
+
 func NewExternalSubscriptionConfigService(settingService *SettingService) *ExternalSubscriptionConfigService {
 	return &ExternalSubscriptionConfigService{settingService: settingService}
 }
@@ -145,7 +155,7 @@ func (s *ExternalSubscriptionConfigService) CreateProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, stored); err != nil {
 		return ExternalSubscriptionProvider{}, err
 	}
-	s.clearStatusesCache()
+	s.invalidateStatusesCache(ctx)
 	return publicExternalSubscriptionProvider(next), nil
 }
 
@@ -168,7 +178,7 @@ func (s *ExternalSubscriptionConfigService) UpdateProvider(ctx context.Context, 
 		if err := s.saveStoredProviders(ctx, stored); err != nil {
 			return ExternalSubscriptionProvider{}, err
 		}
-		s.clearStatusesCache()
+		s.invalidateStatusesCache(ctx)
 		return publicExternalSubscriptionProvider(next), nil
 	}
 	return ExternalSubscriptionProvider{}, infraerrors.NotFound("EXTERNAL_SUBSCRIPTION_PROVIDER_NOT_FOUND", "external subscription provider not found")
@@ -195,7 +205,7 @@ func (s *ExternalSubscriptionConfigService) DeleteProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, next); err != nil {
 		return err
 	}
-	s.clearStatusesCache()
+	s.invalidateStatusesCache(ctx)
 	return nil
 }
 
@@ -305,7 +315,65 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 	sortExternalSubscriptionStatuses(statuses)
 	statuses = s.mergeCachedStatusesForTransientErrors(fingerprint, statuses)
 	s.setCachedStatuses(fingerprint, statuses)
+	_ = s.SaveDisplayStatusesSnapshot(ctx, statuses)
 	return cloneExternalSubscriptionProviderStatuses(statuses), nil
+}
+
+func (s *ExternalSubscriptionConfigService) GetDisplayStatusesSnapshot(ctx context.Context) ([]ExternalSubscriptionProviderStatus, error) {
+	raw, err := s.settingService.settingRepo.GetValue(ctx, SettingKeyExternalSubscriptionDisplayStatuses)
+	if err != nil {
+		if errors.Is(err, ErrSettingNotFound) {
+			return []ExternalSubscriptionProviderStatus{}, nil
+		}
+		return nil, fmt.Errorf("get external subscription display status snapshot: %w", err)
+	}
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return []ExternalSubscriptionProviderStatus{}, nil
+	}
+	var statuses []ExternalSubscriptionProviderStatus
+	if err := json.Unmarshal([]byte(raw), &statuses); err != nil {
+		return []ExternalSubscriptionProviderStatus{}, nil
+	}
+	return cloneExternalSubscriptionProviderStatuses(statuses), nil
+}
+
+func (s *ExternalSubscriptionConfigService) SaveDisplayStatusesSnapshot(ctx context.Context, statuses []ExternalSubscriptionProviderStatus) error {
+	raw, err := json.Marshal(cloneExternalSubscriptionProviderStatuses(statuses))
+	if err != nil {
+		return fmt.Errorf("marshal external subscription display status snapshot: %w", err)
+	}
+	if err := s.settingService.settingRepo.Set(ctx, SettingKeyExternalSubscriptionDisplayStatuses, string(raw)); err != nil {
+		return fmt.Errorf("save external subscription display status snapshot: %w", err)
+	}
+	return nil
+}
+
+func (s *ExternalSubscriptionConfigService) GetAccountQuotaProgressSettings(ctx context.Context) (map[string]ExternalSubscriptionAccountQuotaProgressPreference, error) {
+	raw, err := s.settingService.settingRepo.GetValue(ctx, SettingKeyExternalSubscriptionAccountQuotaProgress)
+	if err != nil {
+		if errors.Is(err, ErrSettingNotFound) {
+			return map[string]ExternalSubscriptionAccountQuotaProgressPreference{}, nil
+		}
+		return nil, fmt.Errorf("get external subscription account quota progress settings: %w", err)
+	}
+	settings, err := decodeExternalSubscriptionAccountQuotaProgressSettings(raw)
+	if err != nil {
+		return nil, err
+	}
+	return settings, nil
+}
+
+func (s *ExternalSubscriptionConfigService) UpdateAccountQuotaProgressSettings(ctx context.Context, input map[string]ExternalSubscriptionAccountQuotaProgressPreference) (map[string]ExternalSubscriptionAccountQuotaProgressPreference, error) {
+	settings := normalizeExternalSubscriptionAccountQuotaProgressSettings(input)
+	raw, err := json.Marshal(settings)
+	if err != nil {
+		return nil, fmt.Errorf("marshal external subscription account quota progress settings: %w", err)
+	}
+	if err := s.settingService.settingRepo.Set(ctx, SettingKeyExternalSubscriptionAccountQuotaProgress, string(raw)); err != nil {
+		return nil, fmt.Errorf("save external subscription account quota progress settings: %w", err)
+	}
+	return settings, nil
 }
 
 func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientErrors(fingerprint string, statuses []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {
@@ -437,9 +505,10 @@ func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx c
 	for index, provider := range stored {
 		byID[provider.ID] = index
 	}
+	mergeDefaultProviders := shouldMergeDefaultExternalSubscriptionProviders(stored)
 	updated := false
 	for _, legacyProvider := range legacy {
-		if !legacyProvider.hasSubscriptionCredential() {
+		if !legacyProvider.hasSubscriptionCredential() && !(mergeDefaultProviders && isDefaultExternalSubscriptionProvider(legacyProvider.ID)) {
 			continue
 		}
 		if index, ok := byID[legacyProvider.ID]; ok {
@@ -494,6 +563,25 @@ func mergeLegacySubscriptionProvider(target *externalSubscriptionStoredProvider,
 		updated = true
 	}
 	return updated
+}
+
+func isDefaultExternalSubscriptionProvider(id string) bool {
+	switch strings.TrimSpace(strings.ToLower(id)) {
+	case "openrouter", "cloudflare", "rawchat", "mimo":
+		return true
+	default:
+		return false
+	}
+}
+
+func shouldMergeDefaultExternalSubscriptionProviders(providers []externalSubscriptionStoredProvider) bool {
+	count := 0
+	for _, provider := range providers {
+		if isDefaultExternalSubscriptionProvider(provider.ID) {
+			count++
+		}
+	}
+	return count >= 2
 }
 
 func mergeExternalSubscriptionKeywords(current []string, defaults []string) []string {
@@ -618,6 +706,16 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 			APIBaseURL:      DefaultRawChatSubscriptionAPIBaseURL,
 			MatchKeywords:   []string{"rawchat", "rawchat.cn"},
 			SortOrder:       90,
+		},
+		externalSubscriptionStoredProvider{
+			ID:              "mimo",
+			Name:            "Xiaomi MiMo",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateMimoTokenPlan,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      DefaultMimoTokenPlanAPIBaseURL,
+			MatchKeywords:   []string{"mimo", "xiaomi", "xiaomimimo"},
+			SortOrder:       95,
 		},
 	)
 	return providers, nil
@@ -755,10 +853,52 @@ func isExternalSubscriptionTemplate(template string) bool {
 		ExternalSubscriptionTemplateBuzzBalance,
 		ExternalSubscriptionTemplateOpenRouterCredits,
 		ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
-		ExternalSubscriptionTemplateRawChatSubscriptions:
+		ExternalSubscriptionTemplateRawChatSubscriptions,
+		ExternalSubscriptionTemplateMimoTokenPlan:
 		return true
 	default:
 		return false
+	}
+}
+
+func decodeExternalSubscriptionAccountQuotaProgressSettings(raw string) (map[string]ExternalSubscriptionAccountQuotaProgressPreference, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return map[string]ExternalSubscriptionAccountQuotaProgressPreference{}, nil
+	}
+	var settings map[string]ExternalSubscriptionAccountQuotaProgressPreference
+	if err := json.Unmarshal([]byte(raw), &settings); err != nil {
+		return nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_ACCOUNT_QUOTA_PROGRESS_INVALID", "external subscription account quota progress settings are invalid")
+	}
+	return normalizeExternalSubscriptionAccountQuotaProgressSettings(settings), nil
+}
+
+func normalizeExternalSubscriptionAccountQuotaProgressSettings(input map[string]ExternalSubscriptionAccountQuotaProgressPreference) map[string]ExternalSubscriptionAccountQuotaProgressPreference {
+	out := make(map[string]ExternalSubscriptionAccountQuotaProgressPreference, len(input))
+	for key, preference := range input {
+		key = strings.TrimSpace(strings.ToLower(key))
+		if key == "" {
+			continue
+		}
+		out[key] = normalizeExternalSubscriptionAccountQuotaProgressPreference(preference)
+	}
+	return out
+}
+
+func normalizeExternalSubscriptionAccountQuotaProgressPreference(preference ExternalSubscriptionAccountQuotaProgressPreference) ExternalSubscriptionAccountQuotaProgressPreference {
+	mode := strings.TrimSpace(preference.Mode)
+	if mode != ExternalSubscriptionAccountQuotaProgressModeCustomTotal {
+		mode = ExternalSubscriptionAccountQuotaProgressModeStatusTotal
+	}
+	var customTotal *float64
+	if preference.CustomTotal != nil && *preference.CustomTotal > 0 {
+		value := *preference.CustomTotal
+		customTotal = &value
+	}
+	return ExternalSubscriptionAccountQuotaProgressPreference{
+		Enabled:     preference.Enabled,
+		Mode:        mode,
+		CustomTotal: customTotal,
 	}
 }
 
@@ -813,6 +953,11 @@ func (s *ExternalSubscriptionConfigService) clearStatusesCache() {
 	s.statusCacheMu.Lock()
 	defer s.statusCacheMu.Unlock()
 	s.statusCache = nil
+}
+
+func (s *ExternalSubscriptionConfigService) invalidateStatusesCache(ctx context.Context) {
+	s.clearStatusesCache()
+	_ = s.settingService.settingRepo.Delete(ctx, SettingKeyExternalSubscriptionDisplayStatuses)
 }
 
 func cloneExternalSubscriptionProviderStatuses(input []ExternalSubscriptionProviderStatus) []ExternalSubscriptionProviderStatus {

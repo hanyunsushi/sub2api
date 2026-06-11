@@ -279,6 +279,16 @@
               {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
             </div>
           </button>
+          <button
+            type="button"
+            class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800/70 dark:hover:bg-dark-700"
+            @click="applyPreset('mimo_token_plan')"
+          >
+            <div class="text-sm font-semibold text-gray-700 dark:text-gray-200">Xiaomi MiMo</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ localText('小米 MiMo Token Plan 余额接口', 'Xiaomi MiMo Token Plan balance API') }}
+            </div>
+          </button>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2">
@@ -491,6 +501,7 @@ const templateOptions = computed(() => [
   { value: 'openrouter_credits', label: 'OpenRouter Credits' },
   { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
   { value: 'rawchat_subscriptions', label: 'RawChat' },
+  { value: 'mimo_token_plan', label: 'Xiaomi MiMo' },
 ])
 
 const balanceStrategyOptions = computed(() => [
@@ -524,6 +535,7 @@ const apiTokenPlaceholder = computed(() => {
   if (form.template === 'openrouter_credits') return 'sk-or-...'
   if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
   if (form.template === 'rawchat_subscriptions') return 'RawChat token'
+  if (form.template === 'mimo_token_plan') return 'Cookie: serviceToken=...; userId=...'
   return 'sk-...'
 })
 
@@ -772,6 +784,15 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!form.id) form.id = 'rawchat'
     if (form.sort_order === 50) form.sort_order = 90
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'rawchat\nrawchat.cn'
+    return
+  }
+  if (template === 'mimo_token_plan') {
+    form.balance_strategy = 'auto'
+    if (!form.api_base_url) form.api_base_url = 'https://platform.xiaomimimo.com'
+    if (!form.name) form.name = 'Xiaomi MiMo'
+    if (!form.id) form.id = 'mimo'
+    if (form.sort_order === 50) form.sort_order = 95
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'mimo\nxiaomi\nxiaomimimo'
   }
 }
 

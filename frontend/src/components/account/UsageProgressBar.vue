@@ -109,9 +109,9 @@ const labelClass = computed(() => {
 
 // Progress bar color based on utilization
 const barClass = computed(() => {
-  if (props.utilization >= 100) {
+  if (props.utilization >= 90) {
     return 'usage-progress-fill--danger bg-red-500'
-  } else if (props.utilization >= 80) {
+  } else if (props.utilization >= 70) {
     return 'usage-progress-fill--warning bg-amber-500'
   } else {
     return 'usage-progress-fill--safe bg-green-500'
@@ -120,9 +120,9 @@ const barClass = computed(() => {
 
 // Text color based on utilization
 const textClass = computed(() => {
-  if (props.utilization >= 100) {
+  if (props.utilization >= 90) {
     return 'text-red-600 dark:text-red-400'
-  } else if (props.utilization >= 80) {
+  } else if (props.utilization >= 70) {
     return 'text-amber-600 dark:text-amber-400'
   } else {
     return 'text-gray-600 dark:text-gray-400'

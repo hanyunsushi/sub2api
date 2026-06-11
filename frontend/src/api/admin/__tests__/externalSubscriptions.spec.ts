@@ -20,6 +20,12 @@ describe('admin external subscriptions api', () => {
     vi.clearAllMocks()
     localStorage.clear()
     externalSubscriptionsAPI.clearStoredDisplayStatusesCache()
+    vi.mocked(apiClient.get).mockImplementation((url: string) => {
+      if (url === '/admin/external-subscriptions/display-statuses-snapshot') {
+        return Promise.resolve({ data: [] })
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
   })
 
   it('lists configurable providers without exposing secrets', async () => {
@@ -154,6 +160,64 @@ describe('admin external subscriptions api', () => {
       api_base_url: 'https://rawchat.cn',
     }))
     expect(created.template).toBe('rawchat_subscriptions')
+  })
+
+  it('accepts the Xiaomi MiMo external subscription template in provider payloads', async () => {
+    vi.mocked(apiClient.post).mockResolvedValueOnce({
+      data: {
+        id: 'mimo',
+        name: 'Xiaomi MiMo',
+        enabled: true,
+        template: 'mimo_token_plan',
+        balance_strategy: 'auto',
+        api_base_url: 'https://platform.xiaomimimo.com',
+        api_token_configured: true,
+        refresh_token_configured: false,
+        match_keywords: ['mimo', 'xiaomi', 'xiaomimimo'],
+        sort_order: 95,
+      },
+    })
+
+    const created = await externalSubscriptionsAPI.createProvider({
+      id: 'mimo',
+      name: 'Xiaomi MiMo',
+      enabled: true,
+      template: 'mimo_token_plan',
+      balance_strategy: 'auto',
+      api_base_url: 'https://platform.xiaomimimo.com',
+      api_token: 'mimo-token',
+      match_keywords: ['mimo', 'xiaomi', 'xiaomimimo'],
+      sort_order: 95,
+    })
+
+    expect(apiClient.post).toHaveBeenCalledWith('/admin/external-subscriptions', expect.objectContaining({
+      id: 'mimo',
+      template: 'mimo_token_plan',
+      api_base_url: 'https://platform.xiaomimimo.com',
+    }))
+    expect(created.template).toBe('mimo_token_plan')
+  })
+
+  it('persists account external quota progress settings through the generic endpoint', async () => {
+    const payload = {
+      settings: {
+        '101:rawchat:rawchat_subscriptions:rawchat': {
+          enabled: true,
+          mode: 'custom_total',
+          customTotal: 120,
+        },
+      },
+    }
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: payload })
+    vi.mocked(apiClient.put).mockResolvedValueOnce({ data: payload })
+
+    const loaded = await externalSubscriptionsAPI.getAccountQuotaProgressSettings()
+    const saved = await externalSubscriptionsAPI.updateAccountQuotaProgressSettings(payload.settings)
+
+    expect(apiClient.get).toHaveBeenCalledWith('/admin/external-subscriptions/account-quota-progress-settings')
+    expect(apiClient.put).toHaveBeenCalledWith('/admin/external-subscriptions/account-quota-progress-settings', payload)
+    expect(loaded).toEqual(payload.settings)
+    expect(saved).toEqual(payload.settings)
   })
 
   it('clears stored display snapshots after provider configuration changes', async () => {

@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="custom-page-layout">
+    <div :class="['custom-page-layout', { 'custom-page-layout--embed': isValidUrl && !isMarkdownMode }]">
       <div class="card flex-1 min-h-0 overflow-hidden">
         <div v-if="loading" class="flex h-full items-center justify-center py-12">
           <div
@@ -375,7 +375,8 @@ onUnmounted(() => {
 <style scoped>
 .custom-page-layout {
   @apply flex flex-col;
-  height: calc(100vh - 64px - 4rem);
+  height: calc(100dvh - 64px - 4rem);
+  min-height: min(720px, calc(100dvh - 64px - 4rem));
 }
 
 .toc-sidebar {
@@ -394,6 +395,19 @@ onUnmounted(() => {
 
   .custom-page-layout > .card {
     overflow: visible;
+  }
+
+  .custom-page-layout--embed {
+    height: calc(100dvh - 64px - 4rem);
+    min-height: min(720px, calc(100dvh - 64px - 4rem));
+  }
+
+  .custom-page-layout--embed > .card,
+  .custom-page-layout--embed .custom-embed-shell,
+  .custom-page-layout--embed .custom-embed-frame {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .custom-markdown-shell {

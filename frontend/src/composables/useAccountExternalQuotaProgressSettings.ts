@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
+import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import type { Account } from '@/types'
 import type {
   AccountExternalQuotaProgressPreference,
@@ -50,6 +50,8 @@ const readInitialSettings = (): AccountExternalQuotaProgressSettings => {
 
 const settings = ref<AccountExternalQuotaProgressSettings>(readInitialSettings())
 let storageListenerRegistered = false
+let loadedFromBackend = false
+let loadRequest: Promise<AccountExternalQuotaProgressSettings> | null = null
 
 export const buildAccountExternalQuotaProgressPreferenceKey = (
   account: Pick<Account, 'id'>,
@@ -76,6 +78,22 @@ const persist = () => {
   }
 }
 
+const persistRemote = async () => {
+  const saved = await externalSubscriptionsAPI.updateAccountQuotaProgressSettings(settings.value)
+  settings.value = normalizeSettings(saved)
+  persist()
+  return settings.value
+}
+
+const normalizeSettings = (
+  input?: Record<string, Partial<AccountExternalQuotaProgressPreference>> | null,
+): AccountExternalQuotaProgressSettings => {
+  if (!input || typeof input !== 'object') return {}
+  return Object.fromEntries(
+    Object.entries(input).map(([key, value]) => [key.toLowerCase(), normalizePreference(value)]),
+  )
+}
+
 const ensureStorageListener = () => {
   if (storageListenerRegistered || typeof window === 'undefined') return
   storageListenerRegistered = true
@@ -88,6 +106,40 @@ const ensureStorageListener = () => {
 export function useAccountExternalQuotaProgressSettings() {
   ensureStorageListener()
 
+  const loadAccountExternalQuotaProgressSettings = async () => {
+    if (loadedFromBackend) return settings.value
+    if (loadRequest) return loadRequest
+    loadRequest = externalSubscriptionsAPI.getAccountQuotaProgressSettings()
+      .then(async (remote) => {
+        const normalizedRemote = normalizeSettings(remote)
+        const local = readInitialSettings()
+        if (Object.keys(normalizedRemote).length > 0) {
+          settings.value = normalizedRemote
+          persist()
+          return settings.value
+        }
+        if (Object.keys(local).length > 0) {
+          settings.value = local
+          await persistRemote()
+          return settings.value
+        }
+        settings.value = {}
+        persist()
+        return settings.value
+      })
+      .then((value) => {
+        loadedFromBackend = true
+        return value
+      })
+      .catch(() => {
+        return settings.value
+      })
+      .finally(() => {
+        loadRequest = null
+      })
+    return loadRequest
+  }
+
   const getAccountExternalQuotaProgressPreference = (
     account: Pick<Account, 'id'>,
     status?: ExternalSubscriptionStatus | null,
@@ -97,7 +149,7 @@ export function useAccountExternalQuotaProgressSettings() {
     return normalizePreference(settings.value[key])
   }
 
-  const setAccountExternalQuotaProgressPreference = (
+  const setAccountExternalQuotaProgressPreference = async (
     account: Pick<Account, 'id'>,
     status: ExternalSubscriptionStatus,
     preference: AccountExternalQuotaProgressPreference,
@@ -108,10 +160,16 @@ export function useAccountExternalQuotaProgressSettings() {
       [key]: normalizePreference(preference),
     }
     persist()
+    try {
+      await persistRemote()
+    } catch {
+      // Keep the local setting visible in the current browser if the backend is briefly unavailable.
+    }
   }
 
   return {
     accountExternalQuotaProgressSettings: settings,
+    loadAccountExternalQuotaProgressSettings,
     getAccountExternalQuotaProgressPreference,
     setAccountExternalQuotaProgressPreference,
   }

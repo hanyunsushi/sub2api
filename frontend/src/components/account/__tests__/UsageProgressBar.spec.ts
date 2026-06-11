@@ -96,4 +96,32 @@ describe('UsageProgressBar', () => {
     expect(wrapper.text()).toContain('usage.resetNow')
     expect(wrapper.text()).not.toContain('usage.resetPending')
   })
+
+  it('uses official green amber red thresholds for quota utilization', () => {
+    const safe = mount(UsageProgressBar, {
+      props: {
+        label: 'EXT',
+        utilization: 69,
+        color: 'emerald',
+      },
+    })
+    const warning = mount(UsageProgressBar, {
+      props: {
+        label: 'EXT',
+        utilization: 70,
+        color: 'emerald',
+      },
+    })
+    const danger = mount(UsageProgressBar, {
+      props: {
+        label: 'EXT',
+        utilization: 90,
+        color: 'emerald',
+      },
+    })
+
+    expect(safe.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--safe')
+    expect(warning.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--warning')
+    expect(danger.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--danger')
+  })
 })

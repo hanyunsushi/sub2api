@@ -6,6 +6,7 @@ export type ExternalSubscriptionTemplate =
   | 'openrouter_credits'
   | 'cloudflare_ai_gateway_credits'
   | 'rawchat_subscriptions'
+  | 'mimo_token_plan'
 
 export type ExternalSubscriptionBalanceStrategy =
   | 'auto'
@@ -82,6 +83,18 @@ export interface ExternalSubscriptionStatus {
   active_count: number
   subscriptions: ExternalSubscriptionItem[]
   refreshed_at?: string
+}
+
+export interface AccountExternalQuotaProgressPreferencePayload {
+  enabled: boolean
+  mode: 'status_total' | 'custom_total'
+  customTotal?: number | null
+}
+
+export type AccountExternalQuotaProgressSettingsPayload = Record<string, AccountExternalQuotaProgressPreferencePayload>
+
+interface AccountExternalQuotaProgressSettingsResponse {
+  settings?: AccountExternalQuotaProgressSettingsPayload
 }
 
 const DISPLAY_STATUSES_CACHE_TTL_MS = 60_000
@@ -169,6 +182,21 @@ function hydrateDisplayStatusesCache(now = Date.now()) {
   return cloneStatuses(stored)
 }
 
+async function hydrateDisplayStatusesFromBackendSnapshot(now = Date.now()) {
+  try {
+    const statuses = await getDisplayStatusesSnapshot()
+    if (statuses.length === 0) return null
+    displayStatusesCache = {
+      expiresAt: now + DISPLAY_STATUSES_CACHE_TTL_MS,
+      statuses: cloneStatuses(statuses),
+    }
+    writeStoredDisplayStatuses(statuses, now)
+    return cloneStatuses(statuses)
+  } catch {
+    return null
+  }
+}
+
 function emitDisplayStatuses(statuses: ExternalSubscriptionStatus[]) {
   const cloned = cloneStatuses(statuses)
   displayStatusesListeners.forEach((listener) => {
@@ -193,6 +221,23 @@ export function clearStoredDisplayStatusesCache() {
   } catch {
     // ignore storage failures
   }
+}
+
+export async function getDisplayStatusesSnapshot(): Promise<ExternalSubscriptionStatus[]> {
+  const { data } = await apiClient.get<ExternalSubscriptionStatus[]>('/admin/external-subscriptions/display-statuses-snapshot')
+  return data
+}
+
+export async function getAccountQuotaProgressSettings(): Promise<AccountExternalQuotaProgressSettingsPayload> {
+  const { data } = await apiClient.get<AccountExternalQuotaProgressSettingsResponse>('/admin/external-subscriptions/account-quota-progress-settings')
+  return data.settings ?? {}
+}
+
+export async function updateAccountQuotaProgressSettings(settings: AccountExternalQuotaProgressSettingsPayload): Promise<AccountExternalQuotaProgressSettingsPayload> {
+  const { data } = await apiClient.put<AccountExternalQuotaProgressSettingsResponse>('/admin/external-subscriptions/account-quota-progress-settings', {
+    settings,
+  })
+  return data.settings ?? {}
 }
 
 function invalidateDisplayStatusesForConfigChange() {
@@ -257,14 +302,14 @@ export async function getDisplayStatuses(options: { refresh?: boolean } = {}): P
   try {
     const statuses = await displayStatusesRequest
     if (statuses.length === 0 && !forceRefresh) {
-      const stale = staleDisplayStatuses() || hydrated
+      const stale = staleDisplayStatuses() || hydrated || await hydrateDisplayStatusesFromBackendSnapshot(now)
       if (stale) return stale
     }
     rememberDisplayStatuses(statuses, now)
     return cloneStatuses(statuses)
   } catch (error) {
     if (!forceRefresh) {
-      const stale = staleDisplayStatuses() || hydrated
+      const stale = staleDisplayStatuses() || hydrated || await hydrateDisplayStatusesFromBackendSnapshot(now)
       if (stale) return stale
     }
     throw error
@@ -300,8 +345,11 @@ export default {
   deleteProvider,
   getStatuses,
   getDisplayStatuses,
+  getDisplayStatusesSnapshot,
   refreshDisplayStatusesInBackground,
   subscribeDisplayStatuses,
   clearDisplayStatusesCache,
   clearStoredDisplayStatusesCache,
+  getAccountQuotaProgressSettings,
+  updateAccountQuotaProgressSettings,
 }
