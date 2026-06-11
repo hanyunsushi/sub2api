@@ -141,4 +141,57 @@ describe('useAccountExternalQuotaProgressSettings', () => {
     })
     expect(getAccountExternalQuotaProgressPreference(account, subscription).enabled).toBe(false)
   })
+
+  it('merges current backend settings before saving one account preference', async () => {
+    const externalSubscriptionsAPI = (await import('@/api/admin/externalSubscriptions')).default
+    vi.mocked(externalSubscriptionsAPI.getAccountQuotaProgressSettings)
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({
+        '202:openrouter:openrouter_credits:openrouter': {
+          enabled: false,
+          mode: 'custom_total',
+          customTotal: 50,
+        },
+      })
+    vi.mocked(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).mockResolvedValueOnce({
+      '101:rawchat:rawchat_subscriptions:rawchat': {
+        enabled: false,
+        mode: 'status_total',
+        customTotal: null,
+      },
+      '202:openrouter:openrouter_credits:openrouter': {
+        enabled: false,
+        mode: 'custom_total',
+        customTotal: 50,
+      },
+    })
+    const {
+      useAccountExternalQuotaProgressSettings,
+    } = await import('../useAccountExternalQuotaProgressSettings')
+
+    const {
+      loadAccountExternalQuotaProgressSettings,
+      setAccountExternalQuotaProgressPreference,
+    } = useAccountExternalQuotaProgressSettings()
+
+    await loadAccountExternalQuotaProgressSettings()
+    await setAccountExternalQuotaProgressPreference({ id: 101 }, status(), {
+      enabled: false,
+      mode: 'status_total',
+      customTotal: null,
+    })
+
+    expect(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).toHaveBeenCalledWith({
+      '101:rawchat:rawchat_subscriptions:rawchat': {
+        enabled: false,
+        mode: 'status_total',
+        customTotal: null,
+      },
+      '202:openrouter:openrouter_credits:openrouter': {
+        enabled: false,
+        mode: 'custom_total',
+        customTotal: 50,
+      },
+    })
+  })
 })

@@ -164,6 +164,70 @@ func TestExternalSubscriptionConfigServicePersistsDisplayStatusSnapshot(t *testi
 	require.InDelta(t, remaining, *reloaded[0].RemainingUSD, 0.0001)
 }
 
+func TestExternalSubscriptionConfigServiceUsesPersistedDisplaySnapshotForTransientStatusErrors(t *testing.T) {
+	total := 60.0
+	remaining := 37.5
+	snapshot := []ExternalSubscriptionProviderStatus{
+		{
+			Name:                   "OpenRouter",
+			Template:               ExternalSubscriptionTemplateOpenRouterCredits,
+			BalanceStrategy:        ExternalSubscriptionBalanceStrategyAuto,
+			APITokenConfigured:     true,
+			RefreshTokenConfigured: false,
+			MatchKeywords:          []string{"openrouter"},
+			SortOrder:              70,
+			ExternalSubscriptionStatus: ExternalSubscriptionStatus{
+				Provider:      "openrouter",
+				Enabled:       true,
+				Configured:    true,
+				Currency:      "USD",
+				SiteURL:       DefaultOpenRouterCreditsAPIBaseURL,
+				TotalLimitUSD: &total,
+				UsedUSD:       22.5,
+				RemainingUSD:  &remaining,
+				Subscriptions: []ExternalSubscriptionItem{},
+				RefreshedAt:   time.Date(2026, 6, 11, 1, 2, 3, 0, time.UTC),
+			},
+		},
+	}
+	snapshotRaw, err := json.Marshal(snapshot)
+	require.NoError(t, err)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/v1/credits", r.URL.Path)
+		http.Error(w, `{"error":{"message":"temporary outage"}}`, http.StatusBadGateway)
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "openrouter",
+			Name:          "OpenRouter",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateOpenRouterCredits,
+			APIBaseURL:    server.URL,
+			APIToken:      "openrouter-token",
+			MatchKeywords: []string{"openrouter"},
+			SortOrder:     70,
+		},
+	}, map[string]string{
+		SettingKeyExternalSubscriptionDisplayStatuses: string(snapshotRaw),
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	openrouter := requireExternalSubscriptionStatus(t, statuses, "openrouter")
+	require.Empty(t, openrouter.ErrorCode)
+	require.NotNil(t, openrouter.TotalLimitUSD)
+	require.InDelta(t, total, *openrouter.TotalLimitUSD, 0.0001)
+	require.NotNil(t, openrouter.RemainingUSD)
+	require.InDelta(t, remaining, *openrouter.RemainingUSD, 0.0001)
+	require.Equal(t, "OpenRouter", openrouter.Name)
+	require.Equal(t, server.URL, openrouter.SiteURL)
+}
+
 func TestExternalSubscriptionConfigServiceConfigurationChangesInvalidateDisplayStatusSnapshot(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepo(map[string]string{
 		SettingKeyExternalSubscriptionDisplayStatuses: `[{"provider":"rawchat"}]`,
