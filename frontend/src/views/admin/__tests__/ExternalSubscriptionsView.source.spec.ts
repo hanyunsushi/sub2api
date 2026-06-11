@@ -160,6 +160,7 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain("{ value: 'mimo_token_plan', label: 'Xiaomi MiMo' }")
     expect(source).toContain("form.id = 'mimo'")
     expect(source).toContain("form.api_base_url = 'https://platform.xiaomimimo.com'")
+    expect(source).toContain("return 'tp-xxxxx'")
     expect(source).toContain("keywordsDraft.value = 'mimo\\nxiaomi\\nxiaomimimo'")
   })
 

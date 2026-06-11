@@ -535,7 +535,7 @@ const apiTokenPlaceholder = computed(() => {
   if (form.template === 'openrouter_credits') return 'sk-or-...'
   if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
   if (form.template === 'rawchat_subscriptions') return 'RawChat token'
-  if (form.template === 'mimo_token_plan') return 'Cookie: serviceToken=...; userId=...'
+  if (form.template === 'mimo_token_plan') return 'tp-xxxxx'
   return 'sk-...'
 })
 
