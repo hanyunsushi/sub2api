@@ -93,6 +93,7 @@ func (r *accountRepository) Create(ctx context.Context, account *service.Account
 		SetStatus(account.Status).
 		SetErrorMessage(account.ErrorMessage).
 		SetSchedulable(account.Schedulable).
+		SetScheduleLocked(account.ScheduleLocked).
 		SetAutoPauseOnExpired(account.AutoPauseOnExpired)
 
 	if account.RateMultiplier != nil {
@@ -334,6 +335,7 @@ func (r *accountRepository) Update(ctx context.Context, account *service.Account
 		SetStatus(account.Status).
 		SetErrorMessage(account.ErrorMessage).
 		SetSchedulable(schedulable).
+		SetScheduleLocked(account.ScheduleLocked).
 		SetAutoPauseOnExpired(account.AutoPauseOnExpired)
 
 	if account.RateMultiplier != nil {
@@ -1304,6 +1306,31 @@ func (r *accountRepository) SetSchedulable(ctx context.Context, id int64, schedu
 	return nil
 }
 
+func (r *accountRepository) SetScheduleLocked(ctx context.Context, id int64, locked bool) error {
+	rows, err := r.client.Account.Update().
+		Where(dbaccount.IDEQ(id)).
+		SetScheduleLocked(locked).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return service.ErrAccountNotFound
+	}
+	return nil
+}
+
+func (r *accountRepository) IsScheduleLocked(ctx context.Context, id int64) (bool, error) {
+	row, err := r.client.Account.Query().
+		Where(dbaccount.IDEQ(id)).
+		Select(dbaccount.FieldScheduleLocked).
+		Only(ctx)
+	if err != nil {
+		return false, translatePersistenceError(err, service.ErrAccountNotFound, nil)
+	}
+	return row.ScheduleLocked, nil
+}
+
 func (r *accountRepository) AutoPauseExpiredAccounts(ctx context.Context, now time.Time) (int64, error) {
 	result, err := r.sql.ExecContext(ctx, `
 		UPDATE accounts
@@ -1791,6 +1818,7 @@ func accountEntityToService(m *dbent.Account) *service.Account {
 		CreatedAt:               m.CreatedAt,
 		UpdatedAt:               m.UpdatedAt,
 		Schedulable:             m.Schedulable,
+		ScheduleLocked:          m.ScheduleLocked,
 		RateLimitedAt:           m.RateLimitedAt,
 		RateLimitResetAt:        m.RateLimitResetAt,
 		OverloadUntil:           m.OverloadUntil,

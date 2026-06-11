@@ -648,6 +648,7 @@ export interface SystemSettings {
   // Channel Monitor feature switch
   channel_monitor_enabled: boolean;
   channel_monitor_default_interval_seconds: number;
+  channel_monitor_account_auto_schedule_enabled: boolean;
 
   // Available Channels feature switch
   available_channels_enabled: boolean;
@@ -915,6 +916,7 @@ export interface UpdateSettingsRequest {
   // Channel Monitor feature switch
   channel_monitor_enabled?: boolean;
   channel_monitor_default_interval_seconds?: number;
+  channel_monitor_account_auto_schedule_enabled?: boolean;
 
   // Available Channels feature switch
   available_channels_enabled?: boolean;

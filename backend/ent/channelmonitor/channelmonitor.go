@@ -45,6 +45,8 @@ const (
 	FieldLastCheckedAt = "last_checked_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
+	// FieldAccountID holds the string denoting the account_id field in the database.
+	FieldAccountID = "account_id"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
 	FieldTemplateID = "template_id"
 	// FieldExtraHeaders holds the string denoting the extra_headers field in the database.
@@ -59,6 +61,8 @@ const (
 	EdgeDailyRollups = "daily_rollups"
 	// EdgeRequestTemplate holds the string denoting the request_template edge name in mutations.
 	EdgeRequestTemplate = "request_template"
+	// EdgeAccount holds the string denoting the account edge name in mutations.
+	EdgeAccount = "account"
 	// Table holds the table name of the channelmonitor in the database.
 	Table = "channel_monitors"
 	// HistoryTable is the table that holds the history relation/edge.
@@ -82,6 +86,13 @@ const (
 	RequestTemplateInverseTable = "channel_monitor_request_templates"
 	// RequestTemplateColumn is the table column denoting the request_template relation/edge.
 	RequestTemplateColumn = "template_id"
+	// AccountTable is the table that holds the account relation/edge.
+	AccountTable = "channel_monitors"
+	// AccountInverseTable is the table name for the Account entity.
+	// It exists in this package in order to avoid circular dependency with the "account" package.
+	AccountInverseTable = "accounts"
+	// AccountColumn is the table column denoting the account relation/edge.
+	AccountColumn = "account_id"
 )
 
 // Columns holds all SQL columns for channelmonitor fields.
@@ -102,6 +113,7 @@ var Columns = []string{
 	FieldIntervalSeconds,
 	FieldLastCheckedAt,
 	FieldCreatedBy,
+	FieldAccountID,
 	FieldTemplateID,
 	FieldExtraHeaders,
 	FieldBodyOverrideMode,
@@ -259,6 +271,11 @@ func ByCreatedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedBy, opts...).ToFunc()
 }
 
+// ByAccountID orders the results by the account_id field.
+func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
+}
+
 // ByTemplateID orders the results by the template_id field.
 func ByTemplateID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTemplateID, opts...).ToFunc()
@@ -303,6 +320,13 @@ func ByRequestTemplateField(field string, opts ...sql.OrderTermOption) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newRequestTemplateStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByAccountField orders the results by account field.
+func ByAccountField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAccountStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newHistoryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -322,5 +346,12 @@ func newRequestTemplateStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RequestTemplateInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, RequestTemplateTable, RequestTemplateColumn),
+	)
+}
+func newAccountStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AccountInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AccountTable, AccountColumn),
 	)
 }

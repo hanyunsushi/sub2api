@@ -150,6 +150,11 @@ func Schedulable(v bool) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldSchedulable, v))
 }
 
+// ScheduleLocked applies equality check predicate on the "schedule_locked" field. It's identical to ScheduleLockedEQ.
+func ScheduleLocked(v bool) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldScheduleLocked, v))
+}
+
 // RateLimitedAt applies equality check predicate on the "rate_limited_at" field. It's identical to RateLimitedAtEQ.
 func RateLimitedAt(v time.Time) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldRateLimitedAt, v))
@@ -1098,6 +1103,16 @@ func SchedulableEQ(v bool) predicate.Account {
 // SchedulableNEQ applies the NEQ predicate on the "schedulable" field.
 func SchedulableNEQ(v bool) predicate.Account {
 	return predicate.Account(sql.FieldNEQ(FieldSchedulable, v))
+}
+
+// ScheduleLockedEQ applies the EQ predicate on the "schedule_locked" field.
+func ScheduleLockedEQ(v bool) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldScheduleLocked, v))
+}
+
+// ScheduleLockedNEQ applies the NEQ predicate on the "schedule_locked" field.
+func ScheduleLockedNEQ(v bool) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldScheduleLocked, v))
 }
 
 // RateLimitedAtEQ applies the EQ predicate on the "rate_limited_at" field.

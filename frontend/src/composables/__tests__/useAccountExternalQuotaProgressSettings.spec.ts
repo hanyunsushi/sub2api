@@ -251,4 +251,53 @@ describe('useAccountExternalQuotaProgressSettings', () => {
       tokenResetAt: '2026-06-11T00:00:00.000Z',
     })
   })
+
+  it('persists account-only token quota progress settings when no external subscription matches', async () => {
+    const externalSubscriptionsAPI = (await import('@/api/admin/externalSubscriptions')).default
+    vi.mocked(externalSubscriptionsAPI.getAccountQuotaProgressSettings)
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({})
+    vi.mocked(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).mockResolvedValueOnce({
+      '404:account': {
+        enabled: true,
+        mode: 'token_total',
+        customTotal: null,
+        tokenTotal: 750_000,
+        tokenResetAt: '2026-06-11T00:00:00.000Z',
+      },
+    })
+    const {
+      useAccountExternalQuotaProgressSettings,
+    } = await import('../useAccountExternalQuotaProgressSettings')
+
+    const {
+      loadAccountExternalQuotaProgressSettings,
+      getAccountExternalQuotaProgressPreference,
+      setAccountExternalQuotaProgressPreference,
+    } = useAccountExternalQuotaProgressSettings()
+
+    await loadAccountExternalQuotaProgressSettings()
+    await setAccountExternalQuotaProgressPreference({ id: 404 }, null, {
+      enabled: true,
+      mode: 'token_total',
+      customTotal: null,
+      tokenTotal: 750_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    })
+
+    expect(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).toHaveBeenCalledWith({
+      '404:account': {
+        enabled: true,
+        mode: 'token_total',
+        customTotal: null,
+        tokenTotal: 750_000,
+        tokenResetAt: '2026-06-11T00:00:00.000Z',
+      },
+    })
+    expect(getAccountExternalQuotaProgressPreference({ id: 404 }, null)).toMatchObject({
+      enabled: true,
+      mode: 'token_total',
+      tokenTotal: 750_000,
+    })
+  })
 })

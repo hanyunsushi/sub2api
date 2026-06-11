@@ -1813,6 +1813,22 @@ func (c *ChannelMonitorClient) QueryRequestTemplate(_m *ChannelMonitor) *Channel
 	return query
 }
 
+// QueryAccount queries the account edge of a ChannelMonitor.
+func (c *ChannelMonitorClient) QueryAccount(_m *ChannelMonitor) *AccountQuery {
+	query := (&AccountClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(channelmonitor.Table, channelmonitor.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, channelmonitor.AccountTable, channelmonitor.AccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ChannelMonitorClient) Hooks() []Hook {
 	return c.hooks.ChannelMonitor

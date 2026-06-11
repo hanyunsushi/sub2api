@@ -362,9 +362,22 @@
             </div>
           </template>
           <template #cell-schedulable="{ row }">
-            <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-primary-500 hover:bg-primary-600' : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
-              <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
-            </button>
+            <div class="inline-flex items-center gap-1.5">
+              <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-primary-500 hover:bg-primary-600' : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
+                <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
+              </button>
+              <button
+                data-testid="account-schedule-lock-action"
+                type="button"
+                class="inline-flex h-6 w-6 items-center justify-center rounded-md border text-gray-500 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                :class="row.schedule_locked ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300' : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:bg-dark-700'"
+                :disabled="togglingScheduleLock === row.id"
+                :title="row.schedule_locked ? t('admin.accounts.scheduleLocked') : t('admin.accounts.scheduleUnlocked')"
+                @click="handleToggleScheduleLock(row)"
+              >
+                <Icon :name="row.schedule_locked ? 'lock' : 'unlock'" size="xs" />
+              </button>
+            </div>
           </template>
           <template #cell-today_stats="{ row }">
             <AccountTodayStatsCell
@@ -391,12 +404,12 @@
                 :manual-refresh-token="usageManualRefreshToken"
               />
               <UsageProgressBar
-                v-if="getAccountExternalQuota(row)?.progress"
+                v-if="getAccountExternalQuotaProgress(row)?.progress"
                 data-testid="account-external-quota-usage-progress"
                 class="account-external-quota-usage-progress"
                 label="EXT"
-                :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0"
-                :title="getAccountExternalQuota(row)?.formattedUsage"
+                :utilization="getAccountExternalQuotaProgress(row)?.progress?.percent ?? 0"
+                :title="getAccountExternalQuotaProgress(row)?.formattedUsage"
                 color="emerald"
                 :show-now-when-idle="false"
               />
@@ -471,7 +484,6 @@
                 <span class="text-xs">{{ t('common.more') }}</span>
               </button>
               <button
-                v-if="getMatchedExternalSubscription(row)"
                 data-testid="account-external-quota-progress-action"
                 type="button"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-300"
@@ -701,6 +713,7 @@ const showSchedulePanel = ref(false)
 const scheduleAcc = ref<Account | null>(null)
 const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
+const togglingScheduleLock = ref<number | null>(null)
 const priorityUpdatingIds = reactive<Set<number>>(new Set())
 const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null}>({ show: false, acc: null, pos: null })
 const rateMultiplierMenu = reactive<{
@@ -1043,6 +1056,28 @@ const getAccountExternalQuota = (account: Account): AccountExternalQuota | null 
   return null
 }
 
+const getAccountExternalQuotaProgress = (account: Account): Pick<AccountExternalQuota, 'formattedUsage' | 'progress'> | null => {
+  const subscription = getMatchedExternalSubscription(account)
+  const preference = getAccountExternalQuotaProgressPreference(account, subscription ?? null)
+  const preferenceKey = buildAccountExternalQuotaProgressPreferenceKey(account, subscription ?? null)
+  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference, {
+    tokenStats: account.external_quota_token_stats?.[preferenceKey] ?? null,
+  })
+  if (!progress) return null
+
+  const used = progress.unit === 'tokens'
+    ? formatExternalTokens(progress.used)
+    : formatExternalAmount(progress.used, subscription?.currency)
+  const progressTotal = progress.unit === 'tokens'
+    ? formatExternalTokens(progress.total)
+    : formatExternalAmount(progress.total, subscription?.currency)
+
+  return {
+    formattedUsage: used && progressTotal ? `${used} / ${progressTotal}` : undefined,
+    progress
+  }
+}
+
 const closeExternalQuotaProgressSettings = () => {
   externalQuotaProgressSettings.show = false
   externalQuotaProgressSettings.account = null
@@ -1052,18 +1087,17 @@ const closeExternalQuotaProgressSettings = () => {
 
 const openExternalQuotaProgressSettings = (account: Account) => {
   const subscription = getMatchedExternalSubscription(account)
-  if (!subscription) return
   externalQuotaProgressSettings.account = account
   externalQuotaProgressSettings.subscription = subscription
-  externalQuotaProgressSettings.current = getAccountExternalQuotaProgressPreference(account, subscription)
+  externalQuotaProgressSettings.current = getAccountExternalQuotaProgressPreference(account, subscription ?? null)
   externalQuotaProgressSettings.show = true
 }
 
 const saveExternalQuotaProgressSettings = async (settings: AccountExternalQuotaProgressPreference) => {
-  if (!externalQuotaProgressSettings.account || !externalQuotaProgressSettings.subscription) return
+  if (!externalQuotaProgressSettings.account) return
   await setAccountExternalQuotaProgressPreference(
     externalQuotaProgressSettings.account,
-    externalQuotaProgressSettings.subscription,
+    externalQuotaProgressSettings.subscription ?? null,
     settings,
   )
   closeExternalQuotaProgressSettings()
@@ -1811,6 +1845,11 @@ const updateSchedulableInList = (accountIds: number[], schedulable: boolean) => 
   const idSet = new Set(accountIds)
   accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedulable } : account))
 }
+const updateScheduleLockedInList = (accountIds: number[], scheduleLocked: boolean) => {
+  if (accountIds.length === 0) return
+  const idSet = new Set(accountIds)
+  accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedule_locked: scheduleLocked } : account))
+}
 const normalizeBulkSchedulableResult = (
   result: {
     success?: number
@@ -2180,6 +2219,20 @@ const handleToggleSchedulable = async (a: Account) => {
     appStore.showError(t('admin.accounts.failedToToggleSchedulable'))
   } finally {
     togglingSchedulable.value = null
+  }
+}
+const handleToggleScheduleLock = async (a: Account) => {
+  const nextLocked = !a.schedule_locked
+  togglingScheduleLock.value = a.id
+  try {
+    const updated = await adminAPI.accounts.setScheduleLocked(a.id, nextLocked)
+    updateScheduleLockedInList([a.id], updated?.schedule_locked ?? nextLocked)
+    enterAutoRefreshSilentWindow()
+  } catch (error) {
+    console.error('Failed to toggle schedule lock:', error)
+    appStore.showError(t('admin.accounts.failedToToggleScheduleLock'))
+  } finally {
+    togglingScheduleLock.value = null
   }
 }
 const handleShowTempUnsched = (a: Account) => { tempUnschedAcc.value = a; showTempUnsched.value = true }

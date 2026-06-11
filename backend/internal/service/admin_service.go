@@ -97,6 +97,7 @@ type AdminService interface {
 	// ForceAntigravityPrivacy 强制重新设置 Antigravity OAuth 账号隐私，无论当前状态。
 	ForceAntigravityPrivacy(ctx context.Context, account *Account) string
 	SetAccountSchedulable(ctx context.Context, id int64, schedulable bool) (*Account, error)
+	SetAccountScheduleLocked(ctx context.Context, id int64, locked bool) (*Account, error)
 	BulkUpdateAccounts(ctx context.Context, input *BulkUpdateAccountsInput) (*BulkUpdateAccountsResult, error)
 	CheckMixedChannelRisk(ctx context.Context, currentAccountID int64, currentAccountPlatform string, groupIDs []int64) error
 	// RevertAccountProxyFallback 将账号的 proxy_id 切回 proxy_fallback_origin_id，并清空 origin 字段。
@@ -127,6 +128,10 @@ type AdminService interface {
 	BatchDeleteRedeemCodes(ctx context.Context, ids []int64) (int64, error)
 	ExpireRedeemCode(ctx context.Context, id int64) (*RedeemCode, error)
 	ResetAccountQuota(ctx context.Context, id int64) error
+}
+
+type accountScheduleLockWriter interface {
+	SetScheduleLocked(ctx context.Context, id int64, locked bool) error
 }
 
 // CreateUserInput represents input for creating a new user via admin operations.
@@ -3037,6 +3042,21 @@ func (s *adminServiceImpl) SetAccountError(ctx context.Context, id int64, errorM
 
 func (s *adminServiceImpl) SetAccountSchedulable(ctx context.Context, id int64, schedulable bool) (*Account, error) {
 	if err := s.accountRepo.SetSchedulable(ctx, id, schedulable); err != nil {
+		return nil, err
+	}
+	updated, err := s.accountRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return updated, nil
+}
+
+func (s *adminServiceImpl) SetAccountScheduleLocked(ctx context.Context, id int64, locked bool) (*Account, error) {
+	writer, ok := s.accountRepo.(accountScheduleLockWriter)
+	if !ok {
+		return nil, fmt.Errorf("account repository does not support schedule lock")
+	}
+	if err := writer.SetScheduleLocked(ctx, id, locked); err != nil {
 		return nil, err
 	}
 	updated, err := s.accountRepo.GetByID(ctx, id)

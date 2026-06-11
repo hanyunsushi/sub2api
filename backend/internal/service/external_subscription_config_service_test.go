@@ -238,6 +238,82 @@ func TestExternalSubscriptionConfigServiceUsesPersistedDisplaySnapshotForTransie
 	require.Equal(t, server.URL, openrouter.SiteURL)
 }
 
+func TestExternalSubscriptionConfigServiceKeepsRawChatSnapshotWhenQuotaAndSubscriptionsAreTransient(t *testing.T) {
+	total := 60.0
+	remaining := 37.5
+	snapshot := []ExternalSubscriptionProviderStatus{
+		{
+			Name:                   "RawChat",
+			Template:               ExternalSubscriptionTemplateRawChatSubscriptions,
+			BalanceStrategy:        ExternalSubscriptionBalanceStrategyAuto,
+			APITokenConfigured:     true,
+			RefreshTokenConfigured: false,
+			MatchKeywords:          []string{"rawchat"},
+			SortOrder:              65,
+			ExternalSubscriptionStatus: ExternalSubscriptionStatus{
+				Provider:      "rawchat",
+				Enabled:       true,
+				Configured:    true,
+				Currency:      "USD",
+				SiteURL:       DefaultRawChatSubscriptionAPIBaseURL,
+				TotalLimitUSD: &total,
+				UsedUSD:       22.5,
+				RemainingUSD:  &remaining,
+				ActiveCount:   1,
+				Subscriptions: []ExternalSubscriptionItem{
+					{ID: 701, GroupName: "codex 每日60刀月卡", Status: "active", Window: "24h", LimitUSD: &total, UsedUSD: 22.5, RemainingUSD: &remaining},
+				},
+				RefreshedAt: time.Date(2026, 6, 11, 1, 2, 3, 0, time.UTC),
+			},
+		},
+	}
+	snapshotRaw, err := json.Marshal(snapshot)
+	require.NoError(t, err)
+
+	rawChatServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/frontend-api/vibe-code/quota":
+			http.Error(w, `{"code":502,"message":"quota temporary unavailable"}`, http.StatusBadGateway)
+		case "/frontend-api/getUserSubscriptions":
+			http.Error(w, `{"code":502,"message":"subscription temporary unavailable"}`, http.StatusBadGateway)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer rawChatServer.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "rawchat",
+			Name:          "RawChat",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateRawChatSubscriptions,
+			APIBaseURL:    rawChatServer.URL,
+			APIToken:      "__user_token__=rawchat-session",
+			MatchKeywords: []string{"rawchat"},
+			SortOrder:     65,
+		},
+	}, map[string]string{
+		SettingKeyExternalSubscriptionDisplayStatuses: string(snapshotRaw),
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+
+	rawchat := requireExternalSubscriptionStatus(t, statuses, "rawchat")
+	require.Empty(t, rawchat.ErrorCode)
+	require.NotNil(t, rawchat.TotalLimitUSD)
+	require.InDelta(t, total, *rawchat.TotalLimitUSD, 0.0001)
+	require.NotNil(t, rawchat.RemainingUSD)
+	require.InDelta(t, remaining, *rawchat.RemainingUSD, 0.0001)
+	require.Equal(t, 1, rawchat.ActiveCount)
+	require.Len(t, rawchat.Subscriptions, 1)
+	require.Equal(t, "RawChat", rawchat.Name)
+	require.Equal(t, rawChatServer.URL, rawchat.SiteURL)
+}
+
 func TestExternalSubscriptionConfigServiceConfigurationChangesInvalidateDisplayStatusSnapshot(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepo(map[string]string{
 		SettingKeyExternalSubscriptionDisplayStatuses: `[{"provider":"rawchat"}]`,

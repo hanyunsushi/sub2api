@@ -238,21 +238,21 @@ const statusTotalText = computed(() => formatAmount(props.subscription?.total_li
 const customTotalText = computed(() => formatAmount(parseCustomTotal(), props.subscription?.currency))
 const tokenTotalText = computed(() => formatTokens(parseTokenTotal()))
 const tokenStats = computed(() => {
-  if (!props.account || !props.subscription) return null
-  const key = buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription)
+  if (!props.account) return null
+  const key = buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription ?? null)
   return props.account.external_quota_token_stats?.[key] ?? null
 })
 const previewMeta = computed(() => buildAccountExternalQuotaProgressMeta(props.subscription, currentPreference.value, {
   tokenStats: tokenStats.value,
 }))
 const previewAmountText = computed(() => {
-  if (!previewMeta.value || !props.subscription) return '-'
+  if (!previewMeta.value) return '-'
   const remaining = previewMeta.value.unit === 'tokens'
     ? formatTokens(previewMeta.value.remaining)
-    : formatAmount(previewMeta.value.remaining, props.subscription.currency)
+    : formatAmount(previewMeta.value.remaining, props.subscription?.currency)
   const total = previewMeta.value.unit === 'tokens'
     ? formatTokens(previewMeta.value.total)
-    : formatAmount(previewMeta.value.total, props.subscription.currency)
+    : formatAmount(previewMeta.value.total, props.subscription?.currency)
   return `${remaining} / ${total}`
 })
 

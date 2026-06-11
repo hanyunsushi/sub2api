@@ -75,6 +75,8 @@ export const buildAccountExternalQuotaProgressPreferenceKey = (
   account: Pick<Account, 'id'>,
   status?: Pick<ExternalSubscriptionStatus, 'provider' | 'template' | 'name'> | null,
 ) => {
+  if (!status) return `${account.id}:account`
+
   const providerKey = [
     status?.provider,
     status?.template,
@@ -170,14 +172,13 @@ export function useAccountExternalQuotaProgressSettings() {
     account: Pick<Account, 'id'>,
     status?: ExternalSubscriptionStatus | null,
   ) => {
-    if (!status) return { ...DEFAULT_PREFERENCE }
     const key = buildAccountExternalQuotaProgressPreferenceKey(account, status)
     return normalizePreference(settings.value[key])
   }
 
   const setAccountExternalQuotaProgressPreference = async (
     account: Pick<Account, 'id'>,
-    status: ExternalSubscriptionStatus,
+    status: ExternalSubscriptionStatus | null,
     preference: AccountExternalQuotaProgressPreference,
   ) => {
     const key = buildAccountExternalQuotaProgressPreferenceKey(account, status)

@@ -26,3 +26,24 @@ func TestChannelMonitorResponseIncludesLogoURL(t *testing.T) {
 		t.Fatalf("expected response logo_url %q, got %q", strings.TrimSpace(monitor.LogoURL), resp.LogoURL)
 	}
 }
+
+func TestChannelMonitorResponseIncludesLinkedAccountID(t *testing.T) {
+	accountID := int64(123)
+	monitor := &service.ChannelMonitor{
+		ID:              1,
+		Name:            "Claude monitor",
+		Provider:        "anthropic",
+		APIMode:         service.MonitorAPIModeChatCompletions,
+		Endpoint:        "https://api.anthropic.com",
+		APIKey:          "sk-test",
+		PrimaryModel:    "claude-sonnet-4",
+		IntervalSeconds: 60,
+		Enabled:         true,
+		AccountID:       &accountID,
+	}
+
+	resp := channelMonitorToResponse(monitor)
+	if resp.AccountID == nil || *resp.AccountID != accountID {
+		t.Fatalf("expected response account_id %d, got %#v", accountID, resp.AccountID)
+	}
+}
