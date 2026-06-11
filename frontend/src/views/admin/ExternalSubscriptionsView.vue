@@ -647,6 +647,8 @@ function templateLabel(template: ExternalSubscriptionTemplate) {
       return 'Cloudflare AI Gateway'
     case 'rawchat_subscriptions':
       return 'RawChat'
+    case 'mimo_token_plan':
+      return 'Xiaomi MiMo'
     default:
       return 'NewAPI Console'
   }
