@@ -1419,7 +1419,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	apiKeyHandler := handler.NewAPIKeyHandler(apiKeyService)
 	usageHandler := handler.NewUsageHandler(usageService, apiKeyService, nil, nil)
 	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil)
-	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	adminTCDMXSubscriptionHandler := adminhandler.NewTCDMXSubscriptionHandler(service.NewTCDMXSubscriptionService(settingService))
 	adminQLHazyCoderSubscriptionHandler := adminhandler.NewQLHazyCoderSubscriptionHandler(service.NewQLHazyCoderSubscriptionService(settingService))
 

@@ -194,4 +194,61 @@ describe('useAccountExternalQuotaProgressSettings', () => {
       },
     })
   })
+
+  it('normalizes and persists token quota progress settings per account', async () => {
+    const externalSubscriptionsAPI = (await import('@/api/admin/externalSubscriptions')).default
+    vi.mocked(externalSubscriptionsAPI.getAccountQuotaProgressSettings)
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({})
+    vi.mocked(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).mockResolvedValueOnce({
+      '303:mimo:mimo_token_plan:xiaomi mimo': {
+        enabled: true,
+        mode: 'token_total',
+        customTotal: null,
+        tokenTotal: 1_000_000,
+        tokenResetAt: '2026-06-11T00:00:00.000Z',
+      },
+    })
+    const {
+      useAccountExternalQuotaProgressSettings,
+    } = await import('../useAccountExternalQuotaProgressSettings')
+
+    const {
+      loadAccountExternalQuotaProgressSettings,
+      getAccountExternalQuotaProgressPreference,
+      setAccountExternalQuotaProgressPreference,
+    } = useAccountExternalQuotaProgressSettings()
+    const account = { id: 303 }
+    const subscription = status({
+      provider: 'mimo',
+      name: 'Xiaomi MiMo',
+      template: 'mimo_token_plan',
+      site_url: 'https://platform.xiaomimimo.com',
+    })
+
+    await loadAccountExternalQuotaProgressSettings()
+    await setAccountExternalQuotaProgressPreference(account, subscription, {
+      enabled: true,
+      mode: 'token_total',
+      customTotal: null,
+      tokenTotal: 1_000_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    })
+
+    expect(externalSubscriptionsAPI.updateAccountQuotaProgressSettings).toHaveBeenCalledWith({
+      '303:mimo:mimo_token_plan:xiaomi mimo': {
+        enabled: true,
+        mode: 'token_total',
+        customTotal: null,
+        tokenTotal: 1_000_000,
+        tokenResetAt: '2026-06-11T00:00:00.000Z',
+      },
+    })
+    expect(getAccountExternalQuotaProgressPreference(account, subscription)).toMatchObject({
+      enabled: true,
+      mode: 'token_total',
+      tokenTotal: 1_000_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    })
+  })
 })

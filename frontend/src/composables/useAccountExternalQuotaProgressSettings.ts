@@ -14,10 +14,12 @@ const DEFAULT_PREFERENCE: AccountExternalQuotaProgressPreference = {
   enabled: true,
   mode: 'status_total',
   customTotal: null,
+  tokenTotal: null,
+  tokenResetAt: null,
 }
 
 const normalizeMode = (value: unknown): ExternalQuotaProgressMode => (
-  value === 'custom_total' ? 'custom_total' : 'status_total'
+  value === 'custom_total' || value === 'token_total' ? value : 'status_total'
 )
 
 const normalizeCustomTotal = (value: unknown): number | null => {
@@ -25,13 +27,29 @@ const normalizeCustomTotal = (value: unknown): number | null => {
   return Number.isFinite(numeric) && numeric > 0 ? numeric : null
 }
 
+const normalizeTokenResetAt = (value: unknown): string | null => {
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  const parsed = new Date(trimmed)
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
+}
+
 const normalizePreference = (
   preference?: Partial<AccountExternalQuotaProgressPreference> | null,
-): AccountExternalQuotaProgressPreference => ({
-  enabled: preference?.enabled ?? DEFAULT_PREFERENCE.enabled,
-  mode: normalizeMode(preference?.mode),
-  customTotal: normalizeCustomTotal(preference?.customTotal),
-})
+): AccountExternalQuotaProgressPreference => {
+  const mode = normalizeMode(preference?.mode)
+  const normalized: AccountExternalQuotaProgressPreference = {
+    enabled: preference?.enabled ?? DEFAULT_PREFERENCE.enabled,
+    mode,
+    customTotal: normalizeCustomTotal(preference?.customTotal),
+  }
+  if (mode === 'token_total') {
+    normalized.tokenTotal = normalizeCustomTotal(preference?.tokenTotal)
+    normalized.tokenResetAt = normalizeTokenResetAt(preference?.tokenResetAt)
+  }
+  return normalized
+}
 
 const readInitialSettings = (): AccountExternalQuotaProgressSettings => {
   if (typeof localStorage === 'undefined') return {}

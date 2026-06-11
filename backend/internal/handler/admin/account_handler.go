@@ -45,19 +45,20 @@ func NewOAuthHandler(oauthService *service.OAuthService) *OAuthHandler {
 
 // AccountHandler handles admin account management
 type AccountHandler struct {
-	adminService            service.AdminService
-	oauthService            *service.OAuthService
-	openaiOAuthService      *service.OpenAIOAuthService
-	geminiOAuthService      *service.GeminiOAuthService
-	antigravityOAuthService *service.AntigravityOAuthService
-	rateLimitService        *service.RateLimitService
-	accountUsageService     *service.AccountUsageService
-	accountTestService      *service.AccountTestService
-	concurrencyService      *service.ConcurrencyService
-	crsSyncService          *service.CRSSyncService
-	sessionLimitCache       service.SessionLimitCache
-	rpmCache                service.RPMCache
-	tokenCacheInvalidator   service.TokenCacheInvalidator
+	adminService                      service.AdminService
+	oauthService                      *service.OAuthService
+	openaiOAuthService                *service.OpenAIOAuthService
+	geminiOAuthService                *service.GeminiOAuthService
+	antigravityOAuthService           *service.AntigravityOAuthService
+	rateLimitService                  *service.RateLimitService
+	accountUsageService               *service.AccountUsageService
+	accountTestService                *service.AccountTestService
+	concurrencyService                *service.ConcurrencyService
+	crsSyncService                    *service.CRSSyncService
+	sessionLimitCache                 service.SessionLimitCache
+	rpmCache                          service.RPMCache
+	tokenCacheInvalidator             service.TokenCacheInvalidator
+	externalSubscriptionConfigService *service.ExternalSubscriptionConfigService
 }
 
 // NewAccountHandler creates a new admin account handler
@@ -75,21 +76,23 @@ func NewAccountHandler(
 	sessionLimitCache service.SessionLimitCache,
 	rpmCache service.RPMCache,
 	tokenCacheInvalidator service.TokenCacheInvalidator,
+	externalSubscriptionConfigService *service.ExternalSubscriptionConfigService,
 ) *AccountHandler {
 	return &AccountHandler{
-		adminService:            adminService,
-		oauthService:            oauthService,
-		openaiOAuthService:      openaiOAuthService,
-		geminiOAuthService:      geminiOAuthService,
-		antigravityOAuthService: antigravityOAuthService,
-		rateLimitService:        rateLimitService,
-		accountUsageService:     accountUsageService,
-		accountTestService:      accountTestService,
-		concurrencyService:      concurrencyService,
-		crsSyncService:          crsSyncService,
-		sessionLimitCache:       sessionLimitCache,
-		rpmCache:                rpmCache,
-		tokenCacheInvalidator:   tokenCacheInvalidator,
+		adminService:                      adminService,
+		oauthService:                      oauthService,
+		openaiOAuthService:                openaiOAuthService,
+		geminiOAuthService:                geminiOAuthService,
+		antigravityOAuthService:           antigravityOAuthService,
+		rateLimitService:                  rateLimitService,
+		accountUsageService:               accountUsageService,
+		accountTestService:                accountTestService,
+		concurrencyService:                concurrencyService,
+		crsSyncService:                    crsSyncService,
+		sessionLimitCache:                 sessionLimitCache,
+		rpmCache:                          rpmCache,
+		tokenCacheInvalidator:             tokenCacheInvalidator,
+		externalSubscriptionConfigService: externalSubscriptionConfigService,
 	}
 }
 
@@ -176,9 +179,10 @@ type AccountWithConcurrency struct {
 	*dto.Account
 	CurrentConcurrency int `json:"current_concurrency"`
 	// 以下字段仅对 Anthropic OAuth/SetupToken 账号有效，且仅在启用相应功能时返回
-	CurrentWindowCost *float64 `json:"current_window_cost,omitempty"` // 当前窗口费用
-	ActiveSessions    *int     `json:"active_sessions,omitempty"`     // 当前活跃会话数
-	CurrentRPM        *int     `json:"current_rpm,omitempty"`         // 当前分钟 RPM 计数
+	CurrentWindowCost       *float64                        `json:"current_window_cost,omitempty"`        // 当前窗口费用
+	ActiveSessions          *int                            `json:"active_sessions,omitempty"`            // 当前活跃会话数
+	CurrentRPM              *int                            `json:"current_rpm,omitempty"`                // 当前分钟 RPM 计数
+	ExternalQuotaTokenStats map[string]*service.WindowStats `json:"external_quota_token_stats,omitempty"` // 外部订阅账号卡片 token 额度条统计
 }
 
 const accountListGroupUngroupedQueryValue = "ungrouped"
@@ -279,6 +283,7 @@ func (h *AccountHandler) List(c *gin.Context) {
 	var windowCosts map[int64]float64
 	var activeSessions map[int64]int
 	var rpmCounts map[int64]int
+	externalQuotaTokenStats := h.loadExternalQuotaTokenStats(c.Request.Context(), accounts)
 
 	// 始终获取并发数（Redis ZCARD，极低开销）
 	if h.concurrencyService != nil {
@@ -382,6 +387,10 @@ func (h *AccountHandler) List(c *gin.Context) {
 			}
 		}
 
+		if statsByKey, ok := externalQuotaTokenStats[acc.ID]; ok && len(statsByKey) > 0 {
+			item.ExternalQuotaTokenStats = statsByKey
+		}
+
 		result[i] = item
 	}
 
@@ -432,6 +441,105 @@ func buildAccountsListETag(
 	}
 	sum := sha256.Sum256(raw)
 	return "\"" + hex.EncodeToString(sum[:]) + "\""
+}
+
+func (h *AccountHandler) loadExternalQuotaTokenStats(ctx context.Context, accounts []service.Account) map[int64]map[string]*service.WindowStats {
+	result := make(map[int64]map[string]*service.WindowStats)
+	if h.externalSubscriptionConfigService == nil || h.accountUsageService == nil || len(accounts) == 0 {
+		return result
+	}
+
+	accountIDs := make(map[int64]struct{}, len(accounts))
+	for i := range accounts {
+		accountIDs[accounts[i].ID] = struct{}{}
+	}
+
+	settings, err := h.externalSubscriptionConfigService.GetAccountQuotaProgressSettings(ctx)
+	if err != nil || len(settings) == 0 {
+		return result
+	}
+
+	type tokenStatsRequest struct {
+		key       string
+		accountID int64
+	}
+	requestsByStart := make(map[string][]tokenStatsRequest)
+	startTimes := make(map[string]time.Time)
+	for key, preference := range settings {
+		if !preference.Enabled || preference.Mode != service.ExternalSubscriptionAccountQuotaProgressModeTokenTotal {
+			continue
+		}
+		if preference.TokenTotal == nil || *preference.TokenTotal <= 0 {
+			continue
+		}
+		accountID, ok := accountIDFromExternalQuotaPreferenceKey(key)
+		if !ok {
+			continue
+		}
+		if _, exists := accountIDs[accountID]; !exists {
+			continue
+		}
+		startTime, ok := parseExternalQuotaTokenResetAt(preference.TokenResetAt)
+		if !ok {
+			continue
+		}
+		startKey := startTime.UTC().Format(time.RFC3339Nano)
+		startTimes[startKey] = startTime
+		requestsByStart[startKey] = append(requestsByStart[startKey], tokenStatsRequest{
+			key:       key,
+			accountID: accountID,
+		})
+	}
+
+	for startKey, requests := range requestsByStart {
+		if len(requests) == 0 {
+			continue
+		}
+		ids := make([]int64, 0, len(requests))
+		for _, request := range requests {
+			ids = append(ids, request.accountID)
+		}
+		statsByAccount, err := h.accountUsageService.GetAccountWindowStatsBatch(ctx, ids, startTimes[startKey])
+		if err != nil {
+			continue
+		}
+		for _, request := range requests {
+			stats := statsByAccount[request.accountID]
+			if stats == nil {
+				stats = &service.WindowStats{}
+			}
+			if result[request.accountID] == nil {
+				result[request.accountID] = make(map[string]*service.WindowStats)
+			}
+			result[request.accountID][request.key] = stats
+		}
+	}
+
+	return result
+}
+
+func accountIDFromExternalQuotaPreferenceKey(key string) (int64, bool) {
+	parts := strings.SplitN(strings.TrimSpace(key), ":", 2)
+	if len(parts) == 0 || parts[0] == "" {
+		return 0, false
+	}
+	id, err := strconv.ParseInt(parts[0], 10, 64)
+	if err != nil || id <= 0 {
+		return 0, false
+	}
+	return id, true
+}
+
+func parseExternalQuotaTokenResetAt(value string) (time.Time, bool) {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return time.Time{}, false
+	}
+	parsed, err := time.Parse(time.RFC3339Nano, trimmed)
+	if err != nil {
+		return time.Time{}, false
+	}
+	return parsed.UTC(), true
 }
 
 func ifNoneMatchMatched(ifNoneMatch, etag string) bool {

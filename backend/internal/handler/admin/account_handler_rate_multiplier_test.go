@@ -15,7 +15,7 @@ func setupAccountRateMultiplierRouter() (*gin.Engine, *stubAdminService) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	adminSvc := newStubAdminService()
-	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	router.PUT("/api/v1/admin/accounts/:id/rate-multiplier", handler.UpdateRateMultiplier)
 	return router, adminSvc
 }

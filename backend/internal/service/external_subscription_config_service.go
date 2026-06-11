@@ -38,6 +38,7 @@ const (
 
 	ExternalSubscriptionAccountQuotaProgressModeStatusTotal = "status_total"
 	ExternalSubscriptionAccountQuotaProgressModeCustomTotal = "custom_total"
+	ExternalSubscriptionAccountQuotaProgressModeTokenTotal  = "token_total"
 )
 
 var externalSubscriptionIDPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{1,63}$`)
@@ -120,9 +121,11 @@ type ExternalSubscriptionStatusOptions struct {
 }
 
 type ExternalSubscriptionAccountQuotaProgressPreference struct {
-	Enabled     bool     `json:"enabled"`
-	Mode        string   `json:"mode"`
-	CustomTotal *float64 `json:"customTotal,omitempty"`
+	Enabled      bool     `json:"enabled"`
+	Mode         string   `json:"mode"`
+	CustomTotal  *float64 `json:"customTotal,omitempty"`
+	TokenTotal   *float64 `json:"tokenTotal,omitempty"`
+	TokenResetAt string   `json:"tokenResetAt,omitempty"`
 }
 
 func NewExternalSubscriptionConfigService(settingService *SettingService) *ExternalSubscriptionConfigService {
@@ -891,7 +894,7 @@ func normalizeExternalSubscriptionAccountQuotaProgressSettings(input map[string]
 
 func normalizeExternalSubscriptionAccountQuotaProgressPreference(preference ExternalSubscriptionAccountQuotaProgressPreference) ExternalSubscriptionAccountQuotaProgressPreference {
 	mode := strings.TrimSpace(preference.Mode)
-	if mode != ExternalSubscriptionAccountQuotaProgressModeCustomTotal {
+	if mode != ExternalSubscriptionAccountQuotaProgressModeCustomTotal && mode != ExternalSubscriptionAccountQuotaProgressModeTokenTotal {
 		mode = ExternalSubscriptionAccountQuotaProgressModeStatusTotal
 	}
 	var customTotal *float64
@@ -899,10 +902,22 @@ func normalizeExternalSubscriptionAccountQuotaProgressPreference(preference Exte
 		value := *preference.CustomTotal
 		customTotal = &value
 	}
+	var tokenTotal *float64
+	if preference.TokenTotal != nil && *preference.TokenTotal > 0 {
+		value := *preference.TokenTotal
+		tokenTotal = &value
+	}
+	tokenResetAt := strings.TrimSpace(preference.TokenResetAt)
+	if mode != ExternalSubscriptionAccountQuotaProgressModeTokenTotal {
+		tokenTotal = nil
+		tokenResetAt = ""
+	}
 	return ExternalSubscriptionAccountQuotaProgressPreference{
-		Enabled:     preference.Enabled,
-		Mode:        mode,
-		CustomTotal: customTotal,
+		Enabled:      preference.Enabled,
+		Mode:         mode,
+		CustomTotal:  customTotal,
+		TokenTotal:   tokenTotal,
+		TokenResetAt: tokenResetAt,
 	}
 }
 

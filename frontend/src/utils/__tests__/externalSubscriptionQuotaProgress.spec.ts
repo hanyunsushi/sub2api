@@ -238,4 +238,43 @@ describe('external subscription quota progress', () => {
     })
     expect(meta?.percent).toBeCloseTo(75)
   })
+
+  it('builds account quota progress from local token usage and a custom token total', () => {
+    const preference: AccountExternalQuotaProgressPreference = {
+      enabled: true,
+      mode: 'token_total',
+      customTotal: null,
+      tokenTotal: 1_000_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    }
+
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      provider: 'mimo',
+      name: 'Xiaomi MiMo',
+      template: 'mimo_token_plan',
+      site_url: 'https://platform.xiaomimimo.com',
+      configured: true,
+      total_limit_usd: undefined,
+      remaining_usd: undefined,
+      used_usd: 0,
+    }), preference, {
+      tokenStats: {
+        requests: 12,
+        tokens: 250_000,
+        cost: 0,
+        standard_cost: 0,
+        user_cost: 0,
+      },
+    })
+
+    expect(meta).toMatchObject({
+      provider: 'mimo',
+      total: 1_000_000,
+      used: 250_000,
+      remaining: 750_000,
+      tone: 'safe',
+      unit: 'tokens',
+    })
+    expect(meta?.percent).toBeCloseTo(25)
+  })
 })

@@ -1,6 +1,8 @@
 import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
+import type { WindowStats } from '@/types'
 
 export type ExternalQuotaProgressTone = 'safe' | 'warning' | 'danger'
+export type ExternalQuotaProgressUnit = 'money' | 'tokens'
 
 export interface ExternalQuotaProgressMeta {
   visible: boolean
@@ -10,14 +12,21 @@ export interface ExternalQuotaProgressMeta {
   total: number
   percent: number
   tone: ExternalQuotaProgressTone
+  unit: ExternalQuotaProgressUnit
 }
 
-export type ExternalQuotaProgressMode = 'status_total' | 'custom_total'
+export type ExternalQuotaProgressMode = 'status_total' | 'custom_total' | 'token_total'
 
 export interface AccountExternalQuotaProgressPreference {
   enabled: boolean
   mode: ExternalQuotaProgressMode
   customTotal?: number | null
+  tokenTotal?: number | null
+  tokenResetAt?: string | null
+}
+
+export interface AccountExternalQuotaProgressOptions {
+  tokenStats?: WindowStats | null
 }
 
 type KnownProgressProvider = 'rawchat' | 'tcdmx' | 'openrouter'
@@ -109,16 +118,38 @@ export const buildExternalQuotaProgressMeta = (
     total,
     percent,
     tone,
+    unit: 'money',
   }
 }
 
 export const buildAccountExternalQuotaProgressMeta = (
   status: ExternalSubscriptionStatus | null | undefined,
   preference: AccountExternalQuotaProgressPreference | null | undefined,
+  options: AccountExternalQuotaProgressOptions = {},
 ): ExternalQuotaProgressMeta | null => {
   if (!status || !preference?.enabled || !status.enabled || !status.configured || status.error_code) return null
 
   const provider = providerKeyFromStatus(status) ?? genericProviderKeyFromStatus(status)
+
+  if (preference.mode === 'token_total') {
+    const total = Math.max(0, Number(preference.tokenTotal ?? 0))
+    if (!Number.isFinite(total) || total <= 0) return null
+    const used = Math.max(0, Number(options.tokenStats?.tokens ?? 0))
+    if (!Number.isFinite(used)) return null
+    const remaining = Math.max(0, total - used)
+    const percent = clampPercent((used / total) * 100)
+
+    return {
+      visible: true,
+      provider,
+      used,
+      remaining,
+      total,
+      percent,
+      tone: toneFromPercent(percent),
+      unit: 'tokens',
+    }
+  }
 
   const total = preference.mode === 'custom_total'
     ? Math.max(0, Number(preference.customTotal ?? 0))
@@ -148,5 +179,6 @@ export const buildAccountExternalQuotaProgressMeta = (
     total,
     percent,
     tone: toneFromPercent(percent),
+    unit: 'money',
   }
 }

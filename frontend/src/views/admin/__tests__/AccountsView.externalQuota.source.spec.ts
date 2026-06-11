@@ -70,10 +70,12 @@ describe('AccountsView external quota card metadata', () => {
   it('uses per-account quota progress settings instead of a global account-page switch', () => {
     expect(source).toContain("import ExternalQuotaProgressSettingsModal from '@/components/admin/account/ExternalQuotaProgressSettingsModal.vue'")
     expect(source).toContain("import UsageProgressBar from '@/components/account/UsageProgressBar.vue'")
-    expect(source).toContain("import { useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'")
+    expect(source).toContain("import { buildAccountExternalQuotaProgressPreferenceKey, useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'")
     expect(source).toContain('loadAccountExternalQuotaProgressSettings')
     expect(source).toContain('void loadAccountExternalQuotaProgressSettings()')
     expect(source).toContain('getAccountExternalQuotaProgressPreference(account, subscription)')
+    expect(source).toContain('buildAccountExternalQuotaProgressPreferenceKey(account, subscription)')
+    expect(source).toContain('account.external_quota_token_stats?.[preferenceKey]')
     expect(source).toContain('openExternalQuotaProgressSettings(row)')
     expect(source).toContain('saveExternalQuotaProgressSettings')
     expect(source).toContain('data-testid="account-external-quota-progress-action"')
@@ -82,10 +84,23 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain(':settings="externalQuotaProgressSettings.current"')
     expect(externalQuotaSettingsModalSource).toContain('hasProviderTotal(props.subscription)')
     expect(externalQuotaSettingsModalSource).not.toContain('supportsExternalQuotaProgress(props.subscription)')
-    expect(externalQuotaSettingsModalSource).toContain("form.mode = next.mode === 'custom_total' || hasStatusTotal.value")
+    expect(externalQuotaSettingsModalSource).toContain("form.mode = next.mode === 'token_total' || next.mode === 'custom_total' || hasStatusTotal.value")
     expect(source).not.toContain("import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'")
     expect(source).not.toContain('setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)')
     expect(source).not.toContain("localText('显示额度进度条', 'Show quota progress')")
+  })
+
+  it('adds a token quota progress template with account-local usage stats and refresh time', () => {
+    expect(externalQuotaSettingsModalSource).toContain("value=\"token_total\"")
+    expect(externalQuotaSettingsModalSource).toContain("localText('Token 用量 / 总量', 'Token usage / total')")
+    expect(externalQuotaSettingsModalSource).toContain("localText('Token 总量', 'Token total')")
+    expect(externalQuotaSettingsModalSource).toContain("localText('Token 刷新时间', 'Token refresh time')")
+    expect(externalQuotaSettingsModalSource).toContain('type="datetime-local"')
+    expect(externalQuotaSettingsModalSource).toContain('buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription)')
+    expect(externalQuotaSettingsModalSource).toContain('props.account.external_quota_token_stats?.[key]')
+    expect(externalQuotaSettingsModalSource).toContain("next.mode === 'token_total'")
+    expect(source).toContain('formatExternalTokens')
+    expect(source).toContain("progress?.unit === 'tokens'")
   })
 
   it('places the external quota progress under the official usage window cell', () => {

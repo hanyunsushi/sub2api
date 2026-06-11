@@ -87,8 +87,10 @@ export interface ExternalSubscriptionStatus {
 
 export interface AccountExternalQuotaProgressPreferencePayload {
   enabled: boolean
-  mode: 'status_total' | 'custom_total'
+  mode: 'status_total' | 'custom_total' | 'token_total'
   customTotal?: number | null
+  tokenTotal?: number | null
+  tokenResetAt?: string | null
 }
 
 export type AccountExternalQuotaProgressSettingsPayload = Record<string, AccountExternalQuotaProgressPreferencePayload>
