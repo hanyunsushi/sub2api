@@ -206,6 +206,12 @@ describe('admin external subscriptions api', () => {
           mode: 'custom_total',
           customTotal: 120,
         },
+        '303:mimo:mimo_token_plan:xiaomi mimo': {
+          enabled: true,
+          mode: 'token_total',
+          tokenTotal: 1000000,
+          tokenResetAt: '2026-06-11T00:00:00.000Z',
+        },
       },
     }
     vi.mocked(apiClient.get).mockResolvedValueOnce({ data: payload })

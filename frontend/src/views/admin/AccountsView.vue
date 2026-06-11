@@ -584,7 +584,7 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
-import { useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'
+import { buildAccountExternalQuotaProgressPreferenceKey, useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'
 import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
 import {
   buildAccountExternalQuotaProgressMeta,
@@ -960,6 +960,11 @@ const formatExternalAmount = (value?: number | null, currency?: string | null) =
   return `$${value.toFixed(2)}`
 }
 
+const formatExternalTokens = (value?: number | null) => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  return `${Math.round(value).toLocaleString()} token`
+}
+
 const formatExternalDate = (value?: string | null) => {
   if (!value) return localText('长期', 'Long-term')
   const parsed = new Date(value)
@@ -1010,9 +1015,16 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
   const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
   const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
   const preference = getAccountExternalQuotaProgressPreference(account, subscription)
-  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference)
-  const used = progress ? formatExternalAmount(progress.used, subscription.currency) : null
-  const progressTotal = progress ? formatExternalAmount(progress.total, subscription.currency) : null
+  const preferenceKey = buildAccountExternalQuotaProgressPreferenceKey(account, subscription)
+  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference, {
+    tokenStats: account.external_quota_token_stats?.[preferenceKey] ?? null,
+  })
+  const used = progress?.unit === 'tokens'
+    ? formatExternalTokens(progress.used)
+    : progress ? formatExternalAmount(progress.used, subscription.currency) : null
+  const progressTotal = progress?.unit === 'tokens'
+    ? formatExternalTokens(progress.total)
+    : progress ? formatExternalAmount(progress.total, subscription.currency) : null
   return {
     label: getExternalSubscriptionLabel(subscription),
     url: subscription.site_url,

@@ -109,11 +109,21 @@ func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t
 			Enabled: false,
 			Mode:    ExternalSubscriptionAccountQuotaProgressModeStatusTotal,
 		},
+		"103:mimo:mimo_token_plan:xiaomi mimo": {
+			Enabled:      true,
+			Mode:         ExternalSubscriptionAccountQuotaProgressModeTokenTotal,
+			TokenTotal:   testFloat64Ptr(1000000),
+			TokenResetAt: "2026-06-11T00:00:00Z",
+		},
 	}
 
 	saved, err := svc.UpdateAccountQuotaProgressSettings(ctx, settings)
 	require.NoError(t, err)
 	require.Equal(t, settings["101:rawchat:rawchat_subscriptions:rawchat"].Mode, saved["101:rawchat:rawchat_subscriptions:rawchat"].Mode)
+	require.Equal(t, ExternalSubscriptionAccountQuotaProgressModeTokenTotal, saved["103:mimo:mimo_token_plan:xiaomi mimo"].Mode)
+	require.NotNil(t, saved["103:mimo:mimo_token_plan:xiaomi mimo"].TokenTotal)
+	require.InDelta(t, 1000000, *saved["103:mimo:mimo_token_plan:xiaomi mimo"].TokenTotal, 0.0001)
+	require.Equal(t, "2026-06-11T00:00:00Z", saved["103:mimo:mimo_token_plan:xiaomi mimo"].TokenResetAt)
 	require.NotContains(t, repo.values[SettingKeyExternalSubscriptionAccountQuotaProgress], "api_token")
 
 	reloadedService := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
@@ -1115,19 +1125,7 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsRawChatTemplateWithLoos
 
 func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplate(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, "/api/v1/tokenPlan/usage", r.URL.Path)
-		require.Equal(t, "mimo-session=abc", r.Header.Get("Cookie"))
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{
-			"code": 0,
-			"message": "ok",
-			"data": {
-				"totalAmount": "100",
-				"usedAmount": "32.5",
-				"remainingAmount": "67.5",
-				"expireTime": "2026-07-01 00:00:00"
-			}
-		}`))
+		require.Fail(t, "MiMo token plan status must not call guessed quota endpoints")
 	}))
 	defer server.Close()
 	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
@@ -1150,29 +1148,17 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplate(t
 	mimo := requireExternalSubscriptionStatus(t, statuses, "mimo")
 	require.Empty(t, mimo.ErrorCode)
 	require.Equal(t, ExternalSubscriptionTemplateMimoTokenPlan, mimo.Template)
-	require.NotNil(t, mimo.TotalLimitUSD)
-	require.InDelta(t, 100, *mimo.TotalLimitUSD, 0.0001)
-	require.InDelta(t, 32.5, mimo.UsedUSD, 0.0001)
-	require.NotNil(t, mimo.RemainingUSD)
-	require.InDelta(t, 67.5, *mimo.RemainingUSD, 0.0001)
-	require.Equal(t, 1, mimo.ActiveCount)
-	require.Len(t, mimo.Subscriptions, 1)
+	require.True(t, mimo.Configured)
+	require.Nil(t, mimo.TotalLimitUSD)
+	require.Nil(t, mimo.RemainingUSD)
+	require.Zero(t, mimo.UsedUSD)
+	require.Zero(t, mimo.ActiveCount)
+	require.Empty(t, mimo.Subscriptions)
 }
 
-func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplateWithUsagePercent(t *testing.T) {
+func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplateWithBearerKey(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, "/api/v1/tokenPlan/usage", r.URL.Path)
-		require.Equal(t, "mimo-session=abc", r.Header.Get("Cookie"))
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{
-			"code": 0,
-			"data": {
-				"totalAmount": 200,
-				"usage": {"percent": 37.5},
-				"expired": false,
-				"planCode": "mimo-pro"
-			}
-		}`))
+		require.Fail(t, "MiMo token plan status must not call guessed quota endpoints")
 	}))
 	defer server.Close()
 	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{
@@ -1182,7 +1168,7 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplateWi
 			Enabled:       true,
 			Template:      ExternalSubscriptionTemplateMimoTokenPlan,
 			APIBaseURL:    server.URL,
-			APIToken:      "mimo-session=abc",
+			APIToken:      "tp-abc",
 			MatchKeywords: []string{"mimo", "xiaomi"},
 			SortOrder:     95,
 		},
@@ -1194,11 +1180,10 @@ func TestExternalSubscriptionConfigServiceGetStatusesRunsMimoTokenPlanTemplateWi
 
 	mimo := requireExternalSubscriptionStatus(t, statuses, "mimo")
 	require.Empty(t, mimo.ErrorCode)
-	require.NotNil(t, mimo.TotalLimitUSD)
-	require.InDelta(t, 200, *mimo.TotalLimitUSD, 0.0001)
-	require.InDelta(t, 75, mimo.UsedUSD, 0.0001)
-	require.NotNil(t, mimo.RemainingUSD)
-	require.InDelta(t, 125, *mimo.RemainingUSD, 0.0001)
+	require.True(t, mimo.Configured)
+	require.Nil(t, mimo.TotalLimitUSD)
+	require.Nil(t, mimo.RemainingUSD)
+	require.Zero(t, mimo.UsedUSD)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesKeepsOtherProvidersWhenOneFails(t *testing.T) {

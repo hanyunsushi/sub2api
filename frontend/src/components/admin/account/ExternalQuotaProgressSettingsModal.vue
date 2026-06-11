@@ -26,7 +26,7 @@
 
       <fieldset class="space-y-2">
         <legend class="input-label">{{ localText('计算方式', 'Calculation') }}</legend>
-        <div class="grid gap-2 sm:grid-cols-2">
+        <div class="grid gap-2 sm:grid-cols-3">
           <label
             :class="[
               'external-quota-mode-option',
@@ -59,6 +59,21 @@
             <span>{{ localText('余额 / 自定义总额', 'Balance / custom total') }}</span>
             <span class="font-mono text-xs">{{ customTotalText }}</span>
           </label>
+          <label
+            :class="[
+              'external-quota-mode-option',
+              form.mode === 'token_total' ? 'external-quota-mode-option--active' : ''
+            ]"
+          >
+            <input
+              v-model="form.mode"
+              type="radio"
+              class="sr-only"
+              value="token_total"
+            />
+            <span>{{ localText('Token 用量 / 总量', 'Token usage / total') }}</span>
+            <span class="font-mono text-xs">{{ tokenTotalText }}</span>
+          </label>
         </div>
       </fieldset>
 
@@ -72,6 +87,28 @@
           class="input font-mono"
           inputmode="decimal"
         />
+      </div>
+
+      <div v-if="form.mode === 'token_total'" class="grid gap-3 sm:grid-cols-2">
+        <div class="space-y-1.5">
+          <label class="input-label">{{ localText('Token 总量', 'Token total') }}</label>
+          <input
+            v-model="form.tokenTotal"
+            type="number"
+            min="0"
+            step="1"
+            class="input font-mono"
+            inputmode="numeric"
+          />
+        </div>
+        <div class="space-y-1.5">
+          <label class="input-label">{{ localText('Token 刷新时间', 'Token refresh time') }}</label>
+          <input
+            v-model="form.tokenResetAt"
+            type="datetime-local"
+            class="input font-mono"
+          />
+        </div>
       </div>
 
       <div class="external-quota-preview rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-700">
@@ -111,6 +148,7 @@ import Toggle from '@/components/common/Toggle.vue'
 import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import type { Account } from '@/types'
+import { buildAccountExternalQuotaProgressPreferenceKey } from '@/composables/useAccountExternalQuotaProgressSettings'
 import {
   buildAccountExternalQuotaProgressMeta,
   type AccountExternalQuotaProgressPreference,
@@ -136,6 +174,8 @@ const form = reactive({
   enabled: false,
   mode: 'status_total' as ExternalQuotaProgressMode,
   customTotal: '',
+  tokenTotal: '',
+  tokenResetAt: '',
 })
 
 const hasProviderTotal = (subscription?: ExternalSubscriptionStatus | null) => (
@@ -158,10 +198,34 @@ const parseCustomTotal = () => {
   return Number.isFinite(value) && value > 0 ? value : null
 }
 
+const parseTokenTotal = () => {
+  const value = Number(form.tokenTotal)
+  return Number.isFinite(value) && value > 0 ? value : null
+}
+
+const parseTokenResetAt = () => {
+  if (!form.tokenResetAt) return null
+  const parsed = new Date(form.tokenResetAt)
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
+}
+
+const toDateTimeLocalValue = (value?: string | null) => {
+  if (!value) return ''
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return ''
+  const offset = parsed.getTimezoneOffset()
+  const local = new Date(parsed.getTime() - offset * 60_000)
+  return local.toISOString().slice(0, 16)
+}
+
+const defaultTokenResetAt = () => toDateTimeLocalValue(new Date().toISOString())
+
 const currentPreference = computed<AccountExternalQuotaProgressPreference>(() => ({
   enabled: form.enabled,
   mode: form.mode,
   customTotal: parseCustomTotal(),
+  tokenTotal: parseTokenTotal(),
+  tokenResetAt: parseTokenResetAt(),
 }))
 
 const hasStatusTotal = computed(() => (
@@ -172,13 +236,30 @@ const subscriptionLabel = computed(() => props.subscription?.name || props.subsc
 const balanceText = computed(() => formatAmount(props.subscription?.remaining_usd, props.subscription?.currency))
 const statusTotalText = computed(() => formatAmount(props.subscription?.total_limit_usd, props.subscription?.currency))
 const customTotalText = computed(() => formatAmount(parseCustomTotal(), props.subscription?.currency))
-const previewMeta = computed(() => buildAccountExternalQuotaProgressMeta(props.subscription, currentPreference.value))
+const tokenTotalText = computed(() => formatTokens(parseTokenTotal()))
+const tokenStats = computed(() => {
+  if (!props.account || !props.subscription) return null
+  const key = buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription)
+  return props.account.external_quota_token_stats?.[key] ?? null
+})
+const previewMeta = computed(() => buildAccountExternalQuotaProgressMeta(props.subscription, currentPreference.value, {
+  tokenStats: tokenStats.value,
+}))
 const previewAmountText = computed(() => {
   if (!previewMeta.value || !props.subscription) return '-'
-  const remaining = formatAmount(previewMeta.value.remaining, props.subscription.currency)
-  const total = formatAmount(previewMeta.value.total, props.subscription.currency)
+  const remaining = previewMeta.value.unit === 'tokens'
+    ? formatTokens(previewMeta.value.remaining)
+    : formatAmount(previewMeta.value.remaining, props.subscription.currency)
+  const total = previewMeta.value.unit === 'tokens'
+    ? formatTokens(previewMeta.value.total)
+    : formatAmount(previewMeta.value.total, props.subscription.currency)
   return `${remaining} / ${total}`
 })
+
+function formatTokens(value?: number | null) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '-'
+  return `${Math.round(value).toLocaleString()} token`
+}
 
 watch(
   () => [props.show, props.settings, props.subscription] as const,
@@ -186,12 +267,16 @@ watch(
     if (!props.show) return
     const next = props.settings ?? { enabled: false, mode: 'status_total', customTotal: null }
     form.enabled = next.enabled === true
-    form.mode = next.mode === 'custom_total' || hasStatusTotal.value
+    form.mode = next.mode === 'token_total' || next.mode === 'custom_total' || hasStatusTotal.value
       ? next.mode
       : 'custom_total'
     form.customTotal = typeof next.customTotal === 'number' && Number.isFinite(next.customTotal)
       ? String(next.customTotal)
       : ''
+    form.tokenTotal = typeof next.tokenTotal === 'number' && Number.isFinite(next.tokenTotal)
+      ? String(next.tokenTotal)
+      : ''
+    form.tokenResetAt = toDateTimeLocalValue(next.tokenResetAt) || defaultTokenResetAt()
   },
   { immediate: true },
 )
