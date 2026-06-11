@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 )
 
 type autoScheduleAccountRepoStub struct {
@@ -32,6 +33,135 @@ func (r *autoScheduleAccountRepoStub) IsScheduleLocked(_ context.Context, id int
 func (r *autoScheduleAccountRepoStub) ListByPlatform(_ context.Context, platform string) ([]Account, error) {
 	r.listedPlatform = platform
 	return r.accounts, nil
+}
+
+type channelMonitorRepoCreateStub struct {
+	created *ChannelMonitor
+}
+
+func (r *channelMonitorRepoCreateStub) Create(_ context.Context, m *ChannelMonitor) error {
+	copy := *m
+	copy.AccountIDs = append([]int64(nil), m.AccountIDs...)
+	copy.ID = 101
+	r.created = &copy
+	m.ID = copy.ID
+	return nil
+}
+
+func (r *channelMonitorRepoCreateStub) GetByID(context.Context, int64) (*ChannelMonitor, error) {
+	panic("unexpected GetByID call")
+}
+
+func (r *channelMonitorRepoCreateStub) Update(context.Context, *ChannelMonitor) error {
+	panic("unexpected Update call")
+}
+
+func (r *channelMonitorRepoCreateStub) Delete(context.Context, int64) error {
+	panic("unexpected Delete call")
+}
+
+func (r *channelMonitorRepoCreateStub) List(context.Context, ChannelMonitorListParams) ([]*ChannelMonitor, int64, error) {
+	panic("unexpected List call")
+}
+
+func (r *channelMonitorRepoCreateStub) ListEnabled(context.Context) ([]*ChannelMonitor, error) {
+	panic("unexpected ListEnabled call")
+}
+
+func (r *channelMonitorRepoCreateStub) MarkChecked(context.Context, int64, time.Time) error {
+	panic("unexpected MarkChecked call")
+}
+
+func (r *channelMonitorRepoCreateStub) InsertHistoryBatch(context.Context, []*ChannelMonitorHistoryRow) error {
+	panic("unexpected InsertHistoryBatch call")
+}
+
+func (r *channelMonitorRepoCreateStub) DeleteHistoryBefore(context.Context, time.Time) (int64, error) {
+	panic("unexpected DeleteHistoryBefore call")
+}
+
+func (r *channelMonitorRepoCreateStub) ListHistory(context.Context, int64, string, int) ([]*ChannelMonitorHistoryEntry, error) {
+	panic("unexpected ListHistory call")
+}
+
+func (r *channelMonitorRepoCreateStub) ListLatestPerModel(context.Context, int64) ([]*ChannelMonitorLatest, error) {
+	panic("unexpected ListLatestPerModel call")
+}
+
+func (r *channelMonitorRepoCreateStub) ComputeAvailability(context.Context, int64, int) ([]*ChannelMonitorAvailability, error) {
+	panic("unexpected ComputeAvailability call")
+}
+
+func (r *channelMonitorRepoCreateStub) ListLatestForMonitorIDs(context.Context, []int64) (map[int64][]*ChannelMonitorLatest, error) {
+	panic("unexpected ListLatestForMonitorIDs call")
+}
+
+func (r *channelMonitorRepoCreateStub) ComputeAvailabilityForMonitors(context.Context, []int64, int) (map[int64][]*ChannelMonitorAvailability, error) {
+	panic("unexpected ComputeAvailabilityForMonitors call")
+}
+
+func (r *channelMonitorRepoCreateStub) ListRecentHistoryForMonitors(context.Context, []int64, map[int64]string, int) (map[int64][]*ChannelMonitorHistoryEntry, error) {
+	panic("unexpected ListRecentHistoryForMonitors call")
+}
+
+func (r *channelMonitorRepoCreateStub) UpsertDailyRollupsFor(context.Context, time.Time) (int64, error) {
+	panic("unexpected UpsertDailyRollupsFor call")
+}
+
+func (r *channelMonitorRepoCreateStub) DeleteRollupsBefore(context.Context, time.Time) (int64, error) {
+	panic("unexpected DeleteRollupsBefore call")
+}
+
+func (r *channelMonitorRepoCreateStub) LoadAggregationWatermark(context.Context) (*time.Time, error) {
+	panic("unexpected LoadAggregationWatermark call")
+}
+
+func (r *channelMonitorRepoCreateStub) UpdateAggregationWatermark(context.Context, time.Time) error {
+	panic("unexpected UpdateAggregationWatermark call")
+}
+
+type passthroughEncryptor struct{}
+
+func (passthroughEncryptor) Encrypt(value string) (string, error) { return value, nil }
+func (passthroughEncryptor) Decrypt(value string) (string, error) { return value, nil }
+
+func TestChannelMonitorCreateAutoBindsAllMatchingAccountsWhenNoAccountIDsProvided(t *testing.T) {
+	monitorRepo := &channelMonitorRepoCreateStub{}
+	accountRepo := &autoScheduleAccountRepoStub{
+		accounts: []Account{
+			{ID: 91, Name: "GPT-RawChat", Platform: PlatformOpenAI},
+			{ID: 92, Name: "GPT-RawChat", Platform: PlatformOpenAI},
+			{ID: 93, Name: "GPT-Other", Platform: PlatformOpenAI},
+		},
+	}
+	svc := NewChannelMonitorService(monitorRepo, passthroughEncryptor{})
+	svc.SetAccountScheduleAutomation(accountRepo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
+		return true
+	}))
+
+	created, err := svc.Create(context.Background(), ChannelMonitorCreateParams{
+		Name:            " GPT-RawChat ",
+		Provider:        PlatformOpenAI,
+		Endpoint:        "https://example.com",
+		APIKey:          "monitor-key",
+		PrimaryModel:    "gpt-5",
+		Enabled:         true,
+		IntervalSeconds: 60,
+	})
+	if err != nil {
+		t.Fatalf("create monitor: %v", err)
+	}
+
+	if accountRepo.listedPlatform != PlatformOpenAI {
+		t.Fatalf("expected account options to use provider %q, got %q", PlatformOpenAI, accountRepo.listedPlatform)
+	}
+	want := []int64{91, 92}
+	if !equalInt64Slices(created.AccountIDs, want) {
+		t.Fatalf("expected created monitor account_ids=%v, got %v", want, created.AccountIDs)
+	}
+	if monitorRepo.created == nil || !equalInt64Slices(monitorRepo.created.AccountIDs, want) {
+		t.Fatalf("expected persisted monitor account_ids=%v, got %+v", want, monitorRepo.created)
+	}
 }
 
 func TestChannelMonitorAutoScheduleDisablesLinkedAccountOnFailedResult(t *testing.T) {
@@ -78,6 +208,29 @@ func TestChannelMonitorAutoScheduleEnablesLinkedAccountWhenResultsRecover(t *tes
 	}
 }
 
+func TestChannelMonitorAutoScheduleUpdatesAllSavedAccountIDs(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
+		return true
+	}))
+
+	svc.applyAccountAutoSchedule(context.Background(), &ChannelMonitor{
+		ID:         18,
+		AccountIDs: []int64{81, 82},
+	}, []*CheckResult{
+		{Model: "gpt-5", Status: "failed"},
+	})
+
+	want := []autoScheduleCall{
+		{accountID: 81, schedulable: false},
+		{accountID: 82, schedulable: false},
+	}
+	if !equalAutoScheduleCalls(repo.calls, want) {
+		t.Fatalf("expected saved account updates %+v, got %+v", want, repo.calls)
+	}
+}
+
 func TestChannelMonitorAutoScheduleDoesNothingWhenGlobalSettingIsDisabled(t *testing.T) {
 	repo := &autoScheduleAccountRepoStub{}
 	svc := NewChannelMonitorService(nil, nil)
@@ -96,7 +249,7 @@ func TestChannelMonitorAutoScheduleDoesNothingWhenGlobalSettingIsDisabled(t *tes
 	}
 }
 
-func TestChannelMonitorAutoScheduleMatchesAccountsByMonitorNameWhenNoAccountIDIsLinked(t *testing.T) {
+func TestChannelMonitorAutoScheduleDoesNotMatchAccountsByNameAfterCreation(t *testing.T) {
 	repo := &autoScheduleAccountRepoStub{
 		accounts: []Account{
 			{ID: 51, Name: "GPT-QLhazycoder", Platform: PlatformOpenAI},
@@ -116,67 +269,43 @@ func TestChannelMonitorAutoScheduleMatchesAccountsByMonitorNameWhenNoAccountIDIs
 		{Model: "gpt-5", Status: "failed"},
 	})
 
-	if repo.listedPlatform != PlatformOpenAI {
-		t.Fatalf("expected accounts to be listed by monitor provider %q, got %q", PlatformOpenAI, repo.listedPlatform)
+	if repo.listedPlatform != "" {
+		t.Fatalf("expected no account lookup after monitor creation, got platform %q", repo.listedPlatform)
 	}
-	if len(repo.calls) != 1 {
-		t.Fatalf("expected one name-matched schedulable update, got %+v", repo.calls)
-	}
-	if repo.calls[0].accountID != 51 || repo.calls[0].schedulable {
-		t.Fatalf("expected name-matched account 51 schedulable=false, got %+v", repo.calls[0])
+	if len(repo.calls) != 0 {
+		t.Fatalf("expected no dynamic name-matched updates after creation, got %+v", repo.calls)
 	}
 }
 
 func TestChannelMonitorAutoScheduleDoesNothingWhenNoAccountNameMatches(t *testing.T) {
-	repo := &autoScheduleAccountRepoStub{
+	monitorRepo := &channelMonitorRepoCreateStub{}
+	accountRepo := &autoScheduleAccountRepoStub{
 		accounts: []Account{
 			{ID: 61, Name: "GPT-QLhazycoder", Platform: PlatformOpenAI},
 		},
 	}
-	svc := NewChannelMonitorService(nil, nil)
-	svc.SetAccountScheduleAutomation(repo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
+	svc := NewChannelMonitorService(monitorRepo, passthroughEncryptor{})
+	svc.SetAccountScheduleAutomation(accountRepo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
 		return true
 	}))
 
-	svc.applyAccountAutoSchedule(context.Background(), &ChannelMonitor{
-		ID:       12,
-		Name:     "GPT-Missing",
-		Provider: PlatformOpenAI,
-	}, []*CheckResult{
-		{Model: "gpt-5", Status: "failed"},
+	created, err := svc.Create(context.Background(), ChannelMonitorCreateParams{
+		Name:            "GPT-Missing",
+		Provider:        PlatformOpenAI,
+		Endpoint:        "https://example.com",
+		APIKey:          "monitor-key",
+		PrimaryModel:    "gpt-5",
+		Enabled:         true,
+		IntervalSeconds: 60,
 	})
-
-	if len(repo.calls) != 0 {
-		t.Fatalf("expected no schedulable updates without a name match, got %+v", repo.calls)
+	if err != nil {
+		t.Fatalf("create monitor: %v", err)
 	}
-}
-
-func TestChannelMonitorAutoScheduleUpdatesAllAccountsWithMatchingMonitorName(t *testing.T) {
-	repo := &autoScheduleAccountRepoStub{
-		accounts: []Account{
-			{ID: 71, Name: "GPT-RawChat", Platform: PlatformOpenAI},
-			{ID: 72, Name: "GPT-RawChat", Platform: PlatformOpenAI},
-		},
+	if accountRepo.listedPlatform != PlatformOpenAI {
+		t.Fatalf("expected account options to use provider %q, got %q", PlatformOpenAI, accountRepo.listedPlatform)
 	}
-	svc := NewChannelMonitorService(nil, nil)
-	svc.SetAccountScheduleAutomation(repo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
-		return true
-	}))
-
-	svc.applyAccountAutoSchedule(context.Background(), &ChannelMonitor{
-		ID:       13,
-		Name:     "GPT-RawChat",
-		Provider: PlatformOpenAI,
-	}, []*CheckResult{
-		{Model: "gpt-5", Status: "failed"},
-	})
-
-	if len(repo.calls) != 2 {
-		t.Fatalf("expected both name-matched accounts to be updated, got %+v", repo.calls)
-	}
-	if repo.calls[0] != (autoScheduleCall{accountID: 71, schedulable: false}) ||
-		repo.calls[1] != (autoScheduleCall{accountID: 72, schedulable: false}) {
-		t.Fatalf("unexpected name-matched updates: %+v", repo.calls)
+	if len(created.AccountIDs) != 0 {
+		t.Fatalf("expected no create-time account_ids when names do not match, got %v", created.AccountIDs)
 	}
 }
 
@@ -196,4 +325,28 @@ func TestChannelMonitorAutoScheduleDoesNothingWhenLinkedAccountIsScheduleLocked(
 	if len(repo.calls) != 0 {
 		t.Fatalf("expected no schedulable updates for locked account, got %+v", repo.calls)
 	}
+}
+
+func equalInt64Slices(left, right []int64) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for index := range left {
+		if left[index] != right[index] {
+			return false
+		}
+	}
+	return true
+}
+
+func equalAutoScheduleCalls(left, right []autoScheduleCall) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for index := range left {
+		if left[index] != right[index] {
+			return false
+		}
+	}
+	return true
 }

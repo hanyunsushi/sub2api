@@ -47,6 +47,7 @@ func (r *channelMonitorRepository) Create(ctx context.Context, m *service.Channe
 		SetEnabled(m.Enabled).
 		SetIntervalSeconds(m.IntervalSeconds).
 		SetCreatedBy(m.CreatedBy).
+		SetAccountIds(normalizeMonitorAccountIDsRepo(m.AccountIDs, m.AccountID)).
 		SetExtraHeaders(emptyHeadersIfNilRepo(m.ExtraHeaders)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode))
 	if m.AccountID != nil {
@@ -93,6 +94,7 @@ func (r *channelMonitorRepository) Update(ctx context.Context, m *service.Channe
 		SetGroupName(m.GroupName).
 		SetEnabled(m.Enabled).
 		SetIntervalSeconds(m.IntervalSeconds).
+		SetAccountIds(normalizeMonitorAccountIDsRepo(m.AccountIDs, m.AccountID)).
 		SetExtraHeaders(emptyHeadersIfNilRepo(m.ExtraHeaders)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode))
 	if m.AccountID != nil {
@@ -716,6 +718,14 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 	if headers == nil {
 		headers = map[string]string{}
 	}
+	accountIDs := normalizeAccountIDsRepo(row.AccountIds)
+	accountID := row.AccountID
+	if len(accountIDs) > 0 {
+		id := accountIDs[0]
+		accountID = &id
+	} else if row.AccountID != nil && *row.AccountID > 0 {
+		accountIDs = []int64{*row.AccountID}
+	}
 	out := &service.ChannelMonitor{
 		ID:               row.ID,
 		Name:             row.Name,
@@ -731,7 +741,8 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 		IntervalSeconds:  row.IntervalSeconds,
 		LastCheckedAt:    row.LastCheckedAt,
 		CreatedBy:        row.CreatedBy,
-		AccountID:        row.AccountID,
+		AccountID:        accountID,
+		AccountIDs:       accountIDs,
 		CreatedAt:        row.CreatedAt,
 		UpdatedAt:        row.UpdatedAt,
 		ExtraHeaders:     headers,
@@ -774,4 +785,31 @@ func emptySliceIfNil(in []string) []string {
 		return []string{}
 	}
 	return in
+}
+
+func normalizeAccountIDsRepo(in []int64) []int64 {
+	if len(in) == 0 {
+		return []int64{}
+	}
+	seen := make(map[int64]struct{}, len(in))
+	out := make([]int64, 0, len(in))
+	for _, id := range in {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	return out
+}
+
+func normalizeMonitorAccountIDsRepo(ids []int64, legacyID *int64) []int64 {
+	out := normalizeAccountIDsRepo(ids)
+	if len(out) > 0 || legacyID == nil || *legacyID <= 0 {
+		return out
+	}
+	return []int64{*legacyID}
 }

@@ -8987,6 +8987,8 @@ type ChannelMonitorMutation struct {
 	last_checked_at         *time.Time
 	created_by              *int64
 	addcreated_by           *int64
+	account_ids             *[]int64
+	appendaccount_ids       []int64
 	extra_headers           *map[string]string
 	body_override_mode      *string
 	body_override           *map[string]interface{}
@@ -9774,6 +9776,57 @@ func (m *ChannelMonitorMutation) ResetAccountID() {
 	delete(m.clearedFields, channelmonitor.FieldAccountID)
 }
 
+// SetAccountIds sets the "account_ids" field.
+func (m *ChannelMonitorMutation) SetAccountIds(i []int64) {
+	m.account_ids = &i
+	m.appendaccount_ids = nil
+}
+
+// AccountIds returns the value of the "account_ids" field in the mutation.
+func (m *ChannelMonitorMutation) AccountIds() (r []int64, exists bool) {
+	v := m.account_ids
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccountIds returns the old "account_ids" field's value of the ChannelMonitor entity.
+// If the ChannelMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChannelMonitorMutation) OldAccountIds(ctx context.Context) (v []int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccountIds is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccountIds requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccountIds: %w", err)
+	}
+	return oldValue.AccountIds, nil
+}
+
+// AppendAccountIds adds i to the "account_ids" field.
+func (m *ChannelMonitorMutation) AppendAccountIds(i []int64) {
+	m.appendaccount_ids = append(m.appendaccount_ids, i...)
+}
+
+// AppendedAccountIds returns the list of values that were appended to the "account_ids" field in this mutation.
+func (m *ChannelMonitorMutation) AppendedAccountIds() ([]int64, bool) {
+	if len(m.appendaccount_ids) == 0 {
+		return nil, false
+	}
+	return m.appendaccount_ids, true
+}
+
+// ResetAccountIds resets all changes to the "account_ids" field.
+func (m *ChannelMonitorMutation) ResetAccountIds() {
+	m.account_ids = nil
+	m.appendaccount_ids = nil
+}
+
 // SetTemplateID sets the "template_id" field.
 func (m *ChannelMonitorMutation) SetTemplateID(i int64) {
 	m.request_template = &i
@@ -10153,7 +10206,7 @@ func (m *ChannelMonitorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChannelMonitorMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, channelmonitor.FieldCreatedAt)
 	}
@@ -10201,6 +10254,9 @@ func (m *ChannelMonitorMutation) Fields() []string {
 	}
 	if m.account != nil {
 		fields = append(fields, channelmonitor.FieldAccountID)
+	}
+	if m.account_ids != nil {
+		fields = append(fields, channelmonitor.FieldAccountIds)
 	}
 	if m.request_template != nil {
 		fields = append(fields, channelmonitor.FieldTemplateID)
@@ -10254,6 +10310,8 @@ func (m *ChannelMonitorMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedBy()
 	case channelmonitor.FieldAccountID:
 		return m.AccountID()
+	case channelmonitor.FieldAccountIds:
+		return m.AccountIds()
 	case channelmonitor.FieldTemplateID:
 		return m.TemplateID()
 	case channelmonitor.FieldExtraHeaders:
@@ -10303,6 +10361,8 @@ func (m *ChannelMonitorMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCreatedBy(ctx)
 	case channelmonitor.FieldAccountID:
 		return m.OldAccountID(ctx)
+	case channelmonitor.FieldAccountIds:
+		return m.OldAccountIds(ctx)
 	case channelmonitor.FieldTemplateID:
 		return m.OldTemplateID(ctx)
 	case channelmonitor.FieldExtraHeaders:
@@ -10431,6 +10491,13 @@ func (m *ChannelMonitorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAccountID(v)
+		return nil
+	case channelmonitor.FieldAccountIds:
+		v, ok := value.([]int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccountIds(v)
 		return nil
 	case channelmonitor.FieldTemplateID:
 		v, ok := value.(int64)
@@ -10616,6 +10683,9 @@ func (m *ChannelMonitorMutation) ResetField(name string) error {
 		return nil
 	case channelmonitor.FieldAccountID:
 		m.ResetAccountID()
+		return nil
+	case channelmonitor.FieldAccountIds:
+		m.ResetAccountIds()
 		return nil
 	case channelmonitor.FieldTemplateID:
 		m.ResetTemplateID()

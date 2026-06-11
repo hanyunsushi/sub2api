@@ -112,11 +112,27 @@
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.accountBinding') }}</label>
-        <Select
-          v-model="accountSelectValue"
-          :options="accountBindingOptions"
-          :placeholder="t('admin.channelMonitor.form.accountBindingPlaceholder')"
-        />
+        <div class="channel-monitor-account-binding-list">
+          <button
+            type="button"
+            class="channel-monitor-account-binding-option"
+            :class="{ 'channel-monitor-account-binding-option--active': form.account_ids.length === 0 }"
+            @click="clearAccountBinding"
+          >
+            {{ t('admin.channelMonitor.form.accountBindingNone') }}
+          </button>
+          <button
+            v-for="account in accountsForBinding"
+            :key="account.id"
+            type="button"
+            class="channel-monitor-account-binding-option"
+            :class="{ 'channel-monitor-account-binding-option--active': form.account_ids.includes(account.id) }"
+            @click="toggleAccountBinding(account.id)"
+          >
+            <span class="truncate">{{ account.name }}</span>
+            <span class="font-mono text-[11px] opacity-70">#{{ account.id }}</span>
+          </button>
+        </div>
         <p class="mt-1 text-xs text-gray-400">
           {{ accountsForBindingLoading ? t('admin.channelMonitor.form.accountBindingLoading') : t('admin.channelMonitor.form.accountBindingHint') }}
         </p>
@@ -276,7 +292,7 @@ interface MonitorForm {
   group_name: string
   interval_seconds: number
   enabled: boolean
-  account_id: number | null
+  account_ids: number[]
   // 高级设置快照
   template_id: number | null
   extra_headers: Record<string, string>
@@ -296,7 +312,7 @@ const form = reactive<MonitorForm>({
   group_name: '',
   interval_seconds: systemDefaultInterval.value,
   enabled: true,
-  account_id: null,
+  account_ids: [],
   template_id: null,
   extra_headers: {},
   body_override_mode: 'off',
@@ -304,6 +320,7 @@ const form = reactive<MonitorForm>({
 })
 
 let suppressFormWatchers = false
+const accountBindingTouched = ref(false)
 
 // 可用模板列表（进入 dialog 时一次性拉取 cache；按 provider / api mode 过滤）。
 const templatesCache = ref<ChannelMonitorTemplate[]>([])
@@ -321,27 +338,6 @@ const templateOptions = computed(() => {
     { value: '', label: t('admin.channelMonitor.templateField.none') },
     ...items.map((t) => ({ value: String(t.id), label: templateOptionLabel(t) })),
   ]
-})
-
-const accountBindingOptions = computed(() => [
-  { value: '', label: t('admin.channelMonitor.form.accountBindingNone') },
-  ...accountsForBinding.value.map((account) => ({
-    value: String(account.id),
-    label: `${account.name} · #${account.id}`,
-  })),
-])
-
-const accountSelectValue = computed<string>({
-  get: () => (form.account_id == null ? '' : String(form.account_id)),
-  set: (raw: string) => {
-    if (raw === '') {
-      form.account_id = null
-      return
-    }
-    const id = Number(raw)
-    if (!Number.isFinite(id) || id <= 0) return
-    form.account_id = id
-  },
 })
 
 async function loadTemplates() {
@@ -363,6 +359,7 @@ async function loadAccountsForBinding() {
   try {
     const res = await adminAPI.accounts.list(1, 100, { platform: form.provider })
     accountsForBinding.value = res.items || []
+    applyCreateAccountBindingSuggestion()
   } catch (err: unknown) {
     accountsForBinding.value = []
     console.warn('load channel monitor account binding options failed', err)
@@ -413,6 +410,49 @@ function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
   return mode === API_MODE_RESPONSES ? API_MODE_RESPONSES : API_MODE_CHAT_COMPLETIONS
 }
 
+function normalizeAccountMatchName(name: string | null | undefined): string {
+  return (name || '').trim().toLowerCase()
+}
+
+function normalizeAccountIDs(ids: number[]): number[] {
+  const seen = new Set<number>()
+  const out: number[] = []
+  for (const id of ids) {
+    if (!Number.isFinite(id) || id <= 0 || seen.has(id)) continue
+    seen.add(id)
+    out.push(id)
+  }
+  return out
+}
+
+function matchingAccountIDsForMonitorName(): number[] {
+  const monitorName = normalizeAccountMatchName(form.name)
+  if (!monitorName) return []
+  return accountsForBinding.value
+    .filter(account => normalizeAccountMatchName(account.name) === monitorName)
+    .map(account => account.id)
+}
+
+function applyCreateAccountBindingSuggestion() {
+  if (editing.value || accountBindingTouched.value) return
+  form.account_ids = normalizeAccountIDs(matchingAccountIDsForMonitorName())
+}
+
+function toggleAccountBinding(id: number) {
+  if (!Number.isFinite(id) || id <= 0) return
+  accountBindingTouched.value = true
+  if (form.account_ids.includes(id)) {
+    form.account_ids = form.account_ids.filter(existing => existing !== id)
+    return
+  }
+  form.account_ids = normalizeAccountIDs([...form.account_ids, id])
+}
+
+function clearAccountBinding() {
+  accountBindingTouched.value = true
+  form.account_ids = []
+}
+
 function apiModeButtonClass(mode: APIMode): string {
   const active = form.api_mode === mode
   if (active) {
@@ -458,7 +498,8 @@ watch(() => form.provider, () => {
   if (form.provider !== PROVIDER_OPENAI) {
     form.api_mode = API_MODE_CHAT_COMPLETIONS
   }
-  form.account_id = null
+  form.account_ids = []
+  accountBindingTouched.value = false
   void loadAccountsForBinding()
   clearRequestSnapshot()
 }, { flush: 'sync' })
@@ -483,7 +524,8 @@ function resetForm() {
   form.group_name = ''
   form.interval_seconds = systemDefaultInterval.value
   form.enabled = true
-  form.account_id = null
+  form.account_ids = []
+  accountBindingTouched.value = false
   form.template_id = null
   form.extra_headers = {}
   form.body_override_mode = 'off'
@@ -504,7 +546,8 @@ function loadFromMonitor(m: ChannelMonitor) {
   form.group_name = m.group_name || ''
   form.interval_seconds = m.interval_seconds || systemDefaultInterval.value
   form.enabled = m.enabled
-  form.account_id = m.account_id ?? null
+  form.account_ids = normalizeAccountIDs((m.account_ids && m.account_ids.length > 0) ? m.account_ids : (m.account_id != null ? [m.account_id] : []))
+  accountBindingTouched.value = true
   form.template_id = m.template_id ?? null
   form.extra_headers = { ...(m.extra_headers || {}) }
   form.body_override_mode = m.body_override_mode || 'off'
@@ -524,6 +567,13 @@ watch(
     void loadAccountsForBinding()
   },
   { immediate: true },
+)
+
+watch(
+  () => form.name,
+  () => {
+    applyCreateAccountBindingSuggestion()
+  },
 )
 
 function useCurrentDomain() {
@@ -560,7 +610,8 @@ function pickMyKey(k: ApiKey) {
 }
 
 function buildPayload(): CreateParams {
-  return {
+  const accountIDs = normalizeAccountIDs(form.account_ids)
+  const payload: CreateParams = {
     name: form.name.trim(),
     logo_url: form.logo_url.trim(),
     provider: form.provider,
@@ -572,12 +623,15 @@ function buildPayload(): CreateParams {
     group_name: form.group_name.trim(),
     enabled: form.enabled,
     interval_seconds: form.interval_seconds,
-    account_id: form.account_id,
     template_id: form.template_id,
     extra_headers: form.extra_headers,
     body_override_mode: form.body_override_mode,
     body_override: form.body_override,
   }
+  if (accountIDs.length > 0 || accountBindingTouched.value) {
+    payload.account_ids = accountIDs
+  }
+  return payload
 }
 
 async function handleSubmit() {
@@ -604,9 +658,10 @@ async function handleSubmit() {
         req.clear_template = true
         delete req.template_id
       }
-      if (form.account_id == null) {
+      if (form.account_ids.length === 0) {
         req.clear_account = true
         delete req.account_id
+        delete req.account_ids
       }
       await adminAPI.channelMonitor.update(target.id, req)
       appStore.showSuccess(t('admin.channelMonitor.updateSuccess'))
@@ -623,3 +678,34 @@ async function handleSubmit() {
   }
 }
 </script>
+
+<style scoped>
+.channel-monitor-account-binding-list {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.channel-monitor-account-binding-option {
+  align-items: center;
+  background: var(--atelier-ui-surface, #ffffff);
+  border: 1px solid var(--atelier-line, rgba(17, 24, 39, 0.12));
+  border-radius: 0.5rem;
+  color: var(--atelier-muted, #4b5563);
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
+}
+
+.channel-monitor-account-binding-option:hover,
+.channel-monitor-account-binding-option--active {
+  background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 8%, transparent);
+  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 45%, transparent);
+  color: var(--atelier-ink, #111827);
+}
+</style>

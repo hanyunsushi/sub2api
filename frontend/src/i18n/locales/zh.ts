@@ -3122,7 +3122,7 @@ export default {
         accountBinding: '绑定账号',
         accountBindingNone: '不绑定账号',
         accountBindingPlaceholder: '选择要自动调度的账号',
-        accountBindingHint: '绑定后，渠道监控自动调度开关开启时会按检测结果开关该账号调度；账号锁定调度时会跳过。',
+        accountBindingHint: '绑定后，渠道监控自动调度开关开启时会按检测结果开关所选账号调度；账号锁定调度时会跳过。',
         accountBindingLoading: '正在加载账号...',
         intervalSeconds: '检测间隔 (秒)',
         intervalSecondsHint: '范围：15 - 3600 秒',

@@ -186,6 +186,12 @@ func (_c *ChannelMonitorCreate) SetNillableAccountID(v *int64) *ChannelMonitorCr
 	return _c
 }
 
+// SetAccountIds sets the "account_ids" field.
+func (_c *ChannelMonitorCreate) SetAccountIds(v []int64) *ChannelMonitorCreate {
+	_c.mutation.SetAccountIds(v)
+	return _c
+}
+
 // SetTemplateID sets the "template_id" field.
 func (_c *ChannelMonitorCreate) SetTemplateID(v int64) *ChannelMonitorCreate {
 	_c.mutation.SetTemplateID(v)
@@ -343,6 +349,10 @@ func (_c *ChannelMonitorCreate) defaults() {
 		v := channelmonitor.DefaultEnabled
 		_c.mutation.SetEnabled(v)
 	}
+	if _, ok := _c.mutation.AccountIds(); !ok {
+		v := channelmonitor.DefaultAccountIds
+		_c.mutation.SetAccountIds(v)
+	}
 	if _, ok := _c.mutation.ExtraHeaders(); !ok {
 		v := channelmonitor.DefaultExtraHeaders
 		_c.mutation.SetExtraHeaders(v)
@@ -433,6 +443,9 @@ func (_c *ChannelMonitorCreate) check() error {
 	}
 	if _, ok := _c.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "ChannelMonitor.created_by"`)}
+	}
+	if _, ok := _c.mutation.AccountIds(); !ok {
+		return &ValidationError{Name: "account_ids", err: errors.New(`ent: missing required field "ChannelMonitor.account_ids"`)}
 	}
 	if _, ok := _c.mutation.ExtraHeaders(); !ok {
 		return &ValidationError{Name: "extra_headers", err: errors.New(`ent: missing required field "ChannelMonitor.extra_headers"`)}
@@ -531,6 +544,10 @@ func (_c *ChannelMonitorCreate) createSpec() (*ChannelMonitor, *sqlgraph.CreateS
 	if value, ok := _c.mutation.CreatedBy(); ok {
 		_spec.SetField(channelmonitor.FieldCreatedBy, field.TypeInt64, value)
 		_node.CreatedBy = value
+	}
+	if value, ok := _c.mutation.AccountIds(); ok {
+		_spec.SetField(channelmonitor.FieldAccountIds, field.TypeJSON, value)
+		_node.AccountIds = value
 	}
 	if value, ok := _c.mutation.ExtraHeaders(); ok {
 		_spec.SetField(channelmonitor.FieldExtraHeaders, field.TypeJSON, value)
@@ -869,6 +886,18 @@ func (u *ChannelMonitorUpsert) UpdateAccountID() *ChannelMonitorUpsert {
 // ClearAccountID clears the value of the "account_id" field.
 func (u *ChannelMonitorUpsert) ClearAccountID() *ChannelMonitorUpsert {
 	u.SetNull(channelmonitor.FieldAccountID)
+	return u
+}
+
+// SetAccountIds sets the "account_ids" field.
+func (u *ChannelMonitorUpsert) SetAccountIds(v []int64) *ChannelMonitorUpsert {
+	u.Set(channelmonitor.FieldAccountIds, v)
+	return u
+}
+
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ChannelMonitorUpsert) UpdateAccountIds() *ChannelMonitorUpsert {
+	u.SetExcluded(channelmonitor.FieldAccountIds)
 	return u
 }
 
@@ -1219,6 +1248,20 @@ func (u *ChannelMonitorUpsertOne) UpdateAccountID() *ChannelMonitorUpsertOne {
 func (u *ChannelMonitorUpsertOne) ClearAccountID() *ChannelMonitorUpsertOne {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetAccountIds sets the "account_ids" field.
+func (u *ChannelMonitorUpsertOne) SetAccountIds(v []int64) *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetAccountIds(v)
+	})
+}
+
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertOne) UpdateAccountIds() *ChannelMonitorUpsertOne {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateAccountIds()
 	})
 }
 
@@ -1745,6 +1788,20 @@ func (u *ChannelMonitorUpsertBulk) UpdateAccountID() *ChannelMonitorUpsertBulk {
 func (u *ChannelMonitorUpsertBulk) ClearAccountID() *ChannelMonitorUpsertBulk {
 	return u.Update(func(s *ChannelMonitorUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetAccountIds sets the "account_ids" field.
+func (u *ChannelMonitorUpsertBulk) SetAccountIds(v []int64) *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.SetAccountIds(v)
+	})
+}
+
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ChannelMonitorUpsertBulk) UpdateAccountIds() *ChannelMonitorUpsertBulk {
+	return u.Update(func(s *ChannelMonitorUpsert) {
+		s.UpdateAccountIds()
 	})
 }
 

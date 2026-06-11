@@ -103,6 +103,7 @@ import { useI18n } from 'vue-i18n'
 import type { UserMonitorView } from '@/api/channelMonitor'
 import type { ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import { systemAILogoPresetIDFromURL } from '@/utils/providerBrandIcon'
 import {
   STATUS_DEGRADED,
   STATUS_ERROR,
@@ -404,17 +405,24 @@ function logoVisualKey(logo: CapacityLogoItem) {
 }
 
 function logoProviderKey(logo: CapacityLogoItem) {
+  const systemLogoID = systemAILogoPresetIDFromURL(logo.logoUrl)
+  if (systemLogoID) return canonicalLogoProviderKey(systemLogoID)
   const text = [
     logo.provider,
     logo.model,
     logo.title,
   ].join(' ').trim().toLowerCase()
   if (!text) return ''
+  return canonicalLogoProviderKey(text)
+}
+
+function canonicalLogoProviderKey(text: string) {
   const knownAliases: Array<[string, string[]]> = [
     ['codex', ['codex']],
     ['rawchat', ['rawchat', 'rawchat.cn', 'rawc']],
     ['free', ['free']],
     ['cloudflare', ['cloudflare', 'cf', 'ai-gateway', 'workers ai']],
+    ['openrouter', ['openrouter', 'openrouter.ai']],
     ['openai', ['openai', 'chatgpt', 'gpt']],
     ['claude', ['claude', 'anthropic', 'buzz', 'buzzai', 'buzzai.cc']],
     ['mimo', ['mimo']],
@@ -521,9 +529,9 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-status-stat strong {
-  justify-self: end;
+  justify-self: center;
   min-width: 1.25rem;
-  text-align: right;
+  text-align: center;
 }
 
 .monitor-capacity-status-dot {

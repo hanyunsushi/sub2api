@@ -784,9 +784,9 @@ watch(
 .header-balance-chip-fixed {
   display: grid !important;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  width: 18rem;
-  min-width: 18rem;
-  max-width: 18rem;
+  width: 14.4rem;
+  min-width: 14.4rem;
+  max-width: 14.4rem;
   align-items: center;
   column-gap: 0.5rem;
   justify-content: stretch;
@@ -800,7 +800,7 @@ watch(
   grid-column: 1;
   display: flex;
   min-width: 0;
-  max-width: 10.5rem;
+  max-width: 8.4rem;
   align-items: center;
   justify-self: start;
   gap: 0.5rem;
@@ -812,7 +812,7 @@ watch(
 
 .header-balance-provider-name {
   flex: 1 1 auto;
-  max-width: 9.5rem;
+  max-width: 7.4rem;
   text-align: left;
 }
 

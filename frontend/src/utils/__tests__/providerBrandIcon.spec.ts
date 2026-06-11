@@ -7,7 +7,8 @@ import {
   providerBrandInfo,
   providerBrandModel,
   rememberCustomAILogoPreset,
-  setAILogoRuntimeConfig
+  setAILogoRuntimeConfig,
+  systemAILogoPresetIDFromURL
 } from '../providerBrandIcon'
 
 describe('provider brand icon resolution', () => {
@@ -42,6 +43,7 @@ describe('provider brand icon resolution', () => {
     expect(aiLogoUrlForProvider('cursor', 'claude-sonnet-4-5')).toContain('/cursor.png')
     expect(aiLogoUrlForProvider('gemini-cli', 'gemini-2.5-pro')).toContain('/geminicli-color.png')
     expect(providerBrandInfo('openrouter')?.iconUrl).toContain('/openrouter.png')
+    expect(systemAILogoPresetIDFromURL(providerBrandInfo('openrouter')?.iconUrl)).toBe('openrouter')
   })
 
   it('covers common LiteLLM and vendor aliases with recognizable icon seeds', () => {

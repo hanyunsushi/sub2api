@@ -3045,7 +3045,7 @@ export default {
         accountBinding: 'Linked account',
         accountBindingNone: 'No linked account',
         accountBindingPlaceholder: 'Select account for auto scheduling',
-        accountBindingHint: 'When linked, monitor results may toggle this account if auto scheduling is enabled; schedule-locked accounts are skipped.',
+        accountBindingHint: 'When linked, monitor results may toggle selected accounts if auto scheduling is enabled; schedule-locked accounts are skipped.',
         accountBindingLoading: 'Loading accounts...',
         intervalSeconds: 'Interval (seconds)',
         intervalSecondsHint: 'Range: 15 - 3600 seconds',

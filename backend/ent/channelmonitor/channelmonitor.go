@@ -47,6 +47,8 @@ const (
 	FieldCreatedBy = "created_by"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
+	// FieldAccountIds holds the string denoting the account_ids field in the database.
+	FieldAccountIds = "account_ids"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
 	FieldTemplateID = "template_id"
 	// FieldExtraHeaders holds the string denoting the extra_headers field in the database.
@@ -114,6 +116,7 @@ var Columns = []string{
 	FieldLastCheckedAt,
 	FieldCreatedBy,
 	FieldAccountID,
+	FieldAccountIds,
 	FieldTemplateID,
 	FieldExtraHeaders,
 	FieldBodyOverrideMode,
@@ -161,6 +164,8 @@ var (
 	DefaultEnabled bool
 	// IntervalSecondsValidator is a validator for the "interval_seconds" field. It is called by the builders before save.
 	IntervalSecondsValidator func(int) error
+	// DefaultAccountIds holds the default value on creation for the "account_ids" field.
+	DefaultAccountIds []int64
 	// DefaultExtraHeaders holds the default value on creation for the "extra_headers" field.
 	DefaultExtraHeaders map[string]string
 	// DefaultBodyOverrideMode holds the default value on creation for the "body_override_mode" field.
