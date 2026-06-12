@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -598,7 +599,16 @@ func (s *ChannelMonitorService) channelMonitorAccountProbePlan(m *ChannelMonitor
 	case MonitorProviderOpenAI:
 		endpoint = account.GetOpenAIBaseURL()
 		apiKey = account.GetOpenAIApiKey()
-		endpoint, requestPath = splitChannelMonitorOpenAIProbeURL(endpoint, m.APIMode)
+		apiMode := channelMonitorOpenAIProbeAPIMode(m.APIMode, account)
+		endpoint, requestPath = splitChannelMonitorOpenAIProbeURL(endpoint, apiMode)
+		opts := channelMonitorBoundProbeOptions(m, apiMode)
+		return channelMonitorAccountProbePlan{
+			accountID: account.ID,
+			provider:  account.Platform,
+			endpoint:  strings.TrimRight(strings.TrimSpace(endpoint), "/"),
+			apiKey:    apiKey,
+			opts:      opts.withRequestPath(requestPath),
+		}, strings.TrimRight(strings.TrimSpace(endpoint), "/") != "" && strings.TrimSpace(apiKey) != ""
 	case MonitorProviderAnthropic:
 		endpoint = account.GetBaseURL()
 		apiKey = account.GetCredential("api_key")
@@ -625,6 +635,42 @@ func (s *ChannelMonitorService) channelMonitorAccountProbePlan(m *ChannelMonitor
 			RequestPathOverride: requestPath,
 		},
 	}, true
+}
+
+func channelMonitorOpenAIProbeAPIMode(monitorAPIMode string, account *Account) string {
+	if account != nil && account.Type == AccountTypeAPIKey {
+		switch openai_compat.ResolveResponsesSupport(account.Extra) {
+		case openai_compat.ResponsesSupportYes:
+			return MonitorAPIModeResponses
+		case openai_compat.ResponsesSupportNo:
+			return MonitorAPIModeChatCompletions
+		}
+	}
+	return defaultAPIMode(monitorAPIMode)
+}
+
+func channelMonitorBoundProbeOptions(m *ChannelMonitor, apiMode string) *CheckOptions {
+	opts := &CheckOptions{
+		APIMode:          apiMode,
+		ExtraHeaders:     m.ExtraHeaders,
+		BodyOverrideMode: m.BodyOverrideMode,
+		BodyOverride:     m.BodyOverride,
+	}
+	if defaultAPIMode(apiMode) == MonitorAPIModeResponses &&
+		defaultAPIMode(m.APIMode) != MonitorAPIModeResponses &&
+		m.BodyOverrideMode == MonitorBodyOverrideModeReplace {
+		opts.BodyOverrideMode = MonitorBodyOverrideModeOff
+		opts.BodyOverride = nil
+	}
+	return opts
+}
+
+func (opts *CheckOptions) withRequestPath(path string) *CheckOptions {
+	if opts == nil {
+		opts = &CheckOptions{}
+	}
+	opts.RequestPathOverride = path
+	return opts
 }
 
 func splitChannelMonitorOpenAIProbeURL(baseURL, apiMode string) (endpoint string, requestPath string) {

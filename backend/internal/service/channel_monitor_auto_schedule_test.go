@@ -11,6 +11,8 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 )
 
 type autoScheduleAccountRepoStub struct {
@@ -537,6 +539,149 @@ func TestChannelMonitorBoundOpenAIAccountHonorsV1BaseURL(t *testing.T) {
 	}
 }
 
+func TestChannelMonitorBoundOpenAIAccountFollowsResponsesCapability(t *testing.T) {
+	swapMonitorClientsForAutoScheduleTest(t)
+
+	var upstreamPath atomic.Value
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		upstreamPath.Store(r.URL.Path)
+		if r.URL.Path != "/codex"+providerOpenAIResponsesPath {
+			w.WriteHeader(http.StatusNotFound)
+			_, _ = w.Write([]byte("Not Found"))
+			return
+		}
+		defer func() { _ = r.Body.Close() }()
+		var body map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		answer := answerFromMonitorAutoScheduleOpenAIRequest(body)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"output": []map[string]any{{
+				"type": "message",
+				"content": []map[string]any{{
+					"type": "output_text",
+					"text": answer,
+				}},
+			}},
+		})
+	}))
+	t.Cleanup(upstream.Close)
+
+	accountID := int64(29)
+	accountRepo := &autoScheduleAccountRepoStub{
+		accounts: []Account{
+			{
+				ID:          accountID,
+				Platform:    PlatformOpenAI,
+				Type:        AccountTypeAPIKey,
+				Status:      StatusActive,
+				Schedulable: false,
+				Credentials: map[string]any{
+					"api_key":  "rawchat-key",
+					"base_url": upstream.URL + "/codex",
+				},
+				Extra: map[string]any{
+					openai_compat.ExtraKeyResponsesSupported: true,
+				},
+			},
+		},
+	}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(accountRepo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
+		return true
+	}))
+
+	results := svc.runChecksConcurrent(context.Background(), &ChannelMonitor{
+		ID:               14,
+		Provider:         MonitorProviderOpenAI,
+		Endpoint:         "https://ai.example.com",
+		APIKey:           "local-sub2api-key",
+		PrimaryModel:     "gpt-5.4-mini",
+		AccountIDs:       []int64{accountID},
+		APIMode:          MonitorAPIModeChatCompletions,
+		BodyOverrideMode: MonitorBodyOverrideModeReplace,
+		BodyOverride:     map[string]any{"model": "gpt-5.4-mini", "messages": []any{map[string]any{"role": "user", "content": "Respond with exactly: ok"}}, "stream": false},
+		IntervalSeconds:  60,
+	})
+
+	if len(results) != 1 || results[0].Status != MonitorStatusOperational {
+		if len(results) == 1 {
+			t.Fatalf("expected responses-capable bound account probe to succeed, got status=%s message=%q", results[0].Status, results[0].Message)
+		}
+		t.Fatalf("expected one responses-capable bound account probe result, got %d", len(results))
+	}
+	if got, _ := upstreamPath.Load().(string); got != "/codex"+providerOpenAIResponsesPath {
+		t.Fatalf("expected responses-capable bound account to use responses path, got %q", got)
+	}
+}
+
+func TestChannelMonitorBoundOpenAIAccountFollowsChatCompletionsCapability(t *testing.T) {
+	swapMonitorClientsForAutoScheduleTest(t)
+
+	var upstreamPath atomic.Value
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		upstreamPath.Store(r.URL.Path)
+		if r.URL.Path != providerOpenAIPath {
+			w.WriteHeader(http.StatusNotFound)
+			_, _ = w.Write([]byte("Not Found"))
+			return
+		}
+		defer func() { _ = r.Body.Close() }()
+		var body map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		answer := answerFromMonitorAutoScheduleOpenAIRequest(body)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"choices": []map[string]any{{"message": map[string]any{"content": answer}}},
+		})
+	}))
+	t.Cleanup(upstream.Close)
+
+	accountID := int64(30)
+	accountRepo := &autoScheduleAccountRepoStub{
+		accounts: []Account{
+			{
+				ID:       accountID,
+				Platform: PlatformOpenAI,
+				Type:     AccountTypeAPIKey,
+				Status:   StatusActive,
+				Credentials: map[string]any{
+					"api_key":  "chat-only-key",
+					"base_url": upstream.URL,
+				},
+				Extra: map[string]any{
+					openai_compat.ExtraKeyResponsesSupported: false,
+				},
+			},
+		},
+	}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(accountRepo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
+		return true
+	}))
+
+	results := svc.runChecksConcurrent(context.Background(), &ChannelMonitor{
+		ID:              15,
+		Provider:        MonitorProviderOpenAI,
+		Endpoint:        "https://ai.example.com",
+		APIKey:          "local-sub2api-key",
+		PrimaryModel:    "gpt-5.4-mini",
+		AccountIDs:      []int64{accountID},
+		APIMode:         MonitorAPIModeResponses,
+		IntervalSeconds: 60,
+	})
+
+	if len(results) != 1 || results[0].Status != MonitorStatusOperational {
+		if len(results) == 1 {
+			t.Fatalf("expected chat-capable bound account probe to succeed, got status=%s message=%q", results[0].Status, results[0].Message)
+		}
+		t.Fatalf("expected one chat-capable bound account probe result, got %d", len(results))
+	}
+	if got, _ := upstreamPath.Load().(string); got != providerOpenAIPath {
+		t.Fatalf("expected chat-capable bound account to use chat completions path, got %q", got)
+	}
+}
+
 func TestChannelMonitorRunCheckAutoSchedulesBoundAccountsIndividually(t *testing.T) {
 	swapMonitorClientsForAutoScheduleTest(t)
 
@@ -732,6 +877,9 @@ func answerFromMonitorAutoScheduleOpenAIRequest(body map[string]any) string {
 		if msg, ok := messages[0].(map[string]any); ok {
 			prompt, _ = msg["content"].(string)
 		}
+	}
+	if strings.TrimSpace(prompt) == "" {
+		prompt, _ = body["input"].(string)
 	}
 	matches := monitorAutoScheduleChallengeRegex.FindStringSubmatch(prompt)
 	if len(matches) != 4 {
