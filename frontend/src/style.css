@@ -6611,7 +6611,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 #app .app-layout-content .accounts-table-page .usage-progress-row {
