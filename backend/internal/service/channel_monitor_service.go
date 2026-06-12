@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/url"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -369,7 +370,13 @@ func (s *ChannelMonitorService) applyAccountAutoScheduleByAccountResults(ctx con
 	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
 		return
 	}
-	for accountID, accountResults := range results {
+	accountIDs := make([]int64, 0, len(results))
+	for accountID := range results {
+		accountIDs = append(accountIDs, accountID)
+	}
+	sort.Slice(accountIDs, func(i, j int) bool { return accountIDs[i] < accountIDs[j] })
+	for _, accountID := range accountIDs {
+		accountResults := results[accountID]
 		if accountID <= 0 || len(accountResults) == 0 {
 			continue
 		}
