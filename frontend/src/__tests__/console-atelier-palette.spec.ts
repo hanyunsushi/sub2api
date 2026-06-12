@@ -522,6 +522,24 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap')
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled)')
     expect(materialSystemBlock).toContain('background: var(--atelier-paper) !important;\n  color: var(--atelier-ink) !important;')
+    const usageTimeRangeTextBlock = cssBlock(
+      materialSystemBlock,
+      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *)',
+    )
+    expect(usageTimeRangeTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
+    expect(usageTimeRangeTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
+    const usageGranularityTriggerTextBlock = cssBlock(
+      materialSystemBlock,
+      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger :where(.select-value, .select-icon, svg, path, span)',
+    )
+    expect(usageGranularityTriggerTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
+    expect(usageGranularityTriggerTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
+    const usageRecordFilterLeftTextBlock = cssBlock(
+      materialSystemBlock,
+      '#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon)',
+    )
+    expect(usageRecordFilterLeftTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
+    expect(usageRecordFilterLeftTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
     expect(adminUsageStatsCardsSource).toContain('usage-stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4')
     expect(adminUsageStatsCardsSource.match(/card usage-stat-card p-4/g)?.length).toBe(4)
     expect(adminUsageStatsCardsSource.match(/usage-stat-icon rounded-lg/g)?.length).toBe(4)
