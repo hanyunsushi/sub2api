@@ -522,6 +522,15 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap')
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled)')
     expect(materialSystemBlock).toContain('background: var(--atelier-paper) !important;\n  color: var(--atelier-ink) !important;')
+    const usageGranularityLabelBlocks = cssBlocksForSelector(
+      materialSystemBlock,
+      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span',
+    )
+    expect(usageGranularityLabelBlocks.length).toBeGreaterThan(0)
+    for (const block of usageGranularityLabelBlocks) {
+      expect(block).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
+    }
+    expect(usageGranularityLabelBlocks.at(-1)).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
     const usageTimeRangeTextBlock = cssBlock(
       materialSystemBlock,
       '#app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *)',
