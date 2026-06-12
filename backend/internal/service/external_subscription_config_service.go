@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"sort"
 	"strings"
@@ -261,6 +262,11 @@ func (s *ExternalSubscriptionConfigService) GetStatuses(ctx context.Context, opt
 func (s *ExternalSubscriptionConfigService) refreshStatusesCacheAsync(fingerprint string, stored []externalSubscriptionStoredProvider) {
 	stored = cloneExternalSubscriptionStoredProviders(stored)
 	go func() {
+		defer func() {
+			if rec := recover(); rec != nil {
+				slog.Error("external_subscription: background status refresh panic", "panic", rec)
+			}
+		}()
 		ctx, cancel := context.WithTimeout(context.Background(), externalSubscriptionStatusBackgroundRefreshTTL)
 		defer cancel()
 		_, _, _ = s.statusSF.Do(fingerprint, func() (any, error) {
@@ -286,6 +292,16 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		wg.Add(1)
 		go func(index int) {
 			defer wg.Done()
+			defer func() {
+				if rec := recover(); rec != nil {
+					slog.Error("external_subscription: provider status panic",
+						"provider", stored[index].Name, "template", stored[index].Template, "panic", rec)
+					results[index] = providerResult{
+						index: index,
+						err:   fmt.Errorf("provider status panic: %v", rec),
+					}
+				}
+			}()
 			providerCtx, cancel := context.WithTimeout(ctx, externalSubscriptionProviderStatusTimeout)
 			defer cancel()
 			provider := stored[index]

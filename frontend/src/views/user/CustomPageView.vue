@@ -365,6 +365,10 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  if (scrollRafId) {
+    cancelAnimationFrame(scrollRafId)
+    scrollRafId = 0
+  }
   if (themeObserver) {
     themeObserver.disconnect()
     themeObserver = null
