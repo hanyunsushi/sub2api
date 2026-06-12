@@ -73,6 +73,7 @@ type channelMonitorAccountScheduleRepository interface {
 	SetSchedulable(ctx context.Context, id int64, schedulable bool) error
 	IsScheduleLocked(ctx context.Context, id int64) (bool, error)
 	ListByPlatform(ctx context.Context, platform string) ([]Account, error)
+	GetByIDs(ctx context.Context, ids []int64) ([]*Account, error)
 }
 
 type channelMonitorScheduleAutomation interface {
@@ -288,14 +289,14 @@ func (s *ChannelMonitorService) RunCheck(ctx context.Context, id int64) ([]*Chec
 	if m.APIKeyDecryptFailed {
 		return nil, ErrChannelMonitorAPIKeyDecryptFailed
 	}
-	results := s.runChecksConcurrent(ctx, m)
-	s.persistCheckResults(ctx, m, results)
+	results, accountResults := s.runChecksConcurrentWithAccountResults(ctx, m)
+	s.persistCheckResults(ctx, m, results, accountResults)
 	return results, nil
 }
 
 // persistCheckResults 写入本次检测的历史记录并更新 last_checked_at。
 // 任一写库失败都只记日志，不影响调用方拿到 results（与 MVP 期望一致：宁可漏记历史也要先返回结果）。
-func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {
+func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *ChannelMonitor, results []*CheckResult, accountResults map[int64][]*CheckResult) {
 	rows := make([]*ChannelMonitorHistoryRow, 0, len(results))
 	for _, r := range results {
 		rows = append(rows, &ChannelMonitorHistoryRow{
@@ -315,6 +316,10 @@ func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *Chan
 	if err := s.repo.MarkChecked(ctx, m.ID, time.Now()); err != nil {
 		slog.Error("channel_monitor: mark checked failed",
 			"monitor_id", m.ID, "error", err)
+	}
+	if len(accountResults) > 0 {
+		s.applyAccountAutoScheduleByAccountResults(ctx, m.ID, accountResults)
+		return
 	}
 	s.applyAccountAutoSchedule(ctx, m, results)
 }
@@ -353,19 +358,48 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 		}
 	}
 	for _, accountID := range accountIDs {
-		locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, accountID)
-		if err != nil {
-			slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
-				"monitor_id", m.ID, "account_id", accountID, "error", err)
+		s.updateAutoScheduleAccount(ctx, m.ID, accountID, schedulable)
+	}
+}
+
+func (s *ChannelMonitorService) applyAccountAutoScheduleByAccountResults(ctx context.Context, monitorID int64, results map[int64][]*CheckResult) {
+	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil {
+		return
+	}
+	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
+		return
+	}
+	for accountID, accountResults := range results {
+		if accountID <= 0 || len(accountResults) == 0 {
 			continue
 		}
-		if locked {
-			continue
+		schedulable := true
+		for _, r := range accountResults {
+			if r == nil {
+				continue
+			}
+			if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
+				schedulable = false
+				break
+			}
 		}
-		if err := s.autoScheduleRepo.SetSchedulable(ctx, accountID, schedulable); err != nil {
-			slog.Warn("channel_monitor: account auto schedule update failed",
-				"monitor_id", m.ID, "account_id", accountID, "schedulable", schedulable, "error", err)
-		}
+		s.updateAutoScheduleAccount(ctx, monitorID, accountID, schedulable)
+	}
+}
+
+func (s *ChannelMonitorService) updateAutoScheduleAccount(ctx context.Context, monitorID int64, accountID int64, schedulable bool) {
+	locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, accountID)
+	if err != nil {
+		slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
+			"monitor_id", monitorID, "account_id", accountID, "error", err)
+		return
+	}
+	if locked {
+		return
+	}
+	if err := s.autoScheduleRepo.SetSchedulable(ctx, accountID, schedulable); err != nil {
+		slog.Warn("channel_monitor: account auto schedule update failed",
+			"monitor_id", monitorID, "account_id", accountID, "schedulable", schedulable, "error", err)
 	}
 }
 
@@ -426,6 +460,14 @@ func normalizeMonitorAccountMatchName(name string) string {
 // runChecksConcurrent 对 primary + extra 模型并发执行检测。
 // errgroup 仅用于等待，不传播错误（每个 model 失败都已打包进 CheckResult）。
 func (s *ChannelMonitorService) runChecksConcurrent(ctx context.Context, m *ChannelMonitor) []*CheckResult {
+	results, _ := s.runChecksConcurrentWithAccountResults(ctx, m)
+	return results
+}
+
+func (s *ChannelMonitorService) runChecksConcurrentWithAccountResults(ctx context.Context, m *ChannelMonitor) ([]*CheckResult, map[int64][]*CheckResult) {
+	if results, accountResults, ok := s.runBoundAccountChecksConcurrent(ctx, m); ok {
+		return results, accountResults
+	}
 	models := append([]string{m.PrimaryModel}, m.ExtraModels...)
 	results := make([]*CheckResult, len(models))
 
@@ -454,7 +496,192 @@ func (s *ChannelMonitorService) runChecksConcurrent(ctx context.Context, m *Chan
 		})
 	}
 	_ = eg.Wait()
-	return results
+	return results, nil
+}
+
+type channelMonitorAccountProbePlan struct {
+	accountID int64
+	provider  string
+	endpoint  string
+	apiKey    string
+	opts      *CheckOptions
+}
+
+func (s *ChannelMonitorService) runBoundAccountChecksConcurrent(ctx context.Context, m *ChannelMonitor) ([]*CheckResult, map[int64][]*CheckResult, bool) {
+	plans := s.channelMonitorAccountProbePlans(ctx, m)
+	if len(plans) == 0 {
+		return nil, nil, false
+	}
+	models := append([]string{m.PrimaryModel}, m.ExtraModels...)
+	results := make([]*CheckResult, len(models))
+	resultsByAccount := make(map[int64][]*CheckResult, len(plans))
+	pingMs := pingEndpointOrigin(ctx, plans[0].endpoint)
+
+	var eg errgroup.Group
+	var mu sync.Mutex
+	for i, model := range models {
+		i, model := i, model
+		eg.Go(func() error {
+			modelAccountResults := make([]*CheckResult, 0, len(plans))
+			for _, plan := range plans {
+				r := runCheckForModel(ctx, plan.provider, plan.endpoint, plan.apiKey, model, plan.opts)
+				r.PingLatencyMs = pingMs
+				modelAccountResults = append(modelAccountResults, r)
+			}
+			merged := mergeMonitorAccountProbeResults(model, modelAccountResults)
+			merged.PingLatencyMs = pingMs
+			mu.Lock()
+			results[i] = merged
+			for idx, plan := range plans {
+				if idx < len(modelAccountResults) {
+					resultsByAccount[plan.accountID] = append(resultsByAccount[plan.accountID], modelAccountResults[idx])
+				}
+			}
+			mu.Unlock()
+			return nil
+		})
+	}
+	_ = eg.Wait()
+	return results, resultsByAccount, true
+}
+
+func (s *ChannelMonitorService) channelMonitorAccountProbePlans(ctx context.Context, m *ChannelMonitor) []channelMonitorAccountProbePlan {
+	if s == nil || s.autoScheduleRepo == nil || m == nil {
+		return nil
+	}
+	accountIDs := s.resolveAutoScheduleAccountIDs(ctx, m)
+	if len(accountIDs) == 0 {
+		return nil
+	}
+	accounts, err := s.autoScheduleRepo.GetByIDs(ctx, accountIDs)
+	if err != nil {
+		slog.Warn("channel_monitor: skip bound account probe, account lookup failed",
+			"monitor_id", m.ID, "error", err)
+		return nil
+	}
+	if len(accounts) == 0 {
+		return nil
+	}
+	accountByID := make(map[int64]*Account, len(accounts))
+	for _, account := range accounts {
+		if account != nil {
+			accountByID[account.ID] = account
+		}
+	}
+	plans := make([]channelMonitorAccountProbePlan, 0, len(accountIDs))
+	for _, accountID := range accountIDs {
+		if plan, ok := s.channelMonitorAccountProbePlan(m, accountByID[accountID]); ok {
+			plans = append(plans, plan)
+		}
+	}
+	return plans
+}
+
+func (s *ChannelMonitorService) channelMonitorAccountProbePlan(m *ChannelMonitor, account *Account) (channelMonitorAccountProbePlan, bool) {
+	if m == nil || account == nil || !account.IsActive() {
+		return channelMonitorAccountProbePlan{}, false
+	}
+	if account.Platform != m.Provider || account.Type != AccountTypeAPIKey {
+		return channelMonitorAccountProbePlan{}, false
+	}
+	endpoint := ""
+	apiKey := ""
+	requestPath := ""
+	switch account.Platform {
+	case MonitorProviderOpenAI:
+		endpoint = account.GetOpenAIBaseURL()
+		apiKey = account.GetOpenAIApiKey()
+		endpoint, requestPath = splitChannelMonitorOpenAIProbeURL(endpoint, m.APIMode)
+	case MonitorProviderAnthropic:
+		endpoint = account.GetBaseURL()
+		apiKey = account.GetCredential("api_key")
+	case MonitorProviderGemini:
+		endpoint = account.GetGeminiBaseURL("https://generativelanguage.googleapis.com")
+		apiKey = account.GetCredential("api_key")
+	default:
+		return channelMonitorAccountProbePlan{}, false
+	}
+	endpoint = strings.TrimRight(strings.TrimSpace(endpoint), "/")
+	if endpoint == "" || strings.TrimSpace(apiKey) == "" {
+		return channelMonitorAccountProbePlan{}, false
+	}
+	return channelMonitorAccountProbePlan{
+		accountID: account.ID,
+		provider:  account.Platform,
+		endpoint:  endpoint,
+		apiKey:    apiKey,
+		opts: &CheckOptions{
+			APIMode:             m.APIMode,
+			ExtraHeaders:        m.ExtraHeaders,
+			BodyOverrideMode:    m.BodyOverrideMode,
+			BodyOverride:        m.BodyOverride,
+			RequestPathOverride: requestPath,
+		},
+	}, true
+}
+
+func splitChannelMonitorOpenAIProbeURL(baseURL, apiMode string) (endpoint string, requestPath string) {
+	full := buildOpenAIChatCompletionsURL(baseURL)
+	if defaultAPIMode(apiMode) == MonitorAPIModeResponses {
+		full = buildOpenAIResponsesURL(baseURL)
+	}
+	u, err := url.Parse(full)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return strings.TrimRight(strings.TrimSpace(baseURL), "/"), ""
+	}
+	path := u.EscapedPath()
+	if u.RawQuery != "" {
+		path += "?" + u.RawQuery
+	}
+	return u.Scheme + "://" + u.Host, path
+}
+
+func mergeMonitorAccountProbeResults(model string, results []*CheckResult) *CheckResult {
+	if len(results) == 0 {
+		return &CheckResult{Model: model, Status: MonitorStatusError, Message: "no bound account probe results", CheckedAt: time.Now()}
+	}
+	merged := cloneCheckResultForModel(results[0], model)
+	for _, r := range results[1:] {
+		merged = worseMonitorResult(merged, r, model)
+	}
+	if len(results) > 1 && merged.Message != "" {
+		merged.Message = truncateMessage(fmt.Sprintf("bound account probe: %s", merged.Message))
+	}
+	return merged
+}
+
+func cloneCheckResultForModel(r *CheckResult, model string) *CheckResult {
+	if r == nil {
+		return &CheckResult{Model: model, Status: MonitorStatusError, Message: "empty bound account probe result", CheckedAt: time.Now()}
+	}
+	clone := *r
+	clone.Model = model
+	return &clone
+}
+
+func worseMonitorResult(current *CheckResult, next *CheckResult, model string) *CheckResult {
+	if monitorStatusRank(next) > monitorStatusRank(current) {
+		return cloneCheckResultForModel(next, model)
+	}
+	return current
+}
+
+func monitorStatusRank(r *CheckResult) int {
+	if r == nil {
+		return 3
+	}
+	switch r.Status {
+	case MonitorStatusOperational:
+		return 0
+	case MonitorStatusDegraded:
+		return 1
+	case MonitorStatusFailed:
+		return 2
+	case MonitorStatusError:
+		return 3
+	default:
+		return 3
+	}
 }
 
 // ---------- 调度器协作 ----------
