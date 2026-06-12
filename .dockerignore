@@ -11,8 +11,6 @@
 *.md
 !deploy/DOCKER.md
 docs/*
-!docs/ai-search/
-!docs/ai-search/**
 !docs/legal/
 !docs/legal/**
 

@@ -130,22 +130,6 @@ services:
       - ANTIGRAVITY_USER_AGENT_VERSION=${ANTIGRAVITY_USER_AGENT_VERSION:-}
 
       # =======================================================================
-      # Cloudflare AI Search (optional Creepee helper)
-      # =======================================================================
-      - CLOUDFLARE_AI_ACCOUNT_ID=${CLOUDFLARE_AI_ACCOUNT_ID:-}
-      - CLOUDFLARE_AI_AI_SEARCH_API_TOKEN=${CLOUDFLARE_AI_AI_SEARCH_API_TOKEN:-}
-      - CLOUDFLARE_AI_AI_SEARCH_INSTANCE_ID=${CLOUDFLARE_AI_AI_SEARCH_INSTANCE_ID:-ai-search}
-      - CLOUDFLARE_AI_AI_SEARCH_PUBLIC_CHAT_ENDPOINT_URL=${CLOUDFLARE_AI_AI_SEARCH_PUBLIC_CHAT_ENDPOINT_URL:-https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/chat/completions}
-      - CLOUDFLARE_AI_AI_SEARCH_NAMESPACE=${CLOUDFLARE_AI_AI_SEARCH_NAMESPACE:-default}
-      - CLOUDFLARE_AI_AI_SEARCH_ITEM_KEY=${CLOUDFLARE_AI_AI_SEARCH_ITEM_KEY:-sub2api-user-knowledge.md}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_ENABLED=${CLOUDFLARE_AI_AI_SEARCH_SYNC_ENABLED:-true}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_CRON=${CLOUDFLARE_AI_AI_SEARCH_SYNC_CRON:-20 3 */3 * *}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_SOURCE_PATH=${CLOUDFLARE_AI_AI_SEARCH_SYNC_SOURCE_PATH:-/app/resources/ai-search/sub2api-codex-custom-plan.md}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_KNOWLEDGE_PATH=${CLOUDFLARE_AI_AI_SEARCH_SYNC_KNOWLEDGE_PATH:-/app/resources/ai-search/sub2api-user-knowledge.md}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_WAIT_FOR_COMPLETION=${CLOUDFLARE_AI_AI_SEARCH_SYNC_WAIT_FOR_COMPLETION:-true}
-      - CLOUDFLARE_AI_AI_SEARCH_SYNC_DELETE_LEGACY_SEED_ITEMS=${CLOUDFLARE_AI_AI_SEARCH_SYNC_DELETE_LEGACY_SEED_ITEMS:-true}
-
-      # =======================================================================
       # Security Configuration (URL Allowlist)
       # =======================================================================
       # Enable URL allowlist validation (false to skip allowlist checks)

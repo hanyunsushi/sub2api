@@ -8,26 +8,17 @@ import (
 )
 
 type BackupHandler struct {
-	backupService         *service.BackupService
-	userService           *service.UserService
-	aiSearchConfig        *service.AISearchConfigService
-	aiSearchService       *service.AISearchService
-	aiSearchKnowledgeSync *service.AISearchKnowledgeSyncService
+	backupService *service.BackupService
+	userService   *service.UserService
 }
 
 func NewBackupHandler(
 	backupService *service.BackupService,
 	userService *service.UserService,
-	aiSearchConfig *service.AISearchConfigService,
-	aiSearchService *service.AISearchService,
-	aiSearchKnowledgeSync *service.AISearchKnowledgeSyncService,
 ) *BackupHandler {
 	return &BackupHandler{
-		backupService:         backupService,
-		userService:           userService,
-		aiSearchConfig:        aiSearchConfig,
-		aiSearchService:       aiSearchService,
-		aiSearchKnowledgeSync: aiSearchKnowledgeSync,
+		backupService: backupService,
+		userService:   userService,
 	}
 }
 
@@ -68,57 +59,6 @@ func (h *BackupHandler) TestS3Connection(c *gin.Context) {
 		return
 	}
 	response.Success(c, gin.H{"ok": true, "message": "connection successful"})
-}
-
-// ─── Cloudflare AI Search 配置 ───
-
-func (h *BackupHandler) GetAISearchConfig(c *gin.Context) {
-	cfg, err := h.aiSearchConfig.GetConfig(c.Request.Context())
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	response.Success(c, cfg)
-}
-
-func (h *BackupHandler) UpdateAISearchConfig(c *gin.Context) {
-	var req service.AISearchBackendConfig
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-	cfg, err := h.aiSearchConfig.UpdateConfig(c.Request.Context(), req)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	if h.aiSearchKnowledgeSync != nil {
-		h.aiSearchKnowledgeSync.Restart()
-	}
-	response.Success(c, cfg)
-}
-
-func (h *BackupHandler) TestAISearchConfig(c *gin.Context) {
-	var req service.AISearchBackendConfig
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-	cfg := h.aiSearchConfig.MergeWithStoredSecret(c.Request.Context(), req)
-	_, err := h.aiSearchService.SearchWithConfig(c.Request.Context(), "Sub2API AI Search", cfg)
-	if err != nil {
-		response.Success(c, gin.H{"ok": false, "message": err.Error()})
-		return
-	}
-	response.Success(c, gin.H{"ok": true, "message": "AI Search connection successful"})
-}
-
-func (h *BackupHandler) SyncAISearchKnowledge(c *gin.Context) {
-	if err := h.aiSearchKnowledgeSync.SyncOnce(c.Request.Context()); err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	response.Success(c, gin.H{"ok": true, "message": "AI Search knowledge sync completed"})
 }
 
 // ─── 定时备份 ───

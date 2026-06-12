@@ -104,49 +104,6 @@ func TestJWTAuth_ValidToken(t *testing.T) {
 	require.Equal(t, "user", body["role"])
 }
 
-func TestAISearchPublicProxyCookieAuthInjectsAuthorizationForScopedPath(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	var gotAuth string
-	router := gin.New()
-	router.Use(AISearchPublicProxyCookieAuth())
-	router.POST("/api/v1/ai-search/public/chat/completions", func(c *gin.Context) {
-		gotAuth = c.GetHeader("Authorization")
-		c.Status(http.StatusNoContent)
-	})
-
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/ai-search/public/chat/completions", nil)
-	req.AddCookie(&http.Cookie{Name: "ai_search_access_token", Value: "access-token-value"})
-	w := httptest.NewRecorder()
-
-	router.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNoContent, w.Code)
-	require.Equal(t, "Bearer access-token-value", gotAuth)
-}
-
-func TestAISearchPublicProxyCookieAuthDoesNotOverrideAuthorization(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	var gotAuth string
-	router := gin.New()
-	router.Use(AISearchPublicProxyCookieAuth())
-	router.POST("/api/v1/ai-search/public/chat/completions", func(c *gin.Context) {
-		gotAuth = c.GetHeader("Authorization")
-		c.Status(http.StatusNoContent)
-	})
-
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/ai-search/public/chat/completions", nil)
-	req.Header.Set("Authorization", "Bearer header-token")
-	req.AddCookie(&http.Cookie{Name: "ai_search_access_token", Value: "cookie-token"})
-	w := httptest.NewRecorder()
-
-	router.ServeHTTP(w, req)
-
-	require.Equal(t, http.StatusNoContent, w.Code)
-	require.Equal(t, "Bearer header-token", gotAuth)
-}
-
 func TestJWTAuth_ValidToken_LowercaseBearer(t *testing.T) {
 	user := &service.User{
 		ID:           1,

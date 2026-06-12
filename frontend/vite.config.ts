@@ -43,13 +43,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      vue({
-        template: {
-          compilerOptions: {
-            isCustomElement: (tag) => tag.endsWith('-snippet')
-          }
-        }
-      }),
+      vue(),
       checker({
         vueTsc: true
       }),
