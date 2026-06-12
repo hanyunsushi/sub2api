@@ -117,10 +117,6 @@ func ProvideGlobalPricingHandler(pricingService *service.PricingService) *Global
 	return NewGlobalPricingHandler(pricingService)
 }
 
-func ProvideAISearchHandler(aiSearchService *service.AISearchService, aiSearchConfigService *service.AISearchConfigService) *AISearchHandler {
-	return NewAISearchHandler(aiSearchService, aiSearchConfigService)
-}
-
 // ProvideHandlers creates the Handlers struct
 func ProvideHandlers(
 	authHandler *AuthHandler,
@@ -140,7 +136,6 @@ func ProvideHandlers(
 	paymentWebhookHandler *PaymentWebhookHandler,
 	availableChannelHandler *AvailableChannelHandler,
 	globalPricingHandler *GlobalPricingHandler,
-	aiSearchHandler *AISearchHandler,
 	_ *service.IdempotencyCoordinator,
 	_ *service.IdempotencyCleanupService,
 ) *Handlers {
@@ -162,7 +157,6 @@ func ProvideHandlers(
 		PaymentWebhook:   paymentWebhookHandler,
 		AvailableChannel: availableChannelHandler,
 		GlobalPricing:    globalPricingHandler,
-		AISearch:         aiSearchHandler,
 	}
 }
 
@@ -185,7 +179,6 @@ var ProviderSet = wire.NewSet(
 	NewPaymentWebhookHandler,
 	NewAvailableChannelHandler,
 	ProvideGlobalPricingHandler,
-	ProvideAISearchHandler,
 
 	// Admin handlers
 	admin.NewDashboardHandler,

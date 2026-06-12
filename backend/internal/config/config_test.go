@@ -81,60 +81,6 @@ func TestLoadDefaultSchedulingConfig(t *testing.T) {
 	}
 }
 
-func TestLoadDefaultCloudflareAISearchSyncConfig(t *testing.T) {
-	resetViperWithJWTSecret(t)
-
-	cfg, err := Load()
-	if err != nil {
-		t.Fatalf("Load() error: %v", err)
-	}
-
-	require.Equal(t, "ai-search", cfg.CloudflareAI.AISearchInstanceID)
-	require.Equal(t, "https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/chat/completions", cfg.CloudflareAI.AISearchPublicChatEndpointURL)
-	require.Equal(t, "default", cfg.CloudflareAI.AISearchNamespace)
-	require.Equal(t, "sub2api-user-knowledge.md", cfg.CloudflareAI.AISearchItemKey)
-	require.True(t, cfg.CloudflareAI.AISearchSyncEnabled)
-	require.Equal(t, "20 3 */3 * *", cfg.CloudflareAI.AISearchSyncCron)
-	require.Equal(t, "", cfg.CloudflareAI.AISearchSyncSourcePath)
-	require.Equal(t, "/app/resources/ai-search/sub2api-user-knowledge.md", cfg.CloudflareAI.AISearchSyncKnowledgePath)
-	require.True(t, cfg.CloudflareAI.AISearchSyncWaitForCompletion)
-	require.True(t, cfg.CloudflareAI.AISearchSyncDeleteLegacySeedItems)
-}
-
-func TestLoadCloudflareAISearchSyncConfigFromEnv(t *testing.T) {
-	resetViperWithJWTSecret(t)
-	t.Setenv("CLOUDFLARE_AI_ACCOUNT_ID", "account")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_API_TOKEN", "token")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_INSTANCE_ID", "ai-search-prod")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_PUBLIC_CHAT_ENDPOINT_URL", "https://example.com/chat/completions")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_NAMESPACE", "sub2api")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_ITEM_KEY", "knowledge.md")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_ENABLED", "false")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_CRON", "0 4 */3 * *")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_SOURCE_PATH", "/mounted/source.md")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_KNOWLEDGE_PATH", "/mounted/knowledge.md")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_WAIT_FOR_COMPLETION", "false")
-	t.Setenv("CLOUDFLARE_AI_AI_SEARCH_SYNC_DELETE_LEGACY_SEED_ITEMS", "false")
-
-	cfg, err := Load()
-	if err != nil {
-		t.Fatalf("Load() error: %v", err)
-	}
-
-	require.Equal(t, "account", cfg.CloudflareAI.AccountID)
-	require.Equal(t, "token", cfg.CloudflareAI.AISearchAPIToken)
-	require.Equal(t, "ai-search-prod", cfg.CloudflareAI.AISearchInstanceID)
-	require.Equal(t, "https://example.com/chat/completions", cfg.CloudflareAI.AISearchPublicChatEndpointURL)
-	require.Equal(t, "sub2api", cfg.CloudflareAI.AISearchNamespace)
-	require.Equal(t, "knowledge.md", cfg.CloudflareAI.AISearchItemKey)
-	require.False(t, cfg.CloudflareAI.AISearchSyncEnabled)
-	require.Equal(t, "0 4 */3 * *", cfg.CloudflareAI.AISearchSyncCron)
-	require.Equal(t, "/mounted/source.md", cfg.CloudflareAI.AISearchSyncSourcePath)
-	require.Equal(t, "/mounted/knowledge.md", cfg.CloudflareAI.AISearchSyncKnowledgePath)
-	require.False(t, cfg.CloudflareAI.AISearchSyncWaitForCompletion)
-	require.False(t, cfg.CloudflareAI.AISearchSyncDeleteLegacySeedItems)
-}
-
 func TestLoadDefaultOpenAIWSConfig(t *testing.T) {
 	resetViperWithJWTSecret(t)
 

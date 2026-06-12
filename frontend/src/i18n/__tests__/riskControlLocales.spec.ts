@@ -22,12 +22,3 @@ describe('risk control locale copy', () => {
     expect(en.admin.riskControl.preBlockAPIKeyLoadHint).not.toContain('worker pool')
   })
 })
-
-describe('AI Search locale copy', () => {
-  it('uses the Creepee brand in settings descriptions', () => {
-    expect(zh.admin.backup.aiSearch.description).toContain('Creepee')
-    expect(en.admin.backup.aiSearch.description).toContain('Creepee')
-    expect(zh.admin.backup.aiSearch.description).not.toContain('Ask AI')
-    expect(en.admin.backup.aiSearch.description).not.toContain('Ask AI')
-  })
-})

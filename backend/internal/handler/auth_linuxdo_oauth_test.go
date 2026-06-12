@@ -334,23 +334,6 @@ func TestPrepareOAuthBindAccessTokenCookieSetsHttpOnlyCookie(t *testing.T) {
 	require.Equal(t, url.QueryEscape("access-token-value"), accessTokenCookie.Value)
 }
 
-func TestLogoutClearsAISearchAccessTokenCookie(t *testing.T) {
-	handler, client := newLinuxDoOAuthHandlerAndClient(t, false, config.LinuxDoConnectConfig{})
-	t.Cleanup(func() { _ = client.Close() })
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(http.MethodPost, "/api/v1/auth/logout", nil)
-
-	handler.Logout(c)
-
-	accessTokenCookie := findCookie(recorder.Result().Cookies(), "ai_search_access_token")
-	require.NotNil(t, accessTokenCookie)
-	require.Equal(t, "/api/v1/ai-search/public", accessTokenCookie.Path)
-	require.Equal(t, -1, accessTokenCookie.MaxAge)
-	require.True(t, accessTokenCookie.HttpOnly)
-}
-
 func TestLinuxDoOAuthCallbackCreatesLoginPendingSessionForExistingIdentityUser(t *testing.T) {
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {

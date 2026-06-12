@@ -84,21 +84,6 @@ func RegisterUserRoutes(
 			pricing.GET("/global", h.GlobalPricing.List)
 		}
 
-		// AI Search（官方 snippet 使用同源代理访问 Cloudflare Public Endpoint，避免浏览器 CORS/授权域名差异）
-		aiSearch := authenticated.Group("/ai-search")
-		{
-			aiSearch.GET("/snippet-config", h.AISearch.SnippetConfig)
-			aiSearch.POST("/search", h.AISearch.Search)
-		}
-
-		aiSearchPublicProxy := v1.Group("/ai-search/public")
-		aiSearchPublicProxy.Use(middleware.AISearchPublicProxyCookieAuth())
-		aiSearchPublicProxy.Use(gin.HandlerFunc(jwtAuth))
-		aiSearchPublicProxy.Use(middleware.BackendModeUserGuard(settingService))
-		{
-			aiSearchPublicProxy.POST("/*path", h.AISearch.PublicProxy)
-		}
-
 		// 使用记录
 		usage := authenticated.Group("/usage")
 		{

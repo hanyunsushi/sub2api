@@ -91,7 +91,6 @@ type Config struct {
 	RunMode                 string                        `mapstructure:"run_mode" yaml:"run_mode"`
 	Timezone                string                        `mapstructure:"timezone"` // e.g. "Asia/Shanghai", "UTC"
 	Gemini                  GeminiConfig                  `mapstructure:"gemini"`
-	CloudflareAI            CloudflareAIConfig            `mapstructure:"cloudflare_ai"`
 	Update                  UpdateConfig                  `mapstructure:"update"`
 	Idempotency             IdempotencyConfig             `mapstructure:"idempotency"`
 }
@@ -131,24 +130,6 @@ type LogSamplingConfig struct {
 type GeminiConfig struct {
 	OAuth GeminiOAuthConfig `mapstructure:"oauth"`
 	Quota GeminiQuotaConfig `mapstructure:"quota"`
-}
-
-type CloudflareAIConfig struct {
-	AccountID                         string `mapstructure:"account_id"`
-	AISearchInstanceID                string `mapstructure:"ai_search_instance_id"`
-	AISearchAPIToken                  string `mapstructure:"ai_search_api_token"`
-	AISearchAPIBaseURL                string `mapstructure:"ai_search_api_base_url"`
-	AISearchPublicEndpointURL         string `mapstructure:"ai_search_public_endpoint_url"`
-	AISearchPublicChatEndpointURL     string `mapstructure:"ai_search_public_chat_endpoint_url"`
-	AISearchPublicOrigin              string `mapstructure:"ai_search_public_origin"`
-	AISearchNamespace                 string `mapstructure:"ai_search_namespace"`
-	AISearchItemKey                   string `mapstructure:"ai_search_item_key"`
-	AISearchSyncEnabled               bool   `mapstructure:"ai_search_sync_enabled"`
-	AISearchSyncCron                  string `mapstructure:"ai_search_sync_cron"`
-	AISearchSyncSourcePath            string `mapstructure:"ai_search_sync_source_path"`
-	AISearchSyncKnowledgePath         string `mapstructure:"ai_search_sync_knowledge_path"`
-	AISearchSyncWaitForCompletion     bool   `mapstructure:"ai_search_sync_wait_for_completion"`
-	AISearchSyncDeleteLegacySeedItems bool   `mapstructure:"ai_search_sync_delete_legacy_seed_items"`
 }
 
 type GeminiOAuthConfig struct {
@@ -1445,18 +1426,6 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 	cfg.LinuxDo.UserInfoEmailPath = strings.TrimSpace(cfg.LinuxDo.UserInfoEmailPath)
 	cfg.LinuxDo.UserInfoIDPath = strings.TrimSpace(cfg.LinuxDo.UserInfoIDPath)
 	cfg.LinuxDo.UserInfoUsernamePath = strings.TrimSpace(cfg.LinuxDo.UserInfoUsernamePath)
-	cfg.CloudflareAI.AccountID = strings.TrimSpace(cfg.CloudflareAI.AccountID)
-	cfg.CloudflareAI.AISearchInstanceID = strings.TrimSpace(cfg.CloudflareAI.AISearchInstanceID)
-	cfg.CloudflareAI.AISearchAPIToken = strings.TrimSpace(cfg.CloudflareAI.AISearchAPIToken)
-	cfg.CloudflareAI.AISearchAPIBaseURL = strings.TrimRight(strings.TrimSpace(cfg.CloudflareAI.AISearchAPIBaseURL), "/")
-	cfg.CloudflareAI.AISearchPublicEndpointURL = strings.TrimSpace(cfg.CloudflareAI.AISearchPublicEndpointURL)
-	cfg.CloudflareAI.AISearchPublicChatEndpointURL = strings.TrimSpace(cfg.CloudflareAI.AISearchPublicChatEndpointURL)
-	cfg.CloudflareAI.AISearchPublicOrigin = strings.TrimRight(strings.TrimSpace(cfg.CloudflareAI.AISearchPublicOrigin), "/")
-	cfg.CloudflareAI.AISearchNamespace = strings.TrimSpace(cfg.CloudflareAI.AISearchNamespace)
-	cfg.CloudflareAI.AISearchItemKey = strings.TrimSpace(cfg.CloudflareAI.AISearchItemKey)
-	cfg.CloudflareAI.AISearchSyncCron = strings.TrimSpace(cfg.CloudflareAI.AISearchSyncCron)
-	cfg.CloudflareAI.AISearchSyncSourcePath = strings.TrimSpace(cfg.CloudflareAI.AISearchSyncSourcePath)
-	cfg.CloudflareAI.AISearchSyncKnowledgePath = strings.TrimSpace(cfg.CloudflareAI.AISearchSyncKnowledgePath)
 	applyLegacyWeChatConnectEnvCompatibility(&cfg.WeChat)
 	normalizeWeChatConnectConfig(&cfg.WeChat)
 	cfg.OIDC.ProviderName = strings.TrimSpace(cfg.OIDC.ProviderName)
@@ -1993,23 +1962,6 @@ func setDefaults() {
 	viper.SetDefault("gemini.oauth.client_secret", "")
 	viper.SetDefault("gemini.oauth.scopes", "")
 	viper.SetDefault("gemini.quota.policy", "")
-
-	// Cloudflare AI Search - API token is optional when public endpoint URL is configured
-	viper.SetDefault("cloudflare_ai.account_id", "")
-	viper.SetDefault("cloudflare_ai.ai_search_instance_id", "ai-search")
-	viper.SetDefault("cloudflare_ai.ai_search_api_token", "")
-	viper.SetDefault("cloudflare_ai.ai_search_api_base_url", "https://api.cloudflare.com/client/v4")
-	viper.SetDefault("cloudflare_ai.ai_search_public_endpoint_url", "https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/search")
-	viper.SetDefault("cloudflare_ai.ai_search_public_chat_endpoint_url", "https://c98b93c6-bafe-4679-89df-823c1298e966.search.ai.cloudflare.com/chat/completions")
-	viper.SetDefault("cloudflare_ai.ai_search_public_origin", "https://sub2api.creeperxco.cn")
-	viper.SetDefault("cloudflare_ai.ai_search_namespace", "default")
-	viper.SetDefault("cloudflare_ai.ai_search_item_key", "sub2api-user-knowledge.md")
-	viper.SetDefault("cloudflare_ai.ai_search_sync_enabled", true)
-	viper.SetDefault("cloudflare_ai.ai_search_sync_cron", "20 3 */3 * *")
-	viper.SetDefault("cloudflare_ai.ai_search_sync_source_path", "")
-	viper.SetDefault("cloudflare_ai.ai_search_sync_knowledge_path", "/app/resources/ai-search/sub2api-user-knowledge.md")
-	viper.SetDefault("cloudflare_ai.ai_search_sync_wait_for_completion", true)
-	viper.SetDefault("cloudflare_ai.ai_search_sync_delete_legacy_seed_items", true)
 
 	// Subscription Maintenance (bounded queue + worker pool)
 	viper.SetDefault("subscription_maintenance.worker_count", 2)
