@@ -18,6 +18,19 @@ type autoScheduleCall struct {
 	schedulable bool
 }
 
+type autoScheduleRuntimeStub struct {
+	enabled bool
+	origins []string
+}
+
+func (s autoScheduleRuntimeStub) ChannelMonitorAccountAutoScheduleEnabled(context.Context) bool {
+	return s.enabled
+}
+
+func (s autoScheduleRuntimeStub) ChannelMonitorLocalGatewayOrigins(context.Context) []string {
+	return s.origins
+}
+
 func (r *autoScheduleAccountRepoStub) SetSchedulable(_ context.Context, id int64, schedulable bool) error {
 	r.calls = append(r.calls, autoScheduleCall{accountID: id, schedulable: schedulable})
 	return nil
@@ -183,6 +196,56 @@ func TestChannelMonitorAutoScheduleDisablesLinkedAccountOnFailedResult(t *testin
 	}
 	if repo.calls[0].accountID != accountID || repo.calls[0].schedulable {
 		t.Fatalf("expected account %d schedulable=false, got %+v", accountID, repo.calls[0])
+	}
+}
+
+func TestChannelMonitorAutoScheduleKeepsLinkedAccountForLocalGatewayCapacity503(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, origins: []string{"https://ai.example.com"}})
+	accountID := int64(46)
+	monitor := &ChannelMonitor{
+		ID:        12,
+		Endpoint:  "https://ai.example.com",
+		AccountID: &accountID,
+	}
+
+	svc.applyAccountAutoSchedule(context.Background(), monitor, []*CheckResult{
+		{
+			Model:   "openrouter/free",
+			Status:  MonitorStatusError,
+			Message: `upstream HTTP 503: {"error":{"message":"Service temporarily unavailable","type":"api_error"}}`,
+		},
+	})
+
+	if len(repo.calls) != 1 {
+		t.Fatalf("expected one schedulable update, got %d", len(repo.calls))
+	}
+	if repo.calls[0].accountID != accountID || !repo.calls[0].schedulable {
+		t.Fatalf("expected local gateway capacity 503 to keep account %d schedulable=true, got %+v", accountID, repo.calls[0])
+	}
+}
+
+func TestChannelMonitorAutoScheduleStillDisablesLinkedAccountForExternal503(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, origins: []string{"https://ai.example.com"}})
+	accountID := int64(47)
+	monitor := &ChannelMonitor{ID: 13, Endpoint: "https://openrouter.ai", AccountID: &accountID}
+
+	svc.applyAccountAutoSchedule(context.Background(), monitor, []*CheckResult{
+		{
+			Model:   "openrouter/free",
+			Status:  MonitorStatusError,
+			Message: `upstream HTTP 503: {"error":{"message":"Service temporarily unavailable","type":"api_error"}}`,
+		},
+	})
+
+	if len(repo.calls) != 1 {
+		t.Fatalf("expected one schedulable update, got %d", len(repo.calls))
+	}
+	if repo.calls[0].accountID != accountID || repo.calls[0].schedulable {
+		t.Fatalf("expected external upstream 503 to set account %d schedulable=false, got %+v", accountID, repo.calls[0])
 	}
 }
 
