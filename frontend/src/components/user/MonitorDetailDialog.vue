@@ -11,8 +11,17 @@
     <div v-else-if="!detail" class="py-8 text-center text-sm text-gray-500">
       {{ t('channelStatus.detailLoadError') }}
     </div>
-    <div v-else class="overflow-x-auto">
-      <table class="w-full text-left text-sm">
+    <div v-else class="monitor-detail-table-scroll overflow-x-auto">
+      <table class="monitor-detail-table min-w-[760px] w-full table-fixed text-left text-sm">
+        <colgroup>
+          <col class="w-[30%]" />
+          <col class="w-[14%]" />
+          <col class="w-[14%]" />
+          <col class="w-[10%]" />
+          <col class="w-[10%]" />
+          <col class="w-[10%]" />
+          <col class="w-[12%]" />
+        </colgroup>
         <thead class="border-b border-gray-200 dark:border-dark-700">
           <tr class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
             <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.model') }}</th>
@@ -30,7 +39,9 @@
             :key="m.model"
             class="border-b border-gray-100 dark:border-dark-800"
           >
-            <td class="py-2 pr-3 font-medium text-gray-900 dark:text-gray-100">{{ m.model }}</td>
+            <td class="py-2 pr-3 font-medium text-gray-900 dark:text-gray-100">
+              <span class="block truncate">{{ m.model }}</span>
+            </td>
             <td class="py-2 pr-3">
               <span
                 class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px]"
@@ -112,3 +123,16 @@ watch(
   { immediate: true },
 )
 </script>
+
+<style scoped>
+.monitor-detail-table-scroll {
+  scrollbar-gutter: stable;
+}
+
+.monitor-detail-table th,
+.monitor-detail-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

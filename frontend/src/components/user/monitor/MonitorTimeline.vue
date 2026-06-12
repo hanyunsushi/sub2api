@@ -13,11 +13,11 @@
     >
       {{ t('monitorCommon.maintenancePaused') }}
     </div>
-    <div v-else class="flex items-end gap-[2px] h-5 w-full">
+    <div v-else class="monitor-timeline-bars flex items-end gap-[2px] h-5 w-full">
       <div
         v-for="(bar, idx) in displayBars"
         :key="idx"
-        class="monitor-timeline-bar flex-1 min-w-[3px] rounded-sm"
+        class="monitor-timeline-bar rounded-sm"
         :class="bar.colorClass"
         :style="{ height: bar.heightPct + '%' }"
         :title="bar.title"
@@ -113,3 +113,14 @@ const displayBars = computed<Bar[]>(() => {
   return bars
 })
 </script>
+
+<style scoped>
+.monitor-timeline-bars {
+  min-width: 0;
+}
+
+.monitor-timeline-bar {
+  flex: 1 1 0;
+  min-width: 3px;
+}
+</style>

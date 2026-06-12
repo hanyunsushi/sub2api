@@ -178,6 +178,7 @@ type SystemSettings struct {
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 	ChannelMonitorAccountAutoSchedule    bool `json:"channel_monitor_account_auto_schedule_enabled"`
+	ChannelMonitorAutoScheduleFailures   int  `json:"channel_monitor_account_auto_schedule_failure_threshold"`
 
 	// Available Channels feature (user-facing aggregate view)
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`
@@ -355,6 +356,7 @@ type PublicSettings struct {
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 	ChannelMonitorAccountAutoSchedule    bool `json:"channel_monitor_account_auto_schedule_enabled"`
+	ChannelMonitorAutoScheduleFailures   int  `json:"channel_monitor_account_auto_schedule_failure_threshold"`
 
 	// Available Channels feature (user-facing aggregate view)
 	AvailableChannelsEnabled bool `json:"available_channels_enabled"`

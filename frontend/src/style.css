@@ -3750,15 +3750,25 @@ body:has(.table-page-layout) :where(
   color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
 }
 
-#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, .btn-primary, .btn-danger, button):not(:disabled) {
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled) {
   border-color: var(--atelier-slab-edge) !important;
-  background: var(--atelier-slab-field) !important;
-  color: var(--atelier-slab-text) !important;
+  background: var(--atelier-paper) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
   box-shadow: none !important;
 }
 
-#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(svg, span) {
-  color: var(--atelier-slab-text) !important;
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled):hover {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
   stroke: currentColor !important;
 }
 

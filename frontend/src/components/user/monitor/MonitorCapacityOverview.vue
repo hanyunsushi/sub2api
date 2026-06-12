@@ -464,6 +464,7 @@ function formatBalance(value: number) {
 .monitor-capacity-card {
   position: relative;
   overflow: hidden;
+  min-width: 0;
 }
 
 .monitor-capacity-card::before {
@@ -502,9 +503,14 @@ function formatBalance(value: number) {
   display: flex;
   height: 0.625rem;
   width: 100%;
+  min-width: 0;
   overflow: hidden;
   border-radius: 999px;
   background: color-mix(in srgb, var(--atelier-dust) 20%, transparent);
+}
+
+.monitor-capacity-status-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .monitor-capacity-status-segment {
@@ -523,14 +529,14 @@ function formatBalance(value: number) {
   display: grid;
   font-size: 0.6875rem;
   gap: 0.25rem 0.375rem;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 0.5rem minmax(0, 1fr) 1.5rem;
   min-width: 0;
   white-space: nowrap;
 }
 
 .monitor-capacity-status-stat strong {
   justify-self: center;
-  min-width: 1.25rem;
+  min-width: 1.5rem;
   text-align: center;
 }
 

@@ -137,7 +137,8 @@ describe('channel monitor AI logo contract', () => {
   })
 
   it('keeps monitor timeline status bars on explicit health colors', () => {
-    expect(userMonitorTimelineSource).toContain('monitor-timeline-bar flex-1')
+    expect(userMonitorTimelineSource).toContain('monitor-timeline-bars')
+    expect(userMonitorTimelineSource).toContain('flex: 1 1 0;')
     expect(userMonitorTimelineSource).toContain("operational: 'monitor-timeline-bar--operational'")
     expect(userMonitorTimelineSource).toContain("degraded: 'monitor-timeline-bar--degraded'")
     expect(userMonitorTimelineSource).not.toContain("operational: 'bg-emerald-500'")

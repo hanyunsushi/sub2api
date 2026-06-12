@@ -5656,6 +5656,8 @@ export default {
           defaultIntervalHint: 'Pre-fills the interval when creating a new monitor; each monitor can override it. Range 15 – 3600.',
           accountAutoSchedule: 'Enable Channel Monitor account auto scheduling',
           accountAutoScheduleHint: 'When enabled, linked monitor results toggle account scheduling; locked accounts are excluded.',
+          autoScheduleFailureThreshold: 'Failure disable threshold',
+          autoScheduleFailureThresholdHint: 'Disable account scheduling after this many consecutive failures; one success restores it and clears the count.',
         },
         availableChannels: {
           title: 'Available Channels',

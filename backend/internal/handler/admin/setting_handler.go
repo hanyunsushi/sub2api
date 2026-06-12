@@ -329,6 +329,7 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		ChannelMonitorEnabled:                settings.ChannelMonitorEnabled,
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
 		ChannelMonitorAccountAutoSchedule:    settings.ChannelMonitorAccountAutoSchedule,
+		ChannelMonitorAutoScheduleFailures:   settings.ChannelMonitorAutoScheduleFailures,
 
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
@@ -708,6 +709,7 @@ type UpdateSettingsRequest struct {
 	ChannelMonitorEnabled                *bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds *int  `json:"channel_monitor_default_interval_seconds"`
 	ChannelMonitorAccountAutoSchedule    *bool `json:"channel_monitor_account_auto_schedule_enabled"`
+	ChannelMonitorAutoScheduleFailures   *int  `json:"channel_monitor_account_auto_schedule_failure_threshold"`
 
 	// Available Channels feature switch (user-facing)
 	AvailableChannelsEnabled *bool `json:"available_channels_enabled"`
@@ -2063,6 +2065,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.ChannelMonitorAccountAutoSchedule
 		}(),
+		ChannelMonitorAutoScheduleFailures: func() int {
+			if req.ChannelMonitorAutoScheduleFailures != nil {
+				return *req.ChannelMonitorAutoScheduleFailures
+			}
+			return previousSettings.ChannelMonitorAutoScheduleFailures
+		}(),
 		AvailableChannelsEnabled: func() bool {
 			if req.AvailableChannelsEnabled != nil {
 				return *req.AvailableChannelsEnabled
@@ -2433,6 +2441,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		ChannelMonitorEnabled:                updatedSettings.ChannelMonitorEnabled,
 		ChannelMonitorDefaultIntervalSeconds: updatedSettings.ChannelMonitorDefaultIntervalSeconds,
 		ChannelMonitorAccountAutoSchedule:    updatedSettings.ChannelMonitorAccountAutoSchedule,
+		ChannelMonitorAutoScheduleFailures:   updatedSettings.ChannelMonitorAutoScheduleFailures,
 
 		AvailableChannelsEnabled: updatedSettings.AvailableChannelsEnabled,
 
@@ -3006,6 +3015,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.ChannelMonitorAccountAutoSchedule != after.ChannelMonitorAccountAutoSchedule {
 		changed = append(changed, "channel_monitor_account_auto_schedule_enabled")
+	}
+	if before.ChannelMonitorAutoScheduleFailures != after.ChannelMonitorAutoScheduleFailures {
+		changed = append(changed, "channel_monitor_account_auto_schedule_failure_threshold")
 	}
 	if before.AvailableChannelsEnabled != after.AvailableChannelsEnabled {
 		changed = append(changed, "available_channels_enabled")

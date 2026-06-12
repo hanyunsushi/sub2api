@@ -520,6 +520,8 @@ describe('console atelier palette restyle', () => {
     expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-card,\n#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell,\n#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {\n  background: var(--atelier-slab-surface) !important;')
     expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {\n  color: var(--atelier-slab-text) !important;')
     expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap')
+    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled)')
+    expect(materialSystemBlock).toContain('background: var(--atelier-paper) !important;\n  color: var(--atelier-ink) !important;')
     expect(adminUsageStatsCardsSource).toContain('usage-stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4')
     expect(adminUsageStatsCardsSource.match(/card usage-stat-card p-4/g)?.length).toBe(4)
     expect(adminUsageStatsCardsSource.match(/usage-stat-icon rounded-lg/g)?.length).toBe(4)

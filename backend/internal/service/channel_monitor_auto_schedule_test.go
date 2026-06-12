@@ -28,8 +28,9 @@ type autoScheduleCall struct {
 }
 
 type autoScheduleRuntimeStub struct {
-	enabled bool
-	origins []string
+	enabled          bool
+	origins          []string
+	failureThreshold int
 }
 
 func (s autoScheduleRuntimeStub) ChannelMonitorAccountAutoScheduleEnabled(context.Context) bool {
@@ -38,6 +39,10 @@ func (s autoScheduleRuntimeStub) ChannelMonitorAccountAutoScheduleEnabled(contex
 
 func (s autoScheduleRuntimeStub) ChannelMonitorLocalGatewayOrigins(context.Context) []string {
 	return s.origins
+}
+
+func (s autoScheduleRuntimeStub) ChannelMonitorAccountAutoScheduleFailureThreshold(context.Context) int {
+	return s.failureThreshold
 }
 
 func (r *autoScheduleAccountRepoStub) SetSchedulable(_ context.Context, id int64, schedulable bool) error {
@@ -290,9 +295,7 @@ func TestChannelMonitorCreateAutoBindsAllMatchingAccountsWhenNoAccountIDsProvide
 func TestChannelMonitorAutoScheduleDisablesLinkedAccountOnFailedResult(t *testing.T) {
 	repo := &autoScheduleAccountRepoStub{}
 	svc := NewChannelMonitorService(nil, nil)
-	svc.SetAccountScheduleAutomation(repo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
-		return true
-	}))
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, failureThreshold: 1})
 	accountID := int64(42)
 	monitor := &ChannelMonitor{ID: 7, AccountID: &accountID}
 
@@ -306,6 +309,74 @@ func TestChannelMonitorAutoScheduleDisablesLinkedAccountOnFailedResult(t *testin
 	}
 	if repo.calls[0].accountID != accountID || repo.calls[0].schedulable {
 		t.Fatalf("expected account %d schedulable=false, got %+v", accountID, repo.calls[0])
+	}
+}
+
+func TestChannelMonitorAutoScheduleWaitsForDefaultFailureThreshold(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true})
+	accountID := int64(48)
+	monitor := &ChannelMonitor{ID: 14, AccountID: &accountID}
+	results := []*CheckResult{{Model: "gpt-5", Status: MonitorStatusFailed}}
+
+	svc.applyAccountAutoSchedule(context.Background(), monitor, results)
+	if len(repo.calls) != 1 {
+		t.Fatalf("expected first failure to keep account schedulable, got %d updates", len(repo.calls))
+	}
+	if repo.calls[0].accountID != accountID || !repo.calls[0].schedulable {
+		t.Fatalf("expected first failure to keep account %d schedulable=true, got %+v", accountID, repo.calls[0])
+	}
+
+	svc.applyAccountAutoSchedule(context.Background(), monitor, results)
+	want := []autoScheduleCall{
+		{accountID: accountID, schedulable: true},
+		{accountID: accountID, schedulable: false},
+	}
+	if !equalAutoScheduleCalls(repo.calls, want) {
+		t.Fatalf("expected second consecutive failure to disable account, got %+v", repo.calls)
+	}
+}
+
+func TestChannelMonitorAutoScheduleSuccessResetsFailureThreshold(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true})
+	accountID := int64(49)
+	monitor := &ChannelMonitor{ID: 15, AccountID: &accountID}
+
+	svc.applyAccountAutoSchedule(context.Background(), monitor, []*CheckResult{{Model: "gpt-5", Status: MonitorStatusFailed}})
+	svc.applyAccountAutoSchedule(context.Background(), monitor, []*CheckResult{{Model: "gpt-5", Status: MonitorStatusOperational}})
+	svc.applyAccountAutoSchedule(context.Background(), monitor, []*CheckResult{{Model: "gpt-5", Status: MonitorStatusFailed}})
+
+	want := []autoScheduleCall{
+		{accountID: accountID, schedulable: true},
+		{accountID: accountID, schedulable: true},
+		{accountID: accountID, schedulable: true},
+	}
+	if !equalAutoScheduleCalls(repo.calls, want) {
+		t.Fatalf("expected success to reset failure count, got %+v", repo.calls)
+	}
+}
+
+func TestChannelMonitorAutoScheduleByAccountResultsWaitsForDefaultFailureThreshold(t *testing.T) {
+	repo := &autoScheduleAccountRepoStub{}
+	svc := NewChannelMonitorService(nil, nil)
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true})
+	accountID := int64(50)
+	results := map[int64][]*CheckResult{
+		accountID: {{Model: "gpt-5", Status: MonitorStatusError}},
+	}
+
+	svc.applyAccountAutoScheduleByAccountResults(context.Background(), 16, results)
+	svc.applyAccountAutoScheduleByAccountResults(context.Background(), 16, results)
+
+	want := []autoScheduleCall{
+		{accountID: accountID, schedulable: true},
+		{accountID: accountID, schedulable: false},
+	}
+	if !equalAutoScheduleCalls(repo.calls, want) {
+		t.Fatalf("expected per-account second consecutive failure to disable account, got %+v", repo.calls)
 	}
 }
 
@@ -339,7 +410,7 @@ func TestChannelMonitorAutoScheduleKeepsLinkedAccountForLocalGatewayCapacity503(
 func TestChannelMonitorAutoScheduleStillDisablesLinkedAccountForExternal503(t *testing.T) {
 	repo := &autoScheduleAccountRepoStub{}
 	svc := NewChannelMonitorService(nil, nil)
-	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, origins: []string{"https://ai.example.com"}})
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, origins: []string{"https://ai.example.com"}, failureThreshold: 1})
 	accountID := int64(47)
 	monitor := &ChannelMonitor{ID: 13, Endpoint: "https://openrouter.ai", AccountID: &accountID}
 
@@ -384,9 +455,7 @@ func TestChannelMonitorAutoScheduleEnablesLinkedAccountWhenResultsRecover(t *tes
 func TestChannelMonitorAutoScheduleUpdatesAllSavedAccountIDs(t *testing.T) {
 	repo := &autoScheduleAccountRepoStub{}
 	svc := NewChannelMonitorService(nil, nil)
-	svc.SetAccountScheduleAutomation(repo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
-		return true
-	}))
+	svc.SetAccountScheduleAutomation(repo, autoScheduleRuntimeStub{enabled: true, failureThreshold: 1})
 
 	svc.applyAccountAutoSchedule(context.Background(), &ChannelMonitor{
 		ID:         18,
@@ -735,9 +804,7 @@ func TestChannelMonitorRunCheckAutoSchedulesBoundAccountsIndividually(t *testing
 		},
 	}
 	svc := NewChannelMonitorService(monitorRepo, passthroughEncryptor{})
-	svc.SetAccountScheduleAutomation(accountRepo, channelMonitorScheduleAutomationFunc(func(context.Context) bool {
-		return true
-	}))
+	svc.SetAccountScheduleAutomation(accountRepo, autoScheduleRuntimeStub{enabled: true, failureThreshold: 1})
 
 	results, err := svc.RunCheck(context.Background(), monitor.ID)
 	if err != nil {
