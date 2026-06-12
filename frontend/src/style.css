@@ -3615,7 +3615,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger {
@@ -3673,7 +3673,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger :where(.select-value, .select-icon, svg, path, span) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   stroke: currentColor !important;
 }
 
@@ -3733,7 +3733,7 @@ body:has(.table-page-layout) :where(
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon) {
   color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   stroke: currentColor !important;
 }
 
@@ -3747,7 +3747,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(input.input)::placeholder {
-  color: color-mix(in srgb, var(--atelier-paper) 68%, transparent) !important;
+  color: color-mix(in srgb, var(--atelier-slab-text) 52%, transparent) !important;
 }
 
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled) {
