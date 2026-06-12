@@ -970,6 +970,23 @@ func (s *SettingService) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Co
 	return value == "true"
 }
 
+func (s *SettingService) ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string {
+	if s == nil || s.settingRepo == nil {
+		return nil
+	}
+	vals, err := s.settingRepo.GetMultiple(ctx, []string{
+		SettingKeyAPIBaseURL,
+		SettingKeyFrontendURL,
+	})
+	if err != nil {
+		return nil
+	}
+	return []string{
+		vals[SettingKeyAPIBaseURL],
+		vals[SettingKeyFrontendURL],
+	}
+}
+
 // AvailableChannelsRuntime is the lightweight view of the available-channels feature
 // switch consumed by the user-facing handler.
 type AvailableChannelsRuntime struct {
@@ -3151,9 +3168,9 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyOpsMetricsIntervalSeconds:    "60",
 
 		// Channel monitor defaults (enabled, 60s)
-		SettingKeyChannelMonitorEnabled:                     "true",
-		SettingKeyChannelMonitorDefaultIntervalSeconds:      "60",
-		SettingKeyChannelMonitorAccountAutoScheduleEnabled:  "false",
+		SettingKeyChannelMonitorEnabled:                    "true",
+		SettingKeyChannelMonitorDefaultIntervalSeconds:     "60",
+		SettingKeyChannelMonitorAccountAutoScheduleEnabled: "false",
 
 		// Available channels feature (default disabled; opt-in)
 		SettingKeyAvailableChannelsEnabled: "false",

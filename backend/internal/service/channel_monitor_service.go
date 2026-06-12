@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -76,12 +77,17 @@ type channelMonitorAccountScheduleRepository interface {
 
 type channelMonitorScheduleAutomation interface {
 	ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool
+	ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string
 }
 
 type channelMonitorScheduleAutomationFunc func(context.Context) bool
 
 func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool {
 	return f(ctx)
+}
+
+func (f channelMonitorScheduleAutomationFunc) ChannelMonitorLocalGatewayOrigins(context.Context) []string {
+	return nil
 }
 
 // NewChannelMonitorService 创建渠道监控服务实例。
@@ -332,9 +338,13 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 	if len(results) == 0 {
 		return
 	}
+	localGatewayOrigins := s.autoScheduleRuntime.ChannelMonitorLocalGatewayOrigins(ctx)
 	schedulable := true
 	for _, r := range results {
 		if r == nil {
+			continue
+		}
+		if isLocalGatewayCapacityResult(m.Endpoint, localGatewayOrigins, r) {
 			continue
 		}
 		if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
@@ -365,6 +375,48 @@ func (s *ChannelMonitorService) resolveAutoScheduleAccountIDs(ctx context.Contex
 		return accountIDs
 	}
 	return normalizeAccountIDsFromOptional(m.AccountID)
+}
+
+func isLocalGatewayCapacityResult(endpoint string, localGatewayOrigins []string, result *CheckResult) bool {
+	if result == nil || result.Status != MonitorStatusError {
+		return false
+	}
+	if !channelMonitorEndpointMatchesAnyOrigin(endpoint, localGatewayOrigins) {
+		return false
+	}
+	msg := strings.ToLower(strings.TrimSpace(result.Message))
+	if !strings.Contains(msg, "upstream http 503") {
+		return false
+	}
+	if strings.Contains(msg, "no available accounts") {
+		return true
+	}
+	return strings.Contains(msg, "service temporarily unavailable") && strings.Contains(msg, "api_error")
+}
+
+func channelMonitorEndpointMatchesAnyOrigin(endpoint string, origins []string) bool {
+	endpointOrigin := normalizeChannelMonitorOrigin(endpoint)
+	if endpointOrigin == "" {
+		return false
+	}
+	for _, origin := range origins {
+		if endpointOrigin == normalizeChannelMonitorOrigin(origin) {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizeChannelMonitorOrigin(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return ""
+	}
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return ""
+	}
+	return strings.ToLower(u.Scheme + "://" + u.Host)
 }
 
 func normalizeMonitorAccountMatchName(name string) string {
