@@ -62,13 +62,20 @@ type ChannelMonitorRepository interface {
 
 // ChannelMonitorService 渠道监控管理服务。
 type ChannelMonitorService struct {
-	repo                ChannelMonitorRepository
-	encryptor           SecretEncryptor
-	autoScheduleRepo    channelMonitorAccountScheduleRepository
-	autoScheduleRuntime channelMonitorScheduleAutomation
+	repo                     ChannelMonitorRepository
+	encryptor                SecretEncryptor
+	autoScheduleRepo         channelMonitorAccountScheduleRepository
+	autoScheduleRuntime      channelMonitorScheduleAutomation
+	autoScheduleFailuresMu   sync.Mutex
+	autoScheduleFailureCount map[channelMonitorAutoScheduleFailureKey]int
 	// scheduler 由 wire 通过 SetScheduler 注入；CRUD 后调用对应钩子即时同步任务。
 	// 测试或未注入场景下保持 nil，所有钩子调用变为 no-op。
 	scheduler MonitorScheduler
+}
+
+type channelMonitorAutoScheduleFailureKey struct {
+	monitorID int64
+	accountID int64
 }
 
 type channelMonitorAccountScheduleRepository interface {
@@ -80,6 +87,7 @@ type channelMonitorAccountScheduleRepository interface {
 
 type channelMonitorScheduleAutomation interface {
 	ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool
+	ChannelMonitorAccountAutoScheduleFailureThreshold(ctx context.Context) int
 	ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string
 }
 
@@ -89,13 +97,40 @@ func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleE
 	return f(ctx)
 }
 
+func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleFailureThreshold(context.Context) int {
+	return channelMonitorAccountAutoScheduleFailureThresholdDefault
+}
+
 func (f channelMonitorScheduleAutomationFunc) ChannelMonitorLocalGatewayOrigins(context.Context) []string {
 	return nil
 }
 
+const (
+	channelMonitorAccountAutoScheduleFailureThresholdMin     = 1
+	channelMonitorAccountAutoScheduleFailureThresholdMax     = 10
+	channelMonitorAccountAutoScheduleFailureThresholdDefault = 2
+)
+
+func normalizeChannelMonitorAccountAutoScheduleFailureThreshold(v int) int {
+	if v <= 0 {
+		return channelMonitorAccountAutoScheduleFailureThresholdDefault
+	}
+	if v < channelMonitorAccountAutoScheduleFailureThresholdMin {
+		return channelMonitorAccountAutoScheduleFailureThresholdMin
+	}
+	if v > channelMonitorAccountAutoScheduleFailureThresholdMax {
+		return channelMonitorAccountAutoScheduleFailureThresholdMax
+	}
+	return v
+}
+
 // NewChannelMonitorService 创建渠道监控服务实例。
 func NewChannelMonitorService(repo ChannelMonitorRepository, encryptor SecretEncryptor) *ChannelMonitorService {
-	return &ChannelMonitorService{repo: repo, encryptor: encryptor}
+	return &ChannelMonitorService{
+		repo:                     repo,
+		encryptor:                encryptor,
+		autoScheduleFailureCount: make(map[channelMonitorAutoScheduleFailureKey]int),
+	}
 }
 
 // ---------- CRUD ----------
@@ -346,7 +381,7 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 		return
 	}
 	localGatewayOrigins := s.autoScheduleRuntime.ChannelMonitorLocalGatewayOrigins(ctx)
-	schedulable := true
+	healthy := true
 	for _, r := range results {
 		if r == nil {
 			continue
@@ -355,11 +390,15 @@ func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m 
 			continue
 		}
 		if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
-			schedulable = false
+			healthy = false
 			break
 		}
 	}
+	threshold := normalizeChannelMonitorAccountAutoScheduleFailureThreshold(
+		s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleFailureThreshold(ctx),
+	)
 	for _, accountID := range accountIDs {
+		schedulable := s.resolveAutoScheduleSchedulable(m.ID, accountID, healthy, threshold)
 		s.updateAutoScheduleAccount(ctx, m.ID, accountID, schedulable)
 	}
 }
@@ -381,18 +420,41 @@ func (s *ChannelMonitorService) applyAccountAutoScheduleByAccountResults(ctx con
 		if accountID <= 0 || len(accountResults) == 0 {
 			continue
 		}
-		schedulable := true
+		healthy := true
 		for _, r := range accountResults {
 			if r == nil {
 				continue
 			}
 			if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
-				schedulable = false
+				healthy = false
 				break
 			}
 		}
+		threshold := normalizeChannelMonitorAccountAutoScheduleFailureThreshold(
+			s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleFailureThreshold(ctx),
+		)
+		schedulable := s.resolveAutoScheduleSchedulable(monitorID, accountID, healthy, threshold)
 		s.updateAutoScheduleAccount(ctx, monitorID, accountID, schedulable)
 	}
+}
+
+func (s *ChannelMonitorService) resolveAutoScheduleSchedulable(monitorID int64, accountID int64, healthy bool, threshold int) bool {
+	if s == nil {
+		return healthy
+	}
+	key := channelMonitorAutoScheduleFailureKey{monitorID: monitorID, accountID: accountID}
+	s.autoScheduleFailuresMu.Lock()
+	defer s.autoScheduleFailuresMu.Unlock()
+	if s.autoScheduleFailureCount == nil {
+		s.autoScheduleFailureCount = make(map[channelMonitorAutoScheduleFailureKey]int)
+	}
+	if healthy {
+		delete(s.autoScheduleFailureCount, key)
+		return true
+	}
+	count := s.autoScheduleFailureCount[key] + 1
+	s.autoScheduleFailureCount[key] = count
+	return count < threshold
 }
 
 func (s *ChannelMonitorService) updateAutoScheduleAccount(ctx context.Context, monitorID int64, accountID int64, schedulable bool) {

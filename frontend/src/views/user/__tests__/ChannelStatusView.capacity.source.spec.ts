@@ -63,6 +63,8 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain('statusSegments')
     expect(componentSource).toContain('monitor-capacity-status-bar')
     expect(componentSource).toContain('monitor-capacity-status-segment')
+    expect(componentSource).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));')
+    expect(componentSource).toContain('grid-template-columns: 0.5rem minmax(0, 1fr) 1.5rem;')
     expect(componentSource).toContain("localText('可用', 'Available')")
     expect(componentSource).toContain("localText('限流', 'Limited')")
     expect(componentSource).toContain("localText('错误', 'Error')")

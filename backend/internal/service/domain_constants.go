@@ -361,6 +361,11 @@ const (
 	// results may automatically toggle linked account schedulable states.
 	SettingKeyChannelMonitorAccountAutoScheduleEnabled = "channel_monitor_account_auto_schedule_enabled"
 
+	// SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold controls how many
+	// consecutive failed/error monitor checks are required before auto-scheduling disables
+	// a linked account. Success still re-enables immediately.
+	SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold = "channel_monitor_account_auto_schedule_failure_threshold"
+
 	// SettingKeyAvailableChannelsEnabled is a DB-backed soft switch for the "Available Channels"
 	// user-facing aggregate view. When false: user endpoint returns an empty list and the
 	// sidebar entry is hidden. Defaults to false (opt-in feature).

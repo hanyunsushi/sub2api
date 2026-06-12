@@ -5816,6 +5816,8 @@ export default {
           defaultIntervalHint: '新建渠道监控时表单的默认值，可被单个渠道覆盖。范围 15 – 3600 秒。',
           accountAutoSchedule: '开启渠道监控-账号自动调度',
           accountAutoScheduleHint: '开启后，绑定账号的渠道监控结果会自动开关账号调度；已锁定调度的账号不参与自动调度。',
+          autoScheduleFailureThreshold: '失败关闭阈值',
+          autoScheduleFailureThresholdHint: '连续失败达到该次数后关闭账号调度；成功一次会立即恢复并清零失败计数。',
         },
         availableChannels: {
           title: '可用渠道',

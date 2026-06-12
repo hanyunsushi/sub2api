@@ -234,6 +234,7 @@ export interface PublicSettings {
   channel_monitor_enabled: boolean
   channel_monitor_default_interval_seconds: number
   channel_monitor_account_auto_schedule_enabled?: boolean
+  channel_monitor_account_auto_schedule_failure_threshold?: number
   available_channels_enabled: boolean
   service_quota_enabled: boolean
   affiliate_enabled: boolean

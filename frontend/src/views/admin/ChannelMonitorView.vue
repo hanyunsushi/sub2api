@@ -176,13 +176,13 @@ let abortController: AbortController | null = null
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 const columns = computed<Column[]>(() => [
-  { key: 'name', label: t('admin.channelMonitor.columns.name'), sortable: false },
-  { key: 'provider', label: t('admin.channelMonitor.columns.provider'), sortable: false },
-  { key: 'primary_model', label: t('admin.channelMonitor.columns.primaryModel'), sortable: false },
-  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false },
-  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false },
-  { key: 'enabled', label: t('admin.channelMonitor.columns.enabled'), sortable: false },
-  { key: 'actions', label: t('admin.channelMonitor.columns.actions'), sortable: false },
+  { key: 'name', label: t('admin.channelMonitor.columns.name'), sortable: false, class: 'w-[14rem] min-w-[14rem] max-w-[14rem]' },
+  { key: 'provider', label: t('admin.channelMonitor.columns.provider'), sortable: false, class: 'w-[9rem] min-w-[9rem] max-w-[9rem]' },
+  { key: 'primary_model', label: t('admin.channelMonitor.columns.primaryModel'), sortable: false, class: 'w-[20rem] min-w-[20rem] max-w-[20rem]' },
+  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false, class: 'w-[8rem] min-w-[8rem] max-w-[8rem]' },
+  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false, class: 'w-[7rem] min-w-[7rem] max-w-[7rem]' },
+  { key: 'enabled', label: t('admin.channelMonitor.columns.enabled'), sortable: false, class: 'w-[6rem] min-w-[6rem] max-w-[6rem]' },
+  { key: 'actions', label: t('admin.channelMonitor.columns.actions'), sortable: false, class: 'w-[9rem] min-w-[9rem] max-w-[9rem]' },
 ])
 
 const deleteConfirmMessage = computed(() => {

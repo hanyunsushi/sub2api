@@ -5473,6 +5473,22 @@
               </div>
               <Toggle v-model="form.channel_monitor_account_auto_schedule_enabled" />
             </div>
+
+            <div v-if="form.channel_monitor_account_auto_schedule_enabled">
+              <label class="input-label">
+                {{ t('admin.settings.features.channelMonitor.autoScheduleFailureThreshold') }}
+              </label>
+              <input
+                v-model.number="form.channel_monitor_account_auto_schedule_failure_threshold"
+                type="number"
+                min="1"
+                max="10"
+                class="input"
+              />
+              <p class="mt-1 text-xs text-gray-400">
+                {{ t('admin.settings.features.channelMonitor.autoScheduleFailureThresholdHint') }}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -7524,6 +7540,7 @@ const form = reactive<SettingsForm>({
   channel_monitor_enabled: true,
   channel_monitor_default_interval_seconds: 60,
   channel_monitor_account_auto_schedule_enabled: false,
+  channel_monitor_account_auto_schedule_failure_threshold: 2,
   // Available Channels feature switch
   available_channels_enabled: false,
   // Affiliate (邀请返利) feature switch
@@ -8840,6 +8857,8 @@ async function saveSettings() {
         Number(form.channel_monitor_default_interval_seconds) || 60,
       channel_monitor_account_auto_schedule_enabled:
         form.channel_monitor_account_auto_schedule_enabled,
+      channel_monitor_account_auto_schedule_failure_threshold:
+        Number(form.channel_monitor_account_auto_schedule_failure_threshold) || 2,
       // Available Channels feature switch
       available_channels_enabled: form.available_channels_enabled,
       // Affiliate (邀请返利) feature switch

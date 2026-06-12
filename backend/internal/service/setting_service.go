@@ -774,6 +774,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyChannelMonitorEnabled,
 		SettingKeyChannelMonitorDefaultIntervalSeconds,
 		SettingKeyChannelMonitorAccountAutoScheduleEnabled,
+		SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold,
 		SettingKeyAvailableChannelsEnabled,
 		SettingKeyAffiliateEnabled,
 		SettingKeyRiskControlEnabled,
@@ -890,6 +891,9 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		ChannelMonitorEnabled:                !isFalseSettingValue(settings[SettingKeyChannelMonitorEnabled]),
 		ChannelMonitorDefaultIntervalSeconds: parseChannelMonitorInterval(settings[SettingKeyChannelMonitorDefaultIntervalSeconds]),
 		ChannelMonitorAccountAutoSchedule:    settings[SettingKeyChannelMonitorAccountAutoScheduleEnabled] == "true",
+		ChannelMonitorAutoScheduleFailures: parseChannelMonitorAccountAutoScheduleFailureThreshold(
+			settings[SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold],
+		),
 
 		AvailableChannelsEnabled: settings[SettingKeyAvailableChannelsEnabled] == "true",
 
@@ -917,6 +921,14 @@ func parseChannelMonitorInterval(raw string) int {
 		return channelMonitorIntervalFallback
 	}
 	return clampChannelMonitorInterval(v)
+}
+
+func parseChannelMonitorAccountAutoScheduleFailureThreshold(raw string) int {
+	v, err := strconv.Atoi(strings.TrimSpace(raw))
+	if err != nil {
+		return channelMonitorAccountAutoScheduleFailureThresholdDefault
+	}
+	return normalizeChannelMonitorAccountAutoScheduleFailureThreshold(v)
 }
 
 // clampChannelMonitorInterval clamps v to the allowed range. 0 means "not provided".
@@ -948,6 +960,7 @@ func (s *SettingService) GetChannelMonitorRuntime(ctx context.Context) ChannelMo
 		SettingKeyChannelMonitorEnabled,
 		SettingKeyChannelMonitorDefaultIntervalSeconds,
 		SettingKeyChannelMonitorAccountAutoScheduleEnabled,
+		SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold,
 	})
 	if err != nil {
 		return ChannelMonitorRuntime{Enabled: true, DefaultIntervalSeconds: channelMonitorIntervalFallback}
@@ -968,6 +981,17 @@ func (s *SettingService) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Co
 		return false
 	}
 	return value == "true"
+}
+
+func (s *SettingService) ChannelMonitorAccountAutoScheduleFailureThreshold(ctx context.Context) int {
+	if s == nil || s.settingRepo == nil {
+		return channelMonitorAccountAutoScheduleFailureThresholdDefault
+	}
+	value, err := s.settingRepo.GetValue(ctx, SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold)
+	if err != nil {
+		return channelMonitorAccountAutoScheduleFailureThresholdDefault
+	}
+	return parseChannelMonitorAccountAutoScheduleFailureThreshold(value)
 }
 
 func (s *SettingService) ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string {
@@ -1244,6 +1268,7 @@ type PublicSettingsInjectionPayload struct {
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 	ChannelMonitorAccountAutoSchedule    bool `json:"channel_monitor_account_auto_schedule_enabled"`
+	ChannelMonitorAutoScheduleFailures   int  `json:"channel_monitor_account_auto_schedule_failure_threshold"`
 	AvailableChannelsEnabled             bool `json:"available_channels_enabled"`
 	AffiliateEnabled                     bool `json:"affiliate_enabled"`
 	RiskControlEnabled                   bool `json:"risk_control_enabled"`
@@ -1312,6 +1337,7 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		ChannelMonitorEnabled:                settings.ChannelMonitorEnabled,
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
 		ChannelMonitorAccountAutoSchedule:    settings.ChannelMonitorAccountAutoSchedule,
+		ChannelMonitorAutoScheduleFailures:   settings.ChannelMonitorAutoScheduleFailures,
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
 		RiskControlEnabled:                   settings.RiskControlEnabled,
@@ -2173,6 +2199,9 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 		updates[SettingKeyChannelMonitorDefaultIntervalSeconds] = strconv.Itoa(v)
 	}
 	updates[SettingKeyChannelMonitorAccountAutoScheduleEnabled] = strconv.FormatBool(settings.ChannelMonitorAccountAutoSchedule)
+	updates[SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold] = strconv.Itoa(
+		normalizeChannelMonitorAccountAutoScheduleFailureThreshold(settings.ChannelMonitorAutoScheduleFailures),
+	)
 
 	// Available channels feature switch
 	updates[SettingKeyAvailableChannelsEnabled] = strconv.FormatBool(settings.AvailableChannelsEnabled)
@@ -3168,9 +3197,10 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyOpsMetricsIntervalSeconds:    "60",
 
 		// Channel monitor defaults (enabled, 60s)
-		SettingKeyChannelMonitorEnabled:                    "true",
-		SettingKeyChannelMonitorDefaultIntervalSeconds:     "60",
-		SettingKeyChannelMonitorAccountAutoScheduleEnabled: "false",
+		SettingKeyChannelMonitorEnabled:                             "true",
+		SettingKeyChannelMonitorDefaultIntervalSeconds:              "60",
+		SettingKeyChannelMonitorAccountAutoScheduleEnabled:          "false",
+		SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold: strconv.Itoa(channelMonitorAccountAutoScheduleFailureThresholdDefault),
 
 		// Available channels feature (default disabled; opt-in)
 		SettingKeyAvailableChannelsEnabled: "false",
@@ -3708,6 +3738,9 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		settings[SettingKeyChannelMonitorDefaultIntervalSeconds],
 	)
 	result.ChannelMonitorAccountAutoSchedule = settings[SettingKeyChannelMonitorAccountAutoScheduleEnabled] == "true"
+	result.ChannelMonitorAutoScheduleFailures = parseChannelMonitorAccountAutoScheduleFailureThreshold(
+		settings[SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold],
+	)
 
 	// Available channels feature (default: disabled; strict true)
 	result.AvailableChannelsEnabled = settings[SettingKeyAvailableChannelsEnabled] == "true"
