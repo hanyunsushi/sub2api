@@ -85,6 +85,19 @@ type AuthResponse struct {
 	User         *dto.User `json:"user"`
 }
 
+type CreepeeSSOTicketResponse struct {
+	Ticket    string `json:"ticket"`
+	ExpiresIn int    `json:"expires_in"`
+}
+
+type CreepeeSSOVerifyRequest struct {
+	Ticket string `json:"ticket" binding:"required"`
+}
+
+type CreepeeSSOVerifyResponse struct {
+	User *dto.User `json:"user"`
+}
+
 func ensureLoginUserActive(user *service.User) error {
 	if user == nil {
 		return infraerrors.Unauthorized("INVALID_USER", "user not found")
@@ -434,6 +447,51 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 	response.Success(c, UserResponse{
 		userProfileResponse: userProfileResponseFromService(user, identities),
 		RunMode:             runMode,
+	})
+}
+
+// IssueCreepeeSSOTicket issues a short-lived, one-time ticket for Obsidian Bridge login.
+func (h *AuthHandler) IssueCreepeeSSOTicket(c *gin.Context) {
+	subject, ok := middleware2.GetAuthSubjectFromContext(c)
+	if !ok {
+		response.Unauthorized(c, "User not authenticated")
+		return
+	}
+
+	user, err := h.userService.GetByID(c.Request.Context(), subject.UserID)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	ticket, err := h.authService.IssueBridgeSSOTicket(c.Request.Context(), user)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, CreepeeSSOTicketResponse{
+		Ticket:    ticket.Ticket,
+		ExpiresIn: ticket.ExpiresIn,
+	})
+}
+
+// VerifyCreepeeSSOTicket consumes a Bridge SSO ticket and returns the Sub2 user snapshot.
+func (h *AuthHandler) VerifyCreepeeSSOTicket(c *gin.Context) {
+	var req CreepeeSSOVerifyRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	user, err := h.authService.VerifyBridgeSSOTicket(c.Request.Context(), req.Ticket)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, CreepeeSSOVerifyResponse{
+		User: dto.UserFromServiceShallow(user),
 	})
 }
 

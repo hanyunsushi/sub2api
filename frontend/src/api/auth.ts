@@ -186,6 +186,11 @@ export interface RefreshTokenResponse {
   token_type: string
 }
 
+export interface CreepeeSSOTicketResponse {
+  ticket: string
+  expires_in: number
+}
+
 export interface OAuthTokenResponse {
   access_token: string
   refresh_token?: string
@@ -316,6 +321,11 @@ export async function refreshToken(): Promise<RefreshTokenResponse> {
  */
 export async function revokeAllSessions(): Promise<{ message: string }> {
   const { data } = await apiClient.post<{ message: string }>('/auth/revoke-all-sessions')
+  return data
+}
+
+export async function issueCreepeeSSOTicket(): Promise<CreepeeSSOTicketResponse> {
+  const { data } = await apiClient.post<CreepeeSSOTicketResponse>('/auth/creepee-sso/issue')
   return data
 }
 
@@ -681,6 +691,7 @@ export const authAPI = {
   resetPassword,
   refreshToken,
   revokeAllSessions,
+  issueCreepeeSSOTicket,
   getPendingOAuthBindLoginKind,
   isPendingOAuthCreateAccountRequired,
   hasPendingOAuthSuggestedProfile,

@@ -14,6 +14,7 @@ const (
 	refreshTokenKeyPrefix   = "refresh_token:"
 	userRefreshTokensPrefix = "user_refresh_tokens:"
 	tokenFamilyPrefix       = "token_family:"
+	bridgeSSOTicketPrefix   = "bridge_sso_ticket:"
 )
 
 // refreshTokenKey generates the Redis key for a refresh token.
@@ -29,6 +30,10 @@ func userRefreshTokensKey(userID int64) string {
 // tokenFamilyKey generates the Redis key for token family set.
 func tokenFamilyKey(familyID string) string {
 	return tokenFamilyPrefix + familyID
+}
+
+func bridgeSSOTicketKey(tokenHash string) string {
+	return bridgeSSOTicketPrefix + tokenHash
 }
 
 type refreshTokenCache struct {
@@ -155,4 +160,29 @@ func (c *refreshTokenCache) GetFamilyTokenHashes(ctx context.Context, familyID s
 func (c *refreshTokenCache) IsTokenInFamily(ctx context.Context, familyID string, tokenHash string) (bool, error) {
 	key := tokenFamilyKey(familyID)
 	return c.rdb.SIsMember(ctx, key, tokenHash).Result()
+}
+
+func (c *refreshTokenCache) StoreBridgeSSOTicket(ctx context.Context, tokenHash string, data *service.BridgeSSOTicketData, ttl time.Duration) error {
+	key := bridgeSSOTicketKey(tokenHash)
+	val, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("marshal bridge sso ticket data: %w", err)
+	}
+	return c.rdb.Set(ctx, key, val, ttl).Err()
+}
+
+func (c *refreshTokenCache) ConsumeBridgeSSOTicket(ctx context.Context, tokenHash string) (*service.BridgeSSOTicketData, error) {
+	key := bridgeSSOTicketKey(tokenHash)
+	val, err := c.rdb.GetDel(ctx, key).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return nil, service.ErrRefreshTokenNotFound
+		}
+		return nil, err
+	}
+	var data service.BridgeSSOTicketData
+	if err := json.Unmarshal([]byte(val), &data); err != nil {
+		return nil, fmt.Errorf("unmarshal bridge sso ticket data: %w", err)
+	}
+	return &data, nil
 }

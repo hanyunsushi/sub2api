@@ -19,6 +19,19 @@ type RefreshTokenData struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
+// BridgeSSOTicketData stores short-lived Sub2 -> Obsidian Bridge SSO ticket state.
+type BridgeSSOTicketData struct {
+	UserID    int64     `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+// BridgeSSOTicketCache manages short-lived, single-use Sub2 -> Bridge tickets.
+type BridgeSSOTicketCache interface {
+	StoreBridgeSSOTicket(ctx context.Context, tokenHash string, data *BridgeSSOTicketData, ttl time.Duration) error
+	ConsumeBridgeSSOTicket(ctx context.Context, tokenHash string) (*BridgeSSOTicketData, error)
+}
+
 // RefreshTokenCache 管理Refresh Token的Redis缓存
 // 用于JWT Token刷新机制，支持Token轮转和防重放攻击
 //

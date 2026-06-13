@@ -40,11 +40,13 @@
         </header>
         <div class="ai-search-panel-body">
           <iframe
+            ref="bridgeFrameRef"
             class="ai-search-bridge-frame"
             data-testid="obsidian-bridge-frame"
             :src="bridgeUrl"
             title="Creepee Obsidian Codex Bridge"
             allow="clipboard-read; clipboard-write"
+            @load="handleBridgeFrameLoad"
           />
         </div>
       </div>
@@ -54,15 +56,20 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { authAPI } from '@/api/auth'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
 const open = computed(() => appStore.aiSearchPanelOpen)
 const panelRef = ref<HTMLElement | null>(null)
+const bridgeFrameRef = ref<HTMLIFrameElement | null>(null)
+const bridgeFrameReady = ref(false)
+const ticketIssuedForOpen = ref(false)
 
 const claudeCodeCrabAvatar = '/brand/claudecode-color.png'
 const defaultBridgeUrl = 'http://127.0.0.1:43110/'
 const bridgeUrl = (import.meta.env.VITE_OBSIDIAN_CODEX_BRIDGE_URL || defaultBridgeUrl).trim() || defaultBridgeUrl
+const bridgeOrigin = new URL(bridgeUrl, window.location.href).origin
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape' && open.value) {
@@ -72,6 +79,30 @@ function handleKeydown(event: KeyboardEvent) {
 
 function closePanel() {
   appStore.closeAISearchPanel()
+}
+
+async function sendCreepeeSSOTicket() {
+  if (!open.value || !bridgeFrameReady.value || ticketIssuedForOpen.value || !bridgeFrameRef.value?.contentWindow) {
+    return
+  }
+
+  ticketIssuedForOpen.value = true
+  try {
+    const { ticket } = await authAPI.issueCreepeeSSOTicket()
+    bridgeFrameRef.value?.contentWindow?.postMessage({
+      type: 'sub2api:creepee-sso',
+      ticket,
+    }, bridgeOrigin)
+  } catch (error) {
+    ticketIssuedForOpen.value = false
+    console.warn('Failed to issue Creepee SSO ticket', error)
+  }
+}
+
+function handleBridgeFrameLoad() {
+  bridgeFrameReady.value = true
+  ticketIssuedForOpen.value = false
+  void sendCreepeeSSOTicket()
 }
 
 onMounted(() => {
@@ -90,7 +121,10 @@ watch(open, (value) => {
   if (value) {
     nextTick(() => {
       panelRef.value?.focus?.()
+      void sendCreepeeSSOTicket()
     })
+  } else {
+    ticketIssuedForOpen.value = false
   }
 })
 </script>

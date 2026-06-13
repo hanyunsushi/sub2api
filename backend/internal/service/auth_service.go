@@ -51,6 +51,11 @@ const maxTokenLength = 8192
 // refreshTokenPrefix is the prefix for refresh tokens to distinguish them from access tokens.
 const refreshTokenPrefix = "rt_"
 
+const (
+	bridgeSSOTicketPrefix = "cpsso_"
+	bridgeSSOTicketTTL    = 90 * time.Second
+)
+
 // JWTClaims JWT载荷数据
 type JWTClaims struct {
 	UserID       int64  `json:"user_id"`
@@ -1400,6 +1405,90 @@ type TokenPair struct {
 type TokenPairWithUser struct {
 	TokenPair
 	UserRole string
+}
+
+// BridgeSSOTicket is a short-lived, single-use credential for Sub2 -> Obsidian Bridge login.
+type BridgeSSOTicket struct {
+	Ticket    string
+	ExpiresIn int
+	ExpiresAt time.Time
+}
+
+// IssueBridgeSSOTicket creates a short-lived one-time ticket for an already authenticated user.
+func (s *AuthService) IssueBridgeSSOTicket(ctx context.Context, user *User) (*BridgeSSOTicket, error) {
+	ticketCache, ok := s.refreshTokenCache.(BridgeSSOTicketCache)
+	if !ok {
+		return nil, ErrServiceUnavailable
+	}
+	if err := ensureBridgeSSOUser(user); err != nil {
+		return nil, err
+	}
+
+	tokenBytes := make([]byte, 32)
+	if _, err := rand.Read(tokenBytes); err != nil {
+		return nil, fmt.Errorf("generate bridge sso ticket: %w", err)
+	}
+	rawTicket := bridgeSSOTicketPrefix + hex.EncodeToString(tokenBytes)
+	now := time.Now()
+	expiresAt := now.Add(bridgeSSOTicketTTL)
+	data := &BridgeSSOTicketData{
+		UserID:    user.ID,
+		CreatedAt: now,
+		ExpiresAt: expiresAt,
+	}
+	if err := ticketCache.StoreBridgeSSOTicket(ctx, hashToken(rawTicket), data, bridgeSSOTicketTTL); err != nil {
+		return nil, ErrServiceUnavailable
+	}
+	return &BridgeSSOTicket{
+		Ticket:    rawTicket,
+		ExpiresIn: int(bridgeSSOTicketTTL / time.Second),
+		ExpiresAt: expiresAt,
+	}, nil
+}
+
+// VerifyBridgeSSOTicket consumes a one-time ticket and returns the current active Sub2 user.
+func (s *AuthService) VerifyBridgeSSOTicket(ctx context.Context, ticket string) (*User, error) {
+	ticketCache, ok := s.refreshTokenCache.(BridgeSSOTicketCache)
+	if !ok {
+		return nil, ErrInvalidToken
+	}
+	normalized := strings.TrimSpace(ticket)
+	if normalized == "" || len(normalized) > maxTokenLength || !strings.HasPrefix(normalized, bridgeSSOTicketPrefix) {
+		return nil, ErrInvalidToken
+	}
+
+	data, err := ticketCache.ConsumeBridgeSSOTicket(ctx, hashToken(normalized))
+	if err != nil {
+		if errors.Is(err, ErrRefreshTokenNotFound) {
+			return nil, ErrInvalidToken
+		}
+		return nil, ErrServiceUnavailable
+	}
+	if data == nil || data.UserID <= 0 || time.Now().After(data.ExpiresAt) {
+		return nil, ErrInvalidToken
+	}
+
+	user, err := s.userRepo.GetByID(ctx, data.UserID)
+	if err != nil {
+		if errors.Is(err, ErrUserNotFound) {
+			return nil, ErrInvalidToken
+		}
+		return nil, ErrServiceUnavailable
+	}
+	if err := ensureBridgeSSOUser(user); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func ensureBridgeSSOUser(user *User) error {
+	if user == nil {
+		return ErrInvalidToken
+	}
+	if !user.IsActive() {
+		return ErrUserNotActive
+	}
+	return nil
 }
 
 // GenerateTokenPair 生成Access Token和Refresh Token对
