@@ -106,10 +106,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" class="btn btn-secondary" @click="handleClose">
+        <button data-testid="account-temp-unsched-status-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.close') }}
         </button>
-        <button
+        <button data-testid="account-temp-unsched-status-button-handle-reset"
           type="button"
           class="btn btn-primary"
           :disabled="!isActive || resetting"

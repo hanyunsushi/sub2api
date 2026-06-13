@@ -22,7 +22,7 @@
         <div class="mt-6 space-y-4">
           <div>
             <label class="input-label">{{ t('auth.emailLabel') }}</label>
-            <input
+            <input data-testid="auth-o-auth-callback-input-email"
               class="input w-full"
               type="email"
               :value="registrationEmail"
@@ -32,7 +32,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('auth.passwordLabel') }}</label>
-            <input
+            <input data-testid="auth-o-auth-callback-input-password"
               v-model="password"
               type="password"
               class="input w-full"
@@ -44,7 +44,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('auth.confirmPassword') }}</label>
-            <input
+            <input data-testid="auth-o-auth-callback-input-confirm-password"
               v-model="confirmPassword"
               type="password"
               class="input w-full"
@@ -56,7 +56,7 @@
           </div>
           <div v-if="invitationRequired">
             <label class="input-label">{{ t('auth.invitationCodeLabel') }}</label>
-            <input
+            <input data-testid="auth-o-auth-callback-input-invitation-code"
               v-model="invitationCode"
               type="text"
               class="input w-full"
@@ -68,7 +68,7 @@
           <p v-if="registrationError" class="text-sm text-red-600 dark:text-red-400">
             {{ registrationError }}
           </p>
-          <button
+          <button data-testid="auth-o-auth-callback-button-handle-submit-registration"
             class="btn btn-primary w-full"
             type="button"
             :disabled="isSubmitting || !canSubmitRegistration"
@@ -86,7 +86,7 @@
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ t('auth.oauth.invalidCallbackHint') }}
         </p>
-        <button class="btn btn-primary mt-6" type="button" @click="router.replace('/login')">
+        <button data-testid="auth-o-auth-callback-button-replace-login" class="btn btn-primary mt-6" type="button" @click="router.replace('/login')">
           {{ t('auth.backToLogin') }}
         </button>
       </div>
@@ -103,8 +103,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.code') }}</label>
             <div class="flex gap-2">
-              <input class="input flex-1 font-mono text-sm" :value="code" readonly />
-              <button class="btn btn-secondary" type="button" :disabled="!code" @click="copy(code)">
+              <input data-testid="auth-o-auth-callback-input-input" class="input flex-1 font-mono text-sm" :value="code" readonly />
+              <button data-testid="auth-o-auth-callback-button-copy-code" class="btn btn-secondary" type="button" :disabled="!code" @click="copy(code)">
                 {{ t('common.copy') }}
               </button>
             </div>
@@ -113,8 +113,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.state') }}</label>
             <div class="flex gap-2">
-              <input class="input flex-1 font-mono text-sm" :value="state" readonly />
-              <button
+              <input data-testid="auth-o-auth-callback-input-input-2" class="input flex-1 font-mono text-sm" :value="state" readonly />
+              <button data-testid="auth-o-auth-callback-button-copy-state"
                 class="btn btn-secondary"
                 type="button"
                 :disabled="!state"
@@ -128,8 +128,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.fullUrl') }}</label>
             <div class="flex gap-2">
-              <input class="input flex-1 font-mono text-xs" :value="fullUrl" readonly />
-              <button
+              <input data-testid="auth-o-auth-callback-input-input-3" class="input flex-1 font-mono text-xs" :value="fullUrl" readonly />
+              <button data-testid="auth-o-auth-callback-button-copy-full-url"
                 class="btn btn-secondary"
                 type="button"
                 :disabled="!fullUrl"

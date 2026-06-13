@@ -29,7 +29,7 @@
             ? 'border-primary-400 bg-primary-50/50 dark:border-primary-500 dark:bg-primary-900/20'
             : 'border-gray-200 hover:border-gray-300 dark:border-dark-600 dark:hover:border-dark-500'"
         >
-          <input
+          <input data-testid="admin-user-group-replace-input-selected-group-id"
             type="radio"
             :value="group.id"
             v-model="selectedGroupId"
@@ -58,8 +58,8 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button @click="$emit('close')" class="btn btn-secondary px-5">{{ t('common.cancel') }}</button>
-        <button
+        <button data-testid="admin-user-group-replace-button-emit-close" @click="$emit('close')" class="btn btn-secondary px-5">{{ t('common.cancel') }}</button>
+        <button data-testid="admin-user-group-replace-button-handle-replace"
           @click="handleReplace"
           :disabled="!selectedGroupId || submitting"
           class="btn btn-primary px-6"

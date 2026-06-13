@@ -12,7 +12,7 @@
 
       <div class="flex items-center gap-3">
         <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
+          <input data-testid="admin-announcements-announcement-targeting-editor-input-announcement-targeting-mode"
             type="radio"
             name="announcement-targeting-mode"
             value="all"
@@ -23,7 +23,7 @@
           {{ t('admin.announcements.form.targetingAll') }}
         </label>
         <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
+          <input data-testid="admin-announcements-announcement-targeting-editor-input-announcement-targeting-mode-2"
             type="radio"
             name="announcement-targeting-mode"
             value="custom"
@@ -44,7 +44,7 @@
             ({{ anyOf.length }}/50)
           </span>
         </div>
-        <button
+        <button data-testid="admin-announcements-announcement-targeting-editor-button-add-or-group"
           type="button"
           class="btn btn-secondary"
           :disabled="anyOf.length >= 50"
@@ -75,7 +75,7 @@
             </div>
           </div>
 
-          <button
+          <button data-testid="admin-announcements-announcement-targeting-editor-button-remove-or-group-group-index"
             type="button"
             class="btn btn-secondary"
             @click="removeOrGroup(groupIndex)"
@@ -120,7 +120,7 @@
                 </div>
                 <div class="w-full sm:flex-1">
                   <label class="input-label">{{ t('admin.announcements.form.balanceValue') }}</label>
-                  <input
+                  <input data-testid="admin-announcements-announcement-targeting-editor-input-number"
                     :value="String(cond.value ?? '')"
                     type="number"
                     step="any"
@@ -131,7 +131,7 @@
               </div>
 
               <div class="flex justify-end">
-                <button
+                <button data-testid="admin-announcements-announcement-targeting-editor-button-remove-and-condition-group-index-cond-index"
                   type="button"
                   class="btn btn-secondary"
                   @click="removeAndCondition(groupIndex, condIndex)"
@@ -144,7 +144,7 @@
           </div>
 
           <div class="flex justify-end">
-            <button
+            <button data-testid="admin-announcements-announcement-targeting-editor-button-add-and-condition-group-index"
               type="button"
               class="btn btn-secondary"
               :disabled="(group.all_of?.length || 0) >= 50"

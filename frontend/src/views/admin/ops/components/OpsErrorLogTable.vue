@@ -56,7 +56,7 @@
               </td>
             </tr>
 
-            <tr
+            <tr data-testid="admin-ops-components-ops-error-log-table-tr-emit-open-error-detail-log-id"
               v-for="log in rows"
               :key="log.id"
               class="group cursor-pointer transition-colors hover:bg-gray-50/80 dark:hover:bg-dark-800/50"
@@ -205,9 +205,9 @@
               </td>
 
               <!-- Actions -->
-              <td class="whitespace-nowrap px-4 py-2 text-right" @click.stop>
+              <td data-testid="admin-ops-components-ops-error-log-table-td-td" class="whitespace-nowrap px-4 py-2 text-right" @click.stop>
                 <div class="flex items-center justify-end gap-3">
-                  <button type="button" class="text-primary-600 hover:text-primary-700 dark:text-primary-400 text-xs font-bold" @click="emit('openErrorDetail', log.id)">
+                  <button data-testid="admin-ops-components-ops-error-log-table-button-emit-open-error-detail-log-id" type="button" class="text-primary-600 hover:text-primary-700 dark:text-primary-400 text-xs font-bold" @click="emit('openErrorDetail', log.id)">
                     {{ t('admin.ops.errorLog.details') }}
                   </button>
                 </div>

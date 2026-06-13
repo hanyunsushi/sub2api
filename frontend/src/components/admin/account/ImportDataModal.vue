@@ -27,11 +27,11 @@
             </div>
             <div class="text-xs text-gray-500 dark:text-dark-400">JSON (.json)</div>
           </div>
-          <button type="button" class="btn btn-secondary shrink-0" @click="openFilePicker">
+          <button data-testid="admin-account-import-data-button-open-file-picker" type="button" class="btn btn-secondary shrink-0" @click="openFilePicker">
             {{ t('common.chooseFile') }}
           </button>
         </div>
-        <input
+        <input data-testid="admin-account-import-data-input-file-input"
           ref="fileInput"
           type="file"
           class="hidden"
@@ -68,10 +68,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button class="btn btn-secondary" type="button" :disabled="importing" @click="handleClose">
+        <button data-testid="admin-account-import-data-button-handle-close" class="btn btn-secondary" type="button" :disabled="importing" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="admin-account-import-data-button-submit"
           class="btn btn-primary"
           type="submit"
           form="import-data-form"

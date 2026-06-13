@@ -11,7 +11,7 @@
           v-if="showSourceToggle"
           class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-dark-800"
         >
-          <button
+          <button data-testid="charts-model-distribution-chart-button-emit-update-source-requested"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'requested'
@@ -21,7 +21,7 @@
           >
             {{ t('usage.requestedModel') }}
           </button>
-          <button
+          <button data-testid="charts-model-distribution-chart-button-emit-update-source-upstream"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'upstream'
@@ -31,7 +31,7 @@
           >
             {{ t('usage.upstreamModel') }}
           </button>
-          <button
+          <button data-testid="charts-model-distribution-chart-button-emit-update-source-mapping"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'mapping'
@@ -46,7 +46,7 @@
           v-if="showMetricToggle"
           class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-dark-800"
         >
-          <button
+          <button data-testid="charts-model-distribution-chart-button-emit-update-metric-tokens"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'tokens'
@@ -56,7 +56,7 @@
           >
             {{ t('admin.dashboard.metricTokens') }}
           </button>
-          <button
+          <button data-testid="charts-model-distribution-chart-button-emit-update-metric-actual-cost"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'actual_cost'
@@ -68,7 +68,7 @@
           </button>
         </div>
         <div v-if="enableRankingView" class="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-dark-800">
-          <button
+          <button data-testid="charts-model-distribution-chart-button-active-view-model-distribution"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="
@@ -80,7 +80,7 @@
           >
             {{ t('admin.dashboard.viewModelDistribution') }}
           </button>
-          <button
+          <button data-testid="charts-model-distribution-chart-button-active-view-spending-ranking"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="
@@ -120,7 +120,7 @@
           </thead>
           <tbody>
             <template v-for="model in displayModelStats" :key="model.model">
-              <tr
+              <tr data-testid="charts-model-distribution-chart-tr-toggle-breakdown-model-model-model"
                 class="border-t border-gray-100 cursor-pointer transition-colors dark:border-gray-700"
                 @click="toggleBreakdown('model', model.model)"
               >
@@ -194,7 +194,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
+            <tr data-testid="charts-model-distribution-chart-tr-tr"
               v-for="(item, index) in rankingDisplayItems"
               :key="item.isOther ? 'others' : `${item.user_id}-${index}`"
               class="border-t border-gray-100 transition-colors dark:border-gray-700"

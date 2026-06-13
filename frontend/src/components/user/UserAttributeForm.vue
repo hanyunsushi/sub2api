@@ -7,7 +7,7 @@
       </label>
 
       <!-- Text Input -->
-      <input
+      <input data-testid="user-user-attribute-form-input-local-values-attr-id"
         v-if="attr.type === 'text' || attr.type === 'email' || attr.type === 'url'"
         v-model="localValues[attr.id]"
         :type="attr.type === 'text' ? 'text' : attr.type"
@@ -18,7 +18,7 @@
       />
 
       <!-- Number Input -->
-      <input
+      <input data-testid="user-user-attribute-form-input-local-values-attr-id-2"
         v-else-if="attr.type === 'number'"
         v-model.number="localValues[attr.id]"
         type="number"
@@ -31,7 +31,7 @@
       />
 
       <!-- Date Input -->
-      <input
+      <input data-testid="user-user-attribute-form-input-local-values-attr-id-3"
         v-else-if="attr.type === 'date'"
         v-model="localValues[attr.id]"
         type="date"
@@ -41,7 +41,7 @@
       />
 
       <!-- Textarea -->
-      <textarea
+      <textarea data-testid="user-user-attribute-form-textarea-local-values-attr-id"
         v-else-if="attr.type === 'textarea'"
         v-model="localValues[attr.id]"
         :required="attr.required"
@@ -66,7 +66,7 @@
           :key="opt.value"
           class="flex items-center gap-2"
         >
-          <input
+          <input data-testid="user-user-attribute-form-input-checkbox"
             type="checkbox"
             :value="opt.value"
             :checked="isOptionSelected(attr.id, opt.value)"

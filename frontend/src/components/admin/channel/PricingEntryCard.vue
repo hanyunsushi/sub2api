@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-dark-600 dark:bg-dark-800">
     <!-- Collapsed summary header (clickable) -->
-    <div
+    <div data-testid="admin-channel-pricing-entry-card-div-collapsed-collapsed"
       class="flex cursor-pointer select-none items-center gap-2"
       @click="collapsed = !collapsed"
     >
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Remove button (always visible, stop propagation) -->
-      <button
+      <button data-testid="admin-channel-pricing-entry-card-button-emit-remove"
         type="button"
         @click.stop="emit('remove')"
         class="flex-shrink-0 rounded p-1 text-gray-400 hover:text-red-500"
@@ -104,27 +104,27 @@
           <div class="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-5">
             <div>
               <label class="text-xs text-gray-400">{{ t('admin.channels.form.inputPrice', '输入') }}</label>
-              <input :value="entry.input_price" @input="emitField('input_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number" :value="entry.input_price" @input="emitField('input_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
               <label class="text-xs text-gray-400">{{ t('admin.channels.form.outputPrice', '输出') }}</label>
-              <input :value="entry.output_price" @input="emitField('output_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-2" :value="entry.output_price" @input="emitField('output_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
               <label class="text-xs text-gray-400">{{ t('admin.channels.form.cacheWritePrice', '缓存写入') }}</label>
-              <input :value="entry.cache_write_price" @input="emitField('cache_write_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-3" :value="entry.cache_write_price" @input="emitField('cache_write_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
               <label class="text-xs text-gray-400">{{ t('admin.channels.form.cacheReadPrice', '缓存读取') }}</label>
-              <input :value="entry.cache_read_price" @input="emitField('cache_read_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-4" :value="entry.cache_read_price" @input="emitField('cache_read_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
               <label class="text-xs text-gray-400">{{ t('admin.channels.form.imageTokenPrice', '图片输出') }}</label>
-              <input :value="entry.image_output_price" @input="emitField('image_output_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-5" :value="entry.image_output_price" @input="emitField('image_output_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
           </div>
@@ -136,7 +136,7 @@
                 {{ t('admin.channels.form.intervals', '上下文区间定价（可选）') }}
                 <span class="ml-1 font-normal text-gray-400">(min, max]</span>
               </label>
-              <button type="button" @click="addInterval" class="text-xs text-primary-600 hover:text-primary-700">
+              <button data-testid="admin-channel-pricing-entry-card-button-add-interval" type="button" @click="addInterval" class="text-xs text-primary-600 hover:text-primary-700">
                 + {{ t('admin.channels.form.addInterval', '添加区间') }}
               </button>
             </div>
@@ -161,7 +161,7 @@
             <span class="ml-1 font-normal text-gray-400">$</span>
           </label>
           <div class="mt-1 w-48">
-            <input :value="entry.per_request_price" @input="emitField('per_request_price', ($event.target as HTMLInputElement).value)"
+            <input data-testid="admin-channel-pricing-entry-card-input-number-6" :value="entry.per_request_price" @input="emitField('per_request_price', ($event.target as HTMLInputElement).value)"
               type="number" step="any" min="0" class="input text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
           </div>
 
@@ -170,7 +170,7 @@
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400">
               {{ t('admin.channels.form.requestTiers', '按次计费层级') }}
             </label>
-            <button type="button" @click="addInterval" class="text-xs text-primary-600 hover:text-primary-700">
+            <button data-testid="admin-channel-pricing-entry-card-button-add-interval-2" type="button" @click="addInterval" class="text-xs text-primary-600 hover:text-primary-700">
               + {{ t('admin.channels.form.addTier', '添加层级') }}
             </button>
           </div>
@@ -197,7 +197,7 @@
             <span class="ml-1 font-normal text-gray-400">$</span>
           </label>
           <div class="mt-1 w-48">
-            <input :value="entry.per_request_price" @input="emitField('per_request_price', ($event.target as HTMLInputElement).value)"
+            <input data-testid="admin-channel-pricing-entry-card-input-number-7" :value="entry.per_request_price" @input="emitField('per_request_price', ($event.target as HTMLInputElement).value)"
               type="number" step="any" min="0" class="input text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
           </div>
 
@@ -206,7 +206,7 @@
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400">
               {{ t('admin.channels.form.imageTiers', '图片计费层级（按次）') }}
             </label>
-            <button type="button" @click="addImageTier" class="text-xs text-primary-600 hover:text-primary-700">
+            <button data-testid="admin-channel-pricing-entry-card-button-add-image-tier" type="button" @click="addImageTier" class="text-xs text-primary-600 hover:text-primary-700">
               + {{ t('admin.channels.form.addTier', '添加层级') }}
             </button>
           </div>

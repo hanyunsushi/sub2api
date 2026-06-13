@@ -40,7 +40,7 @@
                 v-if="suggestedDisplayName"
                 class="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm dark:border-dark-600 dark:bg-dark-900/50"
               >
-                <input v-model="adoptDisplayName" type="checkbox" class="mt-1 h-4 w-4" />
+                <input data-testid="auth-linux-do-callback-input-adopt-display-name" v-model="adoptDisplayName" type="checkbox" class="mt-1 h-4 w-4" />
                 <span class="space-y-1">
                   <span class="block font-medium text-gray-900 dark:text-white">
                     {{ t('auth.oauthFlow.useDisplayName') }}
@@ -55,7 +55,7 @@
                 v-if="suggestedAvatarUrl"
                 class="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm dark:border-dark-600 dark:bg-dark-900/50"
               >
-                <input v-model="adoptAvatar" type="checkbox" class="mt-1 h-4 w-4" />
+                <input data-testid="auth-linux-do-callback-input-adopt-avatar" v-model="adoptAvatar" type="checkbox" class="mt-1 h-4 w-4" />
                 <img
                   :src="suggestedAvatarUrl"
                   :alt="t('auth.oauthFlow.avatarAlt', { providerName })"
@@ -78,7 +78,7 @@
               {{ t('auth.linuxdo.invitationRequired') }}
             </p>
             <div>
-              <input
+              <input data-testid="auth-linux-do-callback-input-invitation-code"
                 v-model="invitationCode"
                 type="text"
                 class="input w-full"
@@ -87,7 +87,7 @@
                 @keyup.enter="handleSubmitInvitation"
               />
             </div>
-            <button
+            <button data-testid="auth-linux-do-callback-button-handle-submit-invitation"
               class="btn btn-primary w-full"
               :disabled="isSubmitting || !invitationCode.trim()"
               @click="handleSubmitInvitation"
@@ -100,7 +100,7 @@
             <p class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('auth.oauthFlow.reviewProfileBeforeContinue', { providerName }) }}
             </p>
-            <button class="btn btn-primary w-full" :disabled="isSubmitting" @click="handleContinueLogin">
+            <button data-testid="auth-linux-do-callback-button-handle-continue-login" class="btn btn-primary w-full" :disabled="isSubmitting" @click="handleContinueLogin">
               {{ isSubmitting ? t('common.processing') : t('auth.continue') }}
             </button>
           </template>
@@ -122,14 +122,14 @@
                 </div>
 
                 <div class="grid gap-3 sm:grid-cols-2">
-                  <button
+                  <button data-testid="auth-linux-do-callback-button-switch-to-bind-login-mode"
                     class="btn btn-secondary w-full"
                     :disabled="isSubmitting"
                     @click="switchToBindLoginMode()"
                   >
                     {{ t('auth.oauthFlow.bindExistingAccount') }}
                   </button>
-                  <button
+                  <button data-testid="auth-linux-do-callback-button-switch-to-create-account-mode"
                     class="btn btn-primary w-full"
                     :disabled="isSubmitting"
                     @click="switchToCreateAccountMode"
@@ -186,7 +186,7 @@
               >
                 {{ isSubmitting ? t('common.processing') : t('auth.oauthFlow.logInAndBind') }}
               </button>
-              <button
+              <button data-testid="auth-linux-do-callback-button-switch-to-create-account-mode-2"
                 v-if="canReturnToCreateAccount"
                 class="btn btn-secondary w-full"
                 :disabled="isSubmitting"

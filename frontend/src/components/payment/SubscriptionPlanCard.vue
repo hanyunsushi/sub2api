@@ -83,7 +83,7 @@
       <div class="flex-1" />
 
       <!-- Subscribe Button -->
-      <button
+      <button data-testid="payment-subscription-plan-card-button-emit-select-plan"
         type="button"
         :class="['w-full rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-[0.98]', btnClass]"
         @click="emit('select', plan)"

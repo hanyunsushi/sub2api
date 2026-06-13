@@ -48,7 +48,7 @@
             </p>
           </div>
         </div>
-        <button
+        <button data-testid="user-profile-profile-totp-card-button-show-disable-dialog-on"
           type="button"
           class="btn btn-outline-danger"
           @click="showDisableDialog = true"
@@ -74,7 +74,7 @@
             </p>
           </div>
         </div>
-        <button
+        <button data-testid="user-profile-profile-totp-card-button-show-setup-modal-on"
           type="button"
           class="btn btn-primary"
           @click="showSetupModal = true"

@@ -6,7 +6,7 @@
           <!-- Left: Search + Filters -->
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-64">
-              <input
+              <input data-testid="admin-redeem-input-search-query"
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('admin.redeem.searchCodes')"
@@ -30,7 +30,7 @@
 
           <!-- Right: Action buttons -->
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
-            <button
+            <button data-testid="admin-redeem-button-load-codes"
               @click="loadCodes"
               :disabled="loading"
               class="btn btn-secondary"
@@ -38,10 +38,10 @@
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button @click="handleExportCodes" class="btn btn-secondary">
+            <button data-testid="admin-redeem-button-handle-export-codes" @click="handleExportCodes" class="btn btn-secondary">
               {{ t('admin.redeem.exportCsv') }}
             </button>
-            <button
+            <button data-testid="batch-update-open"
               data-test="batch-update-open"
               @click="openBatchUpdateDialog"
               :disabled="selectedCount === 0 || batchUpdating"
@@ -50,7 +50,7 @@
               <Icon name="edit" size="md" class="mr-2" />
               {{ t('admin.redeem.batchUpdate') }}
             </button>
-            <button @click="showGenerateDialog = true" class="btn btn-primary">
+            <button data-testid="admin-redeem-button-show-generate-dialog-on" @click="showGenerateDialog = true" class="btn btn-primary">
               {{ t('admin.redeem.generateCodes') }}
             </button>
           </div>
@@ -68,7 +68,7 @@
           @sort="handleSort"
         >
           <template #header-select>
-            <input
+            <input data-testid="select-all-codes"
               data-test="select-all-codes"
               type="checkbox"
               class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -79,7 +79,7 @@
           </template>
 
           <template #cell-select="{ row }">
-            <input
+            <input data-testid="select-code"
               data-test="select-code"
               type="checkbox"
               class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -92,7 +92,7 @@
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
               <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
-              <button
+              <button data-testid="admin-redeem-button-copy-to-clipboard-value"
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
@@ -171,7 +171,7 @@
 
           <template #cell-actions="{ row }">
             <div class="flex items-center space-x-2">
-              <button
+              <button data-testid="admin-redeem-button-handle-delete-row"
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
@@ -201,14 +201,14 @@
             {{ t('admin.redeem.selectedCount', { count: selectedCount }) }}
           </span>
           <div class="flex flex-wrap items-center gap-2">
-            <button
+            <button data-testid="admin-redeem-button-clear-selected-codes"
               type="button"
               class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
               @click="clearSelectedCodes"
             >
               {{ t('admin.redeem.clearSelection') }}
             </button>
-            <button
+            <button data-testid="admin-redeem-button-open-batch-update-dialog"
               type="button"
               class="btn btn-primary btn-sm"
               @click="openBatchUpdateDialog"
@@ -229,7 +229,7 @@
 
         <!-- Batch Actions -->
         <div v-if="filters.status === 'unused'" class="flex justify-end">
-          <button @click="showDeleteUnusedDialog = true" class="btn btn-danger">
+          <button data-testid="admin-redeem-button-show-delete-unused-dialog-on" @click="showDeleteUnusedDialog = true" class="btn btn-danger">
             {{ t('admin.redeem.deleteAllUnused') }}
           </button>
         </div>
@@ -263,7 +263,7 @@
     <!-- Generate Codes Dialog -->
     <Teleport to="body">
       <div v-if="showGenerateDialog" class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="fixed inset-0 bg-black/50" @click="showGenerateDialog = false"></div>
+        <div data-testid="admin-redeem-div-show-generate-dialog-off" class="fixed inset-0 bg-black/50" @click="showGenerateDialog = false"></div>
         <div
           class="relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-dark-800"
         >
@@ -284,7 +284,7 @@
                     : t('admin.redeem.columns.value')
                 }}
               </label>
-              <input
+              <input data-testid="admin-redeem-input-generate-form-value"
                 v-model.number="generateForm.value"
                 type="number"
                 :step="generateForm.type === 'balance' ? '0.01' : '1'"
@@ -334,7 +334,7 @@
               </div>
               <div>
                 <label class="input-label">{{ t('admin.redeem.validityDays') }}</label>
-                <input
+                <input data-testid="admin-redeem-input-generate-form-validity-days"
                   v-model.number="generateForm.validity_days"
                   type="number"
                   min="1"
@@ -347,7 +347,7 @@
             <div>
               <label class="input-label">{{ t('admin.redeem.codeExpiry') }}</label>
               <div class="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                <button
+                <button data-testid="admin-redeem-button-expiry-option-option-value"
                   v-for="option in redeemCodeExpiryOptions"
                   :key="option.value"
                   type="button"
@@ -362,7 +362,7 @@
                   {{ option.label }}
                 </button>
               </div>
-              <input
+              <input data-testid="admin-redeem-input-generate-form-custom-expiry-days"
                 v-if="generateForm.expiry_option === 'custom'"
                 v-model.number="generateForm.custom_expiry_days"
                 type="number"
@@ -375,7 +375,7 @@
             </div>
             <div>
               <label class="input-label">{{ t('admin.redeem.count') }}</label>
-              <input
+              <input data-testid="admin-redeem-input-generate-form-count"
                 v-model.number="generateForm.count"
                 type="number"
                 min="1"
@@ -385,10 +385,10 @@
               />
             </div>
             <div class="flex justify-end gap-3 pt-2">
-              <button type="button" @click="showGenerateDialog = false" class="btn btn-secondary">
+              <button data-testid="admin-redeem-button-show-generate-dialog-off" type="button" @click="showGenerateDialog = false" class="btn btn-secondary">
                 {{ t('common.cancel') }}
               </button>
-              <button type="submit" :disabled="generating" class="btn btn-primary">
+              <button data-testid="admin-redeem-button-submit" type="submit" :disabled="generating" class="btn btn-primary">
                 {{ generating ? t('admin.redeem.generating') : t('admin.redeem.generate') }}
               </button>
             </div>
@@ -403,7 +403,7 @@
         v-if="showBatchUpdateDialog"
         class="fixed inset-0 z-50 flex items-center justify-center p-4"
       >
-        <div class="fixed inset-0 bg-black/50" @click="closeBatchUpdateDialog"></div>
+        <div data-testid="admin-redeem-div-close-batch-update-dialog" class="fixed inset-0 bg-black/50" @click="closeBatchUpdateDialog"></div>
         <div
           class="relative z-10 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-dark-800"
         >
@@ -417,7 +417,7 @@
           <form data-test="batch-update-form" class="space-y-4" @submit.prevent="handleBatchUpdate">
             <div class="space-y-2">
               <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <input
+                <input data-testid="batch-field-status"
                   data-test="batch-field-status"
                   v-model="batchUpdateForm.update_status"
                   type="checkbox"
@@ -435,7 +435,7 @@
 
             <div class="space-y-2">
               <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <input
+                <input data-testid="admin-redeem-input-batch-update-form-update-expires-at"
                   v-model="batchUpdateForm.update_expires_at"
                   type="checkbox"
                   class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -444,7 +444,7 @@
               </label>
               <template v-if="batchUpdateForm.update_expires_at">
                 <Select v-model="batchUpdateForm.expires_mode" :options="batchExpiryModeOptions" />
-                <input
+                <input data-testid="admin-redeem-input-batch-update-form-expires-at-local"
                   v-if="batchUpdateForm.expires_mode === 'custom'"
                   v-model="batchUpdateForm.expires_at_local"
                   type="datetime-local"
@@ -455,7 +455,7 @@
 
             <div class="space-y-2">
               <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <input
+                <input data-testid="batch-field-notes"
                   data-test="batch-field-notes"
                   v-model="batchUpdateForm.update_notes"
                   type="checkbox"
@@ -463,7 +463,7 @@
                 />
                 {{ t('admin.redeem.batchFields.notes') }}
               </label>
-              <textarea
+              <textarea data-testid="batch-notes-input"
                 v-if="batchUpdateForm.update_notes"
                 data-test="batch-notes-input"
                 v-model="batchUpdateForm.notes"
@@ -475,7 +475,7 @@
 
             <div class="space-y-2">
               <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <input
+                <input data-testid="admin-redeem-input-batch-update-form-update-group-id"
                   v-model="batchUpdateForm.update_group_id"
                   type="checkbox"
                   class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -491,10 +491,10 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-2">
-              <button type="button" @click="closeBatchUpdateDialog" class="btn btn-secondary">
+              <button data-testid="admin-redeem-button-close-batch-update-dialog" type="button" @click="closeBatchUpdateDialog" class="btn btn-secondary">
                 {{ t('common.cancel') }}
               </button>
-              <button
+              <button data-testid="batch-update-submit"
                 data-test="batch-update-submit"
                 type="submit"
                 :disabled="batchUpdating"
@@ -511,7 +511,7 @@
     <!-- Generated Codes Result Dialog -->
     <Teleport to="body">
       <div v-if="showResultDialog" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="fixed inset-0 bg-black/50" @click="closeResultDialog"></div>
+        <div data-testid="admin-redeem-div-close-result-dialog" class="fixed inset-0 bg-black/50" @click="closeResultDialog"></div>
         <div class="relative z-10 w-full max-w-lg rounded-xl bg-white shadow-xl dark:bg-dark-800">
           <!-- Header -->
           <div
@@ -544,7 +544,7 @@
                 </p>
               </div>
             </div>
-            <button
+            <button data-testid="admin-redeem-button-close-result-dialog"
               @click="closeResultDialog"
               class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300"
             >
@@ -554,7 +554,7 @@
           <!-- Content -->
           <div class="p-5">
             <div class="relative">
-              <textarea
+              <textarea data-testid="admin-redeem-textarea-textarea"
                 readonly
                 :value="generatedCodesText"
                 :style="{ height: textareaHeight }"
@@ -566,7 +566,7 @@
           <div
             class="flex justify-end gap-2 rounded-b-xl border-t border-gray-200 bg-gray-50 px-5 py-4 dark:border-dark-600 dark:bg-dark-700/50"
           >
-            <button
+            <button data-testid="admin-redeem-button-copy-generated-codes"
               @click="copyGeneratedCodes"
               :class="[
                 'btn flex items-center gap-2 transition-all',
@@ -584,7 +584,7 @@
               </svg>
               {{ copiedAll ? t('admin.redeem.copied') : t('admin.redeem.copyAll') }}
             </button>
-            <button @click="downloadGeneratedCodes" class="btn btn-primary flex items-center gap-2">
+            <button data-testid="admin-redeem-button-download-generated-codes" @click="downloadGeneratedCodes" class="btn btn-primary flex items-center gap-2">
               <Icon name="download" size="sm" :stroke-width="2" />
               {{ t('admin.redeem.download') }}
             </button>

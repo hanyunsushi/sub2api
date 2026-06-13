@@ -352,7 +352,7 @@ watch(
       </h3>
       <div class="flex items-center gap-2">
         <!-- 用户视图切换按钮 -->
-        <button
+        <button data-testid="admin-ops-components-ops-concurrency-card-button-show-by-user-show-by-user"
           class="flex items-center justify-center rounded-lg px-2 py-1 transition-colors"
           :class="showByUser
             ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
@@ -365,7 +365,7 @@ watch(
           </svg>
         </button>
         <!-- 刷新按钮 -->
-        <button
+        <button data-testid="admin-ops-components-ops-concurrency-card-button-load-data"
           class="flex items-center gap-1 rounded-lg bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :disabled="loading"
           :title="t('common.refresh')"

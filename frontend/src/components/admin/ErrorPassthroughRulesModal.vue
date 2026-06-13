@@ -11,7 +11,7 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('admin.errorPassthrough.description') }}
         </p>
-        <button @click="showCreateModal = true" class="btn btn-primary btn-sm">
+        <button data-testid="admin-error-passthrough-rules-button-show-create-modal-on" @click="showCreateModal = true" class="btn btn-primary btn-sm">
           <Icon name="plus" size="sm" class="mr-1" />
           {{ t('admin.errorPassthrough.createRule') }}
         </button>
@@ -161,7 +161,7 @@
                 </div>
               </td>
               <td class="px-3 py-2">
-                <button
+                <button data-testid="admin-error-passthrough-rules-button-toggle-enabled-rule"
                   @click="toggleEnabled(rule)"
                   :class="[
                     'relative inline-flex h-4 w-7 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -178,14 +178,14 @@
               </td>
               <td class="px-3 py-2">
                 <div class="flex items-center gap-1">
-                  <button
+                  <button data-testid="admin-error-passthrough-rules-button-handle-edit-rule"
                     @click="handleEdit(rule)"
                     class="p-1 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400"
                     :title="t('common.edit')"
                   >
                     <Icon name="edit" size="sm" />
                   </button>
-                  <button
+                  <button data-testid="admin-error-passthrough-rules-button-handle-delete-rule"
                     @click="handleDelete(rule)"
                     class="p-1 text-gray-500 hover:text-red-600 dark:hover:text-red-400"
                     :title="t('common.delete')"
@@ -202,7 +202,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button @click="$emit('close')" class="btn btn-secondary">
+        <button data-testid="admin-error-passthrough-rules-button-emit-close" @click="$emit('close')" class="btn btn-secondary">
           {{ t('common.close') }}
         </button>
       </div>
@@ -220,7 +220,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="input-label">{{ t('admin.errorPassthrough.form.name') }}</label>
-            <input
+            <input data-testid="admin-error-passthrough-rules-input-form-name"
               v-model="form.name"
               type="text"
               required
@@ -230,7 +230,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.errorPassthrough.form.priority') }}</label>
-            <input
+            <input data-testid="admin-error-passthrough-rules-input-form-priority"
               v-model.number="form.priority"
               type="number"
               min="0"
@@ -242,7 +242,7 @@
 
         <div>
           <label class="input-label">{{ t('admin.errorPassthrough.form.description') }}</label>
-          <input
+          <input data-testid="admin-error-passthrough-rules-input-form-description"
             v-model="form.description"
             type="text"
             class="input"
@@ -259,7 +259,7 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="input-label text-xs">{{ t('admin.errorPassthrough.form.errorCodes') }}</label>
-              <input
+              <input data-testid="admin-error-passthrough-rules-input-error-codes-input"
                 v-model="errorCodesInput"
                 type="text"
                 class="input text-sm"
@@ -269,7 +269,7 @@
             </div>
             <div>
               <label class="input-label text-xs">{{ t('admin.errorPassthrough.form.keywords') }}</label>
-              <textarea
+              <textarea data-testid="admin-error-passthrough-rules-textarea-keywords-input"
                 v-model="keywordsInput"
                 rows="2"
                 class="input font-mono text-xs"
@@ -287,7 +287,7 @@
                 :key="option.value"
                 class="flex items-start gap-2 cursor-pointer"
               >
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-match-mode"
                   type="radio"
                   :value="option.value"
                   v-model="form.match_mode"
@@ -309,7 +309,7 @@
                 :key="platform.value"
                 class="inline-flex items-center gap-1.5"
               >
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-platforms"
                   type="checkbox"
                   :value="platform.value"
                   v-model="form.platforms"
@@ -331,7 +331,7 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="flex items-center gap-1.5">
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-passthrough-code"
                   type="checkbox"
                   v-model="form.passthrough_code"
                   class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -342,7 +342,7 @@
               </label>
               <div v-if="!form.passthrough_code" class="mt-2">
                 <label class="input-label text-xs">{{ t('admin.errorPassthrough.form.responseCode') }}</label>
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-response-code"
                   v-model.number="form.response_code"
                   type="number"
                   min="100"
@@ -354,7 +354,7 @@
             </div>
             <div>
               <label class="flex items-center gap-1.5">
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-passthrough-body"
                   type="checkbox"
                   v-model="form.passthrough_body"
                   class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -365,7 +365,7 @@
               </label>
               <div v-if="!form.passthrough_body" class="mt-2">
                 <label class="input-label text-xs">{{ t('admin.errorPassthrough.form.customMessage') }}</label>
-                <input
+                <input data-testid="admin-error-passthrough-rules-input-form-custom-message"
                   v-model="form.custom_message"
                   type="text"
                   class="input text-sm"
@@ -378,7 +378,7 @@
 
         <!-- Skip Monitoring -->
         <div class="flex items-center gap-1.5">
-          <input
+          <input data-testid="admin-error-passthrough-rules-input-form-skip-monitoring"
             type="checkbox"
             v-model="form.skip_monitoring"
             class="h-3.5 w-3.5 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
@@ -391,7 +391,7 @@
 
         <!-- Enabled -->
         <div class="flex items-center gap-1.5">
-          <input
+          <input data-testid="admin-error-passthrough-rules-input-form-enabled"
             type="checkbox"
             v-model="form.enabled"
             class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -404,10 +404,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button @click="closeFormModal" type="button" class="btn btn-secondary">
+          <button data-testid="admin-error-passthrough-rules-button-close-form-modal" @click="closeFormModal" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button @click="handleSubmit" :disabled="submitting" class="btn btn-primary">
+          <button data-testid="admin-error-passthrough-rules-button-handle-submit" @click="handleSubmit" :disabled="submitting" class="btn btn-primary">
             <Icon v-if="submitting" name="refresh" size="sm" class="mr-1 animate-spin" />
             {{ showEditModal ? t('common.update') : t('common.create') }}
           </button>

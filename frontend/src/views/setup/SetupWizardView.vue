@@ -73,7 +73,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('setup.database.host') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-database-host"
                 v-model="formData.database.host"
                 type="text"
                 class="input"
@@ -82,7 +82,7 @@
             </div>
             <div>
               <label class="input-label">{{ t('setup.database.port') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-database-port"
                 v-model.number="formData.database.port"
                 type="number"
                 class="input"
@@ -106,7 +106,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('setup.database.username') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-database-user"
                 v-model="formData.database.user"
                 type="text"
                 class="input"
@@ -115,7 +115,7 @@
             </div>
             <div>
               <label class="input-label">{{ t('setup.database.password') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-database-password"
                 v-model="formData.database.password"
                 type="password"
                 class="input"
@@ -127,7 +127,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('setup.database.databaseName') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-database-dbname"
                 v-model="formData.database.dbname"
                 type="text"
                 class="input"
@@ -148,7 +148,7 @@
             </div>
           </div>
 
-          <button
+          <button data-testid="setup-setup-wizard-button-test-database-connection"
             @click="testDatabaseConnection"
             :disabled="testingDb"
             class="btn btn-secondary w-full"
@@ -198,7 +198,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('setup.redis.host') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-redis-host"
                 v-model="formData.redis.host"
                 type="text"
                 class="input"
@@ -207,7 +207,7 @@
             </div>
             <div>
               <label class="input-label">{{ t('setup.redis.port') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-redis-port"
                 v-model.number="formData.redis.port"
                 type="number"
                 class="input"
@@ -219,7 +219,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('setup.redis.password') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-redis-password"
                 v-model="formData.redis.password"
                 type="password"
                 class="input"
@@ -228,7 +228,7 @@
             </div>
             <div>
               <label class="input-label">{{ t('setup.redis.database') }}</label>
-              <input
+              <input data-testid="setup-setup-wizard-input-form-data-redis-db"
                 v-model.number="formData.redis.db"
                 type="number"
                 class="input"
@@ -249,7 +249,7 @@
             <Toggle v-model="formData.redis.enable_tls" />
           </div>
 
-          <button
+          <button data-testid="setup-setup-wizard-button-test-redis-connection"
             @click="testRedisConnection"
             :disabled="testingRedis"
             class="btn btn-secondary w-full"
@@ -304,7 +304,7 @@
 
           <div>
             <label class="input-label">{{ t('setup.admin.email') }}</label>
-            <input
+            <input data-testid="setup-setup-wizard-input-form-data-admin-email"
               v-model="formData.admin.email"
               type="email"
               class="input"
@@ -314,7 +314,7 @@
 
           <div>
             <label class="input-label">{{ t('setup.admin.password') }}</label>
-            <input
+            <input data-testid="setup-setup-wizard-input-form-data-admin-password"
               v-model="formData.admin.password"
               type="password"
               class="input"
@@ -324,7 +324,7 @@
 
           <div>
             <label class="input-label">{{ t('setup.admin.confirmPassword') }}</label>
-            <input
+            <input data-testid="setup-setup-wizard-input-confirm-password"
               v-model="confirmPassword"
               type="password"
               class="input"
@@ -435,7 +435,7 @@
 
         <!-- Navigation Buttons -->
         <div class="mt-8 flex justify-between">
-          <button
+          <button data-testid="setup-setup-wizard-button-button"
             v-if="currentStep > 0 && !installSuccess"
             @click="currentStep--"
             class="btn btn-secondary"
@@ -445,7 +445,7 @@
           </button>
           <div v-else></div>
 
-          <button
+          <button data-testid="setup-setup-wizard-button-next-step"
             v-if="currentStep < 3"
             @click="nextStep"
             :disabled="!canProceed"
@@ -455,7 +455,7 @@
             <Icon name="chevronRight" size="sm" class="ml-2" :stroke-width="2" />
           </button>
 
-          <button
+          <button data-testid="setup-setup-wizard-button-perform-install"
             v-else-if="!installSuccess"
             @click="performInstall"
             :disabled="installing"

@@ -29,7 +29,7 @@
         :key="preset.id"
         class="logo-picker-preset-frame"
       >
-        <button
+        <button data-testid="common-logo-picker-button-select-preset-preset-url"
           type="button"
           class="logo-picker-preset"
           :class="{ 'logo-picker-preset-active': normalizedValue === preset.url }"
@@ -38,7 +38,7 @@
         >
           <img :src="preset.url" :alt="preset.label" loading="lazy" />
         </button>
-        <button
+        <button data-testid="common-logo-picker-button-delete-preset-preset-url"
           v-if="isCustomPreset(preset.url)"
           type="button"
           class="logo-picker-preset-delete"

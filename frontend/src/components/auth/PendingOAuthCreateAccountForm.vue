@@ -76,7 +76,7 @@
     >
       {{ isSubmitting ? t('common.processing') : t('auth.createAccount') }}
     </button>
-    <button
+    <button data-testid="auth-pending-o-auth-create-account-form-button-emit-switch-to-bind"
       type="button"
       class="btn btn-secondary w-full"
       :disabled="isSubmitting"

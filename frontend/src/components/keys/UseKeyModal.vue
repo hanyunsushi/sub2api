@@ -31,7 +31,7 @@
         <!-- Client Tabs -->
         <div v-if="clientTabs.length" class="border-b border-gray-200 dark:border-dark-700">
           <nav class="-mb-px flex space-x-6" aria-label="Client">
-            <button
+            <button data-testid="keys-use-key-button-active-client-tab-tab-id"
               v-for="tab in clientTabs"
               :key="tab.id"
               @click="activeClientTab = tab.id"
@@ -53,7 +53,7 @@
         <!-- OS/Shell Tabs -->
         <div v-if="showShellTabs" class="border-b border-gray-200 dark:border-dark-700">
           <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-            <button
+            <button data-testid="keys-use-key-button-active-tab-tab-id"
               v-for="tab in currentTabs"
               :key="tab.id"
               @click="activeTab = tab.id"
@@ -88,7 +88,7 @@
               <!-- Code Header -->
               <div class="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-dark-800 border-b border-gray-700 dark:border-dark-700">
                 <span class="text-xs text-gray-400 font-mono">{{ file.path }}</span>
-                <button
+                <button data-testid="keys-use-key-button-copy-content-file-content-index"
                   @click="copyContent(file.content, index)"
                   class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-colors"
                   :class="copiedIndex === index
@@ -122,7 +122,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button
+        <button data-testid="keys-use-key-button-emit-close"
           @click="emit('close')"
           class="btn btn-secondary"
         >

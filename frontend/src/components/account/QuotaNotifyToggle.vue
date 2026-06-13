@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex items-center gap-1.5">
-    <button
+    <button data-testid="account-quota-notify-toggle-button-emit-update-enabled-enabled"
       type="button"
       @click="emit('update:enabled', !enabled)"
       :class="[
@@ -32,7 +32,7 @@ const emit = defineEmits<{
       />
     </button>
     <template v-if="enabled">
-      <input
+      <input data-testid="account-quota-notify-toggle-input-number"
         :value="threshold"
         @input="emit('update:threshold', parseFloat(($event.target as HTMLInputElement).value) || null)"
         type="number"
@@ -41,7 +41,7 @@ const emit = defineEmits<{
         :step="thresholdType === QUOTA_THRESHOLD_TYPE_PERCENTAGE ? 1 : 0.01"
         class="input py-1 text-sm flex-1 min-w-0"
       />
-      <select
+      <select data-testid="account-quota-notify-toggle-select-select"
         :value="thresholdType || QUOTA_THRESHOLD_TYPE_FIXED"
         @change="emit('update:thresholdType', ($event.target as HTMLSelectElement).value as QuotaThresholdType)"
         class="input py-1 text-xs w-[4.5rem] flex-shrink-0 text-center"

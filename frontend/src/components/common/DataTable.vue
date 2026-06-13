@@ -77,7 +77,7 @@
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
       <thead class="table-header bg-gray-50 dark:bg-dark-800">
         <tr>
-          <th
+          <th data-testid="common-data-table-th-th"
             v-for="(column, index) in columns"
             :key="column.key"
             scope="col"

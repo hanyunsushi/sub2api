@@ -136,7 +136,7 @@ onBeforeUnmount(() => {
           @keydown.space.prevent="copy(item.endpoint)"
         >{{ item.endpoint }}</code>
 
-        <button
+        <button data-testid="keys-endpoint-popover-button-copy-item-endpoint"
           type="button"
           class="rounded p-0.5 transition-colors"
           :class="copiedEndpoint === item.endpoint
@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
           </svg>
         </button>
 
-        <a
+        <a data-testid="keys-endpoint-popover-link-a"
           :href="speedTestUrl(item.endpoint)"
           target="_blank"
           rel="noopener noreferrer"

@@ -45,7 +45,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-forgot-password-input-form-data-email"
               id="email"
               v-model="formData.email"
               type="email"
@@ -74,7 +74,7 @@
           />
         </div>
 
-        <button
+        <button data-testid="auth-forgot-password-button-submit"
           type="submit"
           :disabled="isLoading || (turnstileEnabled && !turnstileToken)"
           class="btn btn-primary auth-recovery-submit w-full"

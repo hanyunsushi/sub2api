@@ -20,7 +20,7 @@
           <div class="mt-3 flex flex-wrap gap-4 text-xs text-gray-500">
             <div class="flex items-center gap-1">
               <span>{{ t('admin.users.group') }}:</span>
-              <button
+              <button data-testid="admin-user-user-api-keys-button-open-group-selector-key"
                 :ref="(el) => setGroupButtonRef(key.id, el)"
                 @click="openGroupSelector(key)"
                 class="-mx-1 -my-0.5 flex cursor-pointer items-center gap-1 rounded-md px-1 py-0.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
@@ -55,7 +55,7 @@
     >
       <div class="max-h-64 overflow-y-auto p-1.5">
         <!-- Unbind option -->
-        <button
+        <button data-testid="admin-user-user-api-keys-button-change-group-selected-key-for-group-null"
           @click="changeGroup(selectedKeyForGroup!, null)"
           :class="[
             'flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors',
@@ -72,7 +72,7 @@
           ><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
         </button>
         <!-- Group options -->
-        <button
+        <button data-testid="admin-user-user-api-keys-button-change-group-selected-key-for-group-group-id"
           v-for="group in allGroups"
           :key="group.id"
           @click="changeGroup(selectedKeyForGroup!, group.id)"

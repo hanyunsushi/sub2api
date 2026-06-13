@@ -8,36 +8,36 @@
     <form id="create-user-form" @submit.prevent="submit" class="space-y-5">
       <div>
         <label class="input-label">{{ t('admin.users.email') }}</label>
-        <input v-model="form.email" type="email" required class="input" :placeholder="t('admin.users.enterEmail')" />
+        <input data-testid="admin-user-user-create-input-form-email" v-model="form.email" type="email" required class="input" :placeholder="t('admin.users.enterEmail')" />
       </div>
       <div>
         <label class="input-label">{{ t('admin.users.password') }}</label>
         <div class="flex gap-2">
           <div class="relative flex-1">
-            <input v-model="form.password" type="text" required class="input pr-10" :placeholder="t('admin.users.enterPassword')" />
+            <input data-testid="admin-user-user-create-input-form-password" v-model="form.password" type="text" required class="input pr-10" :placeholder="t('admin.users.enterPassword')" />
           </div>
-          <button type="button" @click="generateRandomPassword" class="btn btn-secondary px-3">
+          <button data-testid="admin-user-user-create-button-generate-random-password" type="button" @click="generateRandomPassword" class="btn btn-secondary px-3">
             <Icon name="refresh" size="md" />
           </button>
         </div>
       </div>
       <div>
         <label class="input-label">{{ t('admin.users.username') }}</label>
-        <input v-model="form.username" type="text" class="input" :placeholder="t('admin.users.enterUsername')" />
+        <input data-testid="admin-user-user-create-input-form-username" v-model="form.username" type="text" class="input" :placeholder="t('admin.users.enterUsername')" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label class="input-label">{{ t('admin.users.columns.balance') }}</label>
-          <input v-model="form.balance" type="number" step="any" class="input" />
+          <input data-testid="admin-user-user-create-input-form-balance" v-model="form.balance" type="number" step="any" class="input" />
         </div>
         <div>
           <label class="input-label">{{ t('admin.users.columns.concurrency') }}</label>
-          <input v-model.number="form.concurrency" type="number" class="input" />
+          <input data-testid="admin-user-user-create-input-form-concurrency" v-model.number="form.concurrency" type="number" class="input" />
         </div>
       </div>
       <div>
         <label class="input-label">{{ t('admin.users.form.rpmLimit') }}</label>
-        <input
+        <input data-testid="admin-user-user-create-input-form-rpm-limit"
           v-model.number="form.rpm_limit"
           type="number"
           min="0"
@@ -50,8 +50,8 @@
     </form>
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button @click="$emit('close')" type="button" class="btn btn-secondary">{{ t('common.cancel') }}</button>
-        <button type="submit" form="create-user-form" :disabled="loading" class="btn btn-primary">
+        <button data-testid="admin-user-user-create-button-emit-close" @click="$emit('close')" type="button" class="btn btn-secondary">{{ t('common.cancel') }}</button>
+        <button data-testid="admin-user-user-create-button-submit" type="submit" form="create-user-form" :disabled="loading" class="btn btn-primary">
           {{ loading ? t('admin.users.creating') : t('common.create') }}
         </button>
       </div>

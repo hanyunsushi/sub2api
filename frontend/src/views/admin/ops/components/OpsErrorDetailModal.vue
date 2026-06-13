@@ -165,7 +165,7 @@
                 <div class="font-mono text-xs text-gray-500 dark:text-gray-400">
                   {{ ev.status_code ?? '—' }}
                 </div>
-                <button
+                <button data-testid="admin-ops-components-ops-error-detail-button-toggle-upstream-detail-ev-id"
                   type="button"
                   class="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[10px] font-bold text-primary-700 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-60 dark:text-primary-200 dark:hover:bg-dark-700"
                   :disabled="!getUpstreamResponsePreview(ev)"

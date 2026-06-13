@@ -11,6 +11,7 @@
             type="button"
             class="codex-button codex-button--primary"
             :disabled="codexStore.loading || !managementKeyDraft.trim()"
+            data-testid="codex-accounts-refresh-quota"
             @click="refreshAccounts"
           >
             <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
@@ -29,6 +30,7 @@
                     class="codex-input"
                     type="text"
                     autocomplete="off"
+                    data-testid="codex-accounts-base-url"
                     :placeholder="DEFAULT_CPA_MANAGEMENT_BASE"
                   />
                 </label>
@@ -39,11 +41,12 @@
                     class="codex-input"
                     type="password"
                     autocomplete="off"
+                    data-testid="codex-accounts-management-key"
                     :placeholder="t('admin.codex.accounts.managementKeyPlaceholder')"
                   />
                 </label>
                 <label class="codex-remember">
-                  <input
+                  <input data-testid="codex-codex-accounts-input-remember-connection-draft"
                     v-model="rememberConnectionDraft"
                     class="codex-checkbox"
                     type="checkbox"
@@ -57,6 +60,7 @@
                   type="button"
                   class="codex-button codex-button--primary"
                   :disabled="codexStore.loading"
+                  data-testid="codex-accounts-connect"
                   @click="connectAndLoad"
                 >
                   <Icon name="key" size="sm" />
@@ -97,6 +101,7 @@
                       type="button"
                       class="codex-button codex-button--primary"
                       :disabled="codexStore.loading || !managementKeyDraft.trim()"
+                      data-testid="codex-accounts-refresh-quota-list"
                       @click="refreshAccounts"
                     >
                       <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
@@ -107,12 +112,14 @@
                       class="sr-only"
                       type="file"
                       accept="application/json,.json"
+                      data-testid="codex-accounts-auth-file-input"
                       @change="handleAuthFileChange"
                     />
                     <button
                       type="button"
                       class="codex-button"
                       :disabled="uploadingAuthFile || !managementKeyDraft.trim()"
+                      data-testid="codex-accounts-upload-auth-file"
                       @click="openAuthFilePicker"
                     >
                       <Icon name="upload" size="sm" />
@@ -126,6 +133,7 @@
                       type="button"
                       class="codex-button"
                       :disabled="oauthLoading || !managementKeyDraft.trim()"
+                      data-testid="codex-accounts-open-oauth"
                       @click="openCodexOAuth"
                     >
                       <Icon name="externalLink" size="sm" />
@@ -137,26 +145,27 @@
                       v-model="searchQuery"
                       class="codex-input !min-h-9 !w-56"
                       type="search"
+                      data-testid="codex-accounts-search"
                       :placeholder="t('admin.codex.accounts.search')"
                     />
-                    <select v-model="statusFilter" class="codex-select !min-h-9 !w-36">
+                    <select v-model="statusFilter" class="codex-select !min-h-9 !w-36" data-testid="codex-accounts-filter-status">
                       <option v-for="option in statusOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
                     </select>
-                    <select v-model="groupFilter" class="codex-select !min-h-9 !w-40">
+                    <select v-model="groupFilter" class="codex-select !min-h-9 !w-40" data-testid="codex-accounts-filter-group">
                       <option value="all">{{ t('admin.codex.accounts.allGroups') }}</option>
                       <option value="ungrouped">{{ t('admin.codex.accounts.noGroup') }}</option>
                       <option v-for="group in codexStore.groups" :key="group.id" :value="String(group.id)">
                         {{ group.name }}
                       </option>
                     </select>
-                    <select v-model="usageStateFilter" class="codex-select !min-h-9 !w-36">
+                    <select v-model="usageStateFilter" class="codex-select !min-h-9 !w-36" data-testid="codex-accounts-filter-usage-state">
                       <option v-for="option in usageStateOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
                     </select>
-                    <select v-model="sortKey" class="codex-select !min-h-9 !w-44">
+                    <select v-model="sortKey" class="codex-select !min-h-9 !w-44" data-testid="codex-accounts-sort-key">
                       <option v-for="option in sortOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
@@ -166,6 +175,7 @@
                       class="codex-button codex-button--compact"
                       :title="sortDirectionLabel"
                       :aria-label="sortDirectionLabel"
+                      data-testid="codex-accounts-sort-direction"
                       @click="toggleSortDirection"
                     >
                       <Icon :name="sortDirection === 'asc' ? 'arrowUp' : 'arrowDown'" size="sm" />
@@ -177,7 +187,7 @@
 
               <div v-if="filteredAccounts.length > 0" class="codex-selection-bar">
                 <label class="codex-selection-toggle">
-                  <input
+                  <input data-testid="codex-codex-accounts-input-checkbox"
                     class="codex-selection-checkbox"
                     type="checkbox"
                     :checked="allPageDeletableSelected"
@@ -193,6 +203,7 @@
                   type="button"
                   class="codex-button codex-button--danger codex-button--compact"
                   :disabled="selectedDeletableCount === 0 || isDeletingAuthFiles"
+                  data-testid="codex-accounts-delete-selected"
                   @click="requestDeleteSelectedAccounts"
                 >
                   <Icon name="trash" size="sm" />
@@ -202,6 +213,7 @@
                   type="button"
                   class="codex-button codex-button--compact"
                   :disabled="selectedAuthNames.length === 0 || isDeletingAuthFiles"
+                  data-testid="codex-accounts-clear-selection"
                   @click="clearAccountSelection"
                 >
                   {{ t('admin.codex.accounts.clearSelection') }}
@@ -215,7 +227,7 @@
                 {{ t('admin.codex.accounts.empty') }}
               </div>
               <div v-else class="codex-account-grid">
-                <article
+                <article data-testid="codex-codex-accounts-article-select-account-account-name"
                   v-for="account in paginatedAccounts"
                   :key="account.key"
                   class="codex-account-card"
@@ -226,13 +238,13 @@
                   @click="selectAccount(account.name)"
                 >
                   <div class="codex-account-card__top">
-                    <label
+                    <label data-testid="codex-codex-accounts-label-label"
                       class="codex-selection-control"
                       :class="{ 'is-disabled': !account.canDelete }"
                       :title="account.canDelete ? t('admin.codex.accounts.selectAuthFileNamed', { name: account.name }) : t('admin.codex.accounts.deleteDisabled')"
                       @click.stop
                     >
-                      <input
+                      <input data-testid="codex-codex-accounts-input-checkbox-2"
                         class="codex-selection-checkbox"
                         type="checkbox"
                         :checked="isAccountSelected(account.name)"
@@ -254,7 +266,7 @@
                         :title="accountStatusTitle(account)"
                         :aria-label="accountStatusTitle(account)"
                       ></span>
-                      <button
+                      <button data-testid="codex-codex-accounts-button-toggle-account-disabled-account"
                         type="button"
                         class="codex-icon-button codex-icon-button--tight"
                         :class="{ 'codex-icon-button--success': account.status === 'disabled' }"
@@ -268,7 +280,7 @@
                           size="xs"
                         />
                       </button>
-                      <button
+                      <button data-testid="codex-codex-accounts-button-request-delete-account-account-name"
                         type="button"
                         class="codex-icon-button codex-icon-button--tight codex-icon-button--danger"
                         :disabled="!account.canDelete || isDeletingAccount(account.name)"
@@ -359,7 +371,7 @@
               </div>
               <div v-if="oauthFallbackUrl" class="codex-inline-action">
                 <span>{{ t('admin.codex.accounts.popupBlocked') }}</span>
-                <a class="codex-link-button" :href="oauthFallbackUrl" target="_blank" rel="noopener noreferrer">
+                <a data-testid="codex-codex-accounts-link-a" class="codex-link-button" :href="oauthFallbackUrl" target="_blank" rel="noopener noreferrer">
                   {{ t('admin.codex.accounts.openOAuthLink') }}
                 </a>
               </div>
@@ -378,11 +390,11 @@
               <form v-if="selectedAccount" class="codex-detail-form" @submit.prevent="saveMetadata">
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.displayName') }}</span>
-                  <input v-model="metadataDraft.displayName" class="codex-input" type="text" />
+                  <input data-testid="codex-codex-accounts-input-metadata-draft-display-name" v-model="metadataDraft.displayName" class="codex-input" type="text" />
                 </label>
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.group') }}</span>
-                  <select v-model="metadataDraft.groupId" class="codex-select">
+                  <select data-testid="codex-codex-accounts-select-metadata-draft-group-id" v-model="metadataDraft.groupId" class="codex-select">
                     <option value="">{{ t('admin.codex.accounts.noGroup') }}</option>
                     <option v-for="group in codexStore.groups" :key="group.id" :value="String(group.id)">
                       {{ group.name }}
@@ -391,7 +403,7 @@
                 </label>
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.tags') }}</span>
-                  <input
+                  <input data-testid="codex-codex-accounts-input-metadata-draft-tags"
                     v-model="metadataDraft.tags"
                     class="codex-input"
                     type="text"
@@ -400,13 +412,13 @@
                 </label>
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.sortOrder') }}</span>
-                  <input v-model.number="metadataDraft.sortOrder" class="codex-input" type="number" />
+                  <input data-testid="codex-codex-accounts-input-metadata-draft-sort-order" v-model.number="metadataDraft.sortOrder" class="codex-input" type="number" />
                 </label>
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.note') }}</span>
-                  <textarea v-model="metadataDraft.note" class="codex-textarea"></textarea>
+                  <textarea data-testid="codex-codex-accounts-textarea-metadata-draft-note" v-model="metadataDraft.note" class="codex-textarea"></textarea>
                 </label>
-                <button type="submit" class="codex-button codex-button--primary" :disabled="savingMetadata">
+                <button data-testid="codex-codex-accounts-button-submit" type="submit" class="codex-button codex-button--primary" :disabled="savingMetadata">
                   <Icon name="database" size="sm" />
                   {{ savingMetadata ? t('common.saving') : t('common.save') }}
                 </button>
@@ -424,9 +436,9 @@
               <form class="codex-detail-form" @submit.prevent="createGroup">
                 <label class="codex-field">
                   <span class="codex-label">{{ t('admin.codex.accounts.newGroup') }}</span>
-                  <input v-model="newGroupName" class="codex-input" type="text" />
+                  <input data-testid="codex-codex-accounts-input-new-group-name" v-model="newGroupName" class="codex-input" type="text" />
                 </label>
-                <button type="submit" class="codex-button" :disabled="creatingGroup || !newGroupName.trim()">
+                <button data-testid="codex-codex-accounts-button-submit-2" type="submit" class="codex-button" :disabled="creatingGroup || !newGroupName.trim()">
                   <Icon name="plus" size="sm" />
                   {{ t('admin.codex.accounts.createGroup') }}
                 </button>
@@ -440,7 +452,7 @@
                   <span class="font-mono text-xs text-[var(--codex-muted)]">#{{ group.id }}</span>
                 </div>
                 <div class="codex-group-key-tools">
-                  <select
+                  <select data-testid="codex-codex-accounts-select-selected-sub2-group-by-codex-group-group-id"
                     v-model="selectedSub2GroupByCodexGroup[group.id]"
                     class="codex-select !min-h-9"
                     :aria-label="t('admin.codex.accounts.sub2GroupForKey')"
@@ -450,7 +462,7 @@
                       {{ nativeGroup.name }} · {{ nativeGroup.platform }}
                     </option>
                   </select>
-                  <button
+                  <button data-testid="codex-codex-accounts-button-generate-group-api-key-group-id"
                     type="button"
                     class="codex-button codex-button--compact"
                     :disabled="generatingGroupKeyId === group.id || !selectedSub2GroupByCodexGroup[group.id]"
@@ -461,7 +473,7 @@
                   </button>
                   <div v-if="generatedKeys[group.id]" class="codex-generated-key">
                     <span>{{ generatedKeys[group.id]?.key }}</span>
-                    <button type="button" class="codex-link-button" @click="copyGeneratedKey(group.id)">
+                    <button data-testid="codex-codex-accounts-button-copy-generated-key-group-id" type="button" class="codex-link-button" @click="copyGeneratedKey(group.id)">
                       {{ t('common.copy') }}
                     </button>
                   </div>
@@ -475,7 +487,7 @@
         </div>
 
         <Teleport to="body">
-          <div
+          <div data-testid="codex-codex-accounts-div-cancel-delete-account"
             v-if="deleteTargetAuthNames.length"
             class="codex-modal-backdrop"
             role="presentation"
@@ -500,13 +512,14 @@
                 </span>
               </div>
               <div class="codex-modal-actions">
-                <button type="button" class="codex-button" @click="cancelDeleteAccount">
+                <button type="button" class="codex-button" data-testid="codex-accounts-delete-cancel" @click="cancelDeleteAccount">
                   {{ t('common.cancel') }}
                 </button>
                 <button
                   type="button"
                   class="codex-button codex-button--danger"
                   :disabled="isDeletingAuthFiles"
+                  data-testid="codex-accounts-delete-confirm"
                   @click="confirmDeleteAccounts"
                 >
                   <Icon name="trash" size="sm" />

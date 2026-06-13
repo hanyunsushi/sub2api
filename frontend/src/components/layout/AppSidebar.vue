@@ -32,7 +32,7 @@
           <template v-for="item in adminNavItems" :key="item.path">
             <!-- Collapsible group (has children) -->
             <template v-if="item.children?.length">
-              <button
+              <button data-testid="layout-app-sidebar-button-handle-group-click-item"
                 type="button"
                 class="sidebar-link mb-1 w-full"
                 :class="{
@@ -57,7 +57,7 @@
               </button>
               <!-- Children -->
               <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="sidebar-children mb-1 ml-4 pl-2">
-                <router-link
+                <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-child-path"
                   v-for="child in item.children"
                   :key="child.path"
                   :to="child.path"
@@ -75,7 +75,7 @@
               </div>
             </template>
             <!-- Normal item (no children) -->
-            <a
+            <a data-testid="layout-app-sidebar-link-handle-menu-item-click-item-path"
               v-else-if="item.openMode === 'redirect'"
               :href="item.path"
               target="_blank"
@@ -90,7 +90,7 @@
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
-            <router-link
+            <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path"
               v-else
               :to="item.path"
               class="sidebar-link mb-1"
@@ -124,7 +124,7 @@
           </div>
 
           <template v-for="item in personalNavItems" :key="item.path">
-            <a
+            <a data-testid="layout-app-sidebar-link-handle-menu-item-click-item-path-2"
               v-if="item.openMode === 'redirect'"
               :href="item.path"
               target="_blank"
@@ -140,7 +140,7 @@
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
-            <router-link
+            <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-2"
               v-else
               :to="item.path"
               class="sidebar-link mb-1"
@@ -162,7 +162,7 @@
       <template v-else-if="!appStore.backendModeEnabled">
         <div class="sidebar-section">
           <template v-for="item in userNavItems" :key="item.path">
-            <a
+            <a data-testid="layout-app-sidebar-link-handle-menu-item-click-item-path-3"
               v-if="item.openMode === 'redirect'"
               :href="item.path"
               target="_blank"
@@ -178,7 +178,7 @@
               <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
-            <router-link
+            <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-3"
               v-else
               :to="item.path"
               class="sidebar-link mb-1"
@@ -202,7 +202,7 @@
       <ThemeSwitcher class="mb-2" :collapsed="sidebarCollapsed" />
 
       <!-- Collapse Button -->
-      <button
+      <button data-testid="layout-app-sidebar-button-toggle-sidebar"
         @click="toggleSidebar"
         class="sidebar-link w-full"
         :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
@@ -217,7 +217,7 @@
 
   <!-- Mobile Overlay -->
   <transition name="fade">
-    <div
+    <div data-testid="layout-app-sidebar-div-close-mobile"
       v-if="mobileOpen"
       class="fixed inset-0 z-30 bg-dark-950/55 lg:hidden"
       @click="closeMobile"

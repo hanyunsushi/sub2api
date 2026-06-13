@@ -12,7 +12,7 @@
         </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button
+        <button data-testid="admin-settings-email-template-editor-button-refresh-preview"
           type="button"
           class="btn btn-secondary btn-sm"
           :disabled="loadingTemplate || previewing || !canPreview"
@@ -20,7 +20,7 @@
         >
           {{ previewing ? t("admin.settings.emailTemplates.previewing") : t("admin.settings.emailTemplates.preview") }}
         </button>
-        <button
+        <button data-testid="admin-settings-email-template-editor-button-restore-official"
           type="button"
           class="btn btn-secondary btn-sm"
           :disabled="loadingTemplate || restoring || !selectedEvent || !selectedLocale"
@@ -28,7 +28,7 @@
         >
           {{ restoring ? t("admin.settings.emailTemplates.restoring") : t("admin.settings.emailTemplates.restoreOfficial") }}
         </button>
-        <button
+        <button data-testid="admin-settings-email-template-editor-button-save-template"
           type="button"
           class="btn btn-primary btn-sm"
           :disabled="loadingTemplate || saving || !canSave"
@@ -56,7 +56,7 @@
             <label class="input-label" for="email-template-event">
               {{ t("admin.settings.emailTemplates.event") }}
             </label>
-            <select
+            <select data-testid="admin-settings-email-template-editor-select-selected-event"
               id="email-template-event"
               v-model="selectedEvent"
               class="input"
@@ -75,7 +75,7 @@
             <label class="input-label" for="email-template-locale">
               {{ t("admin.settings.emailTemplates.locale") }}
             </label>
-            <select
+            <select data-testid="admin-settings-email-template-editor-select-selected-locale"
               id="email-template-locale"
               v-model="selectedLocale"
               class="input"
@@ -140,7 +140,7 @@
               <label class="input-label" for="email-template-subject">
                 {{ t("admin.settings.emailTemplates.subject") }}
               </label>
-              <input
+              <input data-testid="admin-settings-email-template-editor-input-subject"
                 id="email-template-subject"
                 v-model="subject"
                 type="text"
@@ -154,7 +154,7 @@
               <label class="input-label" for="email-template-html">
                 {{ t("admin.settings.emailTemplates.html") }}
               </label>
-              <textarea
+              <textarea data-testid="admin-settings-email-template-editor-textarea-html"
                 id="email-template-html"
                 v-model="html"
                 rows="18"
@@ -174,7 +174,7 @@
                 {{ t("admin.settings.emailTemplates.placeholdersHelp") }}
               </p>
               <div class="mt-3 flex flex-wrap gap-2">
-                <button
+                <button data-testid="admin-settings-email-template-editor-button-copy-placeholder-placeholder"
                   v-for="placeholder in placeholderList"
                   :key="placeholder"
                   type="button"

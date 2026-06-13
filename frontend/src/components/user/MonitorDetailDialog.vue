@@ -62,7 +62,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button @click="$emit('close')" class="btn btn-secondary">
+        <button data-testid="user-monitor-detail-button-emit-close" @click="$emit('close')" class="btn btn-secondary">
           {{ t('channelStatus.closeDetail') }}
         </button>
       </div>

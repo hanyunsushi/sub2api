@@ -68,7 +68,7 @@
         <UsageFilters v-model="filters" :start-date="startDate" :end-date="endDate" :exporting="exporting" :model-options="modelNameOptions" @change="applyFilters" @refresh="refreshData" @reset="resetFilters" @cleanup="openCleanupDialog" @export="exportToExcel">
         <template #after-reset>
           <div class="relative" ref="columnDropdownRef">
-            <button
+            <button data-testid="admin-usage-button-show-column-dropdown-show-column-dropdown"
               ref="columnDropdownButtonRef"
               @click="showColumnDropdown = !showColumnDropdown"
               class="btn btn-secondary px-2 md:px-3"
@@ -85,7 +85,7 @@
               placement="bottom-end"
               panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
             >
-              <button
+              <button data-testid="admin-usage-button-toggle-column-col-key"
                 v-for="col in toggleableColumns"
                 :key="col.key"
                 @click="toggleColumn(col.key)"
@@ -106,10 +106,10 @@
         </UsageFilters>
       </div>
       <div class="mb-4 flex gap-2 border-b border-gray-200 dark:border-dark-700">
-        <button class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
+        <button data-testid="admin-usage-button-active-tab-usage" class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
           {{ t('usage.tabs.usage') }}
         </button>
-        <button class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrorsTab">
+        <button data-testid="admin-usage-button-switch-to-errors-tab" class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrorsTab">
           {{ t('usage.tabs.errors') }}
         </button>
       </div>

@@ -16,7 +16,7 @@
         <div class="flex flex-col items-center py-4">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
           <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.payInNewWindowHint') }}</p>
-          <button v-if="payUrl" class="btn btn-secondary mt-3 text-sm" @click="reopenPopup">
+          <button data-testid="payment-payment-qr-button-reopen-popup" v-if="payUrl" class="btn btn-secondary mt-3 text-sm" @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
           </button>
         </div>
@@ -56,13 +56,13 @@
     </div>
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button v-if="!success && !expired" class="btn btn-secondary" :disabled="cancelling" @click="handleCancel">
+        <button data-testid="payment-payment-qr-button-handle-cancel" v-if="!success && !expired" class="btn btn-secondary" :disabled="cancelling" @click="handleCancel">
           {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
         </button>
-        <button v-if="success" class="btn btn-primary" @click="handleDone">
+        <button data-testid="payment-payment-qr-button-handle-done" v-if="success" class="btn btn-primary" @click="handleDone">
           {{ t('common.confirm') }}
         </button>
-        <button v-if="expired" class="btn btn-primary" @click="handleClose">
+        <button data-testid="payment-payment-qr-button-handle-close" v-if="expired" class="btn btn-primary" @click="handleClose">
           {{ t('payment.result.backToRecharge') }}
         </button>
       </div>

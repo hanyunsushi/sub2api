@@ -50,7 +50,7 @@
               </div>
 
               <!-- Close button -->
-              <button
+              <button data-testid="common-toast-button-remove-toast-toast-id"
                 @click="removeToast(toast.id)"
                 class="toast-close -m-1 flex-shrink-0 rounded p-1 transition-colors"
                 aria-label="Close notification"

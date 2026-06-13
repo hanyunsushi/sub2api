@@ -4,7 +4,7 @@
       {{ t('payment.paymentMethod') }}
     </label>
     <div class="grid grid-cols-2 gap-3 sm:flex">
-      <button
+      <button data-testid="payment-payment-method-selector-button-button"
         v-for="method in sortedMethods"
         :key="method.type"
         type="button"

@@ -4,7 +4,7 @@
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('dashboard.quickActions') }}</h2>
     </div>
     <div class="space-y-3 p-4">
-      <button @click="router.push('/keys')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+      <button data-testid="user-dashboard-user-dashboard-quick-actions-button-push-keys" @click="router.push('/keys')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
         <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="key" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>
@@ -19,7 +19,7 @@
         />
       </button>
 
-      <button @click="router.push('/usage')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+      <button data-testid="user-dashboard-user-dashboard-quick-actions-button-push-usage" @click="router.push('/usage')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
         <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="chart" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>
@@ -34,7 +34,7 @@
         />
       </button>
 
-      <button @click="router.push('/redeem')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
+      <button data-testid="user-dashboard-user-dashboard-quick-actions-button-push-redeem" @click="router.push('/redeem')" class="group flex w-full items-center gap-4 rounded-xl bg-gray-50 p-4 text-left transition-all duration-200 dark:bg-dark-800/50">
         <div class="dashboard-stat-icon dashboard-stat-icon-lg transition-transform">
           <Icon name="gift" size="lg" class="text-primary-600 dark:text-primary-400" />
         </div>

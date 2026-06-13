@@ -49,7 +49,7 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-col justify-center gap-3 sm:flex-row">
-        <button @click="goBack" class="btn btn-secondary">
+        <button data-testid="not-found-button-go-back" @click="goBack" class="btn btn-secondary">
           <Icon name="arrowLeft" size="md" class="mr-2" />
           Go Back
         </button>
@@ -62,7 +62,7 @@
       <!-- Help Link -->
       <p class="not-found-copy mt-8 text-sm">
         Need help?
-        <a
+        <a data-testid="not-found-link-a"
           href="#"
           class="not-found-link transition-colors"
         >

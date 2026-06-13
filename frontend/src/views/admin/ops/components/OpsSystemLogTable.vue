@@ -387,33 +387,33 @@ onMounted(async () => {
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
           采样初始
-          <input v-model.number="runtimeConfig.sampling_initial" type="number" min="1" class="input mt-1" />
+          <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-sampling-initial" v-model.number="runtimeConfig.sampling_initial" type="number" min="1" class="input mt-1" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
           采样后续
-          <input v-model.number="runtimeConfig.sampling_thereafter" type="number" min="1" class="input mt-1" />
+          <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-sampling-thereafter" v-model.number="runtimeConfig.sampling_thereafter" type="number" min="1" class="input mt-1" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
           保留天数
-          <input v-model.number="runtimeConfig.retention_days" type="number" min="1" max="3650" class="input mt-1" />
+          <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-retention-days" v-model.number="runtimeConfig.retention_days" type="number" min="1" max="3650" class="input mt-1" />
         </label>
         <div class="md:col-span-2 xl:col-span-6">
           <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
               <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                <input v-model="runtimeConfig.caller" type="checkbox" />
+                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-caller" v-model="runtimeConfig.caller" type="checkbox" />
                 caller
               </label>
               <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                <input v-model="runtimeConfig.enable_sampling" type="checkbox" />
+                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-enable-sampling" v-model="runtimeConfig.enable_sampling" type="checkbox" />
                 sampling
               </label>
             </div>
             <div class="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving" @click="saveRuntimeConfig">
+              <button data-testid="admin-ops-components-ops-system-log-table-button-save-runtime-config" type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving" @click="saveRuntimeConfig">
                 {{ runtimeSaving ? '保存中...' : '保存并生效' }}
               </button>
-              <button type="button" class="btn btn-secondary btn-sm" :disabled="runtimeSaving" @click="resetRuntimeConfig">
+              <button data-testid="admin-ops-components-ops-system-log-table-button-reset-runtime-config" type="button" class="btn btn-secondary btn-sm" :disabled="runtimeSaving" @click="resetRuntimeConfig">
                 回滚默认值
               </button>
             </div>
@@ -430,11 +430,11 @@ onMounted(async () => {
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         开始时间（可选）
-        <input v-model="filters.start_time" type="datetime-local" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-start-time" v-model="filters.start_time" type="datetime-local" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         结束时间（可选）
-        <input v-model="filters.end_time" type="datetime-local" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-end-time" v-model="filters.end_time" type="datetime-local" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         级别
@@ -442,43 +442,43 @@ onMounted(async () => {
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         组件
-        <input v-model="filters.component" type="text" class="input mt-1" placeholder="如 http.access" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-component" v-model="filters.component" type="text" class="input mt-1" placeholder="如 http.access" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         request_id
-        <input v-model="filters.request_id" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-request-id" v-model="filters.request_id" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         client_request_id
-        <input v-model="filters.client_request_id" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-client-request-id" v-model="filters.client_request_id" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         user_id
-        <input v-model="filters.user_id" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-user-id" v-model="filters.user_id" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         account_id
-        <input v-model="filters.account_id" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-account-id" v-model="filters.account_id" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         平台
-        <input v-model="filters.platform" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-platform" v-model="filters.platform" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         模型
-        <input v-model="filters.model" type="text" class="input mt-1" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-model" v-model="filters.model" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         关键词
-        <input v-model="filters.q" type="text" class="input mt-1" placeholder="消息/request_id" />
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-q" v-model="filters.q" type="text" class="input mt-1" placeholder="消息/request_id" />
       </label>
     </div>
 
     <div class="mb-3 flex flex-wrap gap-2">
-      <button type="button" class="btn btn-primary btn-sm" @click="applyFilters">查询</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">重置</button>
-      <button type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">按当前筛选清理</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">刷新健康指标</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-primary btn-sm" @click="applyFilters">查询</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-reset-filters" type="button" class="btn btn-secondary btn-sm" @click="resetFilters">重置</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">按当前筛选清理</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-fetch-health" type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">刷新健康指标</button>
     </div>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">

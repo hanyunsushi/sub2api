@@ -12,7 +12,7 @@
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <button
+          <button data-testid="payment-payment-provider-list-button-emit-refresh"
             type="button"
             @click="emit('refresh')"
             :disabled="loading"
@@ -21,7 +21,7 @@
           >
             <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
           </button>
-          <button
+          <button data-testid="payment-payment-provider-list-button-emit-create"
             type="button"
             @click="emit('create')"
             :disabled="!canCreate"
@@ -78,7 +78,7 @@
             ? t('admin.settings.payment.noProviders')
             : t('admin.settings.payment.enableTypesFirst') }}
         </p>
-        <button
+        <button data-testid="payment-payment-provider-list-button-emit-create-2"
           type="button"
           v-if="canCreate"
           @click="emit('create')"

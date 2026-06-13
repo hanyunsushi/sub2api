@@ -39,6 +39,7 @@
                   :placeholder="t('redeem.redeemCodePlaceholder')"
                   :disabled="submitting"
                   class="input py-3 pl-12 text-lg"
+                  data-testid="redeem-code-input"
                 />
               </div>
               <p class="input-hint">
@@ -50,6 +51,7 @@
               type="submit"
               :disabled="!redeemCode || submitting"
               class="btn btn-primary w-full py-3"
+              data-testid="redeem-submit"
             >
               <svg
                 v-if="submitting"

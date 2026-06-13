@@ -13,7 +13,7 @@
         <slot name="prefix"></slot>
       </div>
 
-      <input
+      <input data-testid="common-input-input-input-ref"
         :id="id"
         ref="inputRef"
         :type="type"

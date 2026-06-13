@@ -13,11 +13,11 @@
     >
       <div>
         <label class="input-label">{{ t('common.name') }}</label>
-        <input v-model="form.name" type="text" required class="input" data-tour="edit-account-form-name" />
+        <input data-testid="account-edit-account-input-form-name" v-model="form.name" type="text" required class="input" data-tour="edit-account-form-name" />
       </div>
       <div>
         <label class="input-label">{{ t('admin.accounts.notes') }}</label>
-        <textarea
+        <textarea data-testid="account-edit-account-textarea-form-notes"
           v-model="form.notes"
           rows="3"
           class="input"
@@ -36,7 +36,7 @@
       <div v-if="account.type === 'apikey'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.baseUrl') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-base-url"
             v-model="editBaseUrl"
             type="text"
             class="input"
@@ -54,7 +54,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.apiKey') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-api-key"
             v-model="editApiKey"
             type="password"
             class="input font-mono"
@@ -91,7 +91,7 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button
+              <button data-testid="account-edit-account-button-model-restriction-mode-whitelist"
                 type="button"
                 @click="modelRestrictionMode = 'whitelist'"
                 :class="[
@@ -116,7 +116,7 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button
+              <button data-testid="account-edit-account-button-model-restriction-mode-mapping"
                 type="button"
                 @click="modelRestrictionMode = 'mapping'"
                 :class="[
@@ -182,7 +182,7 @@
                 :key="getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-edit-account-input-mapping-from"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -201,13 +201,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-model-mapping-index"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -224,7 +224,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-edit-account-button-add-model-mapping"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -247,7 +247,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button
+                <button data-testid="account-edit-account-button-add-preset-mapping-preset-from-preset-to"
                   v-for="preset in presetMappings"
                   :key="preset.label"
                   type="button"
@@ -270,7 +270,7 @@
                 {{ t('admin.accounts.poolModeHint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-pool-mode-enabled-pool-mode-enabled"
               type="button"
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
@@ -294,7 +294,7 @@
           </div>
           <div v-if="poolModeEnabled" class="mt-3">
             <label class="input-label">{{ t('admin.accounts.poolModeRetryCount') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-pool-mode-retry-count"
               v-model.number="poolModeRetryCount"
               type="number"
               min="0"
@@ -313,7 +313,7 @@
           </div>
           <div v-if="poolModeEnabled" class="mt-3">
             <label class="input-label">{{ t('admin.accounts.poolModeRetryStatusCodes') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-pool-mode-retry-status-codes-input"
               v-model="poolModeRetryStatusCodesInput"
               type="text"
               class="input"
@@ -334,7 +334,7 @@
                 {{ t('admin.accounts.customErrorCodesHint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-custom-error-codes-enabled-custom-error-codes-enabled"
               type="button"
               @click="customErrorCodesEnabled = !customErrorCodesEnabled"
               :class="[
@@ -361,7 +361,7 @@
 
             <!-- Error Code Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-edit-account-button-toggle-error-code-code-value"
                 v-for="code in commonErrorCodes"
                 :key="code.value"
                 type="button"
@@ -379,7 +379,7 @@
 
             <!-- Manual input -->
             <div class="flex items-center gap-2">
-              <input
+              <input data-testid="account-edit-account-input-custom-error-code-input"
                 v-model.number="customErrorCodeInput"
                 type="number"
                 min="100"
@@ -388,7 +388,7 @@
                 :placeholder="t('admin.accounts.enterErrorCode')"
                 @keyup.enter="addCustomErrorCode"
               />
-              <button type="button" @click="addCustomErrorCode" class="btn btn-secondary px-3">
+              <button data-testid="account-edit-account-button-add-custom-error-code" type="button" @click="addCustomErrorCode" class="btn btn-secondary px-3">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     stroke-linecap="round"
@@ -408,7 +408,7 @@
                 class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
               >
                 {{ code }}
-                <button
+                <button data-testid="account-edit-account-button-remove-error-code-code"
                   type="button"
                   @click="removeErrorCode(code)"
                   class="hover:text-red-900 dark:hover:text-red-300"
@@ -444,7 +444,7 @@
         <template v-else>
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-whitelist-2"
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
@@ -456,7 +456,7 @@
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-mapping-2"
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -495,7 +495,7 @@
                 :key="'oauth-' + getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-edit-account-input-mapping-from-2"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -514,13 +514,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to-2"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-model-mapping-index-2"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -537,7 +537,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-edit-account-button-add-model-mapping-2"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -547,7 +547,7 @@
 
             <!-- Quick Add Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-edit-account-button-add-preset-mapping-preset-from-preset-to-2"
                 v-for="preset in presetMappings"
                 :key="'oauth-' + preset.label"
                 type="button"
@@ -565,7 +565,7 @@
       <div v-if="account.type === 'upstream'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.baseUrl') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-base-url-2"
             v-model="editBaseUrl"
             type="text"
             class="input"
@@ -575,7 +575,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.apiKey') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-api-key-2"
             v-model="editApiKey"
             type="password"
             class="input font-mono"
@@ -590,7 +590,7 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="input-label">Project ID</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-vertex-project-id"
               v-model="editVertexProjectId"
               type="text"
               class="input font-mono"
@@ -601,7 +601,7 @@
           </div>
           <div>
             <label class="input-label">Location</label>
-            <select
+            <select data-testid="account-edit-account-select-edit-vertex-location"
               v-model="editVertexLocation"
               required
               class="input font-mono"
@@ -630,7 +630,7 @@
 
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-whitelist-3"
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
@@ -655,7 +655,7 @@
               </svg>
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-mapping-3"
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -721,7 +721,7 @@
                 :key="getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-edit-account-input-mapping-from-3"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -740,13 +740,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to-3"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-model-mapping-index-3"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -763,7 +763,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-edit-account-button-add-model-mapping-3"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -786,7 +786,7 @@
 
             <!-- Quick Add Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-edit-account-button-add-preset-mapping-preset-from-preset-to-3"
                 v-for="preset in presetMappings"
                 :key="preset.label"
                 type="button"
@@ -806,7 +806,7 @@
         <template v-if="!isBedrockAPIKeyMode">
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockAccessKeyId') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-access-key-id"
               v-model="editBedrockAccessKeyId"
               type="text"
               class="input font-mono"
@@ -815,7 +815,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSecretAccessKey') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-secret-access-key"
               v-model="editBedrockSecretAccessKey"
               type="password"
               class="input font-mono"
@@ -825,7 +825,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSessionToken') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-session-token"
               v-model="editBedrockSessionToken"
               type="password"
               class="input font-mono"
@@ -838,7 +838,7 @@
         <!-- API Key field -->
         <div v-if="isBedrockAPIKeyMode">
           <label class="input-label">{{ t('admin.accounts.bedrockApiKeyInput') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-bedrock-api-key-value"
             v-model="editBedrockApiKeyValue"
             type="password"
             class="input font-mono"
@@ -850,7 +850,7 @@
         <!-- Shared: Region -->
         <div>
           <label class="input-label">{{ t('admin.accounts.bedrockRegion') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-bedrock-region"
             v-model="editBedrockRegion"
             type="text"
             class="input"
@@ -862,7 +862,7 @@
         <!-- Shared: Force Global -->
         <div>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-force-global"
               v-model="editBedrockForceGlobal"
               type="checkbox"
               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-500"
@@ -878,7 +878,7 @@
 
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-whitelist-4"
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
@@ -890,7 +890,7 @@
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-mapping-4"
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -916,19 +916,19 @@
           <!-- Mapping Mode -->
           <div v-else class="space-y-3">
             <div v-for="(mapping, index) in modelMappings" :key="getModelMappingKey(mapping)" class="flex items-center gap-2">
-              <input v-model="mapping.from" type="text" class="input flex-1" :placeholder="t('admin.accounts.fromModel')" />
+              <input data-testid="account-edit-account-input-mapping-from-4" v-model="mapping.from" type="text" class="input flex-1" :placeholder="t('admin.accounts.fromModel')" />
               <span class="text-gray-400">→</span>
-              <input v-model="mapping.to" type="text" class="input flex-1" :placeholder="t('admin.accounts.toModel')" />
-              <button type="button" @click="modelMappings.splice(index, 1)" class="text-red-500 hover:text-red-700">
+              <input data-testid="account-edit-account-input-mapping-to-4" v-model="mapping.to" type="text" class="input flex-1" :placeholder="t('admin.accounts.toModel')" />
+              <button data-testid="account-edit-account-button-splice-index-1" type="button" @click="modelMappings.splice(index, 1)" class="text-red-500 hover:text-red-700">
                 <Icon name="trash" size="sm" />
               </button>
             </div>
-            <button type="button" @click="modelMappings.push({ from: '', to: '' })" class="btn btn-secondary text-sm">
+            <button data-testid="account-edit-account-button-push-from-to" type="button" @click="modelMappings.push({ from: '', to: '' })" class="btn btn-secondary text-sm">
               + {{ t('admin.accounts.addMapping') }}
             </button>
             <!-- Bedrock Preset Mappings -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-edit-account-button-push-from-preset-from-to-preset-to"
                 v-for="preset in bedrockPresets"
                 :key="preset.from"
                 type="button"
@@ -950,7 +950,7 @@
                 {{ t('admin.accounts.poolModeHint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-pool-mode-enabled-pool-mode-enabled-2"
               type="button"
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
@@ -974,7 +974,7 @@
           </div>
           <div v-if="poolModeEnabled" class="mt-3">
             <label class="input-label">{{ t('admin.accounts.poolModeRetryCount') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-pool-mode-retry-count-2"
               v-model.number="poolModeRetryCount"
               type="number"
               min="0"
@@ -993,7 +993,7 @@
           </div>
           <div v-if="poolModeEnabled" class="mt-3">
             <label class="input-label">{{ t('admin.accounts.poolModeRetryStatusCodes') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-pool-mode-retry-status-codes-input-2"
               v-model="poolModeRetryStatusCodesInput"
               type="text"
               class="input"
@@ -1018,7 +1018,7 @@
           </div>
 
           <div class="mb-3 flex flex-wrap gap-2">
-            <button
+            <button data-testid="account-edit-account-button-sync-antigravity-upstream-models"
               type="button"
               @click="syncAntigravityUpstreamModels"
               :disabled="isSyncingAntigravityUpstream || !account?.id"
@@ -1035,7 +1035,7 @@
               class="space-y-1"
             >
               <div class="flex items-center gap-2">
-                <input
+                <input data-testid="account-edit-account-input-mapping-from-5"
                   v-model="mapping.from"
                   type="text"
                   :class="[
@@ -1048,7 +1048,7 @@
                 <svg class="h-4 w-4 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to-5"
                   v-model="mapping.to"
                   type="text"
                   :class="[
@@ -1057,7 +1057,7 @@
                   ]"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-antigravity-model-mapping-index"
                   type="button"
                   @click="removeAntigravityModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1082,7 +1082,7 @@
             </div>
           </div>
 
-          <button
+          <button data-testid="account-edit-account-button-add-antigravity-model-mapping"
             type="button"
             @click="addAntigravityModelMapping"
             class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1094,7 +1094,7 @@
           </button>
 
           <div class="flex flex-wrap gap-2">
-            <button
+            <button data-testid="account-edit-account-button-add-antigravity-preset-mapping-preset-from-preset-to"
               v-for="preset in antigravityPresetMappings"
               :key="preset.label"
               type="button"
@@ -1116,7 +1116,7 @@
               {{ t('admin.accounts.tempUnschedulable.hint') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-temp-unsched-enabled-temp-unsched-enabled"
             type="button"
             @click="tempUnschedEnabled = !tempUnschedEnabled"
             :class="[
@@ -1142,7 +1142,7 @@
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <button
+            <button data-testid="account-edit-account-button-add-temp-unsched-rule-preset-rule"
               v-for="preset in tempUnschedPresets"
               :key="preset.label"
               type="button"
@@ -1164,7 +1164,7 @@
                   {{ t('admin.accounts.tempUnschedulable.ruleIndex', { index: index + 1 }) }}
                 </span>
                 <div class="flex items-center gap-2">
-                  <button
+                  <button data-testid="account-edit-account-button-move-temp-unsched-rule-index-1"
                     type="button"
                     :disabled="index === 0"
                     @click="moveTempUnschedRule(index, -1)"
@@ -1172,7 +1172,7 @@
                   >
                     <Icon name="chevronUp" size="sm" :stroke-width="2" />
                   </button>
-                  <button
+                  <button data-testid="account-edit-account-button-move-temp-unsched-rule-index-1-2"
                     type="button"
                     :disabled="index === tempUnschedRules.length - 1"
                     @click="moveTempUnschedRule(index, 1)"
@@ -1182,7 +1182,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <button
+                  <button data-testid="account-edit-account-button-remove-temp-unsched-rule-index"
                     type="button"
                     @click="removeTempUnschedRule(index)"
                     class="rounded p-1 text-red-500 transition-colors hover:text-red-600"
@@ -1195,7 +1195,7 @@
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label class="input-label">{{ t('admin.accounts.tempUnschedulable.errorCode') }}</label>
-                  <input
+                  <input data-testid="account-edit-account-input-rule-error-code"
                     v-model.number="rule.error_code"
                     type="number"
                     min="100"
@@ -1206,7 +1206,7 @@
                 </div>
                 <div>
                   <label class="input-label">{{ t('admin.accounts.tempUnschedulable.durationMinutes') }}</label>
-                  <input
+                  <input data-testid="account-edit-account-input-rule-duration-minutes"
                     v-model.number="rule.duration_minutes"
                     type="number"
                     min="1"
@@ -1216,7 +1216,7 @@
                 </div>
                 <div class="sm:col-span-2">
                   <label class="input-label">{{ t('admin.accounts.tempUnschedulable.keywords') }}</label>
-                  <input
+                  <input data-testid="account-edit-account-input-rule-keywords"
                     v-model="rule.keywords"
                     type="text"
                     class="input"
@@ -1226,7 +1226,7 @@
                 </div>
                 <div class="sm:col-span-2">
                   <label class="input-label">{{ t('admin.accounts.tempUnschedulable.description') }}</label>
-                  <input
+                  <input data-testid="account-edit-account-input-rule-description"
                     v-model="rule.description"
                     type="text"
                     class="input"
@@ -1237,7 +1237,7 @@
             </div>
           </div>
 
-          <button
+          <button data-testid="account-edit-account-button-add-temp-unsched-rule"
             type="button"
             @click="addTempUnschedRule()"
             class="w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1269,7 +1269,7 @@
               {{ t('admin.accounts.interceptWarmupRequestsDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-intercept-warmup-requests-intercept-warmup-requests"
             type="button"
             @click="interceptWarmupRequests = !interceptWarmupRequests"
             :class="[
@@ -1298,19 +1298,19 @@
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.concurrency') }}</label>
-          <input v-model.number="form.concurrency" type="number" min="1" class="input"
+          <input data-testid="account-edit-account-input-form-concurrency" v-model.number="form.concurrency" type="number" min="1" class="input"
             @input="form.concurrency = Math.max(1, form.concurrency || 1)" />
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.loadFactor') }}</label>
-          <input v-model.number="form.load_factor" type="number" min="1"
+          <input data-testid="account-edit-account-input-form-load-factor" v-model.number="form.load_factor" type="number" min="1"
             class="input" :placeholder="String(form.concurrency || 1)"
             @input="form.load_factor = (form.load_factor &amp;&amp; form.load_factor >= 1) ? form.load_factor : null" />
           <p class="input-hint">{{ t('admin.accounts.loadFactorHint') }}</p>
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.priority') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-form-priority"
             v-model.number="form.priority"
             type="number"
             min="1"
@@ -1321,13 +1321,13 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.billingRateMultiplier') }}</label>
-          <input v-model.number="form.rate_multiplier" type="number" min="0" step="0.001" class="input" />
+          <input data-testid="account-edit-account-input-form-rate-multiplier" v-model.number="form.rate_multiplier" type="number" min="0" step="0.001" class="input" />
           <p class="input-hint">{{ t('admin.accounts.billingRateMultiplierHint') }}</p>
         </div>
       </div>
       <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <label class="input-label">{{ t('admin.accounts.expiresAt') }}</label>
-        <input v-model="expiresAtInput" type="datetime-local" class="input" />
+        <input data-testid="account-edit-account-input-expires-at-input" v-model="expiresAtInput" type="datetime-local" class="input" />
         <p class="input-hint">{{ t('admin.accounts.expiresAtHint') }}</p>
       </div>
 
@@ -1343,7 +1343,7 @@
               {{ t('admin.accounts.openai.oauthPassthroughDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-openai-passthrough-enabled-openai-passthrough-enabled"
             type="button"
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
             :class="[
@@ -1510,7 +1510,7 @@
               {{ t('admin.accounts.anthropic.apiKeyPassthroughDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-anthropic-passthrough-enabled-anthropic-passthrough-enabled"
             type="button"
             @click="anthropicPassthroughEnabled = !anthropicPassthroughEnabled"
             :class="[
@@ -1540,7 +1540,7 @@
               {{ t('admin.accounts.anthropic.webSearchEmulationDesc') }}
             </p>
           </div>
-          <select v-model="webSearchEmulationMode" class="input w-24 text-sm">
+          <select data-testid="account-edit-account-select-web-search-emulation-mode" v-model="webSearchEmulationMode" class="input w-24 text-sm">
             <option value="default">{{ t('admin.accounts.anthropic.webSearchDefault') }}</option>
             <option value="enabled">{{ t('admin.accounts.anthropic.webSearchEnabled') }}</option>
             <option value="disabled">{{ t('admin.accounts.anthropic.webSearchDisabled') }}</option>
@@ -1663,7 +1663,7 @@
               {{ t('admin.accounts.openai.codexCLIOnlyDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-codex-cli-only-enabled-codex-cli-only-enabled"
             type="button"
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
             :class="[
@@ -1689,7 +1689,7 @@
               {{ t('admin.accounts.openai.codexCLIOnlyAllowClaudeCodeDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-codex-cli-only-allow-claude-code-enabled-codex-cli-only-allow-claude-code-enabled"
             type="button"
             @click="codexCLIOnlyAllowClaudeCodeEnabled = !codexCLIOnlyAllowClaudeCodeEnabled"
             :class="[
@@ -1741,25 +1741,25 @@
               :key="getOpenAICompactModelMappingKey(mapping)"
               class="flex items-center gap-2"
             >
-              <input
+              <input data-testid="account-edit-account-input-mapping-from-6"
                 v-model="mapping.from"
                 type="text"
                 class="input flex-1"
                 :placeholder="t('admin.accounts.fromModel')"
               />
               <span class="text-gray-400">→</span>
-              <input
+              <input data-testid="account-edit-account-input-mapping-to-6"
                 v-model="mapping.to"
                 type="text"
                 class="input flex-1"
                 :placeholder="t('admin.accounts.toModel')"
               />
-              <button type="button" @click="removeOpenAICompactModelMapping(index)" class="text-red-500 hover:text-red-700">
+              <button data-testid="account-edit-account-button-remove-open-ai-compact-model-mapping-index" type="button" @click="removeOpenAICompactModelMapping(index)" class="text-red-500 hover:text-red-700">
                 <Icon name="trash" size="sm" />
               </button>
             </div>
           </div>
-          <button type="button" @click="addOpenAICompactModelMapping" class="btn btn-secondary text-sm">
+          <button data-testid="account-edit-account-button-add-open-ai-compact-model-mapping" type="button" @click="addOpenAICompactModelMapping" class="btn btn-secondary text-sm">
             + {{ t('admin.accounts.addMapping') }}
           </button>
         </div>
@@ -1775,7 +1775,7 @@
               {{ t('admin.accounts.autoPauseOnExpiredDesc') }}
             </p>
           </div>
-          <button
+          <button data-testid="account-edit-account-button-auto-pause-on-expired-auto-pause-on-expired"
             type="button"
             @click="autoPauseOnExpired = !autoPauseOnExpired"
             :class="[
@@ -1892,7 +1892,7 @@
                 {{ t('admin.accounts.quotaControl.windowCost.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-window-cost-enabled-window-cost-enabled"
               type="button"
               @click="windowCostEnabled = !windowCostEnabled"
               :class="[
@@ -1914,7 +1914,7 @@
               <label class="input-label">{{ t('admin.accounts.quotaControl.windowCost.limit') }}</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                <input
+                <input data-testid="account-edit-account-input-window-cost-limit"
                   v-model.number="windowCostLimit"
                   type="number"
                   min="0"
@@ -1929,7 +1929,7 @@
               <label class="input-label">{{ t('admin.accounts.quotaControl.windowCost.stickyReserve') }}</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                <input
+                <input data-testid="account-edit-account-input-window-cost-sticky-reserve"
                   v-model.number="windowCostStickyReserve"
                   type="number"
                   min="0"
@@ -1952,7 +1952,7 @@
                 {{ t('admin.accounts.quotaControl.sessionLimit.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-session-limit-enabled-session-limit-enabled"
               type="button"
               @click="sessionLimitEnabled = !sessionLimitEnabled"
               :class="[
@@ -1972,7 +1972,7 @@
           <div v-if="sessionLimitEnabled" class="grid grid-cols-2 gap-4">
             <div>
               <label class="input-label">{{ t('admin.accounts.quotaControl.sessionLimit.maxSessions') }}</label>
-              <input
+              <input data-testid="account-edit-account-input-max-sessions"
                 v-model.number="maxSessions"
                 type="number"
                 min="1"
@@ -1985,7 +1985,7 @@
             <div>
               <label class="input-label">{{ t('admin.accounts.quotaControl.sessionLimit.idleTimeout') }}</label>
               <div class="relative">
-                <input
+                <input data-testid="account-edit-account-input-session-idle-timeout"
                   v-model.number="sessionIdleTimeout"
                   type="number"
                   min="1"
@@ -2009,7 +2009,7 @@
                 {{ t('admin.accounts.quotaControl.rpmLimit.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-rpm-limit-enabled-rpm-limit-enabled"
               type="button"
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
@@ -2029,7 +2029,7 @@
           <div v-if="rpmLimitEnabled" class="space-y-4">
             <div>
               <label class="input-label">{{ t('admin.accounts.quotaControl.rpmLimit.baseRpm') }}</label>
-              <input
+              <input data-testid="account-edit-account-input-base-rpm"
                 v-model.number="baseRpm"
                 type="number"
                 min="1"
@@ -2044,7 +2044,7 @@
             <div>
               <label class="input-label">{{ t('admin.accounts.quotaControl.rpmLimit.strategy') }}</label>
               <div class="flex gap-2">
-                <button
+                <button data-testid="account-edit-account-button-rpm-strategy-tiered"
                   type="button"
                   @click="rpmStrategy = 'tiered'"
                   :class="[
@@ -2059,7 +2059,7 @@
                     <div class="mt-0.5 text-[10px] opacity-70">{{ t('admin.accounts.quotaControl.rpmLimit.strategyTieredHint') }}</div>
                   </div>
                 </button>
-                <button
+                <button data-testid="account-edit-account-button-rpm-strategy-sticky-exempt"
                   type="button"
                   @click="rpmStrategy = 'sticky_exempt'"
                   :class="[
@@ -2079,7 +2079,7 @@
 
             <div v-if="rpmStrategy === 'tiered'">
               <label class="input-label">{{ t('admin.accounts.quotaControl.rpmLimit.stickyBuffer') }}</label>
-              <input
+              <input data-testid="account-edit-account-input-rpm-sticky-buffer"
                 v-model.number="rpmStickyBuffer"
                 type="number"
                 min="1"
@@ -2099,7 +2099,7 @@
               {{ t('admin.accounts.quotaControl.rpmLimit.userMsgQueueHint') }}
             </p>
             <div class="flex space-x-2">
-              <button type="button" v-for="opt in umqModeOptions" :key="opt.value"
+              <button data-testid="account-edit-account-button-user-msg-queue-mode-opt-value" type="button" v-for="opt in umqModeOptions" :key="opt.value"
                 @click="userMsgQueueMode = opt.value"
                 :class="[
                   'px-3 py-1.5 text-sm rounded-md border transition-colors',
@@ -2122,7 +2122,7 @@
                 {{ t('admin.accounts.quotaControl.tlsFingerprint.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-tls-fingerprint-enabled-tls-fingerprint-enabled"
               type="button"
               @click="tlsFingerprintEnabled = !tlsFingerprintEnabled"
               :class="[
@@ -2140,7 +2140,7 @@
           </div>
           <!-- Profile selector -->
           <div v-if="tlsFingerprintEnabled" class="mt-3">
-            <select v-model="tlsFingerprintProfileId" class="input">
+            <select data-testid="account-edit-account-select-tls-fingerprint-profile-id" v-model="tlsFingerprintProfileId" class="input">
               <option :value="null">{{ t('admin.accounts.quotaControl.tlsFingerprint.defaultProfile') }}</option>
               <option v-if="tlsFingerprintProfiles.length > 0" :value="-1">{{ t('admin.accounts.quotaControl.tlsFingerprint.randomProfile') }}</option>
               <option v-for="p in tlsFingerprintProfiles" :key="p.id" :value="p.id">{{ p.name }}</option>
@@ -2157,7 +2157,7 @@
                 {{ t('admin.accounts.quotaControl.sessionIdMasking.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-session-id-masking-enabled-session-id-masking-enabled"
               type="button"
               @click="sessionIdMaskingEnabled = !sessionIdMaskingEnabled"
               :class="[
@@ -2184,7 +2184,7 @@
                 {{ t('admin.accounts.quotaControl.cacheTTLOverride.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-cache-ttl-override-enabled-cache-ttl-override-enabled"
               type="button"
               @click="cacheTTLOverrideEnabled = !cacheTTLOverrideEnabled"
               :class="[
@@ -2202,7 +2202,7 @@
           </div>
           <div v-if="cacheTTLOverrideEnabled" class="mt-3">
             <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.cacheTTLOverride.target') }}</label>
-            <select
+            <select data-testid="account-edit-account-select-cache-ttl-override-target"
               v-model="cacheTTLOverrideTarget"
               class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-dark-500 dark:bg-dark-700 dark:text-white"
             >
@@ -2224,7 +2224,7 @@
                 {{ t('admin.accounts.quotaControl.customBaseUrl.hint') }}
               </p>
             </div>
-            <button
+            <button data-testid="account-edit-account-button-custom-base-url-enabled-custom-base-url-enabled"
               type="button"
               @click="customBaseUrlEnabled = !customBaseUrlEnabled"
               :class="[
@@ -2241,7 +2241,7 @@
             </button>
           </div>
           <div v-if="customBaseUrlEnabled" class="mt-3">
-            <input
+            <input data-testid="account-edit-account-input-custom-base-url"
               v-model="customBaseUrl"
               type="text"
               class="input"
@@ -2260,7 +2260,7 @@
         <!-- Mixed Scheduling (only for antigravity accounts, read-only in edit mode) -->
         <div v-if="account?.platform === 'antigravity'" class="flex items-center gap-2">
           <label class="flex cursor-not-allowed items-center gap-2 opacity-60">
-            <input
+            <input data-testid="account-edit-account-input-mixed-scheduling"
               type="checkbox"
               v-model="mixedScheduling"
               disabled
@@ -2289,7 +2289,7 @@
         </div>
         <div v-if="account?.platform === 'antigravity'" class="mt-3 flex items-center gap-2">
           <label class="flex cursor-pointer items-center gap-2">
-            <input
+            <input data-testid="account-edit-account-input-allow-overages"
               type="checkbox"
               v-model="allowOverages"
               class="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500 dark:border-dark-500"
@@ -2330,10 +2330,10 @@
 
     <template #footer>
       <div v-if="account" class="flex justify-end gap-3">
-        <button @click="handleClose" type="button" class="btn btn-secondary">
+        <button data-testid="account-edit-account-button-handle-close" @click="handleClose" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="account-edit-account-button-submit"
           type="submit"
           form="edit-account-form"
           :disabled="submitting"

@@ -251,7 +251,7 @@ async function saveAllSettings() {
         <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.settings.dataCollection') }}</h4>
         <div>
           <label class="input-label">{{ t('admin.ops.settings.evaluationInterval') }}</label>
-          <input
+          <input data-testid="admin-ops-components-ops-settings-input-runtime-settings-evaluation-interval-seconds"
             v-model.number="runtimeSettings.evaluation_interval_seconds"
             type="number"
             min="1"
@@ -277,14 +277,14 @@ async function saveAllSettings() {
           <div v-if="emailConfig.alert.enabled">
             <label class="input-label">{{ t('admin.ops.settings.alertRecipients') }}</label>
             <div class="flex gap-2">
-              <input
+              <input data-testid="admin-ops-components-ops-settings-input-alert-recipient-input"
                 v-model="alertRecipientInput"
                 type="email"
                 class="input"
                 :placeholder="t('admin.ops.settings.emailPlaceholder')"
                 @keydown.enter.prevent="addRecipient('alert')"
               />
-              <button class="btn btn-secondary whitespace-nowrap" type="button" @click="addRecipient('alert')">
+              <button data-testid="admin-ops-components-ops-settings-button-add-recipient-alert" class="btn btn-secondary whitespace-nowrap" type="button" @click="addRecipient('alert')">
                 {{ t('common.add') }}
               </button>
             </div>
@@ -295,7 +295,7 @@ async function saveAllSettings() {
                 class="inline-flex items-center gap-2 rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
               >
                 {{ email }}
-                <button type="button" class="text-primary-700/80 hover:text-primary-900" @click="removeRecipient('alert', email)">×</button>
+                <button data-testid="admin-ops-components-ops-settings-button-remove-recipient-alert-email" type="button" class="text-primary-700/80 hover:text-primary-900" @click="removeRecipient('alert', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -325,14 +325,14 @@ async function saveAllSettings() {
           <div v-if="emailConfig.report.enabled">
             <label class="input-label">{{ t('admin.ops.settings.reportRecipients') }}</label>
             <div class="flex gap-2">
-              <input
+              <input data-testid="admin-ops-components-ops-settings-input-report-recipient-input"
                 v-model="reportRecipientInput"
                 type="email"
                 class="input"
                 :placeholder="t('admin.ops.settings.emailPlaceholder')"
                 @keydown.enter.prevent="addRecipient('report')"
               />
-              <button class="btn btn-secondary whitespace-nowrap" type="button" @click="addRecipient('report')">
+              <button data-testid="admin-ops-components-ops-settings-button-add-recipient-report" class="btn btn-secondary whitespace-nowrap" type="button" @click="addRecipient('report')">
                 {{ t('common.add') }}
               </button>
             </div>
@@ -343,7 +343,7 @@ async function saveAllSettings() {
                 class="inline-flex items-center gap-2 rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
               >
                 {{ email }}
-                <button type="button" class="text-primary-700/80 hover:text-primary-900" @click="removeRecipient('report', email)">×</button>
+                <button data-testid="admin-ops-components-ops-settings-button-remove-recipient-report-email" type="button" class="text-primary-700/80 hover:text-primary-900" @click="removeRecipient('report', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -357,14 +357,14 @@ async function saveAllSettings() {
               <Toggle v-model="emailConfig.report.daily_summary_enabled" />
             </div>
             <div v-if="emailConfig.report.daily_summary_enabled">
-              <input v-model="emailConfig.report.daily_summary_schedule" type="text" class="input" placeholder="0 9 * * *" />
+              <input data-testid="admin-ops-components-ops-settings-input-email-config-report-daily-summary-schedule" v-model="emailConfig.report.daily_summary_schedule" type="text" class="input" placeholder="0 9 * * *" />
             </div>
             <div class="flex items-center justify-between">
               <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.ops.settings.weeklySummary') }}</label>
               <Toggle v-model="emailConfig.report.weekly_summary_enabled" />
             </div>
             <div v-if="emailConfig.report.weekly_summary_enabled">
-              <input v-model="emailConfig.report.weekly_summary_schedule" type="text" class="input" placeholder="0 9 * * 1" />
+              <input data-testid="admin-ops-components-ops-settings-input-email-config-report-weekly-summary-schedule" v-model="emailConfig.report.weekly_summary_schedule" type="text" class="input" placeholder="0 9 * * 1" />
             </div>
           </div>
         </div>
@@ -378,7 +378,7 @@ async function saveAllSettings() {
         <div class="space-y-4">
           <div>
             <label class="input-label">{{ t('admin.ops.settings.slaMinPercent') }}</label>
-            <input
+            <input data-testid="admin-ops-components-ops-settings-input-metric-thresholds-sla-percent-min"
               v-model.number="metricThresholds.sla_percent_min"
               type="number"
               min="0"
@@ -392,7 +392,7 @@ async function saveAllSettings() {
 
           <div>
             <label class="input-label">{{ t('admin.ops.settings.ttftP99MaxMs') }}</label>
-            <input
+            <input data-testid="admin-ops-components-ops-settings-input-metric-thresholds-ttft-p99-ms-max"
               v-model.number="metricThresholds.ttft_p99_ms_max"
               type="number"
               min="0"
@@ -404,7 +404,7 @@ async function saveAllSettings() {
 
           <div>
             <label class="input-label">{{ t('admin.ops.settings.requestErrorRateMaxPercent') }}</label>
-            <input
+            <input data-testid="admin-ops-components-ops-settings-input-metric-thresholds-request-error-rate-percent-max"
               v-model.number="metricThresholds.request_error_rate_percent_max"
               type="number"
               min="0"
@@ -417,7 +417,7 @@ async function saveAllSettings() {
 
           <div>
             <label class="input-label">{{ t('admin.ops.settings.upstreamErrorRateMaxPercent') }}</label>
-            <input
+            <input data-testid="admin-ops-components-ops-settings-input-metric-thresholds-upstream-error-rate-percent-max"
               v-model.number="metricThresholds.upstream_error_rate_percent_max"
               type="number"
               min="0"
@@ -447,7 +447,7 @@ async function saveAllSettings() {
 
             <div v-if="advancedSettings.data_retention.cleanup_enabled">
               <label class="input-label">{{ t('admin.ops.settings.cleanupSchedule') }}</label>
-              <input
+              <input data-testid="admin-ops-components-ops-settings-input-advanced-settings-data-retention-cleanup-schedule"
                 v-model="advancedSettings.data_retention.cleanup_schedule"
                 type="text"
                 class="input"
@@ -459,7 +459,7 @@ async function saveAllSettings() {
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
                 <label class="input-label">{{ t('admin.ops.settings.errorLogRetentionDays') }}</label>
-                <input
+                <input data-testid="admin-ops-components-ops-settings-input-advanced-settings-data-retention-error-log-retention-days"
                   v-model.number="advancedSettings.data_retention.error_log_retention_days"
                   type="number"
                   min="0"
@@ -469,7 +469,7 @@ async function saveAllSettings() {
               </div>
               <div>
                 <label class="input-label">{{ t('admin.ops.settings.minuteMetricsRetentionDays') }}</label>
-                <input
+                <input data-testid="admin-ops-components-ops-settings-input-advanced-settings-data-retention-minute-metrics-retention-days"
                   v-model.number="advancedSettings.data_retention.minute_metrics_retention_days"
                   type="number"
                   min="0"
@@ -479,7 +479,7 @@ async function saveAllSettings() {
               </div>
               <div>
                 <label class="input-label">{{ t('admin.ops.settings.hourlyMetricsRetentionDays') }}</label>
-                <input
+                <input data-testid="admin-ops-components-ops-settings-input-advanced-settings-data-retention-hourly-metrics-retention-days"
                   v-model.number="advancedSettings.data_retention.hourly_metrics_retention_days"
                   type="number"
                   min="0"
@@ -650,8 +650,8 @@ async function saveAllSettings() {
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <button class="btn btn-secondary" @click="emit('close')">{{ t('common.cancel') }}</button>
-        <button class="btn btn-primary" :disabled="saving || !validation.valid" @click="saveAllSettings">
+        <button data-testid="admin-ops-components-ops-settings-button-emit-close" class="btn btn-secondary" @click="emit('close')">{{ t('common.cancel') }}</button>
+        <button data-testid="admin-ops-components-ops-settings-button-save-all-settings" class="btn btn-primary" :disabled="saving || !validation.valid" @click="saveAllSettings">
           {{ saving ? t('common.saving') : t('common.save') }}
         </button>
       </div>

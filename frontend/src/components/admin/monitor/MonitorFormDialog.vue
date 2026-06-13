@@ -8,13 +8,13 @@
     <form id="channel-monitor-form" @submit.prevent="handleSubmit" class="space-y-5">
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.name') }} <span class="text-red-500">*</span></label>
-        <input v-model="form.name" type="text" required class="input" :placeholder="t('admin.channelMonitor.form.namePlaceholder')" />
+        <input v-model="form.name" type="text" required class="input" data-testid="monitor-form-name" :placeholder="t('admin.channelMonitor.form.namePlaceholder')" />
       </div>
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.provider') }} <span class="text-red-500">*</span></label>
         <div class="grid grid-cols-3 gap-3">
-          <button
+          <button data-testid="admin-monitor-monitor-form-button-provider-opt-value"
             v-for="opt in providerOptions"
             :key="opt.value"
             type="button"
@@ -39,7 +39,7 @@
       <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
-          <button
+          <button data-testid="admin-monitor-monitor-form-button-api-mode-opt-value"
             v-for="opt in apiModeOptions"
             :key="opt.value"
             type="button"
@@ -57,8 +57,8 @@
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.endpoint') }} <span class="text-red-500">*</span></label>
         <div class="flex gap-2">
-          <input v-model="form.endpoint" type="text" required class="input flex-1" :placeholder="t('admin.channelMonitor.form.endpointPlaceholder')" />
-          <button type="button" @click="useCurrentDomain" class="btn btn-secondary whitespace-nowrap">
+          <input v-model="form.endpoint" type="text" required class="input flex-1" data-testid="monitor-form-endpoint" :placeholder="t('admin.channelMonitor.form.endpointPlaceholder')" />
+          <button type="button" @click="useCurrentDomain" class="btn btn-secondary whitespace-nowrap" data-testid="monitor-form-use-current-domain">
             {{ t('admin.channelMonitor.form.useCurrentDomain') }}
           </button>
         </div>
@@ -74,9 +74,10 @@
             type="password"
             :required="!editing"
             class="input flex-1"
+            data-testid="monitor-form-api-key"
             :placeholder="editing ? t('admin.channelMonitor.form.apiKeyEditPlaceholder') : t('admin.channelMonitor.form.apiKeyPlaceholder')"
           />
-          <button type="button" @click="openMyKeyPicker" class="btn btn-secondary whitespace-nowrap">
+          <button type="button" @click="openMyKeyPicker" class="btn btn-secondary whitespace-nowrap" data-testid="monitor-form-use-my-key">
             {{ t('admin.channelMonitor.form.useMyKey') }}
           </button>
         </div>
@@ -85,7 +86,7 @@
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.primaryModel') }} <span class="text-red-500">*</span></label>
-        <input
+        <input data-testid="admin-monitor-monitor-form-input-form-primary-model"
           v-model="form.primary_model"
           type="text"
           required
@@ -107,13 +108,13 @@
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.groupName') }}</label>
-        <input v-model="form.group_name" type="text" class="input" :placeholder="t('admin.channelMonitor.form.groupNamePlaceholder')" />
+        <input v-model="form.group_name" type="text" class="input" data-testid="monitor-form-group-name" :placeholder="t('admin.channelMonitor.form.groupNamePlaceholder')" />
       </div>
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.accountBinding') }}</label>
         <div class="channel-monitor-account-binding-list">
-          <button
+          <button data-testid="admin-monitor-monitor-form-button-clear-account-binding"
             type="button"
             class="channel-monitor-account-binding-option"
             :class="{ 'channel-monitor-account-binding-option--active': form.account_ids.length === 0 }"
@@ -121,7 +122,7 @@
           >
             {{ t('admin.channelMonitor.form.accountBindingNone') }}
           </button>
-          <button
+          <button data-testid="admin-monitor-monitor-form-button-toggle-account-binding-account-id"
             v-for="account in accountsForBinding"
             :key="account.id"
             type="button"
@@ -140,7 +141,7 @@
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-red-500">*</span></label>
-        <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" />
+        <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" data-testid="monitor-form-interval-seconds" />
         <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
       </div>
 
@@ -183,7 +184,7 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button @click="$emit('close')" type="button" class="btn btn-secondary">
+        <button @click="$emit('close')" type="button" class="btn btn-secondary" data-testid="monitor-form-cancel">
           {{ t('common.cancel') }}
         </button>
         <button
@@ -191,6 +192,7 @@
           form="channel-monitor-form"
           :disabled="submitting"
           class="btn btn-primary"
+          data-testid="monitor-form-submit"
         >
           {{ submitting
             ? t('common.submitting')

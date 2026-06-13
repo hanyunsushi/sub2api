@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="containerRef">
-    <button
+    <button data-testid="common-proxy-selector-button-toggle"
       ref="triggerRef"
       type="button"
       @click="toggle"
@@ -33,7 +33,7 @@
         <div class="select-header">
           <div class="select-search">
             <Icon name="search" size="sm" class="text-gray-400" />
-            <input
+            <input data-testid="common-proxy-selector-input-search-query"
               ref="searchInputRef"
               v-model="searchQuery"
               type="text"
@@ -42,7 +42,7 @@
               @click.stop
             />
           </div>
-          <button
+          <button data-testid="common-proxy-selector-button-handle-batch-test"
             v-if="proxies.length > 0"
             type="button"
             @click.stop="handleBatchTest"
@@ -72,7 +72,7 @@
         <!-- Options list -->
         <div class="select-options">
           <!-- No Proxy option -->
-          <div
+          <div data-testid="common-proxy-selector-div-select-option-null"
             @click="selectOption(null)"
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
@@ -81,7 +81,7 @@
           </div>
 
           <!-- Proxy options -->
-          <div
+          <div data-testid="common-proxy-selector-div-select-option-proxy-id"
             v-for="proxy in filteredProxies"
             :key="proxy.id"
             @click="selectOption(proxy.id)"
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Individual test button -->
-            <button
+            <button data-testid="common-proxy-selector-button-handle-test-proxy-proxy"
               type="button"
               @click.stop="handleTestProxy(proxy)"
               :disabled="testingProxyIds.has(proxy.id)"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 铃铛按钮 -->
-    <button
+    <button data-testid="common-announcement-bell-button-open-modal"
       @click="openModal"
       class="relative flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all hover:scale-105 hover:bg-primary-50 dark:text-gray-400 dark:hover:bg-dark-800"
       :class="{ 'text-primary-600 dark:text-primary-400': unreadCount > 0 }"
@@ -21,12 +21,12 @@
     <!-- 公告列表 Modal -->
     <Teleport to="body">
       <Transition name="modal-fade">
-        <div
+        <div data-testid="common-announcement-bell-div-close-modal"
           v-if="isModalOpen"
           class="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[8vh]"
           @click="closeModal"
         >
-          <div
+          <div data-testid="common-announcement-bell-div-div"
             class="w-full max-w-[620px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
             @click.stop
           >
@@ -48,7 +48,7 @@
                   </p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <button
+                  <button data-testid="common-announcement-bell-button-mark-all-as-read"
                     v-if="unreadCount > 0"
                     @click="markAllAsRead"
                     :disabled="loading"
@@ -56,7 +56,7 @@
                   >
                     {{ t('announcements.markAllRead') }}
                   </button>
-                  <button
+                  <button data-testid="common-announcement-bell-button-close-modal"
                     @click="closeModal"
                     class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/50 text-gray-500 transition-all hover:bg-white hover:text-gray-700 dark:bg-dark-700/50 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-300"
                     :aria-label="t('common.close')"
@@ -81,7 +81,7 @@
 
               <!-- Announcements List -->
               <div v-else-if="announcements.length > 0">
-                <div
+                <div data-testid="common-announcement-bell-div-open-detail-item"
                   v-for="item in announcements"
                   :key="item.id"
                   class="group relative flex items-center gap-4 border-b border-gray-100 px-6 py-4 transition-all hover:bg-gray-50 dark:border-dark-700 dark:hover:bg-dark-700/30"
@@ -181,12 +181,12 @@
     <!-- 公告详情 Modal -->
     <Teleport to="body">
       <Transition name="modal-fade">
-        <div
+        <div data-testid="common-announcement-bell-div-close-detail"
           v-if="detailModalOpen && selectedAnnouncement"
           class="fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[6vh]"
           @click="closeDetail"
         >
-          <div
+          <div data-testid="common-announcement-bell-div-div-2"
             class="w-full max-w-[780px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
             @click.stop
           >
@@ -245,7 +245,7 @@
                 </div>
 
                 <!-- Close button -->
-                <button
+                <button data-testid="common-announcement-bell-button-close-detail"
                   @click="closeDetail"
                   class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white/50 text-gray-500 transition-all hover:bg-white hover:text-gray-700 hover:shadow-lg dark:bg-dark-700/50 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-300"
                   :aria-label="t('common.close')"
@@ -281,13 +281,13 @@
                   <span>{{ selectedAnnouncement.read_at ? t('announcements.readStatus') : t('announcements.markReadHint') }}</span>
                 </div>
                 <div class="flex items-center gap-3">
-                  <button
+                  <button data-testid="common-announcement-bell-button-close-detail-2"
                     @click="closeDetail"
                     class="rounded-lg border border-accent-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-primary-50 hover:shadow dark:border-dark-600 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
                   >
                     {{ t('common.close') }}
                   </button>
-                  <button
+                  <button data-testid="common-announcement-bell-button-mark-as-read-and-close-selected-announcement-id"
                     v-if="!selectedAnnouncement.read_at"
                     @click="markAsReadAndClose(selectedAnnouncement.id)"
                     class="rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-primary-600/20 transition-all hover:scale-105 hover:bg-primary-700 hover:shadow-md dark:bg-primary-500 dark:text-dark-950"

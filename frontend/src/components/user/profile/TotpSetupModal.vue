@@ -1,7 +1,7 @@
 <template>
-  <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
+  <div data-testid="user-profile-totp-setup-div-emit-close" class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
+      <div data-testid="user-profile-totp-setup-div-emit-close-2" class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
 
       <div class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800">
         <!-- Header -->
@@ -27,7 +27,7 @@
               <div>
                 <label class="input-label">{{ t('profile.totp.emailCode') }}</label>
                 <div class="flex gap-2">
-                  <input
+                  <input data-testid="user-profile-totp-setup-input-verify-form-email-code"
                     v-model="verifyForm.emailCode"
                     type="text"
                     maxlength="6"
@@ -35,7 +35,7 @@
                     class="input flex-1"
                     :placeholder="t('profile.totp.enterEmailCode')"
                   />
-                  <button
+                  <button data-testid="user-profile-totp-setup-button-handle-send-code"
                     type="button"
                     class="btn btn-secondary whitespace-nowrap"
                     :disabled="sendingCode || codeCooldown > 0"
@@ -51,7 +51,7 @@
             <div v-else class="space-y-4">
               <div>
                 <label class="input-label">{{ t('profile.currentPassword') }}</label>
-                <input
+                <input data-testid="user-profile-totp-setup-input-verify-form-password"
                   v-model="verifyForm.password"
                   type="password"
                   autocomplete="current-password"
@@ -62,10 +62,10 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-              <button type="button" class="btn btn-secondary" @click="$emit('close')">
+              <button data-testid="user-profile-totp-setup-button-emit-close" type="button" class="btn btn-secondary" @click="$emit('close')">
                 {{ t('common.cancel') }}
               </button>
-              <button
+              <button data-testid="user-profile-totp-setup-button-handle-verify-and-setup"
                 type="button"
                 class="btn btn-primary"
                 :disabled="!canProceedFromVerify || setupLoading"
@@ -95,7 +95,7 @@
                 <code class="rounded bg-gray-100 px-3 py-2 font-mono text-sm dark:bg-dark-700">
                   {{ setupData.secret }}
                 </code>
-                <button
+                <button data-testid="user-profile-totp-setup-button-copy-secret"
                   type="button"
                   class="rounded p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-700"
                   @click="copySecret"
@@ -109,10 +109,10 @@
           </template>
 
           <div class="flex justify-end gap-3 pt-4">
-            <button type="button" class="btn btn-secondary" @click="$emit('close')">
+            <button data-testid="user-profile-totp-setup-button-emit-close-2" type="button" class="btn btn-secondary" @click="$emit('close')">
               {{ t('common.cancel') }}
             </button>
-            <button
+            <button data-testid="user-profile-totp-setup-button-step-2"
               type="button"
               class="btn btn-primary"
               :disabled="!setupData"
@@ -131,7 +131,7 @@
                 {{ t('profile.totp.enterCode') }}
               </label>
               <div class="flex justify-center gap-2">
-                <input
+                <input data-testid="user-profile-totp-setup-input-text"
                   v-for="(_, index) in 6"
                   :key="index"
                   :ref="(el) => setInputRef(el, index)"
@@ -148,10 +148,10 @@
             </div>
 
             <div class="flex justify-end gap-3">
-              <button type="button" class="btn btn-secondary" @click="step = 1">
+              <button data-testid="user-profile-totp-setup-button-step-1" type="button" class="btn btn-secondary" @click="step = 1">
                 {{ t('common.back') }}
               </button>
-              <button
+              <button data-testid="user-profile-totp-setup-button-submit"
                 type="submit"
                 class="btn btn-primary"
                 :disabled="verifying || code.join('').length !== 6"

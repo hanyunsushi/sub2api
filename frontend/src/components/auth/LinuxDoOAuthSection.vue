@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <button type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
+    <button data-testid="auth-linux-do-o-auth-section-button-start-login" type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
       <svg
         class="icon mr-2"
         viewBox="0 0 16 16"

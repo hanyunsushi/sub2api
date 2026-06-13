@@ -11,7 +11,7 @@
       </p>
 
       <div class="relative">
-        <input
+        <input data-testid="admin-monitor-monitor-key-picker-input-search"
           v-model="search"
           type="text"
           class="input pl-9"
@@ -38,7 +38,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-dark-700">
-            <tr
+            <tr data-testid="admin-monitor-monitor-key-picker-tr-emit-pick-k"
               v-for="k in filteredKeys"
               :key="k.id"
               class="cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700"
@@ -64,7 +64,7 @@
     </div>
     <template #footer>
       <div class="flex justify-end">
-        <button @click="$emit('close')" class="btn btn-secondary">
+        <button data-testid="admin-monitor-monitor-key-picker-button-emit-close" @click="$emit('close')" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
       </div>

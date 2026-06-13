@@ -51,7 +51,7 @@
 
         <div class="home-nav-actions">
           <LocaleSwitcher tone="on-deep" />
-          <a
+          <a data-testid="home-link-a"
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
@@ -461,7 +461,7 @@
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
         </p>
         <div class="home-footer-links">
-          <a
+          <a data-testid="home-link-a-2"
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
@@ -470,7 +470,7 @@
           >
             {{ t('home.docs') }}
           </a>
-          <a
+          <a data-testid="home-link-a-3"
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"

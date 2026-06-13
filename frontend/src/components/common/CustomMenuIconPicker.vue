@@ -27,7 +27,7 @@
 
       <div class="custom-menu-icon-picker-url">
         <label class="input-label">{{ urlLabel }}</label>
-        <input
+        <input data-testid="common-custom-menu-icon-picker-input-url"
           :value="isURLValue ? modelValue : ''"
           type="url"
           class="input font-mono text-sm"
@@ -41,7 +41,7 @@
 
       <div v-if="mergedIconPresets.length" class="custom-menu-icon-picker-presets">
         <span class="custom-menu-icon-picker-presets-label">{{ presetsLabel }}</span>
-        <button
+        <button data-testid="common-custom-menu-icon-picker-button-select-preset-preset-url"
           v-for="preset in mergedIconPresets"
           :key="preset.id"
           type="button"

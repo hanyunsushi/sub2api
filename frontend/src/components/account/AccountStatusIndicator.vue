@@ -14,7 +14,7 @@
 
     <!-- Main Status Badge (shown when not rate limited/overloaded) -->
     <template v-else>
-      <button
+      <button data-testid="account-account-status-indicator-button-handle-temp-unsched-click"
         v-if="isTempUnschedulable"
         type="button"
         :class="['badge text-xs', statusClass, 'cursor-pointer']"
@@ -30,7 +30,7 @@
 
     <!-- Error Info Indicator -->
     <div v-if="hasError && account.error_message">
-      <button
+      <button data-testid="account-account-status-indicator-button-button"
         type="button"
         class="account-status-tooltip-trigger h-4 w-4 cursor-help text-red-500 transition-colors hover:text-red-600 focus:outline-none dark:text-red-400 dark:hover:text-red-300"
         :aria-label="t('admin.accounts.status.viewTempUnschedDetails')"

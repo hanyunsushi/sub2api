@@ -19,7 +19,7 @@
           <label for="old_password" class="input-label">
             {{ t('profile.currentPassword') }}
           </label>
-          <input
+          <input data-testid="user-profile-profile-password-form-input-form-old-password"
             id="old_password"
             v-model="form.old_password"
             type="password"
@@ -33,7 +33,7 @@
           <label for="new_password" class="input-label">
             {{ t('profile.newPassword') }}
           </label>
-          <input
+          <input data-testid="user-profile-profile-password-form-input-form-new-password"
             id="new_password"
             v-model="form.new_password"
             type="password"
@@ -50,7 +50,7 @@
           <label for="confirm_password" class="input-label">
             {{ t('profile.confirmNewPassword') }}
           </label>
-          <input
+          <input data-testid="user-profile-profile-password-form-input-form-confirm-password"
             id="confirm_password"
             v-model="form.confirm_password"
             type="password"
@@ -61,7 +61,7 @@
         </div>
 
         <div class="flex justify-end pt-4">
-          <button type="submit" :disabled="loading" class="btn btn-primary">
+          <button data-testid="user-profile-profile-password-form-button-submit" type="submit" :disabled="loading" class="btn btn-primary">
             {{ loading ? t('profile.changingPassword') : t('profile.changePasswordButton') }}
           </button>
         </div>

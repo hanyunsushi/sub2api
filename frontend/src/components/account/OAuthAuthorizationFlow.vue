@@ -16,7 +16,7 @@
           </label>
           <div class="flex flex-wrap gap-4">
             <label class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method"
                 v-model="inputMethod"
                 type="radio"
                 value="manual"
@@ -27,7 +27,7 @@
               }}</span>
             </label>
             <label v-if="showCookieOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-2"
                 v-model="inputMethod"
                 type="radio"
                 value="cookie"
@@ -38,7 +38,7 @@
               }}</span>
             </label>
             <label v-if="showRefreshTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-3"
                 v-model="inputMethod"
                 type="radio"
                 value="refresh_token"
@@ -49,7 +49,7 @@
               }}</span>
             </label>
             <label v-if="showMobileRefreshTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-4"
                 v-model="inputMethod"
                 type="radio"
                 value="mobile_refresh_token"
@@ -60,7 +60,7 @@
               }}</span>
             </label>
             <label v-if="showSessionTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-5"
                 v-model="inputMethod"
                 type="radio"
                 value="session_token"
@@ -71,7 +71,7 @@
               }}</span>
             </label>
             <label v-if="showAccessTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-6"
                 v-model="inputMethod"
                 type="radio"
                 value="access_token"
@@ -82,7 +82,7 @@
               }}</span>
             </label>
             <label v-if="showCodexSessionImportOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="account-o-auth-authorization-flow-input-input-method-7"
                 v-model="inputMethod"
                 type="radio"
                 value="codex_session"
@@ -118,7 +118,7 @@
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedRefreshTokenCount }) }}
                 </span>
               </label>
-              <textarea
+              <textarea data-testid="account-o-auth-authorization-flow-textarea-refresh-token-input"
                 v-model="refreshTokenInput"
                 rows="3"
                 class="input w-full resize-y font-mono text-sm"
@@ -143,7 +143,7 @@
             </div>
 
             <!-- Validate Button -->
-            <button
+            <button data-testid="account-o-auth-authorization-flow-button-handle-validate-refresh-token"
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !refreshTokenInput.trim()"
@@ -201,7 +201,7 @@
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedCodexSessionCount }) }}
                 </span>
               </label>
-              <textarea
+              <textarea data-testid="account-o-auth-authorization-flow-textarea-codex-session-input"
                 v-model="codexSessionInput"
                 rows="8"
                 class="input w-full resize-y font-mono text-sm"
@@ -222,7 +222,7 @@
               </p>
             </div>
 
-            <button
+            <button data-testid="account-o-auth-authorization-flow-button-handle-import-codex-session"
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !codexSessionInput.trim()"
@@ -280,7 +280,7 @@
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedKeyCount }) }}
                 </span>
-                <button
+                <button data-testid="account-o-auth-authorization-flow-button-show-help-dialog-show-help-dialog"
                   v-if="showHelp"
                   type="button"
                   class="text-blue-500 hover:text-blue-600"
@@ -301,7 +301,7 @@
                   </svg>
                 </button>
               </label>
-              <textarea
+              <textarea data-testid="account-o-auth-authorization-flow-textarea-session-key-input"
                 v-model="sessionKeyInput"
                 rows="3"
                 class="input w-full resize-y font-mono text-sm"
@@ -354,7 +354,7 @@
             </div>
 
             <!-- Auth Button -->
-            <button
+            <button data-testid="account-o-auth-authorization-flow-button-handle-cookie-auth"
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !sessionKeyInput.trim()"
@@ -413,7 +413,7 @@
                 <div v-if="showProjectId && platform === 'gemini'" class="mb-3">
                   <label class="input-label flex items-center gap-2">
                     {{ t('admin.accounts.oauth.gemini.projectIdLabel') }}
-                    <a
+                    <a data-testid="account-o-auth-authorization-flow-link-a"
                       href="https://console.cloud.google.com/"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -425,7 +425,7 @@
                       {{ t('admin.accounts.oauth.gemini.howToGetProjectId') }}
                     </a>
                   </label>
-                  <input
+                  <input data-testid="account-o-auth-authorization-flow-input-project-id"
                     v-model="projectId"
                     type="text"
                     class="input w-full font-mono text-sm"
@@ -435,7 +435,7 @@
                     {{ t('admin.accounts.oauth.gemini.projectIdHint') }}
                   </p>
                 </div>
-                <button
+                <button data-testid="account-o-auth-authorization-flow-button-handle-generate-url"
                   v-if="!authUrl"
                   type="button"
                   :disabled="loading"
@@ -467,13 +467,13 @@
                 </button>
                 <div v-else class="space-y-3">
                   <div class="flex items-center gap-2">
-                    <input
+                    <input data-testid="account-o-auth-authorization-flow-input-text"
                       :value="authUrl"
                       readonly
                       type="text"
                       class="input flex-1 bg-gray-50 font-mono text-xs dark:bg-gray-700"
                     />
-                    <button
+                    <button data-testid="account-o-auth-authorization-flow-button-handle-copy-url"
                       type="button"
                       class="btn btn-secondary p-2"
                       title="Copy URL"
@@ -502,7 +502,7 @@
                       />
                     </button>
                   </div>
-                  <button
+                  <button data-testid="account-o-auth-authorization-flow-button-handle-regenerate"
                     type="button"
                     class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
                     @click="handleRegenerate"
@@ -579,7 +579,7 @@
                     <Icon name="key" size="sm" class="mr-1 inline text-blue-500" />
                     {{ oauthAuthCode }}
                   </label>
-                  <textarea
+                  <textarea data-testid="account-o-auth-authorization-flow-textarea-auth-code-input"
                     v-model="authCodeInput"
                     rows="3"
                     class="input w-full resize-none font-mono text-sm"

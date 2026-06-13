@@ -156,7 +156,7 @@ const kindBadgeClass = (kind: string) => {
           <div class="text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.ops.requestDetails.rangeLabel', { range: rangeLabel }) }}
           </div>
-          <button
+          <button data-testid="admin-ops-components-ops-request-details-button-fetch-data"
             type="button"
             class="btn btn-secondary btn-sm"
             @click="fetchData"
@@ -245,7 +245,7 @@ const kindBadgeClass = (kind: string) => {
                       <span class="max-w-[220px] truncate font-mono text-[11px] text-gray-700 dark:text-gray-200" :title="row.request_id">
                         {{ row.request_id }}
                       </span>
-                      <button
+                      <button data-testid="admin-ops-components-ops-request-details-button-handle-copy-request-id-row-request-id"
                         class="rounded-md bg-gray-100 px-2 py-1 text-[10px] font-bold text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
                         @click="handleCopyRequestId(row.request_id)"
                       >
@@ -255,7 +255,7 @@ const kindBadgeClass = (kind: string) => {
                     <span v-else class="text-xs text-gray-400">-</span>
                   </td>
                   <td class="whitespace-nowrap px-4 py-3 text-right">
-                    <button
+                    <button data-testid="admin-ops-components-ops-request-details-button-open-error-detail-row-error-id"
                       v-if="row.kind === 'error' && row.error_id"
                       class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30"
                       @click="openErrorDetail(row.error_id)"

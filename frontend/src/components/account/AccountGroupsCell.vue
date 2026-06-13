@@ -13,7 +13,7 @@
         class="max-w-24"
       />
       <!-- 更多数量徽章 -->
-      <button
+      <button data-testid="account-account-groups-cell-button-show-popover-show-popover"
         v-if="hiddenCount > 0"
         ref="moreButtonRef"
         @click.stop="showPopover = !showPopover"
@@ -43,7 +43,7 @@
             <span class="text-xs font-medium text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.groupCountTotal', { count: groups.length }) }}
             </span>
-            <button
+            <button data-testid="account-account-groups-cell-button-show-popover-off"
               @click="showPopover = false"
               class="rounded p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300"
             >
@@ -68,7 +68,7 @@
     </Teleport>
 
     <!-- 点击外部关闭 popover -->
-    <div
+    <div data-testid="account-account-groups-cell-div-show-popover-off"
       v-if="showPopover"
       class="fixed inset-0 z-40"
       @click="showPopover = false"

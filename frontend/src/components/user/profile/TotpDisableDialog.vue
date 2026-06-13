@@ -1,7 +1,7 @@
 <template>
-  <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
+  <div data-testid="user-profile-totp-disable-div-emit-close" class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
+      <div data-testid="user-profile-totp-disable-div-emit-close-2" class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
 
       <div class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800">
         <!-- Header -->
@@ -29,7 +29,7 @@
           <div v-if="verificationMethod === 'email'">
             <label class="input-label">{{ t('profile.totp.emailCode') }}</label>
             <div class="flex gap-2">
-              <input
+              <input data-testid="user-profile-totp-disable-input-form-email-code"
                 v-model="form.emailCode"
                 type="text"
                 maxlength="6"
@@ -37,7 +37,7 @@
                 class="input flex-1"
                 :placeholder="t('profile.totp.enterEmailCode')"
               />
-              <button
+              <button data-testid="user-profile-totp-disable-button-handle-send-code"
                 type="button"
                 class="btn btn-secondary whitespace-nowrap"
                 :disabled="sendingCode || codeCooldown > 0"
@@ -53,7 +53,7 @@
             <label for="password" class="input-label">
               {{ t('profile.currentPassword') }}
             </label>
-            <input
+            <input data-testid="user-profile-totp-disable-input-form-password"
               id="password"
               v-model="form.password"
               type="password"
@@ -65,10 +65,10 @@
 
           <!-- Actions -->
           <div class="flex justify-end gap-3 pt-4">
-            <button type="button" class="btn btn-secondary" @click="$emit('close')">
+            <button data-testid="user-profile-totp-disable-button-emit-close" type="button" class="btn btn-secondary" @click="$emit('close')">
               {{ t('common.cancel') }}
             </button>
-            <button
+            <button data-testid="user-profile-totp-disable-button-submit"
               type="submit"
               class="btn btn-danger"
               :disabled="loading || !canSubmit"

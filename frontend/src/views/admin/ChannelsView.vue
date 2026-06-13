@@ -11,7 +11,7 @@
                 size="md"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
-              <input
+              <input data-testid="admin-channels-input-search-query"
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('admin.channels.searchChannels', 'Search channels...')"
@@ -31,7 +31,7 @@
 
           <!-- Right: Actions -->
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button
+            <button data-testid="admin-channels-button-load-channels"
               @click="loadChannels"
               :disabled="loading"
               class="btn btn-secondary"
@@ -39,7 +39,7 @@
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button @click="openCreateDialog" class="btn btn-primary">
+            <button data-testid="admin-channels-button-open-create-dialog" @click="openCreateDialog" class="btn btn-primary">
               <Icon name="plus" size="md" class="mr-2" />
               {{ t('admin.channels.createChannel', 'Create Channel') }}
             </button>
@@ -108,14 +108,14 @@
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button
+              <button data-testid="admin-channels-button-open-edit-dialog-row"
                 @click="openEditDialog(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t('common.edit', 'Edit') }}</span>
               </button>
-              <button
+              <button data-testid="admin-channels-button-handle-delete-row"
                 @click="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
@@ -159,7 +159,7 @@
         <!-- Tab Bar -->
         <div class="flex items-center border-b border-gray-200 dark:border-dark-700 flex-shrink-0 -mx-4 sm:-mx-6 px-4 sm:px-6 -mt-3 sm:-mt-4">
           <!-- Basic Settings Tab -->
-          <button
+          <button data-testid="admin-channels-button-active-tab-basic"
             type="button"
             @click="activeTab = 'basic'"
             class="channel-tab"
@@ -168,7 +168,7 @@
             {{ t('admin.channels.form.basicSettings', '基础设置') }}
           </button>
           <!-- Platform Tabs (only enabled) -->
-          <button
+          <button data-testid="admin-channels-button-active-tab-section-platform"
             v-for="section in form.platforms.filter(s => s.enabled)"
             :key="section.platform"
             type="button"
@@ -188,7 +188,7 @@
             <!-- Name -->
             <div>
               <label class="input-label">{{ t('admin.channels.form.name', 'Name') }} <span class="text-red-500">*</span></label>
-              <input
+              <input data-testid="admin-channels-input-form-name"
                 v-model="form.name"
                 type="text"
                 required
@@ -207,7 +207,7 @@
             <!-- Description -->
             <div>
               <label class="input-label">{{ t('admin.channels.form.description', 'Description') }}</label>
-              <textarea
+              <textarea data-testid="admin-channels-textarea-form-description"
                 v-model="form.description"
                 rows="2"
                 class="input"
@@ -224,7 +224,7 @@
             <!-- Model Restriction -->
             <div>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input
+                <input data-testid="admin-channels-input-form-restrict-models"
                   type="checkbox"
                   v-model="form.restrict_models"
                   class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -257,7 +257,7 @@
                     ? 'bg-primary-50 border-primary-300 dark:bg-primary-900/20 dark:border-primary-700'
                     : 'border-gray-200 hover:bg-gray-50 dark:border-dark-600 dark:hover:bg-dark-700'"
                 >
-                  <input
+                  <input data-testid="admin-channels-input-checkbox"
                     type="checkbox"
                     :checked="activePlatforms.includes(p)"
                     class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -320,7 +320,7 @@
                       isGroupInOtherChannel(group.id, section.platform) ? 'opacity-40' : ''
                     ]"
                   >
-                    <input
+                    <input data-testid="admin-channels-input-checkbox-2"
                       type="checkbox"
                       :checked="section.group_ids.includes(group.id)"
                       :disabled="isGroupInOtherChannel(group.id, section.platform)"
@@ -390,7 +390,7 @@
             <div>
               <div class="mb-1 flex items-center justify-between">
                 <label class="input-label text-xs mb-0">{{ t('admin.channels.form.modelMapping', 'Model Mapping') }}</label>
-                <button type="button" @click="addMappingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
+                <button data-testid="admin-channels-button-add-mapping-entry-s-idx" type="button" @click="addMappingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
                   + {{ t('common.add', 'Add') }}
                 </button>
               </div>
@@ -406,7 +406,7 @@
                   :key="srcModel"
                   class="flex items-center gap-2"
                 >
-                  <input
+                  <input data-testid="admin-channels-input-text"
                     :value="srcModel"
                     type="text"
                     class="input flex-1 text-xs"
@@ -415,7 +415,7 @@
                     @change="renameMappingKey(sIdx, srcModel, ($event.target as HTMLInputElement).value)"
                   />
                   <span class="text-gray-400 text-xs">→</span>
-                  <input
+                  <input data-testid="admin-channels-input-text-2"
                     :value="section.model_mapping[srcModel]"
                     type="text"
                     class="input flex-1 text-xs"
@@ -423,7 +423,7 @@
                     :placeholder="t('admin.channels.form.mappingTarget', 'Target model')"
                     @input="section.model_mapping[srcModel] = ($event.target as HTMLInputElement).value"
                   />
-                  <button
+                  <button data-testid="admin-channels-button-remove-mapping-entry-s-idx-src-model"
                     type="button"
                     @click="removeMappingEntry(sIdx, srcModel)"
                     class="rounded p-0.5 text-gray-400 hover:text-red-500"
@@ -439,7 +439,7 @@
               <div class="mb-1 flex items-center justify-between">
                 <label class="input-label text-xs mb-0">{{ t('admin.channels.form.modelPricing', 'Model Pricing') }}</label>
                 <div class="flex items-center gap-2">
-                  <button
+                  <button data-testid="admin-channels-button-sync-latest-models-s-idx"
                     type="button"
                     @click="syncLatestModels(sIdx)"
                     :disabled="syncingPlatform === section.platform"
@@ -447,7 +447,7 @@
                   >
                     {{ syncingPlatform === section.platform ? t('admin.channels.form.syncingModels') : t('admin.channels.form.syncLatestModels') }}
                   </button>
-                  <button type="button" @click="addPricingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
+                  <button data-testid="admin-channels-button-add-pricing-entry-s-idx" type="button" @click="addPricingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
                     + {{ t('common.add', 'Add') }}
                   </button>
                 </div>
@@ -476,7 +476,7 @@
                 <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.channels.form.accountStatsPricingRules') }}
                 </h4>
-                <button
+                <button data-testid="admin-channels-button-add-account-stats-rule-s-idx"
                   type="button"
                   @click="addAccountStatsRule(sIdx)"
                   class="rounded-lg border border-primary-300 px-3 py-1 text-xs font-medium text-primary-600 hover:bg-primary-50 dark:border-primary-600 dark:text-primary-400 dark:hover:bg-primary-900/20"
@@ -499,12 +499,12 @@
                 class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
                 <div class="flex items-center justify-between">
-                  <input
+                  <input data-testid="admin-channels-input-rule-name"
                     v-model="rule.name"
                     :placeholder="t('admin.channels.form.ruleName')"
                     class="bg-transparent text-sm font-medium text-gray-700 placeholder-gray-400 outline-none dark:text-gray-300"
                   />
-                  <button type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-red-500 hover:text-red-700">
+                  <button data-testid="admin-channels-button-remove-account-stats-rule-s-idx-rule-index" type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-red-500 hover:text-red-700">
                     {{ t('common.delete') }}
                   </button>
                 </div>
@@ -520,7 +520,7 @@
                         ? 'border-primary-300 bg-primary-50 dark:border-primary-700 dark:bg-primary-900/20'
                         : 'border-gray-200 hover:bg-gray-50 dark:border-dark-600 dark:hover:bg-dark-700'"
                     >
-                      <input type="checkbox" :checked="rule.group_ids.includes(gid)" class="h-3 w-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500" @change="rule.group_ids.includes(gid) ? rule.group_ids.splice(rule.group_ids.indexOf(gid), 1) : rule.group_ids.push(gid)" />
+                      <input data-testid="admin-channels-input-checkbox-3" type="checkbox" :checked="rule.group_ids.includes(gid)" class="h-3 w-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500" @change="rule.group_ids.includes(gid) ? rule.group_ids.splice(rule.group_ids.indexOf(gid), 1) : rule.group_ids.push(gid)" />
                       <span :class="['font-medium', platformTextClass(section.platform)]">{{ getGroupNameById(gid) }}</span>
                     </label>
                   </div>
@@ -539,14 +539,14 @@
                       class="inline-flex items-center gap-1 rounded-md border border-primary-300 bg-primary-50 px-2 py-0.5 text-xs dark:border-primary-700 dark:bg-primary-900/20"
                     >
                       <span :class="['font-medium', platformTextClass(section.platform)]">{{ getRuleAccountLabel(accountId) }}</span>
-                      <button type="button" @click="removeRuleAccount(rule, accountId)" class="text-gray-400 hover:text-red-500">
+                      <button data-testid="admin-channels-button-remove-rule-account-rule-account-id" type="button" @click="removeRuleAccount(rule, accountId)" class="text-gray-400 hover:text-red-500">
                         <Icon name="x" size="xs" />
                       </button>
                     </span>
                   </div>
                   <!-- Account search input -->
                   <div class="relative mt-1 rule-account-search-container">
-                    <input
+                    <input data-testid="admin-channels-input-rule-account-search-keyword-section-platform-rule-index"
                       :ref="el => setRuleAccountSearchInputRef(section.platform, ruleIndex, el)"
                       v-model="ruleAccountSearchKeyword[`${section.platform}-${ruleIndex}`]"
                       type="text"
@@ -562,7 +562,7 @@
                       :match-width="true"
                       panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                     >
-                      <button
+                      <button data-testid="admin-channels-button-select-rule-account-rule-account"
                         v-for="account in ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]"
                         :key="account.id"
                         type="button"
@@ -584,7 +584,7 @@
                 <div>
                   <div class="mb-1 flex items-center justify-between">
                     <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.channels.form.ruleModelPricing') }}</label>
-                    <button type="button" @click="addRulePricingEntry(sIdx, ruleIndex)" class="text-xs text-primary-600 hover:text-primary-700">
+                    <button data-testid="admin-channels-button-add-rule-pricing-entry-s-idx-rule-index" type="button" @click="addRulePricingEntry(sIdx, ruleIndex)" class="text-xs text-primary-600 hover:text-primary-700">
                       + {{ t('common.add') }}
                     </button>
                   </div>
@@ -610,10 +610,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button @click="closeDialog" type="button" class="btn btn-secondary">
+          <button data-testid="admin-channels-button-close-dialog" @click="closeDialog" type="button" class="btn btn-secondary">
             {{ t('common.cancel', 'Cancel') }}
           </button>
-          <button
+          <button data-testid="admin-channels-button-submit"
             type="submit"
             form="channel-form"
             :disabled="submitting"

@@ -19,7 +19,7 @@
             <template #after>
               <!-- Auto Refresh Dropdown -->
               <div class="relative" ref="autoRefreshDropdownRef">
-                <button
+                <button data-testid="admin-accounts-button-button"
                   ref="autoRefreshButtonRef"
                   @click="
                     showAutoRefreshDropdown = !showAutoRefreshDropdown;
@@ -45,7 +45,7 @@
                   panel-class="w-56 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
                 >
                   <div class="p-2">
-                    <button
+                    <button data-testid="admin-accounts-button-set-auto-refresh-enabled-auto-refresh-enabled"
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
                       class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                     >
@@ -53,7 +53,7 @@
                       <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="text-primary-500" />
                     </button>
                     <div class="my-1 border-t border-gray-100 dark:border-gray-700"></div>
-                    <button
+                    <button data-testid="admin-accounts-button-set-auto-refresh-interval-sec"
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
                       @click="setAutoRefreshInterval(sec)"
@@ -68,7 +68,7 @@
 
               <!-- More Tools Dropdown -->
               <div class="relative" ref="accountToolsDropdownRef">
-                <button
+                <button data-testid="admin-accounts-button-button-2"
                   ref="accountToolsButtonRef"
                   @click="
                     showAccountToolsDropdown = !showAccountToolsDropdown;
@@ -94,19 +94,19 @@
                         {{ t('admin.accounts.dataActions') }}
                       </div>
                     </div>
-                    <button class="account-tools-menu-item" @click="openSyncFromCrs">
+                    <button data-testid="admin-accounts-button-open-sync-from-crs" class="account-tools-menu-item" @click="openSyncFromCrs">
                       <span class="account-tools-menu-icon bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
                         <Icon name="sync" size="sm" />
                       </span>
                       <span class="flex-1 text-left">{{ t('admin.accounts.syncFromCrs') }}</span>
                     </button>
-                    <button class="account-tools-menu-item" @click="openImportData">
+                    <button data-testid="admin-accounts-button-open-import-data" class="account-tools-menu-item" @click="openImportData">
                       <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
                         <Icon name="upload" size="sm" />
                       </span>
                       <span class="flex-1 text-left">{{ t('admin.accounts.dataImport') }}</span>
                     </button>
-                    <button class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
+                    <button data-testid="admin-accounts-button-open-export-data-dialog-from-menu" class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
                       <span class="account-tools-menu-icon bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300">
                         <Icon name="download" size="sm" />
                       </span>
@@ -127,13 +127,13 @@
                         {{ t('admin.accounts.toolActions') }}
                       </div>
                     </div>
-                    <button class="account-tools-menu-item" @click="openErrorPassthrough">
+                    <button data-testid="admin-accounts-button-open-error-passthrough" class="account-tools-menu-item" @click="openErrorPassthrough">
                       <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                         <Icon name="shield" size="sm" />
                       </span>
                       <span class="flex-1 text-left">{{ t('admin.errorPassthrough.title') }}</span>
                     </button>
-                    <button class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
+                    <button data-testid="admin-accounts-button-open-tls-fingerprint-profiles" class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
                       <span class="account-tools-menu-icon bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200">
                         <Icon name="lock" size="sm" />
                       </span>
@@ -150,7 +150,7 @@
                       </div>
                     </div>
                     <div class="grid grid-cols-1 gap-1">
-                      <button
+                      <button data-testid="admin-accounts-button-toggle-column-col-key"
                         v-for="col in toggleableColumns"
                         :key="col.key"
                         @click="toggleColumn(col.key)"
@@ -171,7 +171,7 @@
           class="mt-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-200"
         >
           <span>{{ t('admin.accounts.listPendingSyncHint') }}</span>
-          <button
+          <button data-testid="admin-accounts-button-sync-pending-list-changes"
             class="btn btn-secondary px-2 py-1 text-xs"
             @click="syncPendingListChanges"
           >
@@ -222,7 +222,7 @@
             />
           </template>
           <template #header-select>
-            <input
+            <input data-testid="admin-accounts-input-checkbox"
               type="checkbox"
               class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               :checked="allVisibleSelected"
@@ -246,7 +246,7 @@
                 class="account-priority-quick-adjust inline-flex h-6 items-center overflow-hidden rounded-md border border-gray-200 bg-gray-50 font-mono text-[11px] font-semibold leading-none text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300"
                 :title="t('admin.accounts.priority')"
               >
-                <button
+                <button data-testid="admin-accounts-button-handle-priority-quick-adjust-row-1"
                   type="button"
                   class="account-priority-step"
                   :title="localText('提高优先级', 'Raise priority')"
@@ -258,7 +258,7 @@
                 <span data-testid="account-card-priority" class="account-priority-value">
                   P{{ row.priority ?? '-' }}
                 </span>
-                <button
+                <button data-testid="admin-accounts-button-handle-priority-quick-adjust-row-1-2"
                   type="button"
                   class="account-priority-step"
                   :title="localText('降低优先级', 'Lower priority')"
@@ -268,7 +268,7 @@
                   <Icon name="chevronDown" size="xs" />
                 </button>
               </div>
-              <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+              <input data-testid="admin-accounts-input-checkbox-2" type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             </div>
           </template>
           <template #cell-name="{ row, value }">
@@ -305,7 +305,7 @@
                   <span class="font-semibold text-gray-700 dark:text-gray-200">
                     {{ getAccountExternalQuota(row)?.label }}
                   </span>
-                  <a
+                  <a data-testid="admin-accounts-link-a"
                     class="account-external-quota-link font-medium text-primary-600 hover:text-primary-700 dark:text-primary-300"
                     :href="getAccountExternalQuota(row)?.url"
                     target="_blank"
@@ -363,7 +363,7 @@
           </template>
           <template #cell-schedulable="{ row }">
             <div class="inline-flex items-center gap-1.5">
-              <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-primary-500 hover:bg-primary-600' : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
+              <button data-testid="admin-accounts-button-handle-toggle-schedulable-row" @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-primary-500 hover:bg-primary-600' : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
                 <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
               </button>
               <button
@@ -432,7 +432,7 @@
                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" :title="t('admin.accounts.fallbackActiveTip', { origin: row.proxy_fallback_origin_name })">
                   {{ t('admin.accounts.fallbackActive') }}
                 </span>
-                <button class="text-xs px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
+                <button data-testid="admin-accounts-button-on-revert-fallback-row" class="text-xs px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
               </div>
             </div>
           </template>
@@ -471,15 +471,15 @@
           </template>
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button @click="handleEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400">
+              <button data-testid="admin-accounts-button-handle-edit-row" @click="handleEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                 <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
-              <button @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+              <button data-testid="admin-accounts-button-handle-delete-row" @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
-              <button @click="openMenu(row, $event)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white">
+              <button data-testid="admin-accounts-button-open-menu-row-event" @click="openMenu(row, $event)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
                 <span class="text-xs">{{ t('common.more') }}</span>
               </button>
@@ -531,7 +531,7 @@
             {{ rateMultiplierMenu.account?.name }}
           </span>
         </div>
-        <input
+        <input data-testid="admin-accounts-input-rate-multiplier-menu-value"
           v-model="rateMultiplierMenu.value"
           type="number"
           min="0"
@@ -541,7 +541,7 @@
           :disabled="rateMultiplierMenu.saving"
         />
         <div class="flex justify-end gap-2">
-          <button
+          <button data-testid="admin-accounts-button-close-rate-multiplier-menu"
             type="button"
             class="btn btn-secondary px-2 py-1 text-xs"
             :disabled="rateMultiplierMenu.saving"
@@ -549,7 +549,7 @@
           >
             <Icon name="x" size="xs" />
           </button>
-          <button
+          <button data-testid="admin-accounts-button-submit"
             type="submit"
             class="btn btn-primary px-2 py-1 text-xs"
             :disabled="rateMultiplierMenu.saving"
@@ -576,7 +576,7 @@
     <ConfirmDialog :show="showDeleteDialog" :title="t('admin.accounts.deleteAccount')" :message="t('admin.accounts.deleteConfirm', { name: deletingAcc?.name })" :confirm-text="t('common.delete')" :cancel-text="t('common.cancel')" :danger="true" @confirm="confirmDelete" @cancel="showDeleteDialog = false" />
     <ConfirmDialog :show="showExportDataDialog" :title="t('admin.accounts.dataExport')" :message="t('admin.accounts.dataExportConfirmMessage')" :confirm-text="t('admin.accounts.dataExportConfirm')" :cancel-text="t('common.cancel')" @confirm="handleExportData" @cancel="showExportDataDialog = false">
       <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" v-model="includeProxyOnExport" />
+        <input data-testid="admin-accounts-input-include-proxy-on-export" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" v-model="includeProxyOnExport" />
         <span>{{ t('admin.accounts.dataExportIncludeProxies') }}</span>
       </label>
     </ConfirmDialog>
@@ -643,7 +643,7 @@ const { t, locale } = useI18n()
 const appStore = useAppStore()
 const authStore = useAuthStore()
 
-const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? zh : en
+const localText = (zh: string, en: string) => locale?.value?.startsWith('zh') ? zh : en
 
 const proxies = ref<AccountProxy[]>([])
 const groups = ref<AdminGroup[]>([])

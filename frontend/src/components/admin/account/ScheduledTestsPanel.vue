@@ -11,7 +11,7 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('admin.scheduledTests.title') }}
         </p>
-        <button
+        <button data-testid="admin-account-scheduled-tests-panel-button-show-add-form-show-add-form"
           @click="showAddForm = !showAddForm"
           class="btn btn-primary flex items-center gap-1.5 text-sm"
         >
@@ -109,13 +109,13 @@
           </div>
         </div>
         <div class="mt-3 flex justify-end gap-2">
-          <button
+          <button data-testid="admin-account-scheduled-tests-panel-button-show-add-form-false-reset-new-plan"
             @click="showAddForm = false; resetNewPlan()"
             class="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500"
           >
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="admin-account-scheduled-tests-panel-button-handle-create"
             @click="handleCreate"
             :disabled="!newPlan.model_id || !newPlan.cron_expression || creating"
             class="flex items-center gap-1.5 rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -151,7 +151,7 @@
           class="rounded-xl border border-gray-200 bg-white transition-all dark:border-dark-600 dark:bg-dark-800"
         >
           <!-- Plan Header -->
-          <div
+          <div data-testid="admin-account-scheduled-tests-panel-div-toggle-expand-plan-id"
             class="flex cursor-pointer items-center justify-between px-4 py-3"
             @click="toggleExpand(plan.id)"
           >
@@ -167,7 +167,7 @@
               </div>
 
               <!-- Enabled Toggle -->
-              <div class="flex items-center gap-1.5" @click.stop>
+              <div data-testid="admin-account-scheduled-tests-panel-div-div" class="flex items-center gap-1.5" @click.stop>
                 <Toggle
                   :model-value="plan.enabled"
                   @update:model-value="(val: boolean) => handleToggleEnabled(plan, val)"
@@ -200,15 +200,15 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex items-center gap-1" @click.stop>
-                <button
+              <div data-testid="admin-account-scheduled-tests-panel-div-div-2" class="flex items-center gap-1" @click.stop>
+                <button data-testid="admin-account-scheduled-tests-panel-button-start-edit-plan"
                   @click="startEdit(plan)"
                   class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20"
                   :title="t('admin.scheduledTests.editPlan')"
                 >
                   <Icon name="edit" size="sm" :stroke-width="2" />
                 </button>
-                <button
+                <button data-testid="admin-account-scheduled-tests-panel-button-confirm-delete-plan-plan"
                   @click="confirmDeletePlan(plan)"
                   class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
                   :title="t('admin.scheduledTests.deletePlan')"
@@ -230,7 +230,7 @@
           </div>
 
           <!-- Edit Form -->
-          <div
+          <div data-testid="admin-account-scheduled-tests-panel-div-div-3"
             v-if="editingPlanId === plan.id"
             class="border-t border-blue-100 bg-blue-50/50 px-4 py-3 dark:border-blue-900 dark:bg-blue-900/10"
             @click.stop
@@ -319,13 +319,13 @@
               </div>
             </div>
             <div class="mt-3 flex justify-end gap-2">
-              <button
+              <button data-testid="admin-account-scheduled-tests-panel-button-cancel-edit"
                 @click="cancelEdit"
                 class="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500"
               >
                 {{ t('common.cancel') }}
               </button>
-              <button
+              <button data-testid="admin-account-scheduled-tests-panel-button-handle-edit"
                 @click="handleEdit"
                 :disabled="!editForm.model_id || !editForm.cron_expression || updating"
                 class="flex items-center gap-1.5 rounded-lg bg-primary-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -402,7 +402,7 @@
 
                 <!-- Response / Error (collapsible) -->
                 <div v-if="result.error_message" class="mt-2">
-                  <div
+                  <div data-testid="admin-account-scheduled-tests-panel-div-toggle-result-detail-result-id"
                     class="cursor-pointer text-xs font-medium text-red-600 dark:text-red-400"
                     @click="toggleResultDetail(result.id)"
                   >
@@ -422,7 +422,7 @@
                   >{{ result.error_message }}</pre>
                 </div>
                 <div v-else-if="result.response_text" class="mt-2">
-                  <div
+                  <div data-testid="admin-account-scheduled-tests-panel-div-toggle-result-detail-result-id-2"
                     class="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-400"
                     @click="toggleResultDetail(result.id)"
                   >

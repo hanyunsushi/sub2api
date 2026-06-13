@@ -12,11 +12,11 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.description') }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="statusLoading" @click="loadStatus(false)">
+            <button data-testid="admin-risk-control-button-load-status-false" type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="statusLoading" @click="loadStatus(false)">
               <Icon name="refresh" size="sm" :class="statusLoading ? 'animate-spin' : ''" />
               {{ t('admin.riskControl.refreshStatus') }}
             </button>
-            <button type="button" class="btn btn-primary inline-flex items-center gap-2" @click="openSettings">
+            <button data-testid="admin-risk-control-button-open-settings" type="button" class="btn btn-primary inline-flex items-center gap-2" @click="openSettings">
               <Icon name="cog" size="sm" />
               {{ t('admin.riskControl.openSettings') }}
             </button>
@@ -237,7 +237,7 @@
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('admin.riskControl.records') }}</h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.recordsHint') }}</p>
               </div>
-              <button type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="logsLoading" @click="loadLogs">
+              <button data-testid="admin-risk-control-button-load-logs" type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="logsLoading" @click="loadLogs">
                 <Icon name="refresh" size="sm" :class="logsLoading ? 'animate-spin' : ''" />
                 {{ t('admin.riskControl.refresh') }}
               </button>
@@ -267,9 +267,9 @@
               <Select v-model="filters.result" :options="resultOptions" @change="reloadLogsFromFirstPage" />
               <Select v-model="filters.group_id" :options="groupFilterOptions" @change="reloadLogsFromFirstPage" />
               <Select v-model="filters.endpoint" :options="endpointOptions" @change="reloadLogsFromFirstPage" />
-              <input v-model.trim="filters.search" type="search" class="input" :placeholder="t('admin.riskControl.filters.search')" @keyup.enter="reloadLogsFromFirstPage" />
-              <input v-model="filters.from" type="datetime-local" class="input" :title="t('admin.riskControl.filters.from')" @change="reloadLogsFromFirstPage" />
-              <input v-model="filters.to" type="datetime-local" class="input" :title="t('admin.riskControl.filters.to')" @change="reloadLogsFromFirstPage" />
+              <input data-testid="admin-risk-control-input-filters-search" v-model.trim="filters.search" type="search" class="input" :placeholder="t('admin.riskControl.filters.search')" @keyup.enter="reloadLogsFromFirstPage" />
+              <input data-testid="admin-risk-control-input-filters-from" v-model="filters.from" type="datetime-local" class="input" :title="t('admin.riskControl.filters.from')" @change="reloadLogsFromFirstPage" />
+              <input data-testid="admin-risk-control-input-filters-to" v-model="filters.to" type="datetime-local" class="input" :title="t('admin.riskControl.filters.to')" @change="reloadLogsFromFirstPage" />
             </div>
           </div>
 
@@ -324,7 +324,7 @@
                         {{ row.email_sent ? t('admin.riskControl.emailSent') : t('admin.riskControl.emailNotSent') }}
                         <span v-if="row.auto_banned"> / {{ t('admin.riskControl.autoBanned') }}</span>
                       </div>
-                      <button
+                      <button data-testid="admin-risk-control-button-unban-user-row"
                         v-if="canUnbanRow(row)"
                         type="button"
                         class="mt-2 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
@@ -342,7 +342,7 @@
                       </div>
                     </td>
                     <td class="w-[320px] max-w-sm px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <button
+                      <button data-testid="admin-risk-control-button-open-input-detail-row"
                         type="button"
                         class="group flex w-full min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
                         :title="inputSummaryText(row)"
@@ -372,7 +372,7 @@
       <BaseDialog :show="settingsOpen" :title="t('admin.riskControl.settingsTitle')" width="extra-wide" @close="settingsOpen = false">
         <div class="space-y-6">
           <div class="flex gap-2 overflow-x-auto border-b border-gray-100 pb-3 dark:border-dark-700">
-            <button
+            <button data-testid="admin-risk-control-button-active-settings-tab-tab-id"
               v-for="tab in settingsTabs"
               :key="tab.id"
               type="button"
@@ -400,24 +400,24 @@
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.baseUrl') }}</label>
-                <input v-model.trim="configForm.base_url" type="url" class="input" placeholder="https://api.openai.com" />
+                <input data-testid="admin-risk-control-input-config-form-base-url" v-model.trim="configForm.base_url" type="url" class="input" placeholder="https://api.openai.com" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.model') }}</label>
-                <input v-model.trim="configForm.model" type="text" class="input" placeholder="omni-moderation-latest" />
+                <input data-testid="admin-risk-control-input-config-form-model" v-model.trim="configForm.model" type="text" class="input" placeholder="omni-moderation-latest" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.timeoutMs') }}</label>
-                <input v-model.number="configForm.timeout_ms" type="number" min="500" max="30000" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-timeout-ms" v-model.number="configForm.timeout_ms" type="number" min="500" max="30000" class="input" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.retryCount') }}</label>
-                <input v-model.number="configForm.retry_count" type="number" min="0" max="5" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-retry-count" v-model.number="configForm.retry_count" type="number" min="0" max="5" class="input" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.sampleRate') }}</label>
                 <div class="relative">
-                  <input v-model.number="configForm.sample_rate" type="number" min="0" max="100" step="1" class="input pr-8" />
+                  <input data-testid="admin-risk-control-input-config-form-sample-rate" v-model.number="configForm.sample_rate" type="number" min="0" max="100" step="1" class="input pr-8" />
                   <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
                 </div>
               </div>
@@ -437,7 +437,7 @@
                   </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <button
+                  <button data-testid="admin-risk-control-button-test-api-keys-true"
                     type="button"
                     class="btn btn-secondary inline-flex items-center gap-2"
                     :disabled="apiKeyTesting || inputApiKeyCount === 0 || configForm.clear_api_key"
@@ -446,7 +446,7 @@
                     <Icon name="beaker" size="sm" :class="apiKeyTesting ? 'animate-pulse' : ''" />
                     {{ apiKeyTesting ? t('admin.riskControl.testingApiKeys') : t('admin.riskControl.testInputApiKeys') }}
                   </button>
-                  <button
+                  <button data-testid="admin-risk-control-button-test-api-keys-false"
                     type="button"
                     class="btn btn-secondary inline-flex items-center gap-2"
                     :disabled="apiKeyTesting || effectiveStoredApiKeyCount === 0 || pendingDeletedApiKeyCount > 0 || configForm.clear_api_key || configForm.api_keys_mode === 'replace'"
@@ -455,7 +455,7 @@
                     <Icon name="shield" size="sm" />
                     {{ storedApiKeyTestButtonText }}
                   </button>
-                  <button
+                  <button data-testid="admin-risk-control-button-toggle-clear-api-key"
                     v-if="configForm.api_key_configured"
                     type="button"
                     class="btn btn-secondary inline-flex items-center gap-2"
@@ -475,7 +475,7 @@
                       <span class="ml-2">{{ apiKeysModeHint }}</span>
                     </div>
                     <div class="inline-flex rounded-lg bg-white p-1 shadow-sm dark:bg-dark-800">
-                      <button
+                      <button data-testid="admin-risk-control-button-set-api-keys-mode-append"
                         type="button"
                         class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
                         :class="configForm.api_keys_mode === 'append' ? 'bg-primary-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
@@ -484,7 +484,7 @@
                       >
                         {{ t('admin.riskControl.apiKeysModeAppend') }}
                       </button>
-                      <button
+                      <button data-testid="admin-risk-control-button-set-api-keys-mode-replace"
                         type="button"
                         class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
                         :class="configForm.api_keys_mode === 'replace' ? 'bg-amber-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
@@ -495,7 +495,7 @@
                       </button>
                     </div>
                   </div>
-                  <textarea
+                  <textarea data-testid="admin-risk-control-textarea-config-form-api-keys-text"
                     v-model="configForm.api_keys_text"
                     class="input min-h-44 resize-y font-mono text-sm"
                     :placeholder="apiKeysPlaceholder"
@@ -526,7 +526,7 @@
                         <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('admin.riskControl.auditTestInput') }}</p>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.auditTestInputHint') }}</p>
                       </div>
-                      <button
+                      <button data-testid="admin-risk-control-button-clear-moderation-test-input"
                         v-if="moderationTestPrompt || moderationTestImages.length > 0 || moderationTestResult"
                         type="button"
                         class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-500 hover:bg-white hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-800 dark:hover:text-white"
@@ -536,7 +536,7 @@
                         {{ t('admin.riskControl.clearAuditTest') }}
                       </button>
                     </div>
-                    <textarea
+                    <textarea data-testid="admin-risk-control-textarea-moderation-test-prompt"
                       v-model="moderationTestPrompt"
                       class="input min-h-24 resize-y text-sm"
                       :placeholder="t('admin.riskControl.auditTestPromptPlaceholder')"
@@ -557,7 +557,7 @@
                         <label class="btn btn-secondary inline-flex cursor-pointer items-center gap-2">
                           <Icon name="plus" size="sm" />
                           {{ t('admin.riskControl.addAuditTestImage') }}
-                          <input type="file" accept="image/*" multiple class="sr-only" @change="handleModerationImageUpload" />
+                          <input data-testid="admin-risk-control-input-file" type="file" accept="image/*" multiple class="sr-only" @change="handleModerationImageUpload" />
                         </label>
                       </div>
                       <div v-if="moderationTestImages.length > 0" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -567,7 +567,7 @@
                           class="group relative aspect-square overflow-hidden rounded-lg border border-gray-100 bg-gray-100 dark:border-dark-700 dark:bg-dark-700"
                         >
                           <img :src="image" alt="" class="h-full w-full object-cover" />
-                          <button
+                          <button data-testid="admin-risk-control-button-remove-moderation-test-image-index"
                             type="button"
                             class="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
                             @click="removeModerationTestImage(index)"
@@ -622,7 +622,7 @@
                               <span class="h-1.5 w-1.5 rounded-full" :class="apiKeyStatusDotClass(row.status)"></span>
                               {{ apiKeyStatusLabel(row.status) }}
                             </span>
-                            <button
+                            <button data-testid="admin-risk-control-button-toggle-delete-stored-api-key-row"
                               v-if="row.configured && !configForm.clear_api_key"
                               type="button"
                               class="inline-flex h-7 w-7 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-700 dark:hover:text-gray-200"
@@ -643,7 +643,7 @@
                       <span class="min-w-0 truncate">
                         {{ apiKeyRowsExpanded ? t('admin.riskControl.apiKeyRowsExpanded', { count: apiKeyRows.length }) : t('admin.riskControl.apiKeyRowsCollapsed', { count: hiddenApiKeyRowCount }) }}
                       </span>
-                      <button
+                      <button data-testid="admin-risk-control-button-api-key-rows-expanded-api-key-rows-expanded"
                         type="button"
                         class="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 font-medium text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-primary-300 dark:hover:bg-primary-900/20"
                         @click="apiKeyRowsExpanded = !apiKeyRowsExpanded"
@@ -699,7 +699,7 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.groupScopeHint') }}</p>
               </div>
               <div class="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
-                <button
+                <button data-testid="admin-risk-control-button-all-groups-on"
                   type="button"
                   class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
                   :class="configForm.all_groups ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-800 dark:text-white' : 'text-gray-500 dark:text-gray-400'"
@@ -707,7 +707,7 @@
                 >
                   {{ t('admin.riskControl.allGroups') }}
                 </button>
-                <button
+                <button data-testid="admin-risk-control-button-all-groups-off"
                   type="button"
                   class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
                   :class="!configForm.all_groups ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-800 dark:text-white' : 'text-gray-500 dark:text-gray-400'"
@@ -721,10 +721,10 @@
             <div v-if="!configForm.all_groups" class="space-y-4">
               <div class="relative">
                 <Icon name="search" size="sm" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input v-model.trim="groupSearch" type="search" class="input pl-9" :placeholder="t('admin.riskControl.searchGroups')" />
+                <input data-testid="admin-risk-control-input-group-search" v-model.trim="groupSearch" type="search" class="input pl-9" :placeholder="t('admin.riskControl.searchGroups')" />
               </div>
               <div class="grid max-h-[420px] grid-cols-1 gap-3 overflow-y-auto pr-1 md:grid-cols-2 xl:grid-cols-3">
-                <button
+                <button data-testid="admin-risk-control-button-toggle-group-group-id"
                   v-for="group in filteredGroups"
                   :key="group.id"
                   type="button"
@@ -759,7 +759,7 @@
               </div>
 
               <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
-                <button
+                <button data-testid="admin-risk-control-button-set-model-filter-type-option-value"
                   v-for="option in modelFilterOptions"
                   :key="option.value"
                   type="button"
@@ -797,11 +797,11 @@
           <div v-else-if="activeSettingsTab === 'runtime'" class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <div>
               <label class="input-label">{{ t('admin.riskControl.workerCount') }}</label>
-              <input v-model.number="configForm.worker_count" type="number" min="1" max="32" class="input" />
+              <input data-testid="admin-risk-control-input-config-form-worker-count" v-model.number="configForm.worker_count" type="number" min="1" max="32" class="input" />
             </div>
             <div>
               <label class="input-label">{{ t('admin.riskControl.queueSize') }}</label>
-              <input v-model.number="configForm.queue_size" type="number" min="100" max="100000" class="input" />
+              <input data-testid="admin-risk-control-input-config-form-queue-size" v-model.number="configForm.queue_size" type="number" min="100" max="100000" class="input" />
             </div>
             <div class="flex items-center justify-between rounded-lg border border-gray-100 p-4 dark:border-dark-700 lg:col-span-2">
               <div>
@@ -826,7 +826,7 @@
                     </p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.flaggedHashHint') }}</p>
                   </div>
-                  <button
+                  <button data-testid="admin-risk-control-button-clear-flagged-hashes"
                     type="button"
                     class="btn btn-secondary inline-flex items-center justify-center gap-2 text-red-600 hover:text-red-700 dark:text-red-300"
                     :disabled="hashActionLoading || (status?.flagged_hash_count ?? 0) === 0"
@@ -837,13 +837,13 @@
                   </button>
                 </div>
                 <div class="mt-3 flex flex-col gap-2 sm:flex-row">
-                  <input
+                  <input data-testid="admin-risk-control-input-flagged-hash-input"
                     v-model.trim="flaggedHashInput"
                     type="text"
                     class="input font-mono text-sm"
                     :placeholder="t('admin.riskControl.flaggedHashPlaceholder')"
                   />
-                  <button
+                  <button data-testid="admin-risk-control-button-delete-flagged-hash"
                     type="button"
                     class="btn btn-secondary inline-flex items-center justify-center gap-2"
                     :disabled="hashActionLoading || !isFlaggedHashInputValid"
@@ -861,11 +861,11 @@
             <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
               <div>
                 <label class="input-label">{{ t('admin.riskControl.blockStatus') }}</label>
-                <input v-model.number="configForm.block_status" type="number" min="400" max="599" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-block-status" v-model.number="configForm.block_status" type="number" min="400" max="599" class="input" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.blockMessage') }}</label>
-                <input v-model.trim="configForm.block_message" type="text" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-block-message" v-model.trim="configForm.block_message" type="text" class="input" />
               </div>
               <div class="flex items-center justify-between rounded-lg border border-gray-100 p-4 dark:border-dark-700">
                 <div>
@@ -883,11 +883,11 @@
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.banThreshold') }}</label>
-                <input v-model.number="configForm.ban_threshold" type="number" min="1" max="1000" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-ban-threshold" v-model.number="configForm.ban_threshold" type="number" min="1" max="1000" class="input" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.violationWindowHours') }}</label>
-                <input v-model.number="configForm.violation_window_hours" type="number" min="1" max="8760" class="input" />
+                <input data-testid="admin-risk-control-input-config-form-violation-window-hours" v-model.number="configForm.violation_window_hours" type="number" min="1" max="8760" class="input" />
               </div>
             </div>
           </div>
@@ -898,7 +898,7 @@
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.riskControl.riskThresholds') }}</h3>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.riskThresholdsHint') }}</p>
               </div>
-              <button
+              <button data-testid="admin-risk-control-button-reset-risk-thresholds"
                 type="button"
                 class="btn btn-secondary inline-flex items-center justify-center gap-2"
                 @click="resetRiskThresholds"
@@ -932,7 +932,7 @@
                     {{ t('admin.riskControl.riskThresholdPercent') }}
                   </label>
                   <div class="relative">
-                    <input
+                    <input data-testid="admin-risk-control-input-config-form-thresholds-row-category"
                       :id="`risk-threshold-${row.category}`"
                       v-model.number="configForm.thresholds[row.category]"
                       :data-test="`risk-threshold-${row.category}`"
@@ -968,7 +968,7 @@
             <div class="space-y-2">
               <label class="input-label">{{ t('admin.riskControl.keywordBlockingMode') }}</label>
               <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <button
+                <button data-testid="admin-risk-control-button-keyword-blocking-mode-option-value"
                   v-for="option in keywordBlockingModeOptions"
                   :key="option.value"
                   type="button"
@@ -1001,7 +1001,7 @@
                   {{ t('admin.riskControl.blockedKeywordCount', { count: blockedKeywordCount }) }}
                 </span>
               </div>
-              <textarea
+              <textarea data-testid="admin-risk-control-textarea-config-form-blocked-keywords-text"
                 v-model="configForm.blocked_keywords_text"
                 class="input min-h-52 resize-y font-mono text-sm"
                 :placeholder="t('admin.riskControl.blockedKeywordsPlaceholder')"
@@ -1016,11 +1016,11 @@
           <div v-else class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <div>
               <label class="input-label">{{ t('admin.riskControl.hitRetentionDays') }}</label>
-              <input v-model.number="configForm.hit_retention_days" type="number" min="1" max="3650" class="input" />
+              <input data-testid="admin-risk-control-input-config-form-hit-retention-days" v-model.number="configForm.hit_retention_days" type="number" min="1" max="3650" class="input" />
             </div>
             <div>
               <label class="input-label">{{ t('admin.riskControl.nonHitRetentionDays') }}</label>
-              <input v-model.number="configForm.non_hit_retention_days" type="number" min="1" max="3" class="input" />
+              <input data-testid="admin-risk-control-input-config-form-non-hit-retention-days" v-model.number="configForm.non_hit_retention_days" type="number" min="1" max="3" class="input" />
             </div>
             <div class="rounded-lg border border-gray-100 p-4 text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400 lg:col-span-2">
               <div class="flex flex-wrap items-center gap-3">
@@ -1033,8 +1033,8 @@
 
         <template #footer>
           <div class="flex justify-end gap-2">
-            <button type="button" class="btn btn-secondary" @click="settingsOpen = false">{{ t('common.cancel') }}</button>
-            <button type="button" class="btn btn-primary inline-flex items-center gap-2" :disabled="saving" @click="saveConfig">
+            <button data-testid="admin-risk-control-button-settings-open-off" type="button" class="btn btn-secondary" @click="settingsOpen = false">{{ t('common.cancel') }}</button>
+            <button data-testid="admin-risk-control-button-save-config" type="button" class="btn btn-primary inline-flex items-center gap-2" :disabled="saving" @click="saveConfig">
               <Icon v-if="saving" name="refresh" size="sm" class="animate-spin" />
               <Icon v-else name="check" size="sm" />
               {{ saving ? t('common.saving') : t('admin.riskControl.saveConfig') }}
@@ -1091,7 +1091,7 @@
 
         <template #footer>
           <div class="flex justify-end">
-            <button type="button" class="btn btn-secondary" @click="closeInputDetail">{{ t('common.close') }}</button>
+            <button data-testid="admin-risk-control-button-close-input-detail" type="button" class="btn btn-secondary" @click="closeInputDetail">{{ t('common.close') }}</button>
           </div>
         </template>
       </BaseDialog>

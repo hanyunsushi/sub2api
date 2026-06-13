@@ -9,7 +9,7 @@
           :key="i"
           class="flex items-center gap-2"
         >
-          <input
+          <input data-testid="admin-monitor-monitor-advanced-request-config-input-row-name"
             v-model="row.name"
             type="text"
             spellcheck="false"
@@ -17,7 +17,7 @@
             class="input w-52 flex-none font-mono text-xs"
             @blur="commitHeaders"
           />
-          <input
+          <input data-testid="admin-monitor-monitor-advanced-request-config-input-row-value"
             v-model="row.value"
             type="text"
             spellcheck="false"
@@ -25,7 +25,7 @@
             class="input flex-1 font-mono text-xs"
             @blur="commitHeaders"
           />
-          <button
+          <button data-testid="admin-monitor-monitor-advanced-request-config-button-remove-row-i"
             type="button"
             class="flex-none rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
             :title="t('common.delete')"
@@ -36,7 +36,7 @@
             </svg>
           </button>
         </div>
-        <button
+        <button data-testid="admin-monitor-monitor-advanced-request-config-button-add-row"
           type="button"
           class="inline-flex items-center gap-1 rounded border border-dashed border-gray-300 px-2 py-1 text-xs text-gray-500 hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
           @click="addRow"
@@ -57,7 +57,7 @@
     <div>
       <label class="input-label">{{ t('admin.channelMonitor.advanced.bodyMode') }}</label>
       <div class="grid grid-cols-3 gap-3">
-        <button
+        <button data-testid="admin-monitor-monitor-advanced-request-config-button-update-body-mode-opt-value"
           v-for="opt in bodyModeOptions"
           :key="opt.value"
           type="button"
@@ -77,7 +77,7 @@
     <div v-if="bodyOverrideMode !== 'off'">
       <div class="mb-1 flex items-center justify-between">
         <label class="input-label !mb-0">{{ t('admin.channelMonitor.advanced.bodyJson') }}</label>
-        <button
+        <button data-testid="admin-monitor-monitor-advanced-request-config-button-format-body"
           type="button"
           class="text-xs text-primary-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline dark:text-primary-400"
           :disabled="!bodyText.trim()"
@@ -86,7 +86,7 @@
           {{ t('admin.channelMonitor.advanced.bodyJsonFormat') }}
         </button>
       </div>
-      <textarea
+      <textarea data-testid="admin-monitor-monitor-advanced-request-config-textarea-body-text"
         v-model="bodyText"
         rows="10"
         :placeholder="bodyPlaceholder"

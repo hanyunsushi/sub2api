@@ -9,7 +9,7 @@
       class="flex items-center gap-2 rounded-t-lg border border-b-0 border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
     >
       <Icon name="search" size="sm" class="shrink-0 text-gray-400" />
-      <input
+      <input data-testid="common-group-selector-input-search-text"
         v-model="searchText"
         type="text"
         :placeholder="t('common.searchPlaceholder')"
@@ -30,7 +30,7 @@
         class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 transition-colors hover:bg-white dark:hover:bg-dark-700"
         :title="t('admin.groups.rateAndAccounts', { rate: group.rate_multiplier, count: group.account_count || 0 })"
       >
-        <input
+        <input data-testid="common-group-selector-input-checkbox"
           type="checkbox"
           :value="group.id"
           :checked="modelValue.includes(group.id)"

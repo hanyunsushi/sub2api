@@ -32,7 +32,7 @@
             @change="apply"
           />
         </div>
-        <button class="btn btn-primary" @click="apply">
+        <button data-testid="user-user-error-requests-table-button-apply" class="btn btn-primary" @click="apply">
           <Icon name="search" size="sm" />
           {{ t('common.search') }}
         </button>
@@ -54,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr
+          <tr data-testid="user-user-error-requests-table-tr-open-detail-row-id"
             v-for="(row, i) in rows"
             :key="i"
             class="border-t border-gray-100 dark:border-dark-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-800"

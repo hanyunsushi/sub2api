@@ -1,6 +1,6 @@
 <template>
   <div v-if="authStore.isAdmin" ref="dropdownRef" class="theme-switcher relative">
-    <button
+    <button data-testid="common-theme-switcher-button-toggle-dropdown"
       ref="triggerRef"
       class="theme-switcher-trigger sidebar-link w-full"
       :class="{ 'sidebar-link-collapsed': collapsed }"
@@ -32,7 +32,7 @@
       placement="bottom-end"
       panel-class="theme-switcher-menu w-52 overflow-hidden"
     >
-      <button
+      <button data-testid="common-theme-switcher-button-select-theme-theme-id"
         v-for="theme in themes"
         :key="theme.id"
         class="theme-switcher-option flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors"

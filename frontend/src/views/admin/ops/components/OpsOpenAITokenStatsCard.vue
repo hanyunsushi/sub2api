@@ -173,14 +173,14 @@ function onNextPage() {
           <div class="w-24">
             <Select v-model="pageSize" :options="pageSizeOptions" />
           </div>
-          <button
+          <button data-testid="admin-ops-components-ops-open-ai-token-stats-card-button-on-prev-page"
             class="btn btn-secondary btn-sm"
             :disabled="loading || page <= 1"
             @click="onPrevPage"
           >
             {{ t('admin.ops.openaiTokenStats.prevPage') }}
           </button>
-          <button
+          <button data-testid="admin-ops-components-ops-open-ai-token-stats-card-button-on-next-page"
             class="btn btn-secondary btn-sm"
             :disabled="loading || page >= totalPages"
             @click="onNextPage"

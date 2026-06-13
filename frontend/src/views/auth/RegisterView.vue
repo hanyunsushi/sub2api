@@ -43,7 +43,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-register-input-form-data-email"
               id="email"
               v-model="formData.email"
               type="email"
@@ -73,7 +73,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-register-input-form-data-password"
               id="password"
               v-model="formData.password"
               :type="showPassword ? 'text' : 'password'"
@@ -84,7 +84,7 @@
               :class="{ 'input-error': errors.password }"
               :placeholder="t('auth.createPasswordPlaceholder')"
             />
-            <button
+            <button data-testid="auth-register-button-show-password-show-password"
               type="button"
               :disabled="registrationActionDisabled"
               @click="showPassword = !showPassword"
@@ -114,7 +114,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="key" size="md" :class="invitationValidation.valid ? 'text-green-500' : 'text-gray-400 dark:text-dark-500'" />
             </div>
-            <input
+            <input data-testid="auth-register-input-form-data-invitation-code"
               id="invitation_code"
               v-model="formData.invitation_code"
               type="text"
@@ -168,7 +168,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="gift" size="md" :class="promoValidation.valid ? 'text-green-500' : 'text-gray-400 dark:text-dark-500'" />
             </div>
-            <input
+            <input data-testid="auth-register-input-form-data-promo-code"
               id="promo_code"
               v-model="formData.promo_code"
               type="text"
@@ -230,7 +230,7 @@
         />
 
         <!-- Submit Button -->
-        <button
+        <button data-testid="auth-register-button-submit"
           type="submit"
           :disabled="registrationActionDisabled || (turnstileEnabled && !turnstileToken)"
           class="btn btn-primary w-full"

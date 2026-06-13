@@ -1,0 +1,17 @@
+# ast-grep configuration — structural search/lint for the Sub2API frontend.
+#
+# Why: plain grep can't reliably target "a <button> using class btn-warning" or
+# "a bare <h1> not inside a .card". ast-grep matches by syntax structure, giving an
+# agent precise, low-false-positive locating power across 271 .vue files.
+#
+# Install (host): `brew install ast-grep` or `npm i -g @ast-grep/cli`.
+# Usage:
+#   sg scan                         # run all rules below
+#   sg scan -r frontend-rules/<id>  # one rule
+#   sg run -p '<button class="$C">$$$</button>' -l html frontend/src   # ad-hoc pattern
+#
+# These rules are LOCATORS/hints, not CI gates — severity is `hint`. They surface
+# spots that the Anthropic-theme work cares about; confirm with Read before editing.
+
+ruleDirs:
+  - frontend-rules

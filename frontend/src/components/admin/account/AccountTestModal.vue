@@ -110,7 +110,7 @@
         </div>
 
         <!-- Copy Button -->
-        <button
+        <button data-testid="admin-account-account-test-button-copy-output"
           v-if="outputLines.length > 0"
           @click="copyOutput"
           class="absolute right-2 top-2 rounded-lg bg-gray-800/80 p-1.5 text-gray-400 opacity-0 transition-all hover:bg-gray-700 hover:text-white group-hover:opacity-100"
@@ -125,7 +125,7 @@
           {{ t('admin.accounts.imagePreview') }}
         </div>
         <div class="flex flex-wrap justify-center gap-3">
-          <div
+          <div data-testid="admin-account-account-test-div-preview-image-url-image-url"
             v-for="(image, index) in generatedImages"
             :key="`${image.url}-${index}`"
             class="group/img relative cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-primary-300 hover:shadow-md dark:border-dark-500 dark:bg-dark-700"
@@ -145,12 +145,12 @@
       <!-- Image Lightbox -->
       <Teleport to="body">
         <Transition name="fade">
-          <div
+          <div data-testid="admin-account-account-test-div-preview-image-url"
             v-if="previewImageUrl"
             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
             @click.self="previewImageUrl = ''"
           >
-            <button
+            <button data-testid="admin-account-account-test-button-preview-image-url"
               class="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
               @click="previewImageUrl = ''"
             >
@@ -186,13 +186,13 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button
+        <button data-testid="admin-account-account-test-button-handle-close"
           @click="handleClose"
           class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500"
         >
           {{ t('common.close') }}
         </button>
-        <button
+        <button data-testid="admin-account-account-test-button-start-test"
           @click="startTest"
           :disabled="status === 'connecting' || !selectedModelId"
           :class="[
