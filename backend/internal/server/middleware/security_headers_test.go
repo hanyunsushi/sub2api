@@ -359,6 +359,14 @@ func TestEnhanceCSPPolicy(t *testing.T) {
 		assert.Equal(t, 1, countDirectiveValue(enhanced, "style-src", AirwallexDemoCheckoutDomain))
 		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", AirwallexDemoCheckoutDomain))
 	})
+
+	t.Run("allows_obsidian_bridge_sidecar_iframe", func(t *testing.T) {
+		policy := "default-src 'self'; script-src 'self' __CSP_NONCE__; frame-src https://challenges.cloudflare.com"
+		enhanced := enhanceCSPPolicy(policy)
+
+		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", ObsidianCodexBridgeOrigin))
+		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", ObsidianCodexBridgeLocalhostOrigin))
+	})
 }
 
 func countDirectiveValue(policy, directive, value string) int {

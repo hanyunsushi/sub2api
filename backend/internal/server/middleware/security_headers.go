@@ -28,6 +28,10 @@ const (
 	AirwallexDemoStaticDomain = "https://static-demo.airwallex.com"
 	// AirwallexDemoCheckoutDomain 是 Airwallex 沙箱环境收银台元素和 iframe 域名。
 	AirwallexDemoCheckoutDomain = "https://checkout-demo.airwallex.com"
+	// ObsidianCodexBridgeOrigin 是 Creepee 侧边栏默认嵌入的本地 Obsidian Bridge。
+	ObsidianCodexBridgeOrigin = "http://127.0.0.1:43110"
+	// ObsidianCodexBridgeLocalhostOrigin 兼容用户把本地 Bridge 配为 localhost 的场景。
+	ObsidianCodexBridgeLocalhostOrigin = "http://localhost:43110"
 )
 
 var requiredCSPDirectiveValues = []struct {
@@ -47,6 +51,8 @@ var requiredCSPDirectiveValues = []struct {
 	{"style-src", AirwallexDemoStaticDomain},
 	{"style-src", AirwallexDemoCheckoutDomain},
 	{"frame-src", AirwallexDemoCheckoutDomain},
+	{"frame-src", ObsidianCodexBridgeOrigin},
+	{"frame-src", ObsidianCodexBridgeLocalhostOrigin},
 }
 
 // GenerateNonce generates a cryptographically secure random nonce.
