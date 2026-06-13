@@ -5,7 +5,7 @@
         v-if="announcementStore.currentPopup"
         class="fixed inset-0 z-[120] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[8vh]"
       >
-        <div
+        <div data-testid="common-announcement-popup-div-div"
           class="w-full max-w-[680px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
           @click.stop
         >
@@ -62,7 +62,7 @@
           <!-- Footer -->
           <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-5 dark:border-dark-700 dark:bg-dark-900/30">
             <div class="flex items-center justify-end">
-              <button
+              <button data-testid="common-announcement-popup-button-handle-dismiss"
                 @click="handleDismiss"
                 class="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm shadow-primary-600/20 transition-all hover:scale-105 hover:bg-primary-700 hover:shadow-md dark:bg-primary-500 dark:text-dark-950"
               >

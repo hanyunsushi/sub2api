@@ -36,17 +36,18 @@
                     type="text"
                     :placeholder="t('globalPricing.searchPlaceholder')"
                     class="input pl-10"
+                    data-testid="global-pricing-search"
                   />
                 </div>
 
-                <select v-model="providerFilter" class="input w-full sm:w-44">
+                <select v-model="providerFilter" class="input w-full sm:w-44" data-testid="global-pricing-filter-provider">
                   <option value="">{{ t('globalPricing.filters.allProviders') }}</option>
                   <option v-for="provider in providerOptions" :key="provider" :value="provider">
                     {{ provider }}
                   </option>
                 </select>
 
-                <select v-model="modeFilter" class="input w-full sm:w-40">
+                <select v-model="modeFilter" class="input w-full sm:w-40" data-testid="global-pricing-filter-mode">
                   <option value="">{{ t('globalPricing.filters.allModes') }}</option>
                   <option v-for="mode in modeOptions" :key="mode" :value="mode">
                     {{ mode }}
@@ -58,6 +59,7 @@
                     v-model="promptCachingOnly"
                     type="checkbox"
                     class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600"
+                    data-testid="global-pricing-prompt-caching-only"
                   />
                   <span>{{ t('globalPricing.filters.promptCachingOnly') }}</span>
                 </label>
@@ -71,6 +73,7 @@
                   @click="loadPricing"
                   :disabled="loading"
                   class="btn btn-secondary"
+                  data-testid="global-pricing-refresh"
                   :title="t('common.refresh', 'Refresh')"
                 >
                   <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />

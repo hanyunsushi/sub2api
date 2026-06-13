@@ -8,7 +8,7 @@
         v-if="showMetricToggle"
         class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-dark-800"
       >
-        <button
+        <button data-testid="charts-group-distribution-chart-button-emit-update-metric-tokens"
           type="button"
           class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
           :class="metric === 'tokens'
@@ -18,7 +18,7 @@
         >
           {{ t('admin.dashboard.metricTokens') }}
         </button>
-        <button
+        <button data-testid="charts-group-distribution-chart-button-emit-update-metric-actual-cost"
           type="button"
           class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
           :class="metric === 'actual_cost'
@@ -51,7 +51,7 @@
           </thead>
           <tbody>
             <template v-for="group in displayGroupStats" :key="group.group_id">
-              <tr
+              <tr data-testid="charts-group-distribution-chart-tr-tr"
                 class="border-t border-gray-100 transition-colors dark:border-gray-700"
                 :class="group.group_id > 0 ? 'cursor-pointer' : ''"
                 @click="group.group_id > 0 && toggleBreakdown('group', group.group_id)"

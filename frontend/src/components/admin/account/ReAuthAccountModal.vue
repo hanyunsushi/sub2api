@@ -49,7 +49,7 @@
         <legend class="input-label">{{ t('admin.accounts.oauth.authMethod') }}</legend>
         <div class="mt-2 flex gap-4">
           <label class="flex cursor-pointer items-center">
-            <input
+            <input data-testid="admin-account-re-auth-account-input-add-method"
               v-model="addMethod"
               type="radio"
               value="oauth"
@@ -60,7 +60,7 @@
             }}</span>
           </label>
           <label class="flex cursor-pointer items-center">
-            <input
+            <input data-testid="admin-account-re-auth-account-input-add-method-2"
               v-model="addMethod"
               type="radio"
               value="setup-token"
@@ -138,10 +138,10 @@
 
     <template #footer>
       <div v-if="account" class="flex justify-between gap-3">
-        <button type="button" class="btn btn-secondary" @click="handleClose">
+        <button data-testid="admin-account-re-auth-account-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="admin-account-re-auth-account-button-handle-exchange-code"
           v-if="isManualInputMethod"
           type="button"
           :disabled="!canExchangeCode"

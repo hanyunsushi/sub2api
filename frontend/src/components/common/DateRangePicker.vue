@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="containerRef">
-    <button
+    <button data-testid="common-date-range-picker-button-toggle"
       type="button"
       @click="toggle"
       :class="['date-picker-trigger', isOpen && 'date-picker-trigger-open']"
@@ -22,7 +22,7 @@
 
     <Teleport to="body">
       <Transition name="date-picker-dropdown">
-        <div
+        <div data-testid="common-date-range-picker-div-div"
           v-if="isOpen"
           ref="dropdownRef"
           class="date-picker-dropdown-portal"
@@ -33,7 +33,7 @@
         >
           <!-- Quick presets -->
           <div class="date-picker-presets">
-            <button
+            <button data-testid="common-date-range-picker-button-select-preset-preset"
               v-for="preset in presets"
               :key="preset.value"
               @click="selectPreset(preset)"
@@ -49,7 +49,7 @@
           <div class="date-picker-custom">
             <div class="date-picker-field">
               <label class="date-picker-label">{{ t('dates.startDate') }}</label>
-              <input
+              <input data-testid="common-date-range-picker-input-local-start-date"
                 type="date"
                 v-model="localStartDate"
                 :max="localEndDate || tomorrow"
@@ -62,7 +62,7 @@
             </div>
             <div class="date-picker-field">
               <label class="date-picker-label">{{ t('dates.endDate') }}</label>
-              <input
+              <input data-testid="common-date-range-picker-input-local-end-date"
                 type="date"
                 v-model="localEndDate"
                 :min="localStartDate"
@@ -75,7 +75,7 @@
 
           <!-- Apply button -->
           <div class="date-picker-actions">
-            <button @click="apply" class="date-picker-apply">
+            <button data-testid="common-date-range-picker-button-apply" @click="apply" class="date-picker-apply">
               {{ t('dates.apply') }}
             </button>
           </div>

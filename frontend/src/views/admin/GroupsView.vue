@@ -13,7 +13,7 @@
                 size="md"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
-              <input
+              <input data-testid="admin-groups-input-search-query"
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('admin.groups.searchGroups')"
@@ -48,7 +48,7 @@
           <div
             class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto"
           >
-            <button
+            <button data-testid="admin-groups-button-load-groups"
               @click="loadGroups"
               :disabled="loading"
               class="btn btn-secondary"
@@ -60,7 +60,7 @@
                 :class="loading ? 'animate-spin' : ''"
               />
             </button>
-            <button
+            <button data-testid="admin-groups-button-open-sort-modal"
               @click="openSortModal"
               class="btn btn-secondary"
               :title="t('admin.groups.sortOrder')"
@@ -68,7 +68,7 @@
               <Icon name="arrowsUpDown" size="md" class="mr-2" />
               {{ t("admin.groups.sortOrder") }}
             </button>
-            <button
+            <button data-testid="admin-groups-button-open-create-modal"
               @click="openCreateModal"
               class="btn btn-primary"
               data-tour="groups-create-btn"
@@ -299,14 +299,14 @@
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button
+              <button data-testid="admin-groups-button-handle-edit-row"
                 @click="handleEdit(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t("common.edit") }}</span>
               </button>
-              <button
+              <button data-testid="admin-groups-button-handle-rate-multipliers-row"
                 @click="handleRateMultipliers(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
               >
@@ -315,7 +315,7 @@
                   t("admin.groups.rateMultipliers")
                 }}</span>
               </button>
-              <button
+              <button data-testid="admin-groups-button-handle-rpm-overrides-row"
                 @click="handleRPMOverrides(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
               >
@@ -324,7 +324,7 @@
                   t("admin.groups.rpmOverrides")
                 }}</span>
               </button>
-              <button
+              <button data-testid="admin-groups-button-handle-delete-row"
                 @click="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
@@ -371,7 +371,7 @@
       >
         <div>
           <label class="input-label">{{ t("admin.groups.form.name") }}</label>
-          <input
+          <input data-testid="admin-groups-input-create-form-name"
             v-model="createForm.name"
             type="text"
             required
@@ -389,7 +389,7 @@
           <label class="input-label">{{
             t("admin.groups.form.description")
           }}</label>
-          <textarea
+          <textarea data-testid="admin-groups-textarea-create-form-description"
             v-model="createForm.description"
             rows="3"
             class="input"
@@ -451,7 +451,7 @@
                 copyAccountsGroupOptions.find((o) => o.value === groupId)
                   ?.label || `#${groupId}`
               }}
-              <button
+              <button data-testid="admin-groups-button-button"
                 type="button"
                 @click="
                   createForm.copy_accounts_from_group_ids =
@@ -466,7 +466,7 @@
             </span>
           </div>
           <!-- 分组选择下拉 -->
-          <select
+          <select data-testid="admin-groups-select-select"
             class="input"
             @change="
               (e) => {
@@ -501,7 +501,7 @@
           <label class="input-label">{{
             t("admin.groups.form.rateMultiplier")
           }}</label>
-          <input
+          <input data-testid="admin-groups-input-create-form-rate-multiplier"
             v-model.number="createForm.rate_multiplier"
             type="number"
             step="0.001"
@@ -514,7 +514,7 @@
         </div>
         <div>
           <label class="input-label">{{ t("admin.groups.form.rpmLimit") }}</label>
-          <input
+          <input data-testid="admin-groups-input-create-form-rpm-limit"
             v-model.number="createForm.rpm_limit"
             type="number"
             min="0"
@@ -572,7 +572,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-is-exclusive-create-form-is-exclusive"
               type="button"
               @click="createForm.is_exclusive = !createForm.is_exclusive"
               :class="[
@@ -623,7 +623,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.dailyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-daily-limit-usd"
                 v-model.number="createForm.daily_limit_usd"
                 type="number"
                 step="0.01"
@@ -636,7 +636,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.weeklyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-weekly-limit-usd"
                 v-model.number="createForm.weekly_limit_usd"
                 type="number"
                 step="0.01"
@@ -649,7 +649,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.monthlyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-monthly-limit-usd"
                 v-model.number="createForm.monthly_limit_usd"
                 type="number"
                 step="0.01"
@@ -671,7 +671,7 @@
                 {{ t("admin.groups.modelsList.hint") }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-enabled-create-models-list-state-enabled"
               type="button"
               @click="createModelsListState.enabled = !createModelsListState.enabled"
               :class="[
@@ -702,14 +702,14 @@
                 {{ createModelsListState.items.length }}
               </span>
               <div class="flex items-center gap-1.5">
-                <button
+                <button data-testid="admin-groups-button-select-all-models-list-items-create-models-list-state"
                   type="button"
                   class="rounded px-2 py-1 font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
                   @click="selectAllModelsListItems(createModelsListState)"
                 >
                   全选
                 </button>
-                <button
+                <button data-testid="admin-groups-button-invert-models-list-selection-create-models-list-state"
                   type="button"
                   class="rounded px-2 py-1 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                   @click="invertModelsListSelection(createModelsListState)"
@@ -735,7 +735,7 @@
                 :key="item.id"
                 class="flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
               >
-                <input
+                <input data-testid="admin-groups-input-item-selected"
                   v-model="item.selected"
                   type="checkbox"
                   class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -743,7 +743,7 @@
                 <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
                   {{ item.id }}
                 </span>
-                <button
+                <button data-testid="admin-groups-button-move-create-models-list-item-index-index-1"
                   type="button"
                   :disabled="index === 0"
                   class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
@@ -751,7 +751,7 @@
                 >
                   <Icon name="arrowUp" size="sm" />
                 </button>
-                <button
+                <button data-testid="admin-groups-button-move-create-models-list-item-index-index-1-2"
                   type="button"
                   :disabled="index === createModelsListState.items.length - 1"
                   class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
@@ -783,7 +783,7 @@
           </p>
           <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
+              <input data-testid="admin-groups-input-create-form-allow-image-generation"
                 v-model="createForm.allow_image_generation"
                 type="checkbox"
                 class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -791,7 +791,7 @@
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
+              <input data-testid="admin-groups-input-create-form-image-rate-independent"
                 v-model="createForm.image_rate_independent"
                 type="checkbox"
                 class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -806,7 +806,7 @@
             <label class="input-label">{{
               t("admin.groups.imagePricing.imageMultiplier")
             }}</label>
-            <input
+            <input data-testid="admin-groups-input-create-form-image-rate-multiplier"
               v-model.number="createForm.image_rate_multiplier"
               type="number"
               step="0.0001"
@@ -818,7 +818,7 @@
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="input-label">1K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-image-price-1k"
                 v-model.number="createForm.image_price_1k"
                 type="number"
                 step="0.001"
@@ -829,7 +829,7 @@
             </div>
             <div>
               <label class="input-label">2K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-image-price-2k"
                 v-model.number="createForm.image_price_2k"
                 type="number"
                 step="0.001"
@@ -840,7 +840,7 @@
             </div>
             <div>
               <label class="input-label">4K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-create-form-image-price-4k"
                 v-model.number="createForm.image_price_4k"
                 type="number"
                 step="0.001"
@@ -900,7 +900,7 @@
           </div>
           <div class="space-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox"
                 type="checkbox"
                 :checked="createForm.supported_model_scopes.includes('claude')"
                 @change="toggleCreateScope('claude')"
@@ -911,7 +911,7 @@
               }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox-2"
                 type="checkbox"
                 :checked="
                   createForm.supported_model_scopes.includes('gemini_text')
@@ -924,7 +924,7 @@
               }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox-3"
                 type="checkbox"
                 :checked="
                   createForm.supported_model_scopes.includes('gemini_image')
@@ -972,7 +972,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-mcp-xml-inject-create-form-mcp-xml-inject"
               type="button"
               @click="createForm.mcp_xml_inject = !createForm.mcp_xml_inject"
               :class="[
@@ -1030,7 +1030,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-button-2"
               type="button"
               @click="
                 createForm.claude_code_only = !createForm.claude_code_only
@@ -1089,7 +1089,7 @@
             <label class="text-sm text-gray-600 dark:text-gray-400">{{
               t("admin.groups.openaiMessages.allowDispatch")
             }}</label>
-            <button
+            <button data-testid="admin-groups-button-button-3"
               type="button"
               @click="
                 createForm.allow_messages_dispatch =
@@ -1142,7 +1142,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.opusModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-create-form-opus-mapped-model"
                       v-model="createForm.opus_mapped_model"
                       type="text"
                       :placeholder="
@@ -1155,7 +1155,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.sonnetModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-create-form-sonnet-mapped-model"
                       v-model="createForm.sonnet_mapped_model"
                       type="text"
                       :placeholder="
@@ -1168,7 +1168,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.haikuModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-create-form-haiku-mapped-model"
                       v-model="createForm.haiku_mapped_model"
                       type="text"
                       :placeholder="
@@ -1215,7 +1215,7 @@
                   <span>{{
                     t("admin.groups.openaiMessages.noExactMappings")
                   }}</span>
-                  <button
+                  <button data-testid="admin-groups-button-add-create-messages-dispatch-mapping"
                     type="button"
                     @click="addCreateMessagesDispatchMapping"
                     class="flex items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
@@ -1239,7 +1239,7 @@
                           <label class="input-label">{{
                             t("admin.groups.openaiMessages.claudeModel")
                           }}</label>
-                          <input
+                          <input data-testid="admin-groups-input-row-claude-model"
                             v-model="row.claude_model"
                             type="text"
                             :placeholder="
@@ -1263,7 +1263,7 @@
                           <label class="input-label">{{
                             t("admin.groups.openaiMessages.targetModel")
                           }}</label>
-                          <input
+                          <input data-testid="admin-groups-input-row-target-model"
                             v-model="row.target_model"
                             type="text"
                             :placeholder="
@@ -1275,7 +1275,7 @@
                           />
                         </div>
                       </div>
-                      <button
+                      <button data-testid="admin-groups-button-remove-create-messages-dispatch-mapping-row"
                         type="button"
                         @click="removeCreateMessagesDispatchMapping(row)"
                         class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
@@ -1288,7 +1288,7 @@
                     </div>
                   </div>
 
-                  <button
+                  <button data-testid="admin-groups-button-add-create-messages-dispatch-mapping-2"
                     type="button"
                     @click="addCreateMessagesDispatchMapping"
                     class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-500 transition-all hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-primary-800 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
@@ -1329,7 +1329,7 @@
                 }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-button-4"
               type="button"
               @click="
                 createForm.require_oauth_only = !createForm.require_oauth_only
@@ -1366,7 +1366,7 @@
                 }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-button-5"
               type="button"
               @click="
                 createForm.require_privacy_set = !createForm.require_privacy_set
@@ -1443,7 +1443,7 @@
           </div>
           <!-- 启用开关 -->
           <div class="flex items-center gap-3 mb-3">
-            <button
+            <button data-testid="admin-groups-button-button-6"
               type="button"
               @click="
                 createForm.model_routing_enabled =
@@ -1495,7 +1495,7 @@
                     <label class="input-label text-xs">{{
                       t("admin.groups.modelRouting.modelPattern")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-rule-pattern"
                       v-model="rule.pattern"
                       type="text"
                       class="input text-sm"
@@ -1519,7 +1519,7 @@
                         class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
                       >
                         {{ account.name }}
-                        <button
+                        <button data-testid="admin-groups-button-remove-selected-account-rule-account-id"
                           type="button"
                           @click="removeSelectedAccount(rule, account.id)"
                           class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
@@ -1530,7 +1530,7 @@
                     </div>
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
-                      <input
+                      <input data-testid="admin-groups-input-account-search-keyword-get-create-rule-search-key-rule"
                         :ref="el => setAccountSearchInputRef(getCreateRuleSearchKey(rule), el)"
                         v-model="
                           accountSearchKeyword[getCreateRuleSearchKey(rule)]
@@ -1556,7 +1556,7 @@
                         :match-width="true"
                         panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
-                        <button
+                        <button data-testid="admin-groups-button-select-account-rule-account"
                           v-for="account in accountSearchResults[
                             getCreateRuleSearchKey(rule)
                           ]"
@@ -1585,7 +1585,7 @@
                     </p>
                   </div>
                 </div>
-                <button
+                <button data-testid="admin-groups-button-remove-create-routing-rule-rule"
                   type="button"
                   @click="removeCreateRoutingRule(rule)"
                   class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
@@ -1597,7 +1597,7 @@
             </div>
           </div>
           <!-- 添加规则按钮（仅在启用时显示） -->
-          <button
+          <button data-testid="admin-groups-button-add-create-routing-rule"
             v-if="createForm.model_routing_enabled"
             type="button"
             @click="addCreateRoutingRule"
@@ -1611,14 +1611,14 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 pt-4">
-          <button
+          <button data-testid="admin-groups-button-close-create-modal"
             @click="closeCreateModal"
             type="button"
             class="btn btn-secondary"
           >
             {{ t("common.cancel") }}
           </button>
-          <button
+          <button data-testid="admin-groups-button-submit"
             type="submit"
             form="create-group-form"
             :disabled="submitting"
@@ -1666,7 +1666,7 @@
       >
         <div>
           <label class="input-label">{{ t("admin.groups.form.name") }}</label>
-          <input
+          <input data-testid="admin-groups-input-edit-form-name"
             v-model="editForm.name"
             type="text"
             required
@@ -1683,7 +1683,7 @@
           <label class="input-label">{{
             t("admin.groups.form.description")
           }}</label>
-          <textarea
+          <textarea data-testid="admin-groups-textarea-edit-form-description"
             v-model="editForm.description"
             rows="3"
             class="input"
@@ -1744,7 +1744,7 @@
                 copyAccountsGroupOptionsForEdit.find((o) => o.value === groupId)
                   ?.label || `#${groupId}`
               }}
-              <button
+              <button data-testid="admin-groups-button-button-7"
                 type="button"
                 @click="
                   editForm.copy_accounts_from_group_ids =
@@ -1759,7 +1759,7 @@
             </span>
           </div>
           <!-- 分组选择下拉 -->
-          <select
+          <select data-testid="admin-groups-select-select-2"
             class="input"
             @change="
               (e) => {
@@ -1796,7 +1796,7 @@
           <label class="input-label">{{
             t("admin.groups.form.rateMultiplier")
           }}</label>
-          <input
+          <input data-testid="admin-groups-input-edit-form-rate-multiplier"
             v-model.number="editForm.rate_multiplier"
             type="number"
             step="0.001"
@@ -1808,7 +1808,7 @@
         </div>
         <div>
           <label class="input-label">{{ t("admin.groups.form.rpmLimit") }}</label>
-          <input
+          <input data-testid="admin-groups-input-edit-form-rpm-limit"
             v-model.number="editForm.rpm_limit"
             type="number"
             min="0"
@@ -1863,7 +1863,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-is-exclusive-edit-form-is-exclusive"
               type="button"
               @click="editForm.is_exclusive = !editForm.is_exclusive"
               :class="[
@@ -1919,7 +1919,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.dailyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-daily-limit-usd"
                 v-model.number="editForm.daily_limit_usd"
                 type="number"
                 step="0.01"
@@ -1932,7 +1932,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.weeklyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-weekly-limit-usd"
                 v-model.number="editForm.weekly_limit_usd"
                 type="number"
                 step="0.01"
@@ -1945,7 +1945,7 @@
               <label class="input-label">{{
                 t("admin.groups.subscription.monthlyLimit")
               }}</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-monthly-limit-usd"
                 v-model.number="editForm.monthly_limit_usd"
                 type="number"
                 step="0.01"
@@ -1967,7 +1967,7 @@
                 {{ t("admin.groups.modelsList.hint") }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-enabled-edit-models-list-state-enabled"
               type="button"
               @click="editModelsListState.enabled = !editModelsListState.enabled"
               :class="[
@@ -1998,14 +1998,14 @@
                 {{ editModelsListState.items.length }}
               </span>
               <div class="flex items-center gap-1.5">
-                <button
+                <button data-testid="admin-groups-button-select-all-models-list-items-edit-models-list-state"
                   type="button"
                   class="rounded px-2 py-1 font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
                   @click="selectAllModelsListItems(editModelsListState)"
                 >
                   全选
                 </button>
-                <button
+                <button data-testid="admin-groups-button-invert-models-list-selection-edit-models-list-state"
                   type="button"
                   class="rounded px-2 py-1 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                   @click="invertModelsListSelection(editModelsListState)"
@@ -2031,7 +2031,7 @@
                 :key="item.id"
                 class="flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
               >
-                <input
+                <input data-testid="admin-groups-input-item-selected-2"
                   v-model="item.selected"
                   type="checkbox"
                   class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -2039,7 +2039,7 @@
                 <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
                   {{ item.id }}
                 </span>
-                <button
+                <button data-testid="admin-groups-button-move-edit-models-list-item-index-index-1"
                   type="button"
                   :disabled="index === 0"
                   class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
@@ -2047,7 +2047,7 @@
                 >
                   <Icon name="arrowUp" size="sm" />
                 </button>
-                <button
+                <button data-testid="admin-groups-button-move-edit-models-list-item-index-index-1-2"
                   type="button"
                   :disabled="index === editModelsListState.items.length - 1"
                   class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
@@ -2079,7 +2079,7 @@
           </p>
           <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
             <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
+              <input data-testid="admin-groups-input-edit-form-allow-image-generation"
                 v-model="editForm.allow_image_generation"
                 type="checkbox"
                 class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -2087,7 +2087,7 @@
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
+              <input data-testid="admin-groups-input-edit-form-image-rate-independent"
                 v-model="editForm.image_rate_independent"
                 type="checkbox"
                 class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -2102,7 +2102,7 @@
             <label class="input-label">{{
               t("admin.groups.imagePricing.imageMultiplier")
             }}</label>
-            <input
+            <input data-testid="admin-groups-input-edit-form-image-rate-multiplier"
               v-model.number="editForm.image_rate_multiplier"
               type="number"
               step="0.0001"
@@ -2114,7 +2114,7 @@
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label class="input-label">1K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-image-price-1k"
                 v-model.number="editForm.image_price_1k"
                 type="number"
                 step="0.001"
@@ -2125,7 +2125,7 @@
             </div>
             <div>
               <label class="input-label">2K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-image-price-2k"
                 v-model.number="editForm.image_price_2k"
                 type="number"
                 step="0.001"
@@ -2136,7 +2136,7 @@
             </div>
             <div>
               <label class="input-label">4K ($)</label>
-              <input
+              <input data-testid="admin-groups-input-edit-form-image-price-4k"
                 v-model.number="editForm.image_price_4k"
                 type="number"
                 step="0.001"
@@ -2196,7 +2196,7 @@
           </div>
           <div class="space-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox-4"
                 type="checkbox"
                 :checked="editForm.supported_model_scopes.includes('claude')"
                 @change="toggleEditScope('claude')"
@@ -2207,7 +2207,7 @@
               }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox-5"
                 type="checkbox"
                 :checked="
                   editForm.supported_model_scopes.includes('gemini_text')
@@ -2220,7 +2220,7 @@
               }}</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input
+              <input data-testid="admin-groups-input-checkbox-6"
                 type="checkbox"
                 :checked="
                   editForm.supported_model_scopes.includes('gemini_image')
@@ -2268,7 +2268,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-mcp-xml-inject-edit-form-mcp-xml-inject"
               type="button"
               @click="editForm.mcp_xml_inject = !editForm.mcp_xml_inject"
               :class="[
@@ -2326,7 +2326,7 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <button
+            <button data-testid="admin-groups-button-claude-code-only-edit-form-claude-code-only"
               type="button"
               @click="editForm.claude_code_only = !editForm.claude_code_only"
               :class="[
@@ -2381,7 +2381,7 @@
             <label class="text-sm text-gray-600 dark:text-gray-400">{{
               t("admin.groups.openaiMessages.allowDispatch")
             }}</label>
-            <button
+            <button data-testid="admin-groups-button-button-8"
               type="button"
               @click="
                 editForm.allow_messages_dispatch =
@@ -2434,7 +2434,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.opusModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-edit-form-opus-mapped-model"
                       v-model="editForm.opus_mapped_model"
                       type="text"
                       :placeholder="
@@ -2447,7 +2447,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.sonnetModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-edit-form-sonnet-mapped-model"
                       v-model="editForm.sonnet_mapped_model"
                       type="text"
                       :placeholder="
@@ -2460,7 +2460,7 @@
                     <label class="input-label">{{
                       t("admin.groups.openaiMessages.haikuModel")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-edit-form-haiku-mapped-model"
                       v-model="editForm.haiku_mapped_model"
                       type="text"
                       :placeholder="
@@ -2507,7 +2507,7 @@
                   <span>{{
                     t("admin.groups.openaiMessages.noExactMappings")
                   }}</span>
-                  <button
+                  <button data-testid="admin-groups-button-add-edit-messages-dispatch-mapping"
                     type="button"
                     @click="addEditMessagesDispatchMapping"
                     class="flex items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
@@ -2531,7 +2531,7 @@
                           <label class="input-label">{{
                             t("admin.groups.openaiMessages.claudeModel")
                           }}</label>
-                          <input
+                          <input data-testid="admin-groups-input-row-claude-model-2"
                             v-model="row.claude_model"
                             type="text"
                             :placeholder="
@@ -2555,7 +2555,7 @@
                           <label class="input-label">{{
                             t("admin.groups.openaiMessages.targetModel")
                           }}</label>
-                          <input
+                          <input data-testid="admin-groups-input-row-target-model-2"
                             v-model="row.target_model"
                             type="text"
                             :placeholder="
@@ -2567,7 +2567,7 @@
                           />
                         </div>
                       </div>
-                      <button
+                      <button data-testid="admin-groups-button-remove-edit-messages-dispatch-mapping-row"
                         type="button"
                         @click="removeEditMessagesDispatchMapping(row)"
                         class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
@@ -2580,7 +2580,7 @@
                     </div>
                   </div>
 
-                  <button
+                  <button data-testid="admin-groups-button-add-edit-messages-dispatch-mapping-2"
                     type="button"
                     @click="addEditMessagesDispatchMapping"
                     class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-500 transition-all hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-primary-800 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
@@ -2621,7 +2621,7 @@
                 }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-button-9"
               type="button"
               @click="
                 editForm.require_oauth_only = !editForm.require_oauth_only
@@ -2658,7 +2658,7 @@
                 }}
               </p>
             </div>
-            <button
+            <button data-testid="admin-groups-button-button-10"
               type="button"
               @click="
                 editForm.require_privacy_set = !editForm.require_privacy_set
@@ -2735,7 +2735,7 @@
           </div>
           <!-- 启用开关 -->
           <div class="flex items-center gap-3 mb-3">
-            <button
+            <button data-testid="admin-groups-button-button-11"
               type="button"
               @click="
                 editForm.model_routing_enabled = !editForm.model_routing_enabled
@@ -2786,7 +2786,7 @@
                     <label class="input-label text-xs">{{
                       t("admin.groups.modelRouting.modelPattern")
                     }}</label>
-                    <input
+                    <input data-testid="admin-groups-input-rule-pattern-2"
                       v-model="rule.pattern"
                       type="text"
                       class="input text-sm"
@@ -2810,7 +2810,7 @@
                         class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
                       >
                         {{ account.name }}
-                        <button
+                        <button data-testid="admin-groups-button-remove-selected-account-rule-account-id-2"
                           type="button"
                           @click="removeSelectedAccount(rule, account.id, true)"
                           class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
@@ -2821,7 +2821,7 @@
                     </div>
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
-                      <input
+                      <input data-testid="admin-groups-input-account-search-keyword-get-edit-rule-search-key-rule"
                         :ref="el => setAccountSearchInputRef(getEditRuleSearchKey(rule), el)"
                         v-model="
                           accountSearchKeyword[getEditRuleSearchKey(rule)]
@@ -2847,7 +2847,7 @@
                         :match-width="true"
                         panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
-                        <button
+                        <button data-testid="admin-groups-button-select-account-rule-account-2"
                           v-for="account in accountSearchResults[
                             getEditRuleSearchKey(rule)
                           ]"
@@ -2876,7 +2876,7 @@
                     </p>
                   </div>
                 </div>
-                <button
+                <button data-testid="admin-groups-button-remove-edit-routing-rule-rule"
                   type="button"
                   @click="removeEditRoutingRule(rule)"
                   class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
@@ -2888,7 +2888,7 @@
             </div>
           </div>
           <!-- 添加规则按钮（仅在启用时显示） -->
-          <button
+          <button data-testid="admin-groups-button-add-edit-routing-rule"
             v-if="editForm.model_routing_enabled"
             type="button"
             @click="addEditRoutingRule"
@@ -2902,14 +2902,14 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 pt-4">
-          <button
+          <button data-testid="admin-groups-button-close-edit-modal"
             @click="closeEditModal"
             type="button"
             class="btn btn-secondary"
           >
             {{ t("common.cancel") }}
           </button>
-          <button
+          <button data-testid="admin-groups-button-submit-2"
             type="submit"
             form="edit-group-form"
             :disabled="submitting"
@@ -3006,14 +3006,14 @@
 
       <template #footer>
         <div class="flex justify-end gap-3 pt-4">
-          <button
+          <button data-testid="admin-groups-button-close-sort-modal"
             @click="closeSortModal"
             type="button"
             class="btn btn-secondary"
           >
             {{ t("common.cancel") }}
           </button>
-          <button
+          <button data-testid="admin-groups-button-save-sort-order"
             @click="saveSortOrder"
             :disabled="sortSubmitting"
             class="btn btn-primary"

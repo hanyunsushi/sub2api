@@ -43,7 +43,7 @@
     <div class="flex-1 space-y-2">
       <div class="flex items-center gap-2">
         <label class="btn btn-secondary btn-sm cursor-pointer">
-          <input
+          <input data-testid="common-image-upload-input-file"
             type="file"
             :accept="acceptTypes"
             class="hidden"
@@ -52,7 +52,7 @@
           <Icon name="upload" size="sm" class="mr-1.5" :stroke-width="2" />
           {{ uploadLabel }}
         </label>
-        <button
+        <button data-testid="common-image-upload-button-emit-update-model-value"
           v-if="modelValue"
           type="button"
           class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"

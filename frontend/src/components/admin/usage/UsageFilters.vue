@@ -7,7 +7,7 @@
         <!-- User Search -->
         <div ref="userSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('admin.usage.userFilter') }}</label>
-          <input
+          <input data-testid="admin-usage-usage-filters-input-user-keyword"
             ref="userInputRef"
             v-model="userKeyword"
             type="text"
@@ -16,7 +16,7 @@
             @input="debounceUserSearch"
             @focus="showUserDropdown = true"
           />
-          <button
+          <button data-testid="admin-usage-usage-filters-button-clear-user"
             v-if="filters.user_id"
             type="button"
             @click="clearUser"
@@ -31,7 +31,7 @@
             :match-width="true"
             panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
-            <button
+            <button data-testid="admin-usage-usage-filters-button-select-user-u"
               v-for="u in userResults"
               :key="u.id"
               type="button"
@@ -47,7 +47,7 @@
         <!-- API Key Search -->
         <div ref="apiKeySearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
-          <input
+          <input data-testid="admin-usage-usage-filters-input-api-key-keyword"
             ref="apiKeyInputRef"
             v-model="apiKeyKeyword"
             type="text"
@@ -56,7 +56,7 @@
             @input="debounceApiKeySearch"
             @focus="onApiKeyFocus"
           />
-          <button
+          <button data-testid="admin-usage-usage-filters-button-on-clear-api-key"
             v-if="filters.api_key_id"
             type="button"
             @click="onClearApiKey"
@@ -71,7 +71,7 @@
             :match-width="true"
             panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
-            <button
+            <button data-testid="admin-usage-usage-filters-button-select-api-key-k"
               v-for="k in apiKeyResults"
               :key="k.id"
               type="button"
@@ -93,7 +93,7 @@
         <!-- Account Filter -->
         <div ref="accountSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[220px]">
           <label class="input-label">{{ t('admin.usage.account') }}</label>
-          <input
+          <input data-testid="admin-usage-usage-filters-input-account-keyword"
             ref="accountInputRef"
             v-model="accountKeyword"
             type="text"
@@ -102,7 +102,7 @@
             @input="debounceAccountSearch"
             @focus="showAccountDropdown = true"
           />
-          <button
+          <button data-testid="admin-usage-usage-filters-button-clear-account"
             v-if="filters.account_id"
             type="button"
             @click="clearAccount"
@@ -117,7 +117,7 @@
             :match-width="true"
             panel-class="max-h-60 overflow-auto rounded-lg border bg-white shadow-lg dark:bg-gray-800"
           >
-            <button
+            <button data-testid="admin-usage-usage-filters-button-select-account-a"
               v-for="a in accountResults"
               :key="a.id"
               type="button"
@@ -158,17 +158,17 @@
 
       <!-- Right: actions -->
       <div v-if="showActions" class="usage-filter-actions flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
-        <button type="button" @click="$emit('refresh')" class="btn btn-secondary">
+        <button data-testid="admin-usage-usage-filters-button-emit-refresh" type="button" @click="$emit('refresh')" class="btn btn-secondary">
           {{ t('common.refresh') }}
         </button>
-        <button type="button" @click="$emit('reset')" class="btn btn-secondary">
+        <button data-testid="admin-usage-usage-filters-button-emit-reset" type="button" @click="$emit('reset')" class="btn btn-secondary">
           {{ t('common.reset') }}
         </button>
         <slot name="after-reset" />
-        <button type="button" @click="$emit('cleanup')" class="btn btn-danger">
+        <button data-testid="admin-usage-usage-filters-button-emit-cleanup" type="button" @click="$emit('cleanup')" class="btn btn-danger">
           {{ t('admin.usage.cleanup.button') }}
         </button>
-        <button type="button" @click="$emit('export')" :disabled="exporting" class="btn btn-primary">
+        <button data-testid="admin-usage-usage-filters-button-emit-export" type="button" @click="$emit('export')" :disabled="exporting" class="btn btn-primary">
           {{ t('usage.exportExcel') }}
         </button>
       </div>

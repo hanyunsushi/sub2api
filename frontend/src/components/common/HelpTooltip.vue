@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
+  <div data-testid="common-help-tooltip-div-on-click"
     ref="trigger"
     class="group relative ml-1 inline-flex items-center align-middle"
     @mouseenter="onEnter"
@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
         ]"
         :style="{ top: `calc(${tooltipStyle.top} - 8px)`, left: tooltipStyle.left }"
       >
-        <button
+        <button data-testid="common-help-tooltip-button-close-tooltip"
           v-if="props.trigger === 'click'"
           type="button"
           class="absolute right-1.5 top-1.5 rounded p-1 text-gray-300 transition-colors hover:bg-white/10 hover:text-white"

@@ -36,12 +36,12 @@
           >
             <div class="toc-header">
               <span class="toc-title">目录</span>
-              <button class="toc-close-btn" @click="tocVisible = false">
+              <button data-testid="user-custom-page-button-toc-visible-off" class="toc-close-btn" @click="tocVisible = false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
             </div>
             <nav class="toc-nav">
-              <a
+              <a data-testid="user-custom-page-link-scroll-to-heading-item-id"
                 v-for="item in tocItems"
                 :key="item.id"
                 :href="'#' + item.id"
@@ -58,7 +58,7 @@
           </aside>
 
           <!-- TOC Toggle Button (when collapsed) -->
-          <button
+          <button data-testid="user-custom-page-button-toc-visible-on"
             v-show="!tocVisible && tocItems.length > 0"
             class="toc-toggle-btn"
             @click="tocVisible = true"
@@ -95,7 +95,7 @@
 
         <!-- Iframe embed mode -->
         <div v-else class="custom-embed-shell">
-          <a
+          <a data-testid="user-custom-page-link-a"
             :href="embeddedUrl"
             target="_blank"
             rel="noopener noreferrer"

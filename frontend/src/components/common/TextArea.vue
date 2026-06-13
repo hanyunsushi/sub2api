@@ -5,7 +5,7 @@
       <span v-if="required" class="text-red-500">*</span>
     </label>
     <div class="relative">
-      <textarea
+      <textarea data-testid="common-text-area-textarea-text-area-ref"
         :id="id"
         ref="textAreaRef"
         :value="modelValue"

@@ -36,7 +36,7 @@
     <!-- Action -->
     <div v-if="actionText || $slots.action" class="mt-6">
       <slot name="action">
-        <component
+        <component data-testid="common-empty-state-component-component"
           :is="actionTo ? 'RouterLink' : 'button'"
           v-if="actionText"
           :to="actionTo"

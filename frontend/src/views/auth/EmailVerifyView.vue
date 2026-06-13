@@ -35,7 +35,7 @@
           <label for="code" class="input-label text-center">
             {{ t('auth.verificationCode') }}
           </label>
-          <input
+          <input data-testid="auth-email-verify-input-verify-code"
             id="code"
             v-model="verifyCode"
             type="text"
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" :disabled="isLoading || !verifyCode" class="btn btn-primary w-full">
+        <button data-testid="auth-email-verify-button-submit" type="submit" :disabled="isLoading || !verifyCode" class="btn btn-primary w-full">
           <svg
             v-if="isLoading"
             class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
@@ -105,7 +105,7 @@
 
         <!-- Resend Code -->
         <div class="text-center">
-          <button
+          <button data-testid="auth-email-verify-button-button"
             v-if="countdown > 0"
             type="button"
             disabled
@@ -113,7 +113,7 @@
           >
             {{ t('auth.resendCountdown', { countdown }) }}
           </button>
-          <button
+          <button data-testid="auth-email-verify-button-handle-resend-code"
             v-else
             type="button"
             @click="handleResendCode"
@@ -134,7 +134,7 @@
 
     <!-- Footer -->
     <template #footer>
-      <button
+      <button data-testid="auth-email-verify-button-handle-back"
         @click="handleBack"
         class="flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-gray-300"
       >

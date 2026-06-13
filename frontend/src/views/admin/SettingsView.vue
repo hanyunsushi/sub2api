@@ -18,7 +18,7 @@
             :aria-label="t('admin.settings.title')"
           >
             <div class="settings-tabs">
-              <button
+              <button data-testid="admin-settings-button-select-settings-tab-tab-key"
                 v-for="tab in settingsTabs"
                 :key="tab.key"
                 :id="`settings-tab-${tab.key}`"
@@ -94,7 +94,7 @@
                 <span class="text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.adminApiKey.notConfigured") }}
                 </span>
-                <button
+                <button data-testid="admin-settings-button-create-admin-api-key"
                   type="button"
                   @click="createAdminApiKey"
                   :disabled="adminApiKeyOperating"
@@ -144,7 +144,7 @@
                     </code>
                   </div>
                   <div class="flex gap-2">
-                    <button
+                    <button data-testid="admin-settings-button-regenerate-admin-api-key"
                       type="button"
                       @click="regenerateAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -156,7 +156,7 @@
                           : t("admin.settings.adminApiKey.regenerate")
                       }}
                     </button>
-                    <button
+                    <button data-testid="admin-settings-button-delete-admin-api-key"
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -183,7 +183,7 @@
                     >
                       {{ newAdminApiKey }}
                     </code>
-                    <button
+                    <button data-testid="admin-settings-button-copy-new-key"
                       type="button"
                       @click="copyNewKey"
                       class="btn btn-primary btn-sm flex-shrink-0"
@@ -249,7 +249,7 @@
                     >
                       {{ t("admin.settings.overloadCooldown.cooldownMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-overload-cooldown-form-cooldown-minutes"
                       v-model.number="overloadCooldownForm.cooldown_minutes"
                       type="number"
                       min="1"
@@ -267,7 +267,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-overload-cooldown-settings"
                     type="button"
                     @click="saveOverloadCooldownSettings"
                     :disabled="overloadCooldownSaving"
@@ -354,7 +354,7 @@
                         )
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rate-limit429-cooldown-form-cooldown-seconds"
                       v-model.number="rateLimit429CooldownForm.cooldown_seconds"
                       type="number"
                       min="1"
@@ -374,7 +374,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rate-limit429-cooldown-settings"
                     type="button"
                     @click="saveRateLimit429CooldownSettings"
                     :disabled="rateLimit429CooldownSaving"
@@ -461,7 +461,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.action") }}
                     </label>
-                    <select
+                    <select data-testid="admin-settings-select-stream-timeout-form-action"
                       v-model="streamTimeoutForm.action"
                       class="input w-64"
                     >
@@ -489,7 +489,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.tempUnschedMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-temp-unsched-minutes"
                       v-model.number="streamTimeoutForm.temp_unsched_minutes"
                       type="number"
                       min="1"
@@ -510,7 +510,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.thresholdCount") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-count"
                       v-model.number="streamTimeoutForm.threshold_count"
                       type="number"
                       min="1"
@@ -531,7 +531,7 @@
                         t("admin.settings.streamTimeout.thresholdWindowMinutes")
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-window-minutes"
                       v-model.number="
                         streamTimeoutForm.threshold_window_minutes
                       "
@@ -554,7 +554,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-stream-timeout-settings"
                     type="button"
                     @click="saveStreamTimeoutSettings"
                     :disabled="streamTimeoutSaving"
@@ -709,7 +709,7 @@
                       :key="index"
                       class="flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rectifier-form-apikey-signature-patterns-index"
                         v-model="rectifierForm.apikey_signature_patterns[index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -717,7 +717,7 @@
                           t('admin.settings.rectifier.apikeyPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-button"
                         type="button"
                         @click="
                           rectifierForm.apikey_signature_patterns.splice(
@@ -742,7 +742,7 @@
                         </svg>
                       </button>
                     </div>
-                    <button
+                    <button data-testid="admin-settings-button-push"
                       type="button"
                       @click="rectifierForm.apikey_signature_patterns.push('')"
                       class="btn btn-ghost btn-xs text-primary-600 dark:text-primary-400"
@@ -756,7 +756,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rectifier-settings"
                     type="button"
                     @click="saveRectifierSettings"
                     :disabled="rectifierSaving"
@@ -871,7 +871,7 @@
                     >
                       {{ t("admin.settings.betaPolicy.errorMessage") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rule-error-message"
                       v-model="rule.error_message"
                       type="text"
                       class="input"
@@ -892,7 +892,7 @@
                       {{ t("admin.settings.betaPolicy.quickPresets") }}
                     </label>
                     <div class="flex flex-wrap gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-apply-beta-preset-rule-preset"
                         v-for="preset in betaPresets[rule.beta_token]"
                         :key="preset.label"
                         type="button"
@@ -921,7 +921,7 @@
                       :key="index"
                       class="mb-1.5 flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rule-model-whitelist-index"
                         v-model="rule.model_whitelist![index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -929,7 +929,7 @@
                           t('admin.settings.betaPolicy.modelPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-button-2"
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
                         class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -950,7 +950,7 @@
                       </button>
                     </div>
                     <!-- Add pattern button -->
-                    <button
+                    <button data-testid="admin-settings-button-button-3"
                       type="button"
                       @click="
                         if (!rule.model_whitelist) rule.model_whitelist = [];
@@ -980,7 +980,7 @@
                           t("admin.settings.betaPolicy.commonPatterns")
                         }}:</span
                       >
-                      <button
+                      <button data-testid="admin-settings-button-add-quick-pattern-rule-pattern"
                         v-for="pattern in commonModelPatterns"
                         :key="pattern"
                         type="button"
@@ -1014,7 +1014,7 @@
                     </p>
                     <!-- Fallback Error Message (only when fallback_action=block) -->
                     <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                      <input
+                      <input data-testid="admin-settings-input-rule-fallback-error-message"
                         v-model="rule.fallback_error_message"
                         type="text"
                         class="input"
@@ -1035,7 +1035,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-beta-policy-settings"
                     type="button"
                     @click="saveBetaPolicySettings"
                     :disabled="betaPolicySaving"
@@ -1106,7 +1106,7 @@
                       })
                     }}
                   </span>
-                  <button
+                  <button data-testid="admin-settings-button-remove-open-ai-fast-policy-rule-rule-index"
                     type="button"
                     @click="removeOpenAIFastPolicyRule(ruleIndex)"
                     class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1192,7 +1192,7 @@
                   >
                     {{ t("admin.settings.openaiFastPolicy.errorMessage") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-rule-error-message-2"
                     v-model="rule.error_message"
                     type="text"
                     class="input"
@@ -1224,7 +1224,7 @@
                     :key="patternIdx"
                     class="mb-1.5 flex items-center gap-2"
                   >
-                    <input
+                    <input data-testid="admin-settings-input-rule-model-whitelist-pattern-idx"
                       v-model="rule.model_whitelist![patternIdx]"
                       type="text"
                       class="input input-sm flex-1"
@@ -1234,7 +1234,7 @@
                         )
                       "
                     />
-                    <button
+                    <button data-testid="admin-settings-button-button-4"
                       type="button"
                       @click="
                         removeOpenAIFastPolicyModelPattern(rule, patternIdx)
@@ -1256,7 +1256,7 @@
                       </svg>
                     </button>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-add-open-ai-fast-policy-model-pattern-rule"
                     type="button"
                     @click="addOpenAIFastPolicyModelPattern(rule)"
                     class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
@@ -1306,7 +1306,7 @@
                     }}
                   </p>
                   <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                    <input
+                    <input data-testid="admin-settings-input-rule-fallback-error-message-2"
                       v-model="rule.fallback_error_message"
                       type="text"
                       class="input"
@@ -1322,7 +1322,7 @@
 
               <!-- Add Rule Button -->
               <div>
-                <button
+                <button data-testid="admin-settings-button-add-open-ai-fast-policy-rule"
                   type="button"
                   @click="addOpenAIFastPolicyRule"
                   class="btn btn-secondary btn-sm inline-flex items-center gap-1"
@@ -1416,7 +1416,7 @@
                       class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-xs font-mono text-gray-700 dark:bg-dark-600 dark:text-gray-200"
                     >
                       <span>{{ suffix }}</span>
-                      <button
+                      <button data-testid="admin-settings-button-button-5"
                         type="button"
                         class="rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
                         @click="
@@ -1435,7 +1435,7 @@
                     <div
                       class="flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-registration-email-suffix-whitelist-draft"
                         v-model="registrationEmailSuffixWhitelistDraft"
                         type="text"
                         class="w-full bg-transparent text-sm font-mono text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
@@ -1519,7 +1519,7 @@
                 >
                   {{ t("admin.settings.registration.frontendUrl") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-frontend-url"
                   v-model="form.frontend_url"
                   type="url"
                   class="input"
@@ -1624,7 +1624,7 @@
                     >
                       {{ t("admin.settings.turnstile.siteKey") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-turnstile-site-key"
                       v-model="form.turnstile_site_key"
                       type="text"
                       class="input font-mono text-sm"
@@ -1632,7 +1632,7 @@
                     />
                     <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.turnstile.siteKeyHint") }}
-                      <a
+                      <a data-testid="admin-settings-link-a"
                         href="https://dash.cloudflare.com/"
                         target="_blank"
                         class="text-primary-600 hover:text-primary-500"
@@ -1648,7 +1648,7 @@
                     >
                       {{ t("admin.settings.turnstile.secretKey") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-turnstile-secret-key"
                       v-model="form.turnstile_secret_key"
                       type="password"
                       class="input font-mono text-sm"
@@ -1705,7 +1705,7 @@
                     >
                       {{ t("admin.settings.linuxdo.clientId") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-linuxdo-connect-client-id"
                       v-model="form.linuxdo_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -1724,7 +1724,7 @@
                     >
                       {{ t("admin.settings.linuxdo.clientSecret") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-linuxdo-connect-client-secret"
                       v-model="form.linuxdo_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -1753,7 +1753,7 @@
                     >
                       {{ t("admin.settings.linuxdo.redirectUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-linuxdo-connect-redirect-url"
                       v-model="form.linuxdo_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -1764,7 +1764,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button
+                      <button data-testid="admin-settings-button-set-and-copy-linuxdo-redirect-url"
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyLinuxdoRedirectUrl"
@@ -1853,7 +1853,7 @@
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
-                        <input
+                        <input data-testid="admin-settings-input-form-github-oauth-client-id"
                           v-model="form.github_oauth_client_id"
                           type="text"
                           class="input font-mono text-sm"
@@ -1862,7 +1862,7 @@
                       </div>
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client Secret</label>
-                        <input
+                        <input data-testid="admin-settings-input-form-github-oauth-client-secret"
                           v-model="form.github_oauth_client_secret"
                           type="password"
                           class="input font-mono text-sm"
@@ -1879,14 +1879,14 @@
                       <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("后端回调地址", "Backend Callback URL") }}
                       </label>
-                      <input
+                      <input data-testid="admin-settings-input-form-github-oauth-redirect-url"
                         v-model="form.github_oauth_redirect_url"
                         type="url"
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/github/callback"
                       />
                       <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                        <button
+                        <button data-testid="admin-settings-button-set-and-copy-email-o-auth-redirect-url-github"
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
                           @click="setAndCopyEmailOAuthRedirectUrl('github')"
@@ -1906,7 +1906,7 @@
                       <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("前端回跳地址", "Frontend Callback URL") }}
                       </label>
-                      <input
+                      <input data-testid="admin-settings-input-form-github-oauth-frontend-redirect-url"
                         v-model="form.github_oauth_frontend_redirect_url"
                         type="text"
                         class="input font-mono text-sm"
@@ -1947,7 +1947,7 @@
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
-                        <input
+                        <input data-testid="admin-settings-input-form-google-oauth-client-id"
                           v-model="form.google_oauth_client_id"
                           type="text"
                           class="input font-mono text-sm"
@@ -1956,7 +1956,7 @@
                       </div>
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client Secret</label>
-                        <input
+                        <input data-testid="admin-settings-input-form-google-oauth-client-secret"
                           v-model="form.google_oauth_client_secret"
                           type="password"
                           class="input font-mono text-sm"
@@ -1973,14 +1973,14 @@
                       <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("后端回调地址", "Backend Callback URL") }}
                       </label>
-                      <input
+                      <input data-testid="admin-settings-input-form-google-oauth-redirect-url"
                         v-model="form.google_oauth_redirect_url"
                         type="url"
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/google/callback"
                       />
                       <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                        <button
+                        <button data-testid="admin-settings-button-set-and-copy-email-o-auth-redirect-url-google"
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
                           @click="setAndCopyEmailOAuthRedirectUrl('google')"
@@ -2000,7 +2000,7 @@
                       <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("前端回跳地址", "Frontend Callback URL") }}
                       </label>
-                      <input
+                      <input data-testid="admin-settings-input-form-google-oauth-frontend-redirect-url"
                         v-model="form.google_oauth_frontend_redirect_url"
                         type="text"
                         class="input font-mono text-sm"
@@ -2317,7 +2317,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button
+                      <button data-testid="admin-settings-button-set-and-copy-we-chat-redirect-url"
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyWeChatRedirectUrl"
@@ -2391,7 +2391,7 @@
                     >
                       {{ t("admin.settings.dingtalk.clientId") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-dingtalk-connect-client-id"
                       v-model="form.dingtalk_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -2410,7 +2410,7 @@
                     >
                       {{ t("admin.settings.dingtalk.clientSecret") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-dingtalk-connect-client-secret"
                       v-model="form.dingtalk_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -2439,7 +2439,7 @@
                     >
                       {{ t("admin.settings.dingtalk.redirectUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-dingtalk-connect-redirect-url"
                       v-model="form.dingtalk_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2462,7 +2462,7 @@
                     </p>
                     <div class="space-y-2">
                       <label class="flex cursor-pointer items-center gap-3">
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-corp-restriction-policy"
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="none"
@@ -2473,7 +2473,7 @@
                         </span>
                       </label>
                       <label class="flex cursor-pointer items-center gap-3">
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-corp-restriction-policy-2"
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="internal_only"
@@ -2523,7 +2523,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDisplayNameTarget") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-display-name-attr-key"
                           v-model="form.dingtalk_connect_sync_display_name_attr_key"
                           type="text"
                           placeholder="dingtalk_name"
@@ -2534,7 +2534,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-display-name-attr-name"
                           v-model="form.dingtalk_connect_sync_display_name_attr_name"
                           type="text"
                           placeholder="钉钉姓名"
@@ -2569,7 +2569,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncCorpEmailTarget") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-corp-email-attr-key"
                           v-model="form.dingtalk_connect_sync_corp_email_attr_key"
                           type="text"
                           placeholder="dingtalk_email"
@@ -2580,7 +2580,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-corp-email-attr-name"
                           v-model="form.dingtalk_connect_sync_corp_email_attr_name"
                           type="text"
                           placeholder="钉钉企业邮箱"
@@ -2615,7 +2615,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDeptTarget") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-dept-attr-key"
                           v-model="form.dingtalk_connect_sync_dept_attr_key"
                           type="text"
                           placeholder="dingtalk_department"
@@ -2626,7 +2626,7 @@
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-dept-attr-name"
                           v-model="form.dingtalk_connect_sync_dept_attr_name"
                           type="text"
                           placeholder="钉钉部门"
@@ -2679,7 +2679,7 @@
                     >
                       {{ t("admin.settings.oidc.providerName") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-provider-name"
                       v-model="form.oidc_connect_provider_name"
                       type="text"
                       class="input"
@@ -2695,7 +2695,7 @@
                     >
                       {{ t("admin.settings.oidc.clientId") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-client-id"
                       v-model="form.oidc_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -2711,7 +2711,7 @@
                     >
                       {{ t("admin.settings.oidc.clientSecret") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-client-secret"
                       v-model="form.oidc_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -2740,7 +2740,7 @@
                     >
                       {{ t("admin.settings.oidc.issuerUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-issuer-url"
                       v-model="form.oidc_connect_issuer_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2756,7 +2756,7 @@
                     >
                       {{ t("admin.settings.oidc.discoveryUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-discovery-url"
                       v-model="form.oidc_connect_discovery_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2772,7 +2772,7 @@
                     >
                       {{ t("admin.settings.oidc.authorizeUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-authorize-url"
                       v-model="form.oidc_connect_authorize_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2788,7 +2788,7 @@
                     >
                       {{ t("admin.settings.oidc.tokenUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-token-url"
                       v-model="form.oidc_connect_token_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2804,7 +2804,7 @@
                     >
                       {{ t("admin.settings.oidc.userinfoUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-url"
                       v-model="form.oidc_connect_userinfo_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2820,7 +2820,7 @@
                     >
                       {{ t("admin.settings.oidc.jwksUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-jwks-url"
                       v-model="form.oidc_connect_jwks_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2836,7 +2836,7 @@
                     >
                       {{ t("admin.settings.oidc.scopes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-scopes"
                       v-model="form.oidc_connect_scopes"
                       type="text"
                       class="input font-mono text-sm"
@@ -2853,7 +2853,7 @@
                     >
                       {{ t("admin.settings.oidc.redirectUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-redirect-url"
                       v-model="form.oidc_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2864,7 +2864,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button
+                      <button data-testid="admin-settings-button-set-and-copy-oidc-redirect-url"
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyOIDCRedirectUrl"
@@ -2889,7 +2889,7 @@
                     >
                       {{ t("admin.settings.oidc.frontendRedirectUrl") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-frontend-redirect-url"
                       v-model="form.oidc_connect_frontend_redirect_url"
                       type="text"
                       class="input font-mono text-sm"
@@ -2910,7 +2910,7 @@
                     >
                       {{ t("admin.settings.oidc.tokenAuthMethod") }}
                     </label>
-                    <select
+                    <select data-testid="admin-settings-select-form-oidc-connect-token-auth-method"
                       v-model="form.oidc_connect_token_auth_method"
                       class="input font-mono text-sm"
                     >
@@ -2930,7 +2930,7 @@
                     >
                       {{ t("admin.settings.oidc.clockSkewSeconds") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-clock-skew-seconds"
                       v-model.number="form.oidc_connect_clock_skew_seconds"
                       type="number"
                       min="0"
@@ -2945,7 +2945,7 @@
                     >
                       {{ t("admin.settings.oidc.allowedSigningAlgs") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-allowed-signing-algs"
                       v-model="form.oidc_connect_allowed_signing_algs"
                       type="text"
                       class="input font-mono text-sm"
@@ -3006,7 +3006,7 @@
                     >
                       {{ t("admin.settings.oidc.userinfoEmailPath") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-email-path"
                       v-model="form.oidc_connect_userinfo_email_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3022,7 +3022,7 @@
                     >
                       {{ t("admin.settings.oidc.userinfoIdPath") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-id-path"
                       v-model="form.oidc_connect_userinfo_id_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3038,7 +3038,7 @@
                     >
                       {{ t("admin.settings.oidc.userinfoUsernamePath") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-username-path"
                       v-model="form.oidc_connect_userinfo_username_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3076,7 +3076,7 @@
                   >
                     {{ t("admin.settings.defaults.defaultBalance") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-default-balance"
                     v-model.number="form.default_balance"
                     type="number"
                     step="0.01"
@@ -3094,7 +3094,7 @@
                   >
                     {{ t("admin.settings.defaults.defaultConcurrency") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-default-concurrency"
                     v-model.number="form.default_concurrency"
                     type="number"
                     min="1"
@@ -3111,7 +3111,7 @@
                   >
                     {{ t("admin.settings.defaults.defaultUserRpmLimit") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-default-user-rpm-limit"
                     v-model.number="form.default_user_rpm_limit"
                     type="number"
                     min="0"
@@ -3137,7 +3137,7 @@
                       }}
                     </p>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-add-default-subscription"
                     type="button"
                     class="btn btn-secondary btn-sm"
                     @click="addDefaultSubscription"
@@ -3242,7 +3242,7 @@
                           t("admin.settings.defaults.subscriptionValidityDays")
                         }}
                       </label>
-                      <input
+                      <input data-testid="admin-settings-input-item-validity-days"
                         v-model.number="item.validity_days"
                         type="number"
                         min="1"
@@ -3251,7 +3251,7 @@
                       />
                     </div>
                     <div class="flex items-end">
-                      <button
+                      <button data-testid="admin-settings-button-remove-default-subscription-index"
                         type="button"
                         class="btn btn-secondary default-sub-delete-btn w-full text-red-600 hover:text-red-700 dark:text-red-400"
                         @click="removeDefaultSubscription(index)"
@@ -3292,7 +3292,7 @@
                           <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
                         </td>
                         <td class="pr-4 py-1">
-                          <input
+                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-daily"
                             v-model.number="form.default_platform_quotas[p]!.daily"
                             type="number"
                             step="0.01"
@@ -3302,7 +3302,7 @@
                           />
                         </td>
                         <td class="pr-4 py-1">
-                          <input
+                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-weekly"
                             v-model.number="form.default_platform_quotas[p]!.weekly"
                             type="number"
                             step="0.01"
@@ -3312,7 +3312,7 @@
                           />
                         </td>
                         <td class="py-1">
-                          <input
+                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-monthly"
                             v-model.number="form.default_platform_quotas[p]!.monthly"
                             type="number"
                             step="0.01"
@@ -3395,7 +3395,7 @@
                         >
                           {{ t("admin.settings.defaults.defaultBalance") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-balance"
                           v-model.number="
                             authSourceDefaults[authSource.source].balance
                           "
@@ -3412,7 +3412,7 @@
                         >
                           {{ t("admin.settings.defaults.defaultConcurrency") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-concurrency"
                           v-model.number="
                             authSourceDefaults[authSource.source].concurrency
                           "
@@ -3458,7 +3458,7 @@
                           {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsHint") }}
                         </p>
                       </div>
-                      <button
+                      <button data-testid="admin-settings-button-button-6"
                         type="button"
                         class="btn btn-secondary btn-sm"
                         @click="
@@ -3576,7 +3576,7 @@
                               )
                             }}
                           </label>
-                          <input
+                          <input data-testid="admin-settings-input-item-validity-days-2"
                             v-model.number="item.validity_days"
                             type="number"
                             min="1"
@@ -3585,7 +3585,7 @@
                           />
                         </div>
                         <div class="flex items-end">
-                          <button
+                          <button data-testid="admin-settings-button-button-7"
                             type="button"
                             class="btn btn-secondary w-full text-red-600 hover:text-red-700 dark:text-red-400"
                             @click="
@@ -3627,7 +3627,7 @@
                                 <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
                               </td>
                               <td class="pr-4 py-1">
-                                <input
+                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-daily"
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.daily"
                                   type="number"
                                   step="0.01"
@@ -3637,7 +3637,7 @@
                                 />
                               </td>
                               <td class="pr-4 py-1">
-                                <input
+                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-weekly"
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.weekly"
                                   type="number"
                                   step="0.01"
@@ -3647,7 +3647,7 @@
                                 />
                               </td>
                               <td class="py-1">
-                                <input
+                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-monthly"
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.monthly"
                                   type="number"
                                   step="0.01"
@@ -3691,7 +3691,7 @@
                 >
                   {{ t("admin.settings.claudeCode.minVersion") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-min-claude-code-version"
                   v-model="form.min_claude_code_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -3709,7 +3709,7 @@
                 >
                   {{ t("admin.settings.claudeCode.maxVersion") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-max-claude-code-version"
                   v-model="form.max_claude_code_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -3941,7 +3941,7 @@
                     )
                   }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-antigravity-user-agent-version"
                   v-model="form.antigravity_user_agent_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -3971,7 +3971,7 @@
                     )
                   }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-openai-codex-user-agent"
                   v-model="form.openai_codex_user_agent"
                   type="text"
                   class="input w-full font-mono text-sm"
@@ -4040,7 +4040,7 @@
                   >
                     {{ t("admin.settings.webSearchEmulation.providers") }}
                   </label>
-                  <button
+                  <button data-testid="admin-settings-button-add-web-search-provider"
                     type="button"
                     class="btn btn-secondary btn-sm"
                     @click="addWebSearchProvider"
@@ -4062,7 +4062,7 @@
                   class="rounded-lg border border-gray-200 dark:border-dark-600"
                 >
                   <!-- Collapsible header -->
-                  <div
+                  <div data-testid="admin-settings-div-toggle-provider-expand-p-idx"
                     class="flex cursor-pointer items-center justify-between px-4 py-3"
                     @click="toggleProviderExpand(pIdx)"
                   >
@@ -4114,7 +4114,7 @@
                         }}
                       </span>
                     </div>
-                    <button
+                    <button data-testid="admin-settings-button-remove-web-search-provider-p-idx"
                       type="button"
                       class="text-red-500 hover:text-red-700 text-xs"
                       @click.stop="removeWebSearchProvider(pIdx)"
@@ -4136,7 +4136,7 @@
                         t("admin.settings.webSearchEmulation.apiKey")
                       }}</label>
                       <div class="relative">
-                        <input
+                        <input data-testid="admin-settings-input-provider-api-key"
                           v-model="provider.api_key"
                           :type="apiKeyVisible[pIdx] ? 'text' : 'password'"
                           class="input w-full text-sm"
@@ -4157,7 +4157,7 @@
                           v-if="provider.api_key || provider.api_key_configured"
                           class="absolute inset-y-0 right-0 flex items-center pr-1.5"
                         >
-                          <button
+                          <button data-testid="admin-settings-button-api-key-visible-p-idx-api-key-visible-p-idx"
                             type="button"
                             class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :title="
@@ -4206,7 +4206,7 @@
                               />
                             </svg>
                           </button>
-                          <button
+                          <button data-testid="admin-settings-button-copy-api-key-p-idx"
                             type="button"
                             class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :class="{
@@ -4243,7 +4243,7 @@
                         <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.quotaLimit")
                         }}</label>
-                        <input
+                        <input data-testid="admin-settings-input-provider-quota-limit"
                           v-model="provider.quota_limit"
                           type="number"
                           min="1"
@@ -4262,7 +4262,7 @@
                         <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.subscribedAt")
                         }}</label>
-                        <input
+                        <input data-testid="admin-settings-input-date"
                           :value="formatSubscribedAt(provider.subscribed_at)"
                           type="date"
                           class="input text-sm"
@@ -4322,7 +4322,7 @@
                             : "∞"
                         }}</span
                       >
-                      <button
+                      <button data-testid="admin-settings-button-reset-web-search-usage-p-idx"
                         v-if="(provider.quota_used ?? 0) > 0"
                         type="button"
                         class="text-xs text-primary-600 hover:text-primary-700"
@@ -4343,7 +4343,7 @@
                           :proxies="webSearchProxies"
                         />
                       </div>
-                      <button
+                      <button data-testid="admin-settings-button-open-test-dialog"
                         type="button"
                         class="btn btn-secondary btn-sm whitespace-nowrap"
                         @click="openTestDialog()"
@@ -4358,7 +4358,7 @@
           </div>
 
           <!-- Web Search Test Dialog -->
-          <div
+          <div data-testid="admin-settings-div-ws-test-dialog-open-off"
             v-if="wsTestDialogOpen"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             @click.self="wsTestDialogOpen = false"
@@ -4372,7 +4372,7 @@
                 {{ t("admin.settings.webSearchEmulation.testResultTitle") }}
               </h3>
               <div class="flex items-center gap-2">
-                <input
+                <input data-testid="admin-settings-input-ws-test-query"
                   v-model="wsTestQuery"
                   type="text"
                   class="input flex-1 text-sm"
@@ -4381,7 +4381,7 @@
                   "
                   @keyup.enter="testWebSearchProvider()"
                 />
-                <button
+                <button data-testid="admin-settings-button-test-web-search-provider"
                   type="button"
                   class="btn btn-primary btn-sm"
                   :disabled="wsTestLoading"
@@ -4417,7 +4417,7 @@
                   :key="rIdx"
                   class="mt-2 border-t border-gray-200 pt-2 first:mt-0 first:border-0 first:pt-0 dark:border-dark-600"
                 >
-                  <a
+                  <a data-testid="admin-settings-link-a-2"
                     :href="r.url"
                     target="_blank"
                     class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
@@ -4429,7 +4429,7 @@
                 </div>
               </div>
               <div class="mt-4 flex justify-end">
-                <button
+                <button data-testid="admin-settings-button-ws-test-dialog-open-off"
                   type="button"
                   class="btn btn-secondary btn-sm"
                   @click="wsTestDialogOpen = false"
@@ -4462,7 +4462,7 @@
                 </p>
               </div>
               <label class="toggle">
-                <input v-model="form.allow_user_view_error_requests" type="checkbox" />
+                <input data-testid="admin-settings-input-form-allow-user-view-error-requests" v-model="form.allow_user_view_error_requests" type="checkbox" />
                 <span class="toggle-slider"></span>
               </label>
             </div>
@@ -4508,7 +4508,7 @@
                   >
                     {{ t("admin.settings.site.siteName") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-site-name"
                     v-model="form.site_name"
                     type="text"
                     class="input"
@@ -4524,7 +4524,7 @@
                   >
                     {{ t("admin.settings.site.siteSubtitle") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-site-subtitle"
                     v-model="form.site_subtitle"
                     type="text"
                     class="input"
@@ -4577,7 +4577,7 @@
                 >
                   {{ t("admin.settings.site.apiBaseUrl") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-api-base-url"
                   v-model="form.api_base_url"
                   type="text"
                   class="input font-mono text-sm"
@@ -4603,7 +4603,7 @@
                     >
                       {{ t("admin.settings.site.tableDefaultPageSize") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-table-default-page-size"
                       v-model.number="form.table_default_page_size"
                       type="number"
                       min="5"
@@ -4621,7 +4621,7 @@
                     >
                       {{ t("admin.settings.site.tablePageSizeOptions") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-table-page-size-options-input"
                       v-model="tablePageSizeOptionsInput"
                       type="text"
                       class="input font-mono text-sm"
@@ -4663,7 +4663,7 @@
                           })
                         }}
                       </span>
-                      <button
+                      <button data-testid="admin-settings-button-remove-endpoint-index"
                         type="button"
                         class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                         @click="removeEndpoint(index)"
@@ -4690,7 +4690,7 @@
                         >
                           {{ t("admin.settings.site.customEndpoints.name") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-ep-name"
                           v-model="ep.name"
                           type="text"
                           class="input text-sm"
@@ -4709,7 +4709,7 @@
                             t("admin.settings.site.customEndpoints.endpointUrl")
                           }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-ep-endpoint"
                           v-model="ep.endpoint"
                           type="url"
                           class="input font-mono text-sm"
@@ -4730,7 +4730,7 @@
                             )
                           }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-ep-description"
                           v-model="ep.description"
                           type="text"
                           class="input text-sm"
@@ -4745,7 +4745,7 @@
                   </div>
                 </div>
 
-                <button
+                <button data-testid="admin-settings-button-add-endpoint"
                   type="button"
                   class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                   @click="addEndpoint"
@@ -4774,7 +4774,7 @@
                 >
                   {{ t("admin.settings.site.contactInfo") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-contact-info"
                   v-model="form.contact_info"
                   type="text"
                   class="input"
@@ -4792,7 +4792,7 @@
                 >
                   {{ t("admin.settings.site.docUrl") }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-doc-url"
                   v-model="form.doc_url"
                   type="url"
                   class="input font-mono text-sm"
@@ -4840,7 +4840,7 @@
                     >
                       {{ localText("AI logo 图床基础 URL", "AI logo CDN base URL") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-form-ai-logo-cdn-base-url"
                       v-model="form.ai_logo_cdn_base_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -4861,7 +4861,7 @@
                     >
                       {{ localText("共享自定义 AI logo", "Shared custom AI logos") }}
                     </label>
-                    <textarea
+                    <textarea data-testid="admin-settings-textarea-custom-ai-logo-presets-input"
                       v-model="customAILogoPresetsInput"
                       rows="5"
                       class="input font-mono text-sm"
@@ -4886,7 +4886,7 @@
                 >
                   {{ t("admin.settings.site.homeContent") }}
                 </label>
-                <textarea
+                <textarea data-testid="admin-settings-textarea-form-home-content"
                   v-model="form.home_content"
                   rows="6"
                   class="input font-mono text-sm"
@@ -4959,7 +4959,7 @@
                       }}
                     </span>
                     <div class="flex flex-shrink-0 items-center gap-1">
-                      <button
+                      <button data-testid="admin-settings-button-move-menu-item-index-1"
                         type="button"
                         class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-200"
                         :disabled="index === 0"
@@ -4980,7 +4980,7 @@
                           />
                         </svg>
                       </button>
-                      <button
+                      <button data-testid="admin-settings-button-move-menu-item-index-1-2"
                         type="button"
                         class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-200"
                         :disabled="index === form.custom_menu_items.length - 1"
@@ -5022,7 +5022,7 @@
                   </span>
                   <div class="flex items-center gap-2">
                     <!-- Move up -->
-                    <button
+                    <button data-testid="admin-settings-button-move-menu-item-index-1-3"
                       v-if="index > 0"
                       type="button"
                       class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
@@ -5044,7 +5044,7 @@
                       </svg>
                     </button>
                     <!-- Move down -->
-                    <button
+                    <button data-testid="admin-settings-button-move-menu-item-index-1-4"
                       v-if="index < form.custom_menu_items.length - 1"
                       type="button"
                       class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
@@ -5066,7 +5066,7 @@
                       </svg>
                     </button>
                     <!-- Delete -->
-                    <button
+                    <button data-testid="admin-settings-button-remove-menu-item-index"
                       type="button"
                       class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                       :title="t('admin.settings.customMenu.remove')"
@@ -5097,7 +5097,7 @@
                     >
                       {{ t("admin.settings.customMenu.name") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-item-label"
                       v-model="item.label"
                       type="text"
                       class="input text-sm"
@@ -5114,7 +5114,7 @@
                     >
                       {{ t("admin.settings.customMenu.visibility") }}
                     </label>
-                    <select v-model="item.visibility" class="input text-sm">
+                    <select data-testid="admin-settings-select-item-visibility" v-model="item.visibility" class="input text-sm">
                       <option value="user">
                         {{ t("admin.settings.customMenu.visibilityUser") }}
                       </option>
@@ -5131,7 +5131,7 @@
                     >
                       {{ t("admin.settings.customMenu.openMode") }}
                     </label>
-                    <select v-model="item.open_mode" class="input text-sm">
+                    <select data-testid="admin-settings-select-item-open-mode" v-model="item.open_mode" class="input text-sm">
                       <option value="iframe">
                         {{ t("admin.settings.customMenu.openModeIframe") }}
                       </option>
@@ -5151,7 +5151,7 @@
                     >
                       {{ t("admin.settings.customMenu.url") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-item-url"
                       v-model="item.url"
                       type="url"
                       class="input font-mono text-sm"
@@ -5184,7 +5184,7 @@
               </div>
 
               <!-- Add button -->
-              <button
+              <button data-testid="admin-settings-button-add-menu-item"
                 type="button"
                 class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                 @click="addMenuItem"
@@ -5243,7 +5243,7 @@
 	                    {{ localText("展示形式", "Display mode") }}
 	                  </label>
 	                  <div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
-                    <button
+                    <button data-testid="admin-settings-button-login-agreement-mode-modal"
                       type="button"
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
@@ -5256,7 +5256,7 @@
                       <Icon name="shield" size="sm" />
                       {{ localText("弹窗", "Modal") }}
                     </button>
-                    <button
+                    <button data-testid="admin-settings-button-login-agreement-mode-checkbox"
                       type="button"
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
@@ -5283,7 +5283,7 @@
                   <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ localText("条款更新日期", "Updated date") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-login-agreement-updated-at"
                     v-model="form.login_agreement_updated_at"
                     type="date"
                     class="input"
@@ -5309,7 +5309,7 @@
                       }}
                     </p>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-add-login-agreement-document"
                     type="button"
                     class="btn btn-primary btn-sm inline-flex items-center gap-1.5"
                     @click="addLoginAgreementDocument"
@@ -5350,7 +5350,7 @@
                           </p>
                         </div>
                       </div>
-                      <button
+                      <button data-testid="admin-settings-button-remove-login-agreement-document-index"
                         type="button"
                         class="rounded-md p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-900/20"
                         :disabled="
@@ -5368,7 +5368,7 @@
                         <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           {{ localText("文档名称", "Document title") }}
                         </label>
-                        <input
+                        <input data-testid="admin-settings-input-doc-title"
                           v-model="doc.title"
                           type="text"
                           class="input text-sm"
@@ -5383,7 +5383,7 @@
                           <span class="inline-flex flex-shrink-0 items-center border-r border-gray-200 bg-gray-50 px-3 text-sm text-gray-500 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-400">
                             /legal/
                           </span>
-                          <input
+                          <input data-testid="admin-settings-input-doc-id"
                             v-model="doc.id"
                             type="text"
                             class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
@@ -5396,7 +5396,7 @@
                       <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                         {{ localText("Markdown 内容", "Markdown content") }}
                       </label>
-                        <textarea
+                        <textarea data-testid="admin-settings-textarea-doc-content-md"
                           v-model="doc.content_md"
                           rows="8"
                           class="input font-mono text-sm"
@@ -5450,7 +5450,7 @@
                 {{ t('admin.settings.features.channelMonitor.defaultInterval') }}
                 <span class="text-red-500">*</span>
               </label>
-              <input
+              <input data-testid="admin-settings-input-form-channel-monitor-default-interval-seconds"
                 v-model.number="form.channel_monitor_default_interval_seconds"
                 type="number"
                 min="15"
@@ -5478,7 +5478,7 @@
               <label class="input-label">
                 {{ t('admin.settings.features.channelMonitor.autoScheduleFailureThreshold') }}
               </label>
-              <input
+              <input data-testid="admin-settings-input-form-channel-monitor-account-auto-schedule-failure-threshold"
                 v-model.number="form.channel_monitor_account_auto_schedule_failure_threshold"
                 type="number"
                 min="1"
@@ -5587,7 +5587,7 @@
                   {{ t('admin.settings.features.affiliate.rebateRate') }}
                 </label>
                 <div class="relative">
-                  <input
+                  <input data-testid="admin-settings-input-form-affiliate-rebate-rate"
                     v-model.number="form.affiliate_rebate_rate"
                     type="number"
                     step="0.01"
@@ -5607,7 +5607,7 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.freezeHours') }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-affiliate-rebate-freeze-hours"
                   v-model.number="form.affiliate_rebate_freeze_hours"
                   type="number"
                   step="1"
@@ -5624,7 +5624,7 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.durationDays') }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-affiliate-rebate-duration-days"
                   v-model.number="form.affiliate_rebate_duration_days"
                   type="number"
                   step="1"
@@ -5641,7 +5641,7 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.perInviteeCap') }}
                 </label>
-                <input
+                <input data-testid="admin-settings-input-form-affiliate-rebate-per-invitee-cap"
                   v-model.number="form.affiliate_rebate_per_invitee_cap"
                   type="number"
                   step="0.01"
@@ -5664,7 +5664,7 @@
                       {{ t('admin.settings.features.affiliate.customUsers.description') }}
                     </p>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-open-affiliate-modal-null"
                     type="button"
                     class="btn btn-primary btn-sm"
                     @click="openAffiliateModal(null)"
@@ -5674,14 +5674,14 @@
                 </div>
 
                 <div class="mb-3 flex items-center gap-2">
-                  <input
+                  <input data-testid="admin-settings-input-affiliate-state-search"
                     v-model="affiliateState.search"
                     type="text"
                     class="input flex-1"
                     :placeholder="t('admin.settings.features.affiliate.customUsers.searchPlaceholder')"
                     @input="onAffiliateSearchInput"
                   />
-                  <button
+                  <button data-testid="admin-settings-button-open-affiliate-batch-modal"
                     v-if="affiliateState.selected.length > 0"
                     type="button"
                     class="btn btn-secondary btn-sm"
@@ -5696,7 +5696,7 @@
                     <thead class="bg-gray-50 dark:bg-dark-800">
                       <tr>
                         <th class="px-3 py-2 text-left">
-                          <input
+                          <input data-testid="admin-settings-input-checkbox"
                             type="checkbox"
                             :checked="affiliateState.entries.length > 0 && affiliateState.selected.length === affiliateState.entries.length"
                             @change="toggleAffiliateSelectAll"
@@ -5722,7 +5722,7 @@
                       </tr>
                       <tr v-for="entry in affiliateState.entries" :key="entry.user_id">
                         <td class="px-3 py-2">
-                          <input
+                          <input data-testid="admin-settings-input-checkbox-2"
                             type="checkbox"
                             :checked="affiliateState.selected.includes(entry.user_id)"
                             @change="toggleAffiliateSelect(entry.user_id)"
@@ -5743,10 +5743,10 @@
                         </td>
                         <td class="px-3 py-2 text-sm">
                           <div class="flex items-center gap-2">
-                            <button type="button" class="text-primary-600 hover:underline" @click="openAffiliateModal(entry)">
+                            <button data-testid="admin-settings-button-open-affiliate-modal-entry" type="button" class="text-primary-600 hover:underline" @click="openAffiliateModal(entry)">
                               {{ t('common.edit') }}
                             </button>
-                            <button
+                            <button data-testid="admin-settings-button-ask-reset-affiliate-user-entry"
                               type="button"
                               class="text-red-600 hover:underline"
                               @click="askResetAffiliateUser(entry)"
@@ -5765,7 +5765,7 @@
                     {{ t('admin.settings.features.affiliate.customUsers.totalLabel', { total: affiliateState.total }) }}
                   </span>
                   <div class="flex items-center gap-2">
-                    <button
+                    <button data-testid="admin-settings-button-change-affiliate-page-affiliate-state-page-1"
                       type="button"
                       class="btn btn-secondary btn-sm"
                       :disabled="affiliateState.page <= 1"
@@ -5774,7 +5774,7 @@
                       {{ t('pagination.previous') }}
                     </button>
                     <span class="text-gray-500">{{ affiliateState.page }} / {{ Math.max(1, Math.ceil(affiliateState.total / affiliateState.pageSize)) }}</span>
-                    <button
+                    <button data-testid="admin-settings-button-change-affiliate-page-affiliate-state-page-1-2"
                       type="button"
                       class="btn btn-secondary btn-sm"
                       :disabled="affiliateState.page >= Math.ceil(affiliateState.total / affiliateState.pageSize)"
@@ -5790,7 +5790,7 @@
         </div>
 
         <!-- Affiliate add/edit modal -->
-        <div
+        <div data-testid="admin-settings-div-close-affiliate-modal"
           v-if="affiliateModal.open"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="closeAffiliateModal"
@@ -5811,7 +5811,7 @@
                     <span class="font-medium text-gray-900 dark:text-white">{{ affiliateModal.selectedUser.email }}</span>
                     <span class="ml-1 text-xs text-gray-500">({{ affiliateModal.selectedUser.username }})</span>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-clear-selected-affiliate-user"
                     type="button"
                     class="text-lg leading-none text-gray-400 hover:text-red-600"
                     :title="t('admin.settings.features.affiliate.modal.changeUser')"
@@ -5822,7 +5822,7 @@
                 </div>
                 <!-- Search input + result dropdown — hidden once a selection is made -->
                 <template v-else>
-                  <input
+                  <input data-testid="admin-settings-input-affiliate-modal-user-query"
                     v-model="affiliateModal.userQuery"
                     type="text"
                     class="input"
@@ -5833,7 +5833,7 @@
                     v-if="affiliateModal.userResults.length > 0"
                     class="mt-1 max-h-40 overflow-y-auto rounded border border-gray-200 dark:border-dark-700"
                   >
-                    <button
+                    <button data-testid="admin-settings-button-select-affiliate-user-u"
                       v-for="u in affiliateModal.userResults"
                       :key="u.id"
                       type="button"
@@ -5847,7 +5847,7 @@
               </div>
               <div v-else>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.userLabel') }}</label>
-                <input
+                <input data-testid="admin-settings-input-text"
                   type="text"
                   class="input"
                   :value="affiliateModal.editingEntry ? affiliateModal.editingEntry.email : ''"
@@ -5857,7 +5857,7 @@
 
               <div>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.codeLabel') }}</label>
-                <input
+                <input data-testid="admin-settings-input-affiliate-modal-code"
                   v-model="affiliateModal.code"
                   type="text"
                   class="input font-mono"
@@ -5872,7 +5872,7 @@
               <div>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.rateLabel') }}</label>
                 <div class="relative">
-                  <input
+                  <input data-testid="admin-settings-input-affiliate-modal-rate"
                     v-model="affiliateModal.rate"
                     type="number"
                     step="0.01"
@@ -5898,10 +5898,10 @@
               </p>
               <span v-else></span>
               <div class="flex gap-2">
-                <button type="button" class="btn btn-secondary" @click="closeAffiliateModal">
+                <button data-testid="admin-settings-button-close-affiliate-modal" type="button" class="btn btn-secondary" @click="closeAffiliateModal">
                   {{ t('common.cancel') }}
                 </button>
-                <button
+                <button data-testid="admin-settings-button-submit-affiliate-modal"
                   type="button"
                   class="btn btn-primary"
                   :disabled="affiliateModal.saving || !affiliateModalCanSubmit"
@@ -5915,7 +5915,7 @@
         </div>
 
         <!-- Affiliate batch rate modal -->
-        <div
+        <div data-testid="admin-settings-div-open-off"
           v-if="affiliateBatchModal.open"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="affiliateBatchModal.open = false"
@@ -5928,7 +5928,7 @@
               {{ t('admin.settings.features.affiliate.batchModal.hint') }}
             </p>
             <div class="relative">
-              <input
+              <input data-testid="admin-settings-input-affiliate-batch-modal-rate"
                 v-model="affiliateBatchModal.rate"
                 type="number"
                 step="0.01"
@@ -5943,10 +5943,10 @@
               {{ t('admin.settings.features.affiliate.batchModal.clearHint') }}
             </p>
             <div class="mt-6 flex justify-end gap-2">
-              <button type="button" class="btn btn-secondary" @click="affiliateBatchModal.open = false">
+              <button data-testid="admin-settings-button-open-off" type="button" class="btn btn-secondary" @click="affiliateBatchModal.open = false">
                 {{ t('common.cancel') }}
               </button>
-              <button
+              <button data-testid="admin-settings-button-submit-affiliate-batch-modal"
                 type="button"
                 class="btn btn-primary"
                 :disabled="affiliateBatchModal.saving"
@@ -5973,7 +5973,7 @@
               </h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.payment.description") }}
-                <a
+                <a data-testid="admin-settings-link-a-3"
                   :href="paymentGuideHref"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -6016,7 +6016,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-prefix"
                       v-model="form.payment_product_name_prefix"
                       type="text"
                       class="input"
@@ -6027,7 +6027,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNameSuffix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-suffix"
                       v-model="form.payment_product_name_suffix"
                       type="text"
                       class="input"
@@ -6055,7 +6055,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number"
                       :value="form.payment_min_amount || ''"
                       @input="
                         form.payment_min_amount =
@@ -6074,7 +6074,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-2"
                       :value="form.payment_max_amount || ''"
                       @input="
                         form.payment_max_amount =
@@ -6093,7 +6093,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.dailyLimit")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-3"
                       :value="form.payment_daily_limit || ''"
                       @input="
                         form.payment_daily_limit =
@@ -6112,7 +6112,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.balanceRechargeMultiplier")
                     }}</label>
-                    <input
+                    <input data-testid="admin-settings-input-number-4"
                       :value="form.payment_balance_recharge_multiplier || ''"
                       @input="
                         form.payment_balance_recharge_multiplier =
@@ -6150,7 +6150,7 @@
                       t("admin.settings.payment.rechargeFeeRate")
                     }}</label>
                     <div class="relative">
-                      <input
+                      <input data-testid="admin-settings-input-number-5"
                         :value="form.payment_recharge_fee_rate ?? ''"
                         @input="
                           form.payment_recharge_fee_rate = Math.min(
@@ -6197,7 +6197,7 @@
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
                       <span class="text-red-500">*</span></label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-order-timeout-minutes"
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
                       min="1"
@@ -6215,7 +6215,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-max-pending-orders"
                       v-model.number="form.payment_max_pending_orders"
                       type="number"
                       min="1"
@@ -6237,7 +6237,7 @@
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-button-8"
                         type="button"
                         :class="[
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -6276,7 +6276,7 @@
                           t("admin.settings.payment.cancelRateLimitEvery")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-window"
                         v-model.number="form.payment_cancel_rate_limit_window"
                         type="number"
                         min="1"
@@ -6301,7 +6301,7 @@
                           t("admin.settings.payment.cancelRateLimitAllowMax")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-max"
                         v-model.number="form.payment_cancel_rate_limit_max"
                         type="number"
                         min="1"
@@ -6327,7 +6327,7 @@
                       t("admin.settings.payment.alipayForceQRCode")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-button-9"
                         type="button"
                         :class="[
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -6361,7 +6361,7 @@
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
                   <div class="mt-1.5 flex flex-wrap gap-2">
-                    <button
+                    <button data-testid="admin-settings-button-toggle-payment-type-pt-value"
                       v-for="pt in allPaymentTypes"
                       :key="pt.value"
                       type="button"
@@ -6378,7 +6378,7 @@
                   </div>
                   <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                     {{ t("admin.settings.payment.enabledPaymentTypesHint") }}
-                    <a
+                    <a data-testid="admin-settings-link-a-4"
                       :href="paymentMethodsHref"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -6420,7 +6420,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.helpText")
                     }}</label>
-                    <textarea
+                    <textarea data-testid="admin-settings-textarea-form-payment-help-text"
                       v-model="form.payment_help_text"
                       rows="3"
                       class="input"
@@ -6488,7 +6488,7 @@
                   {{ t("admin.settings.smtp.description") }}
                 </p>
               </div>
-              <button
+              <button data-testid="admin-settings-button-test-smtp-connection"
                 type="button"
                 @click="testSmtpConnection"
                 :disabled="testingSmtp || loadFailed"
@@ -6529,7 +6529,7 @@
                   >
                     {{ t("admin.settings.smtp.host") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-host"
                     v-model="form.smtp_host"
                     type="text"
                     class="input"
@@ -6542,7 +6542,7 @@
                   >
                     {{ t("admin.settings.smtp.port") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-port"
                     v-model.number="form.smtp_port"
                     type="number"
                     min="1"
@@ -6557,7 +6557,7 @@
                   >
                     {{ t("admin.settings.smtp.username") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-username"
                     v-model="form.smtp_username"
                     type="text"
                     class="input"
@@ -6570,7 +6570,7 @@
                   >
                     {{ t("admin.settings.smtp.password") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-password"
                     v-model="form.smtp_password"
                     type="password"
                     class="input"
@@ -6599,7 +6599,7 @@
                   >
                     {{ t("admin.settings.smtp.fromEmail") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-from-email"
                     v-model="form.smtp_from_email"
                     type="email"
                     class="input"
@@ -6612,7 +6612,7 @@
                   >
                     {{ t("admin.settings.smtp.fromName") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-form-smtp-from-name"
                     v-model="form.smtp_from_name"
                     type="text"
                     class="input"
@@ -6658,7 +6658,7 @@
                   >
                     {{ t("admin.settings.testEmail.recipientEmail") }}
                   </label>
-                  <input
+                  <input data-testid="admin-settings-input-test-email-address"
                     v-model="testEmailAddress"
                     type="email"
                     class="input"
@@ -6667,7 +6667,7 @@
                     "
                   />
                 </div>
-                <button
+                <button data-testid="admin-settings-button-send-test-email"
                   type="button"
                   @click="sendTestEmail"
                   :disabled="
@@ -6766,7 +6766,7 @@
                     class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     >$</span
                   >
-                  <input
+                  <input data-testid="admin-settings-input-form-balance-low-notify-threshold"
                     v-model.number="form.balance_low_notify_threshold"
                     type="number"
                     min="0"
@@ -6783,7 +6783,7 @@
                   class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.balanceNotify.rechargeUrl") }}</label
                 >
-                <input
+                <input data-testid="admin-settings-input-form-balance-low-notify-recharge-url"
                   v-model="form.balance_low_notify_recharge_url"
                   type="url"
                   class="input"
@@ -6831,7 +6831,7 @@
                     <label
                       class="relative inline-flex items-center cursor-pointer shrink-0"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-checkbox-3"
                         type="checkbox"
                         :checked="!entry.disabled"
                         @change="entry.disabled = !entry.disabled"
@@ -6841,7 +6841,7 @@
                         class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-primary-600"
                       ></div>
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-entry-email"
                       v-model="entry.email"
                       type="email"
                       class="input flex-1"
@@ -6849,7 +6849,7 @@
                         t('admin.settings.quotaNotify.emailPlaceholder')
                       "
                     />
-                    <button
+                    <button data-testid="admin-settings-button-splice-index-1"
                       @click="form.account_quota_notify_emails.splice(index, 1)"
                       class="btn btn-secondary px-2"
                       type="button"
@@ -6857,7 +6857,7 @@
                       <Icon name="x" size="xs" class="h-4 w-4" />
                     </button>
                   </div>
-                  <button
+                  <button data-testid="admin-settings-button-add-quota-notify-email"
                     @click="addQuotaNotifyEmail"
                     class="btn btn-secondary btn-sm"
                     type="button"
@@ -6881,7 +6881,7 @@
 
         <!-- Save Button -->
         <div v-show="activeTab !== 'backup'" class="flex justify-end">
-          <button
+          <button data-testid="admin-settings-button-submit"
             type="submit"
             :disabled="saving || loadFailed"
             class="btn btn-primary"

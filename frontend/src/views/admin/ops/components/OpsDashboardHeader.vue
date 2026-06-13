@@ -924,7 +924,7 @@ function handleToolbarRefresh() {
           @update:model-value="handleQueryModeChange"
         />
 
-        <button
+        <button data-testid="admin-ops-components-ops-dashboard-header-button-handle-toolbar-refresh"
           v-if="!props.fullscreen"
           type="button"
           class="ops-toolbar-icon-button flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600"
@@ -945,7 +945,7 @@ function handleToolbarRefresh() {
         <div v-if="!props.fullscreen" class="mx-1 hidden h-4 w-[1px] bg-gray-200 dark:bg-dark-700 sm:block"></div>
 
         <!-- Alert Rules Button (hidden in fullscreen) -->
-        <button
+        <button data-testid="admin-ops-components-ops-dashboard-header-button-emit-open-alert-rules"
           v-if="!props.fullscreen"
           type="button"
           class="ops-toolbar-text-button flex h-8 items-center gap-1.5 rounded-lg bg-primary-100 px-3 text-xs font-bold text-primary-700 transition-colors hover:bg-primary-200 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
@@ -959,7 +959,7 @@ function handleToolbarRefresh() {
         </button>
 
         <!-- Settings Button (hidden in fullscreen) -->
-        <button
+        <button data-testid="admin-ops-components-ops-dashboard-header-button-emit-open-settings"
           v-if="!props.fullscreen"
           type="button"
           class="ops-toolbar-text-button flex h-8 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
@@ -974,7 +974,7 @@ function handleToolbarRefresh() {
         </button>
 
         <!-- Enter Fullscreen Button (hidden in fullscreen mode) -->
-        <button
+        <button data-testid="admin-ops-components-ops-dashboard-header-button-emit-enter-fullscreen"
           v-if="!props.fullscreen"
           type="button"
           class="ops-toolbar-icon-button flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
@@ -1112,7 +1112,7 @@ function handleToolbarRefresh() {
 
               <!-- Time Window Selector -->
               <div class="flex flex-wrap gap-1">
-                <button
+                <button data-testid="admin-ops-components-ops-dashboard-header-button-realtime-window-window"
                   v-for="window in availableRealtimeWindows"
                   :key="window"
                   type="button"
@@ -1212,7 +1212,7 @@ function handleToolbarRefresh() {
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.requestsTitle') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.totalRequests')" />
             </div>
-            <button
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-details-title-t-admin-ops-request-details-title"
               v-if="!props.fullscreen"
               class="text-[10px] font-bold text-primary-600 hover:underline"
               type="button"
@@ -1249,7 +1249,7 @@ function handleToolbarRefresh() {
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.sla')" />
               <span class="h-1.5 w-1.5 rounded-full" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-red-500' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-primary-600' : 'bg-primary-500'"></span>
             </div>
-            <button
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-details-title-t-admin-ops-request-details-title-2"
               v-if="!props.fullscreen"
               class="text-[10px] font-bold text-primary-600 hover:underline"
               type="button"
@@ -1279,7 +1279,7 @@ function handleToolbarRefresh() {
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.latencyDuration') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.latency')" />
             </div>
-            <button
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-details-title-t-admin-ops-latency-duration"
               v-if="!props.fullscreen"
               class="text-[10px] font-bold text-primary-600 hover:underline"
               type="button"
@@ -1330,7 +1330,7 @@ function handleToolbarRefresh() {
               <span class="text-[10px] font-bold uppercase text-gray-400">TTFT</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.ttft')" />
             </div>
-            <button
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-details-title-t-admin-ops-ttft-label"
               v-if="!props.fullscreen"
               class="text-[10px] font-bold text-primary-600 hover:underline"
               type="button"
@@ -1381,7 +1381,7 @@ function handleToolbarRefresh() {
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.requestErrors') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.errors')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openErrorDetails('request')">
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-error-details-request" v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openErrorDetails('request')">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1407,7 +1407,7 @@ function handleToolbarRefresh() {
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.upstreamErrors') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.upstreamErrors')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openErrorDetails('upstream')">
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-error-details-upstream" v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openErrorDetails('upstream')">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1522,7 +1522,7 @@ function handleToolbarRefresh() {
               <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.jobs') }}</div>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.jobs')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openJobsDetails">
+            <button data-testid="admin-ops-components-ops-dashboard-header-button-open-jobs-details" v-if="!props.fullscreen" class="text-[10px] font-bold text-primary-600 hover:underline" type="button" @click="openJobsDetails">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1586,7 +1586,7 @@ function handleToolbarRefresh() {
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {{ t('admin.ops.customTimeRange.startTime') }}
           </label>
-          <input
+          <input data-testid="admin-ops-components-ops-dashboard-header-input-custom-start-time-input"
             v-model="customStartTimeInput"
             type="datetime-local"
             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
@@ -1596,21 +1596,21 @@ function handleToolbarRefresh() {
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {{ t('admin.ops.customTimeRange.endTime') }}
           </label>
-          <input
+          <input data-testid="admin-ops-components-ops-dashboard-header-input-custom-end-time-input"
             v-model="customEndTimeInput"
             type="datetime-local"
             class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
           />
         </div>
         <div class="flex justify-end gap-3 pt-2">
-          <button
+          <button data-testid="admin-ops-components-ops-dashboard-header-button-handle-custom-time-range-cancel"
             type="button"
             class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
             @click="handleCustomTimeRangeCancel"
           >
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="admin-ops-components-ops-dashboard-header-button-handle-custom-time-range-confirm"
             type="button"
             class="rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600"
             @click="handleCustomTimeRangeConfirm"

@@ -1,12 +1,12 @@
 <template>
   <div class="table-filter-actions flex flex-wrap items-center gap-3">
     <slot name="before"></slot>
-    <button @click="$emit('refresh')" :disabled="loading" class="btn btn-secondary">
+    <button data-testid="admin-account-account-table-actions-button-emit-refresh" @click="$emit('refresh')" :disabled="loading" class="btn btn-secondary">
       <Icon name="refresh" size="md" :class="[loading ? 'animate-spin' : '']" />
     </button>
     <slot name="after"></slot>
     <slot name="beforeCreate"></slot>
-    <button @click="$emit('create')" class="btn btn-primary">{{ t('admin.accounts.createAccount') }}</button>
+    <button data-testid="admin-account-account-table-actions-button-emit-create" @click="$emit('create')" class="btn btn-primary">{{ t('admin.accounts.createAccount') }}</button>
     <slot name="afterCreate"></slot>
   </div>
 </template>

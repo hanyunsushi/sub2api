@@ -34,7 +34,7 @@
               !hasStatusTotal ? 'external-quota-mode-option--disabled' : ''
             ]"
           >
-            <input
+            <input data-testid="admin-account-external-quota-progress-settings-input-form-mode"
               v-model="form.mode"
               type="radio"
               class="sr-only"
@@ -50,7 +50,7 @@
               form.mode === 'custom_total' ? 'external-quota-mode-option--active' : ''
             ]"
           >
-            <input
+            <input data-testid="admin-account-external-quota-progress-settings-input-form-mode-2"
               v-model="form.mode"
               type="radio"
               class="sr-only"
@@ -65,7 +65,7 @@
               form.mode === 'token_total' ? 'external-quota-mode-option--active' : ''
             ]"
           >
-            <input
+            <input data-testid="admin-account-external-quota-progress-settings-input-form-mode-3"
               v-model="form.mode"
               type="radio"
               class="sr-only"
@@ -86,6 +86,7 @@
           step="0.01"
           class="input font-mono"
           inputmode="decimal"
+          data-testid="external-quota-progress-custom-total"
         />
       </div>
 
@@ -99,6 +100,7 @@
             step="1"
             class="input font-mono"
             inputmode="numeric"
+            data-testid="external-quota-progress-token-total"
           />
         </div>
         <div class="space-y-1.5">
@@ -107,6 +109,7 @@
             v-model="form.tokenResetAt"
             type="datetime-local"
             class="input font-mono"
+            data-testid="external-quota-progress-token-reset-at"
           />
         </div>
       </div>
@@ -129,10 +132,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" class="btn btn-secondary" @click="emit('close')">
+        <button type="button" class="btn btn-secondary" data-testid="external-quota-progress-cancel" @click="emit('close')">
           {{ t('common.cancel') }}
         </button>
-        <button type="submit" form="external-quota-progress-settings-form" class="btn btn-primary">
+        <button type="submit" form="external-quota-progress-settings-form" class="btn btn-primary" data-testid="external-quota-progress-save">
           {{ t('common.save') }}
         </button>
       </div>
@@ -168,7 +171,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const localText = (zh: string, en: string) => locale.value?.startsWith('zh') ? zh : en
+const localText = (zh: string, en: string) => locale?.value?.startsWith('zh') ? zh : en
 
 const form = reactive({
   enabled: false,

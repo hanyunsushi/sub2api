@@ -5,7 +5,7 @@
       <div class="flex items-center justify-end">
         <div class="flex items-center gap-2">
           <div class="flex rounded-lg border border-gray-200 dark:border-dark-600">
-            <button
+            <button data-testid="admin-orders-admin-payment-dashboard-button-days-d"
               v-for="d in DAYS_OPTIONS"
               :key="d"
               type="button"
@@ -18,7 +18,7 @@
               {{ d }}{{ t('payment.admin.daySuffix') }}
             </button>
           </div>
-          <button @click="loadDashboard" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
+          <button data-testid="admin-orders-admin-payment-dashboard-button-load-dashboard" @click="loadDashboard" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
             <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
           </button>
         </div>

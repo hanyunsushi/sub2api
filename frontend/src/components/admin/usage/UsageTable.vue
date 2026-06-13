@@ -12,7 +12,7 @@
       >
         <template #cell-user="{ row }">
           <div class="text-sm">
-            <button
+            <button data-testid="admin-usage-usage-table-button-emit-user-click-row-user-id"
               v-if="row.user?.email"
               class="font-medium text-primary-600 underline decoration-dashed underline-offset-2 transition-colors dark:text-primary-400"
               @click="$emit('userClick', row.user_id, row.user?.email)"

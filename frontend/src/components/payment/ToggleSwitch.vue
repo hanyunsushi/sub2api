@@ -1,7 +1,7 @@
 <template>
   <label class="flex flex-col items-center gap-0.5 cursor-pointer">
     <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ label }}</span>
-    <button
+    <button data-testid="payment-toggle-switch-button-emit-toggle"
       type="button"
       role="switch"
       :aria-checked="checked"

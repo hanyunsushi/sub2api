@@ -23,7 +23,7 @@
         </h4>
         <div class="flex items-end gap-2">
           <div class="relative flex-1">
-            <input
+            <input data-testid="admin-group-group-rate-multipliers-input-search-query"
               ref="searchInputRef"
               v-model="searchQuery"
               type="text"
@@ -39,7 +39,7 @@
               :match-width="true"
               panel-class="max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-500 dark:bg-dark-700"
             >
-              <button
+              <button data-testid="admin-group-group-rate-multipliers-button-select-user-user"
                 v-for="user in searchResults"
                 :key="user.id"
                 type="button"
@@ -53,7 +53,7 @@
             </FloatingDropdown>
           </div>
           <div class="w-24">
-            <input
+            <input data-testid="admin-group-group-rate-multipliers-input-new-rate"
               v-model.number="newRate"
               type="number"
               step="0.001"
@@ -63,7 +63,7 @@
               placeholder="1.0"
             />
           </div>
-          <button
+          <button data-testid="admin-group-group-rate-multipliers-button-handle-add-local"
             type="button"
             class="btn btn-primary shrink-0"
             :disabled="!selectedUser || !newRate"
@@ -78,7 +78,7 @@
           <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.batchAdjust') }}</span>
           <div class="flex items-center gap-1.5">
             <span class="text-xs text-gray-400">×</span>
-            <input
+            <input data-testid="admin-group-group-rate-multipliers-input-batch-factor"
               v-model.number="batchFactor"
               type="number"
               step="0.1"
@@ -87,7 +87,7 @@
               class="hide-spinner w-20 rounded border border-gray-200 bg-white px-2 py-1 text-center text-sm transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/20 dark:border-dark-500 dark:bg-dark-700 dark:focus:border-primary-500"
               placeholder="0.5"
             />
-            <button
+            <button data-testid="admin-group-group-rate-multipliers-button-apply-batch-factor"
               type="button"
               class="btn btn-primary btn-sm shrink-0 px-2.5 py-1 text-xs"
               :disabled="!batchFactor || batchFactor <= 0"
@@ -97,7 +97,7 @@
             </button>
           </div>
           <div class="ml-auto">
-            <button
+            <button data-testid="admin-group-group-rate-multipliers-button-clear-all-local"
               type="button"
               class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
               @click="clearAllLocal"
@@ -166,7 +166,7 @@
                       </span>
                     </td>
                     <td class="whitespace-nowrap px-3 py-2">
-                      <input
+                      <input data-testid="admin-group-group-rate-multipliers-input-number"
                         type="number"
                         step="0.001"
                         min="0.001"
@@ -181,7 +181,7 @@
                       {{ computeFinalRate(entry.rate_multiplier) }}
                     </td>
                     <td class="px-2 py-2">
-                      <button
+                      <button data-testid="admin-group-group-rate-multipliers-button-remove-local-entry-user-id"
                         type="button"
                         class="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         @click="removeLocal(entry.user_id)"
@@ -211,7 +211,7 @@
         <!-- 左侧：未保存提示 + 撤销 -->
         <template v-if="isDirty">
           <span class="text-xs text-amber-600 dark:text-amber-400">{{ t('admin.groups.unsavedChanges') }}</span>
-          <button
+          <button data-testid="admin-group-group-rate-multipliers-button-handle-cancel"
             type="button"
             class="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             @click="handleCancel"
@@ -221,10 +221,10 @@
         </template>
         <!-- 右侧：关闭 / 保存 -->
         <div class="ml-auto flex items-center gap-3">
-          <button type="button" class="btn btn-sm px-4 py-1.5" @click="handleClose">
+          <button data-testid="admin-group-group-rate-multipliers-button-handle-close" type="button" class="btn btn-sm px-4 py-1.5" @click="handleClose">
             {{ t('common.close') }}
           </button>
-          <button
+          <button data-testid="admin-group-group-rate-multipliers-button-handle-save"
             v-if="isDirty"
             type="button"
             class="btn btn-primary btn-sm px-4 py-1.5"

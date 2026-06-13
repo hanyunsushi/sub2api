@@ -35,7 +35,7 @@
 
       <template #actions>
         <div class="keys-page-actions flex justify-end gap-3">
-        <button
+        <button data-testid="user-keys-button-load-api-keys"
           @click="loadApiKeys"
           :disabled="loading"
           class="btn btn-secondary"
@@ -43,7 +43,7 @@
         >
           <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
         </button>
-        <button @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
+        <button data-testid="user-keys-button-show-create-modal-on" @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
           <Icon name="plus" size="md" class="mr-2" />
           {{ t('keys.createKey') }}
         </button>
@@ -65,7 +65,7 @@
               <code class="code text-xs">
                 {{ maskApiKey(value) }}
               </code>
-              <button
+              <button data-testid="user-keys-button-copy-to-clipboard-value-row-id"
                 @click="copyToClipboard(value, row.id)"
                 class="rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
                 :class="
@@ -109,7 +109,7 @@
 
           <template #cell-group="{ row }">
             <div class="group/dropdown relative">
-              <button
+              <button data-testid="user-keys-button-open-group-selector-row"
                 :ref="(el) => setGroupButtonRef(row.id, el)"
                 @click="openGroupSelector(row)"
                 class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-dark-700"
@@ -273,7 +273,7 @@
                 </div>
               </div>
               <!-- Reset button -->
-              <button
+              <button data-testid="user-keys-button-confirm-reset-rate-limit-from-table-row"
                 v-if="row.usage_5h > 0 || row.usage_1d > 0 || row.usage_7d > 0"
                 @click.stop="confirmResetRateLimitFromTable(row)"
                 class="mt-0.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
@@ -323,7 +323,7 @@
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
               <!-- Use Key Button -->
-              <button
+              <button data-testid="user-keys-button-open-use-key-modal-row"
                 @click="openUseKeyModal(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
               >
@@ -331,7 +331,7 @@
                 <span class="text-xs">{{ t('keys.useKey') }}</span>
               </button>
               <!-- Import to CC Switch Button -->
-              <button
+              <button data-testid="user-keys-button-import-to-ccswitch-row"
                 v-if="!publicSettings?.hide_ccs_import_button"
                 @click="importToCcswitch(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
@@ -340,7 +340,7 @@
                 <span class="text-xs">{{ t('keys.importToCcSwitch') }}</span>
               </button>
               <!-- Toggle Status Button -->
-              <button
+              <button data-testid="user-keys-button-toggle-key-status-row"
                 @click="toggleKeyStatus(row)"
                 :class="[
                   'flex flex-col items-center gap-0.5 rounded-lg p-1.5 transition-colors',
@@ -354,7 +354,7 @@
                 <span class="text-xs">{{ row.status === 'active' ? t('keys.disable') : t('keys.enable') }}</span>
               </button>
               <!-- Edit Button -->
-              <button
+              <button data-testid="user-keys-button-edit-key-row"
                 @click="editKey(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
@@ -362,7 +362,7 @@
                 <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
               <!-- Delete Button -->
-              <button
+              <button data-testid="user-keys-button-confirm-delete-row"
                 @click="confirmDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
@@ -405,7 +405,7 @@
       <form id="key-form" @submit.prevent="handleSubmit" class="space-y-5">
         <div>
           <label class="input-label">{{ t('keys.nameLabel') }}</label>
-          <input
+          <input data-testid="user-keys-input-form-data-name"
             v-model="formData.name"
             type="text"
             required
@@ -460,7 +460,7 @@
         <div v-if="!showEditModal" class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.customKeyLabel') }}</label>
-            <button
+            <button data-testid="user-keys-button-use-custom-key-form-data-use-custom-key"
               type="button"
               @click="formData.use_custom_key = !formData.use_custom_key"
               :class="[
@@ -477,7 +477,7 @@
             </button>
           </div>
           <div v-if="formData.use_custom_key">
-            <input
+            <input data-testid="user-keys-input-form-data-custom-key"
               v-model="formData.custom_key"
               type="text"
               class="input font-mono"
@@ -502,7 +502,7 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.ipRestriction') }}</label>
-            <button
+            <button data-testid="user-keys-button-enable-ip-restriction-form-data-enable-ip-restriction"
               type="button"
               @click="formData.enable_ip_restriction = !formData.enable_ip_restriction"
               :class="[
@@ -522,7 +522,7 @@
           <div v-if="formData.enable_ip_restriction" class="space-y-4 pt-2">
             <div>
               <label class="input-label">{{ t('keys.ipWhitelist') }}</label>
-              <textarea
+              <textarea data-testid="user-keys-textarea-form-data-ip-whitelist"
                 v-model="formData.ip_whitelist"
                 rows="3"
                 class="input font-mono text-sm"
@@ -533,7 +533,7 @@
 
             <div>
               <label class="input-label">{{ t('keys.ipBlacklist') }}</label>
-              <textarea
+              <textarea data-testid="user-keys-textarea-form-data-ip-blacklist"
                 v-model="formData.ip_blacklist"
                 rows="3"
                 class="input font-mono text-sm"
@@ -572,7 +572,7 @@
             <div>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
+                <input data-testid="user-keys-input-form-data-quota"
                   v-model.number="formData.quota"
                   type="number"
                   step="0.01"
@@ -597,7 +597,7 @@
                     ${{ selectedKey.quota?.toFixed(2) || '0.00' }}
                   </span>
                 </div>
-                <button
+                <button data-testid="user-keys-button-confirm-reset-quota"
                   type="button"
                   @click="confirmResetQuota"
                   class="btn btn-secondary text-sm"
@@ -614,7 +614,7 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.rateLimitSection') }}</label>
-            <button
+            <button data-testid="user-keys-button-enable-rate-limit-form-data-enable-rate-limit"
               type="button"
               @click="formData.enable_rate_limit = !formData.enable_rate_limit"
               :class="[
@@ -638,7 +638,7 @@
               <label class="input-label">{{ t('keys.rateLimit5h') }}</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
+                <input data-testid="user-keys-input-form-data-rate-limit-5h"
                   v-model.number="formData.rate_limit_5h"
                   type="number"
                   step="0.01"
@@ -684,7 +684,7 @@
               <label class="input-label">{{ t('keys.rateLimit1d') }}</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
+                <input data-testid="user-keys-input-form-data-rate-limit-1d"
                   v-model.number="formData.rate_limit_1d"
                   type="number"
                   step="0.01"
@@ -730,7 +730,7 @@
               <label class="input-label">{{ t('keys.rateLimit7d') }}</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
+                <input data-testid="user-keys-input-form-data-rate-limit-7d"
                   v-model.number="formData.rate_limit_7d"
                   type="number"
                   step="0.01"
@@ -773,7 +773,7 @@
 
             <!-- Reset Rate Limit button (edit mode only) -->
             <div v-if="showEditModal && selectedKey && (selectedKey.rate_limit_5h > 0 || selectedKey.rate_limit_1d > 0 || selectedKey.rate_limit_7d > 0)">
-              <button
+              <button data-testid="user-keys-button-confirm-reset-rate-limit"
                 type="button"
                 @click="confirmResetRateLimit"
                 class="btn btn-secondary text-sm"
@@ -788,7 +788,7 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.expiration') }}</label>
-            <button
+            <button data-testid="user-keys-button-enable-expiration-form-data-enable-expiration"
               type="button"
               @click="formData.enable_expiration = !formData.enable_expiration"
               :class="[
@@ -808,7 +808,7 @@
           <div v-if="formData.enable_expiration" class="space-y-4 pt-2">
             <!-- Quick select buttons (for both create and edit mode) -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="user-keys-button-set-expiration-days-parse-int-days"
                 v-for="days in ['7', '30', '90']"
                 :key="days"
                 type="button"
@@ -822,7 +822,7 @@
               >
                 {{ showEditModal ? t('keys.extendDays', { days }) : t('keys.expiresInDays', { days }) }}
               </button>
-              <button
+              <button data-testid="user-keys-button-expiration-preset-custom"
                 type="button"
                 @click="formData.expiration_preset = 'custom'"
                 :class="[
@@ -839,7 +839,7 @@
             <!-- Date picker (always show for precise adjustment) -->
             <div>
               <label class="input-label">{{ t('keys.expirationDate') }}</label>
-              <input
+              <input data-testid="user-keys-input-form-data-expiration-date"
                 v-model="formData.expiration_date"
                 type="datetime-local"
                 class="input"
@@ -859,10 +859,10 @@
       </form>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button @click="closeModals" type="button" class="btn btn-secondary">
+          <button data-testid="user-keys-button-close-modals" @click="closeModals" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="user-keys-button-submit"
             form="key-form"
             type="submit"
             :disabled="submitting"
@@ -959,7 +959,7 @@
           {{ t('keys.ccsClientSelect.description') }}
 	        </p>
 	        <div class="grid grid-cols-2 gap-3">
-	          <button
+	          <button data-testid="user-keys-button-handle-ccs-client-select-claude"
 	            @click="handleCcsClientSelect('claude')"
 	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-gray-200 dark:border-dark-600 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
 	          >
@@ -971,7 +971,7 @@
 	              t('keys.ccsClientSelect.claudeCodeDesc')
 	            }}</span>
 	          </button>
-	          <button
+	          <button data-testid="user-keys-button-handle-ccs-client-select-gemini"
 	            @click="handleCcsClientSelect('gemini')"
 	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-gray-200 dark:border-dark-600 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
 	          >
@@ -987,7 +987,7 @@
 	      </div>
       <template #footer>
         <div class="flex justify-end">
-          <button @click="closeCcsClientSelect" class="btn btn-secondary">
+          <button data-testid="user-keys-button-close-ccs-client-select" @click="closeCcsClientSelect" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
         </div>
@@ -1013,7 +1013,7 @@
             <svg class="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input
+            <input data-testid="user-keys-input-group-search-query"
               v-model="groupSearchQuery"
               type="text"
               class="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 dark:border-dark-600 dark:bg-dark-700 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-600 dark:focus:ring-primary-600"
@@ -1024,7 +1024,7 @@
         </div>
         <!-- Group list -->
         <div class="max-h-80 overflow-y-auto p-1.5">
-          <button
+          <button data-testid="user-keys-button-change-group-selected-key-for-group-option-value"
             v-for="option in filteredGroupOptions"
             :key="option.value ?? 'null'"
             @click="changeGroup(selectedKeyForGroup!, option.value)"

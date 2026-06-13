@@ -5,7 +5,7 @@
         <div class="table-filter-shell flex flex-wrap items-center gap-3">
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-72">
-              <input
+              <input data-testid="admin-external-subscriptions-input-search-query"
                 v-model="searchQuery"
                 type="text"
                 class="input"
@@ -25,7 +25,7 @@
           </div>
 
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
-            <button
+            <button data-testid="admin-external-subscriptions-button-refresh-all-true"
               type="button"
               class="btn btn-secondary"
               :disabled="loading || statusLoading"
@@ -34,7 +34,7 @@
             >
               <Icon name="refresh" size="md" :class="loading || statusLoading ? 'animate-spin' : ''" />
             </button>
-            <button type="button" class="btn btn-primary" @click="openCreateDialog">
+            <button data-testid="admin-external-subscriptions-button-open-create-dialog" type="button" class="btn btn-primary" @click="openCreateDialog">
               <Icon name="plus" size="md" class="mr-2" />
               {{ localText('新增订阅', 'Add Provider') }}
             </button>
@@ -105,7 +105,7 @@
                   </div>
                 </div>
                 <div v-if="card.providerConfig" class="flex flex-shrink-0 items-center gap-1">
-                  <button
+                  <button data-testid="admin-external-subscriptions-button-open-edit-dialog-card-provider-config"
                     type="button"
                     class="btn-ghost btn-icon"
                     :title="t('common.edit')"
@@ -113,7 +113,7 @@
                   >
                     <Icon name="edit" size="sm" />
                   </button>
-                  <button
+                  <button data-testid="admin-external-subscriptions-button-open-delete-dialog-card-provider-config"
                     type="button"
                     class="btn-ghost btn-icon text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     :title="t('common.delete')"
@@ -124,7 +124,7 @@
                 </div>
               </div>
 
-              <a
+              <a data-testid="admin-external-subscriptions-link-a"
                 class="external-subscription-card-link mt-2 block truncate font-mono text-xs"
                 :href="card.siteUrl"
                 :title="card.siteUrl"
@@ -219,7 +219,7 @@
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-console"
             type="button"
             class="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-left transition-colors hover:border-primary-300 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
             @click="applyPreset('newapi_console')"
@@ -229,7 +229,7 @@
               {{ localText('QL、LIUST、PackyCode 这类控制台余额接口', 'For QL, LIUST, PackyCode style console balance APIs') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-active-subscriptions"
             type="button"
             class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
             @click="applyPreset('active_subscriptions')"
@@ -239,7 +239,7 @@
               {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-buzz-balance"
             type="button"
             class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('buzz_balance')"
@@ -249,7 +249,7 @@
               {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-openrouter-credits"
             type="button"
             class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('openrouter_credits')"
@@ -259,7 +259,7 @@
               {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-cloudflare-ai-gateway-credits"
             type="button"
             class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left transition-colors hover:border-orange-300 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-900/20 dark:hover:bg-orange-900/30"
             @click="applyPreset('cloudflare_ai_gateway_credits')"
@@ -269,7 +269,7 @@
               {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-rawchat-subscriptions"
             type="button"
             class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
             @click="applyPreset('rawchat_subscriptions')"
@@ -279,7 +279,7 @@
               {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
             </div>
           </button>
-          <button
+          <button data-testid="admin-external-subscriptions-button-apply-preset-mimo-token-plan"
             type="button"
             class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800/70 dark:hover:bg-dark-700"
             @click="applyPreset('mimo_token_plan')"
@@ -296,7 +296,7 @@
             <label class="input-label">
               ID <span class="text-red-500">*</span>
             </label>
-            <input
+            <input data-testid="admin-external-subscriptions-input-form-id"
               v-model="form.id"
               type="text"
               class="input font-mono"
@@ -309,7 +309,7 @@
             <label class="input-label">
               {{ localText('显示名称', 'Display Name') }} <span class="text-red-500">*</span>
             </label>
-            <input v-model="form.name" type="text" class="input" required placeholder="PackyCode" />
+            <input data-testid="admin-external-subscriptions-input-form-name" v-model="form.name" type="text" class="input" required placeholder="PackyCode" />
           </div>
         </div>
 
@@ -325,11 +325,11 @@
             <label class="input-label">
               API Base URL <span class="text-red-500">*</span>
             </label>
-            <input v-model="form.api_base_url" type="url" class="input" required placeholder="https://api.example.com" />
+            <input data-testid="admin-external-subscriptions-input-form-api-base-url" v-model="form.api_base_url" type="url" class="input" required placeholder="https://api.example.com" />
           </div>
           <div>
             <label class="input-label">{{ localText('排序', 'Sort Order') }}</label>
-            <input v-model.number="form.sort_order" type="number" class="input" min="0" step="1" />
+            <input data-testid="admin-external-subscriptions-input-form-sort-order" v-model.number="form.sort_order" type="number" class="input" min="0" step="1" />
           </div>
         </div>
 
@@ -359,7 +359,7 @@
                 leave blank to keep
               </span>
             </label>
-            <input
+            <input data-testid="admin-external-subscriptions-input-form-api-token"
               v-model="form.api_token"
               type="password"
               class="input"
@@ -369,7 +369,7 @@
           </div>
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
-            <input v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
+            <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
           </div>
           <div v-if="requiresRefreshToken">
             <label class="input-label">
@@ -378,7 +378,7 @@
                 leave blank to keep
               </span>
             </label>
-            <input
+            <input data-testid="admin-external-subscriptions-input-form-refresh-token"
               v-model="form.refresh_token"
               type="password"
               class="input"
@@ -390,7 +390,7 @@
 
         <div>
           <label class="input-label">{{ localText('账号匹配关键字', 'Account Match Keywords') }}</label>
-          <textarea
+          <textarea data-testid="admin-external-subscriptions-textarea-keywords-draft"
             v-model="keywordsDraft"
             rows="4"
             class="input font-mono text-sm"
@@ -404,10 +404,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button type="button" class="btn btn-secondary" @click="closeDialog">
+          <button data-testid="admin-external-subscriptions-button-close-dialog" type="button" class="btn btn-secondary" @click="closeDialog">
             {{ t('common.cancel') }}
           </button>
-          <button type="submit" form="external-subscription-form" class="btn btn-primary" :disabled="submitting">
+          <button data-testid="admin-external-subscriptions-button-submit" type="submit" form="external-subscription-form" class="btn btn-primary" :disabled="submitting">
             {{ submitting ? t('common.saving') : t('common.save') }}
           </button>
         </div>

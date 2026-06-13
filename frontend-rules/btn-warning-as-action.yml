@@ -1,0 +1,13 @@
+id: btn-warning-as-action
+language: html
+severity: hint
+message: >-
+  '.btn-warning' is a semantic (traffic-light) color per the Anthropic design system,
+  not a terracotta commit action. Verify this button is a genuine warning/destructive
+  control and that the theme does not repaint it as a primary action.
+rule:
+  pattern: <button class="$CLASS">$$$</button>
+  has:
+    regex: 'btn-warning'
+files:
+  - frontend/src/**/*.vue

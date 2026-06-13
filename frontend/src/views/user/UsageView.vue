@@ -130,13 +130,13 @@
 
             <!-- Actions -->
             <div class="usage-filter-actions ml-auto flex items-center gap-3">
-              <button @click="applyFilters" :disabled="loading" class="btn btn-secondary">
+              <button data-testid="user-usage-button-apply-filters" @click="applyFilters" :disabled="loading" class="btn btn-secondary">
                 {{ t('common.refresh') }}
               </button>
-              <button @click="resetFilters" class="btn btn-secondary">
+              <button data-testid="user-usage-button-reset-filters" @click="resetFilters" class="btn btn-secondary">
                 {{ t('common.reset') }}
               </button>
-              <button @click="exportToCSV" :disabled="exporting" class="btn btn-primary">
+              <button data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-primary">
                 <svg
                   v-if="exporting"
                   class="-ml-1 mr-2 h-4 w-4 animate-spin"
@@ -168,10 +168,10 @@
       <template #table>
         <!-- Tab 切换栏 -->
         <div v-if="errorViewEnabled" class="mb-0 flex gap-2 border-b border-gray-200 px-4 pt-3 dark:border-dark-700">
-          <button class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
+          <button data-testid="user-usage-button-active-tab-usage" class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
             {{ t('usage.tabs.usage') }}
           </button>
-          <button class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrors">
+          <button data-testid="user-usage-button-switch-to-errors" class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrors">
             {{ t('usage.tabs.errors') }}
           </button>
         </div>

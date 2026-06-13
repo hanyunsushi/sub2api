@@ -3,7 +3,7 @@
     <div class="flex h-16 items-center justify-between px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex min-w-0 items-center gap-4">
-        <button
+        <button data-testid="layout-app-header-button-toggle-mobile-sidebar"
           @click="toggleMobileSidebar"
           class="btn-ghost btn-icon lg:hidden"
           aria-label="Toggle Menu"
@@ -38,7 +38,7 @@
         <AnnouncementBell v-if="user" />
 
         <!-- Docs Link -->
-        <a
+        <a data-testid="layout-app-header-link-a"
           v-if="docUrl"
           :href="docUrl"
           target="_blank"
@@ -185,7 +185,7 @@
 
         <!-- User Dropdown -->
         <div v-if="user" class="relative" ref="dropdownRef">
-          <button
+          <button data-testid="layout-app-header-button-toggle-dropdown"
             ref="dropdownButtonRef"
             @click="toggleDropdown"
             class="user-menu-trigger flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
@@ -238,17 +238,17 @@
               </div>
 
               <div class="py-1">
-                <router-link to="/profile" @click="closeDropdown" class="dropdown-item">
+                <router-link data-testid="layout-app-header-router-link-close-dropdown" to="/profile" @click="closeDropdown" class="dropdown-item">
                   <Icon name="user" size="sm" />
                   {{ t('nav.profile') }}
                 </router-link>
 
-                <router-link to="/keys" @click="closeDropdown" class="dropdown-item">
+                <router-link data-testid="layout-app-header-router-link-close-dropdown-2" to="/keys" @click="closeDropdown" class="dropdown-item">
                   <Icon name="key" size="sm" />
                   {{ t('nav.apiKeys') }}
                 </router-link>
 
-                <a
+                <a data-testid="layout-app-header-link-close-dropdown"
                   v-if="authStore.isAdmin"
                   href="https://github.com/Wei-Shaw/sub2api"
                   target="_blank"
@@ -295,7 +295,7 @@
               </div>
 
               <div v-if="showOnboardingButton" class="border-t border-gray-100 py-1 dark:border-dark-700">
-                <button @click="handleReplayGuide" class="dropdown-item w-full">
+                <button data-testid="layout-app-header-button-handle-replay-guide" @click="handleReplayGuide" class="dropdown-item w-full">
                   <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a1 1 0 110 2 1 1 0 010-2zm1.07-7.75c0-.6-.49-1.25-1.32-1.25-.7 0-1.22.4-1.43 1.02a1 1 0 11-1.9-.62A3.41 3.41 0 0111.8 5c2.02 0 3.25 1.4 3.25 2.9 0 2-1.83 2.55-2.43 3.12-.43.4-.47.75-.47 1.23a1 1 0 01-2 0c0-1 .16-1.82 1.1-2.7.69-.64 1.82-1.05 1.82-2.06z"
@@ -306,7 +306,7 @@
               </div>
 
               <div class="border-t border-gray-100 py-1 dark:border-dark-700">
-                <button
+                <button data-testid="layout-app-header-button-handle-logout"
                   @click="handleLogout"
                   class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >

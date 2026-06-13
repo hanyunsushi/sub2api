@@ -2,7 +2,7 @@
   <div class="relative">
     <!-- Admin: Full version badge with dropdown -->
     <template v-if="isAdmin">
-      <button
+      <button data-testid="common-version-badge-button-toggle-dropdown"
         ref="buttonRef"
         @click="toggleDropdown"
         class="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs transition-colors"
@@ -42,7 +42,7 @@
             <span class="text-sm font-medium text-gray-700 dark:text-dark-300">{{
               t('version.currentVersion')
             }}</span>
-            <button
+            <button data-testid="common-version-badge-button-refresh-version-true"
               @click="refreshVersion(true)"
               class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-dark-200"
               :disabled="loading"
@@ -141,7 +141,7 @@
                 </div>
 
                 <!-- Retry button -->
-                <button
+                <button data-testid="common-version-badge-button-handle-update"
                   @click="handleUpdate"
                   :disabled="updating"
                   class="flex w-full items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -179,7 +179,7 @@
                 </div>
 
                 <!-- Restart button with countdown -->
-                <button
+                <button data-testid="common-version-badge-button-handle-restart"
                   @click="handleRestart"
                   :disabled="restarting"
                   class="flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -230,7 +230,7 @@
 
               <!-- Priority 3: Update available for source build - show git pull hint -->
               <div v-else-if="hasUpdate && !isReleaseBuild" class="space-y-2">
-                <a
+                <a data-testid="common-version-badge-link-a"
                   v-if="releaseInfo?.html_url && releaseInfo.html_url !== '#'"
                   :href="releaseInfo.html_url"
                   target="_blank"
@@ -315,7 +315,7 @@
                 </div>
 
                 <!-- Update button -->
-                <button
+                <button data-testid="common-version-badge-button-handle-update-2"
                   @click="handleUpdate"
                   :disabled="updating"
                   class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -340,7 +340,7 @@
                 </button>
 
                 <!-- View release link -->
-                <a
+                <a data-testid="common-version-badge-link-a-2"
                   v-if="releaseInfo?.html_url && releaseInfo.html_url !== '#'"
                   :href="releaseInfo.html_url"
                   target="_blank"
@@ -353,7 +353,7 @@
               </div>
 
               <!-- Priority 5: Up to date - show GitHub link -->
-              <a
+              <a data-testid="common-version-badge-link-a-3"
                 v-else-if="releaseInfo?.html_url && releaseInfo.html_url !== '#'"
                 :href="releaseInfo.html_url"
                 target="_blank"

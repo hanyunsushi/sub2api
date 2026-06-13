@@ -1,7 +1,7 @@
 <template>
   <div v-if="hasActiveSubscriptions" class="relative" ref="containerRef">
     <!-- Mini Progress Display -->
-    <button
+    <button data-testid="common-subscription-progress-mini-button-toggle-tooltip"
       ref="triggerRef"
       @click="toggleTooltip"
       class="flex cursor-pointer items-center gap-2 rounded-lg border border-primary-200/70 bg-primary-50 px-3 py-1.5 transition-colors hover:bg-primary-100 dark:border-primary-800/50 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
@@ -167,7 +167,7 @@
         </div>
 
         <div class="border-t border-gray-100 p-2 dark:border-dark-700">
-          <router-link
+          <router-link data-testid="common-subscription-progress-mini-router-link-close-tooltip"
             to="/subscriptions"
             @click="closeTooltip"
             class="block w-full py-1 text-center text-xs text-primary-600 hover:underline dark:text-primary-400"

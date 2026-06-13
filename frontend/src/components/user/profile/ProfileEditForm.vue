@@ -19,7 +19,7 @@
           <label for="username" class="input-label">
             {{ t('profile.username') }}
           </label>
-          <input
+          <input data-testid="user-profile-profile-edit-form-input-username"
             id="username"
             v-model="username"
             type="text"
@@ -29,7 +29,7 @@
         </div>
 
         <div class="flex justify-end pt-4">
-          <button type="submit" :disabled="loading" class="btn btn-primary">
+          <button data-testid="user-profile-profile-edit-form-button-submit" type="submit" :disabled="loading" class="btn btn-primary">
             {{ loading ? t('profile.updating') : t('profile.updateProfile') }}
           </button>
         </div>

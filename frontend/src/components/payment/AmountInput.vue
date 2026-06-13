@@ -6,7 +6,7 @@
         {{ t('payment.quickAmounts') }}
       </label>
       <div class="grid grid-cols-3 gap-2">
-        <button
+        <button data-testid="payment-amount-input-button-select-amount-amt"
           v-for="amt in filteredAmounts"
           :key="amt"
           type="button"
@@ -32,7 +32,7 @@
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-dark-500">
           $
         </span>
-        <input
+        <input data-testid="payment-amount-input-input-text"
           type="text"
           inputmode="decimal"
           :value="customText"

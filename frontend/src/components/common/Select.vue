@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="containerRef">
-    <button
+    <button data-testid="common-select-button-toggle"
       ref="triggerRef"
       type="button"
       @click="toggle"
@@ -22,7 +22,7 @@
           {{ selectedLabel }}
         </slot>
       </span>
-      <span
+      <span data-testid="common-select-span-clear-selection"
         v-if="clearable && hasValue && !disabled"
         class="select-clear"
         role="button"
@@ -46,7 +46,7 @@
     <!-- Teleport dropdown to body to escape stacking context -->
     <Teleport to="body">
       <Transition name="select-dropdown">
-        <div
+        <div data-testid="common-select-div-div"
           v-if="isOpen"
           ref="dropdownRef"
           class="select-dropdown-portal"
@@ -60,7 +60,7 @@
           <!-- Search input -->
           <div v-if="isSearchable" class="select-search">
             <Icon name="search" size="sm" class="text-gray-400" />
-            <input
+            <input data-testid="common-select-input-search-query"
               ref="searchInputRef"
               v-model="searchQuery"
               type="text"
@@ -72,7 +72,7 @@
 
           <!-- Options list -->
           <div class="select-options" ref="optionsListRef">
-            <div
+            <div data-testid="common-select-div-div-2"
               v-for="(option, index) in filteredOptions"
               :key="`${typeof getOptionValue(option)}:${String(getOptionValue(option) ?? '')}`"
               role="option"

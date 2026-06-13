@@ -4,7 +4,7 @@
     class="px-0.5"
   >
     <div class="flex items-start gap-2">
-      <input
+      <input data-testid="auth-login-agreement-prompt-input-login-agreement-consent"
         id="login-agreement-consent"
         type="checkbox"
         :checked="accepted"
@@ -47,7 +47,7 @@
           未同意前，账号密码输入和快捷登录会保持禁用。
         </p>
       </div>
-      <button
+      <button data-testid="auth-login-agreement-prompt-button-emit-open"
         type="button"
         class="flex-shrink-0 rounded-md bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-700"
         @click="emit('open')"
@@ -116,14 +116,14 @@
 
           <div class="border-t border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-dark-800 dark:bg-dark-950/60">
             <div class="grid grid-cols-2 gap-3">
-              <button
+              <button data-testid="auth-login-agreement-prompt-button-emit-reject"
                 type="button"
                 class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-200 dark:hover:bg-dark-700"
                 @click="emit('reject')"
               >
                 拒绝
               </button>
-              <button
+              <button data-testid="auth-login-agreement-prompt-button-emit-accept"
                 type="button"
                 class="rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-primary-600/20 transition hover:bg-primary-700"
                 @click="emit('accept')"

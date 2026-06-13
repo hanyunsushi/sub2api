@@ -25,7 +25,7 @@
         <!-- Code Input -->
         <div class="mb-6">
           <!-- Hidden input for password manager autofill (autocomplete="one-time-code") -->
-          <input
+          <input data-testid="auth-totp-login-input-hidden-otp-input-ref"
             ref="hiddenOtpInputRef"
             type="text"
             inputmode="numeric"
@@ -37,7 +37,7 @@
             @input="handleHiddenOtpInput"
           />
           <div class="flex justify-center gap-2">
-            <input
+            <input data-testid="auth-totp-login-input-text"
               v-for="(_, index) in 6"
               :key="index"
               :ref="(el) => setInputRef(el, index)"
@@ -61,7 +61,7 @@
         </div>
 
         <!-- Cancel button only -->
-        <button
+        <button data-testid="auth-totp-login-button-emit-cancel"
           type="button"
           class="btn btn-secondary w-full"
           :disabled="verifying"

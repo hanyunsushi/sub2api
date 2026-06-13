@@ -9,7 +9,7 @@
     </div>
 
     <div :class="providerGridClass">
-      <button
+      <button data-testid="auth-email-o-auth-buttons-button-start-login-provider"
         v-for="provider in visibleProviders"
         :key="provider"
         type="button"

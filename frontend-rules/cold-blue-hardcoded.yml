@@ -1,0 +1,13 @@
+id: cold-blue-hardcoded
+language: css
+severity: hint
+message: >-
+  Possible cold-blue/indigo/violet hardcoded color. The Anthropic design system forbids
+  cold blue/indigo/violet as theme color (focus blue #3898ec is the only allowed blue,
+  for accessibility). Confirm this is a preserved semantic/status color, otherwise warm it.
+rule:
+  kind: plain_value
+  regex: '(?i)#(1d4ed8|2563eb|3b82f6|6366f1|4f46e5|7c3aed|8b5cf6|0ea5e9|0284c7)'
+files:
+  - frontend/src/**/*.css
+  - frontend/src/**/*.vue

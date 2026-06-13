@@ -30,7 +30,7 @@
       <div class="grid grid-cols-1 gap-4">
         <div>
           <label for="crs-base-url" class="input-label">{{ t('admin.accounts.crsBaseUrl') }}</label>
-          <input
+          <input data-testid="account-sync-from-crs-input-form-base-url"
             id="crs-base-url"
             v-model="form.base_url"
             type="text"
@@ -43,11 +43,11 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label for="crs-username" class="input-label">{{ t('admin.accounts.crsUsername') }}</label>
-            <input id="crs-username" v-model="form.username" type="text" class="input" required autocomplete="username" />
+            <input data-testid="account-sync-from-crs-input-form-username" id="crs-username" v-model="form.username" type="text" class="input" required autocomplete="username" />
           </div>
           <div>
             <label for="crs-password" class="input-label">{{ t('admin.accounts.crsPassword') }}</label>
-            <input
+            <input data-testid="account-sync-from-crs-input-form-password"
               id="crs-password"
               v-model="form.password"
               type="password"
@@ -59,7 +59,7 @@
         </div>
 
         <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-dark-300">
-          <input
+          <input data-testid="account-sync-from-crs-input-form-sync-proxies"
             v-model="form.sync_proxies"
             type="checkbox"
             class="rounded border-gray-300 dark:border-dark-600"
@@ -102,12 +102,12 @@
             <span class="ml-1 text-xs text-gray-400">({{ previewResult.new_accounts.length }})</span>
           </div>
           <div class="flex gap-2">
-            <button
+            <button data-testid="account-sync-from-crs-button-select-all"
               type="button"
               class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
               @click="selectAll"
             >{{ t('admin.accounts.crsSelectAll') }}</button>
-            <button
+            <button data-testid="account-sync-from-crs-button-select-none"
               type="button"
               class="text-xs text-gray-500 hover:text-gray-600 dark:text-gray-400"
               @click="selectNone"
@@ -122,7 +122,7 @@
             :key="acc.crs_account_id"
             class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-dark-700/40"
           >
-            <input
+            <input data-testid="account-sync-from-crs-input-checkbox"
               type="checkbox"
               :checked="selectedIds.has(acc.crs_account_id)"
               class="rounded border-gray-300 dark:border-dark-600"
@@ -191,7 +191,7 @@
       <div class="flex justify-end gap-3">
         <!-- Step 1: Input -->
         <template v-if="currentStep === 'input'">
-          <button
+          <button data-testid="account-sync-from-crs-button-handle-close"
             class="btn btn-secondary"
             type="button"
             :disabled="previewing"
@@ -199,7 +199,7 @@
           >
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="account-sync-from-crs-button-submit"
             class="btn btn-primary"
             type="submit"
             form="sync-from-crs-form"
@@ -211,7 +211,7 @@
 
         <!-- Step 2: Preview -->
         <template v-else-if="currentStep === 'preview'">
-          <button
+          <button data-testid="account-sync-from-crs-button-handle-back"
             class="btn btn-secondary"
             type="button"
             :disabled="syncing"
@@ -219,7 +219,7 @@
           >
             {{ t('admin.accounts.crsBack') }}
           </button>
-          <button
+          <button data-testid="account-sync-from-crs-button-handle-sync"
             class="btn btn-primary"
             type="button"
             :disabled="syncing || hasNewButNoneSelected"
@@ -231,7 +231,7 @@
 
         <!-- Step 3: Result -->
         <template v-else-if="currentStep === 'result'">
-          <button class="btn btn-secondary" type="button" @click="handleClose">
+          <button data-testid="account-sync-from-crs-button-handle-close-2" class="btn btn-secondary" type="button" @click="handleClose">
             {{ t('common.close') }}
           </button>
         </template>

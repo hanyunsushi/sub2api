@@ -19,14 +19,14 @@
     <div v-else>
       <!-- 全选/全不选 -->
       <div class="mb-2 flex items-center gap-3 text-xs">
-        <button
+        <button data-testid="admin-monitor-monitor-template-apply-picker-button-select-all"
           type="button"
           class="text-primary-600 hover:underline dark:text-primary-400"
           @click="selectAll"
         >
           {{ t('common.selectAll') }}
         </button>
-        <button
+        <button data-testid="admin-monitor-monitor-template-apply-picker-button-select-none"
           type="button"
           class="text-gray-500 hover:underline dark:text-gray-400"
           @click="selectNone"
@@ -42,13 +42,13 @@
       </div>
 
       <ul class="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-lg border border-gray-200 dark:divide-dark-700 dark:border-dark-700">
-        <li
+        <li data-testid="admin-monitor-monitor-template-apply-picker-li-toggle-m-id"
           v-for="m in monitors"
           :key="m.id"
           class="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-dark-800"
           @click="toggle(m.id)"
         >
-          <input
+          <input data-testid="admin-monitor-monitor-template-apply-picker-input-checkbox"
             type="checkbox"
             :checked="selectedSet.has(m.id)"
             class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
@@ -70,10 +70,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <button class="btn btn-secondary" @click="$emit('close')">
+        <button data-testid="admin-monitor-monitor-template-apply-picker-button-emit-close" class="btn btn-secondary" @click="$emit('close')">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="admin-monitor-monitor-template-apply-picker-button-handle-apply"
           class="btn btn-primary"
           :disabled="submitting || selectedIds.length === 0"
           @click="handleApply"

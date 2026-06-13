@@ -28,7 +28,7 @@
               <span class="ai-search-panel-subtitle">Obsidian Codex Bridge</span>
             </div>
           </div>
-          <button
+          <button data-testid="layout-ai-search-panel-button-close-panel"
             type="button"
             class="ai-search-panel-close"
             aria-label="Close"

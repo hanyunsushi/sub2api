@@ -13,7 +13,7 @@
                 size="md"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
-              <input
+              <input data-testid="admin-users-input-search-query"
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('admin.users.searchUsers')"
@@ -79,7 +79,7 @@
                 class="relative w-full sm:w-36"
               >
                 <!-- Text/Email/URL/Textarea/Date type: styled input -->
-                <input
+                <input data-testid="admin-users-input-input"
                   v-if="['text', 'textarea', 'email', 'url', 'date'].includes(getAttributeDefinition(Number(attrId))?.type || 'text')"
                   :value="value"
                   @input="(e) => updateAttributeFilter(Number(attrId), (e.target as HTMLInputElement).value)"
@@ -88,7 +88,7 @@
                   class="input w-full"
                 />
                 <!-- Number type: number input -->
-                <input
+                <input data-testid="admin-users-input-number"
                   v-else-if="getAttributeDefinition(Number(attrId))?.type === 'number'"
                   :value="value"
                   type="number"
@@ -111,7 +111,7 @@
                   </div>
                 </template>
                 <!-- Fallback -->
-                <input
+                <input data-testid="admin-users-input-input-2"
                   v-else
                   :value="value"
                   @input="(e) => updateAttributeFilter(Number(attrId), (e.target as HTMLInputElement).value)"
@@ -128,7 +128,7 @@
             <!-- Mobile: Secondary buttons (icon only) -->
             <div class="users-filter-tools flex items-center gap-2 md:contents">
               <!-- Refresh Button -->
-              <button
+              <button data-testid="admin-users-button-load-users"
                 @click="loadUsers"
                 :disabled="loading"
                 class="btn btn-secondary px-2 md:px-3"
@@ -138,7 +138,7 @@
               </button>
               <!-- Filter Settings Dropdown -->
               <div class="relative" ref="filterDropdownRef">
-                <button
+                <button data-testid="admin-users-button-show-filter-dropdown-show-filter-dropdown"
                   ref="filterDropdownButtonRef"
                   @click="showFilterDropdown = !showFilterDropdown"
                   class="btn btn-secondary px-2 md:px-3"
@@ -155,7 +155,7 @@
                   panel-class="w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
                   <!-- Built-in filters -->
-                  <button
+                  <button data-testid="admin-users-button-toggle-built-in-filter-filter-key"
                     v-for="filter in builtInFilters"
                     :key="filter.key"
                     @click="toggleBuiltInFilter(filter.key)"
@@ -176,7 +176,7 @@
                     class="my-1 border-t border-gray-100 dark:border-dark-700"
                   ></div>
                   <!-- Custom attribute filters -->
-                  <button
+                  <button data-testid="admin-users-button-toggle-attribute-filter-attr"
                     v-for="attr in filterableAttributes"
                     :key="attr.id"
                     @click="toggleAttributeFilter(attr)"
@@ -195,7 +195,7 @@
               </div>
               <!-- Column Settings Dropdown -->
               <div class="relative" ref="columnDropdownRef">
-                <button
+                <button data-testid="admin-users-button-show-column-dropdown-show-column-dropdown"
                   ref="columnDropdownButtonRef"
                   @click="showColumnDropdown = !showColumnDropdown"
                   class="btn btn-secondary px-2 md:px-3"
@@ -213,7 +213,7 @@
                   placement="bottom-end"
                   panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
-                  <button
+                  <button data-testid="admin-users-button-toggle-column-col-key"
                     v-for="col in toggleableColumns"
                     :key="col.key"
                     :disabled="isForcedVisibleColumn(col.key)"
@@ -238,7 +238,7 @@
                 </FloatingDropdown>
               </div>
               <!-- Attributes Config Button -->
-              <button
+              <button data-testid="admin-users-button-show-attributes-modal-on"
                 @click="showAttributesModal = true"
                 class="btn btn-secondary px-2 md:px-3"
                 :title="t('admin.users.attributes.configButton')"
@@ -249,7 +249,7 @@
             </div>
 
             <!-- Create User Button (full width on mobile, auto width on desktop) -->
-            <button @click="showCreateModal = true" class="users-filter-create btn btn-primary flex-1 md:flex-initial">
+            <button data-testid="admin-users-button-show-create-modal-on" @click="showCreateModal = true" class="users-filter-create btn btn-primary flex-1 md:flex-initial">
               <Icon name="plus" size="md" class="mr-2" />
               {{ t('admin.users.createUser') }}
             </button>
@@ -325,7 +325,7 @@
           <template #cell-groups="{ row }">
             <div v-if="allGroups.length > 0" class="flex flex-col gap-1">
               <!-- 专属分组行 -->
-              <span
+              <span data-testid="admin-users-span-toggle-expanded-group-row-id"
                 v-if="getUserGroups(row).exclusive.length > 0"
                 :ref="el => setExpandedGroupTriggerRef(row.id, el)"
                 class="group/ex relative inline-flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs"
@@ -354,7 +354,7 @@
                   <div class="border-b border-gray-100 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:border-dark-600 dark:text-dark-400">
                     {{ t('admin.users.clickToReplace') }}
                   </div>
-                  <div
+                  <div data-testid="admin-users-div-open-group-replace-row-g"
                     v-for="g in getUserGroups(row).exclusive"
                     :key="g.id"
                     class="flex cursor-pointer items-center gap-2 px-3 py-2 text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-600 dark:text-dark-200 dark:hover:bg-primary-900/30 dark:hover:text-primary-400"
@@ -418,7 +418,7 @@
           <template #cell-balance="{ value, row }">
             <div class="flex items-center gap-2">
               <div class="group relative">
-                <button
+                <button data-testid="admin-users-button-handle-balance-history-row"
                   class="font-medium text-gray-900 underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:text-primary-600 dark:text-white dark:decoration-dark-500 dark:hover:text-primary-400"
                   @click="handleBalanceHistory(row)"
                 >
@@ -430,7 +430,7 @@
                   <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-dark-600"></div>
                 </div>
               </div>
-              <button
+              <button data-testid="admin-users-button-handle-deposit-row"
                 @click.stop="handleDeposit(row)"
                 class="rounded px-2 py-0.5 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
                 :title="t('admin.users.deposit')"
@@ -441,7 +441,7 @@
           </template>
 
           <template #cell-balance_platform_quota="{ row }">
-            <button
+            <button data-testid="admin-users-button-handle-platform-quota-row"
               type="button"
               class="block text-left underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:decoration-primary-400 dark:decoration-dark-500"
               :title="t('admin.users.platformQuota.cellColumnTooltip')"
@@ -462,7 +462,7 @@
             <div class="flex items-center gap-1.5">
               <span>{{ column.label }}</span>
               <div class="usage-sort-trigger relative">
-                <button
+                <button data-testid="admin-users-button-toggle-usage-sort-menu-usage-key"
                   :ref="el => setUsageSortButtonRef(usageKey, el)"
                   type="button"
                   class="flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-gray-200 dark:hover:bg-dark-700"
@@ -500,7 +500,7 @@
                   placement="bottom-end"
                   panel-class="min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
                 >
-                  <button
+                  <button data-testid="admin-users-button-toggle-usage-sort-usage-key-metric"
                     v-for="metric in (['today', 'total'] as const)"
                     :key="metric"
                     type="button"
@@ -591,7 +591,7 @@
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
               <!-- Edit Button -->
-              <button
+              <button data-testid="admin-users-button-handle-edit-row"
                 @click="handleEdit(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
@@ -600,7 +600,7 @@
               </button>
 
               <!-- Toggle Status Button (not for admin) -->
-              <button
+              <button data-testid="admin-users-button-handle-toggle-status-row"
                 v-if="row.role !== 'admin'"
                 @click="handleToggleStatus(row)"
                 :class="[
@@ -616,7 +616,7 @@
               </button>
 
               <!-- More Actions Menu Trigger -->
-              <button
+              <button data-testid="admin-users-button-open-action-menu-row-event"
                 @click="openActionMenu(row, $event)"
                 class="action-menu-trigger flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white"
                 :class="{ 'bg-gray-100 text-gray-900 dark:bg-dark-700 dark:text-white': activeMenuId === row.id }"
@@ -662,7 +662,7 @@
           <template v-for="user in users" :key="user.id">
             <template v-if="user.id === activeMenuId">
               <!-- View API Keys -->
-              <button
+              <button data-testid="admin-users-button-handle-view-api-keys-user"
                 @click="handleViewApiKeys(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -671,7 +671,7 @@
               </button>
 
               <!-- Allowed Groups -->
-              <button
+              <button data-testid="admin-users-button-handle-allowed-groups-user"
                 @click="handleAllowedGroups(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -682,7 +682,7 @@
               <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
 
               <!-- Deposit -->
-              <button
+              <button data-testid="admin-users-button-handle-deposit-user"
                 @click="handleDeposit(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -691,7 +691,7 @@
               </button>
 
               <!-- Withdraw -->
-              <button
+              <button data-testid="admin-users-button-handle-withdraw-user"
                 @click="handleWithdraw(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -702,7 +702,7 @@
               </button>
 
               <!-- Platform Quotas -->
-              <button
+              <button data-testid="admin-users-button-handle-platform-quota-user"
                 @click="handlePlatformQuota(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -711,7 +711,7 @@
               </button>
 
               <!-- Balance History -->
-              <button
+              <button data-testid="admin-users-button-handle-balance-history-user"
                 @click="handleBalanceHistory(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
@@ -722,7 +722,7 @@
               <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
 
               <!-- Delete (not for admin) -->
-              <button
+              <button data-testid="admin-users-button-handle-delete-user"
                 v-if="user.role !== 'admin'"
                 @click="handleDelete(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"

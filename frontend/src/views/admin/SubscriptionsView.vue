@@ -16,7 +16,7 @@
                 size="md"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
-              <input
+              <input data-testid="admin-subscriptions-input-filter-user-keyword"
                 ref="filterUserInputRef"
                 v-model="filterUserKeyword"
                 type="text"
@@ -25,7 +25,7 @@
                 @input="debounceSearchFilterUsers"
                 @focus="showFilterUserDropdown = true"
               />
-              <button
+              <button data-testid="admin-subscriptions-button-clear-filter-user"
                 v-if="selectedFilterUser"
                 @click="clearFilterUser"
                 type="button"
@@ -54,7 +54,7 @@
                 >
                   {{ t('common.noOptionsFound') }}
                 </div>
-                <button
+                <button data-testid="admin-subscriptions-button-select-filter-user-user"
                   v-for="user in filterUserResults"
                   :key="user.id"
                   type="button"
@@ -96,7 +96,7 @@
 
           <!-- Right: Actions -->
           <div class="table-filter-actions ml-auto flex flex-wrap items-center justify-end gap-3">
-            <button
+            <button data-testid="admin-subscriptions-button-load-subscriptions"
               @click="loadSubscriptions"
               :disabled="loading"
               class="btn btn-secondary"
@@ -106,7 +106,7 @@
             </button>
             <!-- Column Settings Dropdown -->
             <div class="relative" ref="columnDropdownRef">
-              <button
+              <button data-testid="admin-subscriptions-button-show-column-dropdown-show-column-dropdown"
                 ref="columnDropdownButtonRef"
                 @click="showColumnDropdown = !showColumnDropdown"
                 class="btn btn-secondary px-2 md:px-3"
@@ -131,14 +131,14 @@
                     <div class="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       {{ t('admin.subscriptions.columns.user') }}
                     </div>
-                    <button
+                    <button data-testid="admin-subscriptions-button-set-user-column-mode-email"
                       @click="setUserColumnMode('email')"
                       class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                     >
                       <span>{{ t('admin.users.columns.email') }}</span>
                       <Icon v-if="userColumnMode === 'email'" name="check" size="sm" class="text-primary-500" />
                     </button>
-                    <button
+                    <button data-testid="admin-subscriptions-button-set-user-column-mode-username"
                       @click="setUserColumnMode('username')"
                       class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                     >
@@ -147,7 +147,7 @@
                     </button>
                   </div>
                   <!-- Other columns toggle -->
-                  <button
+                  <button data-testid="admin-subscriptions-button-toggle-column-col-key"
                     v-for="col in toggleableColumns"
                     :key="col.key"
                     @click="toggleColumn(col.key)"
@@ -159,14 +159,14 @@
                 </div>
               </FloatingDropdown>
             </div>
-            <button
+            <button data-testid="admin-subscriptions-button-show-guide-modal-on"
               @click="showGuideModal = true"
               class="btn btn-secondary"
               :title="t('admin.subscriptions.guide.showGuide')"
             >
               <Icon name="questionCircle" size="md" />
             </button>
-            <button @click="showAssignModal = true" class="btn btn-primary">
+            <button data-testid="admin-subscriptions-button-show-assign-modal-on" @click="showAssignModal = true" class="btn btn-primary">
               <Icon name="plus" size="md" class="mr-2" />
               {{ t('admin.subscriptions.assignSubscription') }}
             </button>
@@ -386,7 +386,7 @@
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button
+              <button data-testid="admin-subscriptions-button-handle-extend-row"
                 v-if="row.status === 'active' || row.status === 'expired'"
                 @click="handleExtend(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
@@ -394,7 +394,7 @@
                 <Icon name="calendar" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.adjust') }}</span>
               </button>
-              <button
+              <button data-testid="admin-subscriptions-button-handle-reset-quota-row"
                 v-if="row.status === 'active'"
                 @click="handleResetQuota(row)"
                 :disabled="resettingQuota && resettingSubscription?.id === row.id"
@@ -403,7 +403,7 @@
                 <Icon name="refresh" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.resetQuota') }}</span>
               </button>
-              <button
+              <button data-testid="admin-subscriptions-button-handle-revoke-row"
                 v-if="row.status === 'active'"
                 @click="handleRevoke(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
@@ -453,7 +453,7 @@
         <div>
           <label class="input-label">{{ t('admin.subscriptions.form.user') }}</label>
           <div class="relative" data-assign-user-search>
-            <input
+            <input data-testid="admin-subscriptions-input-user-search-keyword"
               ref="assignUserInputRef"
               v-model="userSearchKeyword"
               type="text"
@@ -462,7 +462,7 @@
               @input="debounceSearchUsers"
               @focus="showUserDropdown = true"
             />
-            <button
+            <button data-testid="admin-subscriptions-button-clear-user-selection"
               v-if="selectedUser"
               @click="clearUserSelection"
               type="button"
@@ -489,7 +489,7 @@
               >
                 {{ t('common.noOptionsFound') }}
               </div>
-              <button
+              <button data-testid="admin-subscriptions-button-select-user-user"
                 v-for="user in userSearchResults"
                 :key="user.id"
                 type="button"
@@ -534,16 +534,16 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.subscriptions.form.validityDays') }}</label>
-          <input v-model.number="assignForm.validity_days" type="number" min="1" class="input" />
+          <input data-testid="admin-subscriptions-input-assign-form-validity-days" v-model.number="assignForm.validity_days" type="number" min="1" class="input" />
           <p class="input-hint">{{ t('admin.subscriptions.validityHint') }}</p>
         </div>
       </form>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button @click="closeAssignModal" type="button" class="btn btn-secondary">
+          <button data-testid="admin-subscriptions-button-close-assign-modal" @click="closeAssignModal" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="admin-subscriptions-button-submit"
             type="submit"
             form="assign-subscription-form"
             :disabled="submitting"
@@ -615,7 +615,7 @@
         <div>
           <label class="input-label">{{ t('admin.subscriptions.form.adjustDays') }}</label>
           <div class="flex items-center gap-2">
-            <input
+            <input data-testid="admin-subscriptions-input-extend-form-days"
               v-model.number="extendForm.days"
               type="number"
               required
@@ -628,10 +628,10 @@
       </form>
       <template #footer>
         <div v-if="extendingSubscription" class="flex justify-end gap-3">
-          <button @click="closeExtendModal" type="button" class="btn btn-secondary">
+          <button data-testid="admin-subscriptions-button-close-extend-modal" @click="closeExtendModal" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button
+          <button data-testid="admin-subscriptions-button-submit-2"
             type="submit"
             form="extend-subscription-form"
             :disabled="submitting"
@@ -669,9 +669,9 @@
     <teleport to="body">
       <transition name="modal">
         <div v-if="showGuideModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" @mousedown.self="showGuideModal = false">
-          <div class="fixed inset-0 bg-black/50" @click="showGuideModal = false"></div>
+          <div data-testid="admin-subscriptions-div-show-guide-modal-off" class="fixed inset-0 bg-black/50" @click="showGuideModal = false"></div>
           <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
-            <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
+            <button data-testid="admin-subscriptions-button-show-guide-modal-off" type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
@@ -690,7 +690,7 @@
                 <li>{{ t('admin.subscriptions.guide.step1.line3') }}</li>
               </ol>
               <div class="ml-8 mt-2">
-                <router-link
+                <router-link data-testid="admin-subscriptions-router-link-show-guide-modal-off"
                   to="/admin/groups"
                   @click="showGuideModal = false"
                   class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
@@ -738,7 +738,7 @@
             </div>
 
             <div class="mt-4 text-right">
-              <button type="button" class="btn btn-primary btn-sm" @click="showGuideModal = false">{{ t('common.close') }}</button>
+              <button data-testid="admin-subscriptions-button-show-guide-modal-off-2" type="button" class="btn btn-primary btn-sm" @click="showGuideModal = false">{{ t('common.close') }}</button>
             </div>
           </div>
         </div>

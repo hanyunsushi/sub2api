@@ -231,7 +231,7 @@
                   @change="onDateRangeChange"
                 />
               </div>
-              <button
+              <button data-testid="admin-dashboard-button-load-dashboard-stats"
                 @click="loadDashboardStats"
                 :disabled="chartsLoading"
                 class="btn btn-secondary dashboard-paper-control dashboard-filter-refresh"

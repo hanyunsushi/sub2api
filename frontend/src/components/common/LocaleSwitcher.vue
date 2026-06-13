@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="dropdownRef">
-    <button
+    <button data-testid="common-locale-switcher-button-toggle-dropdown"
       ref="triggerRef"
       @click="toggleDropdown"
       :disabled="switching"
@@ -23,7 +23,7 @@
       placement="bottom-end"
       panel-class="w-32 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
     >
-        <button
+        <button data-testid="common-locale-switcher-button-select-locale-locale-code"
           v-for="locale in availableLocales"
           :key="locale.code"
           :disabled="switching"

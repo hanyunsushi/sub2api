@@ -19,7 +19,7 @@
           <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200">
             {{ t('admin.usage.cleanup.recentTasks') }}
           </h4>
-          <button type="button" class="btn btn-ghost btn-sm" @click="loadTasks">
+          <button data-testid="admin-usage-usage-cleanup-button-load-tasks" type="button" class="btn btn-ghost btn-sm" @click="loadTasks">
             {{ t('common.refresh') }}
           </button>
         </div>
@@ -43,7 +43,7 @@
                     {{ statusLabel(task.status) }}
                   </span>
                   <span class="text-xs text-gray-400">#{{ task.id }}</span>
-                  <button
+                  <button data-testid="admin-usage-usage-cleanup-button-open-cancel-confirm-task"
                     v-if="canCancel(task)"
                     type="button"
                     class="btn btn-ghost btn-xs text-rose-600 hover:text-rose-700 dark:text-rose-300"
@@ -84,10 +84,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" class="btn btn-secondary" @click="handleClose">
+        <button data-testid="admin-usage-usage-cleanup-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button type="button" class="btn btn-danger" :disabled="submitting" @click="openConfirm">
+        <button data-testid="admin-usage-usage-cleanup-button-open-confirm" type="button" class="btn btn-danger" :disabled="submitting" @click="openConfirm">
           {{ submitting ? t('admin.usage.cleanup.submitting') : t('admin.usage.cleanup.submit') }}
         </button>
       </div>

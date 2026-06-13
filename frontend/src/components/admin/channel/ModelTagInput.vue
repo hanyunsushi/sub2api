@@ -9,7 +9,7 @@
         :class="getPlatformTagClass(props.platform || '')"
       >
         {{ model }}
-        <button
+        <button data-testid="admin-channel-model-tag-input-button-remove-model-idx"
           type="button"
           @click="removeModel(idx)"
           class="ml-0.5 rounded-full p-0.5 hover:bg-primary-200 dark:hover:bg-primary-800"
@@ -17,7 +17,7 @@
           <Icon name="x" size="xs" />
         </button>
       </span>
-      <input
+      <input data-testid="admin-channel-model-tag-input-input-input-value"
         ref="inputRef"
         v-model="inputValue"
         type="text"

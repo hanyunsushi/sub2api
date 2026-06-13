@@ -68,7 +68,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-reset-password-input-email"
               id="email"
               :value="email"
               type="email"
@@ -88,7 +88,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-reset-password-input-form-data-password"
               id="password"
               v-model="formData.password"
               :type="showPassword ? 'text' : 'password'"
@@ -99,7 +99,7 @@
               :class="{ 'input-error': errors.password }"
               :placeholder="t('auth.newPasswordPlaceholder')"
             />
-            <button
+            <button data-testid="auth-reset-password-button-show-password-show-password"
               type="button"
               @click="showPassword = !showPassword"
               class="auth-recovery-field-action"
@@ -119,7 +119,7 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input
+            <input data-testid="auth-reset-password-input-form-data-confirm-password"
               id="confirmPassword"
               v-model="formData.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
@@ -130,7 +130,7 @@
               :class="{ 'input-error': errors.confirmPassword }"
               :placeholder="t('auth.confirmPasswordPlaceholder')"
             />
-            <button
+            <button data-testid="auth-reset-password-button-show-confirm-password-show-confirm-password"
               type="button"
               @click="showConfirmPassword = !showConfirmPassword"
               class="auth-recovery-field-action"
@@ -145,7 +145,7 @@
           {{ errorMessage }}
         </p>
 
-        <button
+        <button data-testid="auth-reset-password-button-submit"
           type="submit"
           :disabled="isLoading"
           class="btn btn-primary auth-recovery-submit w-full"

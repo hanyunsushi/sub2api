@@ -50,7 +50,7 @@
       <!-- Deduct Balance -->
       <div>
         <div class="flex items-center gap-2">
-          <input
+          <input data-testid="admin-payment-admin-refund-input-form-deduct-balance"
             id="deduct-balance"
             v-model="form.deduct_balance"
             type="checkbox"
@@ -96,7 +96,7 @@
         <label class="input-label">{{ t('payment.admin.refundAmount') }}</label>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{{ order?.order_type === 'balance' ? '$' : '¥' }}</span>
-          <input
+          <input data-testid="admin-payment-admin-refund-input-form-amount"
             v-model.number="form.amount"
             type="number"
             step="0.01"
@@ -114,7 +114,7 @@
       <!-- Reason -->
       <div>
         <label class="input-label">{{ t('payment.admin.refundReason') }}</label>
-        <textarea
+        <textarea data-testid="admin-payment-admin-refund-textarea-form-reason"
           v-model="form.reason"
           rows="3"
           class="input"
@@ -133,7 +133,7 @@
 
       <!-- Force Refund -->
       <div v-if="requireForce" class="flex items-center gap-2">
-        <input
+        <input data-testid="admin-payment-admin-refund-input-form-force"
           id="force-refund"
           v-model="form.force"
           type="checkbox"
@@ -147,10 +147,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" @click="emit('cancel')" class="btn btn-secondary">
+        <button data-testid="admin-payment-admin-refund-button-emit-cancel" type="button" @click="emit('cancel')" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="admin-payment-admin-refund-button-submit"
           type="submit"
           form="refund-form"
           :disabled="submitting || form.amount <= 0 || (requireForce && !form.force)"

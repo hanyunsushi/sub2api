@@ -49,7 +49,7 @@
               {{ t('admin.accounts.openai.oauthPassthroughDesc') }}
             </p>
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-open-ai-passthrough"
             v-model="enableOpenAIPassthrough"
             id="bulk-edit-openai-passthrough-enabled"
             type="checkbox"
@@ -63,7 +63,7 @@
           role="group"
           aria-labelledby="bulk-edit-openai-passthrough-label"
         >
-          <button
+          <button data-testid="account-bulk-edit-account-button-openai-passthrough-enabled-openai-passthrough-enabled"
             id="bulk-edit-openai-passthrough-toggle"
             type="button"
             :class="[
@@ -92,7 +92,7 @@
           >
             {{ t('admin.accounts.baseUrl') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-base-url"
             v-model="enableBaseUrl"
             id="bulk-edit-base-url-enabled"
             type="checkbox"
@@ -100,7 +100,7 @@
             class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
-        <input
+        <input data-testid="account-bulk-edit-account-input-base-url"
           v-model="baseUrl"
           id="bulk-edit-base-url"
           type="text"
@@ -125,7 +125,7 @@
           >
             {{ t('admin.accounts.modelRestriction') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-model-restriction"
             v-model="enableModelRestriction"
             id="bulk-edit-model-restriction-enabled"
             type="checkbox"
@@ -152,7 +152,7 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button
+              <button data-testid="account-bulk-edit-account-button-model-restriction-mode-whitelist"
                 type="button"
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
@@ -177,7 +177,7 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button
+              <button data-testid="account-bulk-edit-account-button-model-restriction-mode-mapping"
                 type="button"
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
@@ -266,7 +266,7 @@
                   :key="index"
                   class="flex items-center gap-2"
                 >
-                  <input
+                  <input data-testid="account-bulk-edit-account-input-mapping-from"
                     v-model="mapping.from"
                     type="text"
                     class="input flex-1"
@@ -285,13 +285,13 @@
                       d="M14 5l7 7m0 0l-7 7m7-7H3"
                     />
                   </svg>
-                  <input
+                  <input data-testid="account-bulk-edit-account-input-mapping-to"
                     v-model="mapping.to"
                     type="text"
                     class="input flex-1"
                     :placeholder="t('admin.accounts.actualModel')"
                   />
-                  <button
+                  <button data-testid="account-bulk-edit-account-button-remove-model-mapping-index"
                     type="button"
                     class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     @click="removeModelMapping(index)"
@@ -308,7 +308,7 @@
                 </div>
               </div>
 
-              <button
+              <button data-testid="account-bulk-edit-account-button-add-model-mapping"
                 type="button"
                 class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
                 @click="addModelMapping"
@@ -331,7 +331,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button
+                <button data-testid="account-bulk-edit-account-button-add-preset-mapping-preset-from-preset-to"
                   v-for="preset in filteredPresets"
                   :key="preset.label"
                   type="button"
@@ -361,7 +361,7 @@
               {{ t('admin.accounts.customErrorCodesHint') }}
             </p>
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-custom-error-codes"
             v-model="enableCustomErrorCodes"
             id="bulk-edit-custom-error-codes-enabled"
             type="checkbox"
@@ -380,7 +380,7 @@
 
           <!-- Error Code Buttons -->
           <div class="flex flex-wrap gap-2">
-            <button
+            <button data-testid="account-bulk-edit-account-button-toggle-error-code-code-value"
               v-for="code in commonErrorCodes"
               :key="code.value"
               type="button"
@@ -398,7 +398,7 @@
 
           <!-- Manual input -->
           <div class="flex items-center gap-2">
-            <input
+            <input data-testid="account-bulk-edit-account-input-custom-error-code-input"
               v-model="customErrorCodeInput"
               id="bulk-edit-custom-error-code-input"
               type="number"
@@ -409,7 +409,7 @@
               aria-labelledby="bulk-edit-custom-error-codes-label"
               @keyup.enter="addCustomErrorCode"
             />
-            <button type="button" class="btn btn-secondary px-3" @click="addCustomErrorCode">
+            <button data-testid="account-bulk-edit-account-button-add-custom-error-code" type="button" class="btn btn-secondary px-3" @click="addCustomErrorCode">
               <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   stroke-linecap="round"
@@ -429,7 +429,7 @@
               class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
             >
               {{ code }}
-              <button
+              <button data-testid="account-bulk-edit-account-button-remove-error-code-code"
                 type="button"
                 class="hover:text-red-900 dark:hover:text-red-300"
                 @click="removeErrorCode(code)"
@@ -459,7 +459,7 @@
               {{ t('admin.accounts.interceptWarmupRequestsDesc') }}
             </p>
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-intercept-warmup"
             v-model="enableInterceptWarmup"
             id="bulk-edit-intercept-warmup-enabled"
             type="checkbox"
@@ -468,7 +468,7 @@
           />
         </div>
         <div v-if="enableInterceptWarmup" id="bulk-edit-intercept-warmup-body" class="mt-3">
-          <button
+          <button data-testid="account-bulk-edit-account-button-intercept-warmup-requests-intercept-warmup-requests"
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -496,7 +496,7 @@
           >
             {{ t('admin.accounts.proxy') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-proxy"
             v-model="enableProxy"
             id="bulk-edit-proxy-enabled"
             type="checkbox"
@@ -524,7 +524,7 @@
             >
               {{ t('admin.accounts.concurrency') }}
             </label>
-            <input
+            <input data-testid="account-bulk-edit-account-input-enable-concurrency"
               v-model="enableConcurrency"
               id="bulk-edit-concurrency-enabled"
               type="checkbox"
@@ -532,7 +532,7 @@
               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-concurrency"
             v-model.number="concurrency"
             id="bulk-edit-concurrency"
             type="number"
@@ -553,7 +553,7 @@
             >
               {{ t('admin.accounts.loadFactor') }}
             </label>
-            <input
+            <input data-testid="account-bulk-edit-account-input-enable-load-factor"
               v-model="enableLoadFactor"
               id="bulk-edit-load-factor-enabled"
               type="checkbox"
@@ -561,7 +561,7 @@
               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-load-factor"
             v-model.number="loadFactor"
             id="bulk-edit-load-factor"
             type="number"
@@ -583,7 +583,7 @@
             >
               {{ t('admin.accounts.priority') }}
             </label>
-            <input
+            <input data-testid="account-bulk-edit-account-input-enable-priority"
               v-model="enablePriority"
               id="bulk-edit-priority-enabled"
               type="checkbox"
@@ -591,7 +591,7 @@
               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-priority"
             v-model.number="priority"
             id="bulk-edit-priority"
             type="number"
@@ -611,7 +611,7 @@
             >
               {{ t('admin.accounts.billingRateMultiplier') }}
             </label>
-            <input
+            <input data-testid="account-bulk-edit-account-input-enable-rate-multiplier"
               v-model="enableRateMultiplier"
               id="bulk-edit-rate-multiplier-enabled"
               type="checkbox"
@@ -619,7 +619,7 @@
               class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-rate-multiplier"
             v-model.number="rateMultiplier"
             id="bulk-edit-rate-multiplier"
             type="number"
@@ -644,7 +644,7 @@
           >
             {{ t('common.status') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-status"
             v-model="enableStatus"
             id="bulk-edit-status-enabled"
             type="checkbox"
@@ -671,7 +671,7 @@
           >
             {{ t('admin.accounts.openai.wsMode') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-open-aiws-mode"
             v-model="enableOpenAIWSMode"
             id="bulk-edit-openai-ws-mode-enabled"
             type="checkbox"
@@ -708,7 +708,7 @@
           >
             {{ t('admin.accounts.openai.codexCLIOnly') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only"
             v-model="enableCodexCLIOnly"
             id="bulk-edit-openai-codex-cli-only-enabled"
             type="checkbox"
@@ -723,7 +723,7 @@
           <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.codexCLIOnlyDesc') }}
           </p>
-          <button
+          <button data-testid="account-bulk-edit-account-button-codex-cli-only-enabled-codex-cli-only-enabled"
             id="bulk-edit-openai-codex-cli-only-toggle"
             type="button"
             :class="[
@@ -752,7 +752,7 @@
           >
             {{ t('admin.accounts.openai.codexCLIOnlyAllowClaudeCode') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only-allow-claude-code"
             v-model="enableCodexCLIOnlyAllowClaudeCode"
             id="bulk-edit-openai-codex-allow-claude-code-enabled"
             type="checkbox"
@@ -767,7 +767,7 @@
           <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.codexCLIOnlyAllowClaudeCodeDesc') }}
           </p>
-          <button
+          <button data-testid="account-bulk-edit-account-button-codex-cli-only-allow-claude-code-enabled-codex-cli-only-allow-claude-code-enabled"
             id="bulk-edit-openai-codex-allow-claude-code-toggle"
             type="button"
             :class="[
@@ -796,7 +796,7 @@
           >
             {{ t('admin.accounts.openai.wsMode') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-open-aiapi-key-ws-mode"
             v-model="enableOpenAIAPIKeyWSMode"
             id="bulk-edit-openai-apikey-ws-mode-enabled"
             type="checkbox"
@@ -838,7 +838,7 @@
               {{ t('admin.accounts.openai.compactModeDesc') }}
             </p>
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-open-ai-compact-mode"
             v-model="enableOpenAICompactMode"
             id="bulk-edit-openai-compact-mode-enabled"
             type="checkbox"
@@ -874,7 +874,7 @@
               {{ t('admin.accounts.openai.compactModelMappingDesc') }}
             </p>
           </div>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-open-ai-compact-model-mapping"
             v-model="enableOpenAICompactModelMapping"
             id="bulk-edit-openai-compact-model-mapping-enabled"
             type="checkbox"
@@ -907,7 +907,7 @@
                 :placeholder="t('admin.accounts.toModel')"
                 data-testid="bulk-edit-openai-compact-model-mapping-input"
               />
-              <button
+              <button data-testid="account-bulk-edit-account-button-remove-open-ai-compact-model-mapping-index"
                 type="button"
                 class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                 @click="removeOpenAICompactModelMapping(index)"
@@ -937,7 +937,7 @@
           >
             {{ t('admin.accounts.quotaControl.rpmLimit.label') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-rpm-limit"
             v-model="enableRpmLimit"
             id="bulk-edit-rpm-limit-enabled"
             type="checkbox"
@@ -954,7 +954,7 @@
         >
           <div class="mb-3 flex items-center justify-between">
             <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.quotaControl.rpmLimit.hint') }}</span>
-            <button
+            <button data-testid="account-bulk-edit-account-button-rpm-limit-enabled-rpm-limit-enabled"
               type="button"
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
@@ -974,7 +974,7 @@
           <div v-if="rpmLimitEnabled" class="space-y-3">
             <div>
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.baseRpm') }}</label>
-              <input
+              <input data-testid="account-bulk-edit-account-input-bulk-base-rpm"
                 v-model.number="bulkBaseRpm"
                 type="number"
                 min="1"
@@ -989,7 +989,7 @@
             <div>
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.strategy') }}</label>
               <div class="flex gap-2">
-                <button
+                <button data-testid="account-bulk-edit-account-button-bulk-rpm-strategy-tiered"
                   type="button"
                   @click="bulkRpmStrategy = 'tiered'"
                   :class="[
@@ -1001,7 +1001,7 @@
                 >
                   {{ t('admin.accounts.quotaControl.rpmLimit.strategyTiered') }}
                 </button>
-                <button
+                <button data-testid="account-bulk-edit-account-button-bulk-rpm-strategy-sticky-exempt"
                   type="button"
                   @click="bulkRpmStrategy = 'sticky_exempt'"
                   :class="[
@@ -1018,7 +1018,7 @@
 
             <div v-if="bulkRpmStrategy === 'tiered'">
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.stickyBuffer') }}</label>
-              <input
+              <input data-testid="account-bulk-edit-account-input-bulk-rpm-sticky-buffer"
                 v-model.number="bulkRpmStickyBuffer"
                 type="number"
                 min="1"
@@ -1039,7 +1039,7 @@
             {{ t('admin.accounts.quotaControl.rpmLimit.userMsgQueueHint') }}
           </p>
           <div class="flex space-x-2">
-            <button type="button" v-for="opt in umqModeOptions" :key="opt.value"
+            <button data-testid="account-bulk-edit-account-button-user-msg-queue-mode-user-msg-queue-mode-opt-value-null-opt-value" type="button" v-for="opt in umqModeOptions" :key="opt.value"
               @click="userMsgQueueMode = userMsgQueueMode === opt.value ? null : opt.value"
               :class="[
                 'px-3 py-1.5 text-sm rounded-md border transition-colors',
@@ -1063,7 +1063,7 @@
           >
             {{ t('nav.groups') }}
           </label>
-          <input
+          <input data-testid="account-bulk-edit-account-input-enable-groups"
             v-model="enableGroups"
             id="bulk-edit-groups-enabled"
             type="checkbox"
@@ -1083,10 +1083,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" class="btn btn-secondary" @click="handleClose">
+        <button data-testid="account-bulk-edit-account-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="account-bulk-edit-account-button-submit"
           type="submit"
           form="bulk-edit-account-form"
           :disabled="submitting"

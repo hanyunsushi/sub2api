@@ -25,7 +25,7 @@
           <p class="text-sm text-gray-700 dark:text-gray-300">
             {{ errorMessage }}
           </p>
-          <button
+          <button data-testid="auth-wechat-payment-callback-button-go-back-to-payment"
             class="btn btn-primary mt-4"
             type="button"
             @click="goBackToPayment"

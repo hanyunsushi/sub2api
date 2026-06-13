@@ -2,7 +2,7 @@
   <div>
     <!-- Multi-select Dropdown -->
     <div class="relative mb-3">
-      <div
+      <div data-testid="account-model-whitelist-selector-div-toggle-dropdown"
         ref="triggerRef"
         @click="toggleDropdown"
         class="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-dark-500 dark:bg-dark-700"
@@ -17,7 +17,7 @@
               <ModelIcon :model="model" size="14px" />
               <span class="truncate">{{ model }}</span>
             </span>
-            <button
+            <button data-testid="account-model-whitelist-selector-button-remove-model-model"
               type="button"
               @click.stop="removeModel(model)"
               class="shrink-0 rounded-full hover:bg-gray-200 dark:hover:bg-dark-500"
@@ -41,7 +41,7 @@
         panel-class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-700"
       >
         <div class="sticky top-0 border-b border-gray-200 bg-white p-2 dark:border-dark-600 dark:bg-dark-700">
-          <input
+          <input data-testid="account-model-whitelist-selector-input-search-query"
             v-model="searchQuery"
             type="text"
             class="input w-full text-sm"
@@ -50,7 +50,7 @@
           />
         </div>
         <div class="max-h-52 overflow-auto">
-          <button
+          <button data-testid="account-model-whitelist-selector-button-toggle-model-model-value"
             v-for="model in filteredModels"
             :key="model.value"
             type="button"
@@ -81,14 +81,14 @@
 
     <!-- Quick Actions -->
     <div class="mb-4 flex flex-wrap gap-2">
-      <button
+      <button data-testid="account-model-whitelist-selector-button-fill-related"
         type="button"
         @click="fillRelated"
         class="rounded-lg border border-blue-200 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
       >
         {{ t('admin.accounts.fillRelatedModels') }}
       </button>
-      <button
+      <button data-testid="account-model-whitelist-selector-button-sync-upstream-models"
         v-if="canSyncUpstream"
         type="button"
         @click="syncUpstreamModels"
@@ -97,7 +97,7 @@
       >
         {{ isSyncingUpstream ? t('admin.accounts.syncUpstreamModelsLoading') : t('admin.accounts.syncUpstreamModels') }}
       </button>
-      <button
+      <button data-testid="account-model-whitelist-selector-button-clear-all"
         type="button"
         @click="clearAll"
         class="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30"
@@ -110,7 +110,7 @@
     <div class="mb-3">
       <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.accounts.customModelName') }}</label>
       <div class="flex gap-2">
-        <input
+        <input data-testid="account-model-whitelist-selector-input-custom-model"
           v-model="customModel"
           type="text"
           class="input flex-1"
@@ -119,7 +119,7 @@
           @compositionstart="isComposing = true"
           @compositionend="isComposing = false"
         />
-        <button
+        <button data-testid="account-model-whitelist-selector-button-add-custom"
           type="button"
           @click="addCustom"
           class="rounded-lg bg-primary-50 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"

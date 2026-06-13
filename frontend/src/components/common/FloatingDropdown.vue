@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="floating-dropdown">
-      <div
+      <div data-testid="common-floating-dropdown-div-div"
         v-if="show && triggerEl"
         ref="panelRef"
         class="floating-dropdown-portal"

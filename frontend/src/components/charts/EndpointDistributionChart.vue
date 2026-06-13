@@ -9,7 +9,7 @@
           v-if="showSourceToggle"
           class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-dark-800"
         >
-          <button
+          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-inbound"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'inbound'
@@ -19,7 +19,7 @@
           >
             {{ t('usage.inbound') }}
           </button>
-          <button
+          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-upstream"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'upstream'
@@ -29,7 +29,7 @@
           >
             {{ t('usage.upstream') }}
           </button>
-          <button
+          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-path"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'path'
@@ -45,7 +45,7 @@
           v-if="showMetricToggle"
           class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-700 dark:bg-dark-800"
         >
-          <button
+          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-metric-tokens"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'tokens'
@@ -55,7 +55,7 @@
           >
             {{ t('admin.dashboard.metricTokens') }}
           </button>
-          <button
+          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-metric-actual-cost"
             type="button"
             class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'actual_cost'
@@ -88,7 +88,7 @@
           </thead>
           <tbody>
             <template v-for="item in displayEndpointStats" :key="item.endpoint">
-              <tr
+              <tr data-testid="charts-endpoint-distribution-chart-tr-toggle-breakdown-item-endpoint"
                 class="border-t border-gray-100 cursor-pointer transition-colors dark:border-gray-700"
                 @click="toggleBreakdown(item.endpoint)"
               >

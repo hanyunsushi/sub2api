@@ -8,6 +8,8 @@
       v-for="card in cards"
       :key="card.groupKey"
       class="monitor-capacity-card rounded-2xl border border-gray-200/80 bg-white/75 p-4 shadow-card dark:border-dark-700/70 dark:bg-dark-800/60"
+      data-testid="monitor-capacity-card"
+      :data-capacity-group="card.groupKey"
     >
       <div class="flex items-start justify-between gap-3">
         <div>

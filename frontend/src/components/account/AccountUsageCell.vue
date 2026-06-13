@@ -76,7 +76,7 @@
           >
             {{ t('admin.accounts.usageWindow.passiveSampled') }}
           </span>
-          <button
+          <button data-testid="account-account-usage-cell-button-load-active-usage"
             type="button"
             class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
             :disabled="activeQueryLoading"
@@ -127,7 +127,7 @@
           color="emerald"
         />
         <div class="flex items-center gap-1.5 mt-0.5">
-          <button
+          <button data-testid="account-account-usage-cell-button-load-active-usage-2"
             type="button"
             class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
             :disabled="activeQueryLoading"
@@ -213,7 +213,7 @@
           {{ forbiddenLabel }}
         </span>
         <div v-if="validationURL" class="flex items-center gap-1">
-          <a
+          <a data-testid="account-account-usage-cell-link-a"
             :href="validationURL"
             target="_blank"
             rel="noopener noreferrer"
@@ -222,7 +222,7 @@
           >
             {{ t('admin.accounts.openVerification') }}
           </a>
-          <button
+          <button data-testid="account-account-usage-cell-button-copy-validation-url"
             type="button"
             class="text-[10px] text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             :title="t('admin.accounts.copyLink')"
@@ -345,7 +345,7 @@
               <div><strong>{{ geminiQuotaPolicyChannel }}:</strong></div>
               <div class="pl-2">• {{ geminiQuotaPolicyLimits }}</div>
               <div class="mt-2">
-                <a :href="geminiQuotaPolicyDocsUrl" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
+                <a data-testid="account-account-usage-cell-link-a-2" :href="geminiQuotaPolicyDocsUrl" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
                   {{ t('admin.accounts.gemini.quotaPolicy.columns.docs') }} →
                 </a>
               </div>

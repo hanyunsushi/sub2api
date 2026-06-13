@@ -34,7 +34,7 @@
               {{ complianceStore.status?.version || 'v2026.06.10' }}
             </p>
           </div>
-          <a
+          <a data-testid="admin-admin-compliance-link-a"
             :href="documentUrl"
             target="_blank"
             rel="noopener noreferrer"
@@ -74,7 +74,7 @@
 
     <template #footer>
       <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button
+        <button data-testid="admin-admin-compliance-button-logout"
           type="button"
           class="btn btn-secondary"
           :disabled="complianceStore.submitting"
@@ -82,7 +82,7 @@
         >
           {{ t('adminCompliance.logout') }}
         </button>
-        <button
+        <button data-testid="admin-admin-compliance-button-submit"
           type="button"
           class="btn btn-primary"
           :disabled="!canSubmit || complianceStore.submitting"

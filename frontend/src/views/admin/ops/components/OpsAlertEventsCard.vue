@@ -367,7 +367,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
         <Select :model-value="severity" :options="severityOptions" class="w-[88px]" @change="severity = String($event || '')" />
         <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
         <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
-        <button
+        <button data-testid="admin-ops-components-ops-alert-events-card-button-load-first-page"
           class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :disabled="loading"
           @click="loadFirstPage"
@@ -424,7 +424,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-800">
-            <tr
+            <tr data-testid="admin-ops-components-ops-alert-events-card-tr-open-detail-row"
               v-for="row in events"
               :key="row.id"
               class="cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50"
@@ -544,13 +544,13 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                   class="w-[110px]"
                   @change="silenceDuration = String($event || '1h')"
                 />
-                <button type="button" class="btn btn-secondary btn-sm" :disabled="detailActionLoading" @click="silenceAlert">
+                <button data-testid="admin-ops-components-ops-alert-events-card-button-silence-alert" type="button" class="btn btn-secondary btn-sm" :disabled="detailActionLoading" @click="silenceAlert">
                   <Icon name="ban" size="sm" />
                   {{ t('common.apply') }}
                 </button>
               </div>
 
-              <button type="button" class="btn btn-secondary btn-sm" :disabled="detailActionLoading" @click="manualResolve">
+              <button data-testid="admin-ops-components-ops-alert-events-card-button-manual-resolve" type="button" class="btn btn-secondary btn-sm" :disabled="detailActionLoading" @click="manualResolve">
                 <Icon name="checkCircle" size="sm" />
                 {{ t('admin.ops.alertEvents.detail.manualResolve') }}
               </button>
@@ -571,14 +571,14 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
               <div class="mt-1 flex flex-wrap items-center gap-2">
                 <div class="font-mono text-sm font-bold text-gray-900 dark:text-white">#{{ selected.rule_id }}</div>
-                <a
+                <a data-testid="admin-ops-components-ops-alert-events-card-link-a"
                   class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
                   :href="`/admin/ops?open_alert_rules=1&alert_rule_id=${selected.rule_id}`"
                 >
                   <Icon name="externalLink" size="xs" />
                   {{ t('admin.ops.alertEvents.detail.viewRule') }}
                 </a>
-                <a
+                <a data-testid="admin-ops-components-ops-alert-events-card-link-a-2"
                   class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
                   :href="`/admin/ops?platform=${encodeURIComponent(getDimensionString(selected,'platform')||'')}&group_id=${selected.dimensions?.group_id || ''}&error_type=request&open_error_details=1`"
                 >
