@@ -1,10 +1,20 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia, type Pinia } from 'pinia'
 import { nextTick } from 'vue'
 
 import AISearchBox from '../AISearchBox.vue'
 import AISearchPanel from '../AISearchPanel.vue'
+
+const authMocks = vi.hoisted(() => ({
+  issueCreepeeSSOTicket: vi.fn()
+}))
+
+vi.mock('@/api/auth', () => ({
+  authAPI: {
+    issueCreepeeSSOTicket: authMocks.issueCreepeeSSOTicket
+  }
+}))
 
 describe('Creepee Obsidian bridge panel interactions', () => {
   let pinia: Pinia
@@ -12,9 +22,14 @@ describe('Creepee Obsidian bridge panel interactions', () => {
   beforeEach(() => {
     pinia = createPinia()
     setActivePinia(pinia)
+    authMocks.issueCreepeeSSOTicket.mockResolvedValue({
+      ticket: 'cpsso_test_ticket',
+      expires_in: 90
+    })
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     document.body.classList.remove('ai-search-panel-open')
     document.querySelectorAll('[data-testid="ai-search-sidecar"]').forEach((node) => node.remove())
   })
@@ -49,6 +64,36 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(document.querySelector('.ai-search-panel-subtitle')?.textContent).toContain('Obsidian Codex Bridge')
     expect(document.querySelector<HTMLImageElement>('.ai-search-panel-avatar')?.getAttribute('src')).toBe('/brand/claudecode-color.png')
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(true)
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
+  it('sends a one-time Sub2 SSO ticket to the bridge iframe with postMessage only', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+
+    const frame = document.querySelector<HTMLIFrameElement>('[data-testid="obsidian-bridge-frame"]')
+    expect(frame).not.toBeNull()
+    const bridgeWindow = { postMessage: vi.fn() }
+    Object.defineProperty(frame, 'contentWindow', {
+      configurable: true,
+      value: bridgeWindow
+    })
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await frame?.dispatchEvent(new Event('load'))
+    await flushPromises()
+
+    expect(authMocks.issueCreepeeSSOTicket).toHaveBeenCalledTimes(1)
+    expect(bridgeWindow.postMessage).toHaveBeenCalledWith({
+      type: 'sub2api:creepee-sso',
+      ticket: 'cpsso_test_ticket'
+    }, 'http://127.0.0.1:43110')
+    expect(frame?.getAttribute('src')).toBe('http://127.0.0.1:43110/')
+    expect(frame?.getAttribute('src')).not.toContain('cpsso_test_ticket')
+
     triggerWrapper.unmount()
     panelWrapper.unmount()
   })
