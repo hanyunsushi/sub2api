@@ -11,22 +11,20 @@
       aria-controls="creepee-ai-sidecar"
       @click="openPanel"
     >
-      <img
+      <CreepeeAvatar
         class="ai-search-trigger-avatar"
-        :src="claudeCodeCrabAvatar"
-        alt=""
-        aria-hidden="true"
-      >
+        action="idle"
+      />
       <span class="ai-search-trigger-label">Ask Creepee</span>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import CreepeeAvatar from '@/components/layout/CreepeeAvatar.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
-const claudeCodeCrabAvatar = '/brand/claudecode-color.png'
 
 function openPanel() {
   appStore.openAISearchPanel()

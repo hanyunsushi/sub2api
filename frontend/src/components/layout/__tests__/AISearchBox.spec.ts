@@ -55,6 +55,8 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('true')
     expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('false')
     expect(document.querySelector('[data-testid="ai-search-panel"]')).not.toBeNull()
+    expect(document.querySelector('[data-testid="creepee-avatar-canvas"]')).not.toBeNull()
+    expect(document.querySelector('.ai-search-trigger-avatar')).not.toBeNull()
     expect(document.querySelector('chat-page-snippet')).toBeNull()
     const frame = document.querySelector<HTMLIFrameElement>('[data-testid="obsidian-bridge-frame"]')
     expect(frame).not.toBeNull()

@@ -4,6 +4,8 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const componentSource = readFileSync(resolve(__dirname, '../AISearchBox.vue'), 'utf8')
+const creepeeAvatarPath = resolve(__dirname, '../CreepeeAvatar.vue')
+const creepeeAvatarSource = existsSync(creepeeAvatarPath) ? readFileSync(creepeeAvatarPath, 'utf8') : ''
 const panelPath = resolve(__dirname, '../AISearchPanel.vue')
 const panelSource = existsSync(panelPath) ? readFileSync(panelPath, 'utf8') : ''
 const appSource = readFileSync(resolve(__dirname, '../../../App.vue'), 'utf8')
@@ -36,10 +38,23 @@ describe('Creepee Obsidian bridge source contract', () => {
     expect(componentSource).toContain('aria-label="Ask Creepee"')
     expect(componentSource).toContain('title="Ask Creepee"')
     expect(componentSource).toContain('class="ai-search-trigger-avatar"')
+    expect(componentSource).toContain("import CreepeeAvatar from '@/components/layout/CreepeeAvatar.vue'")
+    expect(componentSource).toContain('<CreepeeAvatar')
     expect(componentSource).toContain('Ask Creepee')
     expect(componentSource).toContain('appStore.openAISearchPanel()')
+    expect(componentSource).not.toContain('claudeCodeCrabAvatar')
+    expect(componentSource).not.toContain('/brand/claudecode-color.png')
     expect(componentSource).not.toContain('Ask AI')
     expect(componentSource).not.toContain('Ask Creepee.ai')
+  })
+
+  it('uses the Bridge triage Creepee animated avatar for the trigger logo', () => {
+    expect(creepeeAvatarSource).toContain('CREEPEE_SPRITE')
+    expect(creepeeAvatarSource).toContain('data-testid="creepee-avatar-canvas"')
+    expect(creepeeAvatarSource).toContain('requestAnimationFrame(drawCreepeeFrame)')
+    expect(creepeeAvatarSource).toContain('data-creepee-action')
+    expect(creepeeAvatarSource).toContain('charge')
+    expect(creepeeAvatarSource).toContain('wave')
   })
 
   it('renders Obsidian Codex Bridge in the sidecar iframe instead of Cloudflare AI Search', () => {
@@ -109,6 +124,9 @@ describe('Creepee Obsidian bridge source contract', () => {
 
     expect(boxBlock).toContain('display: flex;')
     expect(triggerBlock).toContain('cursor: pointer;')
+    expect(triggerBlock).toContain('border: 0;')
+    expect(triggerBlock).toContain('box-shadow: none;')
+    expect(triggerBlock).not.toContain('border: 1px')
     expect(sidecarBlock).toContain('position: fixed;')
     expect(sidecarBlock).toContain('right: 0;')
     expect(sidecarBlock).toContain('width: var(--ai-search-sidecar-width);')
