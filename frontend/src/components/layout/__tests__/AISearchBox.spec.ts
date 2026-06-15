@@ -94,6 +94,47 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(frame?.getAttribute('src')).toBe('http://127.0.0.1:43110/')
     expect(frame?.getAttribute('src')).not.toContain('cpsso_test_ticket')
 
+    window.dispatchEvent(new MessageEvent('message', {
+      origin: 'http://127.0.0.1:43110',
+      data: { type: 'obsidian-bridge:sso-complete' }
+    }))
+    await flushPromises()
+    expect(authMocks.issueCreepeeSSOTicket).toHaveBeenCalledTimes(1)
+
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
+  it('waits for the bridge ready message before issuing SSO when the frame loads early', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+
+    const frame = document.querySelector<HTMLIFrameElement>('[data-testid="obsidian-bridge-frame"]')
+    expect(frame).not.toBeNull()
+    const bridgeWindow = { postMessage: vi.fn() }
+    Object.defineProperty(frame, 'contentWindow', {
+      configurable: true,
+      value: bridgeWindow
+    })
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+    expect(authMocks.issueCreepeeSSOTicket).not.toHaveBeenCalled()
+
+    window.dispatchEvent(new MessageEvent('message', {
+      origin: 'http://127.0.0.1:43110',
+      data: { type: 'obsidian-bridge:ready' }
+    }))
+    await flushPromises()
+
+    expect(authMocks.issueCreepeeSSOTicket).toHaveBeenCalledTimes(1)
+    expect(bridgeWindow.postMessage).toHaveBeenCalledWith({
+      type: 'sub2api:creepee-sso',
+      ticket: 'cpsso_test_ticket'
+    }, 'http://127.0.0.1:43110')
+
     triggerWrapper.unmount()
     panelWrapper.unmount()
   })
