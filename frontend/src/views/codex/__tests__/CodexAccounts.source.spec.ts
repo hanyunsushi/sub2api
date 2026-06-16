@@ -64,9 +64,10 @@ describe('CodexAccounts source contracts', () => {
 
     expect(accountCardHoverBlock).toContain('transform: translateY(-2px);')
     expect(accountCardHoverBlock).toContain(`background: ${creepeeHoverSurface};`)
+    expect(accountCardHoverBlock).toContain(`background-color: ${creepeeHoverSurface};`)
     expect(accountCardHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(accountCardHoverBlock).not.toContain('border-color')
-    expect(accountCardHoverBlock).not.toContain('color:')
+    expect(accountCardHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
     expect(accountCardHoverBlock).not.toContain('var(--atelier-paper)')
     expect(accountCardHoverBlock).not.toContain('var(--codex-accent-soft)')
     expect(accountCardHoverBlock).not.toContain('rgba(0, 47, 167, 0.5)')

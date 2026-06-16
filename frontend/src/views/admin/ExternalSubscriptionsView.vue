@@ -1074,6 +1074,7 @@ onBeforeUnmount(() => {
 
 .external-subscription-card:hover {
   background: var(--creepee-prompt-card-hover-surface);
+  background-color: var(--creepee-prompt-card-hover-surface);
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
   transform: translateY(-2px);
 }

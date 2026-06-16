@@ -1728,6 +1728,14 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   background: var(--atelier-paper);
 }
 
+#creepee-ai-sidecar.ai-search-sidecar,
+#creepee-ai-sidecar.ai-search-sidecar .ai-search-panel,
+#creepee-ai-sidecar.ai-search-sidecar .ai-search-bridge-frame {
+  border: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
 @media (max-width: 560px) {
   .ai-search-trigger-label {
     display: none;
@@ -3910,6 +3918,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   transform: translate3d(0, -2px, 0);
   background: var(--creepee-prompt-card-hover-surface) !important;
+  background-color: var(--creepee-prompt-card-hover-surface) !important;
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
 }
 
@@ -8355,11 +8364,13 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
   transform: translateY(-2px) !important;
   background: var(--creepee-prompt-card-hover-surface) !important;
+  background-color: var(--creepee-prompt-card-hover-surface) !important;
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   transform: translate3d(0, -2px, 0) !important;
   background: var(--creepee-prompt-card-hover-surface) !important;
+  background-color: var(--creepee-prompt-card-hover-surface) !important;
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
 }
