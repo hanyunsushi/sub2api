@@ -11,6 +11,24 @@ const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../
 const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
+const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
+const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
+
+const cssBlock = (content: string, selector: string): string => {
+  const start = content.indexOf(`${selector} {`)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const end = content.indexOf('\n}', start)
+  expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
+  return content.slice(start, end + 2)
+}
+
+const lastCssBlock = (content: string, selector: string): { block: string; start: number } => {
+  const start = content.lastIndexOf(`${selector} {`)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const end = content.indexOf('\n}', start)
+  expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
+  return { block: content.slice(start, end + 2), start }
+}
 
 describe('AccountsView external quota card metadata', () => {
   it('loads generic external subscription quota summaries for matching account cards', () => {
@@ -218,5 +236,43 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)')
     expect(source).toContain('return graceUntil > accountCallingNow.value')
     expect(source).toContain('watch(')
+  })
+
+  it('matches the Creepee prompt-card hover treatment on admin account table cards', () => {
+    const accountRowHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
+    )
+    const globalHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    )
+    const tableResetIndex = styleSource.indexOf(
+      '#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover'
+    )
+    const finalAccountRowHover = lastCssBlock(
+      styleSource,
+      '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
+    )
+
+    expect(accountRowHoverBlock).toContain('transform: translate3d(0, -2px, 0);')
+    expect(accountRowHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
+    expect(accountRowHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(accountRowHoverBlock).not.toContain('border-color')
+    expect(accountRowHoverBlock).not.toContain('color:')
+    expect(accountRowHoverBlock).not.toContain('var(--atelier-paper)')
+    expect(globalHoverBlock).toContain('.accounts-table-page .table-wrapper tbody tr')
+    expect(globalHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
+    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(globalHoverBlock).not.toContain('border-color')
+    expect(globalHoverBlock).not.toContain('color:')
+    expect(globalHoverBlock).not.toContain('var(--atelier-paper)')
+    expect(styleSource).toContain('--creepee-prompt-card-hover-surface: #faf9f5;')
+    expect(finalAccountRowHover.start).toBeGreaterThan(tableResetIndex)
+    expect(finalAccountRowHover.block).toContain('transform: translate3d(0, -2px, 0) !important;')
+    expect(finalAccountRowHover.block).toContain(`background: ${creepeeHoverSurface} !important;`)
+    expect(finalAccountRowHover.block).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(finalAccountRowHover.block).not.toContain('border-color')
+    expect(finalAccountRowHover.block).not.toContain('color:')
   })
 })

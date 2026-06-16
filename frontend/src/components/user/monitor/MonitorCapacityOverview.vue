@@ -471,7 +471,6 @@ function formatBalance(value: number) {
   transition:
     transform 0.16s ease,
     background 0.16s ease,
-    border-color 0.16s ease,
     box-shadow 0.16s ease;
 }
 
@@ -485,8 +484,7 @@ function formatBalance(value: number) {
 
 .monitor-capacity-card:hover {
   transform: translateY(-2px);
-  background: var(--atelier-paper);
-  border-color: var(--atelier-material-edge-strong);
+  background: var(--creepee-prompt-card-hover-surface);
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
 }
 

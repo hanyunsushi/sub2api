@@ -6,6 +6,8 @@ const componentSource = readFileSync(resolve(__dirname, '../CodexAccounts.vue'),
 const codexThemeSource = readFileSync(resolve(__dirname, '../../../styles/codex-theme.css'), 'utf8')
 const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
 const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
+const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
+const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
 
 const getCssBlock = (selector: string) => {
   const start = codexThemeSource.indexOf(`${selector} {`)
@@ -57,13 +59,20 @@ describe('CodexAccounts source contracts', () => {
   })
 
   it('matches the Creepee prompt-card hover treatment on account cards', () => {
-    const accountCardHoverBlock = getCssBlock('.codex-account-card:hover,\n.codex-account-card.is-selected')
+    const accountCardHoverBlock = getCssBlock('.codex-account-card:hover')
+    const selectedBlock = getCssBlock('.codex-account-card.is-selected')
 
     expect(accountCardHoverBlock).toContain('transform: translateY(-2px);')
-    expect(accountCardHoverBlock).toContain('background: var(--atelier-paper);')
-    expect(accountCardHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;')
+    expect(accountCardHoverBlock).toContain(`background: ${creepeeHoverSurface};`)
+    expect(accountCardHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(accountCardHoverBlock).not.toContain('border-color')
+    expect(accountCardHoverBlock).not.toContain('color:')
+    expect(accountCardHoverBlock).not.toContain('var(--atelier-paper)')
     expect(accountCardHoverBlock).not.toContain('var(--codex-accent-soft)')
     expect(accountCardHoverBlock).not.toContain('rgba(0, 47, 167, 0.5)')
+    expect(selectedBlock).not.toContain('transform:')
+    expect(selectedBlock).not.toContain('background: var(--atelier-paper)')
+    expect(selectedBlock).not.toContain(creepeeHoverShadow)
   })
 
   it('does not add a fixed module scrollbar to the CPA account management shell', () => {

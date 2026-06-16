@@ -422,7 +422,7 @@
   background: var(--material-card-surface);
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
   padding: clamp(10px, 2.4cqi, 14px);
-  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+  transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .dark .codex-account-card {
@@ -430,12 +430,14 @@
   box-shadow: 0 10px 24px -22px var(--material-card-shadow);
 }
 
-.codex-account-card:hover,
-.codex-account-card.is-selected {
+.codex-account-card:hover {
   transform: translateY(-2px);
-  border-color: var(--codex-border-strong);
-  background: var(--atelier-paper);
+  background: var(--creepee-prompt-card-hover-surface);
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
+}
+
+.codex-account-card.is-selected {
+  border-color: var(--codex-border-strong);
 }
 
 .codex-account-card.is-checked {

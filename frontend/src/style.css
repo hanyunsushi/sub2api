@@ -4,6 +4,7 @@
 
 :root {
   --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
+  --creepee-prompt-card-hover-surface: #faf9f5;
 }
 
 /* Newspaper appearance theme */
@@ -1631,9 +1632,9 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   align-items: stretch;
   width: var(--ai-search-sidecar-width);
   min-width: 34.25rem;
-  border-left: 1px solid rgba(23, 21, 18, 0.18);
   background: var(--atelier-paper);
   box-shadow: none;
+  filter: none;
   contain: layout paint style;
   opacity: 0;
   pointer-events: none;
@@ -1660,7 +1661,6 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   left: 0;
   width: 100vw;
   min-width: 0;
-  border-left: 0;
 }
 
 .ai-search-panel {
@@ -1674,6 +1674,7 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   background: var(--atelier-paper);
   color: var(--atelier-ink);
   box-shadow: none;
+  filter: none;
   overflow: hidden;
   outline: none;
 }
@@ -3903,13 +3904,13 @@ body:has(.table-page-layout) :where(
   padding: 0.56rem;
   content-visibility: auto;
   contain-intrinsic-size: 9.5rem 20rem;
-  transition: transform 0.22s var(--atelier-ease), box-shadow 0.22s var(--atelier-ease);
+  transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   transform: translate3d(0, -2px, 0);
-  background: var(--atelier-paper-2) !important;
-  box-shadow: 0 16px 34px -26px rgba(23, 21, 18, 0.44);
+  background: var(--creepee-prompt-card-hover-surface) !important;
+  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr.codex-account-card-calling {
@@ -8343,19 +8344,22 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 /* Creepee prompt-card hover parity for selectable account/status/subscription cards. */
-#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card) {
+#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr) {
   transition:
     transform 0.16s ease,
     background 0.16s ease,
     background-color 0.16s ease,
-    border-color 0.16s ease,
     box-shadow 0.16s ease !important;
 }
 
-#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card):hover {
+#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
   transform: translateY(-2px) !important;
-  border-color: var(--atelier-material-edge-strong) !important;
-  background: var(--atelier-paper) !important;
-  color: var(--atelier-ink) !important;
+  background: var(--creepee-prompt-card-hover-surface) !important;
+  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  transform: translate3d(0, -2px, 0) !important;
+  background: var(--creepee-prompt-card-hover-surface) !important;
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
 }
