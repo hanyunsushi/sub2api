@@ -107,36 +107,8 @@ func RegisterAdminRoutes(
 		// Codex / CPA 管理
 		registerCodexMetadataRoutes(admin, h)
 
-		// BuzzAI 余额
-		registerBuzzBalanceRoutes(admin, h)
-
 		// 外部订阅展示配置
 		registerExternalSubscriptionRoutes(admin, h)
-
-		// TCDMX 订阅额度
-		registerTCDMXSubscriptionRoutes(admin, h)
-
-		// qlhazycoder 订阅额度
-		registerQLHazyCoderSubscriptionRoutes(admin, h)
-
-		// XHYAPI 订阅额度
-		registerXHYAPISubscriptionRoutes(admin, h)
-
-		// Pixel 订阅额度
-		registerPixelSubscriptionRoutes(admin, h)
-
-		// liust 订阅额度
-		registerLiustSubscriptionRoutes(admin, h)
-
-		// PackyCode 订阅额度
-		registerPackyCodeSubscriptionRoutes(admin, h)
-	}
-}
-
-func registerBuzzBalanceRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	buzz := admin.Group("/buzz")
-	{
-		buzz.GET("/balance", h.Admin.BuzzBalance.GetBalance)
 	}
 }
 
@@ -151,48 +123,6 @@ func registerExternalSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handl
 		externalSubscriptions.PUT("/account-quota-progress-settings", h.Admin.ExternalSubscription.UpdateAccountQuotaProgressSettings)
 		externalSubscriptions.PUT("/:id", h.Admin.ExternalSubscription.UpdateProvider)
 		externalSubscriptions.DELETE("/:id", h.Admin.ExternalSubscription.DeleteProvider)
-	}
-}
-
-func registerTCDMXSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	tcdmx := admin.Group("/tcdmx")
-	{
-		tcdmx.GET("/subscription", h.Admin.TCDMXSubscription.GetStatus)
-	}
-}
-
-func registerQLHazyCoderSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	qlhazycoder := admin.Group("/qlhazycoder")
-	{
-		qlhazycoder.GET("/subscription", h.Admin.QLHazyCoderSubscription.GetStatus)
-	}
-}
-
-func registerXHYAPISubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	xhyapi := admin.Group("/xhyapi")
-	{
-		xhyapi.GET("/subscription", h.Admin.XHYAPISubscription.GetStatus)
-	}
-}
-
-func registerPixelSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	pixel := admin.Group("/pixel")
-	{
-		pixel.GET("/subscription", h.Admin.PixelSubscription.GetStatus)
-	}
-}
-
-func registerLiustSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	liust := admin.Group("/liust")
-	{
-		liust.GET("/subscription", h.Admin.LiustSubscription.GetStatus)
-	}
-}
-
-func registerPackyCodeSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
-	packycode := admin.Group("/packycode")
-	{
-		packycode.GET("/subscription", h.Admin.PackyCodeSubscription.GetStatus)
 	}
 }
 

@@ -7,6 +7,14 @@ const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : ''
 const stylePath = resolve(__dirname, '../../../style.css')
 const styleSource = existsSync(stylePath) ? readFileSync(stylePath, 'utf8') : ''
 
+const cssBlock = (content: string, selector: string): string => {
+  const start = content.indexOf(`${selector} {`)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const end = content.indexOf('\n}', start)
+  expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
+  return content.slice(start, end + 2)
+}
+
 describe('ExternalSubscriptionsView source', () => {
   it('is a standalone admin settings subpage backed by the generic external subscriptions API', () => {
     expect(source).toContain('<AppLayout>')
@@ -97,6 +105,21 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('min-height: 13.75rem;')
     expect(source).not.toContain('padding: 1rem;')
     expect(source).not.toContain('grid gap-4 md:grid-cols-2 xl:grid-cols-3')
+  })
+
+  it('matches the Creepee prompt-card hover treatment on external subscription cards', () => {
+    const localHoverBlock = cssBlock(source, '.external-subscription-card:hover')
+    const globalHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card):hover'
+    )
+
+    expect(localHoverBlock).toContain('transform: translateY(-2px);')
+    expect(localHoverBlock).toContain('background: var(--atelier-paper);')
+    expect(localHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;')
+    expect(localHoverBlock).not.toContain('var(--atelier-material-shadow)')
+    expect(globalHoverBlock).toContain('transform: translateY(-2px) !important;')
+    expect(globalHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

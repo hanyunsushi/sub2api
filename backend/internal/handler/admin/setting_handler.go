@@ -270,37 +270,6 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		BalanceLowNotifyEnabled:                settings.BalanceLowNotifyEnabled,
 		BalanceLowNotifyThreshold:              settings.BalanceLowNotifyThreshold,
 		BalanceLowNotifyRechargeURL:            settings.BalanceLowNotifyRechargeURL,
-		BuzzBalanceEnabled:                     settings.BuzzBalanceEnabled,
-		BuzzBalanceAPIBaseURL:                  settings.BuzzBalanceAPIBaseURL,
-		BuzzBalanceAPITokenConfigured:          settings.BuzzBalanceAPITokenConfigured,
-		TCDMXSubscriptionEnabled:               settings.TCDMXSubscriptionEnabled,
-		TCDMXSubscriptionAPIBaseURL:            settings.TCDMXSubscriptionAPIBaseURL,
-		TCDMXSubscriptionAPITokenConfigured:    settings.TCDMXSubscriptionAPITokenConfigured,
-		TCDMXSubscriptionRefreshConfigured:     settings.TCDMXSubscriptionRefreshConfigured,
-		QLHazyCoderSubscriptionEnabled:         settings.QLHazyCoderSubscriptionEnabled,
-		QLHazyCoderSubscriptionAPIBaseURL:      settings.QLHazyCoderSubscriptionAPIBaseURL,
-		QLHazyCoderSubscriptionUserID:          settings.QLHazyCoderSubscriptionUserID,
-		QLHazyCoderAPITokenConfigured:          settings.QLHazyCoderSubscriptionAPITokenConfigured,
-		QLHazyCoderRefreshConfigured:           settings.QLHazyCoderSubscriptionRefreshConfigured,
-		XHYAPISubscriptionEnabled:              settings.XHYAPISubscriptionEnabled,
-		XHYAPISubscriptionAPIBaseURL:           settings.XHYAPISubscriptionAPIBaseURL,
-		XHYAPISubscriptionUserID:               settings.XHYAPISubscriptionUserID,
-		XHYAPISubscriptionAPITokenConfigured:   settings.XHYAPISubscriptionAPITokenConfigured,
-		XHYAPISubscriptionRefreshConfigured:    settings.XHYAPISubscriptionRefreshConfigured,
-		PixelSubscriptionEnabled:               settings.PixelSubscriptionEnabled,
-		PixelSubscriptionAPIBaseURL:            settings.PixelSubscriptionAPIBaseURL,
-		PixelSubscriptionAPITokenConfigured:    settings.PixelSubscriptionAPITokenConfigured,
-		PixelSubscriptionRefreshConfigured:     settings.PixelSubscriptionRefreshConfigured,
-		LiustSubscriptionEnabled:               settings.LiustSubscriptionEnabled,
-		LiustSubscriptionAPIBaseURL:            settings.LiustSubscriptionAPIBaseURL,
-		LiustSubscriptionUserID:                settings.LiustSubscriptionUserID,
-		LiustSubscriptionAPITokenConfigured:    settings.LiustSubscriptionAPITokenConfigured,
-		LiustSubscriptionRefreshConfigured:     settings.LiustSubscriptionRefreshConfigured,
-		PackyCodeSubscriptionEnabled:           settings.PackyCodeSubscriptionEnabled,
-		PackyCodeSubscriptionAPIBaseURL:        settings.PackyCodeSubscriptionAPIBaseURL,
-		PackyCodeSubscriptionUserID:            settings.PackyCodeSubscriptionUserID,
-		PackyCodeAPITokenConfigured:            settings.PackyCodeSubscriptionAPITokenConfigured,
-		PackyCodeRefreshConfigured:             settings.PackyCodeSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        settings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              settings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(settings.AccountQuotaNotifyEmails),
@@ -640,43 +609,12 @@ type UpdateSettingsRequest struct {
 	OpenAIAdvancedSchedulerEnabled *bool `json:"openai_advanced_scheduler_enabled"`
 
 	// 余额、订阅到期与账号限额通知
-	BalanceLowNotifyEnabled             *bool                   `json:"balance_low_notify_enabled"`
-	BalanceLowNotifyThreshold           *float64                `json:"balance_low_notify_threshold"`
-	BalanceLowNotifyRechargeURL         *string                 `json:"balance_low_notify_recharge_url"`
-	BuzzBalanceEnabled                  *bool                   `json:"buzz_balance_enabled"`
-	BuzzBalanceAPIBaseURL               *string                 `json:"buzz_balance_api_base_url"`
-	BuzzBalanceAPIToken                 string                  `json:"buzz_balance_api_token"`
-	TCDMXSubscriptionEnabled            *bool                   `json:"tcdmx_subscription_enabled"`
-	TCDMXSubscriptionAPIBaseURL         *string                 `json:"tcdmx_subscription_api_base_url"`
-	TCDMXSubscriptionAPIToken           string                  `json:"tcdmx_subscription_api_token"`
-	TCDMXSubscriptionRefreshToken       string                  `json:"tcdmx_subscription_refresh_token"`
-	QLHazyCoderSubscriptionEnabled      *bool                   `json:"qlhazycoder_subscription_enabled"`
-	QLHazyCoderSubscriptionAPIBaseURL   *string                 `json:"qlhazycoder_subscription_api_base_url"`
-	QLHazyCoderSubscriptionAPIToken     string                  `json:"qlhazycoder_subscription_api_token"`
-	QLHazyCoderSubscriptionUserID       *string                 `json:"qlhazycoder_subscription_user_id"`
-	QLHazyCoderSubscriptionRefreshToken string                  `json:"qlhazycoder_subscription_refresh_token"`
-	XHYAPISubscriptionEnabled           *bool                   `json:"xhyapi_subscription_enabled"`
-	XHYAPISubscriptionAPIBaseURL        *string                 `json:"xhyapi_subscription_api_base_url"`
-	XHYAPISubscriptionAPIToken          string                  `json:"xhyapi_subscription_api_token"`
-	XHYAPISubscriptionUserID            *string                 `json:"xhyapi_subscription_user_id"`
-	XHYAPISubscriptionRefreshToken      string                  `json:"xhyapi_subscription_refresh_token"`
-	PixelSubscriptionEnabled            *bool                   `json:"pixel_subscription_enabled"`
-	PixelSubscriptionAPIBaseURL         *string                 `json:"pixel_subscription_api_base_url"`
-	PixelSubscriptionAPIToken           string                  `json:"pixel_subscription_api_token"`
-	PixelSubscriptionRefreshToken       string                  `json:"pixel_subscription_refresh_token"`
-	LiustSubscriptionEnabled            *bool                   `json:"liust_subscription_enabled"`
-	LiustSubscriptionAPIBaseURL         *string                 `json:"liust_subscription_api_base_url"`
-	LiustSubscriptionAPIToken           string                  `json:"liust_subscription_api_token"`
-	LiustSubscriptionUserID             *string                 `json:"liust_subscription_user_id"`
-	LiustSubscriptionRefreshToken       string                  `json:"liust_subscription_refresh_token"`
-	PackyCodeSubscriptionEnabled        *bool                   `json:"packycode_subscription_enabled"`
-	PackyCodeSubscriptionAPIBaseURL     *string                 `json:"packycode_subscription_api_base_url"`
-	PackyCodeSubscriptionAPIToken       string                  `json:"packycode_subscription_api_token"`
-	PackyCodeSubscriptionUserID         *string                 `json:"packycode_subscription_user_id"`
-	PackyCodeSubscriptionRefreshToken   string                  `json:"packycode_subscription_refresh_token"`
-	SubscriptionExpiryNotifyEnabled     *bool                   `json:"subscription_expiry_notify_enabled"`
-	AccountQuotaNotifyEnabled           *bool                   `json:"account_quota_notify_enabled"`
-	AccountQuotaNotifyEmails            *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
+	BalanceLowNotifyEnabled         *bool                   `json:"balance_low_notify_enabled"`
+	BalanceLowNotifyThreshold       *float64                `json:"balance_low_notify_threshold"`
+	BalanceLowNotifyRechargeURL     *string                 `json:"balance_low_notify_recharge_url"`
+	SubscriptionExpiryNotifyEnabled *bool                   `json:"subscription_expiry_notify_enabled"`
+	AccountQuotaNotifyEnabled       *bool                   `json:"account_quota_notify_enabled"`
+	AccountQuotaNotifyEmails        *[]dto.NotifyEmailEntry `json:"account_quota_notify_emails"`
 
 	// Payment configuration (integrated into settings, full replace)
 	PaymentEnabled                   *bool    `json:"payment_enabled"`
@@ -1570,63 +1508,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			return
 		}
 	}
-	if req.BuzzBalanceAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.BuzzBalanceAPIBaseURL)
-		req.BuzzBalanceAPIBaseURL = &normalized
-	}
-	req.BuzzBalanceAPIToken = strings.TrimSpace(req.BuzzBalanceAPIToken)
-	if req.TCDMXSubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.TCDMXSubscriptionAPIBaseURL)
-		req.TCDMXSubscriptionAPIBaseURL = &normalized
-	}
-	req.TCDMXSubscriptionAPIToken = strings.TrimSpace(req.TCDMXSubscriptionAPIToken)
-	req.TCDMXSubscriptionRefreshToken = strings.TrimSpace(req.TCDMXSubscriptionRefreshToken)
-	if req.QLHazyCoderSubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.QLHazyCoderSubscriptionAPIBaseURL)
-		req.QLHazyCoderSubscriptionAPIBaseURL = &normalized
-	}
-	req.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(req.QLHazyCoderSubscriptionAPIToken)
-	if req.QLHazyCoderSubscriptionUserID != nil {
-		normalized := strings.TrimSpace(*req.QLHazyCoderSubscriptionUserID)
-		req.QLHazyCoderSubscriptionUserID = &normalized
-	}
-	req.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(req.QLHazyCoderSubscriptionRefreshToken)
-	if req.XHYAPISubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.XHYAPISubscriptionAPIBaseURL)
-		req.XHYAPISubscriptionAPIBaseURL = &normalized
-	}
-	req.XHYAPISubscriptionAPIToken = strings.TrimSpace(req.XHYAPISubscriptionAPIToken)
-	if req.XHYAPISubscriptionUserID != nil {
-		normalized := strings.TrimSpace(*req.XHYAPISubscriptionUserID)
-		req.XHYAPISubscriptionUserID = &normalized
-	}
-	req.XHYAPISubscriptionRefreshToken = strings.TrimSpace(req.XHYAPISubscriptionRefreshToken)
-	if req.PixelSubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.PixelSubscriptionAPIBaseURL)
-		req.PixelSubscriptionAPIBaseURL = &normalized
-	}
-	req.PixelSubscriptionAPIToken = strings.TrimSpace(req.PixelSubscriptionAPIToken)
-	req.PixelSubscriptionRefreshToken = strings.TrimSpace(req.PixelSubscriptionRefreshToken)
-	if req.LiustSubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.LiustSubscriptionAPIBaseURL)
-		req.LiustSubscriptionAPIBaseURL = &normalized
-	}
-	req.LiustSubscriptionAPIToken = strings.TrimSpace(req.LiustSubscriptionAPIToken)
-	if req.LiustSubscriptionUserID != nil {
-		normalized := strings.TrimSpace(*req.LiustSubscriptionUserID)
-		req.LiustSubscriptionUserID = &normalized
-	}
-	req.LiustSubscriptionRefreshToken = strings.TrimSpace(req.LiustSubscriptionRefreshToken)
-	if req.PackyCodeSubscriptionAPIBaseURL != nil {
-		normalized := strings.TrimSpace(*req.PackyCodeSubscriptionAPIBaseURL)
-		req.PackyCodeSubscriptionAPIBaseURL = &normalized
-	}
-	req.PackyCodeSubscriptionAPIToken = strings.TrimSpace(req.PackyCodeSubscriptionAPIToken)
-	if req.PackyCodeSubscriptionUserID != nil {
-		normalized := strings.TrimSpace(*req.PackyCodeSubscriptionUserID)
-		req.PackyCodeSubscriptionUserID = &normalized
-	}
-	req.PackyCodeSubscriptionRefreshToken = strings.TrimSpace(req.PackyCodeSubscriptionRefreshToken)
 	if req.OpenAICodexUserAgent != nil {
 		normalized := strings.TrimSpace(*req.OpenAICodexUserAgent)
 		req.OpenAICodexUserAgent = &normalized
@@ -1908,127 +1789,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.BalanceLowNotifyRechargeURL
 		}(),
-		BuzzBalanceEnabled: func() bool {
-			if req.BuzzBalanceEnabled != nil {
-				return *req.BuzzBalanceEnabled
-			}
-			return previousSettings.BuzzBalanceEnabled
-		}(),
-		BuzzBalanceAPIBaseURL: func() string {
-			if req.BuzzBalanceAPIBaseURL != nil {
-				return *req.BuzzBalanceAPIBaseURL
-			}
-			return previousSettings.BuzzBalanceAPIBaseURL
-		}(),
-		BuzzBalanceAPIToken: req.BuzzBalanceAPIToken,
-		TCDMXSubscriptionEnabled: func() bool {
-			if req.TCDMXSubscriptionEnabled != nil {
-				return *req.TCDMXSubscriptionEnabled
-			}
-			return previousSettings.TCDMXSubscriptionEnabled
-		}(),
-		TCDMXSubscriptionAPIBaseURL: func() string {
-			if req.TCDMXSubscriptionAPIBaseURL != nil {
-				return *req.TCDMXSubscriptionAPIBaseURL
-			}
-			return previousSettings.TCDMXSubscriptionAPIBaseURL
-		}(),
-		TCDMXSubscriptionAPIToken:     req.TCDMXSubscriptionAPIToken,
-		TCDMXSubscriptionRefreshToken: req.TCDMXSubscriptionRefreshToken,
-		QLHazyCoderSubscriptionEnabled: func() bool {
-			if req.QLHazyCoderSubscriptionEnabled != nil {
-				return *req.QLHazyCoderSubscriptionEnabled
-			}
-			return previousSettings.QLHazyCoderSubscriptionEnabled
-		}(),
-		QLHazyCoderSubscriptionAPIBaseURL: func() string {
-			if req.QLHazyCoderSubscriptionAPIBaseURL != nil {
-				return *req.QLHazyCoderSubscriptionAPIBaseURL
-			}
-			return previousSettings.QLHazyCoderSubscriptionAPIBaseURL
-		}(),
-		QLHazyCoderSubscriptionAPIToken: req.QLHazyCoderSubscriptionAPIToken,
-		QLHazyCoderSubscriptionUserID: func() string {
-			if req.QLHazyCoderSubscriptionUserID != nil {
-				return *req.QLHazyCoderSubscriptionUserID
-			}
-			return previousSettings.QLHazyCoderSubscriptionUserID
-		}(),
-		QLHazyCoderSubscriptionRefreshToken: req.QLHazyCoderSubscriptionRefreshToken,
-		XHYAPISubscriptionEnabled: func() bool {
-			if req.XHYAPISubscriptionEnabled != nil {
-				return *req.XHYAPISubscriptionEnabled
-			}
-			return previousSettings.XHYAPISubscriptionEnabled
-		}(),
-		XHYAPISubscriptionAPIBaseURL: func() string {
-			if req.XHYAPISubscriptionAPIBaseURL != nil {
-				return *req.XHYAPISubscriptionAPIBaseURL
-			}
-			return previousSettings.XHYAPISubscriptionAPIBaseURL
-		}(),
-		XHYAPISubscriptionAPIToken: req.XHYAPISubscriptionAPIToken,
-		XHYAPISubscriptionUserID: func() string {
-			if req.XHYAPISubscriptionUserID != nil {
-				return *req.XHYAPISubscriptionUserID
-			}
-			return previousSettings.XHYAPISubscriptionUserID
-		}(),
-		XHYAPISubscriptionRefreshToken: req.XHYAPISubscriptionRefreshToken,
-		PixelSubscriptionEnabled: func() bool {
-			if req.PixelSubscriptionEnabled != nil {
-				return *req.PixelSubscriptionEnabled
-			}
-			return previousSettings.PixelSubscriptionEnabled
-		}(),
-		PixelSubscriptionAPIBaseURL: func() string {
-			if req.PixelSubscriptionAPIBaseURL != nil {
-				return *req.PixelSubscriptionAPIBaseURL
-			}
-			return previousSettings.PixelSubscriptionAPIBaseURL
-		}(),
-		PixelSubscriptionAPIToken:     req.PixelSubscriptionAPIToken,
-		PixelSubscriptionRefreshToken: req.PixelSubscriptionRefreshToken,
-		LiustSubscriptionEnabled: func() bool {
-			if req.LiustSubscriptionEnabled != nil {
-				return *req.LiustSubscriptionEnabled
-			}
-			return previousSettings.LiustSubscriptionEnabled
-		}(),
-		LiustSubscriptionAPIBaseURL: func() string {
-			if req.LiustSubscriptionAPIBaseURL != nil {
-				return *req.LiustSubscriptionAPIBaseURL
-			}
-			return previousSettings.LiustSubscriptionAPIBaseURL
-		}(),
-		LiustSubscriptionAPIToken: req.LiustSubscriptionAPIToken,
-		LiustSubscriptionUserID: func() string {
-			if req.LiustSubscriptionUserID != nil {
-				return *req.LiustSubscriptionUserID
-			}
-			return previousSettings.LiustSubscriptionUserID
-		}(),
-		LiustSubscriptionRefreshToken: req.LiustSubscriptionRefreshToken,
-		PackyCodeSubscriptionEnabled: func() bool {
-			if req.PackyCodeSubscriptionEnabled != nil {
-				return *req.PackyCodeSubscriptionEnabled
-			}
-			return previousSettings.PackyCodeSubscriptionEnabled
-		}(),
-		PackyCodeSubscriptionAPIBaseURL: func() string {
-			if req.PackyCodeSubscriptionAPIBaseURL != nil {
-				return *req.PackyCodeSubscriptionAPIBaseURL
-			}
-			return previousSettings.PackyCodeSubscriptionAPIBaseURL
-		}(),
-		PackyCodeSubscriptionAPIToken: req.PackyCodeSubscriptionAPIToken,
-		PackyCodeSubscriptionUserID: func() string {
-			if req.PackyCodeSubscriptionUserID != nil {
-				return *req.PackyCodeSubscriptionUserID
-			}
-			return previousSettings.PackyCodeSubscriptionUserID
-		}(),
-		PackyCodeSubscriptionRefreshToken: req.PackyCodeSubscriptionRefreshToken,
 		SubscriptionExpiryNotifyEnabled: func() bool {
 			if req.SubscriptionExpiryNotifyEnabled != nil {
 				return *req.SubscriptionExpiryNotifyEnabled
@@ -2382,37 +2142,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		BalanceLowNotifyEnabled:                updatedSettings.BalanceLowNotifyEnabled,
 		BalanceLowNotifyThreshold:              updatedSettings.BalanceLowNotifyThreshold,
 		BalanceLowNotifyRechargeURL:            updatedSettings.BalanceLowNotifyRechargeURL,
-		BuzzBalanceEnabled:                     updatedSettings.BuzzBalanceEnabled,
-		BuzzBalanceAPIBaseURL:                  updatedSettings.BuzzBalanceAPIBaseURL,
-		BuzzBalanceAPITokenConfigured:          updatedSettings.BuzzBalanceAPITokenConfigured,
-		TCDMXSubscriptionEnabled:               updatedSettings.TCDMXSubscriptionEnabled,
-		TCDMXSubscriptionAPIBaseURL:            updatedSettings.TCDMXSubscriptionAPIBaseURL,
-		TCDMXSubscriptionAPITokenConfigured:    updatedSettings.TCDMXSubscriptionAPITokenConfigured,
-		TCDMXSubscriptionRefreshConfigured:     updatedSettings.TCDMXSubscriptionRefreshConfigured,
-		QLHazyCoderSubscriptionEnabled:         updatedSettings.QLHazyCoderSubscriptionEnabled,
-		QLHazyCoderSubscriptionAPIBaseURL:      updatedSettings.QLHazyCoderSubscriptionAPIBaseURL,
-		QLHazyCoderSubscriptionUserID:          updatedSettings.QLHazyCoderSubscriptionUserID,
-		QLHazyCoderAPITokenConfigured:          updatedSettings.QLHazyCoderSubscriptionAPITokenConfigured,
-		QLHazyCoderRefreshConfigured:           updatedSettings.QLHazyCoderSubscriptionRefreshConfigured,
-		XHYAPISubscriptionEnabled:              updatedSettings.XHYAPISubscriptionEnabled,
-		XHYAPISubscriptionAPIBaseURL:           updatedSettings.XHYAPISubscriptionAPIBaseURL,
-		XHYAPISubscriptionUserID:               updatedSettings.XHYAPISubscriptionUserID,
-		XHYAPISubscriptionAPITokenConfigured:   updatedSettings.XHYAPISubscriptionAPITokenConfigured,
-		XHYAPISubscriptionRefreshConfigured:    updatedSettings.XHYAPISubscriptionRefreshConfigured,
-		PixelSubscriptionEnabled:               updatedSettings.PixelSubscriptionEnabled,
-		PixelSubscriptionAPIBaseURL:            updatedSettings.PixelSubscriptionAPIBaseURL,
-		PixelSubscriptionAPITokenConfigured:    updatedSettings.PixelSubscriptionAPITokenConfigured,
-		PixelSubscriptionRefreshConfigured:     updatedSettings.PixelSubscriptionRefreshConfigured,
-		LiustSubscriptionEnabled:               updatedSettings.LiustSubscriptionEnabled,
-		LiustSubscriptionAPIBaseURL:            updatedSettings.LiustSubscriptionAPIBaseURL,
-		LiustSubscriptionUserID:                updatedSettings.LiustSubscriptionUserID,
-		LiustSubscriptionAPITokenConfigured:    updatedSettings.LiustSubscriptionAPITokenConfigured,
-		LiustSubscriptionRefreshConfigured:     updatedSettings.LiustSubscriptionRefreshConfigured,
-		PackyCodeSubscriptionEnabled:           updatedSettings.PackyCodeSubscriptionEnabled,
-		PackyCodeSubscriptionAPIBaseURL:        updatedSettings.PackyCodeSubscriptionAPIBaseURL,
-		PackyCodeSubscriptionUserID:            updatedSettings.PackyCodeSubscriptionUserID,
-		PackyCodeAPITokenConfigured:            updatedSettings.PackyCodeSubscriptionAPITokenConfigured,
-		PackyCodeRefreshConfigured:             updatedSettings.PackyCodeSubscriptionRefreshConfigured,
 		SubscriptionExpiryNotifyEnabled:        updatedSettings.SubscriptionExpiryNotifyEnabled,
 		AccountQuotaNotifyEnabled:              updatedSettings.AccountQuotaNotifyEnabled,
 		AccountQuotaNotifyEmails:               dto.NotifyEmailEntriesFromService(updatedSettings.AccountQuotaNotifyEmails),
@@ -2904,99 +2633,6 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.BalanceLowNotifyRechargeURL != after.BalanceLowNotifyRechargeURL {
 		changed = append(changed, "balance_low_notify_recharge_url")
-	}
-	if before.BuzzBalanceEnabled != after.BuzzBalanceEnabled {
-		changed = append(changed, "buzz_balance_enabled")
-	}
-	if before.BuzzBalanceAPIBaseURL != after.BuzzBalanceAPIBaseURL {
-		changed = append(changed, "buzz_balance_api_base_url")
-	}
-	if req.BuzzBalanceAPIToken != "" {
-		changed = append(changed, "buzz_balance_api_token")
-	}
-	if before.TCDMXSubscriptionEnabled != after.TCDMXSubscriptionEnabled {
-		changed = append(changed, "tcdmx_subscription_enabled")
-	}
-	if before.TCDMXSubscriptionAPIBaseURL != after.TCDMXSubscriptionAPIBaseURL {
-		changed = append(changed, "tcdmx_subscription_api_base_url")
-	}
-	if req.TCDMXSubscriptionAPIToken != "" {
-		changed = append(changed, "tcdmx_subscription_api_token")
-	}
-	if req.TCDMXSubscriptionRefreshToken != "" {
-		changed = append(changed, "tcdmx_subscription_refresh_token")
-	}
-	if before.QLHazyCoderSubscriptionEnabled != after.QLHazyCoderSubscriptionEnabled {
-		changed = append(changed, "qlhazycoder_subscription_enabled")
-	}
-	if before.QLHazyCoderSubscriptionAPIBaseURL != after.QLHazyCoderSubscriptionAPIBaseURL {
-		changed = append(changed, "qlhazycoder_subscription_api_base_url")
-	}
-	if req.QLHazyCoderSubscriptionAPIToken != "" {
-		changed = append(changed, "qlhazycoder_subscription_api_token")
-	}
-	if before.QLHazyCoderSubscriptionUserID != after.QLHazyCoderSubscriptionUserID {
-		changed = append(changed, "qlhazycoder_subscription_user_id")
-	}
-	if req.QLHazyCoderSubscriptionRefreshToken != "" {
-		changed = append(changed, "qlhazycoder_subscription_refresh_token")
-	}
-	if before.XHYAPISubscriptionEnabled != after.XHYAPISubscriptionEnabled {
-		changed = append(changed, "xhyapi_subscription_enabled")
-	}
-	if before.XHYAPISubscriptionAPIBaseURL != after.XHYAPISubscriptionAPIBaseURL {
-		changed = append(changed, "xhyapi_subscription_api_base_url")
-	}
-	if req.XHYAPISubscriptionAPIToken != "" {
-		changed = append(changed, "xhyapi_subscription_api_token")
-	}
-	if before.XHYAPISubscriptionUserID != after.XHYAPISubscriptionUserID {
-		changed = append(changed, "xhyapi_subscription_user_id")
-	}
-	if req.XHYAPISubscriptionRefreshToken != "" {
-		changed = append(changed, "xhyapi_subscription_refresh_token")
-	}
-	if before.PixelSubscriptionEnabled != after.PixelSubscriptionEnabled {
-		changed = append(changed, "pixel_subscription_enabled")
-	}
-	if before.PixelSubscriptionAPIBaseURL != after.PixelSubscriptionAPIBaseURL {
-		changed = append(changed, "pixel_subscription_api_base_url")
-	}
-	if req.PixelSubscriptionAPIToken != "" {
-		changed = append(changed, "pixel_subscription_api_token")
-	}
-	if req.PixelSubscriptionRefreshToken != "" {
-		changed = append(changed, "pixel_subscription_refresh_token")
-	}
-	if before.LiustSubscriptionEnabled != after.LiustSubscriptionEnabled {
-		changed = append(changed, "liust_subscription_enabled")
-	}
-	if before.LiustSubscriptionAPIBaseURL != after.LiustSubscriptionAPIBaseURL {
-		changed = append(changed, "liust_subscription_api_base_url")
-	}
-	if req.LiustSubscriptionAPIToken != "" {
-		changed = append(changed, "liust_subscription_api_token")
-	}
-	if before.LiustSubscriptionUserID != after.LiustSubscriptionUserID {
-		changed = append(changed, "liust_subscription_user_id")
-	}
-	if req.LiustSubscriptionRefreshToken != "" {
-		changed = append(changed, "liust_subscription_refresh_token")
-	}
-	if before.PackyCodeSubscriptionEnabled != after.PackyCodeSubscriptionEnabled {
-		changed = append(changed, "packycode_subscription_enabled")
-	}
-	if before.PackyCodeSubscriptionAPIBaseURL != after.PackyCodeSubscriptionAPIBaseURL {
-		changed = append(changed, "packycode_subscription_api_base_url")
-	}
-	if req.PackyCodeSubscriptionAPIToken != "" {
-		changed = append(changed, "packycode_subscription_api_token")
-	}
-	if before.PackyCodeSubscriptionUserID != after.PackyCodeSubscriptionUserID {
-		changed = append(changed, "packycode_subscription_user_id")
-	}
-	if req.PackyCodeSubscriptionRefreshToken != "" {
-		changed = append(changed, "packycode_subscription_refresh_token")
 	}
 	if before.SubscriptionExpiryNotifyEnabled != after.SubscriptionExpiryNotifyEnabled {
 		changed = append(changed, "subscription_expiry_notify_enabled")

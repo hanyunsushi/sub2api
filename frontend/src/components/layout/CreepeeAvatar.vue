@@ -298,8 +298,8 @@ onBeforeUnmount(stopAnimation)
 .creepee-avatar {
   display: inline-grid;
   place-items: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--creepee-avatar-size, 1.25rem);
+  height: var(--creepee-avatar-size, 1.25rem);
   flex: 0 0 auto;
   overflow: hidden;
   border-radius: 0.25rem;

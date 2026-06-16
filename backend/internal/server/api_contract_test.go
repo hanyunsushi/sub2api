@@ -423,45 +423,147 @@ func TestAPIContracts(t *testing.T) {
 				}`,
 		},
 		{
-			name:       "GET /api/v1/admin/tcdmx/subscription disabled",
+			name:       "GET /api/v1/admin/external-subscriptions disabled",
 			method:     http.MethodGet,
-			path:       "/api/v1/admin/tcdmx/subscription",
+			path:       "/api/v1/admin/external-subscriptions",
 			wantStatus: http.StatusOK,
 			wantJSON: `{
 				"code": 0,
 				"message": "success",
-				"data": {
-					"provider": "tcdmx",
-					"enabled": false,
-					"configured": false,
-					"currency": "USD",
-					"site_url": "https://tcdmx.com",
-					"used_usd": 0,
-					"active_count": 0,
-					"subscriptions": null,
-					"refreshed_at": "0001-01-01T00:00:00Z"
-				}
-			}`,
-		},
-		{
-			name:       "GET /api/v1/admin/qlhazycoder/subscription disabled",
-			method:     http.MethodGet,
-			path:       "/api/v1/admin/qlhazycoder/subscription",
-			wantStatus: http.StatusOK,
-			wantJSON: `{
-				"code": 0,
-				"message": "success",
-				"data": {
-					"provider": "qlhazycoder",
-					"enabled": false,
-					"configured": false,
-					"currency": "CNY",
-					"site_url": "https://api.qlhazycoder.top",
-					"used_usd": 0,
-					"active_count": 0,
-					"subscriptions": [],
-					"refreshed_at": "0001-01-01T00:00:00Z"
-				}
+				"data": [
+					{
+						"id": "buzz",
+						"name": "Buzz",
+						"enabled": false,
+						"template": "buzz_balance",
+						"balance_strategy": "auto",
+						"api_base_url": "https://buzzai.cc",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["buzz", "buzzai", "buzzai.cc", "claude"],
+						"sort_order": 5
+					},
+					{
+						"id": "tcdmx",
+						"name": "TCDMX",
+						"enabled": false,
+						"template": "active_subscriptions",
+						"balance_strategy": "active_subscriptions",
+						"api_base_url": "https://tcdmx.com",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["tcdmx.com", "tcdmx"],
+						"sort_order": 10
+					},
+					{
+						"id": "qlhazycoder",
+						"name": "qlhazycoder",
+						"enabled": false,
+						"template": "newapi_console",
+						"balance_strategy": "newapi_subscription",
+						"api_base_url": "https://api.qlhazycoder.top",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["api.qlhazycoder.top", "qlhazycoder", "qlhazy"],
+						"sort_order": 20
+					},
+					{
+						"id": "xhyapi",
+						"name": "XHYAPI",
+						"enabled": false,
+						"template": "active_subscriptions",
+						"balance_strategy": "active_subscriptions",
+						"api_base_url": "https://xhyapi.com",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["xhyapi.com", "xhyapi", "xhy"],
+						"sort_order": 30
+					},
+					{
+						"id": "pixel",
+						"name": "Pixel",
+						"enabled": false,
+						"template": "active_subscriptions",
+						"balance_strategy": "auth_me_balance",
+						"api_base_url": "https://ai-pixel.online",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["ai-pixel.online", "pixel"],
+						"sort_order": 40
+					},
+					{
+						"id": "liust",
+						"name": "liust",
+						"enabled": false,
+						"template": "newapi_console",
+						"balance_strategy": "newapi_subscription",
+						"api_base_url": "https://liust.xyz",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["liust.xyz", "liust"],
+						"sort_order": 50
+					},
+					{
+						"id": "packycode",
+						"name": "PackyCode",
+						"enabled": false,
+						"template": "newapi_console",
+						"balance_strategy": "newapi_user_quota",
+						"api_base_url": "https://www.packyapi.com",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["packyapi.com", "packycode", "packy"],
+						"sort_order": 60
+					},
+					{
+						"id": "openrouter",
+						"name": "OpenRouter",
+						"enabled": false,
+						"template": "openrouter_credits",
+						"balance_strategy": "auto",
+						"api_base_url": "https://openrouter.ai",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["openrouter", "openrouter.ai"],
+						"sort_order": 70
+					},
+					{
+						"id": "cloudflare",
+						"name": "Cloudflare AI Gateway",
+						"enabled": false,
+						"template": "cloudflare_ai_gateway_credits",
+						"balance_strategy": "auto",
+						"api_base_url": "https://api.cloudflare.com/client/v4",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["cloudflare", "ai-gateway", "workers-ai"],
+						"sort_order": 80
+					},
+					{
+						"id": "rawchat",
+						"name": "RawChat",
+						"enabled": false,
+						"template": "rawchat_subscriptions",
+						"balance_strategy": "auto",
+						"api_base_url": "https://rawchat.cn",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["rawchat", "rawchat.cn"],
+						"sort_order": 90
+					},
+					{
+						"id": "mimo",
+						"name": "Xiaomi MiMo",
+						"enabled": false,
+						"template": "mimo_token_plan",
+						"balance_strategy": "auto",
+						"api_base_url": "https://platform.xiaomimimo.com",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["mimo", "xiaomi", "xiaomimimo"],
+						"sort_order": 95
+					}
+				]
 			}`,
 		},
 		{
@@ -928,37 +1030,6 @@ func TestAPIContracts(t *testing.T) {
 					"subscription_expiry_notify_enabled": true,
 						"balance_low_notify_threshold": 0,
 						"balance_low_notify_recharge_url": "",
-						"buzz_balance_enabled": false,
-						"buzz_balance_api_base_url": "https://buzzai.cc",
-						"buzz_balance_api_token_configured": false,
-						"tcdmx_subscription_enabled": false,
-						"tcdmx_subscription_api_base_url": "https://tcdmx.com",
-						"tcdmx_subscription_api_token_configured": false,
-						"tcdmx_subscription_refresh_token_configured": false,
-						"qlhazycoder_subscription_enabled": false,
-						"qlhazycoder_subscription_api_base_url": "https://api.qlhazycoder.top",
-						"qlhazycoder_subscription_api_token_configured": false,
-						"qlhazycoder_subscription_refresh_token_configured": false,
-						"qlhazycoder_subscription_user_id": "",
-						"xhyapi_subscription_enabled": false,
-						"xhyapi_subscription_api_base_url": "https://xhyapi.com",
-						"xhyapi_subscription_api_token_configured": false,
-						"xhyapi_subscription_refresh_token_configured": false,
-						"xhyapi_subscription_user_id": "",
-						"pixel_subscription_enabled": false,
-						"pixel_subscription_api_base_url": "https://ai-pixel.online",
-						"pixel_subscription_api_token_configured": false,
-						"pixel_subscription_refresh_token_configured": false,
-						"liust_subscription_enabled": false,
-						"liust_subscription_api_base_url": "https://liust.xyz",
-						"liust_subscription_api_token_configured": false,
-						"liust_subscription_refresh_token_configured": false,
-						"liust_subscription_user_id": "",
-						"packycode_subscription_enabled": false,
-						"packycode_subscription_api_base_url": "https://www.packyapi.com",
-						"packycode_subscription_api_token_configured": false,
-						"packycode_subscription_refresh_token_configured": false,
-						"packycode_subscription_user_id": "",
 						"account_quota_notify_emails": [],
 						"channel_monitor_enabled": true,
 					"channel_monitor_account_auto_schedule_enabled": false,
@@ -1201,37 +1272,6 @@ func TestAPIContracts(t *testing.T) {
 					"subscription_expiry_notify_enabled": true,
 						"balance_low_notify_threshold": 0,
 						"balance_low_notify_recharge_url": "",
-						"buzz_balance_enabled": false,
-					"buzz_balance_api_base_url": "https://buzzai.cc",
-					"buzz_balance_api_token_configured": false,
-					"tcdmx_subscription_enabled": false,
-					"tcdmx_subscription_api_base_url": "https://tcdmx.com",
-					"tcdmx_subscription_api_token_configured": false,
-					"tcdmx_subscription_refresh_token_configured": false,
-					"qlhazycoder_subscription_enabled": false,
-					"qlhazycoder_subscription_api_base_url": "https://api.qlhazycoder.top",
-					"qlhazycoder_subscription_api_token_configured": false,
-					"qlhazycoder_subscription_refresh_token_configured": false,
-					"qlhazycoder_subscription_user_id": "",
-					"xhyapi_subscription_enabled": false,
-					"xhyapi_subscription_api_base_url": "https://xhyapi.com",
-					"xhyapi_subscription_api_token_configured": false,
-					"xhyapi_subscription_refresh_token_configured": false,
-					"xhyapi_subscription_user_id": "",
-					"pixel_subscription_enabled": false,
-					"pixel_subscription_api_base_url": "https://ai-pixel.online",
-					"pixel_subscription_api_token_configured": false,
-					"pixel_subscription_refresh_token_configured": false,
-					"liust_subscription_enabled": false,
-					"liust_subscription_api_base_url": "https://liust.xyz",
-					"liust_subscription_api_token_configured": false,
-					"liust_subscription_refresh_token_configured": false,
-					"liust_subscription_user_id": "",
-					"packycode_subscription_enabled": false,
-					"packycode_subscription_api_base_url": "https://www.packyapi.com",
-					"packycode_subscription_api_token_configured": false,
-					"packycode_subscription_refresh_token_configured": false,
-					"packycode_subscription_user_id": "",
 					"account_quota_notify_emails": [],
 						"channel_monitor_enabled": true,
 					"channel_monitor_account_auto_schedule_enabled": false,
@@ -1424,8 +1464,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	usageHandler := handler.NewUsageHandler(usageService, apiKeyService, nil, nil)
 	adminSettingHandler := adminhandler.NewSettingHandler(settingService, nil, nil, nil, nil, nil, nil)
 	adminAccountHandler := adminhandler.NewAccountHandler(adminService, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-	adminTCDMXSubscriptionHandler := adminhandler.NewTCDMXSubscriptionHandler(service.NewTCDMXSubscriptionService(settingService))
-	adminQLHazyCoderSubscriptionHandler := adminhandler.NewQLHazyCoderSubscriptionHandler(service.NewQLHazyCoderSubscriptionService(settingService))
+	adminExternalSubscriptionHandler := adminhandler.NewExternalSubscriptionConfigHandler(service.NewExternalSubscriptionConfigService(settingService))
 
 	jwtAuth := func(c *gin.Context) {
 		c.Set(string(middleware.ContextKeyUser), middleware.AuthSubject{
@@ -1476,8 +1515,7 @@ func newContractDeps(t *testing.T) *contractDeps {
 	v1Admin.GET("/settings", adminSettingHandler.GetSettings)
 	v1Admin.PUT("/settings/appearance-theme-default", adminSettingHandler.UpdateAppearanceThemeDefault)
 	v1Admin.POST("/accounts/bulk-update", adminAccountHandler.BulkUpdate)
-	v1Admin.GET("/tcdmx/subscription", adminTCDMXSubscriptionHandler.GetStatus)
-	v1Admin.GET("/qlhazycoder/subscription", adminQLHazyCoderSubscriptionHandler.GetStatus)
+	v1Admin.GET("/external-subscriptions", adminExternalSubscriptionHandler.ListProviders)
 
 	return &contractDeps{
 		now:         now,

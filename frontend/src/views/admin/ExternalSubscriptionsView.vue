@@ -1055,9 +1055,10 @@ onBeforeUnmount(() => {
   box-shadow: none;
   padding: 0.875rem;
   transition:
-    border-color 0.18s var(--atelier-ease),
-    transform 0.18s var(--atelier-ease),
-    box-shadow 0.18s var(--atelier-ease);
+    transform 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .external-subscription-card::before {
@@ -1074,8 +1075,9 @@ onBeforeUnmount(() => {
 
 .external-subscription-card:hover {
   border-color: var(--atelier-material-edge-strong);
-  box-shadow: var(--atelier-material-shadow);
-  transform: translate3d(0, -1px, 0);
+  background: var(--atelier-paper);
+  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
+  transform: translateY(-2px);
 }
 
 .external-subscription-logo {

@@ -159,7 +159,7 @@ func (s *ExternalSubscriptionConfigService) CreateProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, stored); err != nil {
 		return ExternalSubscriptionProvider{}, err
 	}
-	if isDefaultExternalSubscriptionProvider(next.ID) {
+	if canMarkDeletedExternalSubscriptionProvider(next.ID) {
 		if err := s.removeDeletedDefaultProvider(ctx, next.ID); err != nil {
 			return ExternalSubscriptionProvider{}, err
 		}
@@ -187,7 +187,7 @@ func (s *ExternalSubscriptionConfigService) UpdateProvider(ctx context.Context, 
 		if err := s.saveStoredProviders(ctx, stored); err != nil {
 			return ExternalSubscriptionProvider{}, err
 		}
-		if isDefaultExternalSubscriptionProvider(next.ID) {
+		if canMarkDeletedExternalSubscriptionProvider(next.ID) {
 			if err := s.removeDeletedDefaultProvider(ctx, next.ID); err != nil {
 				return ExternalSubscriptionProvider{}, err
 			}
@@ -219,7 +219,7 @@ func (s *ExternalSubscriptionConfigService) DeleteProvider(ctx context.Context, 
 	if err := s.saveStoredProviders(ctx, next); err != nil {
 		return err
 	}
-	if isDefaultExternalSubscriptionProvider(id) {
+	if canMarkDeletedExternalSubscriptionProvider(id) {
 		if err := s.addDeletedDefaultProvider(ctx, id); err != nil {
 			return err
 		}
@@ -551,7 +551,7 @@ func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx c
 	updated := false
 	for _, legacyProvider := range legacy {
 		hasCredential := legacyProvider.hasSubscriptionCredential()
-		if !hasCredential && deletedDefaults[legacyProvider.ID] {
+		if deletedDefaults[legacyProvider.ID] {
 			continue
 		}
 		if !hasCredential && !(mergeDefaultProviders && isDefaultExternalSubscriptionProvider(legacyProvider.ID)) {
@@ -620,6 +620,15 @@ func isDefaultExternalSubscriptionProvider(id string) bool {
 	}
 }
 
+func canMarkDeletedExternalSubscriptionProvider(id string) bool {
+	switch strings.TrimSpace(strings.ToLower(id)) {
+	case "buzz", "tcdmx", "qlhazycoder", "xhyapi", "pixel", "liust", "packycode", "openrouter", "cloudflare", "rawchat", "mimo":
+		return true
+	default:
+		return false
+	}
+}
+
 func shouldMergeDefaultExternalSubscriptionProviders(providers []externalSubscriptionStoredProvider) bool {
 	count := 0
 	for _, provider := range providers {
@@ -647,7 +656,7 @@ func (s *ExternalSubscriptionConfigService) addDeletedDefaultProvider(ctx contex
 		return err
 	}
 	id = strings.TrimSpace(strings.ToLower(id))
-	if !isDefaultExternalSubscriptionProvider(id) || deleted[id] {
+	if !canMarkDeletedExternalSubscriptionProvider(id) || deleted[id] {
 		return nil
 	}
 	deleted[id] = true
@@ -671,7 +680,7 @@ func (s *ExternalSubscriptionConfigService) saveDeletedDefaultProviders(ctx cont
 	ids := make([]string, 0, len(deleted))
 	for id := range deleted {
 		id = strings.TrimSpace(strings.ToLower(id))
-		if isDefaultExternalSubscriptionProvider(id) {
+		if canMarkDeletedExternalSubscriptionProvider(id) {
 			ids = append(ids, id)
 		}
 	}
@@ -1028,7 +1037,7 @@ func decodeExternalSubscriptionDeletedDefaultProviders(raw string) (map[string]b
 	deleted := make(map[string]bool, len(ids))
 	for _, id := range ids {
 		id = strings.TrimSpace(strings.ToLower(id))
-		if isDefaultExternalSubscriptionProvider(id) {
+		if canMarkDeletedExternalSubscriptionProvider(id) {
 			deleted[id] = true
 		}
 	}

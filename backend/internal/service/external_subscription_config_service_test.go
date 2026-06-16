@@ -420,6 +420,36 @@ func TestExternalSubscriptionConfigServiceDeleteDefaultProviderDoesNotRecreateMi
 	require.Contains(t, repo.values[SettingKeyExternalSubscriptionDeletedDefaultProviders], "mimo")
 }
 
+func TestExternalSubscriptionConfigServiceDeleteLegacyLiustProviderDoesNotRecreateFromCredentials(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
+		{
+			ID:            "liust",
+			Name:          "liust",
+			Enabled:       true,
+			Template:      ExternalSubscriptionTemplateNewAPIConsole,
+			APIBaseURL:    DefaultLiustSubscriptionAPIBaseURL,
+			APIToken:      "liust-token",
+			UserID:        "808",
+			MatchKeywords: []string{"liust.xyz", "liust"},
+			SortOrder:     50,
+		},
+	}, map[string]string{
+		SettingKeyLiustSubscriptionEnabled:    "true",
+		SettingKeyLiustSubscriptionAPIBaseURL: DefaultLiustSubscriptionAPIBaseURL,
+		SettingKeyLiustSubscriptionAPIToken:   "liust-token",
+		SettingKeyLiustSubscriptionUserID:     "808",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	ctx := context.Background()
+
+	require.NoError(t, svc.DeleteProvider(ctx, "liust"))
+
+	providers, err := svc.ListProviders(ctx)
+	require.NoError(t, err)
+	requireNoExternalSubscriptionProvider(t, providers, "liust")
+	require.Contains(t, repo.values[SettingKeyExternalSubscriptionDeletedDefaultProviders], "liust")
+}
+
 func TestExternalSubscriptionConfigServiceCreateProviderClearsDeletedDefaultMarker(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{

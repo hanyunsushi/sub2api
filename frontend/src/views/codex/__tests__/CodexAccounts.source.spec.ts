@@ -56,6 +56,16 @@ describe('CodexAccounts source contracts', () => {
     expect(codexThemeSource).toContain('.dark .codex-account-card')
   })
 
+  it('matches the Creepee prompt-card hover treatment on account cards', () => {
+    const accountCardHoverBlock = getCssBlock('.codex-account-card:hover,\n.codex-account-card.is-selected')
+
+    expect(accountCardHoverBlock).toContain('transform: translateY(-2px);')
+    expect(accountCardHoverBlock).toContain('background: var(--atelier-paper);')
+    expect(accountCardHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;')
+    expect(accountCardHoverBlock).not.toContain('var(--codex-accent-soft)')
+    expect(accountCardHoverBlock).not.toContain('rgba(0, 47, 167, 0.5)')
+  })
+
   it('does not add a fixed module scrollbar to the CPA account management shell', () => {
     const shellBlock = getCssBlock('.codex-shell')
 

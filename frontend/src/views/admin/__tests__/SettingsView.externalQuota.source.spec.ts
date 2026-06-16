@@ -18,16 +18,20 @@ describe('SettingsView external subscription placement', () => {
     expect(source).not.toContain('启用 PackyCode 订阅额度')
   })
 
-  it('keeps legacy provider fields out of the visible gateway template while preserving backend-compatible form state', () => {
+  it('keeps legacy provider fields out of the generic settings page', () => {
     const templateSource = source.slice(0, source.indexOf('<script setup'))
 
-    expect(templateSource).not.toContain('tcdmx_subscription_api_token')
-    expect(templateSource).not.toContain('qlhazycoder_subscription_api_token')
-    expect(templateSource).not.toContain('xhyapi_subscription_api_token')
-    expect(templateSource).not.toContain('pixel_subscription_api_token')
-    expect(templateSource).not.toContain('liust_subscription_api_token')
-    expect(templateSource).not.toContain('packycode_subscription_api_token')
-    expect(source).toContain('tcdmx_subscription_api_token')
-    expect(source).toContain('packycode_subscription_api_token')
+    for (const legacyField of [
+      'buzz_balance_api_token',
+      'tcdmx_subscription_api_token',
+      'qlhazycoder_subscription_api_token',
+      'xhyapi_subscription_api_token',
+      'pixel_subscription_api_token',
+      'liust_subscription_api_token',
+      'packycode_subscription_api_token',
+    ]) {
+      expect(templateSource).not.toContain(legacyField)
+      expect(source).not.toContain(legacyField)
+    }
   })
 })
