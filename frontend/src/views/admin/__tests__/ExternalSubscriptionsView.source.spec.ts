@@ -6,6 +6,8 @@ const sourcePath = resolve(__dirname, '../ExternalSubscriptionsView.vue')
 const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : ''
 const stylePath = resolve(__dirname, '../../../style.css')
 const styleSource = existsSync(stylePath) ? readFileSync(stylePath, 'utf8') : ''
+const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
+const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -111,15 +113,23 @@ describe('ExternalSubscriptionsView source', () => {
     const localHoverBlock = cssBlock(source, '.external-subscription-card:hover')
     const globalHoverBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card):hover'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
 
     expect(localHoverBlock).toContain('transform: translateY(-2px);')
-    expect(localHoverBlock).toContain('background: var(--atelier-paper);')
-    expect(localHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;')
+    expect(localHoverBlock).toContain(`background: ${creepeeHoverSurface};`)
+    expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('var(--atelier-material-shadow)')
+    expect(localHoverBlock).not.toContain('border-color')
+    expect(localHoverBlock).not.toContain('color:')
+    expect(localHoverBlock).not.toContain('var(--atelier-paper)')
     expect(globalHoverBlock).toContain('transform: translateY(-2px) !important;')
-    expect(globalHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;')
+    expect(globalHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
+    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(globalHoverBlock).not.toContain('border-color')
+    expect(globalHoverBlock).not.toContain('color:')
+    expect(globalHoverBlock).not.toContain('var(--atelier-paper)')
+    expect(styleSource).toContain('--creepee-prompt-card-hover-surface: #faf9f5;')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

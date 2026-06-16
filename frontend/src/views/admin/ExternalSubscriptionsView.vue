@@ -1057,7 +1057,6 @@ onBeforeUnmount(() => {
   transition:
     transform 0.16s ease,
     background 0.16s ease,
-    border-color 0.16s ease,
     box-shadow 0.16s ease;
 }
 
@@ -1074,8 +1073,7 @@ onBeforeUnmount(() => {
 }
 
 .external-subscription-card:hover {
-  border-color: var(--atelier-material-edge-strong);
-  background: var(--atelier-paper);
+  background: var(--creepee-prompt-card-hover-surface);
   box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
   transform: translateY(-2px);
 }
