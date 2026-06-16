@@ -487,8 +487,6 @@ function formatBalance(value: number) {
 
 .monitor-capacity-card:hover {
   transform: var(--creepee-home-card-hover-transform);
-  background: var(--creepee-card-hover-surface);
-  background-color: var(--creepee-card-hover-surface);
   box-shadow: var(--creepee-home-card-hover-shadow);
 }
 
