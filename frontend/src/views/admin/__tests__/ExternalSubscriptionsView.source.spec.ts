@@ -119,6 +119,10 @@ describe('ExternalSubscriptionsView source', () => {
       styleSource,
       '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
+    const themedGlobalHoverBlock = cssBlock(
+      styleSource,
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    )
     const globalBaseBlock = cssBlock(
       styleSource,
       '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
@@ -151,6 +155,15 @@ describe('ExternalSubscriptionsView source', () => {
     expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(globalHoverBlock).not.toContain('border-color')
     expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
+    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(themedGlobalHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
+    expect(themedGlobalHoverBlock).toContain(`background-color: ${creepeeHoverSurface} !important;`)
+    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(themedGlobalHoverBlock).not.toContain('var(--atelier-material-shadow')
+    expect(themedGlobalHoverBlock).not.toContain('rgba(20, 20, 19, 0.024)')
+    expect(themedGlobalHoverBlock).not.toContain('translateY(-2px)')
+    expect(themedGlobalHoverBlock).not.toContain('border-color')
+    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

@@ -8398,3 +8398,10 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   background-color: var(--creepee-card-hover-surface) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }
+
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
+  transform: var(--creepee-home-card-hover-transform) !important;
+  background: var(--creepee-card-hover-surface) !important;
+  background-color: var(--creepee-card-hover-surface) !important;
+  box-shadow: var(--creepee-home-card-hover-shadow) !important;
+}
