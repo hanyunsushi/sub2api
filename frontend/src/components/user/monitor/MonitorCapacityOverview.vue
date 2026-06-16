@@ -464,14 +464,17 @@ function formatBalance(value: number) {
 
 <style scoped>
 .monitor-capacity-card {
+  --home-card-accent: var(--atelier-blue);
+  --creepee-card-hover-surface: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
   position: relative;
   overflow: hidden;
   min-width: 0;
   box-shadow: none;
   transition:
-    transform 0.16s ease,
-    background 0.16s ease,
-    box-shadow 0.16s ease;
+    transform 280ms var(--atelier-ease),
+    background-color 280ms var(--atelier-ease),
+    box-shadow 280ms var(--atelier-ease);
 }
 
 .monitor-capacity-card::before {
@@ -483,10 +486,10 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-card:hover {
-  transform: translateY(-2px);
-  background: var(--creepee-prompt-card-hover-surface);
-  background-color: var(--creepee-prompt-card-hover-surface);
-  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
+  transform: var(--creepee-home-card-hover-transform);
+  background: var(--creepee-card-hover-surface);
+  background-color: var(--creepee-card-hover-surface);
+  box-shadow: var(--creepee-home-card-hover-shadow);
 }
 
 .monitor-capacity-card > * {

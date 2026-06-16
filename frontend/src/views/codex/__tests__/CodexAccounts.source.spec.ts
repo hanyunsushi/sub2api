@@ -6,8 +6,11 @@ const componentSource = readFileSync(resolve(__dirname, '../CodexAccounts.vue'),
 const codexThemeSource = readFileSync(resolve(__dirname, '../../../styles/codex-theme.css'), 'utf8')
 const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
 const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
-const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
-const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
+const creepeeHoverSurface = 'var(--creepee-card-hover-surface)'
+const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
+const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
+const homepageHoverShadow =
+  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
 
 const getCssBlock = (selector: string) => {
   const start = codexThemeSource.indexOf(`${selector} {`)
@@ -58,14 +61,21 @@ describe('CodexAccounts source contracts', () => {
     expect(codexThemeSource).toContain('.dark .codex-account-card')
   })
 
-  it('matches the Creepee prompt-card hover treatment on account cards', () => {
+  it('matches the Creepee homepage recommendation-card hover treatment on account cards', () => {
     const accountCardHoverBlock = getCssBlock('.codex-account-card:hover')
+    const accountCardBlock = getCssBlock('.codex-account-card')
     const selectedBlock = getCssBlock('.codex-account-card.is-selected')
 
-    expect(accountCardHoverBlock).toContain('transform: translateY(-2px);')
+    expect(accountCardBlock).toContain(homepageHoverShadow)
+    expect(accountCardHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(accountCardHoverBlock).toContain(`background: ${creepeeHoverSurface};`)
     expect(accountCardHoverBlock).toContain(`background-color: ${creepeeHoverSurface};`)
     expect(accountCardHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(accountCardHoverBlock).not.toContain('translateY(-2px)')
+    expect(accountCardHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(accountCardHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(accountCardHoverBlock).not.toContain('var(--atelier-butter')
+    expect(accountCardHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(accountCardHoverBlock).not.toContain('border-color')
     expect(accountCardHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
     expect(accountCardHoverBlock).not.toContain('var(--atelier-paper)')
