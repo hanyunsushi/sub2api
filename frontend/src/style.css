@@ -1582,7 +1582,7 @@
   border-radius: 0.375rem;
   background: transparent;
   color: var(--atelier-ink);
-  padding: 0 0.75rem;
+  padding: 0 0.55rem;
   font-family: var(--atelier-font-sans);
   font-size: 0.8125rem;
   font-weight: 700;
@@ -1602,8 +1602,8 @@
 }
 
 .ai-search-trigger-avatar {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.75rem;
+  height: 1.75rem;
   flex: 0 0 auto;
   border-radius: 0.25rem;
   background: transparent;
@@ -1656,6 +1656,7 @@ body.ai-search-panel-open .app-layout-content {
 }
 
 .ai-search-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -1669,64 +1670,19 @@ body.ai-search-panel-open .app-layout-content {
   outline: none;
 }
 
-.ai-search-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 0 0 auto;
-  min-height: 4rem;
-  gap: 1rem;
-  padding: 0.75rem 0.75rem 0.75rem 1rem;
-  border-bottom: 1px solid rgba(23, 21, 18, 0.14);
-  background: var(--atelier-paper-2);
-}
-
-.ai-search-panel-brand {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.ai-search-panel-avatar {
-  width: 2rem;
-  height: 2rem;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 0.375rem;
-  background: transparent;
-  object-fit: contain;
-}
-
-.ai-search-panel-copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.ai-search-panel-title {
-  font-family: var(--atelier-font-sans);
-  font-size: 0.875rem;
-  font-weight: 750;
-}
-
-.ai-search-panel-subtitle {
-  color: var(--atelier-muted);
-  font-family: var(--atelier-font-mono);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.15;
-}
-
 .ai-search-panel-close {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2rem;
   height: 2rem;
+  border: 1px solid rgba(23, 21, 18, 0.12);
   border-radius: 0.375rem;
-  background: transparent;
+  background: rgba(255, 250, 240, 0.88);
   color: var(--atelier-muted);
   font-size: 1.25rem;
   line-height: 1;
