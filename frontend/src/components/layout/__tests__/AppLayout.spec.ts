@@ -12,7 +12,7 @@ describe('AppLayout route transition', () => {
   it('does not animate AI sidecar margin squeeze across the whole page', () => {
     expect(componentSource).toContain('transition-[margin-left]')
     expect(componentSource).not.toContain('transition-[margin-left,margin-right]')
-    expect(styleSource).toContain('body.ai-search-panel-open .app-layout-content')
+    expect(styleSource).toContain('body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content')
     expect(styleSource).toContain('margin-right: var(--ai-search-sidecar-width);')
     expect(styleSource).not.toContain('transition-property: margin-left, margin-right;')
   })

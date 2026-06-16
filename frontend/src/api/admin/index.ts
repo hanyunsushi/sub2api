@@ -31,14 +31,7 @@ import channelMonitorTemplateAPI from './channelMonitorTemplate'
 import adminPaymentAPI from './payment'
 import affiliatesAPI from './affiliates'
 import riskControlAPI from './riskControl'
-import buzzBalanceAPI from './buzzBalance'
 import externalSubscriptionsAPI from './externalSubscriptions'
-import tcdmxSubscriptionAPI from './tcdmxSubscription'
-import qlhazycoderSubscriptionAPI from './qlhazycoderSubscription'
-import xhyapiSubscriptionAPI from './xhyapiSubscription'
-import pixelSubscriptionAPI from './pixelSubscription'
-import liustSubscriptionAPI from './liustSubscription'
-import packycodeSubscriptionAPI from './packycodeSubscription'
 import adminComplianceAPI from './compliance'
 
 /**
@@ -73,14 +66,7 @@ export const adminAPI = {
   payment: adminPaymentAPI,
   affiliates: affiliatesAPI,
   riskControl: riskControlAPI,
-  buzzBalance: buzzBalanceAPI,
   externalSubscriptions: externalSubscriptionsAPI,
-  tcdmxSubscription: tcdmxSubscriptionAPI,
-  qlhazycoderSubscription: qlhazycoderSubscriptionAPI,
-  xhyapiSubscription: xhyapiSubscriptionAPI,
-  pixelSubscription: pixelSubscriptionAPI,
-  liustSubscription: liustSubscriptionAPI,
-  packycodeSubscription: packycodeSubscriptionAPI,
   compliance: adminComplianceAPI
 }
 
@@ -113,14 +99,7 @@ export {
   adminPaymentAPI,
   affiliatesAPI,
   riskControlAPI,
-  buzzBalanceAPI,
   externalSubscriptionsAPI,
-  tcdmxSubscriptionAPI,
-  qlhazycoderSubscriptionAPI,
-  xhyapiSubscriptionAPI,
-  pixelSubscriptionAPI,
-  liustSubscriptionAPI,
-  packycodeSubscriptionAPI,
   adminComplianceAPI
 }
 
@@ -132,7 +111,6 @@ export type { ErrorPassthroughRule, CreateRuleRequest, UpdateRuleRequest } from 
 export type { BackupAgentHealth, DataManagementConfig } from './dataManagement'
 export type { TLSFingerprintProfile, CreateProfileRequest, UpdateProfileRequest } from './tlsFingerprintProfile'
 export type { ContentModerationConfig, ContentModerationLog, ModerationMode } from './riskControl'
-export type { BuzzBalance } from './buzzBalance'
 export type {
   ExternalSubscriptionProvider,
   ExternalSubscriptionProviderInput,
@@ -140,9 +118,3 @@ export type {
   ExternalSubscriptionItem,
   ExternalSubscriptionTemplate,
 } from './externalSubscriptions'
-export type { TCDMXSubscriptionStatus, TCDMXSubscriptionItem } from './tcdmxSubscription'
-export type { QLHazyCoderSubscriptionStatus, QLHazyCoderSubscriptionItem } from './qlhazycoderSubscription'
-export type { XHYAPISubscriptionStatus, XHYAPISubscriptionItem } from './xhyapiSubscription'
-export type { PixelSubscriptionStatus, PixelSubscriptionItem } from './pixelSubscription'
-export type { LiustSubscriptionStatus, LiustSubscriptionItem } from './liustSubscription'
-export type { PackyCodeSubscriptionStatus, PackyCodeSubscriptionItem } from './packycodeSubscription'

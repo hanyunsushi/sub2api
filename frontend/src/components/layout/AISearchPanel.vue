@@ -3,7 +3,7 @@
     <div
       id="creepee-ai-sidecar"
       class="ai-search-sidecar"
-      :class="{ 'ai-search-sidecar-open': open }"
+      :class="sidecarClass"
       :data-open="open ? 'true' : 'false'"
       :aria-hidden="!open"
       data-testid="ai-search-sidecar"
@@ -16,15 +16,28 @@
         aria-label="Creepee Obsidian Codex Bridge"
         tabindex="-1"
       >
-        <button data-testid="layout-ai-search-panel-button-close-panel"
-          type="button"
-          class="ai-search-panel-close"
-          aria-label="Close"
-          title="Close"
-          @click="closePanel"
-        >
-          <span aria-hidden="true">x</span>
-        </button>
+        <div class="ai-search-panel-actions" aria-label="Panel controls">
+          <button
+            data-testid="layout-ai-search-panel-button-toggle-fullscreen"
+            type="button"
+            class="ai-search-panel-action ai-search-panel-fullscreen-toggle"
+            :aria-label="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
+            :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
+            :aria-pressed="fullscreen"
+            @click="toggleFullscreen"
+          >
+            <Icon :name="fullscreen ? 'minimize' : 'maximize'" size="sm" :stroke-width="1.8" aria-hidden="true" />
+          </button>
+          <button data-testid="layout-ai-search-panel-button-close-panel"
+            type="button"
+            class="ai-search-panel-action ai-search-panel-close"
+            aria-label="Close"
+            title="Close"
+            @click="closePanel"
+          >
+            <Icon name="x" size="sm" :stroke-width="1.8" aria-hidden="true" />
+          </button>
+        </div>
         <div class="ai-search-panel-body">
           <iframe
             ref="bridgeFrameRef"
@@ -44,10 +57,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { authAPI } from '@/api/auth'
+import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
 const open = computed(() => appStore.aiSearchPanelOpen)
+const fullscreen = ref(false)
 const panelRef = ref<HTMLElement | null>(null)
 const bridgeFrameRef = ref<HTMLIFrameElement | null>(null)
 const bridgeFrameReady = ref(false)
@@ -61,6 +76,10 @@ const bridgeUrl = (import.meta.env.VITE_OBSIDIAN_CODEX_BRIDGE_URL || defaultBrid
 const bridgeOrigin = new URL(bridgeUrl, window.location.href).origin
 const maxCreepeeSSOAttempts = 3
 const creepeeSSORetryDelayMs = 1200
+const sidecarClass = computed(() => ({
+  'ai-search-sidecar-open': open.value,
+  'ai-search-sidecar-fullscreen': fullscreen.value,
+}))
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape' && open.value) {
@@ -69,7 +88,12 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 function closePanel() {
+  fullscreen.value = false
   appStore.closeAISearchPanel()
+}
+
+function toggleFullscreen() {
+  fullscreen.value = !fullscreen.value
 }
 
 function clearCreepeeSSORetry() {
@@ -159,11 +183,13 @@ onBeforeUnmount(() => {
   window.removeEventListener('message', handleBridgeMessage)
   clearCreepeeSSORetry()
   document.body.classList.remove('ai-search-panel-open')
+  document.body.classList.remove('ai-search-panel-fullscreen')
 })
 
 watch(open, (value) => {
   if (typeof document !== 'undefined') {
     document.body.classList.toggle('ai-search-panel-open', value)
+    document.body.classList.toggle('ai-search-panel-fullscreen', value && fullscreen.value)
   }
   if (value) {
     resetCreepeeSSOForOpen()
@@ -172,7 +198,14 @@ watch(open, (value) => {
       void sendCreepeeSSOTicket()
     })
   } else {
+    fullscreen.value = false
     resetCreepeeSSOForOpen()
+  }
+})
+
+watch(fullscreen, (value) => {
+  if (typeof document !== 'undefined') {
+    document.body.classList.toggle('ai-search-panel-fullscreen', open.value && value)
   }
 })
 </script>

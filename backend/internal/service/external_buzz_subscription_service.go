@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
@@ -78,21 +77,4 @@ func (s *ExternalSubscriptionService) getBuzzBalanceJSON(ctx context.Context, se
 		return externalCreditErrorFromResponse(cfg, resp.StatusCode, resp.Bytes())
 	}
 	return nil
-}
-
-func buzzBalanceProviderConfig() externalSubscriptionProviderConfig {
-	return externalSubscriptionProviderConfig{
-		Provider:          "buzz",
-		DisplayName:       "Buzz",
-		DefaultAPIBaseURL: DefaultBuzzBalanceAPIBaseURL,
-		EnabledKey:        SettingKeyBuzzBalanceEnabled,
-		APIBaseURLKey:     SettingKeyBuzzBalanceAPIBaseURL,
-		APITokenKey:       SettingKeyBuzzBalanceAPIToken,
-		UserIDKey:         "",
-		RefreshTokenKey:   "",
-	}
-}
-
-func isBuzzBalanceProviderID(id string) bool {
-	return strings.TrimSpace(strings.ToLower(id)) == "buzz"
 }

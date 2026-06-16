@@ -2241,63 +2241,6 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyBalanceLowNotifyEnabled] = strconv.FormatBool(settings.BalanceLowNotifyEnabled)
 	updates[SettingKeyBalanceLowNotifyThreshold] = strconv.FormatFloat(settings.BalanceLowNotifyThreshold, 'f', 8, 64)
 	updates[SettingKeyBalanceLowNotifyRechargeURL] = settings.BalanceLowNotifyRechargeURL
-	updates[SettingKeyBuzzBalanceEnabled] = strconv.FormatBool(settings.BuzzBalanceEnabled)
-	updates[SettingKeyBuzzBalanceAPIBaseURL] = normalizeBuzzBalanceAPIBaseURL(settings.BuzzBalanceAPIBaseURL)
-	if strings.TrimSpace(settings.BuzzBalanceAPIToken) != "" {
-		updates[SettingKeyBuzzBalanceAPIToken] = strings.TrimSpace(settings.BuzzBalanceAPIToken)
-	}
-	updates[SettingKeyTCDMXSubscriptionEnabled] = strconv.FormatBool(settings.TCDMXSubscriptionEnabled)
-	updates[SettingKeyTCDMXSubscriptionAPIBaseURL] = normalizeTCDMXSubscriptionAPIBaseURL(settings.TCDMXSubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.TCDMXSubscriptionAPIToken) != "" {
-		updates[SettingKeyTCDMXSubscriptionAPIToken] = strings.TrimSpace(settings.TCDMXSubscriptionAPIToken)
-	}
-	if strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken) != "" {
-		updates[SettingKeyTCDMXSubscriptionRefreshToken] = strings.TrimSpace(settings.TCDMXSubscriptionRefreshToken)
-	}
-	updates[SettingKeyQLHazyCoderSubscriptionEnabled] = strconv.FormatBool(settings.QLHazyCoderSubscriptionEnabled)
-	updates[SettingKeyQLHazyCoderSubscriptionAPIBaseURL] = normalizeQLHazyCoderSubscriptionAPIBaseURL(settings.QLHazyCoderSubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken) != "" {
-		updates[SettingKeyQLHazyCoderSubscriptionAPIToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionAPIToken)
-	}
-	updates[SettingKeyQLHazyCoderSubscriptionUserID] = strings.TrimSpace(settings.QLHazyCoderSubscriptionUserID)
-	if strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken) != "" {
-		updates[SettingKeyQLHazyCoderSubscriptionRefreshToken] = strings.TrimSpace(settings.QLHazyCoderSubscriptionRefreshToken)
-	}
-	updates[SettingKeyXHYAPISubscriptionEnabled] = strconv.FormatBool(settings.XHYAPISubscriptionEnabled)
-	updates[SettingKeyXHYAPISubscriptionAPIBaseURL] = normalizeXHYAPISubscriptionAPIBaseURL(settings.XHYAPISubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.XHYAPISubscriptionAPIToken) != "" {
-		updates[SettingKeyXHYAPISubscriptionAPIToken] = strings.TrimSpace(settings.XHYAPISubscriptionAPIToken)
-	}
-	updates[SettingKeyXHYAPISubscriptionUserID] = strings.TrimSpace(settings.XHYAPISubscriptionUserID)
-	if strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken) != "" {
-		updates[SettingKeyXHYAPISubscriptionRefreshToken] = strings.TrimSpace(settings.XHYAPISubscriptionRefreshToken)
-	}
-	updates[SettingKeyPixelSubscriptionEnabled] = strconv.FormatBool(settings.PixelSubscriptionEnabled)
-	updates[SettingKeyPixelSubscriptionAPIBaseURL] = normalizePixelSubscriptionAPIBaseURL(settings.PixelSubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.PixelSubscriptionAPIToken) != "" {
-		updates[SettingKeyPixelSubscriptionAPIToken] = strings.TrimSpace(settings.PixelSubscriptionAPIToken)
-	}
-	if strings.TrimSpace(settings.PixelSubscriptionRefreshToken) != "" {
-		updates[SettingKeyPixelSubscriptionRefreshToken] = strings.TrimSpace(settings.PixelSubscriptionRefreshToken)
-	}
-	updates[SettingKeyLiustSubscriptionEnabled] = strconv.FormatBool(settings.LiustSubscriptionEnabled)
-	updates[SettingKeyLiustSubscriptionAPIBaseURL] = normalizeLiustSubscriptionAPIBaseURL(settings.LiustSubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.LiustSubscriptionAPIToken) != "" {
-		updates[SettingKeyLiustSubscriptionAPIToken] = strings.TrimSpace(settings.LiustSubscriptionAPIToken)
-	}
-	updates[SettingKeyLiustSubscriptionUserID] = strings.TrimSpace(settings.LiustSubscriptionUserID)
-	if strings.TrimSpace(settings.LiustSubscriptionRefreshToken) != "" {
-		updates[SettingKeyLiustSubscriptionRefreshToken] = strings.TrimSpace(settings.LiustSubscriptionRefreshToken)
-	}
-	updates[SettingKeyPackyCodeSubscriptionEnabled] = strconv.FormatBool(settings.PackyCodeSubscriptionEnabled)
-	updates[SettingKeyPackyCodeSubscriptionAPIBaseURL] = normalizePackyCodeSubscriptionAPIBaseURL(settings.PackyCodeSubscriptionAPIBaseURL)
-	if strings.TrimSpace(settings.PackyCodeSubscriptionAPIToken) != "" {
-		updates[SettingKeyPackyCodeSubscriptionAPIToken] = strings.TrimSpace(settings.PackyCodeSubscriptionAPIToken)
-	}
-	updates[SettingKeyPackyCodeSubscriptionUserID] = strings.TrimSpace(settings.PackyCodeSubscriptionUserID)
-	if strings.TrimSpace(settings.PackyCodeSubscriptionRefreshToken) != "" {
-		updates[SettingKeyPackyCodeSubscriptionRefreshToken] = strings.TrimSpace(settings.PackyCodeSubscriptionRefreshToken)
-	}
 	updates[SettingKeySubscriptionExpiryNotifyEnabled] = strconv.FormatBool(settings.SubscriptionExpiryNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEnabled] = strconv.FormatBool(settings.AccountQuotaNotifyEnabled)
 	updates[SettingKeyAccountQuotaNotifyEmails] = MarshalNotifyEmails(settings.AccountQuotaNotifyEmails)
@@ -3795,50 +3738,6 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		result.BalanceLowNotifyThreshold = v
 	}
 	result.BalanceLowNotifyRechargeURL = settings[SettingKeyBalanceLowNotifyRechargeURL]
-	result.BuzzBalanceEnabled = settings[SettingKeyBuzzBalanceEnabled] == "true"
-	result.BuzzBalanceAPIBaseURL = normalizeBuzzBalanceAPIBaseURL(settings[SettingKeyBuzzBalanceAPIBaseURL])
-	result.BuzzBalanceAPIToken = strings.TrimSpace(settings[SettingKeyBuzzBalanceAPIToken])
-	result.BuzzBalanceAPITokenConfigured = result.BuzzBalanceAPIToken != ""
-	result.TCDMXSubscriptionEnabled = settings[SettingKeyTCDMXSubscriptionEnabled] == "true"
-	result.TCDMXSubscriptionAPIBaseURL = normalizeTCDMXSubscriptionAPIBaseURL(settings[SettingKeyTCDMXSubscriptionAPIBaseURL])
-	result.TCDMXSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionAPIToken])
-	result.TCDMXSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyTCDMXSubscriptionRefreshToken])
-	result.TCDMXSubscriptionAPITokenConfigured = result.TCDMXSubscriptionAPIToken != ""
-	result.TCDMXSubscriptionRefreshConfigured = result.TCDMXSubscriptionRefreshToken != ""
-	result.QLHazyCoderSubscriptionEnabled = settings[SettingKeyQLHazyCoderSubscriptionEnabled] == "true"
-	result.QLHazyCoderSubscriptionAPIBaseURL = normalizeQLHazyCoderSubscriptionAPIBaseURL(settings[SettingKeyQLHazyCoderSubscriptionAPIBaseURL])
-	result.QLHazyCoderSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionAPIToken])
-	result.QLHazyCoderSubscriptionUserID = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionUserID])
-	result.QLHazyCoderSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyQLHazyCoderSubscriptionRefreshToken])
-	result.QLHazyCoderSubscriptionAPITokenConfigured = result.QLHazyCoderSubscriptionAPIToken != ""
-	result.QLHazyCoderSubscriptionRefreshConfigured = result.QLHazyCoderSubscriptionRefreshToken != ""
-	result.XHYAPISubscriptionEnabled = settings[SettingKeyXHYAPISubscriptionEnabled] == "true"
-	result.XHYAPISubscriptionAPIBaseURL = normalizeXHYAPISubscriptionAPIBaseURL(settings[SettingKeyXHYAPISubscriptionAPIBaseURL])
-	result.XHYAPISubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionAPIToken])
-	result.XHYAPISubscriptionUserID = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionUserID])
-	result.XHYAPISubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyXHYAPISubscriptionRefreshToken])
-	result.XHYAPISubscriptionAPITokenConfigured = result.XHYAPISubscriptionAPIToken != ""
-	result.XHYAPISubscriptionRefreshConfigured = result.XHYAPISubscriptionRefreshToken != ""
-	result.PixelSubscriptionEnabled = settings[SettingKeyPixelSubscriptionEnabled] == "true"
-	result.PixelSubscriptionAPIBaseURL = normalizePixelSubscriptionAPIBaseURL(settings[SettingKeyPixelSubscriptionAPIBaseURL])
-	result.PixelSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyPixelSubscriptionAPIToken])
-	result.PixelSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyPixelSubscriptionRefreshToken])
-	result.PixelSubscriptionAPITokenConfigured = result.PixelSubscriptionAPIToken != ""
-	result.PixelSubscriptionRefreshConfigured = result.PixelSubscriptionRefreshToken != ""
-	result.LiustSubscriptionEnabled = settings[SettingKeyLiustSubscriptionEnabled] == "true"
-	result.LiustSubscriptionAPIBaseURL = normalizeLiustSubscriptionAPIBaseURL(settings[SettingKeyLiustSubscriptionAPIBaseURL])
-	result.LiustSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionAPIToken])
-	result.LiustSubscriptionUserID = strings.TrimSpace(settings[SettingKeyLiustSubscriptionUserID])
-	result.LiustSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyLiustSubscriptionRefreshToken])
-	result.LiustSubscriptionAPITokenConfigured = result.LiustSubscriptionAPIToken != ""
-	result.LiustSubscriptionRefreshConfigured = result.LiustSubscriptionRefreshToken != ""
-	result.PackyCodeSubscriptionEnabled = settings[SettingKeyPackyCodeSubscriptionEnabled] == "true"
-	result.PackyCodeSubscriptionAPIBaseURL = normalizePackyCodeSubscriptionAPIBaseURL(settings[SettingKeyPackyCodeSubscriptionAPIBaseURL])
-	result.PackyCodeSubscriptionAPIToken = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionAPIToken])
-	result.PackyCodeSubscriptionUserID = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionUserID])
-	result.PackyCodeSubscriptionRefreshToken = strings.TrimSpace(settings[SettingKeyPackyCodeSubscriptionRefreshToken])
-	result.PackyCodeSubscriptionAPITokenConfigured = result.PackyCodeSubscriptionAPIToken != ""
-	result.PackyCodeSubscriptionRefreshConfigured = result.PackyCodeSubscriptionRefreshToken != ""
 	result.SubscriptionExpiryNotifyEnabled = !isFalseSettingValue(settings[SettingKeySubscriptionExpiryNotifyEnabled])
 
 	// 账号限额通知

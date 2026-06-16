@@ -4,6 +4,15 @@ import { resolve } from 'node:path'
 
 const viewSource = readFileSync(resolve(__dirname, '../ChannelStatusView.vue'), 'utf8')
 const componentSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
+const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+
+const cssBlock = (content: string, selector: string): string => {
+  const start = content.indexOf(`${selector} {`)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const end = content.indexOf('\n}', start)
+  expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
+  return content.slice(start, end + 2)
+}
 
 describe('ChannelStatusView shared capacity overview source', () => {
   it('loads external subscription display statuses and renders a monitor group capacity overview', () => {
@@ -69,5 +78,21 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("localText('限流', 'Limited')")
     expect(componentSource).toContain("localText('错误', 'Error')")
     expect(componentSource).toContain("localText('停用', 'Disabled')")
+  })
+
+  it('matches the Creepee prompt-card hover treatment on channel status cards', () => {
+    const localHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
+    const globalHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card):hover'
+    )
+
+    expect(componentSource).not.toContain('shadow-card')
+    expect(localHoverBlock).toContain('transform: translateY(-2px);')
+    expect(localHoverBlock).toContain('background: var(--atelier-paper);')
+    expect(localHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;')
+    expect(localHoverBlock).not.toContain('linear-gradient')
+    expect(globalHoverBlock).toContain('transform: translateY(-2px) !important;')
+    expect(globalHoverBlock).toContain('box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;')
   })
 })

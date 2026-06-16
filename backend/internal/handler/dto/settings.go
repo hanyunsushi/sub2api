@@ -232,43 +232,12 @@ type SystemSettings struct {
 	PaymentAlipayForceQRCode bool `json:"payment_alipay_force_qrcode"`
 
 	// 余额、订阅到期与账号限额通知
-	BalanceLowNotifyEnabled              bool               `json:"balance_low_notify_enabled"`
-	BalanceLowNotifyThreshold            float64            `json:"balance_low_notify_threshold"`
-	BalanceLowNotifyRechargeURL          string             `json:"balance_low_notify_recharge_url"`
-	BuzzBalanceEnabled                   bool               `json:"buzz_balance_enabled"`
-	BuzzBalanceAPIBaseURL                string             `json:"buzz_balance_api_base_url"`
-	BuzzBalanceAPITokenConfigured        bool               `json:"buzz_balance_api_token_configured"`
-	TCDMXSubscriptionEnabled             bool               `json:"tcdmx_subscription_enabled"`
-	TCDMXSubscriptionAPIBaseURL          string             `json:"tcdmx_subscription_api_base_url"`
-	TCDMXSubscriptionAPITokenConfigured  bool               `json:"tcdmx_subscription_api_token_configured"`
-	TCDMXSubscriptionRefreshConfigured   bool               `json:"tcdmx_subscription_refresh_token_configured"`
-	QLHazyCoderSubscriptionEnabled       bool               `json:"qlhazycoder_subscription_enabled"`
-	QLHazyCoderSubscriptionAPIBaseURL    string             `json:"qlhazycoder_subscription_api_base_url"`
-	QLHazyCoderSubscriptionUserID        string             `json:"qlhazycoder_subscription_user_id"`
-	QLHazyCoderAPITokenConfigured        bool               `json:"qlhazycoder_subscription_api_token_configured"`
-	QLHazyCoderRefreshConfigured         bool               `json:"qlhazycoder_subscription_refresh_token_configured"`
-	XHYAPISubscriptionEnabled            bool               `json:"xhyapi_subscription_enabled"`
-	XHYAPISubscriptionAPIBaseURL         string             `json:"xhyapi_subscription_api_base_url"`
-	XHYAPISubscriptionUserID             string             `json:"xhyapi_subscription_user_id"`
-	XHYAPISubscriptionAPITokenConfigured bool               `json:"xhyapi_subscription_api_token_configured"`
-	XHYAPISubscriptionRefreshConfigured  bool               `json:"xhyapi_subscription_refresh_token_configured"`
-	PixelSubscriptionEnabled             bool               `json:"pixel_subscription_enabled"`
-	PixelSubscriptionAPIBaseURL          string             `json:"pixel_subscription_api_base_url"`
-	PixelSubscriptionAPITokenConfigured  bool               `json:"pixel_subscription_api_token_configured"`
-	PixelSubscriptionRefreshConfigured   bool               `json:"pixel_subscription_refresh_token_configured"`
-	LiustSubscriptionEnabled             bool               `json:"liust_subscription_enabled"`
-	LiustSubscriptionAPIBaseURL          string             `json:"liust_subscription_api_base_url"`
-	LiustSubscriptionUserID              string             `json:"liust_subscription_user_id"`
-	LiustSubscriptionAPITokenConfigured  bool               `json:"liust_subscription_api_token_configured"`
-	LiustSubscriptionRefreshConfigured   bool               `json:"liust_subscription_refresh_token_configured"`
-	PackyCodeSubscriptionEnabled         bool               `json:"packycode_subscription_enabled"`
-	PackyCodeSubscriptionAPIBaseURL      string             `json:"packycode_subscription_api_base_url"`
-	PackyCodeSubscriptionUserID          string             `json:"packycode_subscription_user_id"`
-	PackyCodeAPITokenConfigured          bool               `json:"packycode_subscription_api_token_configured"`
-	PackyCodeRefreshConfigured           bool               `json:"packycode_subscription_refresh_token_configured"`
-	SubscriptionExpiryNotifyEnabled      bool               `json:"subscription_expiry_notify_enabled"`
-	AccountQuotaNotifyEnabled            bool               `json:"account_quota_notify_enabled"`
-	AccountQuotaNotifyEmails             []NotifyEmailEntry `json:"account_quota_notify_emails"`
+	BalanceLowNotifyEnabled         bool               `json:"balance_low_notify_enabled"`
+	BalanceLowNotifyThreshold       float64            `json:"balance_low_notify_threshold"`
+	BalanceLowNotifyRechargeURL     string             `json:"balance_low_notify_recharge_url"`
+	SubscriptionExpiryNotifyEnabled bool               `json:"subscription_expiry_notify_enabled"`
+	AccountQuotaNotifyEnabled       bool               `json:"account_quota_notify_enabled"`
+	AccountQuotaNotifyEmails        []NotifyEmailEntry `json:"account_quota_notify_emails"`
 
 	// Channel Monitor feature switch
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`

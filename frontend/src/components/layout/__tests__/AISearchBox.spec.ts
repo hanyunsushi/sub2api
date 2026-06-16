@@ -31,6 +31,7 @@ describe('Creepee Obsidian bridge panel interactions', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     document.body.classList.remove('ai-search-panel-open')
+    document.body.classList.remove('ai-search-panel-fullscreen')
     document.querySelectorAll('[data-testid="ai-search-sidecar"]').forEach((node) => node.remove())
   })
 
@@ -67,6 +68,8 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(document.querySelector('.ai-search-panel-subtitle')).toBeNull()
     expect(document.querySelector('.ai-search-panel-avatar')).toBeNull()
     expect(document.querySelector('.ai-search-panel-close')).not.toBeNull()
+    expect(document.querySelector('.ai-search-panel-actions')).not.toBeNull()
+    expect(document.querySelector('[data-testid="layout-ai-search-panel-button-toggle-fullscreen"]')).not.toBeNull()
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(true)
     triggerWrapper.unmount()
     panelWrapper.unmount()
@@ -204,6 +207,41 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     panelWrapper.unmount()
   })
 
+  it('toggles fullscreen without remounting the resident iframe', async () => {
+    const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
+    const triggerWrapper = mount(AISearchBox, mountOptions)
+    const panelWrapper = mount(AISearchPanel, mountOptions)
+    await nextTick()
+
+    await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
+    await nextTick()
+
+    const sidecar = document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement
+    const frame = document.querySelector('[data-testid="obsidian-bridge-frame"]')
+    const fullscreenButton = document.querySelector<HTMLButtonElement>('[data-testid="layout-ai-search-panel-button-toggle-fullscreen"]')
+    expect(sidecar).not.toBeNull()
+    expect(frame).not.toBeNull()
+    expect(fullscreenButton).not.toBeNull()
+    expect(fullscreenButton?.getAttribute('aria-pressed')).toBe('false')
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(false)
+
+    fullscreenButton?.click()
+    await nextTick()
+    expect(sidecar.classList.contains('ai-search-sidecar-fullscreen')).toBe(true)
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(true)
+    expect(fullscreenButton?.getAttribute('aria-pressed')).toBe('true')
+    expect(document.querySelector('[data-testid="obsidian-bridge-frame"]')).toBe(frame)
+
+    fullscreenButton?.click()
+    await nextTick()
+    expect(sidecar.classList.contains('ai-search-sidecar-fullscreen')).toBe(false)
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(false)
+    expect(fullscreenButton?.getAttribute('aria-pressed')).toBe('false')
+
+    triggerWrapper.unmount()
+    panelWrapper.unmount()
+  })
+
   it('closes on Escape and via the close button', async () => {
     const mountOptions = { attachTo: document.body, global: { plugins: [pinia] } }
     const triggerWrapper = mount(AISearchBox, mountOptions)
@@ -212,19 +250,27 @@ describe('Creepee Obsidian bridge panel interactions', () => {
 
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
+    document.querySelector<HTMLButtonElement>('[data-testid="layout-ai-search-panel-button-toggle-fullscreen"]')?.click()
+    await nextTick()
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(true)
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await nextTick()
     expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('false')
     expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(false)
 
     await triggerWrapper.get('[data-testid="ai-search-trigger"]').trigger('click')
     await nextTick()
+    document.querySelector<HTMLButtonElement>('[data-testid="layout-ai-search-panel-button-toggle-fullscreen"]')?.click()
+    await nextTick()
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(true)
     document.querySelector<HTMLButtonElement>('.ai-search-panel-close')?.click()
     await nextTick()
     expect((document.querySelector('[data-testid="ai-search-sidecar"]') as HTMLElement).dataset.open).toBe('false')
     expect(document.querySelector('[data-testid="ai-search-sidecar"]')?.getAttribute('aria-hidden')).toBe('true')
     expect(document.body.classList.contains('ai-search-panel-open')).toBe(false)
+    expect(document.body.classList.contains('ai-search-panel-fullscreen')).toBe(false)
     triggerWrapper.unmount()
     panelWrapper.unmount()
   })

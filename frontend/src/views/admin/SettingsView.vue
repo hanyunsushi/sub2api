@@ -7259,8 +7259,6 @@ type SettingsForm = Omit<
   | "wechat_connect_open_enabled"
   | "wechat_connect_mp_enabled"
   | "wechat_connect_mobile_enabled"
-  | "liust_subscription_refresh_token_configured"
-  | "packycode_subscription_refresh_token_configured"
 > & {
   smtp_password: string;
   turnstile_secret_key: string;
@@ -7278,16 +7276,6 @@ type SettingsForm = Omit<
   google_oauth_client_secret: string;
   force_email_on_third_party_signup: boolean;
   openai_advanced_scheduler_enabled: boolean;
-  buzz_balance_api_token: string;
-  tcdmx_subscription_api_token: string;
-  tcdmx_subscription_refresh_token: string;
-  qlhazycoder_subscription_api_token: string;
-  xhyapi_subscription_api_token: string;
-  xhyapi_subscription_refresh_token: string;
-  pixel_subscription_api_token: string;
-  pixel_subscription_refresh_token: string;
-  liust_subscription_api_token: string;
-  packycode_subscription_api_token: string;
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
 };
@@ -7495,44 +7483,6 @@ const form = reactive<SettingsForm>({
   balance_low_notify_enabled: false,
   balance_low_notify_threshold: 0,
   balance_low_notify_recharge_url: "",
-  buzz_balance_enabled: false,
-  buzz_balance_api_base_url: "https://buzzai.cc",
-  buzz_balance_api_token: "",
-  buzz_balance_api_token_configured: false,
-  tcdmx_subscription_enabled: false,
-  tcdmx_subscription_api_base_url: "https://tcdmx.com",
-  tcdmx_subscription_api_token: "",
-  tcdmx_subscription_api_token_configured: false,
-  tcdmx_subscription_refresh_token: "",
-  tcdmx_subscription_refresh_token_configured: false,
-  qlhazycoder_subscription_enabled: false,
-  qlhazycoder_subscription_api_base_url: "https://api.qlhazycoder.top",
-  qlhazycoder_subscription_user_id: "",
-  qlhazycoder_subscription_api_token: "",
-  qlhazycoder_subscription_api_token_configured: false,
-  xhyapi_subscription_enabled: false,
-  xhyapi_subscription_api_base_url: "https://xhyapi.com",
-  xhyapi_subscription_user_id: "",
-  xhyapi_subscription_api_token: "",
-  xhyapi_subscription_api_token_configured: false,
-  xhyapi_subscription_refresh_token: "",
-  xhyapi_subscription_refresh_token_configured: false,
-  pixel_subscription_enabled: false,
-  pixel_subscription_api_base_url: "https://ai-pixel.online",
-  pixel_subscription_api_token: "",
-  pixel_subscription_api_token_configured: false,
-  pixel_subscription_refresh_token: "",
-  pixel_subscription_refresh_token_configured: false,
-  liust_subscription_enabled: false,
-  liust_subscription_api_base_url: "https://liust.xyz",
-  liust_subscription_user_id: "",
-  liust_subscription_api_token: "",
-  liust_subscription_api_token_configured: false,
-  packycode_subscription_enabled: false,
-  packycode_subscription_api_base_url: "https://www.packyapi.com",
-  packycode_subscription_user_id: "",
-  packycode_subscription_api_token: "",
-  packycode_subscription_api_token_configured: false,
   subscription_expiry_notify_enabled: true,
   account_quota_notify_enabled: false,
   account_quota_notify_emails: [] as NotifyEmailEntry[],
@@ -8255,16 +8205,6 @@ async function loadSettings() {
     form.wechat_connect_open_app_secret = "";
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
-    form.buzz_balance_api_token = "";
-    form.tcdmx_subscription_api_token = "";
-    form.tcdmx_subscription_refresh_token = "";
-    form.qlhazycoder_subscription_api_token = "";
-    form.xhyapi_subscription_api_token = "";
-    form.xhyapi_subscription_refresh_token = "";
-    form.pixel_subscription_api_token = "";
-    form.pixel_subscription_refresh_token = "";
-    form.liust_subscription_api_token = "";
-    form.packycode_subscription_api_token = "";
     const wechatCapabilities = resolveWeChatConnectModeCapabilities(
       settings.wechat_connect_open_enabled,
       settings.wechat_connect_mp_enabled,
@@ -8567,27 +8507,6 @@ async function saveSettings() {
     }
     form.custom_ai_logo_presets = normalizedCustomAILogoPresets;
     customAILogoPresetsInput.value = normalizedCustomAILogoPresets.join("\n");
-    if (!isValidHttpUrl(form.buzz_balance_api_base_url)) {
-      form.buzz_balance_api_base_url = "https://buzzai.cc";
-    }
-    if (!isValidHttpUrl(form.tcdmx_subscription_api_base_url)) {
-      form.tcdmx_subscription_api_base_url = "https://tcdmx.com";
-    }
-    if (!isValidHttpUrl(form.qlhazycoder_subscription_api_base_url)) {
-      form.qlhazycoder_subscription_api_base_url = "https://api.qlhazycoder.top";
-    }
-    if (!isValidHttpUrl(form.xhyapi_subscription_api_base_url)) {
-      form.xhyapi_subscription_api_base_url = "https://xhyapi.com";
-    }
-    if (!isValidHttpUrl(form.pixel_subscription_api_base_url)) {
-      form.pixel_subscription_api_base_url = "https://ai-pixel.online";
-    }
-    if (!isValidHttpUrl(form.liust_subscription_api_base_url)) {
-      form.liust_subscription_api_base_url = "https://liust.xyz";
-    }
-    if (!isValidHttpUrl(form.packycode_subscription_api_base_url)) {
-      form.packycode_subscription_api_base_url = "https://www.packyapi.com";
-    }
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -8799,52 +8718,6 @@ async function saveSettings() {
         Number(form.balance_low_notify_threshold) || 0,
       balance_low_notify_recharge_url: (form.balance_low_notify_recharge_url =
         form.balance_low_notify_recharge_url || currentOrigin),
-      buzz_balance_enabled: form.buzz_balance_enabled,
-      buzz_balance_api_base_url:
-        form.buzz_balance_api_base_url?.trim() || "https://buzzai.cc",
-      buzz_balance_api_token: form.buzz_balance_api_token || undefined,
-      tcdmx_subscription_enabled: form.tcdmx_subscription_enabled,
-      tcdmx_subscription_api_base_url:
-        form.tcdmx_subscription_api_base_url?.trim() || "https://tcdmx.com",
-      tcdmx_subscription_api_token:
-        form.tcdmx_subscription_api_token || undefined,
-      tcdmx_subscription_refresh_token:
-        form.tcdmx_subscription_refresh_token || undefined,
-      qlhazycoder_subscription_enabled: form.qlhazycoder_subscription_enabled,
-      qlhazycoder_subscription_api_base_url:
-        form.qlhazycoder_subscription_api_base_url?.trim() || "https://api.qlhazycoder.top",
-      qlhazycoder_subscription_api_token:
-        form.qlhazycoder_subscription_api_token || undefined,
-      qlhazycoder_subscription_user_id:
-        form.qlhazycoder_subscription_user_id?.trim() || "",
-      xhyapi_subscription_enabled: form.xhyapi_subscription_enabled,
-      xhyapi_subscription_api_base_url:
-        form.xhyapi_subscription_api_base_url?.trim() || "https://xhyapi.com",
-      xhyapi_subscription_api_token:
-        form.xhyapi_subscription_api_token || undefined,
-      xhyapi_subscription_refresh_token:
-        form.xhyapi_subscription_refresh_token || undefined,
-      pixel_subscription_enabled: form.pixel_subscription_enabled,
-      pixel_subscription_api_base_url:
-        form.pixel_subscription_api_base_url?.trim() || "https://ai-pixel.online",
-      pixel_subscription_api_token:
-        form.pixel_subscription_api_token || undefined,
-      pixel_subscription_refresh_token:
-        form.pixel_subscription_refresh_token || undefined,
-      liust_subscription_enabled: form.liust_subscription_enabled,
-      liust_subscription_api_base_url:
-        form.liust_subscription_api_base_url?.trim() || "https://liust.xyz",
-      liust_subscription_api_token:
-        form.liust_subscription_api_token || undefined,
-      liust_subscription_user_id:
-        form.liust_subscription_user_id?.trim() || "",
-      packycode_subscription_enabled: form.packycode_subscription_enabled,
-      packycode_subscription_api_base_url:
-        form.packycode_subscription_api_base_url?.trim() || "https://www.packyapi.com",
-      packycode_subscription_api_token:
-        form.packycode_subscription_api_token || undefined,
-      packycode_subscription_user_id:
-        form.packycode_subscription_user_id?.trim() || "",
       subscription_expiry_notify_enabled:
         form.subscription_expiry_notify_enabled,
       account_quota_notify_enabled: form.account_quota_notify_enabled,
@@ -8927,16 +8800,6 @@ async function saveSettings() {
     form.wechat_connect_open_app_secret = "";
     form.wechat_connect_mp_app_secret = "";
     form.wechat_connect_mobile_app_secret = "";
-    form.buzz_balance_api_token = "";
-    form.tcdmx_subscription_api_token = "";
-    form.tcdmx_subscription_refresh_token = "";
-    form.qlhazycoder_subscription_api_token = "";
-    form.xhyapi_subscription_api_token = "";
-    form.xhyapi_subscription_refresh_token = "";
-    form.pixel_subscription_api_token = "";
-    form.pixel_subscription_refresh_token = "";
-    form.liust_subscription_api_token = "";
-    form.packycode_subscription_api_token = "";
     const updatedWechatCapabilities = resolveWeChatConnectModeCapabilities(
       updated.wechat_connect_open_enabled,
       updated.wechat_connect_mp_enabled,

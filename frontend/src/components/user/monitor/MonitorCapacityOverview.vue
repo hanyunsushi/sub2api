@@ -7,7 +7,7 @@
     <article
       v-for="card in cards"
       :key="card.groupKey"
-      class="monitor-capacity-card rounded-2xl border border-gray-200/80 bg-white/75 p-4 shadow-card dark:border-dark-700/70 dark:bg-dark-800/60"
+      class="monitor-capacity-card rounded-2xl border border-gray-200/80 bg-white/75 p-4 dark:border-dark-700/70 dark:bg-dark-800/60"
       data-testid="monitor-capacity-card"
       :data-capacity-group="card.groupKey"
     >
@@ -467,14 +467,27 @@ function formatBalance(value: number) {
   position: relative;
   overflow: hidden;
   min-width: 0;
+  box-shadow: none;
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .monitor-capacity-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08));
+  background: transparent;
   pointer-events: none;
+}
+
+.monitor-capacity-card:hover {
+  transform: translateY(-2px);
+  background: var(--atelier-paper);
+  border-color: var(--atelier-material-edge-strong);
+  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
 }
 
 .monitor-capacity-card > * {

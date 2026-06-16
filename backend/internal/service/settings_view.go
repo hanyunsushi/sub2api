@@ -220,64 +220,6 @@ type SystemSettings struct {
 	BalanceLowNotifyThreshold   float64
 	BalanceLowNotifyRechargeURL string
 
-	// BuzzAI balance display
-	BuzzBalanceEnabled            bool
-	BuzzBalanceAPIBaseURL         string
-	BuzzBalanceAPIToken           string
-	BuzzBalanceAPITokenConfigured bool
-
-	// TCDMX subscription display
-	TCDMXSubscriptionEnabled            bool
-	TCDMXSubscriptionAPIBaseURL         string
-	TCDMXSubscriptionAPIToken           string
-	TCDMXSubscriptionRefreshToken       string
-	TCDMXSubscriptionAPITokenConfigured bool
-	TCDMXSubscriptionRefreshConfigured  bool
-
-	// qlhazycoder subscription display
-	QLHazyCoderSubscriptionEnabled            bool
-	QLHazyCoderSubscriptionAPIBaseURL         string
-	QLHazyCoderSubscriptionAPIToken           string
-	QLHazyCoderSubscriptionUserID             string
-	QLHazyCoderSubscriptionRefreshToken       string
-	QLHazyCoderSubscriptionAPITokenConfigured bool
-	QLHazyCoderSubscriptionRefreshConfigured  bool
-
-	// XHYAPI subscription display
-	XHYAPISubscriptionEnabled            bool
-	XHYAPISubscriptionAPIBaseURL         string
-	XHYAPISubscriptionAPIToken           string
-	XHYAPISubscriptionUserID             string
-	XHYAPISubscriptionRefreshToken       string
-	XHYAPISubscriptionAPITokenConfigured bool
-	XHYAPISubscriptionRefreshConfigured  bool
-
-	// Pixel subscription display
-	PixelSubscriptionEnabled            bool
-	PixelSubscriptionAPIBaseURL         string
-	PixelSubscriptionAPIToken           string
-	PixelSubscriptionRefreshToken       string
-	PixelSubscriptionAPITokenConfigured bool
-	PixelSubscriptionRefreshConfigured  bool
-
-	// liust subscription display
-	LiustSubscriptionEnabled            bool
-	LiustSubscriptionAPIBaseURL         string
-	LiustSubscriptionAPIToken           string
-	LiustSubscriptionUserID             string
-	LiustSubscriptionRefreshToken       string
-	LiustSubscriptionAPITokenConfigured bool
-	LiustSubscriptionRefreshConfigured  bool
-
-	// PackyCode subscription display
-	PackyCodeSubscriptionEnabled            bool
-	PackyCodeSubscriptionAPIBaseURL         string
-	PackyCodeSubscriptionAPIToken           string
-	PackyCodeSubscriptionUserID             string
-	PackyCodeSubscriptionRefreshToken       string
-	PackyCodeSubscriptionAPITokenConfigured bool
-	PackyCodeSubscriptionRefreshConfigured  bool
-
 	// 订阅到期提醒
 	SubscriptionExpiryNotifyEnabled bool
 

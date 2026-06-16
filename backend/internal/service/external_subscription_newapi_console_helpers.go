@@ -1,55 +1,14 @@
 package service
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
-
-type QLHazyCoderSubscriptionSettings = ExternalSubscriptionSettings
-type QLHazyCoderSubscriptionStatus = ExternalSubscriptionStatus
-type QLHazyCoderSubscriptionItem = ExternalSubscriptionItem
-
-type QLHazyCoderSubscriptionService struct {
-	*ExternalSubscriptionService
-}
-
-func qlhazycoderSubscriptionProviderConfig() externalSubscriptionProviderConfig {
-	return externalSubscriptionProviderConfig{
-		Provider:          "qlhazycoder",
-		DisplayName:       "qlhazycoder",
-		DefaultAPIBaseURL: DefaultQLHazyCoderSubscriptionAPIBaseURL,
-		EnabledKey:        SettingKeyQLHazyCoderSubscriptionEnabled,
-		APIBaseURLKey:     SettingKeyQLHazyCoderSubscriptionAPIBaseURL,
-		APITokenKey:       SettingKeyQLHazyCoderSubscriptionAPIToken,
-		UserIDKey:         SettingKeyQLHazyCoderSubscriptionUserID,
-		RefreshTokenKey:   SettingKeyQLHazyCoderSubscriptionRefreshToken,
-	}
-}
-
-func NewQLHazyCoderSubscriptionService(settingService *SettingService) *QLHazyCoderSubscriptionService {
-	return &QLHazyCoderSubscriptionService{
-		ExternalSubscriptionService: newExternalSubscriptionService(settingService, qlhazycoderSubscriptionProviderConfig()),
-	}
-}
-
-func normalizeQLHazyCoderSubscriptionAPIBaseURL(raw string) string {
-	trimmed := strings.TrimRight(strings.TrimSpace(raw), "/")
-	if trimmed == "" || strings.EqualFold(trimmed, "https://shop.qlhazycoder.top") || strings.EqualFold(trimmed, "http://shop.qlhazycoder.top") {
-		return DefaultQLHazyCoderSubscriptionAPIBaseURL
-	}
-	return normalizeExternalSubscriptionAPIBaseURL(raw, DefaultQLHazyCoderSubscriptionAPIBaseURL)
-}
-
-func (s *SettingService) GetQLHazyCoderSubscriptionSettings(ctx context.Context) (QLHazyCoderSubscriptionSettings, error) {
-	return s.getExternalSubscriptionSettings(ctx, qlhazycoderSubscriptionProviderConfig())
-}
 
 type qlhazyCoderEnvelope struct {
 	Success bool            `json:"success"`
@@ -131,114 +90,6 @@ func (v *qlhazyCoderFloat) UnmarshalJSON(raw []byte) error {
 	return infraerrors.ServiceUnavailable("QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR", "failed to parse qlhazycoder account status")
 }
 
-func (s *QLHazyCoderSubscriptionService) GetStatus(ctx context.Context) (*QLHazyCoderSubscriptionStatus, error) {
-	settings, err := s.settingService.getExternalSubscriptionSettings(ctx, qlhazycoderSubscriptionProviderConfig())
-	if err != nil {
-		return nil, err
-	}
-	auth := normalizeQLHazyCoderSubscriptionAuth(settings.APIToken)
-	if auth.UserID == "" {
-		auth.UserID = strings.TrimSpace(settings.UserID)
-	}
-	settings.APIToken = auth.Token
-
-	result := &ExternalSubscriptionStatus{
-		Provider:      "qlhazycoder",
-		Enabled:       settings.Enabled,
-		Configured:    settings.APIToken != "",
-		Currency:      "CNY",
-		SiteURL:       settings.APIBaseURL,
-		Subscriptions: []ExternalSubscriptionItem{},
-	}
-	if !settings.Enabled || settings.APIToken == "" {
-		return result, nil
-	}
-
-	var metadata qlhazyCoderStatusMetadata
-	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/status", &metadata); err != nil {
-		return s.statusWithQLHazyCoderError(result, err)
-	}
-	converter := newQLHazyCoderQuotaConverter(metadata)
-	result.Currency = converter.currency
-
-	var user qlhazyCoderUserSelf
-	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/user/self", &user); err != nil {
-		return s.statusWithQLHazyCoderError(result, err)
-	}
-
-	var subscription qlhazyCoderSubscriptionSelf
-	if err := s.getQLHazyCoderJSON(ctx, settings, auth, "/api/subscription/self", &subscription); err != nil {
-		return s.statusWithQLHazyCoderError(result, err)
-	}
-
-	result.Subscriptions = make([]ExternalSubscriptionItem, 0, len(subscription.Subscriptions))
-	var totalLimit float64
-	var hasLimit bool
-	var earliestExpiry *time.Time
-
-	now := time.Now()
-	for _, wrapper := range subscription.Subscriptions {
-		record := wrapper.Subscription
-		if !isQLHazyCoderActiveSubscription(record, now) {
-			continue
-		}
-		item := qlhazyCoderSubscriptionItemFromAPI(wrapper, converter)
-		result.Subscriptions = append(result.Subscriptions, item)
-		result.ActiveCount++
-		result.UsedUSD += item.UsedUSD
-		if item.LimitUSD != nil {
-			totalLimit += *item.LimitUSD
-			hasLimit = true
-		}
-		if item.ExpiresAt != nil && (earliestExpiry == nil || item.ExpiresAt.Before(*earliestExpiry)) {
-			expiry := *item.ExpiresAt
-			earliestExpiry = &expiry
-		}
-	}
-
-	if hasLimit {
-		result.TotalLimitUSD = &totalLimit
-		remaining := totalLimit - result.UsedUSD
-		result.RemainingUSD = &remaining
-	}
-	if earliestExpiry != nil {
-		result.ExpiresAt = earliestExpiry
-		result.DaysRemaining = daysRemainingFromNow(earliestExpiry)
-	}
-	if result.ActiveCount == 0 {
-		result.UsedUSD = converter.amount(user.UsedQuota)
-		remaining := converter.amount(user.Quota)
-		result.RemainingUSD = &remaining
-	}
-	result.RefreshedAt = time.Now().UTC()
-	return result, nil
-}
-
-func (s *QLHazyCoderSubscriptionService) getQLHazyCoderJSON(ctx context.Context, settings ExternalSubscriptionSettings, auth qlhazyCoderSubscriptionAuth, path string, out any) error {
-	var envelope qlhazyCoderEnvelope
-	req := s.client.R().
-		SetContext(ctx).
-		SetHeader("Authorization", "Bearer "+settings.APIToken).
-		SetSuccessResult(&envelope)
-	if auth.UserID != "" {
-		req.SetHeader("New-API-User", auth.UserID)
-	}
-	resp, err := req.Get(settings.APIBaseURL + path)
-	if err != nil {
-		return infraerrors.ServiceUnavailable("QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR", "failed to query qlhazycoder account status")
-	}
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return qlhazyCoderErrorFromResponse(resp.StatusCode, resp.Bytes(), envelope)
-	}
-	if !envelope.Success {
-		return qlhazyCoderErrorFromResponse(resp.StatusCode, resp.Bytes(), envelope)
-	}
-	if err := json.Unmarshal(envelope.Data, out); err != nil {
-		return infraerrors.ServiceUnavailable("QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR", "failed to parse qlhazycoder account status")
-	}
-	return nil
-}
-
 type qlhazyCoderSubscriptionAuth struct {
 	Token  string
 	UserID string
@@ -312,58 +163,6 @@ func qlhazyCoderUserIDString(value any) string {
 		return strings.TrimSpace(typed.String())
 	default:
 		return strings.TrimSpace(fmt.Sprint(typed))
-	}
-}
-
-func (s *QLHazyCoderSubscriptionService) statusWithQLHazyCoderError(result *ExternalSubscriptionStatus, err error) (*QLHazyCoderSubscriptionStatus, error) {
-	if upstreamErr, ok := err.(*externalSubscriptionUpstreamError); ok {
-		result.ErrorCode = upstreamErr.Code
-		if result.ErrorCode == "" {
-			result.ErrorCode = "QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR"
-		}
-		result.ErrorMessage = upstreamErr.Message
-		if strings.TrimSpace(result.ErrorMessage) == "" {
-			result.ErrorMessage = "qlhazycoder account API returned an error"
-		}
-		result.RefreshedAt = time.Now().UTC()
-		return result, nil
-	}
-	return nil, err
-}
-
-func qlhazyCoderErrorFromResponse(statusCode int, body []byte, envelope qlhazyCoderEnvelope) error {
-	code := ""
-	if statusCode == http.StatusUnauthorized {
-		code = strconv.Itoa(statusCode)
-	}
-	message := strings.TrimSpace(envelope.Message)
-	if code == "" || message == "" {
-		var raw struct {
-			Success bool   `json:"success"`
-			Message string `json:"message"`
-			Error   string `json:"error"`
-		}
-		if err := json.Unmarshal(body, &raw); err == nil {
-			if message == "" {
-				message = strings.TrimSpace(raw.Message)
-			}
-			if message == "" {
-				message = strings.TrimSpace(raw.Error)
-			}
-		}
-	}
-	if code == "" {
-		code = "QLHAZYCODER_SUBSCRIPTION_UPSTREAM_ERROR"
-	}
-	if message == "" {
-		message = "qlhazycoder account API returned an error"
-	}
-	return &externalSubscriptionUpstreamError{
-		StatusCode: statusCode,
-		Code:       code,
-		Message:    message,
-		Provider:   "qlhazycoder",
-		Display:    "qlhazycoder",
 	}
 }
 
