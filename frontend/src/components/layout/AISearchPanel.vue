@@ -16,28 +16,15 @@
         aria-label="Creepee Obsidian Codex Bridge"
         tabindex="-1"
       >
-        <header class="ai-search-panel-head">
-          <div class="ai-search-panel-brand">
-            <img
-              class="ai-search-panel-avatar"
-              :src="claudeCodeCrabAvatar"
-              alt="Claude Code crab"
-            >
-            <div class="ai-search-panel-copy">
-              <span class="ai-search-panel-title">Creepee</span>
-              <span class="ai-search-panel-subtitle">Obsidian Codex Bridge</span>
-            </div>
-          </div>
-          <button data-testid="layout-ai-search-panel-button-close-panel"
-            type="button"
-            class="ai-search-panel-close"
-            aria-label="Close"
-            title="Close"
-            @click="closePanel"
-          >
-            <span aria-hidden="true">x</span>
-          </button>
-        </header>
+        <button data-testid="layout-ai-search-panel-button-close-panel"
+          type="button"
+          class="ai-search-panel-close"
+          aria-label="Close"
+          title="Close"
+          @click="closePanel"
+        >
+          <span aria-hidden="true">x</span>
+        </button>
         <div class="ai-search-panel-body">
           <iframe
             ref="bridgeFrameRef"
@@ -69,7 +56,6 @@ const ssoCompleteForOpen = ref(false)
 let creepeeSSOAttemptCount = 0
 let creepeeSSORetryTimer: number | null = null
 
-const claudeCodeCrabAvatar = '/brand/claudecode-color.png'
 const defaultBridgeUrl = 'http://127.0.0.1:43110/'
 const bridgeUrl = (import.meta.env.VITE_OBSIDIAN_CODEX_BRIDGE_URL || defaultBridgeUrl).trim() || defaultBridgeUrl
 const bridgeOrigin = new URL(bridgeUrl, window.location.href).origin
