@@ -6,8 +6,12 @@ const sourcePath = resolve(__dirname, '../ExternalSubscriptionsView.vue')
 const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : ''
 const stylePath = resolve(__dirname, '../../../style.css')
 const styleSource = existsSync(stylePath) ? readFileSync(stylePath, 'utf8') : ''
-const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
-const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
+const creepeeHoverSurface = 'var(--creepee-card-hover-surface)'
+const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
+const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
+const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
+const homepageHoverShadow =
+  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -109,29 +113,44 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('grid gap-4 md:grid-cols-2 xl:grid-cols-3')
   })
 
-  it('matches the Creepee prompt-card hover treatment on external subscription cards', () => {
+  it('matches the Creepee homepage recommendation-card hover treatment on external subscription cards', () => {
     const localHoverBlock = cssBlock(source, '.external-subscription-card:hover')
     const globalHoverBlock = cssBlock(
       styleSource,
       '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
+    const globalBaseBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+    )
 
-    expect(localHoverBlock).toContain('transform: translateY(-2px);')
+    expect(styleSource).toContain(homepageHoverTransform)
+    expect(styleSource).toContain(homepageHoverShadow)
+    expect(cssBlock(source, '.external-subscription-card')).toContain(homepageHoverShadow)
+    expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(localHoverBlock).toContain(`background: ${creepeeHoverSurface};`)
     expect(localHoverBlock).toContain(`background-color: ${creepeeHoverSurface};`)
     expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(localHoverBlock).not.toContain('translateY(-2px)')
+    expect(localHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(localHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(localHoverBlock).not.toContain('var(--atelier-butter')
+    expect(localHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(localHoverBlock).not.toContain('var(--atelier-material-shadow)')
     expect(localHoverBlock).not.toContain('border-color')
     expect(localHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(localHoverBlock).not.toContain('var(--atelier-paper)')
-    expect(globalHoverBlock).toContain('transform: translateY(-2px) !important;')
+    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(globalBaseBlock).toContain(homepageHoverShadow)
     expect(globalHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
     expect(globalHoverBlock).toContain(`background-color: ${creepeeHoverSurface} !important;`)
     expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(globalHoverBlock).not.toContain('translateY(-2px)')
+    expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(globalHoverBlock).not.toContain('var(--atelier-butter')
+    expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(globalHoverBlock).not.toContain('border-color')
     expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(globalHoverBlock).not.toContain('var(--atelier-paper)')
-    expect(styleSource).toContain('--creepee-prompt-card-hover-surface: #faf9f5;')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

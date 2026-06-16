@@ -4,7 +4,9 @@
 
 :root {
   --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
-  --creepee-prompt-card-hover-surface: #faf9f5;
+  --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
+  --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
 }
 
 /* Newspaper appearance theme */
@@ -1632,9 +1634,11 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   align-items: stretch;
   width: var(--ai-search-sidecar-width);
   min-width: 34.25rem;
-  background: var(--atelier-paper);
+  border: 0;
+  background: transparent;
   box-shadow: none;
   filter: none;
+  outline: 0;
   contain: layout paint style;
   opacity: 0;
   pointer-events: none;
@@ -1732,8 +1736,18 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
 #creepee-ai-sidecar.ai-search-sidecar .ai-search-panel,
 #creepee-ai-sidecar.ai-search-sidecar .ai-search-bridge-frame {
   border: 0 !important;
+  background: transparent !important;
   box-shadow: none !important;
   filter: none !important;
+  outline: 0 !important;
+}
+
+#creepee-ai-sidecar.ai-search-sidecar::before,
+#creepee-ai-sidecar.ai-search-sidecar::after,
+#creepee-ai-sidecar.ai-search-sidecar .ai-search-panel::before,
+#creepee-ai-sidecar.ai-search-sidecar .ai-search-panel::after {
+  content: none !important;
+  display: none !important;
 }
 
 @media (max-width: 560px) {
@@ -3898,6 +3912,9 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+  --home-card-accent: var(--atelier-blue);
+  --creepee-card-hover-surface: var(--atelier-paper-2);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
@@ -3912,14 +3929,18 @@ body:has(.table-page-layout) :where(
   padding: 0.56rem;
   content-visibility: auto;
   contain-intrinsic-size: 9.5rem 20rem;
-  transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    transform 280ms var(--atelier-ease),
+    background-color 280ms var(--atelier-ease),
+    box-shadow 280ms var(--atelier-ease);
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  transform: translate3d(0, -2px, 0);
-  background: var(--creepee-prompt-card-hover-surface) !important;
-  background-color: var(--creepee-prompt-card-hover-surface) !important;
-  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px;
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  transform: var(--creepee-home-card-hover-transform);
+  background: var(--creepee-card-hover-surface) !important;
+  background-color: var(--creepee-card-hover-surface) !important;
+  box-shadow: var(--creepee-home-card-hover-shadow);
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr.codex-account-card-calling {
@@ -8352,25 +8373,28 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   background-color: #ef4444 !important;
 }
 
-/* Creepee prompt-card hover parity for selectable account/status/subscription cards. */
+/* Creepee homepage recommendation-card hover parity for selectable account/status/subscription cards. */
 #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr) {
+  --home-card-accent: var(--atelier-blue);
+  --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
   transition:
-    transform 0.16s ease,
-    background 0.16s ease,
-    background-color 0.16s ease,
-    box-shadow 0.16s ease !important;
+    transform 280ms var(--atelier-ease),
+    background-color 280ms var(--atelier-ease),
+    box-shadow 280ms var(--atelier-ease) !important;
 }
 
 #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
-  transform: translateY(-2px) !important;
-  background: var(--creepee-prompt-card-hover-surface) !important;
-  background-color: var(--creepee-prompt-card-hover-surface) !important;
-  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
+  transform: var(--creepee-home-card-hover-transform) !important;
+  background: var(--creepee-card-hover-surface) !important;
+  background-color: var(--creepee-card-hover-surface) !important;
+  box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  transform: translate3d(0, -2px, 0) !important;
-  background: var(--creepee-prompt-card-hover-surface) !important;
-  background-color: var(--creepee-prompt-card-hover-surface) !important;
-  box-shadow: rgba(20, 20, 19, 0.035) 0 12px 28px !important;
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  transform: var(--creepee-home-card-hover-transform) !important;
+  background: var(--creepee-card-hover-surface) !important;
+  background-color: var(--creepee-card-hover-surface) !important;
+  box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }

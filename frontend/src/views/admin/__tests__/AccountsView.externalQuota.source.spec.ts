@@ -11,8 +11,12 @@ const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../
 const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
-const creepeeHoverSurface = 'var(--creepee-prompt-card-hover-surface)'
-const creepeeHoverShadow = 'rgba(20, 20, 19, 0.035) 0 12px 28px'
+const creepeeHoverSurface = 'var(--creepee-card-hover-surface)'
+const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
+const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
+const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
+const homepageHoverShadow =
+  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -238,7 +242,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('watch(')
   })
 
-  it('matches the Creepee prompt-card hover treatment on admin account table cards', () => {
+  it('matches the Creepee homepage recommendation-card hover treatment on admin account table cards', () => {
     const accountRowHoverBlock = cssBlock(
       styleSource,
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
@@ -246,6 +250,10 @@ describe('AccountsView external quota card metadata', () => {
     const globalHoverBlock = cssBlock(
       styleSource,
       '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    )
+    const globalBaseBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
     )
     const tableResetIndex = styleSource.indexOf(
       '#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover'
@@ -255,26 +263,45 @@ describe('AccountsView external quota card metadata', () => {
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
 
-    expect(accountRowHoverBlock).toContain('transform: translate3d(0, -2px, 0);')
-    expect(accountRowHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
-    expect(accountRowHoverBlock).toContain(`background-color: ${creepeeHoverSurface} !important;`)
+    expect(styleSource).toContain(homepageHoverTransform)
+    expect(styleSource).toContain(homepageHoverShadow)
+    expect(styleSource).toContain(`--creepee-home-card-hover-shadow: ${homepageHoverShadow.split(': ')[1]}`)
+    expect(accountRowHoverBlock).toContain(homepageHoverShadow)
+    expect(accountRowHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
+    expect(accountRowHoverBlock).toContain(`background: ${creepeeHoverSurface}`)
+    expect(accountRowHoverBlock).toContain(`background-color: ${creepeeHoverSurface}`)
     expect(accountRowHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(accountRowHoverBlock).not.toContain('translate3d(0, -2px, 0)')
+    expect(accountRowHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(accountRowHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(accountRowHoverBlock).not.toContain('var(--atelier-butter')
+    expect(accountRowHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(accountRowHoverBlock).not.toContain('border-color')
     expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(accountRowHoverBlock).not.toContain('var(--atelier-paper)')
     expect(globalHoverBlock).toContain('.accounts-table-page .table-wrapper tbody tr')
-    expect(globalHoverBlock).toContain(`background: ${creepeeHoverSurface} !important;`)
-    expect(globalHoverBlock).toContain(`background-color: ${creepeeHoverSurface} !important;`)
+    expect(globalBaseBlock).toContain(homepageHoverShadow)
+    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(globalHoverBlock).toContain(`background: ${creepeeHoverSurface}`)
+    expect(globalHoverBlock).toContain(`background-color: ${creepeeHoverSurface}`)
     expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(globalHoverBlock).not.toContain('translateY(-2px)')
+    expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(globalHoverBlock).not.toContain('var(--atelier-butter')
+    expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(globalHoverBlock).not.toContain('border-color')
     expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(globalHoverBlock).not.toContain('var(--atelier-paper)')
-    expect(styleSource).toContain('--creepee-prompt-card-hover-surface: #faf9f5;')
     expect(finalAccountRowHover.start).toBeGreaterThan(tableResetIndex)
-    expect(finalAccountRowHover.block).toContain('transform: translate3d(0, -2px, 0) !important;')
-    expect(finalAccountRowHover.block).toContain(`background: ${creepeeHoverSurface} !important;`)
-    expect(finalAccountRowHover.block).toContain(`background-color: ${creepeeHoverSurface} !important;`)
+    expect(finalAccountRowHover.block).toContain(homepageHoverShadow)
+    expect(finalAccountRowHover.block).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(finalAccountRowHover.block).toContain(`background: ${creepeeHoverSurface}`)
+    expect(finalAccountRowHover.block).toContain(`background-color: ${creepeeHoverSurface}`)
     expect(finalAccountRowHover.block).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(finalAccountRowHover.block).not.toContain('translate3d(0, -2px, 0)')
+    expect(finalAccountRowHover.block).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(finalAccountRowHover.block).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(finalAccountRowHover.block).not.toContain('var(--atelier-butter')
+    expect(finalAccountRowHover.block).not.toMatch(/(?:amber|yellow)/i)
     expect(finalAccountRowHover.block).not.toContain('border-color')
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
