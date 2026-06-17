@@ -142,6 +142,10 @@ describe('ChannelStatusView shared capacity overview source', () => {
       styleSource,
       '#app .app-layout-content .monitor-channel-card'
     )
+    const monitorChannelHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card:hover,\n#app .app-layout-content .monitor-channel-card:focus-visible'
+    )
 
     expect(componentSource).not.toContain('shadow-card')
     expect(monitorCardSource).toContain('monitor-channel-card')
@@ -158,6 +162,14 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(monitorChannelBaseBlock).toContain('box-shadow: none !important;')
     expect(monitorChannelBaseBlock).not.toContain('hover:border')
     expect(monitorChannelBaseBlock).not.toContain('shadow-card')
+    expect(monitorChannelHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(monitorChannelHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(monitorChannelHoverBlock).toContain('border-color: var(--creepee-card-stable-border) !important;')
+    expect(monitorChannelHoverBlock).toContain('background: var(--creepee-card-hover-surface) !important;')
+    expect(monitorChannelHoverBlock).not.toContain('translate3d(0, -2px, 0)')
+    expect(monitorChannelHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(monitorChannelHoverBlock).not.toContain('var(--atelier-butter')
+    expect(monitorChannelHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(localHoverBlock).not.toContain(`transform: ${creepeeHoverTransform};`)
     expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('translateY(-2px)')
