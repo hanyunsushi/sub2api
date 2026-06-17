@@ -315,13 +315,13 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards out of the account/card hover shadow group', () => {
+  it('keeps shared capacity cards out of the global hover group while allowing their local shadow', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
-    expect(monitorCapacitySource).not.toContain(homepageHoverShadow)
     expect(capacityHoverBlock).not.toContain('transform: var(--creepee-home-card-hover-transform);')
     expect(capacityHoverBlock).not.toContain('border-color')
-    expect(capacityHoverBlock).not.toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
+    expect(capacityHoverBlock).toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
+    expect(capacityHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
   })
