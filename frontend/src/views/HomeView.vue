@@ -16,7 +16,7 @@
   <div
     v-else
     ref="revealRoot"
-    class="home-ascii-shell relative min-h-screen overflow-hidden"
+    class="home-ascii-shell relative min-h-screen"
   >
     <div class="home-site-frame">
       <DarkVeil
@@ -128,27 +128,21 @@
                     data-home-module="hero-cta"
                     style="--home-reveal-delay: 340ms"
                   >
-                    <BorderGlow
-                      class="home-cta-glow"
-                      :edge-sensitivity="38"
-                      glow-color="32 96 69"
-                      background-color="#f6821f"
-                      :border-radius="8"
-                      :glow-radius="24"
-                      :glow-intensity="0.68"
-                      :cone-spread="12"
-                      animated
-                      :colors="['#f6821f', '#fbad41', '#fff4cf']"
-                      :fill-opacity="0"
+                    <StarBorder
+                      as="span"
+                      class-name="home-cta-star"
+                      color="rgba(255, 250, 240, 0.95)"
+                      speed="5s"
+                      :thickness="2"
                     >
                       <router-link
                         :to="isAuthenticated ? dashboardPath : '/login'"
-                        class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold shadow-glow transition-colors"
+                        class="home-cta inline-flex items-center rounded-lg px-8 py-3 text-base font-semibold transition-colors"
                       >
                         {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
                         <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
                       </router-link>
-                    </BorderGlow>
+                    </StarBorder>
                   </div>
                 </div>
               </div>
@@ -359,15 +353,16 @@
           </div>
 
           <div class="home-provider-specimen-grid">
-            <article
-              class="home-provider-specimen home-provider-specimen-featured"
+            <PixelCard
+              as="article"
+              class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"
               data-home-reveal
               data-home-module="provider-specimen"
               style="--home-reveal-delay: 160ms"
             >
               <div class="home-provider-swatch" data-id="Provider 01" data-hex="/v1">
                 <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="anthropic" model="claude" />
+                  <ProviderBrandIcon provider="anthropic" model="claude" prefer-model-icon />
                 </span>
               </div>
               <div class="home-provider-meta">
@@ -376,8 +371,9 @@
                 <p>{{ t('home.providers.description') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </article>
-            <article
+            </PixelCard>
+            <PixelCard
+              as="article"
               class="home-provider-specimen"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -394,8 +390,9 @@
                 <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </article>
-            <article
+            </PixelCard>
+            <PixelCard
+              as="article"
               class="home-provider-specimen home-provider-specimen-ink"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -412,8 +409,9 @@
                 <p>{{ t('home.features.multiAccountDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </article>
-            <article
+            </PixelCard>
+            <PixelCard
+              as="article"
               class="home-provider-specimen home-provider-specimen-dust"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -430,15 +428,18 @@
                 <p>{{ t('home.features.balanceQuotaDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </article>
-            <article
+            </PixelCard>
+            <PixelCard
+              as="article"
               class="home-provider-specimen home-provider-specimen-muted"
               data-home-reveal
               data-home-module="provider-specimen"
               style="--home-reveal-delay: 400ms"
             >
               <div class="home-provider-swatch" data-id="Provider 05" data-hex="+">
-                <span class="home-provider-mark">+</span>
+                <span class="home-provider-mark home-provider-logo-mark">
+                  <ProviderBrandIcon provider="codex" model="codex" />
+                </span>
               </div>
               <div class="home-provider-meta">
                 <span class="home-provider-index">05</span>
@@ -446,16 +447,13 @@
                 <p>{{ t('home.providers.description') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.soon') }}</b>
               </div>
-            </article>
+            </PixelCard>
           </div>
         </section>
       </main>
 
       <footer
         class="home-footer"
-        data-home-reveal
-        data-home-module="footer"
-        style="--home-reveal-delay: 80ms"
       >
         <p class="home-footer-text">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
@@ -491,8 +489,9 @@ import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
-import BorderGlow from '@/components/home/BorderGlow.vue'
+import StarBorder from '@/components/home/StarBorder.vue'
 import DarkVeil from '@/components/home/DarkVeil.vue'
+import PixelCard from '@/components/home/PixelCard.vue'
 import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t } = useI18n()
@@ -517,6 +516,7 @@ const revealRoot = ref<HTMLElement | null>(null)
 let revealObserver: IntersectionObserver | null = null
 let pendingRevealItems: HTMLElement[] = []
 let revealFrame = 0
+let revealScrollElement: HTMLElement | null = null
 
 // GitHub URL
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
@@ -586,7 +586,8 @@ function initHomeReveal() {
 
   revealObserver = observer
   items.forEach((item) => observer.observe(item))
-  window.addEventListener('scroll', scheduleRevealPassedHomeItems, { passive: true })
+  revealScrollElement = revealRoot.value
+  revealScrollElement?.addEventListener('scroll', scheduleRevealPassedHomeItems, { passive: true })
   window.addEventListener('resize', scheduleRevealPassedHomeItems)
   scheduleRevealPassedHomeItems()
 }
@@ -610,7 +611,8 @@ onBeforeUnmount(() => {
   revealObserver?.disconnect()
   revealObserver = null
   pendingRevealItems = []
-  window.removeEventListener('scroll', scheduleRevealPassedHomeItems)
+  revealScrollElement?.removeEventListener('scroll', scheduleRevealPassedHomeItems)
+  revealScrollElement = null
   window.removeEventListener('resize', scheduleRevealPassedHomeItems)
   if (revealFrame) {
     window.cancelAnimationFrame(revealFrame)
@@ -635,6 +637,12 @@ onBeforeUnmount(() => {
   --home-muted-on-dark: rgba(255, 250, 240, 0.72);
   position: relative;
   isolation: isolate;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 0;
   color: var(--atelier-ink);
   font-family: var(--atelier-font-sans);
   background: #07101e;
@@ -664,7 +672,10 @@ onBeforeUnmount(() => {
 }
 
 .home-masthead {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 2;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -788,11 +799,14 @@ onBeforeUnmount(() => {
   position: relative;
   max-width: var(--home-max);
   margin: 0 auto;
+  min-height: 100vh;
   padding: clamp(64px, 8vw, 128px) var(--home-gutter);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .home-section + .home-section {
-  border-top: 1px dotted var(--atelier-line-strong);
+  border-top: 0;
 }
 
 .home-feature-section {
@@ -813,7 +827,8 @@ onBeforeUnmount(() => {
   min-height: calc(100vh - 84px);
   display: grid;
   align-items: center;
-  padding-top: clamp(34px, 4.6vw, 76px);
+  min-height: 100vh;
+  padding-top: clamp(104px, 12vh, 140px);
   padding-bottom: clamp(28px, 4vw, 56px);
 }
 
@@ -931,37 +946,32 @@ onBeforeUnmount(() => {
   margin-top: 22px;
 }
 
-.home-cta-glow {
+.home-cta-star {
   vertical-align: top;
-}
-
-.home-cta-glow :deep(.border-glow-card) {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
 }
 
 .home-cta {
   position: relative;
+  display: inline-flex;
   z-index: 1;
-  border: 1px solid var(--atelier-ink);
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
+  border: 1px solid var(--atelier-terracotta-action, #c96442);
+  background: var(--atelier-terracotta-action, #c96442);
+  color: var(--atelier-paper-2);
   font-family: var(--atelier-font-mono);
   font-size: 12px;
   letter-spacing: 0;
   text-transform: uppercase;
-  box-shadow: 0 16px 36px -26px rgba(0, 47, 167, 0.78);
+  box-shadow: none;
   transition:
     transform 260ms var(--atelier-ease),
     background-color 260ms var(--atelier-ease),
-    box-shadow 260ms var(--atelier-ease);
+    border-color 260ms var(--atelier-ease);
 }
 
 .home-cta:hover {
-  transform: translate3d(0, -2px, 0);
-  background: var(--atelier-blue-dark);
-  box-shadow: 0 24px 44px -30px rgba(0, 47, 167, 0.9);
+  background: var(--atelier-terracotta-action-hover, #a64f34);
+  border-color: var(--atelier-terracotta-action-hover, #a64f34);
+  box-shadow: none;
 }
 
 .home-index-card {
@@ -1186,6 +1196,7 @@ onBeforeUnmount(() => {
 }
 
 .home-ring {
+  position: relative;
   display: grid;
   place-items: center;
   min-height: 0;
@@ -1195,10 +1206,11 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   color: rgba(255, 250, 240, 0.9);
   text-align: center;
-  background: rgba(7, 16, 30, 0.12);
-  backdrop-filter: blur(12px) saturate(1.08);
+  overflow: hidden;
+  background: rgba(255, 250, 240, 0.08);
   box-shadow:
-    inset 0 1px 0 rgba(255, 250, 240, 0.08),
+    inset 0 1px 0 rgba(255, 250, 240, 0.18),
+    inset 0 -18px 42px -34px rgba(255, 250, 240, 0.52),
     0 16px 42px -40px rgba(0, 0, 0, 0.66);
   transition:
     transform 260ms var(--atelier-ease),
@@ -1206,23 +1218,53 @@ onBeforeUnmount(() => {
     color 260ms var(--atelier-ease);
 }
 
+.home-ring::before,
+.home-ring::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.home-ring::before {
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 250, 240, 0.72), transparent 24%),
+    radial-gradient(circle at 76% 82%, rgba(159, 178, 210, 0.34), transparent 30%),
+    linear-gradient(145deg, rgba(255, 250, 240, 0.24), rgba(255, 250, 240, 0.04));
+  backdrop-filter: blur(18px) saturate(1.32);
+}
+
+.home-ring::after {
+  inset: 9px;
+  z-index: 0;
+  border: 1px solid rgba(255, 250, 240, 0.2);
+  background:
+    linear-gradient(120deg, transparent 14%, rgba(255, 250, 240, 0.3) 42%, transparent 66%),
+    radial-gradient(circle at 50% -12%, rgba(255, 250, 240, 0.28), transparent 34%);
+  opacity: 0.68;
+}
+
 .home-ring:hover {
   transform: translate3d(0, -3px, 0);
   color: var(--atelier-white);
-  background: rgba(79, 106, 140, 0.28);
+  background: rgba(255, 250, 240, 0.12);
 }
 
 .home-ring:nth-child(2) {
-  background: rgba(23, 21, 18, 0.11);
+  background: rgba(23, 21, 18, 0.1);
 }
 
 .home-ring:nth-child(3) {
   border-width: 2px;
   border-color: rgba(245, 191, 93, 0.38);
-  background: rgba(7, 16, 30, 0.12);
+  background: rgba(255, 250, 240, 0.08);
 }
 
 .home-ring strong {
+  position: relative;
+  z-index: 1;
   display: block;
   color: inherit;
   font-family: var(--atelier-font-serif);
@@ -1233,6 +1275,8 @@ onBeforeUnmount(() => {
 }
 
 .home-ring span {
+  position: relative;
+  z-index: 1;
   display: block;
   margin-top: 7px;
   color: rgba(255, 250, 240, 0.72);
@@ -1325,7 +1369,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-cap-card:hover {
   transform: translate3d(0, -4px, 0);
-  box-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  box-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
 }
 
 .home-ascii-shell .home-cap-card-featured {
@@ -1389,22 +1433,24 @@ onBeforeUnmount(() => {
 
 .home-provider-section {
   display: grid;
-  gap: clamp(28px, 4vw, 52px);
+  gap: clamp(12px, 2vh, 24px);
+  padding-top: clamp(24px, 3.5vh, 44px);
+  padding-bottom: clamp(20px, 3vh, 34px);
 }
 
 .home-provider-intro {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(280px, 0.55fr);
   align-items: end;
-  gap: clamp(24px, 4vw, 58px);
-  padding-top: 18px;
+  gap: clamp(18px, 3vw, 46px);
+  padding-top: 10px;
   border-top: 1px solid rgba(255, 250, 240, 0.42);
 }
 
 .home-section-title {
   margin: 0;
   color: var(--atelier-white);
-  font-size: 106px;
+  font-size: clamp(44px, 5.8vw, 76px);
   font-weight: 760;
   line-height: 0.88;
   letter-spacing: 0;
@@ -1421,14 +1467,14 @@ onBeforeUnmount(() => {
   margin: 0;
   max-width: 48ch;
   color: rgba(255, 250, 240, 0.74);
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
 .home-provider-specimen-grid {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(14px, 1.6vw, 22px);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 18px);
 }
 
 .home-ascii-shell .home-provider-specimen {
@@ -1436,9 +1482,9 @@ onBeforeUnmount(() => {
   --home-chip-surface: var(--home-surface-paper);
   --home-chip-text: var(--atelier-ink);
   display: grid;
-  grid-column: span 3;
-  grid-template-rows: minmax(170px, 0.75fr) 1fr;
-  min-height: 380px;
+  grid-column: auto;
+  grid-template-rows: minmax(132px, 0.58fr) 1fr;
+  min-height: clamp(240px, 30vh, 292px);
   overflow: hidden;
   border: 1px solid var(--atelier-ink);
   background: var(--home-chip-surface);
@@ -1451,7 +1497,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-specimen:hover {
   transform: translate3d(0, -4px, 0);
-  box-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-chip-accent) 62%, transparent);
+  box-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
 }
 
 .home-ascii-shell .home-provider-specimen-featured {
@@ -1480,7 +1526,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 170px;
+  min-height: 132px;
   border-bottom: 1px solid var(--atelier-ink);
   background:
     radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--home-chip-accent) 42%, transparent), transparent 28%),
@@ -1518,22 +1564,50 @@ onBeforeUnmount(() => {
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
-  border: 1px solid var(--atelier-ink);
-  border-radius: 50%;
+  width: 144px;
+  height: 144px;
+  border: 0;
+  border-radius: 0;
   color: var(--atelier-white);
-  background: var(--home-chip-accent);
+  background: transparent;
   font-family: var(--atelier-font-serif);
-  font-size: 38px;
+  font-size: 76px;
   font-style: italic;
+}
+
+.home-provider-logo-mark {
+  color: currentColor;
+}
+
+.home-provider-logo-mark :deep(.provider-brand-icon) {
+  width: 100%;
+  height: 100%;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.home-provider-logo-mark :deep(.provider-brand-image-system),
+.home-provider-logo-mark :deep(.provider-brand-image-custom) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.home-provider-logo-mark :deep(.provider-brand-icon svg),
+.home-provider-logo-mark :deep(.provider-brand-icon .model-icon) {
+  width: 100%;
+  height: 100%;
+}
+
+.home-provider-specimen-claude .home-provider-logo-mark :deep(.provider-brand-icon) {
+  color: var(--atelier-white) !important;
 }
 
 .home-provider-meta {
   display: grid;
   align-content: start;
-  gap: 10px;
-  padding: 20px;
+  gap: 7px;
+  padding: clamp(14px, 1.6vw, 18px);
 }
 
 .home-provider-section .home-section-label {
@@ -1556,7 +1630,7 @@ onBeforeUnmount(() => {
   margin: 0;
   color: currentColor;
   font-family: var(--atelier-font-serif);
-  font-size: 28px;
+  font-size: clamp(21px, 1.8vw, 27px);
   font-style: italic;
   font-weight: 400;
   line-height: 1;
@@ -1565,8 +1639,8 @@ onBeforeUnmount(() => {
 .home-provider-meta p {
   margin: 0;
   color: color-mix(in srgb, currentColor 78%, transparent);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .home-provider-status {
@@ -1582,15 +1656,20 @@ onBeforeUnmount(() => {
 .home-footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 20px;
-  max-width: var(--home-max);
+  min-height: 100vh;
+  max-width: none;
   margin: 0 auto;
-  padding: 30px var(--home-gutter);
-  border-top: 1px dotted var(--atelier-line-strong);
-  color: var(--atelier-muted);
+  padding: clamp(42px, 7vw, 96px) var(--home-gutter);
+  border-top: 0;
+  background: #050505;
+  color: rgba(255, 250, 240, 0.68);
   font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   text-transform: uppercase;
 }
 
@@ -1617,6 +1696,8 @@ onBeforeUnmount(() => {
   }
 
   .home-cta,
+  :deep(.home-cta-star .border-gradient-bottom),
+  :deep(.home-cta-star .border-gradient-top),
   .home-capability-kicker-item,
   .home-cap-card,
   .home-provider-specimen,

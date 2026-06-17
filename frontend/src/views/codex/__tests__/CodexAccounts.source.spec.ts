@@ -11,7 +11,7 @@ const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
 const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
 const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
 const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
+  '--creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);'
 
 const getCssBlock = (selector: string) => {
   const start = codexThemeSource.indexOf(`${selector} {`)
@@ -74,6 +74,7 @@ describe('CodexAccounts source contracts', () => {
     expect(accountCardHoverBlock).not.toContain('translateY(-2px)')
     expect(accountCardHoverBlock).not.toContain('rgba(20,20,19,.035)')
     expect(accountCardHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(accountCardBlock).not.toContain('color-mix(in srgb, var(--home-card-accent)')
     expect(accountCardHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(accountCardHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(accountCardHoverBlock).not.toContain('var(--atelier-butter')

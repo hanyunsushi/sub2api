@@ -48,6 +48,7 @@ type webAppIconVariant struct {
 }
 
 var webAppIconPaths = map[string]webAppIconVariant{
+	"logo.png":             {Size: 192, ContentType: "image/png"},
 	"apple-touch-icon.png": {Size: 180, ContentType: "image/png"},
 	"icon-192.png":         {Size: 192, ContentType: "image/png"},
 	"icon-512.png":         {Size: 512, ContentType: "image/png"},
@@ -292,6 +293,7 @@ func injectWebAppIconVersion(html, settingsJSON []byte) []byte {
 
 	version := webAppIconVersion(strings.TrimSpace(cfg.SiteLogo))
 	replacements := map[string]string{
+		`href="/logo.png"`:             `href="/logo.png?v=` + version + `"`,
 		`href="/apple-touch-icon.png"`: `href="/apple-touch-icon.png?v=` + version + `"`,
 		`href="/site.webmanifest"`:     `href="/site.webmanifest?v=` + version + `"`,
 	}

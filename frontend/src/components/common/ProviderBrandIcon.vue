@@ -13,8 +13,8 @@
     }"
   >
     <ModelIcon
-      v-if="!brand.iconUrl && brand.iconModel"
-      :model="brand.iconModel"
+      v-if="shouldRenderModelIcon || (!brand.iconUrl && brand.iconModel)"
+      :model="brand.iconModel || ''"
       size="100%"
       aria-hidden="true"
     />
@@ -44,6 +44,7 @@ const props = defineProps<{
   provider?: string | null
   model?: string | null
   logoUrl?: string | null
+  preferModelIcon?: boolean
 }>()
 
 const brand = computed(() => {
@@ -57,6 +58,7 @@ const brand = computed(() => {
   }
 })
 const title = computed(() => props.provider || props.model || 'Provider')
+const shouldRenderModelIcon = computed(() => props.preferModelIcon && brand.value.iconModel)
 const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
 const transparentSystemLogoIds = ['openai', 'claude', 'anthropic']
 const shouldUseTransparentShell = computed(() => {

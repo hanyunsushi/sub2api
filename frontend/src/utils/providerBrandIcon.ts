@@ -23,6 +23,7 @@ export interface AILogoRuntimeConfig {
 }
 
 export const defaultAILogoCDNBaseURL = 'https://unpkg.com/@lobehub/icons-static-png@1.91.0/light'
+export const officialAntigravityLogoURL = '/brand/antigravity-logo.png'
 
 let runtimeAILogoCDNBaseURL = defaultAILogoCDNBaseURL
 let runtimeCustomAILogoPresetURLs: string[] = []
@@ -249,7 +250,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['antigravity'],
-    { iconModel: 'antigravity', label: 'AG', background: '#EAF2FF', color: '#002FA7', border: '#9DB6FF' },
+    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#EAF2FF', color: '#002FA7', border: '#9DB6FF' },
   ],
   [
     ['deepseek'],
@@ -506,6 +507,8 @@ export function aiLogoUrlForProvider(provider?: string | null, model?: string | 
   const modelPreset = findPreset(normalizedModel, modelBrandMap)
   const iconModel = providerPreset?.iconModel || modelPreset?.iconModel || ''
   return (
+    providerPreset?.iconUrl ||
+    modelPreset?.iconUrl ||
     findLogoPreset(normalizedProvider)?.url ||
     findLogoPreset(normalizedModel)?.url ||
     findLogoPreset(normalize(iconModel))?.url ||

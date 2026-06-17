@@ -1046,7 +1046,7 @@ onBeforeUnmount(() => {
 .external-subscription-card {
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
   position: relative;
   display: flex;
   min-height: 10.5rem;

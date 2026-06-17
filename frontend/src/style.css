@@ -6,7 +6,7 @@
   --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
   --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
 }
 
 /* Newspaper appearance theme */
@@ -2041,7 +2041,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .table-container, .table-wrapper, .table-scroll-container, .modal-content, .dialog-container, .toast, .codex-panel, .codex-account-card, .codex-topbar, .codex-side, .layout-section-fixed, .settings-tabs-shell),
-.app-layout-content :where(div, section, article):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="bg-white/95"], [class~="bg-white"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
+.app-layout-content :where(div, section, article):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="bg-white/95"], [class~="bg-white"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.monitor-capacity-card):not(.external-subscription-card):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([class~="btn"]):not([role="button"]) {
   position: relative;
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
@@ -3366,7 +3366,7 @@ body:has(.table-page-layout) :where(
   box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;
 }
 
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]) {
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.monitor-capacity-card):not(.external-subscription-card):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]) {
   border: 1px solid var(--atelier-material-edge) !important;
   border-radius: 8px !important;
   background: var(--atelier-paper-2) !important;
@@ -3379,7 +3379,7 @@ body:has(.table-page-layout) :where(
     box-shadow 0.26s var(--atelier-ease);
 }
 
-.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+.app-layout-content :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.monitor-capacity-card):not(.external-subscription-card):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
   transform: none !important;
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
@@ -3387,7 +3387,7 @@ body:has(.table-page-layout) :where(
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
-.app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
+.app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(div, section, article, details):where([class~="rounded-3xl"], [class~="rounded-2xl"], [class~="rounded-xl"], [class~="rounded-lg"]):where([class~="p-3"], [class~="p-4"], [class~="p-5"], [class~="p-6"], [class~="p-8"], [class~="py-12"], [class~="py-16"]):where([class~="bg-white"], [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/85"], [class~="bg-white/80"], [class~="bg-white/70"], [class~="bg-gray-50"], [class~="bg-gray-50/80"], [class~="bg-gray-50/70"], [class~="bg-gray-50/60"], [class~="bg-gray-50/50"], [class~="bg-gray-100"]):not(.monitor-capacity-card):not(.external-subscription-card):not(.ops-monitor-header):not(.sidebar-logo):not(.user-avatar):not(.switch-thumb):not([class*="absolute"]):not([class*="fixed"]):not([role="button"]):hover {
   transform: none !important;
   border-color: var(--atelier-material-edge) !important;
   background: var(--atelier-paper-2) !important;
@@ -8408,7 +8408,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
   --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
   transition:
     transform 280ms var(--atelier-ease),
     background-color 280ms var(--atelier-ease),
@@ -8421,7 +8421,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }

@@ -10,7 +10,7 @@ const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
 const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
 const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
 const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
+  '--creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -130,6 +130,7 @@ describe('ExternalSubscriptionsView source', () => {
     expect(styleSource).toContain(homepageHoverTransform)
     expect(styleSource).toContain(homepageHoverShadow)
     expect(cssBlock(source, '.external-subscription-card')).toContain(homepageHoverShadow)
+    expect(cssBlock(source, '.external-subscription-card')).not.toContain('color-mix(in srgb, var(--home-card-accent)')
     expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('translateY(-2px)')
@@ -160,6 +161,7 @@ describe('ExternalSubscriptionsView source', () => {
     expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(themedGlobalHoverBlock).not.toContain('border-color')
     expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
+    expect(styleSource).toContain(':not(.monitor-capacity-card):not(.external-subscription-card)')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {

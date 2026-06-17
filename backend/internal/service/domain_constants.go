@@ -455,46 +455,6 @@ const (
 	SettingKeyBuzzBalanceAPIBaseURL = "buzz_balance_api_base_url"
 	SettingKeyBuzzBalanceAPIToken   = "buzz_balance_api_token"
 
-	// TCDMX subscription display
-	SettingKeyTCDMXSubscriptionEnabled      = "tcdmx_subscription_enabled"
-	SettingKeyTCDMXSubscriptionAPIBaseURL   = "tcdmx_subscription_api_base_url"
-	SettingKeyTCDMXSubscriptionAPIToken     = "tcdmx_subscription_api_token"
-	SettingKeyTCDMXSubscriptionRefreshToken = "tcdmx_subscription_refresh_token"
-
-	// qlhazycoder subscription display
-	SettingKeyQLHazyCoderSubscriptionEnabled      = "qlhazycoder_subscription_enabled"
-	SettingKeyQLHazyCoderSubscriptionAPIBaseURL   = "qlhazycoder_subscription_api_base_url"
-	SettingKeyQLHazyCoderSubscriptionAPIToken     = "qlhazycoder_subscription_api_token"
-	SettingKeyQLHazyCoderSubscriptionUserID       = "qlhazycoder_subscription_user_id"
-	SettingKeyQLHazyCoderSubscriptionRefreshToken = "qlhazycoder_subscription_refresh_token"
-
-	// XHYAPI subscription display
-	SettingKeyXHYAPISubscriptionEnabled      = "xhyapi_subscription_enabled"
-	SettingKeyXHYAPISubscriptionAPIBaseURL   = "xhyapi_subscription_api_base_url"
-	SettingKeyXHYAPISubscriptionAPIToken     = "xhyapi_subscription_api_token"
-	SettingKeyXHYAPISubscriptionUserID       = "xhyapi_subscription_user_id"
-	SettingKeyXHYAPISubscriptionRefreshToken = "xhyapi_subscription_refresh_token"
-
-	// Pixel subscription display
-	SettingKeyPixelSubscriptionEnabled      = "pixel_subscription_enabled"
-	SettingKeyPixelSubscriptionAPIBaseURL   = "pixel_subscription_api_base_url"
-	SettingKeyPixelSubscriptionAPIToken     = "pixel_subscription_api_token"
-	SettingKeyPixelSubscriptionRefreshToken = "pixel_subscription_refresh_token"
-
-	// liust subscription display
-	SettingKeyLiustSubscriptionEnabled      = "liust_subscription_enabled"
-	SettingKeyLiustSubscriptionAPIBaseURL   = "liust_subscription_api_base_url"
-	SettingKeyLiustSubscriptionAPIToken     = "liust_subscription_api_token"
-	SettingKeyLiustSubscriptionUserID       = "liust_subscription_user_id"
-	SettingKeyLiustSubscriptionRefreshToken = "liust_subscription_refresh_token"
-
-	// PackyCode subscription display
-	SettingKeyPackyCodeSubscriptionEnabled      = "packycode_subscription_enabled"
-	SettingKeyPackyCodeSubscriptionAPIBaseURL   = "packycode_subscription_api_base_url"
-	SettingKeyPackyCodeSubscriptionAPIToken     = "packycode_subscription_api_token"
-	SettingKeyPackyCodeSubscriptionUserID       = "packycode_subscription_user_id"
-	SettingKeyPackyCodeSubscriptionRefreshToken = "packycode_subscription_refresh_token"
-
 	// Generic external subscription display providers.
 	SettingKeyExternalSubscriptionProviders               = "external_subscription_providers"
 	SettingKeyExternalSubscriptionDisplayStatuses         = "external_subscription_display_statuses"

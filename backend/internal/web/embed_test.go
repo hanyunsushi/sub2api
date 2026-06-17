@@ -252,6 +252,7 @@ func TestFrontendServer_InjectSettings(t *testing.T) {
 		result := server.injectSettings([]byte(`{"site_logo":"data:image/png;base64,abc"}`))
 		version := webAppIconVersion("data:image/png;base64,abc")
 
+		assert.Contains(t, string(result), `/logo.png?v=`+version)
 		assert.Contains(t, string(result), `/apple-touch-icon.png?v=`+version)
 		assert.Contains(t, string(result), `/site.webmanifest?v=`+version)
 	})
@@ -575,7 +576,7 @@ func TestFrontendServer_Middleware(t *testing.T) {
 		}
 	})
 
-	t.Run("serves_static_files", func(t *testing.T) {
+	t.Run("serves_static_logo_when_no_site_logo_is_configured", func(t *testing.T) {
 		provider := &mockSettingsProvider{
 			settings: map[string]string{"test": "value"},
 		}
@@ -593,6 +594,30 @@ func TestFrontendServer_Middleware(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Header().Get("Content-Type"), "image/png")
+	})
+
+	t.Run("serves_dynamic_logo_from_site_logo_before_vue_mounts", func(t *testing.T) {
+		provider := &mockSettingsProvider{
+			settings: map[string]string{"test": "value"},
+			siteName: "Creeper & AI",
+			siteLogo: testPNGDataURL(t, 64, 64, color.RGBA{R: 201, G: 100, B: 66, A: 255}),
+		}
+		server, err := NewFrontendServer(provider)
+		require.NoError(t, err)
+
+		router := gin.New()
+		router.Use(server.Middleware())
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/logo.png", nil)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Header().Get("Content-Type"), "image/png")
+		assert.Equal(t, "no-cache", w.Header().Get("Cache-Control"))
+		width, height := readPNGSize(t, w.Body.Bytes())
+		assert.Equal(t, 192, width)
+		assert.Equal(t, 192, height)
 	})
 
 	t.Run("serves_dynamic_web_app_icon_from_site_logo", func(t *testing.T) {

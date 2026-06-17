@@ -71,7 +71,7 @@ const ssoCompleteForOpen = ref(false)
 let creepeeSSOAttemptCount = 0
 let creepeeSSORetryTimer: number | null = null
 
-const defaultBridgeUrl = 'http://127.0.0.1:43110/'
+const defaultBridgeUrl = 'https://obsi.creeperxco.cn/'
 const bridgeUrl = (import.meta.env.VITE_OBSIDIAN_CODEX_BRIDGE_URL || defaultBridgeUrl).trim() || defaultBridgeUrl
 const bridgeOrigin = new URL(bridgeUrl, window.location.href).origin
 const maxCreepeeSSOAttempts = 3
