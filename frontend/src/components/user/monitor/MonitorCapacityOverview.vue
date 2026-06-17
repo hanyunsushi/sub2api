@@ -467,7 +467,9 @@ function formatBalance(value: number) {
   position: relative;
   overflow: hidden;
   min-width: 0;
-  transition: box-shadow 0.26s var(--atelier-ease);
+  transition:
+    transform 0.26s var(--atelier-ease),
+    box-shadow 0.26s var(--atelier-ease);
 }
 
 .monitor-capacity-card::before {
@@ -479,6 +481,7 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-card:hover {
+  transform: var(--creepee-home-card-hover-transform);
   box-shadow: var(--creepee-home-card-hover-shadow);
 }
 

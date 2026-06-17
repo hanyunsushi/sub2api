@@ -86,7 +86,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("localText('停用', 'Disabled')")
   })
 
-  it('keeps shared capacity card styling intact while adding only a neutral hover shadow', () => {
+  it('keeps shared capacity card styling intact while adding neutral lift and shadow', () => {
     const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
     const capacityBeforeBlock = cssBlock(componentSource, '.monitor-capacity-card::before')
     const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
@@ -108,12 +108,12 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(capacityBaseBlock).not.toContain('--creepee-card-hover-surface')
     expect(capacityBaseBlock).not.toContain('--creepee-card-stable-border')
     expect(capacityBaseBlock).not.toContain('box-shadow: none')
-    expect(capacityBaseBlock).toContain('transition: box-shadow 0.26s var(--atelier-ease);')
-    expect(capacityBaseBlock).not.toContain('transform')
+    expect(capacityBaseBlock).toContain('transform 0.26s var(--atelier-ease),')
+    expect(capacityBaseBlock).toContain('box-shadow 0.26s var(--atelier-ease);')
     expect(capacityBaseBlock).not.toContain('background:')
     expect(capacityBaseBlock).not.toContain('border-color')
     expect(capacityBeforeBlock).toContain('linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08))')
-    expect(capacityHoverBlock).not.toContain(`transform: ${creepeeHoverTransform};`)
+    expect(capacityHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(capacityHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(capacityHoverBlock).not.toContain('background')
     expect(capacityHoverBlock).not.toContain('border-color')
@@ -170,7 +170,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(monitorChannelHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(monitorChannelHoverBlock).not.toContain('var(--atelier-butter')
     expect(monitorChannelHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(localHoverBlock).not.toContain(`transform: ${creepeeHoverTransform};`)
+    expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('translateY(-2px)')
     expect(localHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')

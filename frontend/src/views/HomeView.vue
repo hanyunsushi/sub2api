@@ -574,10 +574,7 @@ function homeMaxScrollTop() {
 
 function homeSnapTopForTarget(target: HTMLElement) {
   if (target.classList.contains('home-footer')) {
-    const root = revealRoot.value
-    if (!root) return 0
-    const centeredTop = target.offsetTop - Math.max(0, (root.clientHeight - target.offsetHeight) / 2)
-    return Math.max(0, Math.min(centeredTop, homeMaxScrollTop()))
+    return homeMaxScrollTop()
   }
   return Math.min(target.offsetTop, homeMaxScrollTop())
 }
@@ -715,12 +712,6 @@ onBeforeUnmount(() => {
   isolation: isolate;
   min-height: 100vh;
   background: transparent;
-}
-
-.home-site-frame::after {
-  content: "";
-  display: block;
-  height: clamp(320px, 46vh, 400px);
 }
 
 .home-ascii-shell [data-home-reveal] {
@@ -1700,22 +1691,23 @@ onBeforeUnmount(() => {
   width: min(1040px, calc(100% - var(--home-gutter) * 2));
   max-width: calc(100% - var(--home-gutter) * 2);
   margin: 0 auto;
-  padding: 28px clamp(18px, 3vw, 34px);
+  padding: 20px clamp(18px, 3vw, 34px);
   border-top: 0;
   background: #050505;
-  color: rgba(255, 250, 240, 0.92);
+  color: rgba(255, 250, 240, 0.96);
   font-family: var(--atelier-font-mono);
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: uppercase;
-  scroll-snap-align: center;
+  scroll-snap-align: end;
   scroll-snap-stop: always;
 }
 
 .home-footer .home-footer-text,
 .home-footer .home-footer-link {
-  color: rgba(255, 250, 240, 0.92);
+  color: rgba(255, 250, 240, 0.96);
 }
 
 .home-footer-link:hover {
@@ -1911,9 +1903,12 @@ onBeforeUnmount(() => {
 
 :global(.dark .home-ascii-shell .home-hero-subtitle),
 :global(.dark .home-ascii-shell .home-section-copy),
-:global(.dark .home-ascii-shell .home-footer-text),
-:global(.dark .home-ascii-shell .home-footer-link),
 :global(.dark .home-ascii-shell .home-body-copy) {
   color: rgba(243, 239, 229, 0.72);
+}
+
+:global(.dark .home-ascii-shell .home-footer .home-footer-text),
+:global(.dark .home-ascii-shell .home-footer .home-footer-link) {
+  color: rgba(255, 250, 240, 0.96);
 }
 </style>
