@@ -464,31 +464,21 @@ function formatBalance(value: number) {
 
 <style scoped>
 .monitor-capacity-card {
-  --home-card-accent: var(--atelier-blue);
-  --creepee-card-hover-surface: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
-  --creepee-card-stable-border: rgba(229, 231, 235, 0.8);
-  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   position: relative;
   overflow: hidden;
   min-width: 0;
-  box-shadow: none;
-  transition:
-    transform 280ms var(--atelier-ease),
-    background-color 280ms var(--atelier-ease),
-    box-shadow 280ms var(--atelier-ease);
 }
 
 .monitor-capacity-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: transparent;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08));
   pointer-events: none;
 }
 
 .monitor-capacity-card:hover {
-  transform: var(--creepee-home-card-hover-transform);
-  box-shadow: var(--creepee-home-card-hover-shadow);
+  background: transparent;
 }
 
 .monitor-capacity-card > * {

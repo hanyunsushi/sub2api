@@ -249,15 +249,15 @@ describe('AccountsView external quota card metadata', () => {
     )
     const globalHoverBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const themedGlobalHoverBlock = cssBlock(
       styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const globalBaseBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
     )
     const tableResetIndex = styleSource.indexOf(
       '#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover'
@@ -315,13 +315,13 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps channel monitor capacity cards on the same hover shadow without adding a stronger border', () => {
+  it('keeps shared capacity cards out of the account/card hover shadow group', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
-    expect(monitorCapacitySource).toContain(homepageHoverShadow)
-    expect(capacityHoverBlock).toContain('transform: var(--creepee-home-card-hover-transform);')
+    expect(monitorCapacitySource).not.toContain(homepageHoverShadow)
+    expect(capacityHoverBlock).not.toContain('transform: var(--creepee-home-card-hover-transform);')
     expect(capacityHoverBlock).not.toContain('border-color')
-    expect(capacityHoverBlock).toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
+    expect(capacityHoverBlock).not.toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
     expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
   })

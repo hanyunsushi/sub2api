@@ -271,6 +271,9 @@
               <input data-testid="admin-accounts-input-checkbox-2" type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             </div>
           </template>
+          <template #cell-id="{ value }">
+            <span class="font-mono text-xs text-gray-500 dark:text-gray-400">#{{ value }}</span>
+          </template>
           <template #cell-name="{ row, value }">
             <div class="flex min-w-0 flex-1 flex-col">
               <div class="account-card-name-main flex min-w-0 items-start gap-2">
@@ -747,6 +750,7 @@ type AccountSortState = {
   sort_order: AccountSortOrder
 }
 const ACCOUNT_SORTABLE_KEYS = new Set([
+  'id',
   'name',
   'status',
   'schedulable',
@@ -1628,6 +1632,7 @@ const allColumns = computed(() => {
   const c = [
     { key: 'select', label: '', sortable: false },
     { key: 'name', label: t('admin.accounts.columns.name'), sortable: true },
+    { key: 'id', label: t('admin.accounts.columns.id'), sortable: true },
     { key: 'platform_type', label: t('admin.accounts.columns.platformType'), sortable: false },
     { key: 'capacity', label: t('admin.accounts.columns.capacity'), sortable: false },
     { key: 'status', label: t('admin.accounts.columns.status'), sortable: true },
