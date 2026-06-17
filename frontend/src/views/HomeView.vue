@@ -202,7 +202,7 @@
               </div>
 
               <div class="home-rings" aria-label="Gateway metrics">
-                <FluidGlassButton
+                <div
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -210,8 +210,8 @@
                 >
                   <strong>/v1</strong>
                   <span>OpenAI format</span>
-                </FluidGlassButton>
-                <FluidGlassButton
+                </div>
+                <div
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -219,8 +219,8 @@
                 >
                   <strong>AI</strong>
                   <span>Provider pool</span>
-                </FluidGlassButton>
-                <FluidGlassButton
+                </div>
+                <div
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -228,7 +228,7 @@
                 >
                   <strong>$</strong>
                   <span>Usage ledger</span>
-                </FluidGlassButton>
+                </div>
               </div>
             </aside>
           </div>
@@ -492,7 +492,6 @@ import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import StarBorder from '@/components/home/StarBorder.vue'
 import DarkVeil from '@/components/home/DarkVeil.vue'
 import PixelCard from '@/components/home/PixelCard.vue'
-import FluidGlassButton from '@/components/home/FluidGlassButton.vue'
 import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t } = useI18n()
@@ -1727,7 +1726,8 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  max-width: none;
+  width: 100%;
+  max-width: var(--home-max);
   margin: 0 auto;
   padding: clamp(38px, 5.5vw, 72px) var(--home-gutter);
   border-top: 0;
