@@ -202,7 +202,7 @@
               </div>
 
               <div class="home-rings" aria-label="Gateway metrics">
-                <div
+                <FluidGlassButton
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -210,8 +210,8 @@
                 >
                   <strong>/v1</strong>
                   <span>OpenAI format</span>
-                </div>
-                <div
+                </FluidGlassButton>
+                <FluidGlassButton
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -219,8 +219,8 @@
                 >
                   <strong>AI</strong>
                   <span>Provider pool</span>
-                </div>
-                <div
+                </FluidGlassButton>
+                <FluidGlassButton
                   class="home-ring"
                   data-home-reveal
                   data-home-module="metric-ring"
@@ -228,7 +228,7 @@
                 >
                   <strong>$</strong>
                   <span>Usage ledger</span>
-                </div>
+                </FluidGlassButton>
               </div>
             </aside>
           </div>
@@ -492,6 +492,7 @@ import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import StarBorder from '@/components/home/StarBorder.vue'
 import DarkVeil from '@/components/home/DarkVeil.vue'
 import PixelCard from '@/components/home/PixelCard.vue'
+import FluidGlassButton from '@/components/home/FluidGlassButton.vue'
 import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t } = useI18n()
@@ -517,6 +518,8 @@ let revealObserver: IntersectionObserver | null = null
 let pendingRevealItems: HTMLElement[] = []
 let revealFrame = 0
 let revealScrollElement: HTMLElement | null = null
+let snapWheelLocked = false
+let snapWheelUnlockTimer = 0
 
 // GitHub URL
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
@@ -566,6 +569,61 @@ function scheduleRevealPassedHomeItems() {
   })
 }
 
+function getHomeSnapTargets() {
+  const root = revealRoot.value
+  if (!root) return []
+  return Array.from(root.querySelectorAll<HTMLElement>('.home-section, .home-footer'))
+}
+
+function homeMaxScrollTop() {
+  const root = revealRoot.value
+  if (!root) return 0
+  return Math.max(0, root.scrollHeight - root.clientHeight)
+}
+
+function homeSnapTopForTarget(target: HTMLElement) {
+  return Math.min(target.offsetTop, homeMaxScrollTop())
+}
+
+function currentHomeSnapIndex(targets: HTMLElement[]) {
+  const root = revealRoot.value
+  if (!root || !targets.length) return 0
+  const scrollTop = root.scrollTop
+  let bestIndex = 0
+  let bestDistance = Number.POSITIVE_INFINITY
+  targets.forEach((target, index) => {
+    const distance = Math.abs(homeSnapTopForTarget(target) - scrollTop)
+    if (distance < bestDistance) {
+      bestDistance = distance
+      bestIndex = index
+    }
+  })
+  return bestIndex
+}
+
+function handleHomeWheel(event: WheelEvent) {
+  const root = revealRoot.value
+  if (!root || event.ctrlKey || event.metaKey || event.altKey || event.deltaY === 0) return
+
+  const targets = getHomeSnapTargets()
+  if (targets.length < 2) return
+
+  event.preventDefault()
+  if (snapWheelLocked) return
+
+  const currentIndex = currentHomeSnapIndex(targets)
+  const nextIndex = Math.max(0, Math.min(targets.length - 1, currentIndex + (event.deltaY > 0 ? 1 : -1)))
+  if (nextIndex === currentIndex) return
+
+  snapWheelLocked = true
+  root.scrollTo({ top: homeSnapTopForTarget(targets[nextIndex]), behavior: 'smooth' })
+  if (snapWheelUnlockTimer) window.clearTimeout(snapWheelUnlockTimer)
+  snapWheelUnlockTimer = window.setTimeout(() => {
+    snapWheelLocked = false
+    snapWheelUnlockTimer = 0
+  }, 520)
+}
+
 function initHomeReveal() {
   const items = Array.from(revealRoot.value?.querySelectorAll<HTMLElement>('[data-home-reveal]') ?? [])
   if (!items.length) return
@@ -588,6 +646,7 @@ function initHomeReveal() {
   items.forEach((item) => observer.observe(item))
   revealScrollElement = revealRoot.value
   revealScrollElement?.addEventListener('scroll', scheduleRevealPassedHomeItems, { passive: true })
+  revealScrollElement?.addEventListener('wheel', handleHomeWheel, { passive: false })
   window.addEventListener('resize', scheduleRevealPassedHomeItems)
   scheduleRevealPassedHomeItems()
 }
@@ -612,8 +671,13 @@ onBeforeUnmount(() => {
   revealObserver = null
   pendingRevealItems = []
   revealScrollElement?.removeEventListener('scroll', scheduleRevealPassedHomeItems)
+  revealScrollElement?.removeEventListener('wheel', handleHomeWheel)
   revealScrollElement = null
   window.removeEventListener('resize', scheduleRevealPassedHomeItems)
+  if (snapWheelUnlockTimer) {
+    window.clearTimeout(snapWheelUnlockTimer)
+    snapWheelUnlockTimer = 0
+  }
   if (revealFrame) {
     window.cancelAnimationFrame(revealFrame)
     revealFrame = 0
@@ -799,6 +863,7 @@ onBeforeUnmount(() => {
   position: relative;
   max-width: var(--home-max);
   margin: 0 auto;
+  height: 100vh;
   min-height: 100vh;
   padding: clamp(64px, 8vw, 128px) var(--home-gutter);
   scroll-snap-align: start;
@@ -824,7 +889,6 @@ onBeforeUnmount(() => {
   overflow: hidden;
   isolation: isolate;
   background: transparent;
-  min-height: calc(100vh - 84px);
   display: grid;
   align-items: center;
   min-height: 100vh;
@@ -1436,6 +1500,7 @@ onBeforeUnmount(() => {
   gap: clamp(12px, 2vh, 24px);
   padding-top: clamp(24px, 3.5vh, 44px);
   padding-bottom: clamp(20px, 3vh, 34px);
+  overflow: hidden;
 }
 
 .home-provider-intro {
@@ -1485,8 +1550,12 @@ onBeforeUnmount(() => {
   grid-column: auto;
   grid-template-rows: minmax(132px, 0.58fr) 1fr;
   min-height: clamp(240px, 30vh, 292px);
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
   overflow: hidden;
   border: 1px solid var(--atelier-ink);
+  border-radius: 0;
   background: var(--home-chip-surface);
   color: var(--home-chip-text);
   transition:
@@ -1658,10 +1727,9 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  min-height: 100vh;
   max-width: none;
   margin: 0 auto;
-  padding: clamp(42px, 7vw, 96px) var(--home-gutter);
+  padding: clamp(38px, 5.5vw, 72px) var(--home-gutter);
   border-top: 0;
   background: #050505;
   color: rgba(255, 250, 240, 0.68);
