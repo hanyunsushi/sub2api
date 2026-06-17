@@ -315,7 +315,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards out of the global hover group while allowing their local shadow', () => {
+  it('keeps shared capacity cards out of the global hover group while allowing only local shadow', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
     expect(capacityHoverBlock).not.toContain('transform: var(--creepee-home-card-hover-transform);')
