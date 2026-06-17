@@ -8,6 +8,14 @@ const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'utf8')
 
 describe('home and auth contrast on Atelier structured color surfaces', () => {
+  const cssBlock = (content: string, selector: string): string => {
+    const start = content.indexOf(`${selector} {`)
+    expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+    const end = content.indexOf('\n}', start)
+    expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
+    return content.slice(start, end + 2)
+  }
+
   it('uses static themed footer microcopy and links on auth pages', () => {
     const authLayout = readFile('src/components/layout/AuthLayout.vue')
     const style = readFile('src/style.css')
@@ -179,8 +187,18 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(home).toContain('border-top: 1px solid rgba(255, 250, 240, 0.42);')
     expect(home).toContain('.home-provider-section .home-section-label')
     expect(home).toContain('.home-footer {')
+    expect(home).toContain('class="home-footer-band"')
+    expect(home).toContain('class="home-footer-inner"')
+    expect(home).toContain('.home-footer-band {')
+    expect(home).toContain('width: 100%;')
+    expect(home).toContain('.home-footer-inner {')
+    expect(home).toContain('max-width: var(--home-max);')
+    expect(home).toContain('display: flex;')
     expect(home).toContain('background: #050505;')
     expect(home).toContain('border-top: 0;')
+    expect(cssBlock(home, '.home-footer')).not.toContain('max-width: none;')
+    expect(cssBlock(home, '.home-footer-band')).not.toContain('max-width: none;')
+    expect(cssBlock(home, '.home-footer-inner')).not.toContain('max-width: none;')
     expect(home).not.toContain('.home-footer {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 20px;\n  min-height: 100vh;')
     expect(home).not.toContain('linear-gradient(115deg, transparent 0 52%, rgba(0, 47, 167, 0.94) 52.2% 100%)')
   })

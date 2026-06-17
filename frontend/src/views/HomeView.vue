@@ -447,30 +447,32 @@
         </section>
       </main>
 
-      <footer
-        class="home-footer"
-      >
-        <p class="home-footer-text">
-          &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
-        </p>
-        <div class="home-footer-links">
-          <a data-testid="home-link-a-2"
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="home-footer-link"
-          >
-            {{ t('home.docs') }}
-          </a>
-          <a data-testid="home-link-a-3"
-            :href="githubUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="home-footer-link"
-          >
-            GitHub
-          </a>
+      <footer class="home-footer">
+        <div class="home-footer-band">
+          <div class="home-footer-inner">
+            <p class="home-footer-text">
+              &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
+            </p>
+            <div class="home-footer-links">
+              <a data-testid="home-link-a-2"
+                v-if="docUrl"
+                :href="docUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-footer-link"
+              >
+                {{ t('home.docs') }}
+              </a>
+              <a data-testid="home-link-a-3"
+                :href="githubUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="home-footer-link"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
@@ -1682,6 +1684,19 @@ onBeforeUnmount(() => {
 }
 
 .home-footer {
+  width: 100%;
+  border-top: 0;
+  background: #050505;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.home-footer-band {
+  width: 100%;
+  background: #050505;
+}
+
+.home-footer-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1691,13 +1706,10 @@ onBeforeUnmount(() => {
   margin: 0 auto;
   padding: clamp(38px, 5.5vw, 72px) var(--home-gutter);
   border-top: 0;
-  background: #050505;
   color: rgba(255, 250, 240, 0.68);
   font-family: var(--atelier-font-mono);
   font-size: 10px;
   letter-spacing: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   text-transform: uppercase;
 }
 
@@ -1845,7 +1857,7 @@ onBeforeUnmount(() => {
     width: 88%;
   }
 
-  .home-footer {
+  .home-footer-inner {
     flex-direction: column;
   }
 }

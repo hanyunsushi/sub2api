@@ -86,19 +86,53 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("localText('停用', 'Disabled')")
   })
 
+  it('keeps shared capacity cards on their original static capacity overview style', () => {
+    const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
+    const capacityBeforeBlock = cssBlock(componentSource, '.monitor-capacity-card::before')
+    const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
+    const globalBaseBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+    )
+    const globalHoverBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    )
+    const themedGlobalHoverBlock = cssBlock(
+      styleSource,
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    )
+
+    expect(styleSource).not.toContain(':where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)')
+    expect(capacityBaseBlock).not.toContain('--creepee-home-card-hover-shadow')
+    expect(capacityBaseBlock).not.toContain('--creepee-card-hover-surface')
+    expect(capacityBaseBlock).not.toContain('--creepee-card-stable-border')
+    expect(capacityBaseBlock).not.toContain('box-shadow: none')
+    expect(capacityBaseBlock).not.toContain('transform 280ms')
+    expect(capacityBeforeBlock).toContain('linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08))')
+    expect(capacityHoverBlock).toContain('background: transparent;')
+    expect(capacityHoverBlock).not.toContain(`transform: ${creepeeHoverTransform};`)
+    expect(capacityHoverBlock).not.toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(globalBaseBlock).toContain(homepageHoverShadow)
+    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
+    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+  })
+
   it('matches the Creepee homepage recommendation-card hover treatment on channel status cards', () => {
     const localHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
     const globalHoverBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const themedGlobalHoverBlock = cssBlock(
       styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const globalBaseBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
     )
     const monitorChannelBaseBlock = cssBlock(
       styleSource,
@@ -114,18 +148,16 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(styleSource).toContain('.monitor-channel-card')
     expect(styleSource).toContain(homepageHoverTransform)
     expect(styleSource).toContain(homepageHoverShadow)
-    expect(cssBlock(componentSource, '.monitor-capacity-card')).toContain(homepageHoverShadow)
-    expect(cssBlock(componentSource, '.monitor-capacity-card')).not.toContain('color-mix(in srgb, var(--home-card-accent)')
+    expect(cssBlock(componentSource, '.monitor-capacity-card')).not.toContain(homepageHoverShadow)
     expect(monitorChannelBaseBlock).toContain('border-color: var(--creepee-card-stable-border) !important;')
     expect(monitorChannelBaseBlock).toContain('background: var(--creepee-card-hover-surface) !important;')
     expect(monitorChannelBaseBlock).toContain('box-shadow: none !important;')
     expect(monitorChannelBaseBlock).not.toContain('hover:border')
     expect(monitorChannelBaseBlock).not.toContain('shadow-card')
-    expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
-    expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(localHoverBlock).not.toContain(`transform: ${creepeeHoverTransform};`)
+    expect(localHoverBlock).not.toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('translateY(-2px)')
     expect(localHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(localHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(localHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(localHoverBlock).not.toContain('var(--atelier-butter')
     expect(localHoverBlock).not.toMatch(/(?:amber|yellow)/i)

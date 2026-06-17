@@ -49,6 +49,7 @@ type channelMonitorCreateRequest struct {
 	IntervalSeconds  int               `json:"interval_seconds" binding:"required,min=15,max=3600"`
 	AccountID        *int64            `json:"account_id"`
 	AccountIDs       *[]int64          `json:"account_ids"`
+	JitterSeconds    int               `json:"jitter_seconds" binding:"omitempty,min=0,max=3585"`
 	TemplateID       *int64            `json:"template_id"`
 	ExtraHeaders     map[string]string `json:"extra_headers"`
 	BodyOverrideMode string            `json:"body_override_mode" binding:"omitempty,oneof=off merge replace"`
@@ -70,6 +71,7 @@ type channelMonitorUpdateRequest struct {
 	AccountID        *int64             `json:"account_id"`
 	AccountIDs       *[]int64           `json:"account_ids"`
 	ClearAccount     bool               `json:"clear_account"`
+	JitterSeconds    *int               `json:"jitter_seconds" binding:"omitempty,min=0,max=3585"`
 	TemplateID       *int64             `json:"template_id"`
 	ClearTemplate    bool               `json:"clear_template"` // true 时把 template_id 置空，忽略 TemplateID
 	ExtraHeaders     *map[string]string `json:"extra_headers"`
@@ -91,6 +93,7 @@ type channelMonitorResponse struct {
 	GroupName           string                               `json:"group_name"`
 	Enabled             bool                                 `json:"enabled"`
 	IntervalSeconds     int                                  `json:"interval_seconds"`
+	JitterSeconds       int                                  `json:"jitter_seconds"`
 	LastCheckedAt       *string                              `json:"last_checked_at"`
 	CreatedBy           int64                                `json:"created_by"`
 	AccountID           *int64                               `json:"account_id"`
@@ -161,6 +164,7 @@ func channelMonitorToResponse(m *service.ChannelMonitor) *channelMonitorResponse
 		GroupName:           m.GroupName,
 		Enabled:             m.Enabled,
 		IntervalSeconds:     m.IntervalSeconds,
+		JitterSeconds:       m.JitterSeconds,
 		CreatedBy:           m.CreatedBy,
 		AccountID:           m.AccountID,
 		AccountIDs:          responseAccountIDs(m.AccountIDs, m.AccountID),
@@ -353,6 +357,7 @@ func (h *ChannelMonitorHandler) Create(c *gin.Context) {
 		CreatedBy:        subject.UserID,
 		AccountID:        req.AccountID,
 		AccountIDs:       req.AccountIDs,
+		JitterSeconds:    req.JitterSeconds,
 		TemplateID:       req.TemplateID,
 		ExtraHeaders:     req.ExtraHeaders,
 		BodyOverrideMode: req.BodyOverrideMode,
@@ -392,6 +397,7 @@ func (h *ChannelMonitorHandler) Update(c *gin.Context) {
 		AccountID:        req.AccountID,
 		AccountIDs:       req.AccountIDs,
 		ClearAccount:     req.ClearAccount,
+		JitterSeconds:    req.JitterSeconds,
 		TemplateID:       req.TemplateID,
 		ClearTemplate:    req.ClearTemplate,
 		ExtraHeaders:     req.ExtraHeaders,
