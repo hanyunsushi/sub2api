@@ -6,6 +6,9 @@ import { nextTick } from 'vue'
 import AISearchBox from '../AISearchBox.vue'
 import AISearchPanel from '../AISearchPanel.vue'
 
+const bridgeURL = 'https://obsi.creeperxco.cn/'
+const bridgeOrigin = 'https://obsi.creeperxco.cn'
+
 const authMocks = vi.hoisted(() => ({
   issueCreepeeSSOTicket: vi.fn()
 }))
@@ -61,7 +64,7 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(document.querySelector('chat-page-snippet')).toBeNull()
     const frame = document.querySelector<HTMLIFrameElement>('[data-testid="obsidian-bridge-frame"]')
     expect(frame).not.toBeNull()
-    expect(frame?.getAttribute('src')).toBe('http://127.0.0.1:43110/')
+    expect(frame?.getAttribute('src')).toBe(bridgeURL)
     expect(frame?.getAttribute('title')).toBe('Creepee Obsidian Codex Bridge')
     expect(document.querySelector('.ai-search-panel-head')).toBeNull()
     expect(document.querySelector('.ai-search-panel-title')).toBeNull()
@@ -97,12 +100,12 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(bridgeWindow.postMessage).toHaveBeenCalledWith({
       type: 'sub2api:creepee-sso',
       ticket: 'cpsso_test_ticket'
-    }, 'http://127.0.0.1:43110')
-    expect(frame?.getAttribute('src')).toBe('http://127.0.0.1:43110/')
+    }, bridgeOrigin)
+    expect(frame?.getAttribute('src')).toBe(bridgeURL)
     expect(frame?.getAttribute('src')).not.toContain('cpsso_test_ticket')
 
     window.dispatchEvent(new MessageEvent('message', {
-      origin: 'http://127.0.0.1:43110',
+      origin: bridgeOrigin,
       data: { type: 'obsidian-bridge:sso-complete' }
     }))
     await flushPromises()
@@ -131,7 +134,7 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(authMocks.issueCreepeeSSOTicket).not.toHaveBeenCalled()
 
     window.dispatchEvent(new MessageEvent('message', {
-      origin: 'http://127.0.0.1:43110',
+      origin: bridgeOrigin,
       data: { type: 'obsidian-bridge:ready' }
     }))
     await flushPromises()
@@ -140,7 +143,7 @@ describe('Creepee Obsidian bridge panel interactions', () => {
     expect(bridgeWindow.postMessage).toHaveBeenCalledWith({
       type: 'sub2api:creepee-sso',
       ticket: 'cpsso_test_ticket'
-    }, 'http://127.0.0.1:43110')
+    }, bridgeOrigin)
 
     triggerWrapper.unmount()
     panelWrapper.unmount()

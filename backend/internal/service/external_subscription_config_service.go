@@ -500,13 +500,13 @@ func (s *ExternalSubscriptionConfigService) loadStoredProviders(ctx context.Cont
 	raw, err := s.settingService.settingRepo.GetValue(ctx, SettingKeyExternalSubscriptionProviders)
 	if err != nil {
 		if errors.Is(err, ErrSettingNotFound) {
-			return s.buildLegacyProviders(ctx)
+			return defaultExternalSubscriptionProviders(), nil
 		}
 		return nil, fmt.Errorf("get external subscription providers: %w", err)
 	}
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
-		return s.buildLegacyProviders(ctx)
+		return defaultExternalSubscriptionProviders(), nil
 	}
 	var providers []externalSubscriptionStoredProvider
 	if err := json.Unmarshal([]byte(raw), &providers); err != nil {
@@ -521,7 +521,7 @@ func (s *ExternalSubscriptionConfigService) loadStoredProviders(ctx context.Cont
 		normalized = append(normalized, next)
 	}
 	sortExternalSubscriptionStoredProviders(normalized)
-	merged, updated, err := s.mergeConfiguredLegacyProviders(ctx, normalized)
+	merged, updated, err := s.mergeDefaultProviders(ctx, normalized)
 	if err != nil {
 		return nil, err
 	}
@@ -534,11 +534,7 @@ func (s *ExternalSubscriptionConfigService) loadStoredProviders(ctx context.Cont
 	return normalized, nil
 }
 
-func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx context.Context, stored []externalSubscriptionStoredProvider) ([]externalSubscriptionStoredProvider, bool, error) {
-	legacy, err := s.buildLegacyProviders(ctx)
-	if err != nil {
-		return nil, false, err
-	}
+func (s *ExternalSubscriptionConfigService) mergeDefaultProviders(ctx context.Context, stored []externalSubscriptionStoredProvider) ([]externalSubscriptionStoredProvider, bool, error) {
 	deletedDefaults, err := s.loadDeletedDefaultProviders(ctx)
 	if err != nil {
 		return nil, false, err
@@ -547,68 +543,26 @@ func (s *ExternalSubscriptionConfigService) mergeConfiguredLegacyProviders(ctx c
 	for index, provider := range stored {
 		byID[provider.ID] = index
 	}
-	mergeDefaultProviders := shouldMergeDefaultExternalSubscriptionProviders(stored)
+	shouldMergeDefaults := shouldMergeDefaultExternalSubscriptionProviders(stored)
 	updated := false
-	for _, legacyProvider := range legacy {
-		hasCredential := legacyProvider.hasSubscriptionCredential()
-		if deletedDefaults[legacyProvider.ID] {
+	for _, defaultProvider := range defaultExternalSubscriptionProviders() {
+		if deletedDefaults[defaultProvider.ID] {
 			continue
 		}
-		if !hasCredential && !(mergeDefaultProviders && isDefaultExternalSubscriptionProvider(legacyProvider.ID)) {
+		if !shouldMergeDefaults {
 			continue
 		}
-		if index, ok := byID[legacyProvider.ID]; ok {
-			if mergeLegacySubscriptionProvider(&stored[index], legacyProvider) {
-				updated = true
-			}
+		if _, ok := byID[defaultProvider.ID]; ok {
 			continue
 		}
-		stored = append(stored, legacyProvider)
-		byID[legacyProvider.ID] = len(stored) - 1
+		stored = append(stored, defaultProvider)
+		byID[defaultProvider.ID] = len(stored) - 1
 		updated = true
 	}
 	if updated {
 		sortExternalSubscriptionStoredProviders(stored)
 	}
 	return stored, updated, nil
-}
-
-func (p externalSubscriptionStoredProvider) hasSubscriptionCredential() bool {
-	return strings.TrimSpace(p.APIToken) != "" ||
-		strings.TrimSpace(p.RefreshToken) != "" ||
-		strings.TrimSpace(p.UserID) != ""
-}
-
-func mergeLegacySubscriptionProvider(target *externalSubscriptionStoredProvider, legacy externalSubscriptionStoredProvider) bool {
-	if target == nil {
-		return false
-	}
-	updated := false
-	if !target.Enabled && legacy.Enabled && legacy.hasSubscriptionCredential() {
-		target.Enabled = true
-		updated = true
-	}
-	if strings.TrimSpace(target.APIToken) == "" && strings.TrimSpace(legacy.APIToken) != "" {
-		target.APIToken = legacy.APIToken
-		updated = true
-	}
-	if strings.TrimSpace(target.RefreshToken) == "" && strings.TrimSpace(legacy.RefreshToken) != "" {
-		target.RefreshToken = legacy.RefreshToken
-		updated = true
-	}
-	if strings.TrimSpace(target.UserID) == "" && strings.TrimSpace(legacy.UserID) != "" {
-		target.UserID = legacy.UserID
-		updated = true
-	}
-	if strings.TrimSpace(target.APIBaseURL) == "" && strings.TrimSpace(legacy.APIBaseURL) != "" {
-		target.APIBaseURL = legacy.APIBaseURL
-		updated = true
-	}
-	if mergedKeywords := mergeExternalSubscriptionKeywords(target.MatchKeywords, legacy.MatchKeywords); len(mergedKeywords) != len(target.MatchKeywords) {
-		target.MatchKeywords = mergedKeywords
-		updated = true
-	}
-	return updated
 }
 
 func isDefaultExternalSubscriptionProvider(id string) bool {
@@ -738,56 +692,78 @@ func externalSubscriptionProviderErrorStatus(provider externalSubscriptionStored
 	}
 }
 
-func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Context) ([]externalSubscriptionStoredProvider, error) {
-	configs := []struct {
-		cfg      externalSubscriptionProviderConfig
-		template string
-		keywords []string
-		order    int
-	}{
-		{tcdmxSubscriptionProviderConfig(), ExternalSubscriptionTemplateActiveSubscriptions, []string{"tcdmx.com", "tcdmx"}, 10},
-		{qlhazycoderSubscriptionProviderConfig(), ExternalSubscriptionTemplateNewAPIConsole, []string{"api.qlhazycoder.top", "qlhazycoder", "qlhazy"}, 20},
-		{xhyapiSubscriptionProviderConfig(), ExternalSubscriptionTemplateActiveSubscriptions, []string{"xhyapi.com", "xhyapi", "xhy"}, 30},
-		{pixelSubscriptionProviderConfig(), ExternalSubscriptionTemplateActiveSubscriptions, []string{"ai-pixel.online", "pixel"}, 40},
-		{liustSubscriptionProviderConfig(), ExternalSubscriptionTemplateNewAPIConsole, []string{"liust.xyz", "liust"}, 50},
-		{packycodeSubscriptionProviderConfig(), ExternalSubscriptionTemplateNewAPIConsole, []string{"packyapi.com", "packycode", "packy"}, 60},
-	}
-	providers := make([]externalSubscriptionStoredProvider, 0, len(configs))
-	buzzSettings, err := s.settingService.GetBuzzBalanceSettings(ctx)
-	if err != nil {
-		return nil, err
-	}
-	providers = append(providers, externalSubscriptionStoredProvider{
-		ID:              "buzz",
-		Name:            "Buzz",
-		Enabled:         buzzSettings.Enabled,
-		Template:        ExternalSubscriptionTemplateBuzzBalance,
-		BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
-		APIBaseURL:      buzzSettings.APIBaseURL,
-		APIToken:        buzzSettings.APIToken,
-		MatchKeywords:   []string{"buzz", "buzzai", "buzzai.cc", "claude"},
-		SortOrder:       5,
-	})
-	for _, item := range configs {
-		settings, err := s.settingService.getExternalSubscriptionSettings(ctx, item.cfg)
-		if err != nil {
-			return nil, err
-		}
-		providers = append(providers, externalSubscriptionStoredProvider{
-			ID:              item.cfg.Provider,
-			Name:            item.cfg.DisplayName,
-			Enabled:         settings.Enabled,
-			Template:        item.template,
-			BalanceStrategy: defaultExternalSubscriptionBalanceStrategy(item.cfg.Provider, item.template),
-			APIBaseURL:      settings.APIBaseURL,
-			APIToken:        settings.APIToken,
-			UserID:          settings.UserID,
-			RefreshToken:    settings.RefreshToken,
-			MatchKeywords:   item.keywords,
-			SortOrder:       item.order,
-		})
-	}
-	providers = append(providers,
+func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider {
+	return []externalSubscriptionStoredProvider{
+		{
+			ID:              "buzz",
+			Name:            "Buzz",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateBuzzBalance,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      DefaultBuzzBalanceAPIBaseURL,
+			MatchKeywords:   []string{"buzz", "buzzai", "buzzai.cc", "claude"},
+			SortOrder:       5,
+		},
+		{
+			ID:              "tcdmx",
+			Name:            "TCDMX",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateActiveSubscriptions,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyActiveSubscriptions,
+			APIBaseURL:      DefaultTCDMXSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"tcdmx.com", "tcdmx"},
+			SortOrder:       10,
+		},
+		{
+			ID:              "qlhazycoder",
+			Name:            "qlhazycoder",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateNewAPIConsole,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPISubscription,
+			APIBaseURL:      DefaultQLHazyCoderSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"api.qlhazycoder.top", "qlhazycoder", "qlhazy"},
+			SortOrder:       20,
+		},
+		{
+			ID:              "xhyapi",
+			Name:            "XHYAPI",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateActiveSubscriptions,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyActiveSubscriptions,
+			APIBaseURL:      DefaultXHYAPISubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"xhyapi.com", "xhyapi", "xhy"},
+			SortOrder:       30,
+		},
+		{
+			ID:              "pixel",
+			Name:            "Pixel",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateActiveSubscriptions,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuthMeBalance,
+			APIBaseURL:      DefaultPixelSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"ai-pixel.online", "pixel"},
+			SortOrder:       40,
+		},
+		{
+			ID:              "liust",
+			Name:            "liust",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateNewAPIConsole,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPISubscription,
+			APIBaseURL:      DefaultLiustSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"liust.xyz", "liust"},
+			SortOrder:       50,
+		},
+		{
+			ID:              "packycode",
+			Name:            "PackyCode",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateNewAPIConsole,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+			APIBaseURL:      DefaultPackyCodeSubscriptionAPIBaseURL,
+			MatchKeywords:   []string{"packyapi.com", "packycode", "packy"},
+			SortOrder:       60,
+		},
 		externalSubscriptionStoredProvider{
 			ID:              "openrouter",
 			Name:            "OpenRouter",
@@ -828,8 +804,7 @@ func (s *ExternalSubscriptionConfigService) buildLegacyProviders(ctx context.Con
 			MatchKeywords:   []string{"mimo", "xiaomi", "xiaomimimo"},
 			SortOrder:       95,
 		},
-	)
-	return providers, nil
+	}
 }
 
 func (s *ExternalSubscriptionConfigService) saveStoredProviders(ctx context.Context, providers []externalSubscriptionStoredProvider) error {

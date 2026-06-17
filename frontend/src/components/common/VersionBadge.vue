@@ -318,7 +318,7 @@
                 <button data-testid="common-version-badge-button-handle-update-2"
                   @click="handleUpdate"
                   :disabled="updating"
-                  class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="version-update-action flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <svg v-if="updating" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle
@@ -552,5 +552,17 @@ onBeforeUnmount(() => {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.version-update-action {
+  border: 1px solid var(--atelier-terracotta-action, #c96442);
+  background: var(--atelier-terracotta-action, #c96442);
+  color: var(--atelier-paper-2, #fffaf0);
+}
+
+.version-update-action:hover:not(:disabled) {
+  border-color: var(--atelier-terracotta-action-hover, #a64f34);
+  background: var(--atelier-terracotta-action-hover, #a64f34);
+  color: var(--atelier-paper-2, #fffaf0);
 }
 </style>

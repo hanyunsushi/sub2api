@@ -80,7 +80,7 @@ const props = withDefaults(defineProps<{
   uploadLabel?: string
   removeLabel?: string
   hint?: string
-  maxSize?: number // bytes
+  maxSize?: number | null // bytes; null disables the client-side size cap
 }>(), {
   mode: 'image',
   size: 'md',
@@ -113,7 +113,7 @@ function handleUpload(event: Event) {
 
   if (!file) return
 
-  if (props.maxSize && file.size > props.maxSize) {
+  if (typeof props.maxSize === 'number' && props.maxSize > 0 && file.size > props.maxSize) {
     error.value = `File too large (${(file.size / 1024).toFixed(1)} KB), max ${(props.maxSize / 1024).toFixed(0)} KB`
     input.value = ''
     return

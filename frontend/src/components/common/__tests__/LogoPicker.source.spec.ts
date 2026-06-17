@@ -42,6 +42,7 @@ describe('LogoPicker preset gallery contract', () => {
     expect(providerBrandIconSource).toContain('provider-brand-transparent-shell')
     expect(providerBrandIconSource).toContain('shouldUseTransparentShell')
     expect(providerBrandIconSource).toContain("['openai', 'claude', 'anthropic']")
+    expect(providerBrandSource).toContain("officialAntigravityLogoURL = '/brand/antigravity-logo.png'")
     expect(providerBrandIconSource).toContain('object-contain')
     expect(providerBrandIconSource).toContain('object-cover')
     expect(providerBrandIconSource).toContain(':deep(.model-icon)')

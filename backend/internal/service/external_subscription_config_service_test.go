@@ -14,22 +14,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHidesSecrets(t *testing.T) {
+func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndIgnoresLegacySettings(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepo(map[string]string{
-		SettingKeyTCDMXSubscriptionEnabled:          "true",
-		SettingKeyTCDMXSubscriptionAPIBaseURL:       "https://tcdmx.example/api/v1",
-		SettingKeyTCDMXSubscriptionAPIToken:         "tcdmx-access-token",
-		SettingKeyTCDMXSubscriptionRefreshToken:     "tcdmx-refresh-token",
-		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
-		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: "https://api.qlhazycoder.top",
-		SettingKeyQLHazyCoderSubscriptionAPIToken:   "qlhazy-token",
-		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
-		SettingKeyPackyCodeSubscriptionEnabled:      "true",
-		SettingKeyPackyCodeSubscriptionAPIToken:     "packy-token",
-		SettingKeyPackyCodeSubscriptionUserID:       "996",
-		SettingKeyBuzzBalanceEnabled:                "true",
-		SettingKeyBuzzBalanceAPIBaseURL:             "https://buzzai.cc",
-		SettingKeyBuzzBalanceAPIToken:               "buzz-token",
+		"tcdmx_subscription_enabled":         "true",
+		"tcdmx_subscription_api_base_url":    "https://tcdmx.example/api/v1",
+		"tcdmx_subscription_api_token":       "tcdmx-access-token",
+		"tcdmx_subscription_refresh_token":   "tcdmx-refresh-token",
+		"qlhazycoder_subscription_enabled":   "true",
+		"qlhazycoder_subscription_api_token": "qlhazy-token",
+		"qlhazycoder_subscription_user_id":   "707",
+		"packycode_subscription_enabled":     "true",
+		"packycode_subscription_api_token":   "packy-token",
+		"packycode_subscription_user_id":     "996",
+		"buzz_balance_enabled":               "true",
+		"buzz_balance_api_token":             "buzz-token",
+		"liust_subscription_enabled":         "true",
+		"liust_subscription_api_token":       "liust-token",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
@@ -39,42 +39,55 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 	tcdmx := requireExternalSubscriptionProvider(t, providers, "tcdmx")
 	require.Equal(t, "TCDMX", tcdmx.Name)
 	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, tcdmx.Template)
-	require.Equal(t, "https://tcdmx.example", tcdmx.APIBaseURL)
-	require.True(t, tcdmx.Enabled)
-	require.True(t, tcdmx.APITokenConfigured)
-	require.True(t, tcdmx.RefreshTokenConfigured)
+	require.Equal(t, DefaultTCDMXSubscriptionAPIBaseURL, tcdmx.APIBaseURL)
+	require.False(t, tcdmx.Enabled)
+	require.False(t, tcdmx.APITokenConfigured)
+	require.False(t, tcdmx.RefreshTokenConfigured)
 	require.Empty(t, tcdmx.APIToken)
 	require.Empty(t, tcdmx.RefreshToken)
 	require.Contains(t, tcdmx.MatchKeywords, "tcdmx")
 
 	qlhazy := requireExternalSubscriptionProvider(t, providers, "qlhazycoder")
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, qlhazy.Template)
-	require.True(t, qlhazy.APITokenConfigured)
-	require.Equal(t, "707", qlhazy.UserID)
+	require.False(t, qlhazy.Enabled)
+	require.False(t, qlhazy.APITokenConfigured)
+	require.Empty(t, qlhazy.UserID)
 	require.Empty(t, qlhazy.APIToken)
 	require.Contains(t, qlhazy.MatchKeywords, "qlhazycoder")
 
 	packy := requireExternalSubscriptionProvider(t, providers, "packycode")
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, packy.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, packy.BalanceStrategy)
-	require.True(t, packy.APITokenConfigured)
-	require.Equal(t, "996", packy.UserID)
+	require.False(t, packy.Enabled)
+	require.False(t, packy.APITokenConfigured)
+	require.Empty(t, packy.UserID)
 	require.Empty(t, packy.APIToken)
 
 	pixel := requireExternalSubscriptionProvider(t, providers, "pixel")
 	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, pixel.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, pixel.BalanceStrategy)
+	require.False(t, pixel.Enabled)
+	require.False(t, pixel.APITokenConfigured)
 
 	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
 	require.Equal(t, "Buzz", buzz.Name)
 	require.Equal(t, ExternalSubscriptionTemplateBuzzBalance, buzz.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyAuto, buzz.BalanceStrategy)
-	require.Equal(t, "https://buzzai.cc", buzz.APIBaseURL)
-	require.True(t, buzz.Enabled)
-	require.True(t, buzz.APITokenConfigured)
+	require.Equal(t, DefaultBuzzBalanceAPIBaseURL, buzz.APIBaseURL)
+	require.False(t, buzz.Enabled)
+	require.False(t, buzz.APITokenConfigured)
 	require.Empty(t, buzz.APIToken)
 	require.Contains(t, buzz.MatchKeywords, "buzzai.cc")
 	require.Contains(t, buzz.MatchKeywords, "claude")
+
+	liust := requireExternalSubscriptionProvider(t, providers, "liust")
+	require.Equal(t, "liust", liust.Name)
+	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, liust.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPISubscription, liust.BalanceStrategy)
+	require.Equal(t, DefaultLiustSubscriptionAPIBaseURL, liust.APIBaseURL)
+	require.False(t, liust.Enabled)
+	require.False(t, liust.APITokenConfigured)
+	require.Empty(t, liust.UserID)
 
 	rawchat := requireExternalSubscriptionProvider(t, providers, "rawchat")
 	require.Equal(t, "RawChat", rawchat.Name)
@@ -93,6 +106,8 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsLegacyDefaultsAndHi
 	require.False(t, mimo.Enabled)
 	require.False(t, mimo.APITokenConfigured)
 	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
+
+	require.Len(t, providers, 11)
 }
 
 func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {
@@ -427,17 +442,17 @@ func TestExternalSubscriptionConfigServiceDeleteLegacyLiustProviderDoesNotRecrea
 			Name:          "liust",
 			Enabled:       true,
 			Template:      ExternalSubscriptionTemplateNewAPIConsole,
-			APIBaseURL:    DefaultLiustSubscriptionAPIBaseURL,
+			APIBaseURL:    "https://liust.xyz",
 			APIToken:      "liust-token",
 			UserID:        "808",
 			MatchKeywords: []string{"liust.xyz", "liust"},
 			SortOrder:     50,
 		},
 	}, map[string]string{
-		SettingKeyLiustSubscriptionEnabled:    "true",
-		SettingKeyLiustSubscriptionAPIBaseURL: DefaultLiustSubscriptionAPIBaseURL,
-		SettingKeyLiustSubscriptionAPIToken:   "liust-token",
-		SettingKeyLiustSubscriptionUserID:     "808",
+		"liust_subscription_enabled":      "true",
+		"liust_subscription_api_base_url": "https://liust.xyz",
+		"liust_subscription_api_token":    "liust-token",
+		"liust_subscription_user_id":      "808",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 	ctx := context.Background()
@@ -448,6 +463,29 @@ func TestExternalSubscriptionConfigServiceDeleteLegacyLiustProviderDoesNotRecrea
 	require.NoError(t, err)
 	requireNoExternalSubscriptionProvider(t, providers, "liust")
 	require.Contains(t, repo.values[SettingKeyExternalSubscriptionDeletedDefaultProviders], "liust")
+}
+
+func TestExternalSubscriptionConfigServiceIgnoresLegacyLiustSettingsWhenNoStoredProviderExists(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepo(map[string]string{
+		"liust_subscription_enabled":      "true",
+		"liust_subscription_api_base_url": "https://liust.xyz",
+		"liust_subscription_api_token":    "liust-token",
+		"liust_subscription_user_id":      "808",
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	providers, err := svc.ListProviders(context.Background())
+	require.NoError(t, err)
+
+	liust := requireExternalSubscriptionProvider(t, providers, "liust")
+	require.False(t, liust.Enabled)
+	require.False(t, liust.APITokenConfigured)
+	require.Empty(t, liust.UserID)
+	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
+	require.False(t, buzz.Enabled)
+	require.False(t, buzz.APITokenConfigured)
+	requireExternalSubscriptionProvider(t, providers, "openrouter")
+	requireExternalSubscriptionProvider(t, providers, "rawchat")
 }
 
 func TestExternalSubscriptionConfigServiceCreateProviderClearsDeletedDefaultMarker(t *testing.T) {
@@ -648,7 +686,7 @@ func TestExternalSubscriptionConfigServiceBalanceStrategyPersistsToPublicProvide
 	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, requireStoredExternalSubscriptionProvider(t, stored, "pixel-wallet").BalanceStrategy)
 }
 
-func TestExternalSubscriptionConfigServiceMergesLegacyKeywordsIntoStoredProvider(t *testing.T) {
+func TestExternalSubscriptionConfigServiceDoesNotMergeLegacyKeywordsIntoStoredProvider(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{
 			ID:            "buzz",
@@ -671,17 +709,14 @@ func TestExternalSubscriptionConfigServiceMergesLegacyKeywordsIntoStoredProvider
 	require.NoError(t, err)
 
 	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
-	require.Contains(t, buzz.MatchKeywords, "buzz")
-	require.Contains(t, buzz.MatchKeywords, "buzzai")
-	require.Contains(t, buzz.MatchKeywords, "buzzai.cc")
-	require.Contains(t, buzz.MatchKeywords, "claude")
+	require.Equal(t, []string{"buzz"}, buzz.MatchKeywords)
 
 	stored := mustStoredExternalSubscriptionProviders(t, repo)
 	raw := requireStoredExternalSubscriptionProvider(t, stored, "buzz")
-	require.Contains(t, raw.MatchKeywords, "claude")
+	require.Equal(t, []string{"buzz"}, raw.MatchKeywords)
 }
 
-func TestExternalSubscriptionConfigServiceMergesConfiguredLegacyProvidersIntoStoredProviders(t *testing.T) {
+func TestExternalSubscriptionConfigServiceDoesNotMergeConfiguredLegacyProvidersIntoStoredProviders(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{
 			ID:            "xhyapi",
@@ -702,37 +737,33 @@ func TestExternalSubscriptionConfigServiceMergesConfiguredLegacyProvidersIntoSto
 			SortOrder:     70,
 		},
 	}, map[string]string{
-		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
-		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: "https://api.qlhazycoder.top",
-		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
-		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
-		SettingKeyXHYAPISubscriptionEnabled:         "true",
-		SettingKeyXHYAPISubscriptionAPIBaseURL:      "https://xhyapi.com",
-		SettingKeyXHYAPISubscriptionAPIToken:        "legacy-xhy-token",
-		SettingKeyXHYAPISubscriptionRefreshToken:    "legacy-xhy-refresh",
+		"qlhazycoder_subscription_enabled":      "true",
+		"qlhazycoder_subscription_api_base_url": "https://api.qlhazycoder.top",
+		"qlhazycoder_subscription_api_token":    "legacy-ql-token",
+		"qlhazycoder_subscription_user_id":      "707",
+		"xhyapi_subscription_enabled":           "true",
+		"xhyapi_subscription_api_base_url":      "https://xhyapi.com",
+		"xhyapi_subscription_api_token":         "legacy-xhy-token",
+		"xhyapi_subscription_refresh_token":     "legacy-xhy-refresh",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
 	providers, err := svc.ListProviders(context.Background())
 	require.NoError(t, err)
 
-	qlhazy := requireExternalSubscriptionProvider(t, providers, "qlhazycoder")
-	require.True(t, qlhazy.Enabled)
-	require.True(t, qlhazy.APITokenConfigured)
-	require.Equal(t, "707", qlhazy.UserID)
+	requireNoExternalSubscriptionProvider(t, providers, "qlhazycoder")
 
 	xhyapi := requireExternalSubscriptionProvider(t, providers, "xhyapi")
-	require.True(t, xhyapi.APITokenConfigured)
-	require.True(t, xhyapi.RefreshTokenConfigured)
+	require.False(t, xhyapi.APITokenConfigured)
+	require.False(t, xhyapi.RefreshTokenConfigured)
 
 	stored := mustStoredExternalSubscriptionProviders(t, repo)
-	require.Equal(t, "legacy-ql-token", requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder").APIToken)
 	xhyRaw := requireStoredExternalSubscriptionProvider(t, stored, "xhyapi")
-	require.Equal(t, "legacy-xhy-token", xhyRaw.APIToken)
-	require.Equal(t, "legacy-xhy-refresh", xhyRaw.RefreshToken)
+	require.Empty(t, xhyRaw.APIToken)
+	require.Empty(t, xhyRaw.RefreshToken)
 }
 
-func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagIntoStoredProvider(t *testing.T) {
+func TestExternalSubscriptionConfigServiceDoesNotMergeLegacyEnabledFlagIntoStoredProvider(t *testing.T) {
 	newAPIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/api/status":
@@ -758,10 +789,10 @@ func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagIntoStoredProvi
 			SortOrder:     20,
 		},
 	}, map[string]string{
-		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
-		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: newAPIServer.URL,
-		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
-		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+		"qlhazycoder_subscription_enabled":      "true",
+		"qlhazycoder_subscription_api_base_url": newAPIServer.URL,
+		"qlhazycoder_subscription_api_token":    "legacy-ql-token",
+		"qlhazycoder_subscription_user_id":      "707",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
@@ -769,19 +800,18 @@ func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagIntoStoredProvi
 	require.NoError(t, err)
 
 	qlhazy := requireExternalSubscriptionStatus(t, statuses, "qlhazycoder")
-	require.True(t, qlhazy.Enabled)
-	require.True(t, qlhazy.Configured)
-	require.NotNil(t, qlhazy.RemainingUSD)
-	require.InDelta(t, 5, *qlhazy.RemainingUSD, 0.0001)
+	require.False(t, qlhazy.Enabled)
+	require.False(t, qlhazy.Configured)
+	require.Nil(t, qlhazy.RemainingUSD)
 
 	stored := mustStoredExternalSubscriptionProviders(t, repo)
 	qlhazyRaw := requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder")
-	require.True(t, qlhazyRaw.Enabled)
-	require.Equal(t, "legacy-ql-token", qlhazyRaw.APIToken)
-	require.Equal(t, "707", qlhazyRaw.UserID)
+	require.False(t, qlhazyRaw.Enabled)
+	require.Empty(t, qlhazyRaw.APIToken)
+	require.Empty(t, qlhazyRaw.UserID)
 }
 
-func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagAfterPreviousSecretMerge(t *testing.T) {
+func TestExternalSubscriptionConfigServiceDoesNotMergeLegacyEnabledFlagAfterPreviousSecretMerge(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{
 			ID:            "qlhazycoder",
@@ -795,10 +825,10 @@ func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagAfterPreviousSe
 			SortOrder:     20,
 		},
 	}, map[string]string{
-		SettingKeyQLHazyCoderSubscriptionEnabled:    "true",
-		SettingKeyQLHazyCoderSubscriptionAPIBaseURL: "https://api.qlhazycoder.top",
-		SettingKeyQLHazyCoderSubscriptionAPIToken:   "legacy-ql-token",
-		SettingKeyQLHazyCoderSubscriptionUserID:     "707",
+		"qlhazycoder_subscription_enabled":      "true",
+		"qlhazycoder_subscription_api_base_url": "https://api.qlhazycoder.top",
+		"qlhazycoder_subscription_api_token":    "legacy-ql-token",
+		"qlhazycoder_subscription_user_id":      "707",
 	})
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
@@ -806,10 +836,10 @@ func TestExternalSubscriptionConfigServiceMergesLegacyEnabledFlagAfterPreviousSe
 	require.NoError(t, err)
 
 	qlhazy := requireExternalSubscriptionProvider(t, providers, "qlhazycoder")
-	require.True(t, qlhazy.Enabled)
+	require.False(t, qlhazy.Enabled)
 
 	stored := mustStoredExternalSubscriptionProviders(t, repo)
-	require.True(t, requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder").Enabled)
+	require.False(t, requireStoredExternalSubscriptionProvider(t, stored, "qlhazycoder").Enabled)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesRunsBothTemplates(t *testing.T) {

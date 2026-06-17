@@ -6,6 +6,7 @@ import i18n, { initI18n } from './i18n'
 import { useAppStore } from '@/stores/app'
 import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
 import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
+import { updateFavicon } from '@/utils/favicon'
 import './assets/fonts/local-fonts.css'
 import './style.css'
 
@@ -25,6 +26,9 @@ async function bootstrap() {
   // Set document title immediately after config is loaded
   if (appStore.siteName && appStore.siteName !== 'Sub2API') {
     document.title = `${appStore.siteName} - AI API Gateway`
+  }
+  if (appStore.siteLogo) {
+    updateFavicon(appStore.siteLogo)
   }
 
   await initI18n()

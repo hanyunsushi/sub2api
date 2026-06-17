@@ -20,6 +20,7 @@ describe('provider brand icon resolution', () => {
     expect(providerBrandModel('openai', 'gpt-5.5')).toBe('gpt')
     expect(providerBrandModel('anthropic', 'claude-sonnet-4-5')).toBe('claude')
     expect(providerBrandModel('gemini', 'gemini-2.5-pro')).toBe('gemini')
+    expect(providerBrandModel('antigravity', 'antigravity')).toBe('')
     expect(providerBrandModel('deepseek', 'deepseek-chat')).toBe('deepseek')
     expect(providerBrandModel('volcengine', 'doubao-seed-1-6')).toBe('doubao')
   })
@@ -44,6 +45,8 @@ describe('provider brand icon resolution', () => {
     expect(aiLogoUrlForProvider('gemini-cli', 'gemini-2.5-pro')).toContain('/geminicli-color.png')
     expect(providerBrandInfo('openrouter')?.iconUrl).toContain('/openrouter.png')
     expect(systemAILogoPresetIDFromURL(providerBrandInfo('openrouter')?.iconUrl)).toBe('openrouter')
+    expect(providerBrandInfo('antigravity')?.iconUrl).toBe('/brand/antigravity-logo.png')
+    expect(aiLogoUrlForProvider('antigravity', 'antigravity')).toBe('/brand/antigravity-logo.png')
   })
 
   it('covers common LiteLLM and vendor aliases with recognizable icon seeds', () => {
