@@ -6,7 +6,7 @@
   --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
   --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
 }
 
 /* Newspaper appearance theme */
@@ -3946,7 +3946,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-paper-2);
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
@@ -3968,7 +3968,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   transform: var(--creepee-home-card-hover-transform);
   box-shadow: var(--creepee-home-card-hover-shadow);
 }
@@ -8408,7 +8408,8 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
   --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
+  --creepee-card-stable-border: var(--atelier-material-edge);
   transition:
     transform 280ms var(--atelier-ease),
     background-color 280ms var(--atelier-ease),
@@ -8421,7 +8422,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  --creepee-home-card-hover-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }

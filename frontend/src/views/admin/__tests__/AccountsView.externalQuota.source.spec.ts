@@ -6,6 +6,7 @@ const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
+const monitorCapacitySource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
 const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../../components/admin/account/ExternalQuotaProgressSettingsModal.vue'), 'utf8')
 const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
@@ -15,7 +16,7 @@ const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
 const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
 const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
 const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 26px 44px -34px color-mix(in srgb, var(--home-card-accent) 58%, transparent);'
+  '--creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -274,11 +275,11 @@ describe('AccountsView external quota card metadata', () => {
     expect(accountRowHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(accountRowHoverBlock).not.toContain('translate3d(0, -2px, 0)')
     expect(accountRowHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(accountRowHoverBlock).not.toContain('border-color')
     expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(accountRowHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(accountRowHoverBlock).not.toContain('var(--atelier-butter')
     expect(accountRowHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(accountRowHoverBlock).not.toContain('border-color')
     expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
     expect(globalHoverBlock).toContain('.accounts-table-page .table-wrapper tbody tr')
     expect(globalBaseBlock).toContain(homepageHoverShadow)
@@ -286,11 +287,11 @@ describe('AccountsView external quota card metadata', () => {
     expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
     expect(globalHoverBlock).not.toContain('translateY(-2px)')
     expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(globalHoverBlock).not.toContain('border-color')
     expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(globalHoverBlock).not.toContain('var(--atelier-butter')
     expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(globalHoverBlock).not.toContain('border-color')
     expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
     expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
     expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
@@ -306,11 +307,22 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
     expect(finalAccountRowHover.block).not.toContain('translate3d(0, -2px, 0)')
     expect(finalAccountRowHover.block).not.toContain('rgba(20, 20, 19, 0.035)')
+    expect(finalAccountRowHover.block).not.toContain('border-color')
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(finalAccountRowHover.block).not.toContain('var(--atelier-ui-hover-surface)')
     expect(finalAccountRowHover.block).not.toContain('var(--atelier-butter')
     expect(finalAccountRowHover.block).not.toMatch(/(?:amber|yellow)/i)
-    expect(finalAccountRowHover.block).not.toContain('border-color')
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
+  })
+
+  it('keeps channel monitor capacity cards on the same hover shadow without adding a stronger border', () => {
+    const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
+
+    expect(monitorCapacitySource).toContain(homepageHoverShadow)
+    expect(capacityHoverBlock).toContain('transform: var(--creepee-home-card-hover-transform);')
+    expect(capacityHoverBlock).not.toContain('border-color')
+    expect(capacityHoverBlock).toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
+    expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
+    expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
   })
 })
