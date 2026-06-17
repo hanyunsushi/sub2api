@@ -353,8 +353,7 @@
           </div>
 
           <div class="home-provider-specimen-grid">
-            <PixelCard
-              as="article"
+            <article
               class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -371,9 +370,8 @@
                 <p>{{ t('home.providers.description') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </PixelCard>
-            <PixelCard
-              as="article"
+            </article>
+            <article
               class="home-provider-specimen"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -390,9 +388,8 @@
                 <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </PixelCard>
-            <PixelCard
-              as="article"
+            </article>
+            <article
               class="home-provider-specimen home-provider-specimen-ink"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -409,9 +406,8 @@
                 <p>{{ t('home.features.multiAccountDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </PixelCard>
-            <PixelCard
-              as="article"
+            </article>
+            <article
               class="home-provider-specimen home-provider-specimen-dust"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -428,9 +424,8 @@
                 <p>{{ t('home.features.balanceQuotaDesc') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
               </div>
-            </PixelCard>
-            <PixelCard
-              as="article"
+            </article>
+            <article
               class="home-provider-specimen home-provider-specimen-muted"
               data-home-reveal
               data-home-module="provider-specimen"
@@ -447,7 +442,7 @@
                 <p>{{ t('home.providers.description') }}</p>
                 <b class="home-provider-status">{{ t('home.providers.soon') }}</b>
               </div>
-            </PixelCard>
+            </article>
           </div>
         </section>
       </main>
@@ -491,7 +486,6 @@ import Icon from '@/components/icons/Icon.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import StarBorder from '@/components/home/StarBorder.vue'
 import DarkVeil from '@/components/home/DarkVeil.vue'
-import PixelCard from '@/components/home/PixelCard.vue'
 import { initAppearanceTheme } from '@/composables/useAppearanceTheme'
 
 const { t } = useI18n()
@@ -1259,7 +1253,6 @@ onBeforeUnmount(() => {
 }
 
 .home-ring {
-  position: relative;
   display: grid;
   place-items: center;
   min-height: 0;
@@ -1269,11 +1262,10 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   color: rgba(255, 250, 240, 0.9);
   text-align: center;
-  overflow: hidden;
-  background: rgba(255, 250, 240, 0.08);
+  background: rgba(7, 16, 30, 0.12);
+  backdrop-filter: blur(12px) saturate(1.08);
   box-shadow:
-    inset 0 1px 0 rgba(255, 250, 240, 0.18),
-    inset 0 -18px 42px -34px rgba(255, 250, 240, 0.52),
+    inset 0 1px 0 rgba(255, 250, 240, 0.08),
     0 16px 42px -40px rgba(0, 0, 0, 0.66);
   transition:
     transform 260ms var(--atelier-ease),
@@ -1281,53 +1273,23 @@ onBeforeUnmount(() => {
     color 260ms var(--atelier-ease);
 }
 
-.home-ring::before,
-.home-ring::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.home-ring::before {
-  inset: 0;
-  z-index: 0;
-  background:
-    radial-gradient(circle at 28% 18%, rgba(255, 250, 240, 0.72), transparent 24%),
-    radial-gradient(circle at 76% 82%, rgba(159, 178, 210, 0.34), transparent 30%),
-    linear-gradient(145deg, rgba(255, 250, 240, 0.24), rgba(255, 250, 240, 0.04));
-  backdrop-filter: blur(18px) saturate(1.32);
-}
-
-.home-ring::after {
-  inset: 9px;
-  z-index: 0;
-  border: 1px solid rgba(255, 250, 240, 0.2);
-  background:
-    linear-gradient(120deg, transparent 14%, rgba(255, 250, 240, 0.3) 42%, transparent 66%),
-    radial-gradient(circle at 50% -12%, rgba(255, 250, 240, 0.28), transparent 34%);
-  opacity: 0.68;
-}
-
 .home-ring:hover {
   transform: translate3d(0, -3px, 0);
   color: var(--atelier-white);
-  background: rgba(255, 250, 240, 0.12);
+  background: rgba(79, 106, 140, 0.28);
 }
 
 .home-ring:nth-child(2) {
-  background: rgba(23, 21, 18, 0.1);
+  background: rgba(23, 21, 18, 0.11);
 }
 
 .home-ring:nth-child(3) {
   border-width: 2px;
   border-color: rgba(245, 191, 93, 0.38);
-  background: rgba(255, 250, 240, 0.08);
+  background: rgba(7, 16, 30, 0.12);
 }
 
 .home-ring strong {
-  position: relative;
-  z-index: 1;
   display: block;
   color: inherit;
   font-family: var(--atelier-font-serif);
@@ -1338,8 +1300,6 @@ onBeforeUnmount(() => {
 }
 
 .home-ring span {
-  position: relative;
-  z-index: 1;
   display: block;
   margin-top: 7px;
   color: rgba(255, 250, 240, 0.72);
@@ -1632,14 +1592,14 @@ onBeforeUnmount(() => {
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 144px;
-  height: 144px;
+  width: 96px;
+  height: 96px;
   border: 0;
   border-radius: 0;
   color: var(--atelier-white);
   background: transparent;
   font-family: var(--atelier-font-serif);
-  font-size: 76px;
+  font-size: 52px;
   font-style: italic;
 }
 
