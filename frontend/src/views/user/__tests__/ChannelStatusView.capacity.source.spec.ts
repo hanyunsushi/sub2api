@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 
 const viewSource = readFileSync(resolve(__dirname, '../ChannelStatusView.vue'), 'utf8')
 const componentSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
+const monitorCardSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCard.vue'), 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
 const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
@@ -89,22 +90,37 @@ describe('ChannelStatusView shared capacity overview source', () => {
     const localHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
     const globalHoverBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const themedGlobalHoverBlock = cssBlock(
       styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
     )
     const globalBaseBlock = cssBlock(
       styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+      '#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+    )
+    const monitorChannelBaseBlock = cssBlock(
+      styleSource,
+      '#app .app-layout-content .monitor-channel-card'
     )
 
     expect(componentSource).not.toContain('shadow-card')
+    expect(monitorCardSource).toContain('monitor-channel-card')
+    expect(monitorCardSource).not.toContain('shadow-card')
+    expect(monitorCardSource).not.toContain('shadow-card-hover')
+    expect(monitorCardSource).not.toContain('hover:border')
+    expect(monitorCardSource).not.toContain('dark:hover:border')
+    expect(styleSource).toContain('.monitor-channel-card')
     expect(styleSource).toContain(homepageHoverTransform)
     expect(styleSource).toContain(homepageHoverShadow)
     expect(cssBlock(componentSource, '.monitor-capacity-card')).toContain(homepageHoverShadow)
     expect(cssBlock(componentSource, '.monitor-capacity-card')).not.toContain('color-mix(in srgb, var(--home-card-accent)')
+    expect(monitorChannelBaseBlock).toContain('border-color: var(--creepee-card-stable-border) !important;')
+    expect(monitorChannelBaseBlock).toContain('background: var(--creepee-card-hover-surface) !important;')
+    expect(monitorChannelBaseBlock).toContain('box-shadow: none !important;')
+    expect(monitorChannelBaseBlock).not.toContain('hover:border')
+    expect(monitorChannelBaseBlock).not.toContain('shadow-card')
     expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
     expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
     expect(localHoverBlock).not.toContain('translateY(-2px)')

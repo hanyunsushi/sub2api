@@ -8404,7 +8404,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 /* Creepee homepage recommendation-card hover parity for selectable account/status/subscription cards. */
-#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr) {
+#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr) {
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
   --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
@@ -8416,7 +8416,13 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
     box-shadow 280ms var(--atelier-ease) !important;
 }
 
-#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
+#app .app-layout-content .monitor-channel-card {
+  border-color: var(--creepee-card-stable-border) !important;
+  background: var(--creepee-card-hover-surface) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }
@@ -8427,7 +8433,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }
 
-:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }

@@ -15,7 +15,7 @@
   >
     <canvas
       ref="canvasRef"
-      class="pixel-canvas"
+      class="pixel-card-canvas"
       aria-hidden="true"
     />
     <span class="pixel-card-content">
@@ -46,7 +46,6 @@ interface Pixel {
 
 const props = withDefaults(defineProps<{
   as?: string
-  variant?: 'default' | 'blue' | 'yellow' | 'pink' | string
   className?: string
   gap?: number
   speed?: number
@@ -54,8 +53,11 @@ const props = withDefaults(defineProps<{
   noFocus?: boolean
 }>(), {
   as: 'div',
-  variant: 'default',
   className: '',
+  gap: 7,
+  speed: 42,
+  colors: 'rgba(255,250,240,0.82),rgba(245,191,93,0.58),rgba(157,169,182,0.54)',
+  noFocus: false,
 })
 
 const containerRef = ref<HTMLElement | null>(null)
@@ -67,52 +69,9 @@ let frame = 0
 let previousTime = 0
 let resizeObserver: ResizeObserver | null = null
 
-const variants: Record<string, {
-  activeColor: string | null
-  gap: number
-  speed: number
-  colors: string
-  noFocus: boolean
-}> = {
-  default: {
-    activeColor: null,
-    gap: 5,
-    speed: 35,
-    colors: '#f8fafc,#f1f5f9,#cbd5e1',
-    noFocus: false,
-  },
-  blue: {
-    activeColor: '#e0f2fe',
-    gap: 10,
-    speed: 25,
-    colors: '#e0f2fe,#7dd3fc,#0ea5e9',
-    noFocus: false,
-  },
-  yellow: {
-    activeColor: '#fef08a',
-    gap: 3,
-    speed: 20,
-    colors: '#fef08a,#fde047,#eab308',
-    noFocus: false,
-  },
-  pink: {
-    activeColor: '#fecdd3',
-    gap: 6,
-    speed: 80,
-    colors: '#fecdd3,#fda4af,#e11d48',
-    noFocus: true,
-  },
-}
-
-const variantConfig = computed(() => variants[props.variant] || variants.default)
-const finalGap = computed(() => props.gap ?? variantConfig.value.gap)
-const finalSpeed = computed(() => props.speed ?? variantConfig.value.speed)
-const finalColors = computed(() => props.colors ?? variantConfig.value.colors)
-const finalNoFocus = computed(() => props.noFocus ?? variantConfig.value.noFocus)
-
 const effectiveSpeed = computed(() => {
   if (reducedMotion.value) return 0
-  return Math.max(0, Math.min(100, finalSpeed.value)) * 0.001
+  return Math.max(0, Math.min(100, props.speed)) * 0.001
 })
 
 function randomBetween(min: number, max: number) {
@@ -129,7 +88,7 @@ function buildPixel(x: number, y: number, color: string, delay: number): Pixel {
     counter: 0,
     counterStep: Math.random() * 4 + 4,
     size: 0,
-    sizeStep: Math.random() * 0.4,
+    sizeStep: Math.random() * 0.35 + 0.05,
     minSize: 0.5,
     maxSize: randomBetween(0.5, 2),
     isIdle: false,
@@ -156,11 +115,10 @@ function initPixels() {
   canvas.style.height = `${height}px`
   context.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-  const palette = finalColors.value.split(',').map((color) => color.trim()).filter(Boolean)
+  const palette = props.colors.split(',').map((color) => color.trim()).filter(Boolean)
   const nextPixels: Pixel[] = []
-  const gap = Math.max(1, parseInt(String(finalGap.value), 10))
-  for (let x = 0; x < width; x += gap) {
-    for (let y = 0; y < height; y += gap) {
+  for (let x = 0; x < width; x += props.gap) {
+    for (let y = 0; y < height; y += props.gap) {
       const dx = x - width / 2
       const dy = y - height / 2
       const distance = Math.sqrt(dx * dx + dy * dy)
@@ -255,12 +213,12 @@ function handleLeave() {
 }
 
 function handleFocus(event: FocusEvent) {
-  if (finalNoFocus.value || event.currentTarget === event.relatedTarget) return
+  if (props.noFocus || event.currentTarget === event.relatedTarget) return
   startAnimation('appear')
 }
 
 function handleBlur(event: FocusEvent) {
-  if (finalNoFocus.value || event.currentTarget === event.relatedTarget) return
+  if (props.noFocus || event.currentTarget === event.relatedTarget) return
   startAnimation('disappear')
 }
 
@@ -276,50 +234,24 @@ onBeforeUnmount(() => {
   if (frame) window.cancelAnimationFrame(frame)
 })
 
-watch(() => [props.gap, props.speed, props.colors, props.variant], initPixels)
+watch(() => [props.gap, props.speed, props.colors], initPixels)
 </script>
 
 <style scoped>
 .pixel-card {
   position: relative;
   overflow: hidden;
-  display: grid;
-  place-items: center;
-  isolation: isolate;
-  width: 300px;
-  height: 400px;
-  aspect-ratio: 4 / 5;
-  border: 1px solid #27272a;
-  border-radius: 25px;
-  user-select: none;
-  transition: border-color 200ms cubic-bezier(0.5, 1, 0.89, 1);
 }
 
-.pixel-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, #09090b, transparent 85%);
-  opacity: 0;
-  transition: opacity 800ms cubic-bezier(0.5, 1, 0.89, 1);
-  pointer-events: none;
-}
-
-.pixel-card:hover::before,
-.pixel-card:focus-within::before {
-  opacity: 1;
-}
-
-.pixel-canvas {
+.pixel-card-canvas {
   position: absolute;
   inset: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
-  display: block;
+  opacity: 0.72;
   pointer-events: none;
+  transition: opacity 220ms var(--atelier-ease, ease);
 }
 
 .pixel-card-content {
@@ -328,12 +260,11 @@ watch(() => [props.gap, props.speed, props.colors, props.variant], initPixels)
   display: contents;
 }
 
-.pixel-card-content :slotted(*) {
-  position: relative;
-  z-index: 2;
+.pixel-card:not(.pixel-card-active) .pixel-card-canvas {
+  opacity: 0.4;
 }
 
-.pixel-card-reduced-motion .pixel-canvas {
+.pixel-card-reduced-motion .pixel-card-canvas {
   display: none;
 }
 </style>
