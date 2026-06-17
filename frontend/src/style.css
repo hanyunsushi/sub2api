@@ -5260,8 +5260,8 @@ body > .endpoint-tooltip .endpoint-tooltip-arrow {
   background: transparent !important;
   justify-self: center;
   align-self: center;
-  width: 96px !important;
-  height: 96px !important;
+  width: 72px !important;
+  height: 72px !important;
   border: 0 !important;
   border-radius: 0 !important;
   color: var(--atelier-ink) !important;

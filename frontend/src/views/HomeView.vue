@@ -1592,8 +1592,8 @@ onBeforeUnmount(() => {
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 96px;
-  height: 96px;
+  width: 72px;
+  height: 72px;
   border: 0;
   border-radius: 0;
   color: var(--atelier-white);
