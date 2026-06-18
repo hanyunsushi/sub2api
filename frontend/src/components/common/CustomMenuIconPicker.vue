@@ -41,17 +41,31 @@
 
       <div v-if="mergedIconPresets.length" class="custom-menu-icon-picker-presets">
         <span class="custom-menu-icon-picker-presets-label">{{ presetsLabel }}</span>
-        <button data-testid="common-custom-menu-icon-picker-button-select-preset-preset-url"
+        <div
           v-for="preset in mergedIconPresets"
           :key="preset.id"
-          type="button"
-          class="custom-menu-icon-picker-preset"
-          :class="{ 'custom-menu-icon-picker-preset-active': normalizedValue === preset.url }"
-          :title="preset.url"
-          @click="selectPreset(preset.url)"
+          class="custom-menu-icon-picker-preset-frame"
         >
-          <img :src="preset.url" :alt="preset.label" loading="lazy" />
-        </button>
+          <button data-testid="common-custom-menu-icon-picker-button-select-preset-preset-url"
+            type="button"
+            class="custom-menu-icon-picker-preset"
+            :class="{ 'custom-menu-icon-picker-preset-active': normalizedValue === preset.url }"
+            :title="preset.url"
+            @click="selectPreset(preset.url)"
+          >
+            <img :src="preset.url" :alt="preset.label" loading="lazy" />
+          </button>
+          <button data-testid="common-custom-menu-icon-picker-button-delete-preset-preset-url"
+            type="button"
+            class="custom-menu-icon-picker-preset-delete"
+            aria-label="Delete custom menu SVG icon"
+            title="Delete custom menu SVG icon"
+            @click.stop="deletePreset(preset.url)"
+          >
+            <span aria-hidden="true">×</span>
+            <span class="sr-only">Custom menu SVG icon</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -62,7 +76,7 @@ import { computed, onMounted, ref } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import { getPublicSettings as fetchPublicSettings } from '@/api/auth'
-import { appendCustomMenuSVGIconPreset } from '@/api/customMenuIconPresets'
+import { appendCustomMenuSVGIconPreset, deleteCustomMenuSVGIconPreset } from '@/api/customMenuIconPresets'
 import { sanitizeSvg } from '@/utils/sanitize'
 import {
   getMergedCustomMenuSVGIconPresets,
@@ -151,6 +165,28 @@ function selectPreset(url: string) {
   emit('update:modelValue', url)
 }
 
+async function deletePreset(url: string) {
+  try {
+    const result = await deleteCustomMenuSVGIconPreset(url)
+    setCustomMenuIconRuntimeConfig({
+      custom_menu_svg_icon_presets: result.custom_menu_svg_icon_presets,
+    })
+    emit('presets-updated', result.custom_menu_svg_icon_presets)
+  } catch {
+    const presets = getMergedCustomMenuSVGIconPresets()
+      .filter((preset) => preset.url !== url)
+      .map((preset) => preset.url)
+    setCustomMenuIconRuntimeConfig({
+      custom_menu_svg_icon_presets: presets,
+    })
+    emit('presets-updated', presets)
+  }
+  if (normalizedValue.value === url) {
+    emit('update:modelValue', '')
+  }
+  refreshMergedIconPresets()
+}
+
 onMounted(() => {
   void refreshIconRuntimeConfig()
 })
@@ -213,6 +249,11 @@ onMounted(() => {
   grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
 }
 
+.custom-menu-icon-picker-preset-frame {
+  aspect-ratio: 1;
+  position: relative;
+}
+
 .custom-menu-icon-picker-presets-label {
   grid-column: 1 / -1;
   font-size: 0.6875rem;
@@ -228,6 +269,8 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 0.375rem;
+  height: 100%;
+  width: 100%;
 }
 
 .custom-menu-icon-picker-preset:hover,
@@ -241,5 +284,31 @@ onMounted(() => {
   height: 100%;
   object-fit: contain;
   width: 100%;
+}
+
+.custom-menu-icon-picker-preset-delete {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 999px;
+  color: rgb(107 114 128);
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  height: 1rem;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: -0.25rem;
+  top: -0.25rem;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease;
+  width: 1rem;
+}
+
+.custom-menu-icon-picker-preset-delete:hover {
+  border-color: rgb(252 165 165);
+  color: rgb(220 38 38);
 }
 </style>

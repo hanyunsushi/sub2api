@@ -104,13 +104,18 @@
           />
         </div>
         <div class="space-y-1.5">
-          <label class="input-label">{{ localText('Token 刷新时间', 'Token refresh time') }}</label>
-          <input
-            v-model="form.tokenResetAt"
-            type="datetime-local"
-            class="input font-mono"
-            data-testid="external-quota-progress-token-reset-at"
-          />
+          <label class="input-label">{{ localText('统计窗口', 'Usage window') }}</label>
+          <div class="external-quota-token-window">
+            <span class="min-w-0 truncate font-mono text-xs">{{ tokenWindowText }}</span>
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              data-testid="external-quota-progress-refresh-token-window"
+              @click="refreshTokenWindow"
+            >
+              {{ localText('刷新统计', 'Refresh stats') }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -212,16 +217,14 @@ const parseTokenResetAt = () => {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
 }
 
-const toDateTimeLocalValue = (value?: string | null) => {
+const toISOStringValue = (value?: string | null) => {
   if (!value) return ''
   const parsed = new Date(value)
   if (Number.isNaN(parsed.getTime())) return ''
-  const offset = parsed.getTimezoneOffset()
-  const local = new Date(parsed.getTime() - offset * 60_000)
-  return local.toISOString().slice(0, 16)
+  return parsed.toISOString()
 }
 
-const defaultTokenResetAt = () => toDateTimeLocalValue(new Date().toISOString())
+const defaultTokenResetAt = () => new Date().toISOString()
 
 const currentPreference = computed<AccountExternalQuotaProgressPreference>(() => ({
   enabled: form.enabled,
@@ -240,6 +243,14 @@ const balanceText = computed(() => formatAmount(props.subscription?.remaining_us
 const statusTotalText = computed(() => formatAmount(props.subscription?.total_limit_usd, props.subscription?.currency))
 const customTotalText = computed(() => formatAmount(parseCustomTotal(), props.subscription?.currency))
 const tokenTotalText = computed(() => formatTokens(parseTokenTotal()))
+const tokenWindowText = computed(() => {
+  const parsed = parseTokenResetAt()
+  if (!parsed) return localText('未刷新', 'Not refreshed')
+  return localText(
+    `自 ${formatDateTime(parsed)} 起`,
+    `Since ${formatDateTime(parsed)}`,
+  )
+})
 const tokenStats = computed(() => {
   if (!props.account) return null
   const key = buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription ?? null)
@@ -264,6 +275,21 @@ function formatTokens(value?: number | null) {
   return `${Math.round(value).toLocaleString()} token`
 }
 
+function formatDateTime(value: string) {
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return '-'
+  return parsed.toLocaleString(locale.value?.startsWith('zh') ? 'zh-CN' : 'en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function refreshTokenWindow() {
+  form.tokenResetAt = new Date().toISOString()
+}
+
 watch(
   () => [props.show, props.settings, props.subscription] as const,
   () => {
@@ -279,7 +305,7 @@ watch(
     form.tokenTotal = typeof next.tokenTotal === 'number' && Number.isFinite(next.tokenTotal)
       ? String(next.tokenTotal)
       : ''
-    form.tokenResetAt = toDateTimeLocalValue(next.tokenResetAt) || defaultTokenResetAt()
+    form.tokenResetAt = toISOStringValue(next.tokenResetAt) || defaultTokenResetAt()
   },
   { immediate: true },
 )
@@ -315,5 +341,16 @@ const handleSubmit = () => {
 .external-quota-mode-option--disabled {
   cursor: not-allowed;
   opacity: 0.52;
+}
+
+.external-quota-token-window {
+  align-items: center;
+  border: 1px solid var(--atelier-material-edge, rgba(17, 24, 39, 0.12));
+  border-radius: 8px;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.375rem 0.375rem 0.75rem;
 }
 </style>

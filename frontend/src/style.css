@@ -9,11 +9,9 @@
   --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
 }
 
-/* Newspaper appearance theme */
-:root,
-:root[data-theme="newspaper"],
-:root.theme-newspaper {
-  --app-theme-name: "Newspaper";
+/* Base appearance tokens */
+:root {
+  --app-theme-name: "Base";
   --atelier-paper: #f3efe5;
   --atelier-paper-2: #e9e1d2;
   --atelier-ink: #171512;
@@ -94,7 +92,7 @@
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
 }
-/* Newspaper appearance theme end */
+/* Base appearance tokens end */
 
 /* Cloudflare appearance theme */
 :root[data-theme="cloudflare"],
@@ -1605,7 +1603,7 @@
 }
 
 .ai-search-trigger-avatar {
-  --creepee-avatar-size: 1.55rem;
+  --creepee-avatar-size: 1.42rem;
   width: var(--creepee-avatar-size);
   height: var(--creepee-avatar-size);
   flex: 0 0 auto;
@@ -6833,7 +6831,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 /* =====================================================================
    Cloudflare theme — complete de-slab pass (v3).
-   The Newspaper base intentionally paints control surfaces as dark
+   The base token layer intentionally paints control surfaces as dark
    --atelier-ink slabs with paper text (filter bars, ops toolbar,
    dropdown/date-picker portals, popovers). Those base rules are written
    with `#app .app-layout-content ...` (ID specificity), so the Cloudflare
@@ -7199,7 +7197,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 
 /* ---- 11. CF filter-action button hover must mirror the base rule's exact
    structure/specificity so neutral buttons get a real gray hover (the base
-   Newspaper rule keeps them flat). Primary/success/create keep their fill. ---- */
+   base rule keeps them flat). Primary/success/create keep their fill. ---- */
 :root.theme-cloudflare #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)
   :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(:disabled):hover {

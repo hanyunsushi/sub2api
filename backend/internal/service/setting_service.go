@@ -1428,7 +1428,7 @@ func normalizeAppearanceThemeDefault(value string) string {
 	case "cloudflare", "anthropic":
 		return strings.ToLower(strings.TrimSpace(value))
 	default:
-		return "newspaper"
+		return "cloudflare"
 	}
 }
 
@@ -1615,10 +1615,40 @@ func (s *SettingService) AppendCustomMenuSVGIconPreset(ctx context.Context, rawU
 	return next, nil
 }
 
+func (s *SettingService) DeleteCustomMenuSVGIconPreset(ctx context.Context, rawURL string) ([]string, error) {
+	url := normalizeHTTPURL(rawURL)
+	if url == "" {
+		return nil, infraerrors.BadRequest("INVALID_CUSTOM_MENU_SVG_ICON_URL", "custom menu SVG icon URL must be a valid http or https URL")
+	}
+
+	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomMenuSVGIconPresets)
+	if err != nil && !errors.Is(err, ErrSettingNotFound) {
+		return nil, err
+	}
+	current := parseCustomMenuSVGIconPresetURLs(currentRaw)
+	next := make([]string, 0, len(current))
+	for _, item := range current {
+		if item != url {
+			next = append(next, item)
+		}
+	}
+	encoded, err := customMenuSVGIconPresetURLsJSON(next)
+	if err != nil {
+		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
+	}
+	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomMenuSVGIconPresets: encoded}); err != nil {
+		return nil, err
+	}
+	if s.onUpdate != nil {
+		s.onUpdate()
+	}
+	return next, nil
+}
+
 func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
 	normalized := normalizeAppearanceThemeDefault(theme)
 	if normalized != strings.ToLower(strings.TrimSpace(theme)) {
-		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper, cloudflare, or anthropic")
+		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be cloudflare or anthropic")
 	}
 	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyAppearanceThemeDefault: normalized}); err != nil {
 		return "", err
@@ -2188,7 +2218,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	rawThemeDefault := strings.ToLower(strings.TrimSpace(settings.AppearanceThemeDefault))
 	themeDefault := normalizeAppearanceThemeDefault(rawThemeDefault)
 	if rawThemeDefault != "" && themeDefault != rawThemeDefault {
-		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be newspaper, cloudflare, or anthropic")
+		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be cloudflare or anthropic")
 	}
 	settings.AppearanceThemeDefault = themeDefault
 	updates[SettingKeyAppearanceThemeDefault] = themeDefault
@@ -3240,7 +3270,7 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyAuthSourceDefaultDingTalkGrantOnSignup:    "false",
 		SettingKeyAuthSourceDefaultDingTalkGrantOnFirstBind: "false",
 		SettingKeyForceEmailOnThirdPartySignup:              "false",
-		SettingKeyAppearanceThemeDefault:                    "newspaper",
+		SettingKeyAppearanceThemeDefault:                    "cloudflare",
 		SettingKeySMTPPort:                                  "587",
 		SettingKeySMTPUseTLS:                                "false",
 		// Model fallback defaults

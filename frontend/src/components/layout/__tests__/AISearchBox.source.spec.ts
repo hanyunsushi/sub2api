@@ -147,7 +147,7 @@ describe('Creepee Obsidian bridge source contract', () => {
     expect(triggerBlock).toContain('border: 0;')
     expect(triggerBlock).toContain('box-shadow: none;')
     expect(triggerBlock).not.toContain('border: 1px')
-    expect(triggerAvatarBlock).toContain('--creepee-avatar-size: 1.55rem;')
+    expect(triggerAvatarBlock).toContain('--creepee-avatar-size: 1.42rem;')
     expect(triggerAvatarBlock).toContain('width: var(--creepee-avatar-size);')
     expect(triggerAvatarBlock).toContain('height: var(--creepee-avatar-size);')
     expect(triggerAvatarBlock).toContain('display: block;')

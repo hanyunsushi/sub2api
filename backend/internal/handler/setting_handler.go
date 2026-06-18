@@ -171,6 +171,26 @@ func (h *SettingHandler) AppendCustomMenuSVGIconPreset(c *gin.Context) {
 	})
 }
 
+// DeleteCustomMenuSVGIconPreset removes a custom menu SVG icon URL from the shared server-side preset library.
+// DELETE /api/v1/settings/custom-menu-svg-icon-presets
+func (h *SettingHandler) DeleteCustomMenuSVGIconPreset(c *gin.Context) {
+	var req appendCustomAILogoPresetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	presets, err := h.settingService.DeleteCustomMenuSVGIconPreset(c.Request.Context(), req.URL)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{
+		"custom_menu_svg_icon_presets": presets,
+	})
+}
+
 // UnsubscribeNotificationEmail handles optional notification email opt-outs.
 // GET /api/v1/settings/email-unsubscribe?token=...
 func (h *SettingHandler) UnsubscribeNotificationEmail(c *gin.Context) {
