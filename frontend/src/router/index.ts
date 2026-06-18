@@ -558,7 +558,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       requiresAdmin: true,
-      title: 'System Settings',
+      title: 'General Settings',
       titleKey: 'admin.settings.title',
       descriptionKey: 'admin.settings.description'
     }

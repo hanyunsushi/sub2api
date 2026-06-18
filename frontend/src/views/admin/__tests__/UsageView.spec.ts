@@ -1,7 +1,12 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 
 import UsageView from '../UsageView.vue'
+
+const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 
 const { list, getStats, getSnapshotV2, getById, getModelStats, listErrorLogs } = vi.hoisted(() => {
   vi.stubGlobal('localStorage', {
@@ -32,6 +37,40 @@ const formatLocalDate = (date: Date): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
+}
+
+const cssBlock = (source: string, selector: string): string => {
+  const start = source.indexOf(selector)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const open = source.indexOf('{', start)
+  expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
+  let depth = 0
+  for (let index = open; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(open + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
+}
+
+const lastCssBlock = (source: string, selector: string): string => {
+  const start = source.lastIndexOf(selector)
+  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
+  const open = source.indexOf('{', start)
+  expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
+  let depth = 0
+  for (let index = open; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(open + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
 }
 
 vi.mock('@/api/admin', () => ({
@@ -350,5 +389,42 @@ describe('admin UsageView errors tab filter forwarding', () => {
       account_id: 7,
       group_id: 3,
     }))
+  })
+})
+
+describe('admin UsageView visual source guards', () => {
+  it('keeps usage tabs as opaque buttons before and after selection', () => {
+    const tabBlock = cssBlock(styleSource, '#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab')
+    const activeBlock = cssBlock(styleSource, '#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab-active')
+
+    expect(tabBlock).toContain('background: var(--atelier-paper-2) !important;')
+    expect(tabBlock).toContain('background-color: var(--atelier-paper-2) !important;')
+    expect(tabBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(activeBlock).toContain('background: var(--atelier-terracotta-action) !important;')
+    expect(activeBlock).toContain('background-color: var(--atelier-terracotta-action) !important;')
+    expect(activeBlock).toContain('color: var(--atelier-paper-2) !important;')
+  })
+
+  it('uses dashboard slab popup colors for usage dropdown portals', () => {
+    const usagePortalBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal,')
+    const usageOptionBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option, .select-option-label, .select-empty, svg),')
+
+    expect(usagePortalBlock).toContain('border-color: var(--atelier-slab-edge-soft) !important;')
+    expect(usagePortalBlock).toContain('background: var(--atelier-slab-field) !important;')
+    expect(usagePortalBlock).toContain('color: var(--atelier-slab-text) !important;')
+    expect(usagePortalBlock).toContain('box-shadow: none !important;')
+    expect(usageOptionBlock).toContain('color: var(--atelier-slab-text) !important;')
+    expect(usagePortalBlock).not.toContain('background: var(--atelier-paper-2) !important;')
+    expect(usagePortalBlock).not.toContain('box-shadow: 0 18px 48px')
+  })
+
+  it('removes the top stitch from dashboard and usage filter cards', () => {
+    const stitchBlock = lastCssBlock(styleSource, '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card::after,')
+
+    expect(stitchBlock).toContain('content: "" !important;')
+    expect(stitchBlock).toContain('var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat')
+    expect(stitchBlock).toContain('var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat')
+    expect(stitchBlock).toContain('var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat')
+    expect(stitchBlock).not.toContain('top left / 100% 1px no-repeat')
   })
 })

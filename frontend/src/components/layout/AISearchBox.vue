@@ -11,9 +11,11 @@
       aria-controls="creepee-ai-sidecar"
       @click="openPanel"
     >
-      <CreepeeAvatar
+      <img
         class="ai-search-trigger-avatar"
-        action="idle"
+        src="https://www.svgrepo.com/show/306960/webpack.svg"
+        alt=""
+        aria-hidden="true"
       />
       <span class="ai-search-trigger-label">Ask Creepee</span>
     </button>
@@ -21,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import CreepeeAvatar from '@/components/layout/CreepeeAvatar.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()

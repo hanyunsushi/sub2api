@@ -1611,6 +1611,8 @@
   flex: 0 0 auto;
   border-radius: 0.25rem;
   background: transparent;
+  display: block;
+  object-fit: contain;
 }
 
 .ai-search-trigger-label {
@@ -8446,4 +8448,254 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 :root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover {
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
+}
+
+/* 2026-06 UI regression pass: precise late overrides for reported surfaces. */
+#app .app-layout-content :where(.h-8.w-8, .h-4.w-4, .h-6.w-6, .h-10.w-10, .h-12.w-12).animate-spin:where(
+  .border-primary-500,
+  .border-primary-600,
+  .border-b-2,
+  .border-t-primary-600,
+  .border-t-primary-400
+) {
+  border-color: color-mix(in srgb, var(--atelier-terracotta-action) 28%, transparent) !important;
+  border-top-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: var(--atelier-terracotta-action) !important;
+}
+
+#app .app-layout-content .spinner.text-primary-500,
+#app .app-layout-content .spinner.text-primary-600 {
+  color: var(--atelier-terracotta-action) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap {
+  position: relative !important;
+  border-top-color: var(--atelier-slab-edge) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card::before,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card::before,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap::before {
+  content: none !important;
+  display: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card::after,
+#app .app-layout-content .admin-usage-atelier .usage-time-filter-card::after,
+#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 4 !important;
+  display: block !important;
+  height: auto !important;
+  border-radius: inherit !important;
+  background:
+    var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat,
+    var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat,
+    var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat !important;
+  pointer-events: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger, .select-trigger),
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover, .select-trigger:hover, .date-picker-trigger-open, .select-trigger-open) {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  outline: 1px solid var(--atelier-slab-edge-soft) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger, .select-trigger) :where(.date-picker-value, .date-picker-icon, .date-picker-chevron, .select-value, .select-icon, svg, path, span),
+#app .app-layout-content .admin-usage-atelier :where(.usage-time-filter-card, .usage-record-filter-wrap) :where(.date-picker-trigger, .select-trigger, input.input) :where(.date-picker-value, .date-picker-icon, .date-picker-chevron, .select-value, .select-icon, svg, path, span) {
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  stroke: currentColor !important;
+}
+
+body:has(.admin-usage-atelier) .select-dropdown-portal,
+body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-search, .select-options),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal,
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
+  border-color: var(--atelier-slab-edge-soft) !important;
+  background: var(--atelier-slab-field) !important;
+  background-color: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
+}
+
+body:has(.admin-usage-atelier) .select-dropdown-portal {
+  --select-option-stable-text: var(--atelier-slab-text);
+  --select-option-selected-stable-text: var(--atelier-slab-text);
+  --select-option-selected-text: var(--atelier-slab-text);
+}
+
+body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option, .select-option-label, .select-empty, svg),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-input, .date-picker-icon, .date-picker-chevron) {
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  stroke: currentColor !important;
+}
+
+body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option:hover, .select-option-focused, .select-option-selected),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover) {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option:hover, .select-option-focused, .select-option-selected) :where(.select-option-label, svg),
+body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover) :where(span, svg) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab {
+  border: 1px solid var(--atelier-slab-edge) !important;
+  border-bottom-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  background-color: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab:hover:not(.tab-active) {
+  background: var(--atelier-ui-hover-surface) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab-active {
+  border-color: var(--atelier-terracotta-action) !important;
+  background: var(--atelier-terracotta-action) !important;
+  background-color: var(--atelier-terracotta-action) !important;
+  color: var(--atelier-paper-2) !important;
+  -webkit-text-fill-color: var(--atelier-paper-2) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header::before,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header::after {
+  content: none !important;
+  display: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header > .grid {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid {
+  gap: 1rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel {
+  padding: 0 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel {
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+  padding: 1rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card):hover {
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-realtime-panel,
+#app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card) {
+  transform: none !important;
+  transition: border-color 180ms var(--atelier-ease), background-color 180ms var(--atelier-ease) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card:focus-within,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-realtime-panel:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-realtime-panel:focus-within {
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card {
+  cursor: default !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card .ops-diagnosis-popover-panel {
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-resource-band {
+  border-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card) {
+  border: 1px solid var(--ops-card-edge) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+#app .app-layout-content .settings-tabs-shell,
+#app .app-layout-content .settings-tabs-scroll,
+#app .app-layout-content .settings-tabs {
+  display: flex;
+  justify-content: center;
+}
+
+#app .app-layout-content .settings-tabs-shell {
+  width: 100%;
+}
+
+#app .app-layout-content .settings-tabs-scroll {
+  width: 100%;
+}
+
+#app .app-layout-content .settings-tabs {
+  margin-inline: auto;
+}
+
+#app .app-layout-content .settings-tab {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+#app .app-layout-content .settings-tab-icon {
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .settings-tab-label {
+  flex: 0 1 auto !important;
 }

@@ -861,7 +861,7 @@ function handleToolbarRefresh() {
 </script>
 
 <template>
-  <div :class="['ops-monitor-header flex flex-col gap-4 rounded-3xl bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700', props.fullscreen ? 'p-8' : 'p-6']">
+  <div :class="['ops-monitor-header flex flex-col gap-4', props.fullscreen ? 'gap-6' : 'gap-4']">
     <!-- Top Toolbar -->
     <div class="ops-monitor-toolbar flex flex-wrap items-stretch justify-between gap-4 border-b border-gray-100 pb-4 dark:border-dark-700">
       <div class="ops-monitor-toolbar-meta">
@@ -990,11 +990,11 @@ function handleToolbarRefresh() {
 
     <div v-if="overview" class="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <!-- Left: Health + Realtime -->
-      <div :class="['ops-live-panel rounded-2xl bg-gray-50 dark:bg-dark-900 lg:col-span-5', props.fullscreen ? 'p-6' : 'p-4']">
+      <div class="ops-live-panel lg:col-span-5">
         <div class="ops-live-grid grid h-full grid-cols-1 gap-6 md:grid-cols-[200px_1fr] md:items-center">
           <!-- 1) Health Score -->
           <div
-            class="ops-health-score-card group relative flex cursor-pointer flex-col items-center justify-center rounded-xl py-2 transition-all hover:bg-white/60 dark:hover:bg-dark-800/60 md:border-r md:border-gray-200 md:pr-6 dark:md:border-dark-700"
+            class="ops-health-score-card group relative flex flex-col items-center justify-center rounded-xl"
           >
             <!-- Diagnosis Popover (hover) -->
             <div

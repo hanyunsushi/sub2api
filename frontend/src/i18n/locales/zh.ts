@@ -397,8 +397,8 @@ export default {
     redeemCodes: '兑换码',
     ops: '运维监控',
     promoCodes: '优惠码',
-    settings: '系统设置',
-    settingsGeneral: '系统设置',
+    settings: '常规设置',
+    settingsGeneral: '常规设置',
     externalSubscriptions: '外部订阅',
     myAccount: '我的账户',
     lightMode: '浅色模式',
@@ -5781,7 +5781,7 @@ export default {
 
     // Settings
     settings: {
-      title: '系统设置',
+      title: '常规设置',
       description: '管理注册、邮箱验证、默认值和 SMTP 设置',
       tabs: {
         general: '通用设置',
