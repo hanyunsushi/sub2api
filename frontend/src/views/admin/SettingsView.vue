@@ -10824,7 +10824,7 @@ watch(
   height: 2px;
   border-radius: 9999px;
   content: "";
-  background: #002FA7;
+  background: var(--atelier-blue);
 }
 
 .settings-tab-icon {

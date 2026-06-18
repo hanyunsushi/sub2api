@@ -11,83 +11,89 @@
 
 /* Base appearance tokens */
 :root {
-  --app-theme-name: "Base";
-  --atelier-paper: #f3efe5;
-  --atelier-paper-2: #e9e1d2;
-  --atelier-ink: #171512;
-  --atelier-muted: #70685c;
-  --atelier-lime: #70685c;
-  --atelier-line: rgba(23, 21, 18, 0.18);
-  --atelier-line-strong: rgba(23, 21, 18, 0.36);
-  --atelier-blue: #002FA7;
-  --atelier-blue-dark: #001E6E;
-  --atelier-butter: #c79a3a;
-  --atelier-butter-dark: #8e6c1f;
-  --atelier-dust: #4f6a8c;
-  --atelier-white: #fffaf0;
+  --app-theme-name: "Anthropic";
+  --atelier-paper: #f5f4ed;
+  --atelier-paper-2: #faf9f5;
+  --atelier-ink: #141413;
+  --atelier-dark: #30302e;
+  --atelier-text: #4d4c48;
+  --atelier-ink-soft: #4d4c48;
+  --atelier-muted: #5e5d59;
+  --atelier-lime: #5e5d59;
+  --atelier-sand: #e8e6dc;
+  --atelier-ring: #d1cfc5;
+  --atelier-focus: #3898ec;
+  --atelier-line: #f0eee6;
+  --atelier-line-strong: #d1cfc5;
+  --atelier-blue: #c96442;
+  --atelier-blue-dark: #a64f34;
+  --atelier-butter: #d97757;
+  --atelier-butter-dark: #c96442;
+  --atelier-dust: #87867f;
+  --atelier-white: #ffffff;
   --atelier-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
-  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
-  --atelier-butter-soft: #c79a3a;
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 14%, var(--atelier-paper));
+  --atelier-butter-soft: #d97757;
   --atelier-surface: var(--atelier-paper);
-  --atelier-surface-strong: #fffaf0;
-  --atelier-surface-muted: #e9e1d2;
-  --atelier-shadow: rgba(23, 21, 18, 0.32);
+  --atelier-surface-strong: var(--atelier-white);
+  --atelier-surface-muted: #e8e6dc;
+  --atelier-shadow: rgba(20, 20, 19, 0.14);
   --atelier-component-muted: var(--atelier-dust);
-  --atelier-component-warning: var(--atelier-dust);
-  --atelier-red: #b44536;
-  --atelier-green: #2f7d59;
-  --atelier-orange: var(--atelier-butter-dark);
+  --atelier-component-warning: var(--atelier-butter-dark);
+  --atelier-red: #b53333;
+  --atelier-green: #64735b;
+  --atelier-orange: #d97757;
   --atelier-canvas: var(--atelier-paper);
   --atelier-surface-panel: var(--atelier-paper-2);
   --atelier-surface-cool: var(--atelier-paper-2);
-  --atelier-surface-dust: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
-  --atelier-surface-blue: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
+  --atelier-surface-dust: #e8e6dc;
+  --atelier-surface-blue: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
   --atelier-material-1: var(--atelier-paper-2);
   --atelier-material-2: var(--atelier-paper-2);
   --atelier-material-blue: var(--atelier-surface-blue);
   --atelier-material-dust: var(--atelier-surface-dust);
   --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
-  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 8%, var(--atelier-paper-2));
-  --atelier-material-edge: rgba(23, 21, 18, 0.18);
-  --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
-  --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
-  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(23, 21, 18, 0.28);
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 5%, var(--atelier-paper-2));
+  --atelier-material-edge: #f0eee6;
+  --atelier-material-edge-strong: #d1cfc5;
+  --atelier-material-shadow: 0 4px 18px rgba(20, 20, 19, 0.025);
+  --atelier-material-shadow-hover: 0 12px 42px rgba(20, 20, 19, 0.055);
   --atelier-material-grid: none;
   --atelier-material-grid-dark: none;
-  --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 22%, var(--atelier-paper));
-  --atelier-material-dust-strong: color-mix(in srgb, var(--atelier-dust) 30%, var(--atelier-paper));
-  --atelier-material-butter-strong: color-mix(in srgb, var(--atelier-butter) 34%, var(--atelier-paper));
-  --atelier-material-green: #d5dfd4;
-  --atelier-material-red: #ead8d3;
+  --atelier-material-blue-strong: color-mix(in srgb, var(--atelier-blue) 18%, var(--atelier-paper));
+  --atelier-material-dust-strong: color-mix(in srgb, var(--atelier-dust) 24%, var(--atelier-paper));
+  --atelier-material-butter-strong: color-mix(in srgb, var(--atelier-butter) 28%, var(--atelier-paper));
+  --atelier-material-green: #dfe6dc;
+  --atelier-material-red: #efd8d4;
   --atelier-material-active: var(--atelier-blue);
-  --atelier-ui-hover-surface: color-mix(in srgb, var(--atelier-white) 42%, var(--atelier-paper-2));
-  --atelier-filter-action-surface: var(--atelier-ink);
-  --atelier-slab-surface: var(--atelier-ink);
-  --atelier-slab-field: var(--atelier-ink);
-  --atelier-slab-text: var(--atelier-paper);
-  --atelier-slab-edge: rgba(255, 250, 240, 0.42);
-  --atelier-slab-edge-soft: rgba(255, 250, 240, 0.28);
-  --atelier-slab-muted: color-mix(in srgb, var(--atelier-paper) 68%, transparent);
-  --atelier-slab-field-hover: color-mix(in srgb, var(--atelier-ink) 84%, var(--atelier-white));
-  --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
-  --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
+  --atelier-ui-hover-surface: #e8e6dc;
+  --atelier-filter-action-surface: var(--atelier-paper-2);
+  --atelier-slab-surface: var(--atelier-paper-2);
+  --atelier-slab-field: var(--atelier-paper);
+  --atelier-slab-text: var(--atelier-ink);
+  --atelier-slab-edge: var(--atelier-material-edge);
+  --atelier-slab-edge-soft: var(--atelier-line);
+  --atelier-slab-muted: var(--atelier-muted);
+  --atelier-slab-field-hover: var(--atelier-ui-hover-surface);
+  --atelier-console-grid-line: rgba(20, 20, 19, 0.026);
+  --atelier-console-grid-line-soft: rgba(20, 20, 19, 0.018);
   --atelier-console-grid-size: 32px 32px;
-  --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
-  --atelier-console-rule-invert: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.42), rgba(255, 250, 240, 0.42) 2px, transparent 2px, transparent 8px);
-  --atelier-console-rule-vertical: repeating-linear-gradient(to bottom, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
-  --atelier-console-rule-vertical-invert: repeating-linear-gradient(to bottom, rgba(255, 250, 240, 0.36), rgba(255, 250, 240, 0.36) 2px, transparent 2px, transparent 8px);
+  --atelier-console-rule: none;
+  --atelier-console-rule-invert: none;
+  --atelier-console-rule-vertical: none;
+  --atelier-console-rule-vertical-invert: none;
   --atelier-filter-stitch-horizontal: var(--atelier-console-rule);
   --atelier-filter-stitch-vertical: var(--atelier-console-rule-vertical);
   --atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);
   --atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);
-  --atelier-scrollbar: var(--atelier-lime);
-  --atelier-scrollbar-hover: color-mix(in srgb, var(--atelier-lime) 78%, var(--atelier-ink));
-  --atelier-scrollbar-track: color-mix(in srgb, var(--atelier-lime) 18%, transparent);
+  --atelier-scrollbar: #87867f;
+  --atelier-scrollbar-hover: #5e5d59;
+  --atelier-scrollbar-track: #f0eee6;
   --atelier-module-enter-duration: 0.9s;
-  --sans: "Source Serif 4", "Noto Serif SC", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
-  --serif: "Newsreader", "Noto Serif SC", "Source Serif 4", "Songti SC", "STSong", "SimSun", ui-serif, Georgia, serif;
-  --mono: "IBM Plex Mono", "Noto Serif SC", "Sarasa Mono SC", "Sarasa Fixed SC", "Sarasa Term SC", "SFMono-Regular", ui-monospace, Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", "STSong", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -102,8 +108,14 @@
   --atelier-paper: #ffffff;
   --atelier-paper-2: #f6f7f8;
   --atelier-ink: #36393a;
+  --atelier-dark: #202223;
+  --atelier-text: #36393a;
+  --atelier-ink-soft: #595e60;
   --atelier-muted: #595e60;
   --atelier-lime: #595e60;
+  --atelier-sand: #eef0f2;
+  --atelier-ring: #d4d8dc;
+  --atelier-focus: #f6821f;
   --atelier-line: rgba(54, 57, 58, 0.12);
   --atelier-line-strong: rgba(54, 57, 58, 0.26);
   /* Cloudflare brand orange + gold replace the Klein-blue accent axis. */
@@ -372,11 +384,7 @@
     overscroll-behavior-y: none;
     color: var(--atelier-ink);
     background: var(--atelier-canvas);
-    background-image:
-      radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
-      radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
-      linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
-      linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+    background-image: none;
     background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
     font-family: var(--atelier-font-sans);
   }
@@ -389,11 +397,7 @@
   .dark body:has(.app-layout-shell) {
     color: var(--atelier-ink);
     background: var(--atelier-canvas);
-    background-image:
-      radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
-      radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
-      linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
-      linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+    background-image: none;
     background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
   }
 
@@ -401,14 +405,14 @@
     --atelier-surface: #171512;
     --atelier-surface-strong: #171512;
     --atelier-surface-muted: rgba(255, 250, 240, 0.08);
-    --atelier-blue-soft: rgba(0, 47, 167, 0.18);
-    --atelier-dust-soft: rgba(79, 106, 140, 0.18);
-    --atelier-butter-soft: #c79a3a;
+    --atelier-blue-soft: rgba(201, 100, 66, 0.18);
+    --atelier-dust-soft: rgba(135, 134, 127, 0.18);
+    --atelier-butter-soft: #d97757;
     --atelier-material-1: #171512;
     --atelier-material-2: rgba(255, 250, 240, 0.08);
-    --atelier-material-blue: rgba(0, 47, 167, 0.18);
-    --atelier-material-dust: rgba(79, 106, 140, 0.16);
-    --atelier-material-butter: rgba(79, 106, 140, 0.16);
+    --atelier-material-blue: rgba(201, 100, 66, 0.18);
+    --atelier-material-dust: rgba(135, 134, 127, 0.16);
+    --atelier-material-butter: rgba(217, 119, 87, 0.16);
     --atelier-material-ink: rgba(255, 250, 240, 0.1);
     --atelier-material-edge: rgba(255, 250, 240, 0.16);
     --atelier-material-edge-strong: rgba(255, 250, 240, 0.28);
@@ -473,8 +477,8 @@
 
   /* 选中文本样式 */
   ::selection {
-    background: rgba(0, 47, 167, 0.18);
-    color: var(--atelier-blue-dark);
+    background: rgba(201, 100, 66, 0.18);
+    color: var(--atelier-ink);
   }
 
 
@@ -497,7 +501,7 @@
     @apply dark:bg-primary-500 dark:hover:bg-primary-400 dark:hover:text-dark-950;
     border-color: var(--atelier-blue);
     background: var(--atelier-blue);
-    box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+    box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
   }
 
   .btn-secondary {
@@ -539,10 +543,14 @@
   }
 
   .btn-stripe {
-    @apply bg-[#002FA7] text-white shadow-md shadow-[#002FA7]/25;
-    @apply hover:bg-[#002FA7] hover:shadow-lg hover:shadow-[#002FA7]/30;
-    @apply dark:bg-[#002FA7] dark:shadow-[#002FA7]/20;
-    @apply dark:hover:bg-[#002FA7];
+    @apply text-white shadow-md;
+    border-color: var(--atelier-blue);
+    background: var(--atelier-blue);
+    box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
+  }
+
+  .btn-stripe:hover:not(:disabled) {
+    background: var(--atelier-blue-dark);
   }
 
   .btn-airwallex,
@@ -647,7 +655,7 @@
   .card-hover {
     @apply hover:-translate-y-0.5 hover:shadow-card-hover;
     @apply hover:border-primary-200 dark:hover:border-dark-600;
-    box-shadow: 0 14px 30px -24px rgba(0, 47, 167, 0.38);
+    box-shadow: 0 14px 30px -24px color-mix(in srgb, var(--atelier-blue) 38%, transparent);
   }
 
   .card-header {
@@ -1338,7 +1346,7 @@
     @apply dark:bg-dark-700 dark:text-white;
     background: var(--atelier-blue);
     color: var(--atelier-white);
-    box-shadow: 0 8px 18px -16px rgba(0, 47, 167, 0.55);
+    box-shadow: 0 8px 18px -16px color-mix(in srgb, var(--atelier-blue) 55%, transparent);
   }
 
   /* ============ 进度条 ============ */
@@ -1503,11 +1511,7 @@
 
 .app-layout-shell {
   background: var(--atelier-canvas);
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
-    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
-    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
-    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+  background-image: none;
   background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
 }
 
@@ -1515,29 +1519,25 @@
   --atelier-surface: var(--atelier-paper);
   --atelier-surface-strong: var(--atelier-paper-2);
   --atelier-surface-muted: var(--atelier-paper-2);
-  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 11%, var(--atelier-paper));
-  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 18%, var(--atelier-paper));
-  --atelier-butter-soft: #c79a3a;
+  --atelier-blue-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
+  --atelier-dust-soft: color-mix(in srgb, var(--atelier-dust) 14%, var(--atelier-paper));
+  --atelier-butter-soft: #d97757;
   --atelier-material-1: var(--atelier-paper-2);
   --atelier-material-2: var(--atelier-paper-2);
   --atelier-material-blue: var(--atelier-surface-blue);
   --atelier-material-dust: var(--atelier-surface-dust);
   --atelier-material-butter: color-mix(in srgb, var(--atelier-butter) 18%, var(--atelier-paper));
-  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 8%, var(--atelier-paper-2));
-  --atelier-material-edge: rgba(23, 21, 18, 0.18);
-  --atelier-material-edge-strong: rgba(23, 21, 18, 0.34);
-  --atelier-material-shadow: 0 10px 24px -22px rgba(23, 21, 18, 0.36);
-  --atelier-material-shadow-hover: 0 16px 34px -26px rgba(0, 47, 167, 0.48);
-  --atelier-console-grid-line: rgba(23, 21, 18, 0.035);
-  --atelier-console-grid-line-soft: rgba(23, 21, 18, 0.025);
-  --atelier-console-rule: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
+  --atelier-material-ink: color-mix(in srgb, var(--atelier-ink) 5%, var(--atelier-paper-2));
+  --atelier-material-edge: #f0eee6;
+  --atelier-material-edge-strong: #d1cfc5;
+  --atelier-material-shadow: 0 4px 18px rgba(20, 20, 19, 0.025);
+  --atelier-material-shadow-hover: 0 12px 42px rgba(20, 20, 19, 0.055);
+  --atelier-console-grid-line: rgba(20, 20, 19, 0.026);
+  --atelier-console-grid-line-soft: rgba(20, 20, 19, 0.018);
+  --atelier-console-rule: none;
   color: var(--atelier-ink);
   background: var(--atelier-canvas);
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem),
-    radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem),
-    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
-    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px);
+  background-image: none;
   background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;
 }
 
@@ -2558,7 +2558,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .dark .app-layout-content :where([class~="dark:bg-blue-500/10"], [class~="dark:bg-blue-500/15"], [class~="dark:bg-blue-500/20"], [class~="dark:bg-blue-900"], [class~="dark:bg-blue-900/20"], [class~="dark:bg-blue-900/30"], [class~="dark:bg-blue-900/50"], [class~="dark:bg-indigo-900"], [class~="dark:bg-indigo-900/30"], [class~="dark:bg-purple-500/10"], [class~="dark:bg-purple-500/15"], [class~="dark:bg-purple-900"], [class~="dark:bg-purple-900/20"], [class~="dark:bg-purple-900/30"], [class~="dark:bg-violet-900"], [class~="dark:bg-violet-900/30"], [class~="dark:bg-sky-900"], [class~="dark:bg-sky-900/30"]) {
-  background: rgba(0, 47, 167, 0.22) !important;
+  background: color-mix(in srgb, var(--atelier-blue) 22%, transparent) !important;
 }
 
 .dark .app-layout-content :where([class~="dark:bg-amber-500/10"], [class~="dark:bg-amber-500/15"], [class~="dark:bg-amber-500/20"], [class~="dark:bg-amber-900/10"], [class~="dark:bg-amber-900/20"], [class~="dark:bg-amber-900/30"], [class~="dark:bg-yellow-900"], [class~="dark:bg-yellow-900/30"], [class~="dark:bg-orange-500/20"], [class~="dark:bg-orange-900"], [class~="dark:bg-orange-900/20"], [class~="dark:bg-orange-900/30"]) {
@@ -2691,7 +2691,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   border-color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
   color: var(--atelier-white) !important;
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62) !important;
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14) !important;
 }
 
 :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
@@ -5138,10 +5138,6 @@ body > .endpoint-tooltip .endpoint-tooltip-arrow {
 
 .auth-ascii-shell {
   background:
-    radial-gradient(circle at 16% 18%, rgba(0, 47, 167, 0.08), transparent 28rem),
-    radial-gradient(circle at 84% 10%, rgba(199, 154, 58, 0.10), transparent 24rem),
-    linear-gradient(90deg, var(--atelier-console-grid-line) 1px, transparent 1px),
-    linear-gradient(0deg, var(--atelier-console-grid-line-soft) 1px, transparent 1px),
     var(--atelier-paper) !important;
   background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto !important;
 }
@@ -6285,7 +6281,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 .dark .balance-row-cloudflare,
 .dark .balance-row-external {
   border-color: color-mix(in srgb, var(--atelier-butter) 40%, var(--atelier-material-edge)) !important;
-  background: rgba(199, 154, 58, 0.18) !important;
+  background: color-mix(in srgb, var(--atelier-butter) 18%, transparent) !important;
 }
 
 .dark .balance-buzz-text,
