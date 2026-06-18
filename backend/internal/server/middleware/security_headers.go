@@ -32,6 +32,8 @@ const (
 	ObsidianCodexBridgeOrigin = "http://127.0.0.1:43110"
 	// ObsidianCodexBridgeLocalhostOrigin 兼容用户把本地 Bridge 配为 localhost 的场景。
 	ObsidianCodexBridgeLocalhostOrigin = "http://localhost:43110"
+	// CreepeeHostedBridgeOrigin is the production-hosted Creepee bridge sidecar.
+	CreepeeHostedBridgeOrigin = "https://obsi.creeperxco.cn"
 )
 
 var requiredCSPDirectiveValues = []struct {
@@ -51,6 +53,7 @@ var requiredCSPDirectiveValues = []struct {
 	{"style-src", AirwallexDemoStaticDomain},
 	{"style-src", AirwallexDemoCheckoutDomain},
 	{"frame-src", AirwallexDemoCheckoutDomain},
+	{"frame-src", CreepeeHostedBridgeOrigin},
 	{"frame-src", ObsidianCodexBridgeOrigin},
 	{"frame-src", ObsidianCodexBridgeLocalhostOrigin},
 }

@@ -409,13 +409,13 @@ describe('admin UsageView visual source guards', () => {
     const usagePortalBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal,')
     const usageOptionBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option, .select-option-label, .select-empty, svg),')
 
-    expect(usagePortalBlock).toContain('border-color: var(--atelier-slab-edge-soft) !important;')
-    expect(usagePortalBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(usagePortalBlock).toContain('color: var(--atelier-slab-text) !important;')
-    expect(usagePortalBlock).toContain('box-shadow: none !important;')
-    expect(usageOptionBlock).toContain('color: var(--atelier-slab-text) !important;')
-    expect(usagePortalBlock).not.toContain('background: var(--atelier-paper-2) !important;')
-    expect(usagePortalBlock).not.toContain('box-shadow: 0 18px 48px')
+    expect(usagePortalBlock).toContain('border-color: var(--atelier-material-edge) !important;')
+    expect(usagePortalBlock).toContain('background: var(--atelier-paper-2) !important;')
+    expect(usagePortalBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(usagePortalBlock).toContain('box-shadow: var(--atelier-material-shadow) !important;')
+    expect(usageOptionBlock).toContain('color: var(--atelier-ink) !important;')
+    expect(usagePortalBlock).not.toContain('background: var(--atelier-slab-field) !important;')
+    expect(usagePortalBlock).not.toContain('box-shadow: none !important;')
   })
 
   it('removes the top stitch from dashboard and usage filter cards', () => {

@@ -17,12 +17,12 @@
             <div class="relative z-10">
               <!-- Icon and badge -->
               <div class="mb-3 flex items-center gap-2">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 text-white shadow-sm shadow-primary-600/20">
+                <div class="announcement-popup-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </div>
-                <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm shadow-primary-600/20">
+                <span class="announcement-popup-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-sm">
                   <span class="relative flex h-2 w-2">
                     <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
                     <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
@@ -49,7 +49,7 @@
           <!-- Body -->
           <div class="max-h-[50vh] overflow-y-auto bg-white px-8 py-8 dark:bg-dark-800">
             <div class="relative">
-              <div class="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-primary-500"></div>
+              <div class="announcement-popup-accent absolute bottom-0 left-0 top-0 w-1 rounded-full"></div>
               <div class="pl-6">
                 <div
                   class="markdown-body prose prose-sm max-w-none dark:prose-invert"
@@ -64,7 +64,7 @@
             <div class="flex items-center justify-end">
               <button data-testid="common-announcement-popup-button-handle-dismiss"
                 @click="handleDismiss"
-                class="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm shadow-primary-600/20 transition-all hover:scale-105 hover:bg-primary-700 hover:shadow-md dark:bg-primary-500 dark:text-dark-950"
+                class="announcement-popup-dismiss rounded-lg px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
               >
                 <span class="flex items-center gap-2">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -141,6 +141,18 @@ watch(
 .popup-fade-leave-to > div {
   transform: translate3d(0, -8px, 0);
   opacity: 0;
+}
+
+.announcement-popup-icon,
+.announcement-popup-badge,
+.announcement-popup-accent,
+.announcement-popup-dismiss {
+  background: var(--atelier-terracotta-action, #c96442);
+  box-shadow: 0 10px 22px -16px rgba(95, 42, 28, 0.7);
+}
+
+.announcement-popup-dismiss:hover {
+  background: var(--atelier-terracotta-action-hover, #b65336);
 }
 
 /* Scrollbar Styling */
