@@ -154,6 +154,22 @@ describe('Cloudflare appearance theme', () => {
     expect(missing, `Anthropic theme is missing tokens: ${missing.join(', ')}`).toEqual([])
   })
 
+  it('uses Anthropic as the neutral fallback base instead of the removed Newspaper theme', () => {
+    expect(baseThemeBlock).toContain('--app-theme-name: "Anthropic";')
+    expect(baseThemeBlock).toContain('--atelier-paper: #f5f4ed;')
+    expect(baseThemeBlock).toContain('--atelier-paper-2: #faf9f5;')
+    expect(baseThemeBlock).toContain('--atelier-ink: #141413;')
+    expect(baseThemeBlock).toContain('--atelier-blue: #c96442;')
+    expect(baseThemeBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
+    expect(baseThemeBlock).toContain('--atelier-slab-text: var(--atelier-ink);')
+    expect(baseThemeBlock).toContain('--atelier-console-rule: none;')
+    expect(baseThemeBlock.toLowerCase()).not.toContain('#002fa7')
+    expect(baseThemeBlock).not.toContain('"Newsreader"')
+    expect(cloudflareBlock).toContain('--atelier-sand: #eef0f2;')
+    expect(cloudflareBlock).toContain('--atelier-ring: #d4d8dc;')
+    expect(cloudflareBlock).toContain('--atelier-text: #36393a;')
+  })
+
   it('uses the Anthropic warm editorial palette from the Obsidian design guide', () => {
     expect(anthropicBlock).toContain('--atelier-paper: #f5f4ed;')
     expect(anthropicBlock).toContain('--atelier-paper-2: #faf9f5;')
@@ -407,10 +423,9 @@ describe('Cloudflare appearance theme', () => {
     expect(codexThemeSource).toContain(`--codex-violet: ${cfOrange};`)
   })
 
-  it('defines slab tokens so dark base control surfaces become light under Cloudflare', () => {
-    // The base token layer keeps the dark ink slab; Cloudflare flips slabs to light.
-    expect(baseThemeBlock).toContain('--atelier-slab-surface: var(--atelier-ink);')
-    expect(baseThemeBlock).toContain('--atelier-slab-text: var(--atelier-paper);')
+  it('defines slab tokens so the Anthropic base and Cloudflare both keep light readable controls', () => {
+    expect(baseThemeBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
+    expect(baseThemeBlock).toContain('--atelier-slab-text: var(--atelier-ink);')
     expect(cloudflareBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
     expect(cloudflareBlock).toContain('--atelier-slab-field: var(--atelier-paper);')
     expect(cloudflareBlock).toContain('--atelier-slab-text: var(--atelier-ink);')
