@@ -215,6 +215,31 @@ func TestSettingService_AppendCustomMenuSVGIconPreset_NormalizesDedupesAndPersis
 	require.Error(t, err)
 }
 
+func TestSettingService_DeleteCustomMenuSVGIconPreset_RemovesServerSideLibraryItem(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	presets, err := svc.DeleteCustomMenuSVGIconPreset(context.Background(), " https://img.example.com/menu/a.svg ")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/menu/b.svg",
+	}, presets)
+	require.JSONEq(t, `["https://img.example.com/menu/b.svg"]`, repo.values[SettingKeyCustomMenuSVGIconPresets])
+
+	presets, err = svc.DeleteCustomMenuSVGIconPreset(context.Background(), "https://img.example.com/menu/missing.svg")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://img.example.com/menu/b.svg",
+	}, presets)
+
+	_, err = svc.DeleteCustomMenuSVGIconPreset(context.Background(), "javascript:alert(1)")
+	require.Error(t, err)
+}
+
 func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefault(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
@@ -225,7 +250,7 @@ func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefaul
 
 	settings, err := svc.GetPublicSettings(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, "newspaper", settings.AppearanceThemeDefault)
+	require.Equal(t, "cloudflare", settings.AppearanceThemeDefault)
 }
 
 func TestSettingService_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {

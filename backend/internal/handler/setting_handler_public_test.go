@@ -264,6 +264,42 @@ func TestSettingHandler_AppendCustomMenuSVGIconPreset_PersistsServerSideLibrary(
 	}, resp.Data.CustomMenuSVGIconPresets)
 }
 
+func TestSettingHandler_DeleteCustomMenuSVGIconPreset_PersistsServerSideLibrary(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	repo := &settingHandlerPublicRepoStub{
+		values: map[string]string{
+			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
+		},
+	}
+	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
+
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	c.Request = httptest.NewRequest(
+		http.MethodDelete,
+		"/api/v1/settings/custom-menu-svg-icon-presets",
+		strings.NewReader(`{"url":" https://img.example.com/menu/a.svg "}`),
+	)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	h.DeleteCustomMenuSVGIconPreset(c)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.JSONEq(t, `["https://img.example.com/menu/b.svg"]`, repo.values[service.SettingKeyCustomMenuSVGIconPresets])
+
+	var resp struct {
+		Code int `json:"code"`
+		Data struct {
+			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
+	require.Equal(t, []string{
+		"https://img.example.com/menu/b.svg",
+	}, resp.Data.CustomMenuSVGIconPresets)
+}
+
 func TestSettingHandler_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	h := NewSettingHandler(service.NewSettingService(&settingHandlerPublicRepoStub{

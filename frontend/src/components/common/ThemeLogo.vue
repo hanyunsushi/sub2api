@@ -31,35 +31,6 @@ const CloudflareLogoMark = defineComponent({
   },
 })
 
-const NewspaperLogoMark = defineComponent({
-  name: 'NewspaperLogoMark',
-  setup(_, { attrs }) {
-    return () => h('svg', {
-      ...attrs,
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      xmlns: 'http://www.w3.org/2000/svg',
-      'aria-hidden': 'true',
-    }, [
-      h('rect', {
-        x: '4',
-        y: '5',
-        width: '16',
-        height: '14',
-        rx: '2',
-        fill: 'currentColor',
-        opacity: '0.12',
-      }),
-      h('path', {
-        d: 'M7 8h10M7 11h10M7 14h6',
-        stroke: 'currentColor',
-        'stroke-width': '1.8',
-        'stroke-linecap': 'round',
-      }),
-    ])
-  },
-})
-
 const ClaudeLogoMark = defineComponent({
   name: 'ClaudeLogoMark',
   setup(_, { attrs }) {
@@ -74,19 +45,14 @@ const ClaudeLogoMark = defineComponent({
 </script>
 
 <template>
-  <CloudflareLogoMark
-    v-if="themeId === 'cloudflare'"
-    v-bind="$attrs"
-    data-theme-logo="cloudflare"
-  />
   <ClaudeLogoMark
-    v-else-if="themeId === 'anthropic'"
+    v-if="themeId === 'anthropic'"
     v-bind="$attrs"
     data-theme-logo="anthropic"
   />
-  <NewspaperLogoMark
+  <CloudflareLogoMark
     v-else
     v-bind="$attrs"
-    data-theme-logo="newspaper"
+    data-theme-logo="cloudflare"
   />
 </template>

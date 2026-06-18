@@ -364,7 +364,7 @@ export function deriveWeChatConnectStoredMode(
 /**
  * System settings interface
  */
-export type AppearanceThemeDefault = "newspaper" | "cloudflare" | "anthropic";
+export type AppearanceThemeDefault = "cloudflare" | "anthropic";
 
 export interface SystemSettings {
   // Registration settings

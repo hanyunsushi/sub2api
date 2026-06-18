@@ -23,7 +23,7 @@ describe('ThemeSwitcher', () => {
     document.documentElement.dataset.theme = ''
     document.documentElement.className = ''
     delete window.__APP_CONFIG__
-    updateAppearanceThemeDefault('newspaper')
+    updateAppearanceThemeDefault('cloudflare')
     vi.mocked(adminAPI.settings.updateAppearanceThemeDefault).mockResolvedValue({
       appearance_theme_default: 'cloudflare',
     })
@@ -44,10 +44,10 @@ describe('ThemeSwitcher', () => {
     expect(localStorage.getItem('appearance_theme')).toBeNull()
   })
 
-  it('renders the current theme logo on the trigger instead of always showing Cloudflare', () => {
+  it('renders the current Cloudflare theme logo on the trigger', () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
-    setAppearanceTheme('newspaper')
+    setAppearanceTheme('cloudflare')
 
     const wrapper = mount(ThemeSwitcher, {
       global: {
@@ -56,8 +56,7 @@ describe('ThemeSwitcher', () => {
     })
 
     const trigger = wrapper.find('button.theme-switcher-trigger')
-    expect(trigger.find('[data-theme-logo="newspaper"]').exists()).toBe(true)
-    expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
+    expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(true)
   })
 
   it('renders the Anthropic logo when Anthropic is selected', () => {
@@ -73,7 +72,6 @@ describe('ThemeSwitcher', () => {
 
     const trigger = wrapper.find('button.theme-switcher-trigger')
     expect(trigger.find('[data-theme-logo="anthropic"]').exists()).toBe(true)
-    expect(trigger.find('[data-theme-logo="newspaper"]').exists()).toBe(false)
     expect(trigger.find('[data-theme-logo="cloudflare"]').exists()).toBe(false)
   })
 
@@ -96,7 +94,7 @@ describe('ThemeSwitcher', () => {
   it('admins publish the global theme from the sidebar switcher', async () => {
     const authStore = useAuthStore()
     authStore.user = { id: 1, email: 'admin@example.com', username: 'admin', role: 'admin' } as any
-    window.__APP_CONFIG__ = { site_name: 'Sub2API', appearance_theme_default: 'newspaper' } as any
+    window.__APP_CONFIG__ = { site_name: 'Sub2API', appearance_theme_default: 'anthropic' } as any
 
     const wrapper = mount(ThemeSwitcher, {
       global: {

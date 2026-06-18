@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-export type AppearanceThemeId = 'newspaper' | 'cloudflare' | 'anthropic'
+export type AppearanceThemeId = 'cloudflare' | 'anthropic'
 
 export interface AppearanceThemeOption {
   id: AppearanceThemeId
@@ -11,17 +11,16 @@ const DEFAULT_THEME_STORAGE_KEY = 'appearance_theme_default'
 const LEGACY_LOCAL_THEME_STORAGE_KEY = 'appearance_theme'
 
 export const appearanceThemeOptions: AppearanceThemeOption[] = [
-  { id: 'newspaper', label: 'Newspaper' },
   { id: 'cloudflare', label: 'Cloudflare' },
   { id: 'anthropic', label: 'Anthropic' },
 ]
 
-const activeTheme = ref<AppearanceThemeId>('newspaper')
+const activeTheme = ref<AppearanceThemeId>('cloudflare')
 
 function normalizeTheme(value: string | null | undefined): AppearanceThemeId {
   return appearanceThemeOptions.some((theme) => theme.id === value)
     ? value as AppearanceThemeId
-    : 'newspaper'
+    : 'cloudflare'
 }
 
 function getInjectedAppearanceThemeDefault(): AppearanceThemeId {
@@ -39,7 +38,6 @@ function clearLegacyLocalThemeOverride() {
 function applyTheme(theme: AppearanceThemeId) {
   activeTheme.value = theme
   document.documentElement.dataset.theme = theme
-  document.documentElement.classList.toggle('theme-newspaper', theme === 'newspaper')
   document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')
   document.documentElement.classList.toggle('theme-anthropic', theme === 'anthropic')
   document.documentElement.classList.remove('dark')

@@ -1104,6 +1104,7 @@ const saveExternalQuotaProgressSettings = async (settings: AccountExternalQuotaP
     externalQuotaProgressSettings.subscription ?? null,
     settings,
   )
+  await load()
   closeExternalQuotaProgressSettings()
 }
 

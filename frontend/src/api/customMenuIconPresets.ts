@@ -11,3 +11,11 @@ export async function appendCustomMenuSVGIconPreset(url: string): Promise<Append
   )
   return data
 }
+
+export async function deleteCustomMenuSVGIconPreset(url: string): Promise<AppendCustomMenuSVGIconPresetResponse> {
+  const { data } = await apiClient.delete<AppendCustomMenuSVGIconPresetResponse>(
+    '/settings/custom-menu-svg-icon-presets',
+    { data: { url } }
+  )
+  return data
+}

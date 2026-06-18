@@ -7940,7 +7940,7 @@ const form = reactive<SettingsForm>({
   home_content: "",
   backend_mode_enabled: false,
   hide_ccs_import_button: false,
-  appearance_theme_default: "newspaper",
+  appearance_theme_default: "cloudflare",
   ai_logo_cdn_base_url: defaultAILogoCDNBaseURL,
   custom_ai_logo_presets: [],
   custom_menu_svg_icon_presets: [],
@@ -8779,7 +8779,7 @@ async function loadSettings() {
     }
     form.appearance_theme_default = isAppearanceThemeId(settings.appearance_theme_default)
       ? settings.appearance_theme_default
-      : "newspaper";
+      : "cloudflare";
     form.custom_menu_items = Array.isArray(settings.custom_menu_items)
       ? settings.custom_menu_items.map((item) => ({
           ...item,
@@ -9034,7 +9034,7 @@ async function saveSettings() {
     form.table_page_size_options = normalizedTablePageSizeOptions;
     form.appearance_theme_default = isAppearanceThemeId(form.appearance_theme_default)
       ? form.appearance_theme_default
-      : "newspaper";
+      : "cloudflare";
 
     const normalizedLoginAgreementDocuments =
       normalizeLoginAgreementDocumentsForSave();

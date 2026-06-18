@@ -199,8 +199,6 @@
 
     <!-- Bottom Section -->
     <div class="sidebar-footer mt-auto p-3">
-      <ThemeSwitcher class="mb-2" :collapsed="sidebarCollapsed" />
-
       <!-- Collapse Button -->
       <button data-testid="layout-app-sidebar-button-toggle-sidebar"
         @click="toggleSidebar"
@@ -231,7 +229,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import VersionBadge from '@/components/common/VersionBadge.vue'
-import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'
 import { sanitizeSvg } from '@/utils/sanitize'
 import { isCustomMenuIconURL as isCustomMenuIconURLValue } from '@/utils/customMenuIconPresets'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'

@@ -47,9 +47,9 @@ const cssRuleFrom = (source: string, markerText: string) => {
   return source.slice(markerIndex, ruleEnd)
 }
 
-const newspaperBlock = cssBlockFrom(
+const baseThemeBlock = cssBlockFrom(
   styleSource,
-  ':root,\n:root[data-theme="newspaper"],\n:root.theme-newspaper {',
+  '/* Base appearance tokens */\n:root {',
 )
 const cloudflareBlock = cssBlockFrom(
   styleSource,
@@ -60,15 +60,16 @@ const anthropicBlock = cssBlockFrom(
   ':root[data-theme="anthropic"],\n:root.theme-anthropic {',
 )
 
-// Every --atelier-* / font token declared by the Newspaper theme must also be
+// Every --atelier-* / font token declared by the base theme must also be
 // declared by the Cloudflare theme, so the new theme fully re-skins the app.
 const declaredTokens = (block: string) =>
   Array.from(block.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gim)).map((match) => match[1])
 
 describe('Cloudflare appearance theme', () => {
-  it('registers Cloudflare as a selectable theme option without removing Newspaper', () => {
-    expect(appearanceThemeSource).toContain("export type AppearanceThemeId = 'newspaper' | 'cloudflare' | 'anthropic'")
-    expect(appearanceThemeSource).toContain("{ id: 'newspaper', label: 'Newspaper' }")
+  it('registers only Cloudflare and Anthropic as selectable global themes', () => {
+    expect(appearanceThemeSource).toContain("export type AppearanceThemeId = 'cloudflare' | 'anthropic'")
+    expect(appearanceThemeSource).not.toContain('newspaper')
+    expect(appearanceThemeSource).not.toContain('theme-newspaper')
     expect(appearanceThemeSource).toContain("{ id: 'cloudflare', label: 'Cloudflare' }")
     expect(appearanceThemeSource).toContain("{ id: 'anthropic', label: 'Anthropic' }")
     expect(appearanceThemeSource).toContain(
@@ -102,6 +103,8 @@ describe('Cloudflare appearance theme', () => {
     expect(themeLogoSource).toContain('#FAAD3F')
     expect(themeLogoSource).toContain("import ModelIcon from '@/components/common/ModelIcon.vue'")
     expect(themeLogoSource).toContain("model: 'claude'")
+    expect(themeLogoSource).not.toContain('NewspaperLogoMark')
+    expect(themeLogoSource).not.toContain('data-theme-logo="newspaper"')
     expect(themeLogoSource).not.toContain('M11.96 3.25')
     expect(themeSwitcherSource).not.toContain('<Icon name="book"')
     expect(themeSwitcherSource).not.toContain('applyGlobally')
@@ -127,27 +130,27 @@ describe('Cloudflare appearance theme', () => {
     expect(settingsViewSource).toContain('appearance_theme_default: form.appearance_theme_default')
   })
 
-  it('defines a Cloudflare theme token block covering every Newspaper token', () => {
+  it('defines a Cloudflare theme token block covering every base appearance token', () => {
     expect(styleSource).toContain('Cloudflare appearance theme')
     expect(styleSource).toContain(':root[data-theme="cloudflare"]')
     expect(styleSource).toContain(':root.theme-cloudflare')
     expect(cloudflareBlock).toContain('--app-theme-name: "Cloudflare";')
 
-    const newspaperTokens = declaredTokens(newspaperBlock)
+    const baseTokens = declaredTokens(baseThemeBlock)
     const cloudflareTokens = new Set(declaredTokens(cloudflareBlock))
-    const missing = newspaperTokens.filter((token) => !cloudflareTokens.has(token))
+    const missing = baseTokens.filter((token) => !cloudflareTokens.has(token))
     expect(missing, `Cloudflare theme is missing tokens: ${missing.join(', ')}`).toEqual([])
   })
 
-  it('defines an Anthropic theme token block covering every Newspaper token', () => {
+  it('defines an Anthropic theme token block covering every base appearance token', () => {
     expect(styleSource).toContain('Anthropic appearance theme')
     expect(styleSource).toContain(':root[data-theme="anthropic"]')
     expect(styleSource).toContain(':root.theme-anthropic')
     expect(anthropicBlock).toContain('--app-theme-name: "Anthropic";')
 
-    const newspaperTokens = declaredTokens(newspaperBlock)
+    const baseTokens = declaredTokens(baseThemeBlock)
     const anthropicTokens = new Set(declaredTokens(anthropicBlock))
-    const missing = newspaperTokens.filter((token) => !anthropicTokens.has(token))
+    const missing = baseTokens.filter((token) => !anthropicTokens.has(token))
     expect(missing, `Anthropic theme is missing tokens: ${missing.join(', ')}`).toEqual([])
   })
 
@@ -379,7 +382,7 @@ describe('Cloudflare appearance theme', () => {
     expect(cloudflareBlock).toContain(`--atelier-blue: ${cfOrange};`)
     expect(cloudflareBlock).toContain(`--atelier-butter: ${cfGold};`)
     expect(cloudflareBlock).toContain('--atelier-ink: #36393a;')
-    // Cloudflare's product UI is sans-serif, not the Newspaper serif stack.
+    // Cloudflare's product UI is sans-serif, not the base serif stack.
     expect(cloudflareBlock).toContain('--atelier-font-sans: var(--sans);')
     expect(cloudflareBlock).toMatch(/--sans:\s*"Inter"/)
     // No Klein-blue leakage in the Cloudflare token block.
@@ -404,10 +407,10 @@ describe('Cloudflare appearance theme', () => {
     expect(codexThemeSource).toContain(`--codex-violet: ${cfOrange};`)
   })
 
-  it('defines slab tokens so dark Newspaper control surfaces become light under Cloudflare', () => {
-    // Base (Newspaper) keeps the dark ink slab; Cloudflare flips slabs to light.
-    expect(newspaperBlock).toContain('--atelier-slab-surface: var(--atelier-ink);')
-    expect(newspaperBlock).toContain('--atelier-slab-text: var(--atelier-paper);')
+  it('defines slab tokens so dark base control surfaces become light under Cloudflare', () => {
+    // The base token layer keeps the dark ink slab; Cloudflare flips slabs to light.
+    expect(baseThemeBlock).toContain('--atelier-slab-surface: var(--atelier-ink);')
+    expect(baseThemeBlock).toContain('--atelier-slab-text: var(--atelier-paper);')
     expect(cloudflareBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
     expect(cloudflareBlock).toContain('--atelier-slab-field: var(--atelier-paper);')
     expect(cloudflareBlock).toContain('--atelier-slab-text: var(--atelier-ink);')

@@ -238,7 +238,7 @@ export interface PublicSettings {
   available_channels_enabled: boolean
   service_quota_enabled: boolean
   affiliate_enabled: boolean
-  appearance_theme_default: 'newspaper' | 'cloudflare' | 'anthropic'
+  appearance_theme_default: 'cloudflare' | 'anthropic'
   ai_logo_cdn_base_url?: string
   custom_ai_logo_presets?: string[]
   custom_menu_svg_icon_presets?: string[]
