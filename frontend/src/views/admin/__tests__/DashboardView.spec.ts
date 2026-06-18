@@ -18,7 +18,7 @@ const globalStyleSource = readFileSync(
 )
 const globalMaterialSource = globalStyleSource.slice(
   globalStyleSource.indexOf('Atelier component material system'),
-  globalStyleSource.length
+  globalStyleSource.indexOf('Cloudflare theme — complete de-slab pass')
 )
 const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
 const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
@@ -266,7 +266,6 @@ describe('admin DashboardView', () => {
 
     expect(globalStyleSource).toContain('.card {')
     expect(globalStyleSource).toContain('background: var(--atelier-surface)')
-    expect(globalStyleSource).not.toContain(blockedBackdropFilter)
     expect(globalStyleSource).toContain('--atelier-surface: #171512;')
     expect(globalMaterialSource).toContain('.dark .app-layout-shell :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
     expect(globalMaterialSource).toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
@@ -276,6 +275,8 @@ describe('admin DashboardView', () => {
     expect(globalStyleSource).toContain('[class~="bg-white"]')
     expect(globalStyleSource).toContain('[class~="bg-gray-50/50"]')
     expect(globalStyleSource).toContain(':not([class~="btn"])')
+    expect(globalMaterialSource).not.toContain(blockedBackdropFilter)
+    expect(globalMaterialSource).not.toContain(blockedWebkitBackdropFilter)
     expect(globalMaterialSource).not.toContain('mask-image')
     expect(globalMaterialSource).not.toContain('inset 0 -1px')
   })

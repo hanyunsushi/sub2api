@@ -92,4 +92,21 @@ describe('SettingsView rounded settings tabs', () => {
     expect(styleSource).toContain('#app .app-layout-content .settings-tab-active:focus-visible::before')
     expect(settingsTabBlock).not.toContain('border-radius: 0 !important;')
   })
+
+  it('renames the system settings entry and centers the settings tab rail', () => {
+    const tabsShellBlock = styleSource.slice(
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell,'),
+      styleSource.indexOf('#app .app-layout-content .settings-tab {', styleSource.indexOf('#app .app-layout-content .settings-tabs-shell,')),
+    )
+
+    expect(zhLocaleSource).toContain("settings: '常规设置'")
+    expect(zhLocaleSource).toContain("settingsGeneral: '常规设置'")
+    expect(zhLocaleSource).toContain("title: '常规设置'")
+    expect(enLocaleSource).toContain("settingsGeneral: 'General Settings'")
+    expect(enLocaleSource).toContain("title: 'General Settings'")
+    expect(tabsShellBlock).toContain('display: flex;')
+    expect(tabsShellBlock).toContain('justify-content: center;')
+    expect(tabsShellBlock).toContain('width: 100%;')
+    expect(tabsShellBlock).toContain('margin-inline: auto;')
+  })
 })

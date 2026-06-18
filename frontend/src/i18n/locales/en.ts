@@ -398,7 +398,7 @@ export default {
     ops: 'Ops',
     promoCodes: 'Promo Codes',
     settings: 'Settings',
-    settingsGeneral: 'System Settings',
+    settingsGeneral: 'General Settings',
     externalSubscriptions: 'External Subscriptions',
     myAccount: 'My Account',
     lightMode: 'Light Mode',
@@ -5621,7 +5621,7 @@ export default {
 
     // Settings
     settings: {
-      title: 'System Settings',
+      title: 'General Settings',
       description: 'Manage registration, email verification, default values, and SMTP settings',
       tabs: {
         general: 'General',
