@@ -35,7 +35,7 @@
               <div class="relative z-10 flex items-start justify-between">
                 <div>
                   <div class="flex items-center gap-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white shadow-sm shadow-primary-600/20">
+                    <div class="announcement-bell-header-icon flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm">
                       <Icon name="bell" size="sm" />
                     </div>
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -52,7 +52,7 @@
                     v-if="unreadCount > 0"
                     @click="markAllAsRead"
                     :disabled="loading"
-                    class="rounded-lg bg-primary-600 px-4 py-2 text-xs font-medium text-white shadow-sm shadow-primary-600/20 transition-all hover:bg-primary-700 hover:shadow-md disabled:opacity-50 dark:bg-primary-500 dark:text-dark-950 dark:hover:bg-primary-400"
+                    class="announcement-bell-mark-all rounded-lg px-4 py-2 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
                   >
                     {{ t('announcements.markAllRead') }}
                   </button>
@@ -93,10 +93,10 @@
                   <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center">
                     <div
                       v-if="!item.read_at"
-                      class="relative flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 text-white shadow-sm shadow-primary-600/20"
+                      class="announcement-bell-detail-mark relative flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm"
                     >
                       <!-- Pulse ring -->
-                      <span class="absolute inline-flex h-full w-full animate-ping rounded-lg bg-primary-400 opacity-75"></span>
+                      <span class="announcement-bell-ping absolute inline-flex h-full w-full animate-ping rounded-lg opacity-75"></span>
                       <!-- Icon -->
                       <svg class="relative z-10 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -199,7 +199,7 @@
                 <div class="flex-1 min-w-0">
                   <!-- Icon and Category -->
                   <div class="mb-3 flex items-center gap-2">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 text-white shadow-sm shadow-primary-600/20">
+                    <div class="announcement-bell-detail-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm">
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -210,7 +210,7 @@
                       </span>
                       <span
                         v-if="!selectedAnnouncement.read_at"
-                        class="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm shadow-primary-600/20"
+                        class="announcement-bell-detail-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-sm"
                       >
                         <span class="relative flex h-2 w-2">
                           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
@@ -260,7 +260,7 @@
               <!-- Content with decorative border -->
               <div class="relative">
                 <!-- Decorative left border -->
-                <div class="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-primary-500"></div>
+                <div class="announcement-bell-detail-mark absolute bottom-0 left-0 top-0 w-1 rounded-full"></div>
 
                 <div class="pl-6">
                   <div
@@ -290,7 +290,7 @@
                   <button data-testid="common-announcement-bell-button-mark-as-read-and-close-selected-announcement-id"
                     v-if="!selectedAnnouncement.read_at"
                     @click="markAsReadAndClose(selectedAnnouncement.id)"
-                    class="rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-primary-600/20 transition-all hover:scale-105 hover:bg-primary-700 hover:shadow-md dark:bg-primary-500 dark:text-dark-950"
+                    class="announcement-bell-detail-mark rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
                   >
                     <span class="flex items-center gap-2">
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -467,6 +467,24 @@ watch(
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #6b7280, #4b5563);
+}
+
+.announcement-bell-header-icon,
+.announcement-bell-mark-all,
+.announcement-bell-detail-icon,
+.announcement-bell-detail-badge,
+.announcement-bell-detail-mark {
+  background: var(--atelier-terracotta-action, #c96442);
+  box-shadow: 0 10px 22px -16px rgba(95, 42, 28, 0.7);
+}
+
+.announcement-bell-mark-all:hover,
+.announcement-bell-detail-mark:hover {
+  background: var(--atelier-terracotta-action-hover, #b65336);
+}
+
+.announcement-bell-ping {
+  background: var(--atelier-terracotta-action, #c96442);
 }
 </style>
 

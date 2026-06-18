@@ -45,6 +45,7 @@ describe('AppSidebar system settings group', () => {
   it('renders system settings as an expandable parent with the external subscriptions child route', () => {
     expect(componentSource).toContain('function systemSettingsNavItem')
     expect(componentSource).toContain('expandOnly: true')
+    expect(componentSource).toContain("label: t('nav.settings')")
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
     expect(componentSource).toContain('systemSettingsNavItem()')

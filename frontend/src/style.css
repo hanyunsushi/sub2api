@@ -1605,9 +1605,9 @@
 }
 
 .ai-search-trigger-avatar {
-  --creepee-avatar-size: 1.75rem;
-  width: 1.75rem;
-  height: 1.75rem;
+  --creepee-avatar-size: 1.55rem;
+  width: var(--creepee-avatar-size);
+  height: var(--creepee-avatar-size);
   flex: 0 0 auto;
   border-radius: 0.25rem;
   background: transparent;
@@ -2209,11 +2209,11 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 }
 
 .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover {
-  transform: translate3d(0, -2px, 0);
-  border-color: color-mix(in srgb, var(--atelier-ink) 24%, var(--ops-card-edge)) !important;
-  background: var(--atelier-ui-hover-surface) !important;
+  transform: none;
+  border-color: var(--ops-card-edge) !important;
+  background: var(--ops-card-surface) !important;
   color: var(--ops-ink) !important;
-  box-shadow: var(--atelier-material-shadow-hover) !important;
+  box-shadow: var(--ops-card-shadow) !important;
 }
 
 .ops-dashboard-atelier .ops-monitor-toolbar {
@@ -2235,6 +2235,14 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
 .ops-dashboard-atelier .ops-live-panel {
   border: 1px solid var(--ops-card-edge) !important;
   border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
+  box-shadow: var(--ops-card-shadow) !important;
+}
+
+.ops-dashboard-atelier .ops-live-panel:hover,
+.ops-dashboard-atelier .ops-live-grid:hover {
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
   background: var(--ops-card-surface) !important;
   box-shadow: var(--ops-card-shadow) !important;
 }
@@ -5638,13 +5646,6 @@ body:has(.ops-dashboard-atelier) :where(.ops-monitor-header, .ops-monitor-header
   z-index: 1 !important;
 }
 
-#app .app-layout-content .ops-dashboard-atelier .ops-live-panel:has(.ops-health-score-card:hover),
-#app .app-layout-content .ops-dashboard-atelier .ops-live-grid:has(.ops-health-score-card:hover),
-body:has(.ops-dashboard-atelier) .ops-live-panel:has(.ops-health-score-card:hover),
-body:has(.ops-dashboard-atelier) .ops-live-grid:has(.ops-health-score-card:hover) {
-  z-index: 100000140 !important;
-}
-
 #app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:hover,
 body:has(.ops-dashboard-atelier) .ops-health-score-card:hover {
   z-index: 100000160 !important;
@@ -6374,28 +6375,6 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   box-shadow: var(--atelier-material-shadow) !important;
 }
 
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover {
-  --atelier-card-surface: var(--ops-card-surface);
-  --atelier-material-2: var(--ops-card-surface);
-  transform: none !important;
-  border-color: var(--ops-card-edge) !important;
-  background-color: var(--ops-card-surface) !important;
-  background: var(--ops-card-surface) !important;
-  color: var(--atelier-ink) !important;
-  box-shadow: var(--ops-card-shadow) !important;
-}
-
-#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card, .ops-health-score-card, .ops-realtime-panel):not(:hover) {
-  --atelier-card-surface: var(--ops-card-surface);
-  --atelier-material-2: var(--ops-card-surface);
-  transform: none !important;
-  border-color: var(--ops-card-edge) !important;
-  background-color: var(--ops-card-surface) !important;
-  background: var(--ops-card-surface) !important;
-  color: var(--atelier-ink) !important;
-  box-shadow: var(--ops-card-shadow) !important;
-}
-
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card) :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"]) {
   border: 1px solid color-mix(in srgb, var(--atelier-ink) 26%, transparent) !important;
   background: var(--atelier-paper) !important;
@@ -6490,7 +6469,7 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
 }
 
 /* Ops chart and live diagnostic panels are data regions; keep metric hover only. */
-#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover {
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card):hover {
   --atelier-card-surface: var(--ops-card-surface);
   --atelier-material-2: var(--ops-card-surface);
   transform: none !important;
@@ -6499,6 +6478,18 @@ body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-pr
   background: var(--ops-card-surface) !important;
   color: var(--atelier-ink) !important;
   box-shadow: var(--atelier-material-shadow) !important;
+}
+
+/* Live diagnostic panels are data regions; keep metric hover only. */
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover {
+  --atelier-card-surface: var(--ops-card-surface);
+  --atelier-material-2: var(--ops-card-surface);
+  transform: none !important;
+  border-color: var(--ops-card-edge) !important;
+  background-color: var(--ops-card-surface) !important;
+  background: var(--ops-card-surface) !important;
+  color: var(--atelier-ink) !important;
+  box-shadow: var(--ops-card-shadow) !important;
 }
 
 /* Non-dashboard/ops filter bars use slab edge tokens, not ink-black borders. */
@@ -8524,24 +8515,24 @@ body:has(.admin-usage-atelier) .select-dropdown-portal,
 body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-search, .select-options),
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal,
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-presets, .date-picker-actions, .date-picker-custom, .date-picker-divider) {
-  border-color: var(--atelier-slab-edge-soft) !important;
-  background: var(--atelier-slab-field) !important;
-  background-color: var(--atelier-slab-field) !important;
-  color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-slab-text) !important;
-  box-shadow: none !important;
+  border-color: var(--atelier-material-edge) !important;
+  background: var(--atelier-paper-2) !important;
+  background-color: var(--atelier-paper-2) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: var(--atelier-material-shadow) !important;
 }
 
 body:has(.admin-usage-atelier) .select-dropdown-portal {
-  --select-option-stable-text: var(--atelier-slab-text);
-  --select-option-selected-stable-text: var(--atelier-slab-text);
-  --select-option-selected-text: var(--atelier-slab-text);
+  --select-option-stable-text: var(--atelier-ink);
+  --select-option-selected-stable-text: var(--atelier-ink);
+  --select-option-selected-text: var(--atelier-ink);
 }
 
 body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option, .select-option-label, .select-empty, svg),
 body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset, .date-picker-label, .date-picker-separator, .date-picker-input, .date-picker-icon, .date-picker-chevron) {
-  color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
   stroke: currentColor !important;
 }
 
@@ -8610,7 +8601,10 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-live-panel {
-  padding: 0 !important;
+  padding: 1rem !important;
+  border: 1px solid var(--ops-card-edge) !important;
+  border-radius: 8px !important;
+  background: var(--ops-card-surface) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-health-score-card,
@@ -8624,7 +8618,9 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 
 #app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:hover,
 #app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel:hover,
-#app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card):hover {
+#app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card):hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid:hover {
   transform: none !important;
   border-color: var(--ops-card-edge) !important;
   background: var(--ops-card-surface) !important;
@@ -8635,7 +8631,7 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 #app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-realtime-panel,
 #app .app-layout-content .ops-dashboard-atelier .ops-resource-band :where(.ops-system-card) {
   transform: none !important;
-  transition: border-color 180ms var(--atelier-ease), background-color 180ms var(--atelier-ease) !important;
+  transition: border-color 180ms var(--atelier-ease), background-color 180ms var(--atelier-ease), box-shadow 180ms var(--atelier-ease) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card:hover,
@@ -8670,6 +8666,7 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 #app .app-layout-content .settings-tabs-scroll,
 #app .app-layout-content .settings-tabs {
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 

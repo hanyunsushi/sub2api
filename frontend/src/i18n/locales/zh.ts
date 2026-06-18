@@ -397,7 +397,7 @@ export default {
     redeemCodes: '兑换码',
     ops: '运维监控',
     promoCodes: '优惠码',
-    settings: '常规设置',
+    settings: '系统设置',
     settingsGeneral: '常规设置',
     externalSubscriptions: '外部订阅',
     myAccount: '我的账户',

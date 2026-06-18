@@ -200,6 +200,8 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(home).toContain('margin: 0 auto;')
     expect(home).toContain('background: #050505;')
     expect(home).toContain('border-top: 0;')
+    expect(cssBlock(home, '.home-footer')).toContain('position: relative;')
+    expect(cssBlock(home, '.home-footer')).toContain('z-index: 2;')
     expect(home).toContain("if (target.classList.contains('home-footer')) {")
     expect(home).toContain('return homeMaxScrollTop()')
     expect(home).not.toContain('const centeredTop = target.offsetTop - Math.max(0, (root.clientHeight - target.offsetHeight) / 2)')

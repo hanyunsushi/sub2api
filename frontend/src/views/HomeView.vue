@@ -1688,6 +1688,8 @@ onBeforeUnmount(() => {
 }
 
 .home-footer {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;

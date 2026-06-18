@@ -147,9 +147,9 @@ describe('Creepee Obsidian bridge source contract', () => {
     expect(triggerBlock).toContain('border: 0;')
     expect(triggerBlock).toContain('box-shadow: none;')
     expect(triggerBlock).not.toContain('border: 1px')
-    expect(triggerAvatarBlock).toContain('--creepee-avatar-size: 1.75rem;')
-    expect(triggerAvatarBlock).toContain('width: 1.75rem;')
-    expect(triggerAvatarBlock).toContain('height: 1.75rem;')
+    expect(triggerAvatarBlock).toContain('--creepee-avatar-size: 1.55rem;')
+    expect(triggerAvatarBlock).toContain('width: var(--creepee-avatar-size);')
+    expect(triggerAvatarBlock).toContain('height: var(--creepee-avatar-size);')
     expect(triggerAvatarBlock).toContain('display: block;')
     expect(triggerAvatarBlock).toContain('object-fit: contain;')
     expect(sidecarBlock).toContain('position: fixed;')
@@ -205,5 +205,15 @@ describe('Creepee Obsidian bridge source contract', () => {
     expect(frameBlock).toContain('background: var(--atelier-paper);')
     expect(styleSource).not.toContain('.ai-search-chat')
     expect(styleSource).not.toContain('search-snippet')
+  })
+
+  it('allows the hosted Creepee bridge origin in CSP instead of only the retired local bridge', () => {
+    const securityHeadersSource = readFileSync(
+      resolve(__dirname, '../../../../../backend/internal/server/middleware/security_headers.go'),
+      'utf8',
+    )
+
+    expect(securityHeadersSource).toContain('CreepeeHostedBridgeOrigin = "https://obsi.creeperxco.cn"')
+    expect(securityHeadersSource).toContain('{"frame-src", CreepeeHostedBridgeOrigin}')
   })
 })

@@ -364,6 +364,7 @@ func TestEnhanceCSPPolicy(t *testing.T) {
 		policy := "default-src 'self'; script-src 'self' __CSP_NONCE__; frame-src https://challenges.cloudflare.com"
 		enhanced := enhanceCSPPolicy(policy)
 
+		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", CreepeeHostedBridgeOrigin))
 		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", ObsidianCodexBridgeOrigin))
 		assert.Equal(t, 1, countDirectiveValue(enhanced, "frame-src", ObsidianCodexBridgeLocalhostOrigin))
 	})

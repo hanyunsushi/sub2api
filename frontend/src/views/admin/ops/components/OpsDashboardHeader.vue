@@ -990,7 +990,7 @@ function handleToolbarRefresh() {
 
     <div v-if="overview" class="grid grid-cols-1 gap-6 lg:grid-cols-12">
       <!-- Left: Health + Realtime -->
-      <div class="ops-live-panel lg:col-span-5">
+      <div class="ops-live-panel lg:col-span-5" aria-label="Health and realtime traffic">
         <div class="ops-live-grid grid h-full grid-cols-1 gap-6 md:grid-cols-[200px_1fr] md:items-center">
           <!-- 1) Health Score -->
           <div
