@@ -14,9 +14,8 @@ const electricBorderPath = resolve(__dirname, '../../../components/common/Electr
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
 const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
-const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
-const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);'
+const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -2px, 0);'
+const homepageHoverShadow = '--creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)

@@ -78,7 +78,7 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
-  it('uses paper-2 sidebar material from the color guidance and keeps Klein blue isolated to active structure', () => {
+  it('uses paper-2 sidebar material from the color guidance and keeps active structure tokenized', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
       styleSource.indexOf('.sidebar-header {')

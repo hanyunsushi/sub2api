@@ -6,13 +6,13 @@
   --codex-surface-soft: color-mix(in srgb, var(--atelier-dust) 16%, var(--atelier-paper));
   --codex-border: var(--atelier-material-edge);
   --codex-border-strong: var(--atelier-material-edge-strong);
-  --codex-text: #111827;
+  --codex-text: var(--atelier-ink);
   --codex-muted: var(--atelier-muted);
   --codex-soft: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
-  --codex-accent: #002FA7;
-  --codex-accent-strong: #002FA7;
+  --codex-accent: var(--atelier-blue);
+  --codex-accent-strong: var(--atelier-blue-dark);
   --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
-  --codex-violet: #002FA7;
+  --codex-violet: var(--atelier-blue);
   --codex-success: #2f7d59;
   --codex-warning: #ad6b1f;
   --codex-danger: #b44536;
@@ -20,7 +20,7 @@
   --codex-module-rule: var(--atelier-console-rule);
   --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
-  --material-card-shadow: rgba(23, 21, 18, 0.34);
+  --material-card-shadow: rgba(20, 20, 19, 0.08);
   color: var(--codex-text);
 }
 
@@ -34,20 +34,20 @@
   --codex-text: var(--atelier-ink);
   --codex-muted: var(--atelier-muted);
   --codex-soft: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
-  --codex-accent: #002FA7;
-  --codex-accent-strong: #002FA7;
+  --codex-accent: var(--atelier-blue);
+  --codex-accent-strong: var(--atelier-blue-dark);
   --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
-  --codex-violet: #002FA7;
+  --codex-violet: var(--atelier-blue);
   --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
-  --material-card-shadow: rgba(23, 21, 18, 0.34);
+  --material-card-shadow: rgba(20, 20, 19, 0.08);
 }
 
 .codex-shell {
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-bg);
-  box-shadow: 0 10px 28px -24px rgba(17, 24, 39, 0.34);
+  box-shadow: 0 4px 18px rgba(20, 20, 19, 0.025);
 }
 
 .dark .codex-shell {
@@ -266,7 +266,7 @@
 .codex-select:focus,
 .codex-textarea:focus {
   border-color: var(--codex-accent);
-  box-shadow: 0 0 0 3px rgba(0, 47, 167, 0.16);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--atelier-focus) 20%, transparent);
 }
 
 .codex-button {
@@ -282,14 +282,14 @@
   color: var(--codex-text);
   font-size: 14px;
   font-weight: 650;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+  box-shadow: 0 1px 0 rgba(20, 20, 19, 0.05);
   transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .codex-button:hover {
   border-color: var(--codex-accent);
   background: var(--codex-accent-soft);
-  box-shadow: 0 8px 18px -16px rgba(0, 47, 167, 0.52);
+  box-shadow: 0 8px 18px -16px color-mix(in srgb, var(--codex-accent) 46%, transparent);
 }
 
 .codex-button:active {
@@ -308,10 +308,10 @@
 }
 
 .codex-button--primary {
-  border-color: #111827;
+  border-color: var(--codex-accent);
   background: var(--codex-accent);
   color: #f8fbff;
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
 }
 
 .codex-button--primary:hover {
@@ -340,7 +340,7 @@
   border-radius: var(--codex-radius);
   background: var(--codex-surface-strong);
   color: var(--codex-muted);
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+  box-shadow: 0 1px 0 rgba(20, 20, 19, 0.05);
   transition: transform 140ms ease, border-color 140ms ease, color 140ms ease, background-color 140ms ease;
 }
 
@@ -413,7 +413,7 @@
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--material-card-surface);
   --creepee-card-stable-border: var(--material-card-edge);
-  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
+  --creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);
   display: grid;
   grid-template-rows: auto auto auto;
   min-height: 164px;
@@ -448,7 +448,7 @@
 
 .codex-account-card.is-checked {
   border-color: var(--codex-accent);
-  box-shadow: 0 0 0 1px rgba(0, 47, 167, 0.16), 0 8px 22px rgba(0, 47, 167, 0.10);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--codex-accent) 28%, transparent), 0 8px 22px color-mix(in srgb, var(--codex-accent) 12%, transparent);
 }
 
 .codex-account-card:active {
@@ -642,7 +642,7 @@
 .codex-tag {
   max-width: 100%;
   border-radius: 6px;
-  border: 1px solid rgba(17, 24, 39, 0.12);
+  border: 1px solid rgba(20, 20, 19, 0.12);
   background: var(--codex-soft);
   padding: 2px 8px;
   color: var(--codex-muted);
@@ -784,7 +784,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(17, 24, 39, 0.46);
+  background: rgba(20, 20, 19, 0.46);
   opacity: 1;
 }
 
@@ -981,9 +981,8 @@
   }
 }
 
-/* Cloudflare appearance theme: the codex admin panel hardcodes Klein-blue
-   accents that bypass the --atelier-* token axis. Re-map them to Cloudflare
-   orange so the CPA management module matches the rest of the theme. */
+/* Cloudflare appearance theme: the codex admin panel now shares the Claude
+   token axis by default. Re-map only the explicit Cloudflare theme override. */
 :root.theme-cloudflare .codex-admin,
 :root[data-theme="cloudflare"] .codex-admin,
 :root.theme-cloudflare .dark .codex-admin,

@@ -778,7 +778,7 @@ watch(
 
 .user-avatar {
   background: var(--atelier-blue);
-  box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.62);
+  box-shadow: 0 8px 18px -14px rgba(201, 100, 66, 0.5);
 }
 
 .header-balance-chip-fixed {

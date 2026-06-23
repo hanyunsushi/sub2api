@@ -188,8 +188,8 @@ onMounted(async () => {
 .legal-page {
   color: var(--atelier-ink);
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    radial-gradient(circle at 12% 18%, rgba(201, 100, 66, 0.08), transparent 30rem),
+    radial-gradient(circle at 78% 6%, rgba(217, 119, 87, 0.08), transparent 24rem),
     var(--atelier-canvas);
 }
 
@@ -200,7 +200,7 @@ onMounted(async () => {
 }
 
 .legal-header {
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
+  box-shadow: 0 1px 0 rgba(20, 20, 19, 0.08);
 }
 
 .legal-logo,
@@ -208,14 +208,14 @@ onMounted(async () => {
   border: 1px solid var(--atelier-material-edge);
   background: var(--atelier-material-dust);
   color: var(--atelier-blue);
-  box-shadow: 0 10px 24px -22px rgba(17, 24, 39, 0.36);
+  box-shadow: 0 4px 18px rgba(20, 20, 19, 0.025);
 }
 
 .legal-login-button {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
 }
 
 .legal-login-button:hover {
@@ -321,14 +321,14 @@ onMounted(async () => {
 :global(.dark) .legal-page {
   color: #f8fbff;
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(201, 100, 66, 0.14), transparent 34%),
     linear-gradient(180deg, #050505, #0a0a0a);
 }
 
 :global(.dark) .legal-header,
 :global(.dark) .legal-panel {
   border-color: rgba(248, 251, 255, 0.16);
-  background: #111827;
+  background: var(--atelier-dark);
 }
 
 :global(.dark) .legal-muted,

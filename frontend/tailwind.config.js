@@ -1,17 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-const kleinBlue = '#002FA7'
-const kleinBlueScale = {
-  50: '#f3efe5',
-  100: '#e9e1d2',
-  200: '#d8dade',
-  300: '#bec5d7',
-  400: kleinBlue,
-  500: kleinBlue,
-  600: kleinBlue,
-  700: kleinBlue,
-  800: kleinBlue,
-  900: kleinBlue,
-  950: kleinBlue
+const terracotta = '#c96442'
+const terracottaScale = {
+  50: '#faf9f5',
+  100: '#f5f4ed',
+  200: '#e8e6dc',
+  300: '#d1cfc5',
+  400: '#d97757',
+  500: terracotta,
+  600: '#b85a3b',
+  700: '#a64f34',
+  800: '#6f3f2f',
+  900: '#3d3d3a',
+  950: '#141413'
 }
 
 export default {
@@ -20,18 +20,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Klein blue theme (IKB #002FA7)
-        primary: kleinBlueScale,
+        // 主色调 - Claude / Anthropic terracotta.
+        primary: terracottaScale,
         butter: '#c79a3a',
-        dust: '#4f6a8c',
-        // Treat legacy blue/indigo/purple/violet utility classes as Klein blue
-        // so older component-local classes render on the same theme axis.
-        blue: kleinBlueScale,
-        indigo: kleinBlueScale,
-        purple: kleinBlueScale,
-        violet: kleinBlueScale,
-        sky: kleinBlueScale,
-        // 辅助色 - neutral and soft Klein-blue surfaces
+        dust: '#87867f',
+        // Treat legacy blue/indigo/purple/violet utility classes as the same
+        // accent axis so older component-local classes stay on brand.
+        blue: terracottaScale,
+        indigo: terracottaScale,
+        purple: terracottaScale,
+        violet: terracottaScale,
+        sky: terracottaScale,
+        // 辅助色 - warm neutral surfaces
         accent: {
           50: '#f3efe5',
           100: '#fffaf0',
@@ -96,15 +96,15 @@ export default {
       boxShadow: {
         surface: '0 12px 28px -24px rgba(23, 21, 18, 0.36)',
         'surface-sm': '0 8px 18px -16px rgba(23, 21, 18, 0.28)',
-        glow: '0 10px 28px rgba(0, 47, 167, 0.18)',
-        'glow-lg': '0 18px 44px rgba(0, 47, 167, 0.22)',
+        glow: '0 10px 28px rgba(201, 100, 66, 0.18)',
+        'glow-lg': '0 18px 44px rgba(201, 100, 66, 0.22)',
         card: '0 1px 2px rgba(23, 21, 18, 0.05), 0 12px 28px -24px rgba(23, 21, 18, 0.36)',
         'card-hover': '0 16px 34px -24px rgba(23, 21, 18, 0.42)',
         'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35)'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #002FA7 0%, #002FA7 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #c96442 0%, #b85a3b 100%)',
         'gradient-dark': 'linear-gradient(135deg, #171512 0%, #050505 100%)',
         'gradient-paper':
           'linear-gradient(180deg, #fffaf0 0%, #f3efe5 100%)',
@@ -142,8 +142,8 @@ export default {
           '100%': { backgroundPosition: '200% 0' }
         },
         glow: {
-          '0%': { boxShadow: '0 10px 28px rgba(0, 47, 167, 0.16)' },
-          '100%': { boxShadow: '0 14px 34px rgba(0, 47, 167, 0.22)' }
+          '0%': { boxShadow: '0 10px 28px rgba(201, 100, 66, 0.16)' },
+          '100%': { boxShadow: '0 14px 34px rgba(201, 100, 66, 0.22)' }
         }
       },
       borderRadius: {

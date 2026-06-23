@@ -250,7 +250,7 @@ func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefaul
 
 	settings, err := svc.GetPublicSettings(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, "cloudflare", settings.AppearanceThemeDefault)
+	require.Equal(t, "anthropic", settings.AppearanceThemeDefault)
 }
 
 func TestSettingService_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
