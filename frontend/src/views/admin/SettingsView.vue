@@ -8779,7 +8779,7 @@ async function loadSettings() {
     }
     form.appearance_theme_default = isAppearanceThemeId(settings.appearance_theme_default)
       ? settings.appearance_theme_default
-      : "cloudflare";
+      : "anthropic";
     form.custom_menu_items = Array.isArray(settings.custom_menu_items)
       ? settings.custom_menu_items.map((item) => ({
           ...item,
