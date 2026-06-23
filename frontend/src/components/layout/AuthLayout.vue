@@ -65,7 +65,7 @@ onMounted(() => {
 .auth-logo {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-paper-2);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.42);
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.12);
 }
 
 .auth-subtitle,
@@ -92,7 +92,7 @@ onMounted(() => {
 
 :global(.dark) .auth-logo {
   border-color: rgba(248, 251, 255, 0.18);
-  background: #111827;
+  background: var(--atelier-dark);
 }
 
 :global(.dark) .auth-subtitle,

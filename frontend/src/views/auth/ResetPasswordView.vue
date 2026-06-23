@@ -485,7 +485,7 @@ async function handleSubmit(): Promise<void> {
 }
 
 :global(.dark .auth-recovery-status) {
-  background: color-mix(in srgb, #111827 86%, var(--atelier-blue) 14%);
+  background: color-mix(in srgb, var(--atelier-dark) 86%, var(--atelier-blue) 14%);
   border-color: rgba(248, 251, 255, 0.16);
 }
 </style>

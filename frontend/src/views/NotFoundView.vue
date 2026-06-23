@@ -90,14 +90,14 @@ function goBack(): void {
 .not-found-atelier {
   color: var(--atelier-ink);
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    radial-gradient(circle at 12% 18%, rgba(201, 100, 66, 0.08), transparent 30rem),
+    radial-gradient(circle at 78% 6%, rgba(217, 119, 87, 0.08), transparent 24rem),
     var(--atelier-canvas);
 }
 
 .not-found-plate {
   position: absolute;
-  border: 1px solid rgba(17, 24, 39, 0.18);
+  border: 1px solid rgba(20, 20, 19, 0.18);
   border-radius: 8px;
   opacity: 0.9;
 }
@@ -126,7 +126,7 @@ function goBack(): void {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
-  box-shadow: 0 14px 30px -24px rgba(0, 47, 167, 0.7);
+  box-shadow: 0 12px 42px rgba(201, 100, 66, 0.14);
 }
 
 .not-found-copy {
@@ -144,7 +144,7 @@ function goBack(): void {
 :global(.dark) .not-found-atelier {
   color: #f8fbff;
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(201, 100, 66, 0.14), transparent 34%),
     linear-gradient(180deg, #050505, #0a0a0a);
 }
 

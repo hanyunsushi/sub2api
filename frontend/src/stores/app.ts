@@ -327,7 +327,7 @@ export const useAppStore = defineStore('app', () => {
     contactInfo.value = config.contact_info || ''
     apiBaseUrl.value = config.api_base_url || ''
     docUrl.value = config.doc_url || ''
-    updateAppearanceThemeDefault(config.appearance_theme_default || 'cloudflare')
+    updateAppearanceThemeDefault(config.appearance_theme_default || 'anthropic')
     setAILogoRuntimeConfig(config)
     setCustomMenuIconRuntimeConfig(config)
     publicSettingsLoaded.value = true
@@ -394,7 +394,7 @@ export const useAppStore = defineStore('app', () => {
         risk_control_enabled: false,
         service_quota_enabled: false,
         affiliate_enabled: false,
-        appearance_theme_default: 'cloudflare',
+        appearance_theme_default: 'anthropic',
         ai_logo_cdn_base_url: '',
         custom_ai_logo_presets: [],
         custom_menu_svg_icon_presets: [],

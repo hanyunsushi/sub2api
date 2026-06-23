@@ -8,7 +8,7 @@ const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
 const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'utf8')
 
-describe('Klein blue ASCII background', () => {
+describe('Claude ASCII background', () => {
   it('provides a Vue canvas implementation of the ASCII wave field', () => {
     const componentPath = resolve(frontendRoot, 'src/components/common/GuizangAsciiBackground.vue')
 
@@ -51,7 +51,7 @@ describe('Klein blue ASCII background', () => {
     const source = readFile('src/components/common/GuizangAsciiBackground.vue')
 
     expect(css).toContain('.guizang-site-background')
-    expect(css).toContain('background: #002fa7')
+    expect(css).toContain('background: var(--atelier-blue, #c96442)')
     expect(css).not.toContain('background: #001f66')
     expect(css).toContain('.guizang-site-background--light')
     expect(css).toContain('.dark .guizang-site-background--light')

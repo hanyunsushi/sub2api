@@ -143,8 +143,8 @@ export function useSwipeSelect(
     const isDark = document.documentElement.classList.contains('dark')
     Object.assign(marqueeEl.style, {
       position: 'fixed',
-      background: isDark ? 'rgba(0, 47, 167, 0.18)' : 'rgba(0, 47, 167, 0.12)',
-      border: isDark ? '1.5px solid rgba(0, 47, 167, 0.55)' : '1.5px solid rgba(0, 47, 167, 0.4)',
+      background: isDark ? 'rgba(201, 100, 66, 0.18)' : 'rgba(201, 100, 66, 0.12)',
+      border: isDark ? '1.5px solid rgba(201, 100, 66, 0.55)' : '1.5px solid rgba(201, 100, 66, 0.4)',
       borderRadius: '4px',
       pointerEvents: 'none',
       zIndex: '9999',

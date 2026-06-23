@@ -26,7 +26,7 @@ Both LoginView and RegisterView use the AuthLayout component, which provides:
 │                                             │
 └─────────────────────────────────────────────┘
 
-Background: Gradient (Klein blue → White → Soft Klein blue)
+Background: Gradient (Terracotta → White → Soft Terracotta)
 Card: White with rounded corners and shadow
 Max Width: 28rem (448px)
 Centered: Both horizontally and vertically
@@ -236,11 +236,11 @@ Centered: Both horizontally and vertically
 
 ### Primary Colors
 
-- **Klein Blue**: `#002FA7` - Primary buttons, links, brand color, hover state, and focus ring
+- **Terracotta**: `#c96442` - Primary buttons, links, brand color, hover state, and focus ring
 
 ### Neutral Colors
 
-- **Gray-900**: `#111827` - Headings
+- **Gray-900**: `#30302e` - Headings
 - **Gray-700**: `#374151` - Labels
 - **Gray-600**: `#4B5563` - Body text
 - **Gray-500**: `#6B7280` - Helper text
@@ -264,7 +264,7 @@ Centered: Both horizontally and vertically
 
 - **From**: Soft Klein surface (`#eef3ff`)
 - **Via**: White (`#FFFFFF`)
-- **To**: Soft Klein-100 (`#f3f6ff`)
+- **To**: Soft Ivory (`#faf9f5`)
 
 ## Typography
 
@@ -313,7 +313,7 @@ Centered: Both horizontally and vertically
 
 ```css
 border: 1px solid #D1D5DB (gray-300)
-focus: 2px ring #002FA7 (klein-500)
+focus: 2px ring #c96442 (terracotta)
 ```
 
 **Error:**
@@ -336,7 +336,7 @@ opacity: 0.6
 **Default:**
 
 ```css
-background: #002FA7 (klein-600)
+background: #c96442 (terracotta)
 text: #FFFFFF (white)
 shadow: shadow-sm
 ```
@@ -344,7 +344,7 @@ shadow: shadow-sm
 **Hover:**
 
 ```css
-background: #002FA7 (klein blue)
+background: #c96442 (terracotta)
 transition: colors 150ms
 ```
 
@@ -352,7 +352,7 @@ transition: colors 150ms
 
 ```css
 outline: none
-ring: 2px offset-2 #002FA7 (klein-500)
+ring: 2px offset-2 #c96442 (terracotta)
 ```
 
 **Disabled:**
@@ -375,14 +375,14 @@ cursor: not-allowed
 **Default:**
 
 ```css
-color: #002FA7 (klein-600)
+color: #c96442 (terracotta)
 font-weight: 500 (medium)
 ```
 
 **Hover:**
 
 ```css
-color: #002FA7 (klein-500)
+color: #c96442 (terracotta)
 transition: colors 150ms
 ```
 
