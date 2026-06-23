@@ -17,6 +17,7 @@
       <button
         type="button"
         class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+        data-testid="openai-quota-reset-query"
         :disabled="loading || resetting"
         :title="countButtonTitle"
         @click="handleQuery"
@@ -41,6 +42,7 @@
       <button
         type="button"
         class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-orange-600 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-orange-400 dark:hover:bg-orange-900/30"
+        data-testid="openai-quota-reset-consume"
         :disabled="resetting || loading || !canReset"
         :title="resetButtonTitle"
         @click="handleReset"
