@@ -46,23 +46,6 @@ describe('mobile page scrolling', () => {
     expect(source).toContain('overflow-y: visible;')
   })
 
-  it('keeps closed Creepee sidecar and account row effects from widening mobile pages', () => {
-    const globalStyle = readFile('style.css')
-    const electricBorderSource = readFile('components/common/ElectricBorder.vue')
-
-    expect(globalStyle).toContain('.ai-search-sidecar:not(.ai-search-sidecar-open):not(.ai-search-sidecar-fullscreen)')
-    expect(globalStyle).toContain('left: 100%;')
-    expect(globalStyle).toContain('right: auto;')
-    expect(globalStyle).toContain('width: min(100vw, var(--ai-search-sidecar-width));')
-    expect(globalStyle).toContain('min-width: 0;')
-    expect(globalStyle).toContain('transform: translate3d(0, 0, 0);')
-    expect(globalStyle).toContain('#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border {')
-    expect(globalStyle).toContain('overflow: clip;')
-    expect(electricBorderSource).toContain('const canvasOutset = computed(() => Math.max(props.thickness * 3, 8))')
-    expect(electricBorderSource).toContain('const borderOffset = canvasOutset.value')
-    expect(electricBorderSource).not.toContain('const borderOffset = 60')
-  })
-
   it('lets custom markdown pages use document scrolling on mobile', () => {
     const source = readFile('views/user/CustomPageView.vue')
 

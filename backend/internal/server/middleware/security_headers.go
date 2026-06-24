@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
-	"net/url"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -59,11 +58,6 @@ var requiredCSPDirectiveValues = []struct {
 	{"frame-src", ObsidianCodexBridgeLocalhostOrigin},
 }
 
-type DynamicCSPOrigins struct {
-	FrameSrc []string
-	ImgSrc   []string
-}
-
 // GenerateNonce generates a cryptographically secure random nonce.
 // 返回 error 以确保调用方在 crypto/rand 失败时能正确降级。
 func GenerateNonce() (string, error) {
@@ -85,9 +79,9 @@ func GetNonceFromContext(c *gin.Context) string {
 }
 
 // SecurityHeaders sets baseline security headers for all responses.
-// getDynamicOrigins is an optional function that returns extra http(s) origins
-// to inject into CSP directives for admin-configured iframe pages and images.
-func SecurityHeaders(cfg config.CSPConfig, getDynamicOrigins func() DynamicCSPOrigins) gin.HandlerFunc {
+// getFrameSrcOrigins is an optional function that returns extra origins to inject into frame-src;
+// pass nil to disable dynamic frame-src injection.
+func SecurityHeaders(cfg config.CSPConfig, getFrameSrcOrigins func() []string) gin.HandlerFunc {
 	policy := strings.TrimSpace(cfg.Policy)
 	if policy == "" {
 		policy = config.DefaultCSPPolicy
@@ -98,16 +92,10 @@ func SecurityHeaders(cfg config.CSPConfig, getDynamicOrigins func() DynamicCSPOr
 
 	return func(c *gin.Context) {
 		finalPolicy := policy
-		if getDynamicOrigins != nil {
-			origins := getDynamicOrigins()
-			for _, origin := range origins.FrameSrc {
-				if isCSPHTTPOrigin(origin) && !directiveHasValue(finalPolicy, "frame-src", origin) {
+		if getFrameSrcOrigins != nil {
+			for _, origin := range getFrameSrcOrigins() {
+				if origin != "" {
 					finalPolicy = addToDirective(finalPolicy, "frame-src", origin)
-				}
-			}
-			for _, origin := range origins.ImgSrc {
-				if isCSPHTTPOrigin(origin) && !directiveHasValue(finalPolicy, "img-src", origin) {
-					finalPolicy = addToDirective(finalPolicy, "img-src", origin)
 				}
 			}
 		}
@@ -134,11 +122,6 @@ func SecurityHeaders(cfg config.CSPConfig, getDynamicOrigins func() DynamicCSPOr
 		}
 		c.Next()
 	}
-}
-
-func isCSPHTTPOrigin(origin string) bool {
-	u, err := url.Parse(origin)
-	return err == nil && u.Host != "" && u.Path == "" && u.RawQuery == "" && u.Fragment == "" && (u.Scheme == "https" || u.Scheme == "http")
 }
 
 func isAPIRoutePath(c *gin.Context) bool {

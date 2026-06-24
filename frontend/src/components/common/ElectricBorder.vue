@@ -47,8 +47,6 @@ const rootStyle = computed(() => ({
   borderRadius: `${props.borderRadius}px`
 }))
 
-const canvasOutset = computed(() => Math.max(props.thickness * 3, 8))
-
 const random = (x: number) => (Math.sin(x * 12.9898) * 43758.5453) % 1
 
 const noise2D = (x: number, y: number) => {
@@ -174,7 +172,7 @@ const updateSize = () => {
   const ctx = canvas.getContext('2d')
   if (!ctx) return canvasSize
 
-  const borderOffset = canvasOutset.value
+  const borderOffset = 60
   const rect = container.getBoundingClientRect()
   const width = rect.width + borderOffset * 2
   const height = rect.height + borderOffset * 2
@@ -216,7 +214,7 @@ const drawElectricBorder = (currentTime: number) => {
   const frequency = 10
   const baseFlatness = 0
   const displacement = 60
-  const borderOffset = canvasOutset.value
+  const borderOffset = 60
   const { width, height } = canvasSize
 
   const left = borderOffset
