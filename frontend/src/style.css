@@ -8736,6 +8736,65 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
   stroke: currentColor !important;
 }
 
+/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-red-800,
+  .text-red-700,
+  .text-red-600,
+  .text-red-500,
+  .text-red-400,
+  .text-rose-800,
+  .text-rose-700,
+  .text-rose-600,
+  .text-rose-500,
+  .text-rose-400
+) {
+  color: #dc2626 !important;
+  -webkit-text-fill-color: #dc2626 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-amber-800,
+  .text-amber-700,
+  .text-amber-600,
+  .text-amber-500,
+  .text-amber-400,
+  .text-yellow-800,
+  .text-yellow-700,
+  .text-yellow-600,
+  .text-yellow-500,
+  .text-yellow-400,
+  .text-orange-800,
+  .text-orange-700,
+  .text-orange-600,
+  .text-orange-500,
+  .text-orange-400
+) {
+  color: #d97706 !important;
+  -webkit-text-fill-color: #d97706 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-emerald-800,
+  .text-emerald-700,
+  .text-emerald-600,
+  .text-emerald-500,
+  .text-emerald-400,
+  .text-green-800,
+  .text-green-700,
+  .text-green-600,
+  .text-green-500,
+  .text-green-400,
+  .text-teal-800,
+  .text-teal-700,
+  .text-teal-600,
+  .text-teal-500,
+  .text-teal-400
+) {
+  color: #16a34a !important;
+  -webkit-text-fill-color: #16a34a !important;
+}
+
 #app .app-layout-content .settings-tabs-shell,
 #app .app-layout-content .settings-tabs-scroll,
 #app .app-layout-content .settings-tabs {
