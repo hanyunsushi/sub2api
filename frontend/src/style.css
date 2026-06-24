@@ -1652,6 +1652,14 @@ body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content {
   will-change: transform;
 }
 
+.ai-search-sidecar:not(.ai-search-sidecar-open):not(.ai-search-sidecar-fullscreen) {
+  left: 100%;
+  right: auto;
+  width: min(100vw, var(--ai-search-sidecar-width));
+  min-width: 0;
+  transform: translate3d(0, 0, 0);
+}
+
 .ai-search-sidecar.ai-search-sidecar-open {
   opacity: 1;
   pointer-events: auto;
@@ -4243,12 +4251,16 @@ body:has(.table-page-layout) :where(
   --account-electric-color: #c96442;
   position: relative;
   isolation: isolate;
-  overflow: visible;
+  overflow: clip;
   border-radius: 16px;
   border-color: color-mix(in srgb, var(--account-electric-color) 58%, var(--atelier-material-edge)) !important;
   box-shadow:
     0 18px 38px -28px rgba(201, 100, 66, 0.62),
     0 0 0 1px color-mix(in srgb, var(--account-electric-color) 34%, transparent);
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border {
+  overflow: clip;
 }
 
 #app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border .account-electric-border-canvas {

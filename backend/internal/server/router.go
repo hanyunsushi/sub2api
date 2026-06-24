@@ -17,7 +17,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const frameSrcRefreshTimeout = 5 * time.Second
+const dynamicCSPOriginsRefreshTimeout = 5 * time.Second
 
 // SetupRouter 配置路由器中间件和路由
 func SetupRouter(
@@ -33,32 +33,36 @@ func SetupRouter(
 	cfg *config.Config,
 	redisClient *redis.Client,
 ) *gin.Engine {
-	// 缓存 iframe 页面的 origin 列表，用于动态注入 CSP frame-src
-	var cachedFrameOrigins atomic.Pointer[[]string]
-	emptyOrigins := []string{}
-	cachedFrameOrigins.Store(&emptyOrigins)
+	// 缓存 iframe 页面和自定义菜单图标来源，用于动态注入 CSP。
+	var cachedDynamicCSPOrigins atomic.Pointer[middleware2.DynamicCSPOrigins]
+	emptyOrigins := middleware2.DynamicCSPOrigins{}
+	cachedDynamicCSPOrigins.Store(&emptyOrigins)
 
-	refreshFrameOrigins := func() {
-		ctx, cancel := context.WithTimeout(context.Background(), frameSrcRefreshTimeout)
+	refreshDynamicCSPOrigins := func() {
+		ctx, cancel := context.WithTimeout(context.Background(), dynamicCSPOriginsRefreshTimeout)
 		defer cancel()
-		origins, err := settingService.GetFrameSrcOrigins(ctx)
+		serviceOrigins, err := settingService.GetDynamicCSPOrigins(ctx)
 		if err != nil {
-			// 获取失败时保留已有缓存，避免 frame-src 被意外清空
+			// 获取失败时保留已有缓存，避免 CSP 动态来源被意外清空。
 			return
 		}
-		cachedFrameOrigins.Store(&origins)
+		origins := middleware2.DynamicCSPOrigins{
+			FrameSrc: serviceOrigins.FrameSrc,
+			ImgSrc:   serviceOrigins.ImgSrc,
+		}
+		cachedDynamicCSPOrigins.Store(&origins)
 	}
-	refreshFrameOrigins() // 启动时初始化
+	refreshDynamicCSPOrigins() // 启动时初始化
 
 	// 应用中间件
 	r.Use(middleware2.RequestLogger())
 	r.Use(middleware2.Logger())
 	r.Use(middleware2.CORS(cfg.CORS))
-	r.Use(middleware2.SecurityHeaders(cfg.Security.CSP, func() []string {
-		if p := cachedFrameOrigins.Load(); p != nil {
+	r.Use(middleware2.SecurityHeaders(cfg.Security.CSP, func() middleware2.DynamicCSPOrigins {
+		if p := cachedDynamicCSPOrigins.Load(); p != nil {
 			return *p
 		}
-		return nil
+		return middleware2.DynamicCSPOrigins{}
 	}))
 
 	// Serve embedded frontend with settings injection if available
@@ -67,17 +71,17 @@ func SetupRouter(
 		if err != nil {
 			log.Printf("Warning: Failed to create frontend server with settings injection: %v, using legacy mode", err)
 			r.Use(web.ServeEmbeddedFrontend())
-			settingService.SetOnUpdateCallback(refreshFrameOrigins)
+			settingService.SetOnUpdateCallback(refreshDynamicCSPOrigins)
 		} else {
-			// Register combined callback: invalidate HTML cache + refresh frame origins
+			// Register combined callback: invalidate HTML cache + refresh dynamic CSP origins
 			settingService.SetOnUpdateCallback(func() {
 				frontendServer.InvalidateCache()
-				refreshFrameOrigins()
+				refreshDynamicCSPOrigins()
 			})
 			r.Use(frontendServer.Middleware())
 		}
 	} else {
-		settingService.SetOnUpdateCallback(refreshFrameOrigins)
+		settingService.SetOnUpdateCallback(refreshDynamicCSPOrigins)
 	}
 
 	// 注册路由
