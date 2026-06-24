@@ -137,6 +137,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(externalQuotaSettingsModalSource).toContain('data-testid="external-quota-progress-refresh-token-window"')
     expect(externalQuotaSettingsModalSource).toContain('function refreshTokenWindow()')
     expect(externalQuotaSettingsModalSource).toContain('new Date().toISOString()')
+    expect(externalQuotaSettingsModalSource).toContain('new Date(Math.min(parsed.getTime(), now)).toISOString()')
     expect(externalQuotaSettingsModalSource).toContain('tokenWindowText')
     expect(externalQuotaSettingsModalSource).not.toContain('type="datetime-local"')
     expect(externalQuotaSettingsModalSource).toContain('buildAccountExternalQuotaProgressPreferenceKey(props.account, props.subscription ?? null)')

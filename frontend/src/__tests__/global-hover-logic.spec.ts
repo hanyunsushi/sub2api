@@ -304,6 +304,23 @@ describe('Cloudflare theme — filter bars are not a black slab', () => {
     expect(finalHoverLayer).toContain('color: var(--atelier-ink) !important;')
   })
 
+  it('uses the dashboard slab field color for neutral filter buttons', () => {
+    const readableFilterButtonBlock = cssBlockContaining('/* Console readable light action fallback. */')
+    const readableFilterButtonHoverBlock = cssBlockContaining(
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(\n' +
+        '  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),\n' +
+        '  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,\n' +
+        '  .user-keys-atelier .keys-filter-actions,\n' +
+        '  .user-usage-atelier .usage-filter-actions,\n' +
+        '  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,\n' +
+        '  .global-pricing-filter-actions\n' +
+        ') :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover',
+    )
+    expect(readableFilterButtonBlock).toContain('background: var(--atelier-slab-field) !important;')
+    expect(readableFilterButtonHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
+    expect(readableFilterButtonBlock).toContain('color: var(--atelier-slab-text) !important;')
+  })
+
   it('keeps Cloudflare filled action borders on brand orange instead of ink black', () => {
     expect(cfLayer).toContain(':root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary)')
     expect(cfLayer).toContain('border-color: var(--atelier-blue) !important;')

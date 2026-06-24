@@ -278,6 +278,27 @@ describe('external subscription quota progress', () => {
     expect(meta?.percent).toBeCloseTo(25)
   })
 
+  it('does not show token quota progress until backend window stats are present', () => {
+    const preference: AccountExternalQuotaProgressPreference = {
+      enabled: true,
+      mode: 'token_total',
+      customTotal: null,
+      tokenTotal: 1_000_000,
+      tokenResetAt: '2026-06-11T00:00:00.000Z',
+    }
+
+    expect(buildAccountExternalQuotaProgressMeta(status({
+      provider: 'mimo',
+      name: 'Xiaomi MiMo',
+      template: 'mimo_token_plan',
+      site_url: 'https://platform.xiaomimimo.com',
+      configured: true,
+      total_limit_usd: undefined,
+      remaining_usd: undefined,
+      used_usd: 0,
+    }), preference)).toBeNull()
+  })
+
   it('builds token quota progress without an external subscription status', () => {
     const preference: AccountExternalQuotaProgressPreference = {
       enabled: true,

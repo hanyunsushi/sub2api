@@ -65,7 +65,7 @@ func (s *accountListSettingRepoStub) GetValue(_ context.Context, key string) (st
 	return value, nil
 }
 
-func setupAccountListRouterWithTokenQuota() (*gin.Engine, *stubAdminService, *accountListUsageLogRepoStub) {
+func setupAccountListRouterWithTokenQuotaResetAt(tokenResetAt string) (*gin.Engine, *stubAdminService, *accountListUsageLogRepoStub) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	adminSvc := newStubAdminService()
@@ -87,7 +87,7 @@ func setupAccountListRouterWithTokenQuota() (*gin.Engine, *stubAdminService, *ac
 	}
 	settingRepo := &accountListSettingRepoStub{
 		values: map[string]string{
-			service.SettingKeyExternalSubscriptionAccountQuotaProgress: `{"303:mimo:mimo_token_plan:xiaomi mimo":{"enabled":true,"mode":"token_total","tokenTotal":1000000,"tokenResetAt":"2026-06-11T00:00:00Z"}}`,
+			service.SettingKeyExternalSubscriptionAccountQuotaProgress: `{"303:mimo:mimo_token_plan:xiaomi mimo":{"enabled":true,"mode":"token_total","tokenTotal":1000000,"tokenResetAt":"` + tokenResetAt + `"}}`,
 		},
 	}
 	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, service.NewUsageCache(), nil, nil)
@@ -95,6 +95,42 @@ func setupAccountListRouterWithTokenQuota() (*gin.Engine, *stubAdminService, *ac
 	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
 	router.GET("/api/v1/admin/accounts", handler.List)
 	return router, adminSvc, usageRepo
+}
+
+func setupAccountListRouterWithTokenQuota() (*gin.Engine, *stubAdminService, *accountListUsageLogRepoStub) {
+	return setupAccountListRouterWithTokenQuotaResetAt("2026-06-11T00:00:00Z")
+}
+
+func setupAccountListRouterWithTokenQuotaSettings(settings string) (*gin.Engine, *accountListUsageLogRepoStub) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	adminSvc := newStubAdminService()
+	adminSvc.accounts = []service.Account{
+		{
+			ID:        303,
+			Name:      "mimo-account",
+			Platform:  service.PlatformAnthropic,
+			Type:      service.AccountTypeAPIKey,
+			Status:    service.StatusActive,
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+		},
+	}
+	usageRepo := &accountListUsageLogRepoStub{
+		batchStats: map[int64]*usagestats.AccountStats{
+			303: {Requests: 12, Tokens: 250000, Cost: 0, StandardCost: 0, UserCost: 0},
+		},
+	}
+	settingRepo := &accountListSettingRepoStub{
+		values: map[string]string{
+			service.SettingKeyExternalSubscriptionAccountQuotaProgress: settings,
+		},
+	}
+	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, service.NewUsageCache(), nil, nil)
+	externalConfigService := service.NewExternalSubscriptionConfigService(service.NewSettingService(settingRepo, &config.Config{}))
+	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
+	router.GET("/api/v1/admin/accounts", handler.List)
+	return router, usageRepo
 }
 
 func TestAccountHandlerListIncludesCreatedAt(t *testing.T) {
@@ -152,6 +188,56 @@ func TestAccountHandlerListIncludesExternalQuotaTokenStats(t *testing.T) {
 	require.Equal(t, int64(303), payload.Data.Items[0].ID)
 	stats := payload.Data.Items[0].ExternalQuotaTokenStats["303:mimo:mimo_token_plan:xiaomi mimo"]
 	require.Equal(t, int64(12), stats.Requests)
+	require.Equal(t, int64(250000), stats.Tokens)
+	require.Equal(t, []int64{303}, usageRepo.batchIDs)
+	require.Equal(t, "2026-06-11T00:00:00Z", usageRepo.batchStart.UTC().Format(time.RFC3339))
+}
+
+func TestAccountHandlerListIgnoresFutureExternalQuotaTokenWindow(t *testing.T) {
+	router, _, usageRepo := setupAccountListRouterWithTokenQuotaResetAt("2999-06-11T00:00:00Z")
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/admin/accounts?page=1&page_size=20", nil)
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Empty(t, usageRepo.batchIDs)
+
+	var payload struct {
+		Data struct {
+			Items []struct {
+				ExternalQuotaTokenStats map[string]struct {
+					Tokens int64 `json:"tokens"`
+				} `json:"external_quota_token_stats"`
+			} `json:"items"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &payload))
+	require.Len(t, payload.Data.Items, 1)
+	require.Nil(t, payload.Data.Items[0].ExternalQuotaTokenStats)
+}
+
+func TestAccountHandlerListFallsBackToAccountTokenWindow(t *testing.T) {
+	router, usageRepo := setupAccountListRouterWithTokenQuotaSettings(`{"303:account":{"enabled":true,"mode":"token_total","tokenTotal":1000000,"tokenResetAt":"2026-06-11T00:00:00Z"},"303:mimo:mimo_token_plan:xiaomi mimo":{"enabled":true,"mode":"token_total","tokenTotal":1000000,"tokenResetAt":"2999-06-11T00:00:00Z"}}`)
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/admin/accounts?page=1&page_size=20", nil)
+	router.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	var payload struct {
+		Data struct {
+			Items []struct {
+				ExternalQuotaTokenStats map[string]struct {
+					Tokens int64 `json:"tokens"`
+				} `json:"external_quota_token_stats"`
+			} `json:"items"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &payload))
+	require.Len(t, payload.Data.Items, 1)
+	stats := payload.Data.Items[0].ExternalQuotaTokenStats["303:mimo:mimo_token_plan:xiaomi mimo"]
 	require.Equal(t, int64(250000), stats.Tokens)
 	require.Equal(t, []int64{303}, usageRepo.batchIDs)
 	require.Equal(t, "2026-06-11T00:00:00Z", usageRepo.batchStart.UTC().Format(time.RFC3339))

@@ -13,7 +13,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="key" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="key" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -33,7 +33,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="server" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="server" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -58,7 +58,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="chart" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="chart" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -78,7 +78,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="userPlus" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="userPlus" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -101,7 +101,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="cube" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="cube" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -137,7 +137,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="database" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="database" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -173,7 +173,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="bolt" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="bolt" size="md" :stroke-width="2" />
               </div>
               <div class="flex-1">
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -199,7 +199,7 @@
           <div class="card p-4">
             <div class="flex items-center gap-3">
               <div class="dashboard-stat-icon">
-                <Icon name="clock" size="md" class="text-primary-700 dark:text-primary-300" :stroke-width="2" />
+                <Icon name="clock" size="md" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -720,7 +720,7 @@ onBeforeUnmount(() => {
 
 .admin-dashboard-atelier :deep(.card) {
   border-radius: 8px;
-  --atelier-card-accent: var(--atelier-blue);
+  --atelier-card-accent: var(--atelier-line-strong);
   --atelier-card-surface: var(--atelier-paper-2);
   position: relative;
   overflow: hidden;
@@ -768,26 +768,26 @@ onBeforeUnmount(() => {
   display: block;
   height: 3px;
   background:
-    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 42% 100% no-repeat,
+    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 42% 100% no-repeat,
     var(--atelier-paper);
   pointer-events: none;
 }
 
 .admin-dashboard-atelier > .grid > .card:nth-child(2n)::after {
   background:
-    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 58% 100% no-repeat,
+    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 58% 100% no-repeat,
     var(--atelier-paper);
 }
 
 .admin-dashboard-atelier > .grid > .card:nth-child(3n)::after {
   background:
-    linear-gradient(var(--atelier-blue), var(--atelier-blue)) 0 0 / 76% 100% no-repeat,
+    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 76% 100% no-repeat,
     var(--atelier-paper);
 }
 
 .admin-dashboard-atelier :deep(.card .text-xl),
 .admin-dashboard-atelier :deep(.card .text-sm.font-semibold) {
-  color: var(--atelier-blue) !important;
+  color: var(--atelier-ink) !important;
 }
 
 .admin-dashboard-atelier :deep(.card .text-xl) {
@@ -902,7 +902,7 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.date-picker-trigger),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
   border-color: var(--atelier-slab-edge-soft) !important;
-  background: var(--atelier-slab-surface) !important;
+  background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
   box-shadow: none !important;
@@ -922,7 +922,7 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
   border-color: var(--atelier-slab-edge) !important;
-  background: var(--atelier-slab-surface) !important;
+  background: var(--atelier-slab-field-hover) !important;
   color: var(--atelier-slab-text) !important;
 }
 

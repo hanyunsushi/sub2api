@@ -448,6 +448,7 @@ func (h *AccountHandler) loadExternalQuotaTokenStats(ctx context.Context, accoun
 	if h.externalSubscriptionConfigService == nil || h.accountUsageService == nil || len(accounts) == 0 {
 		return result
 	}
+	now := time.Now()
 
 	accountIDs := make(map[int64]struct{}, len(accounts))
 	for i := range accounts {
@@ -479,7 +480,17 @@ func (h *AccountHandler) loadExternalQuotaTokenStats(ctx context.Context, accoun
 		if _, exists := accountIDs[accountID]; !exists {
 			continue
 		}
-		startTime, ok := parseExternalQuotaTokenResetAt(preference.TokenResetAt)
+		startTime, ok := parseExternalQuotaTokenResetAt(preference.TokenResetAt, now)
+		if !ok {
+			if fallbackPreference, exists := settings[externalQuotaAccountPreferenceKey(accountID)]; exists {
+				if fallbackPreference.Enabled &&
+					fallbackPreference.Mode == service.ExternalSubscriptionAccountQuotaProgressModeTokenTotal &&
+					fallbackPreference.TokenTotal != nil &&
+					*fallbackPreference.TokenTotal > 0 {
+					startTime, ok = parseExternalQuotaTokenResetAt(fallbackPreference.TokenResetAt, now)
+				}
+			}
+		}
 		if !ok {
 			continue
 		}
@@ -530,13 +541,20 @@ func accountIDFromExternalQuotaPreferenceKey(key string) (int64, bool) {
 	return id, true
 }
 
-func parseExternalQuotaTokenResetAt(value string) (time.Time, bool) {
+func externalQuotaAccountPreferenceKey(accountID int64) string {
+	return strconv.FormatInt(accountID, 10) + ":account"
+}
+
+func parseExternalQuotaTokenResetAt(value string, now time.Time) (time.Time, bool) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
 		return time.Time{}, false
 	}
 	parsed, err := time.Parse(time.RFC3339Nano, trimmed)
 	if err != nil {
+		return time.Time{}, false
+	}
+	if !now.IsZero() && parsed.After(now) {
 		return time.Time{}, false
 	}
 	return parsed.UTC(), true

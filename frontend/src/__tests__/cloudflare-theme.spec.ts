@@ -331,13 +331,63 @@ describe('Cloudflare appearance theme', () => {
     expect(globalPaintResetBlock).toContain('box-shadow: none !important;')
   })
 
-  it('keeps channel status and dashboard top-right controls readable under Anthropic', () => {
+  it('keeps channel status readable and dashboard refresh neutral under Anthropic', () => {
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .auto-refresh-button')
-    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled)')
     expect(styleSource).toContain('background: var(--atelier-blue) !important;')
     expect(styleSource).toContain('color: var(--atelier-paper-2) !important;')
     expect(styleSource).toContain('.auto-refresh-button :where(svg, path, span)')
     expect(styleSource).toContain('color: var(--atelier-ink) !important;')
+
+    const dashboardRefreshBlock = cssBlockFrom(
+      styleSource,
+      '#app .app-layout-content .admin-dashboard-atelier\n' +
+        '  :where(.dashboard-filter-refresh):not(:disabled),',
+    )
+    expect(dashboardRefreshBlock).toContain('background: var(--atelier-slab-field) !important;')
+    expect(dashboardRefreshBlock).toContain('color: var(--atelier-slab-text) !important;')
+    expect(dashboardRefreshBlock).not.toContain('var(--atelier-terracotta-action)')
+    const dashboardRefreshRestBlock = cssBlockFrom(
+      styleSource,
+      '#app .app-layout-content .admin-dashboard-atelier\n' +
+        '  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):not(:hover)',
+    )
+    expect(dashboardRefreshRestBlock).toContain('background: var(--atelier-slab-field) !important;')
+    expect(dashboardRefreshRestBlock).not.toContain('background: var(--atelier-slab-field-hover) !important;')
+    const dashboardRefreshHoverBlock = cssBlockFrom(
+      styleSource,
+      '#app .app-layout-content .admin-dashboard-atelier\n' +
+        '  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):hover',
+    )
+    expect(dashboardRefreshHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
+
+    const anthropicPrimaryRule = cssRuleFrom(
+      styleSource,
+      ':root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary),',
+    )
+    expect(anthropicPrimaryRule).not.toContain('.dashboard-filter-refresh')
+  })
+
+  it('keeps ops dashboard primary and blue utility text neutral inside monitoring modules', () => {
+    const opsNeutralTextSelector =
+      '#app .app-layout-content .ops-dashboard-atelier :where(\n' +
+      '  .ops-monitor-header,\n' +
+      '  .ops-monitor-panel,'
+    const opsNeutralTextRule = styleSource.slice(
+      styleSource.indexOf(opsNeutralTextSelector),
+      styleSource.indexOf(
+        '#app .app-layout-content .ops-dashboard-atelier :where(\n' +
+        '  .ops-monitor-header,\n' +
+        '  .ops-monitor-panel,',
+        styleSource.indexOf(opsNeutralTextSelector) + 1,
+      ),
+    )
+    expect(opsNeutralTextRule).toContain('.text-primary-700')
+    expect(opsNeutralTextRule).toContain('.text-blue-700')
+    expect(opsNeutralTextRule).toContain('color: var(--atelier-ink) !important;')
+    expect(opsNeutralTextRule).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+    expect(styleSource.indexOf(opsNeutralTextSelector)).toBeGreaterThan(
+      styleSource.indexOf('.ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card) :where(.text-primary-600, .text-primary-700, .text-primary-500)'),
+    )
   })
 
   it('marks generic table filter panes so Anthropic keeps a single paper header and terracotta actions', () => {
@@ -346,16 +396,15 @@ describe('Cloudflare appearance theme', () => {
     expect(availableChannelsSource).toContain('table-filter-left')
     expect(availableChannelsSource).toContain('table-filter-actions')
     expect(styleSource).toContain('Anthropic theme — final table filter action pass')
-    expect(styleSource).toContain(':where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled)')
+    expect(styleSource).toContain(':where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)')
   })
 
-  it('keeps top-right action buttons terracotta across all console themes', () => {
+  it('keeps true top-right action buttons terracotta and neutral filter buttons slab-colored', () => {
     expect(styleSource).toContain('Console terracotta action pass')
     expect(styleSource).toContain('--atelier-terracotta-action: #c96442;')
     expect(styleSource).toContain('--atelier-terracotta-action-hover: #a64f34;')
     expect(styleSource).toContain('.table-filter-actions')
     expect(styleSource).toContain('.users-filter-create')
-    expect(styleSource).toContain('.dashboard-filter-refresh')
     expect(styleSource).toContain('.keys-filter-actions')
     expect(styleSource).toContain('.user-usage-atelier .usage-filter-actions')
     expect(styleSource).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions')
@@ -366,13 +415,27 @@ describe('Cloudflare appearance theme', () => {
     expect(actionBlock).toContain('background: var(--atelier-terracotta-action) !important;')
     expect(actionBlock).toContain('color: var(--atelier-paper-2) !important;')
     expect(actionBlock).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
-    expect(actionRule).toContain(':where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled)')
+    expect(actionRule).toContain(':where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)')
+    expect(actionRule).not.toContain('.dashboard-filter-refresh')
     expect(actionBlock).not.toContain(':where(.btn, button, [role="button"])')
     expect(actionRule).not.toContain(':where(.btn, button, [role="button"])')
     const readableFilterButtonBlock = cssBlockFrom(styleSource, '/* Console readable light action fallback. */')
+    const readableFilterButtonHoverBlock = cssBlockFrom(
+      styleSource,
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(\n' +
+        '  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),\n' +
+        '  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,\n' +
+        '  .user-keys-atelier .keys-filter-actions,\n' +
+        '  .user-usage-atelier .usage-filter-actions,\n' +
+        '  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,\n' +
+        '  .global-pricing-filter-actions\n' +
+        ') :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover',
+    )
     const readableFilterButtonRule = cssRuleFrom(styleSource, '/* Console readable light action fallback. */')
-    expect(readableFilterButtonBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(readableFilterButtonBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+    expect(readableFilterButtonBlock).toContain('background: var(--atelier-slab-field) !important;')
+    expect(readableFilterButtonHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
+    expect(readableFilterButtonBlock).toContain('color: var(--atelier-slab-text) !important;')
+    expect(readableFilterButtonBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
     expect(readableFilterButtonBlock).not.toContain('background: var(--atelier-terracotta-action)')
     expect(readableFilterButtonRule).toContain(':where(.btn, button, [role="button"])')
     expect(readableFilterButtonRule).toContain(':not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh)')
