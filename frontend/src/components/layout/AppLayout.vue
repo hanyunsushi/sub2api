@@ -68,7 +68,7 @@ watch(() => route.fullPath, () => {
 
 const { replayTour } = useOnboardingTour({
   storageKey: isAdmin.value ? 'admin_guide' : 'user_guide',
-  autoStart: false
+  autoStart: true
 })
 
 const onboardingStore = useOnboardingStore()
