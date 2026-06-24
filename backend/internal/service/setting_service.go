@@ -66,11 +66,6 @@ type SettingRepository interface {
 	Delete(ctx context.Context, key string) error
 }
 
-type DynamicCSPOrigins struct {
-	FrameSrc []string
-	ImgSrc   []string
-}
-
 // cachedVersionBounds 缓存 Claude Code 版本号上下限（进程内缓存，60s TTL）
 type cachedVersionBounds struct {
 	min       string // 空字符串 = 不检查
@@ -1861,57 +1856,34 @@ func safeRawJSONArray(raw string) json.RawMessage {
 // GetFrameSrcOrigins returns deduplicated http(s) origins from home_content URL,
 // purchase_subscription_url, and all custom_menu_items URLs. Used by the router layer for CSP frame-src injection.
 func (s *SettingService) GetFrameSrcOrigins(ctx context.Context) ([]string, error) {
-	origins, err := s.GetDynamicCSPOrigins(ctx)
+	settings, err := s.GetPublicSettings(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return origins.FrameSrc, nil
-}
 
-func (s *SettingService) GetDynamicCSPOrigins(ctx context.Context) (DynamicCSPOrigins, error) {
-	settings, err := s.GetPublicSettings(ctx)
-	if err != nil {
-		return DynamicCSPOrigins{}, err
-	}
+	seen := make(map[string]struct{})
+	var origins []string
 
-	frameSeen := make(map[string]struct{})
-	imgSeen := make(map[string]struct{})
-	origins := DynamicCSPOrigins{}
-
-	addFrameOrigin := func(rawURL string) {
+	addOrigin := func(rawURL string) {
 		if origin := extractOriginFromURL(rawURL); origin != "" {
-			if _, ok := frameSeen[origin]; !ok {
-				frameSeen[origin] = struct{}{}
-				origins.FrameSrc = append(origins.FrameSrc, origin)
-			}
-		}
-	}
-	addImgOrigin := func(rawURL string) {
-		if origin := extractOriginFromURL(rawURL); origin != "" {
-			if _, ok := imgSeen[origin]; !ok {
-				imgSeen[origin] = struct{}{}
-				origins.ImgSrc = append(origins.ImgSrc, origin)
+			if _, ok := seen[origin]; !ok {
+				seen[origin] = struct{}{}
+				origins = append(origins, origin)
 			}
 		}
 	}
 
 	// home content URL (when home_content is set to a URL for iframe embedding)
-	addFrameOrigin(settings.HomeContent)
+	addOrigin(settings.HomeContent)
 
 	// purchase subscription URL
 	if settings.PurchaseSubscriptionEnabled {
-		addFrameOrigin(settings.PurchaseSubscriptionURL)
+		addOrigin(settings.PurchaseSubscriptionURL)
 	}
 
 	// all custom menu items (including admin-only, since CSP must allow all iframes)
 	for _, item := range parseCustomMenuItemURLs(settings.CustomMenuItems) {
-		addFrameOrigin(item)
-	}
-	for _, item := range parseCustomMenuIconURLs(settings.CustomMenuItems) {
-		addImgOrigin(item)
-	}
-	for _, item := range settings.CustomMenuSVGIconPresets {
-		addImgOrigin(item)
+		addOrigin(item)
 	}
 
 	return origins, nil
@@ -1950,26 +1922,6 @@ func parseCustomMenuItemURLs(raw string) []string {
 	for _, item := range items {
 		if item.URL != "" {
 			urls = append(urls, item.URL)
-		}
-	}
-	return urls
-}
-
-func parseCustomMenuIconURLs(raw string) []string {
-	raw = strings.TrimSpace(raw)
-	if raw == "" || raw == "[]" {
-		return nil
-	}
-	var items []struct {
-		IconSVG string `json:"icon_svg"`
-	}
-	if err := json.Unmarshal([]byte(raw), &items); err != nil {
-		return nil
-	}
-	urls := make([]string, 0, len(items))
-	for _, item := range items {
-		if item.IconSVG != "" {
-			urls = append(urls, item.IconSVG)
 		}
 	}
 	return urls
