@@ -865,7 +865,7 @@ defineExpose({
 }
 
 .dark .table-wrapper .table-header {
-  background-color: var(--atelier-dark);
+  background-color: #111827;
 }
 
 /* 表体保持在表头下方 */
@@ -884,7 +884,7 @@ defineExpose({
 }
 
 .dark .sticky-header-cell {
-  background-color: var(--atelier-dark);
+  background-color: #111827;
 }
 
 /* Sticky 列基础样式 */
@@ -924,7 +924,7 @@ tbody .sticky-col {
 }
 
 .dark tbody .sticky-col {
-  background-color: var(--atelier-dark);
+  background-color: #111827;
 }
 
 /* hover 状态保持 */
@@ -933,7 +933,7 @@ tbody tr:hover .sticky-col {
 }
 
 .dark tbody tr:hover .sticky-col {
-  background-color: rgba(201, 100, 66, 0.18);
+  background-color: rgba(0, 47, 167, 0.18);
 }
 
 /* 阴影只在可滚动时显示 */

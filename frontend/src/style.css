@@ -5,8 +5,8 @@
 :root {
   --ai-search-sidecar-width: clamp(34.25rem, 42vw, 40rem);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
-  --creepee-home-card-hover-transform: translate3d(0, -2px, 0);
-  --creepee-home-card-hover-shadow: 0 12px 42px rgba(20, 20, 19, 0.055);
+  --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
 }
 
 /* Base appearance tokens */
@@ -118,7 +118,7 @@
   --atelier-focus: #f6821f;
   --atelier-line: rgba(54, 57, 58, 0.12);
   --atelier-line-strong: rgba(54, 57, 58, 0.26);
-  /* Cloudflare brand orange + gold replace the default terracotta accent axis. */
+  /* Cloudflare brand orange + gold replace the Klein-blue accent axis. */
   --atelier-blue: #f6821f;
   --atelier-blue-dark: #d96f15;
   --atelier-butter: #fbad41;
@@ -194,7 +194,7 @@
   --atelier-font-mono: var(--mono);
 }
 
-/* Cloudflare theme: re-tint the few hardcoded accent literals that do not
+/* Cloudflare theme: re-tint the few hardcoded Klein-blue literals that do not
    flow through the --atelier-* token axis, so no blue leaks on any page. */
 :root.theme-cloudflare body,
 :root[data-theme="cloudflare"] body {
@@ -210,7 +210,7 @@
   box-shadow: 0 10px 24px -18px rgba(246, 130, 31, 0.62);
 }
 
-/* Text selection: Cloudflare orange tint, not the default terracotta. */
+/* Text selection: Cloudflare orange tint, not Klein blue. */
 :root.theme-cloudflare ::selection,
 :root[data-theme="cloudflare"] ::selection {
   background: rgba(246, 130, 31, 0.18);
@@ -655,7 +655,7 @@
   .card-hover {
     @apply hover:-translate-y-0.5 hover:shadow-card-hover;
     @apply hover:border-primary-200 dark:hover:border-dark-600;
-    box-shadow: var(--atelier-material-shadow-hover);
+    box-shadow: 0 14px 30px -24px color-mix(in srgb, var(--atelier-blue) 38%, transparent);
   }
 
   .card-header {
@@ -1477,13 +1477,13 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: var(--atelier-blue, #c96442);
+  background: #002fa7;
   color: #ffffff;
 }
 
 .guizang-site-background--light {
   background: var(--atelier-canvas);
-  color: var(--atelier-blue, #c96442);
+  color: #002fa7;
 }
 
 .dark .guizang-site-background--light {
@@ -3954,7 +3954,7 @@ body:has(.table-page-layout) :where(
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-paper-2);
-  --creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
@@ -3976,7 +3976,7 @@ body:has(.table-page-layout) :where(
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  --creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   transform: var(--creepee-home-card-hover-transform);
   box-shadow: var(--creepee-home-card-hover-shadow);
 }
@@ -8396,8 +8396,8 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr) {
   --home-card-accent: var(--atelier-blue);
   --creepee-card-hover-surface: var(--atelier-card-surface, var(--atelier-paper-2));
-  --creepee-home-card-hover-transform: translate3d(0, -2px, 0);
-  --creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);
+  --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   --creepee-card-stable-border: var(--atelier-material-edge);
   transition:
     transform 280ms var(--atelier-ease),
@@ -8425,7 +8425,7 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  --creepee-home-card-hover-shadow: var(--atelier-material-shadow-hover);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
   transform: var(--creepee-home-card-hover-transform) !important;
   box-shadow: var(--creepee-home-card-hover-shadow) !important;
 }

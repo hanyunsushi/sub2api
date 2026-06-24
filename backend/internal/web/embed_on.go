@@ -352,8 +352,8 @@ func (s *FrontendServer) serveDynamicManifest(c *gin.Context) {
 		"short_name":       siteName,
 		"start_url":        "/",
 		"display":          "standalone",
-		"background_color": "#f5f4ed",
-		"theme_color":      "#c96442",
+		"background_color": "#ffffff",
+		"theme_color":      "#002FA7",
 		"icons": []map[string]string{
 			{
 				"src":     "/icon-192.png?v=" + version,

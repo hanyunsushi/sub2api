@@ -67,7 +67,7 @@ const METHOD_COLORS: Record<string, string> = {
   alipay: '#00AEEF',
   wechat_pay: '#07C160',
 }
-const DEFAULT_METHOD_COLOR = '#635BFF'
+const DEFAULT_METHOD_COLOR = '#002FA7'
 
 const { t } = useI18n()
 const route = useRoute()

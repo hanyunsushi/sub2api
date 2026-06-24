@@ -722,6 +722,6 @@ async function handleSubmit() {
 .channel-monitor-account-binding-option--active {
   background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 8%, transparent);
   border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 45%, transparent);
-  color: var(--atelier-ink, #141413);
+  color: var(--atelier-ink, #111827);
 }
 </style>
