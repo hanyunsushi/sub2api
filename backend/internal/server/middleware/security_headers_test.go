@@ -273,6 +273,30 @@ func TestSecurityHeaders(t *testing.T) {
 			nonces[nonce] = true
 		}
 	})
+
+	t.Run("injects_dynamic_frame_and_image_origins", func(t *testing.T) {
+		cfg := config.CSPConfig{
+			Enabled: true,
+			Policy:  "default-src 'self'; script-src 'self' __CSP_NONCE__; img-src 'self' data: https:; frame-src 'self'",
+		}
+		middleware := SecurityHeaders(cfg, func() DynamicCSPOrigins {
+			return DynamicCSPOrigins{
+				FrameSrc: []string{"https://menu.example.com", "https://menu.example.com"},
+				ImgSrc:   []string{"http://localhost:42110", "javascript:alert(1)", "http://localhost:42110"},
+			}
+		})
+
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+
+		middleware(c)
+
+		csp := w.Header().Get("Content-Security-Policy")
+		assert.Equal(t, 1, countDirectiveValue(csp, "frame-src", "https://menu.example.com"))
+		assert.Equal(t, 1, countDirectiveValue(csp, "img-src", "http://localhost:42110"))
+		assert.Equal(t, 0, countDirectiveValue(csp, "img-src", "javascript:alert(1)"))
+	})
 }
 
 func TestCSPNonceKey(t *testing.T) {

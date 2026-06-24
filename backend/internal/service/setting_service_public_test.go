@@ -195,6 +195,46 @@ func TestSettingService_DeleteCustomAILogoPreset_NormalizesRemovesAndPersists(t 
 	require.Error(t, err)
 }
 
+func TestSettingService_GetDynamicCSPOrigins_IncludesCustomMenuImageOrigins(t *testing.T) {
+	repo := &settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeyHomeContent:                 "https://home.example.com/frame",
+			SettingKeyPurchaseSubscriptionEnabled: "true",
+			SettingKeyPurchaseSubscriptionURL:     "https://billing.example.com/checkout",
+			SettingKeyCustomMenuItems: `[{
+				"id":"ladders",
+				"label":"Ladders",
+				"icon_svg":"http://localhost:42110/static/assets/icons/khoj_lantern_128x128.png",
+				"url":"https://menu.example.com/app",
+				"visibility":"user",
+				"sort_order":0,
+				"open_mode":"iframe"
+			},{
+				"id":"unsafe",
+				"label":"Unsafe",
+				"icon_svg":"javascript:alert(1)",
+				"url":"javascript:alert(1)",
+				"visibility":"admin",
+				"sort_order":1
+			}]`,
+			SettingKeyCustomMenuSVGIconPresets: `["http://localhost:42110/static/assets/icons/khoj_lantern_128x128.png","https://img.example.com/menu/a.svg","javascript:alert(1)"]`,
+		},
+	}
+	svc := NewSettingService(repo, &config.Config{})
+
+	origins, err := svc.GetDynamicCSPOrigins(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"https://home.example.com",
+		"https://billing.example.com",
+		"https://menu.example.com",
+	}, origins.FrameSrc)
+	require.Equal(t, []string{
+		"http://localhost:42110",
+		"https://img.example.com",
+	}, origins.ImgSrc)
+}
+
 func TestSettingService_AppendCustomMenuSVGIconPreset_NormalizesDedupesAndPersists(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
