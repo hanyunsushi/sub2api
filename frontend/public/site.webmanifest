@@ -3,8 +3,8 @@
   "short_name": "Sub2API",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f4ed",
-  "theme_color": "#c96442",
+  "background_color": "#ffffff",
+  "theme_color": "#002FA7",
   "icons": [
     {
       "src": "/icon-192.png",

@@ -1428,7 +1428,7 @@ func normalizeAppearanceThemeDefault(value string) string {
 	case "cloudflare", "anthropic":
 		return strings.ToLower(strings.TrimSpace(value))
 	default:
-		return "anthropic"
+		return "cloudflare"
 	}
 }
 
@@ -3270,7 +3270,7 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyAuthSourceDefaultDingTalkGrantOnSignup:    "false",
 		SettingKeyAuthSourceDefaultDingTalkGrantOnFirstBind: "false",
 		SettingKeyForceEmailOnThirdPartySignup:              "false",
-		SettingKeyAppearanceThemeDefault:                    "anthropic",
+		SettingKeyAppearanceThemeDefault:                    "cloudflare",
 		SettingKeySMTPPort:                                  "587",
 		SettingKeySMTPUseTLS:                                "false",
 		// Model fallback defaults

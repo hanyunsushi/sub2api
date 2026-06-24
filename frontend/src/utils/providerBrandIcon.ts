@@ -226,10 +226,10 @@ export function systemAILogoPresetIDFromURL(rawURL?: string | null): string {
 
 const fallbackPalettes = [
   { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
-  { background: '#FFF4E8', color: '#C96442', border: '#F3C4AD' },
+  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   { background: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
   { background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
-  { background: '#FAF9F5', color: '#4D4C48', border: '#E8E6DC' },
+  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   { background: '#F0FDFA', color: '#0F766E', border: '#99F6E4' },
   { background: '#FEFCE8', color: '#A16207', border: '#FEF08A' },
   { background: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
@@ -246,11 +246,11 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['gemini', 'google-ai-studio'],
-    { iconModel: 'gemini', label: 'G', background: '#E8F0FE', color: '#4285F4', border: '#B7D4FF' },
+    { iconModel: 'gemini', label: 'G', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   ],
   [
     ['antigravity'],
-    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#FFF4E8', color: '#C96442', border: '#F3C4AD' },
+    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#EAF2FF', color: '#002FA7', border: '#9DB6FF' },
   ],
   [
     ['deepseek'],
@@ -270,7 +270,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['qlhazycoder', 'qlhazy'],
-    { iconModel: null, label: 'QL', background: '#FFF4E8', color: '#C96442', border: '#F3C4AD' },
+    { iconModel: null, label: 'QL', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   ],
   [
     ['packycode', 'packyapi', 'packy'],
@@ -354,7 +354,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['midjourney'],
-    { iconModel: 'midjourney', label: 'MJ', background: '#FAF9F5', color: '#30302E', border: '#E8E6DC' },
+    { iconModel: 'midjourney', label: 'MJ', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
   ],
   [
     ['suno'],

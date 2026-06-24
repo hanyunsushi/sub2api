@@ -15,12 +15,12 @@ export const appearanceThemeOptions: AppearanceThemeOption[] = [
   { id: 'anthropic', label: 'Anthropic' },
 ]
 
-const activeTheme = ref<AppearanceThemeId>('anthropic')
+const activeTheme = ref<AppearanceThemeId>('cloudflare')
 
 function normalizeTheme(value: string | null | undefined): AppearanceThemeId {
   return appearanceThemeOptions.some((theme) => theme.id === value)
     ? value as AppearanceThemeId
-    : 'anthropic'
+    : 'cloudflare'
 }
 
 function getInjectedAppearanceThemeDefault(): AppearanceThemeId {

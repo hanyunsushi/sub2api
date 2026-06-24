@@ -23,11 +23,11 @@ describe('filterCodexAccounts', () => {
     const accounts = [
       account({
         name: 'prod.json',
-        group: { id: 1, name: 'Prod', color: '#c96442', sort_order: 0, created_at: '', updated_at: '' },
+        group: { id: 1, name: 'Prod', color: '#002FA7', sort_order: 0, created_at: '', updated_at: '' },
       }),
       account({
         name: 'dev.json',
-        group: { id: 2, name: 'Dev', color: '#c96442', sort_order: 1, created_at: '', updated_at: '' },
+        group: { id: 2, name: 'Dev', color: '#002FA7', sort_order: 1, created_at: '', updated_at: '' },
       }),
       account({ name: 'none.json' }),
     ]
