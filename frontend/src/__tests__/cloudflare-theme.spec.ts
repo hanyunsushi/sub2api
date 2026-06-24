@@ -410,6 +410,27 @@ describe('Cloudflare appearance theme', () => {
     )
   })
 
+  it('keeps final ops primary fills away from Anthropic terracotta', () => {
+    const opsPrimaryCleanupMarker =
+      '/* Ops final primary cleanup: primary is not an Anthropic terracotta signal here. */'
+    expect(styleSource).toContain(opsPrimaryCleanupMarker)
+    const opsPrimaryCleanupRule = styleSource.slice(styleSource.indexOf(opsPrimaryCleanupMarker))
+    expect(opsPrimaryCleanupRule).toContain('.ops-dashboard-atelier :where(.btn-primary):not(:disabled)')
+    expect(opsPrimaryCleanupRule).toContain('background: var(--atelier-ink) !important;')
+    expect(opsPrimaryCleanupRule).toContain('.ops-realtime-panel button.bg-primary-500')
+    expect(opsPrimaryCleanupRule).toContain('.ops-monitor-toolbar-meta :where(.bg-primary-400, .bg-primary-500, .bg-primary-600)')
+    expect(opsPrimaryCleanupRule).toContain('.ops-realtime-panel :where(span.bg-primary-400, span.bg-primary-500)')
+    expect(opsPrimaryCleanupRule).toContain('background: #16a34a !important;')
+    expect(opsPrimaryCleanupRule).toContain(':where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold')
+    expect(opsPrimaryCleanupRule).toContain('color: var(--atelier-ink) !important;')
+    expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
+      styleSource.indexOf('/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */'),
+    )
+    expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
+      styleSource.indexOf('/* Dashboard refresh is a neutral filter control, not a filled action. */'),
+    )
+  })
+
   it('marks generic table filter panes so Anthropic keeps a single paper header and terracotta actions', () => {
     expect(adminSubscriptionsSource).toContain('table-filter-left')
     expect(adminSubscriptionsSource).toContain('table-filter-actions')

@@ -8857,3 +8857,154 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
   -webkit-text-fill-color: inherit !important;
   stroke: currentColor !important;
 }
+
+/* Ops final primary cleanup: primary is not an Anthropic terracotta signal here. */
+#app .app-layout-content .ops-dashboard-atelier :where(.btn-primary):not(:disabled) {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.btn-primary):not(:disabled):hover {
+  border-color: var(--atelier-dark) !important;
+  background: var(--atelier-dark) !important;
+  background-color: var(--atelier-dark) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.btn-primary):not(:disabled) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500,
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500:hover {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500 :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-400, .bg-primary-500, .bg-primary-600),
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta :where(.bg-primary-400, .bg-primary-500, .bg-primary-600):hover {
+  border-color: var(--atelier-line-strong) !important;
+  background: var(--atelier-slab-field-hover) !important;
+  background-color: var(--atelier-slab-field-hover) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel :where(span.bg-primary-400, span.bg-primary-500) {
+  border-color: #16a34a !important;
+  background: #16a34a !important;
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.bg-primary-500) {
+  border-color: #16a34a !important;
+  background: #16a34a !important;
+  background-color: #16a34a !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card) :where(.bg-primary-600) {
+  border-color: #d97706 !important;
+  background: #d97706 !important;
+  background-color: #d97706 !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel, .ops-health-score-card, .ops-realtime-panel, .ops-metric-card, .ops-system-card)
+  :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-gray-950, .text-gray-900, .text-gray-800):not(button):not(.btn):not([role="button"]) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel, .ops-health-score-card, .ops-realtime-panel, .ops-metric-card, .ops-system-card)
+  :where(.text-primary-800, .text-primary-700, .text-primary-600, .text-primary-500, .text-primary-400, .text-blue-800, .text-blue-700, .text-blue-600, .text-blue-500, .text-blue-400) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel, .ops-health-score-card, .ops-realtime-panel, .ops-metric-card, .ops-system-card)
+  :where(.text-primary-800, .text-primary-700, .text-primary-600, .text-primary-500, .text-primary-400, .text-blue-800, .text-blue-700, .text-blue-600, .text-blue-500, .text-blue-400) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-red-800,
+  .text-red-700,
+  .text-red-600,
+  .text-red-500,
+  .text-red-400,
+  .text-rose-800,
+  .text-rose-700,
+  .text-rose-600,
+  .text-rose-500,
+  .text-rose-400
+) {
+  color: #dc2626 !important;
+  -webkit-text-fill-color: #dc2626 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-amber-800,
+  .text-amber-700,
+  .text-amber-600,
+  .text-amber-500,
+  .text-amber-400,
+  .text-yellow-800,
+  .text-yellow-700,
+  .text-yellow-600,
+  .text-yellow-500,
+  .text-yellow-400,
+  .text-orange-800,
+  .text-orange-700,
+  .text-orange-600,
+  .text-orange-500,
+  .text-orange-400
+) {
+  color: #d97706 !important;
+  -webkit-text-fill-color: #d97706 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-emerald-800,
+  .text-emerald-700,
+  .text-emerald-600,
+  .text-emerald-500,
+  .text-emerald-400,
+  .text-green-800,
+  .text-green-700,
+  .text-green-600,
+  .text-green-500,
+  .text-green-400,
+  .text-teal-800,
+  .text-teal-700,
+  .text-teal-600,
+  .text-teal-500,
+  .text-teal-400
+) {
+  color: #16a34a !important;
+  -webkit-text-fill-color: #16a34a !important;
+}
