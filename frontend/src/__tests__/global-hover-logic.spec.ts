@@ -188,12 +188,13 @@ describe('global hover logic — stable typography for neutral option controls',
     expect(tableDatePortalBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
   })
 
-  it('uses theme accent tokens for onboarding tour filled buttons', () => {
+  it('uses neutral ink tokens for onboarding tour filled buttons', () => {
     expect(onboardingSource).not.toContain('background-color: #002FA7 !important;')
     expect(onboardingSource).not.toContain('rgba(0, 47, 167')
     expect(onboardingSource).toContain('.theme-tour-popover .driver-popover-next-btn')
-    expect(onboardingSource).toContain('background-color: var(--atelier-blue) !important;')
-    expect(onboardingSource).toContain('background-color: var(--atelier-blue-dark) !important;')
+    expect(onboardingSource).toContain('background-color: var(--atelier-ink) !important;')
+    expect(onboardingSource).toContain('background-color: var(--atelier-dark) !important;')
+    expect(onboardingSource).not.toContain('box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--atelier-blue)')
   })
 
   it('keeps onboarding neutral controls from repainting text to accent on hover', () => {

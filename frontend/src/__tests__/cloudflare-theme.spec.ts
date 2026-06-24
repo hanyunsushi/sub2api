@@ -421,8 +421,12 @@ describe('Cloudflare appearance theme', () => {
     expect(opsPrimaryCleanupRule).toContain('.ops-monitor-toolbar-meta :where(.bg-primary-400, .bg-primary-500, .bg-primary-600)')
     expect(opsPrimaryCleanupRule).toContain('.ops-realtime-panel :where(span.bg-primary-400, span.bg-primary-500)')
     expect(opsPrimaryCleanupRule).toContain('background: #16a34a !important;')
-    expect(opsPrimaryCleanupRule).toContain(':where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold')
+    expect(opsPrimaryCleanupRule).toContain(':where(.text-gray-950, .text-gray-900, .text-gray-800)')
     expect(opsPrimaryCleanupRule).toContain('color: var(--atelier-ink) !important;')
+    expect(opsPrimaryCleanupRule).toContain('[class~="bg-primary-400"], [class~="bg-primary-500"], [class~="bg-primary-600"]')
+    expect(opsPrimaryCleanupRule).toContain('svg.text-primary-600')
+    expect(opsPrimaryCleanupRule).toContain('/* Header and onboarding accents stay neutral under Anthropic. */')
+    expect(opsPrimaryCleanupRule).toContain('#app .app-header-context-dot')
     expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
       styleSource.indexOf('/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */'),
     )
