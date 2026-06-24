@@ -390,6 +390,26 @@ describe('Cloudflare appearance theme', () => {
     )
   })
 
+  it('keeps ops dashboard status utility text on official semantic colors', () => {
+    const opsSemanticMarker =
+      '/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */'
+    expect(styleSource).toContain(opsSemanticMarker)
+    const opsSemanticRule = styleSource.slice(
+      styleSource.indexOf(opsSemanticMarker),
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell', styleSource.indexOf(opsSemanticMarker)),
+    )
+    expect(opsSemanticRule).toContain('.text-red-600')
+    expect(opsSemanticRule).toContain('color: #dc2626 !important;')
+    expect(opsSemanticRule).toContain('-webkit-text-fill-color: #dc2626 !important;')
+    expect(opsSemanticRule).toContain('.text-amber-700')
+    expect(opsSemanticRule).toContain('color: #d97706 !important;')
+    expect(opsSemanticRule).toContain('.text-green-600')
+    expect(opsSemanticRule).toContain('color: #16a34a !important;')
+    expect(styleSource.indexOf(opsSemanticMarker)).toBeGreaterThan(
+      styleSource.indexOf('.app-layout-content :where([class~="text-red-800"], [class~="text-red-700"], [class~="text-red-600"]'),
+    )
+  })
+
   it('marks generic table filter panes so Anthropic keeps a single paper header and terracotta actions', () => {
     expect(adminSubscriptionsSource).toContain('table-filter-left')
     expect(adminSubscriptionsSource).toContain('table-filter-actions')
