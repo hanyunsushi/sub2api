@@ -141,6 +141,7 @@ export const buildAccountExternalQuotaProgressMeta = (
   if (preference.mode === 'token_total') {
     const total = Math.max(0, Number(preference.tokenTotal ?? 0))
     if (!Number.isFinite(total) || total <= 0) return null
+    if (!options.tokenStats) return null
     const used = Math.max(0, Number(options.tokenStats?.tokens ?? 0))
     if (!Number.isFinite(used)) return null
     const remaining = Math.max(0, total - used)

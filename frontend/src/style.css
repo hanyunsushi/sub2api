@@ -3570,7 +3570,7 @@ body:has(.table-page-layout) :where(
   border-color: var(--atelier-slab-edge-soft) !important;
   outline: none !important;
   outline-offset: 0 !important;
-  background: var(--atelier-slab-surface) !important;
+  background: var(--atelier-slab-field) !important;
   color: var(--atelier-slab-text) !important;
 }
 
@@ -7504,10 +7504,8 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary),
 :root.theme-anthropic .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]),
-:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled),
 :root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary),
-:root[data-theme="anthropic"] .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]),
-:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) {
+:root[data-theme="anthropic"] .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"], [class~="bg-blue-600"], [class~="bg-indigo-600"], [class~="bg-purple-600"], [class~="bg-violet-600"], [class~="bg-sky-600"]) {
   border-color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
   background-color: var(--atelier-blue) !important;
@@ -7517,9 +7515,7 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 }
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
-:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled):hover,
-:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary):hover:not(:disabled),
-:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled):hover {
+:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary):hover:not(:disabled) {
   border-color: var(--atelier-blue-dark) !important;
   background: var(--atelier-blue-dark) !important;
   background-color: var(--atelier-blue-dark) !important;
@@ -7528,9 +7524,7 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 }
 
 :root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary) :where(svg, path, span),
-:root.theme-anthropic #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
-:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary) :where(svg, path, span),
-:root[data-theme="anthropic"] #app .app-layout-content :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
+:root[data-theme="anthropic"] :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary) :where(svg, path, span) {
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
   stroke: currentColor !important;
@@ -7706,19 +7700,19 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(:disabled),
 :root[data-theme="anthropic"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(:disabled) {
-  border-color: var(--atelier-sand) !important;
-  background: var(--atelier-sand) !important;
-  color: var(--atelier-text) !important;
-  -webkit-text-fill-color: var(--atelier-text) !important;
-  box-shadow: 0 0 0 1px var(--atelier-ring) !important;
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
 }
 
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(:disabled):hover,
 :root[data-theme="anthropic"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.btn-secondary, .btn-ghost, button):not(.btn-primary):not(.btn-success):not(:disabled):hover {
-  border-color: var(--atelier-ring) !important;
-  background: var(--atelier-ui-hover-surface) !important;
-  color: var(--atelier-ink) !important;
-  -webkit-text-fill-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field-hover) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 :root.theme-anthropic body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal),
@@ -8098,14 +8092,14 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 /* Anthropic theme — final table filter action pass. */
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 :root[data-theme="anthropic"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 :root.theme-anthropic #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 :root[data-theme="anthropic"] #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) {
   border-color: var(--atelier-blue) !important;
   background: var(--atelier-blue) !important;
   background-color: var(--atelier-blue) !important;
@@ -8116,14 +8110,14 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 :root[data-theme="anthropic"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 :root.theme-anthropic #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 :root[data-theme="anthropic"] #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover {
   border-color: var(--atelier-blue-dark) !important;
   background: var(--atelier-blue-dark) !important;
   background-color: var(--atelier-blue-dark) !important;
@@ -8133,14 +8127,14 @@ body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset
 
 :root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 :root[data-theme="anthropic"] #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 :root.theme-anthropic #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 :root[data-theme="anthropic"] #app .app-layout-content .admin-dashboard-atelier
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span) {
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
   stroke: currentColor !important;
@@ -8169,19 +8163,17 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 /* Console terracotta action pass. */
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled),
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled),
-#app .app-layout-content .admin-dashboard-atelier
-  :where(.dashboard-filter-refresh):not(:disabled) {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) {
   border-color: var(--atelier-terracotta-action) !important;
   background: var(--atelier-terracotta-action) !important;
   background-color: var(--atelier-terracotta-action) !important;
@@ -8192,19 +8184,17 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover,
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled):hover,
-#app .app-layout-content .admin-dashboard-atelier
-  :where(.dashboard-filter-refresh):not(:disabled):hover {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled):hover {
   border-color: var(--atelier-terracotta-action-hover) !important;
   background: var(--atelier-terracotta-action-hover) !important;
   background-color: var(--atelier-terracotta-action-hover) !important;
@@ -8214,21 +8204,44 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
 
 #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section
   :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto)
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .user-keys-atelier .keys-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .user-usage-atelier .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span),
 #app .app-layout-content .global-pricing-filter-actions
-  :where(.btn-primary, .btn-success, .users-filter-create, .dashboard-filter-refresh):not(:disabled) :where(svg, path, span),
-#app .app-layout-content .admin-dashboard-atelier
-  :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
+  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled) :where(svg, path, span) {
   color: var(--atelier-paper-2) !important;
   -webkit-text-fill-color: var(--atelier-paper-2) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled),
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled):hover {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  background-color: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled):hover {
+  background: var(--atelier-slab-field-hover) !important;
+  background-color: var(--atelier-slab-field-hover) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier
+  :where(.dashboard-filter-refresh):not(:disabled) :where(svg, path, span) {
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
   stroke: currentColor !important;
 }
 
@@ -8241,8 +8254,27 @@ body .header-balance-dropdown-panel :where(.balance-system-text, .balance-buzz-t
   .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
   .global-pricing-filter-actions
 ) :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled) {
-  color: var(--atelier-ink) !important;
-  -webkit-text-fill-color: var(--atelier-ink) !important;
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  background-color: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
+}
+
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(
+  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),
+  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,
+  .user-keys-atelier .keys-filter-actions,
+  .user-usage-atelier .usage-filter-actions,
+  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,
+  .global-pricing-filter-actions
+) :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field-hover) !important;
+  background-color: var(--atelier-slab-field-hover) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
 }
 
 :root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(
@@ -8656,6 +8688,54 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
   box-shadow: var(--ops-card-shadow) !important;
 }
 
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .ops-monitor-header,
+  .ops-monitor-panel,
+  .ops-metric-card,
+  .ops-system-card,
+  .ops-live-panel,
+  .ops-health-score-card,
+  .ops-realtime-panel,
+  .ops-chart-card,
+  .ops-concurrency-card,
+  .ops-alert-card,
+  .ops-log-card,
+  .ops-resource-band
+) :where(
+  .text-primary-800,
+  .text-primary-700,
+  .text-primary-600,
+  .text-primary-500,
+  .text-primary-400,
+  .text-blue-800,
+  .text-blue-700,
+  .text-blue-600,
+  .text-blue-500,
+  .text-blue-400
+) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .ops-monitor-header,
+  .ops-monitor-panel,
+  .ops-metric-card,
+  .ops-system-card,
+  .ops-live-panel,
+  .ops-health-score-card,
+  .ops-realtime-panel,
+  .ops-chart-card,
+  .ops-concurrency-card,
+  .ops-alert-card,
+  .ops-log-card,
+  .ops-resource-band
+) :where(.text-primary-800, .text-primary-700, .text-primary-600, .text-primary-500, .text-primary-400, .text-blue-800, .text-blue-700, .text-blue-600, .text-blue-500, .text-blue-400) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
+}
+
 #app .app-layout-content .settings-tabs-shell,
 #app .app-layout-content .settings-tabs-scroll,
 #app .app-layout-content .settings-tabs {
@@ -8689,4 +8769,32 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 
 #app .app-layout-content .settings-tab-label {
   flex: 0 1 auto !important;
+}
+
+/* Dashboard refresh is a neutral filter control, not a filled action. */
+#app .app-layout-content .admin-dashboard-atelier
+  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):not(:hover) {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  background-color: var(--atelier-slab-field) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier
+  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):hover {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field-hover) !important;
+  background-color: var(--atelier-slab-field-hover) !important;
+  color: var(--atelier-slab-text) !important;
+  -webkit-text-fill-color: var(--atelier-slab-text) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier
+  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled) :where(svg, path, span) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
 }

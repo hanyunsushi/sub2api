@@ -214,7 +214,9 @@ const parseTokenTotal = () => {
 const parseTokenResetAt = () => {
   if (!form.tokenResetAt) return null
   const parsed = new Date(form.tokenResetAt)
-  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
+  if (Number.isNaN(parsed.getTime())) return null
+  const now = Date.now()
+  return new Date(Math.min(parsed.getTime(), now)).toISOString()
 }
 
 const toISOStringValue = (value?: string | null) => {
