@@ -425,6 +425,10 @@ describe('Cloudflare appearance theme', () => {
     expect(opsPrimaryCleanupRule).toContain('color: var(--atelier-ink) !important;')
     expect(opsPrimaryCleanupRule).toContain('[class~="bg-primary-400"], [class~="bg-primary-500"], [class~="bg-primary-600"]')
     expect(opsPrimaryCleanupRule).toContain('svg.text-primary-600')
+    expect(opsPrimaryCleanupRule).toContain(':where(.ops-monitor-panel, .ops-monitor-header)')
+    expect(opsPrimaryCleanupRule).toContain(':where(button):not(:disabled):not(.btn-primary):not(.btn-danger)')
+    expect(opsPrimaryCleanupRule).toContain(':where(svg, path)')
+    expect(opsPrimaryCleanupRule).toContain('color: inherit !important;')
     expect(opsPrimaryCleanupRule).toContain('/* Header and onboarding accents stay neutral under Anthropic. */')
     expect(opsPrimaryCleanupRule).toContain('#app .app-header-context-dot')
     expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(

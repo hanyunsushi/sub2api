@@ -9102,6 +9102,14 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
   stroke: currentColor !important;
 }
 
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-panel, .ops-monitor-header)
+  :where(button):not(:disabled):not(.btn-primary):not(.btn-danger)
+  :where(svg, path) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  stroke: currentColor !important;
+}
+
 /* Header and onboarding accents stay neutral under Anthropic. */
 #app .app-header-context-dot {
   background: var(--atelier-ink) !important;
