@@ -270,11 +270,11 @@
 }
 
 .theme-tour-popover .driver-popover-next-btn {
-  background-color: var(--atelier-blue) !important;
-  color: var(--atelier-white) !important;
-  box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--atelier-blue) 62%, transparent) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  box-shadow: none !important;
 }
-.theme-tour-popover .driver-popover-next-btn:hover { background-color: var(--atelier-blue-dark) !important; }
+.theme-tour-popover .driver-popover-next-btn:hover { background-color: var(--atelier-dark) !important; }
 
 .theme-tour-popover .driver-popover-prev-btn {
   background-color: var(--atelier-paper-2) !important;

@@ -8933,7 +8933,7 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 }
 
 #app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-live-panel, .ops-health-score-card, .ops-realtime-panel, .ops-metric-card, .ops-system-card)
-  :where(.text-3xl, .text-4xl, .text-5xl, .text-lg, .text-xl, .text-2xl, .font-black, .font-bold, .text-gray-950, .text-gray-900, .text-gray-800):not(button):not(.btn):not([role="button"]) {
+  :where(.text-gray-950, .text-gray-900, .text-gray-800) {
   color: var(--atelier-ink) !important;
   -webkit-text-fill-color: var(--atelier-ink) !important;
 }
@@ -9007,4 +9007,135 @@ body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-
 ) {
   color: #16a34a !important;
   -webkit-text-fill-color: #16a34a !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .ops-monitor-header,
+  .ops-monitor-panel,
+  .ops-live-panel,
+  .ops-health-score-card,
+  .ops-realtime-panel,
+  .ops-metric-card,
+  .ops-system-card,
+  .ops-chart-card,
+  .ops-concurrency-card,
+  .ops-alert-card,
+  .ops-log-card,
+  .ops-resource-band
+) :where([class~="bg-primary-400"], [class~="bg-primary-500"], [class~="bg-primary-600"]) {
+  border-color: #16a34a !important;
+  background: #16a34a !important;
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .ops-monitor-header,
+  .ops-monitor-panel,
+  .ops-live-panel,
+  .ops-health-score-card,
+  .ops-realtime-panel,
+  .ops-metric-card,
+  .ops-system-card,
+  .ops-chart-card,
+  .ops-concurrency-card,
+  .ops-alert-card,
+  .ops-log-card,
+  .ops-resource-band
+) :where([class~="bg-primary-600"]) {
+  border-color: #d97706 !important;
+  background: #d97706 !important;
+  background-color: #d97706 !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500,
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500:hover {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(
+  .text-primary-800,
+  .text-primary-700,
+  .text-primary-600,
+  .text-primary-500,
+  .text-primary-400,
+  .text-blue-800,
+  .text-blue-700,
+  .text-blue-600,
+  .text-blue-500,
+  .text-blue-400
+) :where(svg, path),
+#app .app-layout-content .ops-dashboard-atelier :where(
+  svg.text-primary-800,
+  svg.text-primary-700,
+  svg.text-primary-600,
+  svg.text-primary-500,
+  svg.text-primary-400,
+  svg.text-blue-800,
+  svg.text-blue-700,
+  svg.text-blue-600,
+  svg.text-blue-500,
+  svg.text-blue-400
+),
+#app .app-layout-content .ops-dashboard-atelier :where(
+  svg.text-primary-800,
+  svg.text-primary-700,
+  svg.text-primary-600,
+  svg.text-primary-500,
+  svg.text-primary-400,
+  svg.text-blue-800,
+  svg.text-blue-700,
+  svg.text-blue-600,
+  svg.text-blue-500,
+  svg.text-blue-400
+) :where(path) {
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+  stroke: currentColor !important;
+}
+
+/* Header and onboarding accents stay neutral under Anthropic. */
+#app .app-header-context-dot {
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  box-shadow: none !important;
+}
+
+#app .app-header-role-chip {
+  border-color: var(--atelier-slab-edge) !important;
+  background: var(--atelier-slab-field) !important;
+  background-color: var(--atelier-slab-field) !important;
+  color: var(--atelier-ink) !important;
+  -webkit-text-fill-color: var(--atelier-ink) !important;
+}
+
+#app .app-header-atelier .user-avatar {
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+.theme-tour-popover .driver-popover-next-btn {
+  border-color: var(--atelier-ink) !important;
+  background: var(--atelier-ink) !important;
+  background-color: var(--atelier-ink) !important;
+  color: var(--atelier-paper) !important;
+  -webkit-text-fill-color: var(--atelier-paper) !important;
+  box-shadow: none !important;
+}
+
+.theme-tour-popover .driver-popover-next-btn:hover {
+  border-color: var(--atelier-dark) !important;
+  background: var(--atelier-dark) !important;
+  background-color: var(--atelier-dark) !important;
 }
