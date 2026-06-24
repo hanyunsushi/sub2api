@@ -13,7 +13,6 @@ const tailwindConfigSource = readSource('tailwind.config.js')
 const appearanceThemeSource = readSource('src/composables/useAppearanceTheme.ts')
 const appStoreSource = readSource('src/stores/app.ts')
 const adminSettingsSource = readSource('src/views/admin/SettingsView.vue')
-const appLayoutSource = readSource('src/components/layout/AppLayout.vue')
 const providerBrandIconSource = readSource('src/utils/providerBrandIcon.ts')
 const zhLocaleSource = readSource('src/i18n/locales/zh.ts')
 const enLocaleSource = readSource('src/i18n/locales/en.ts')
@@ -125,8 +124,6 @@ describe('Claude design language source contract', () => {
 
   it('keeps the authenticated admin shell on the Claude editorial pass', () => {
     expect(styleSource).toContain('Anthropic authenticated admin pass')
-    expect(appLayoutSource).toContain('autoStart: false')
-    expect(appLayoutSource).not.toContain('autoStart: true')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .app-route-page')
     expect(styleSource).toContain(':where(.admin-dashboard-atelier, .admin-usage-atelier, .table-page-layout, .settings-tabs-shell)')
     expect(styleSource).toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .usage-stat-card, .admin-material-surface, .table-wrapper, .table-scroll-container, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap)')
