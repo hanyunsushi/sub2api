@@ -1,8 +1,35 @@
 import { defineConfig, loadEnv, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
+import { existsSync } from 'fs'
 import { resolve } from 'path'
-import { designOverlay } from '/Users/hinaw/Documents/Codex/2026-07-01/wo-xai/outputs/design-overlay/src/vite-plugin.js'
+import { pathToFileURL } from 'url'
+
+const designOverlayPluginPath = [
+  '/Users',
+  'hinaw',
+  'Documents',
+  'Codex',
+  '2026-07-01',
+  'wo-xai',
+  'outputs',
+  'design-overlay',
+  'src',
+  'vite-plugin.js'
+].join('/')
+
+const anthropicDesignSystemPath = [
+  '/Users',
+  'hinaw',
+  'Library',
+  'Application Support',
+  'Open Design',
+  'namespaces',
+  'release-stable',
+  'data',
+  'projects',
+  'brand-anthropic-a38199'
+].join('/')
 
 /**
  * Vite 插件：开发模式下注入公开配置到 index.html
@@ -35,12 +62,46 @@ function injectPublicSettings(backendUrl: string): Plugin {
   }
 }
 
-export default defineConfig(({ mode }) => {
+async function loadDesignOverlayPlugin(command: string): Promise<Plugin[]> {
+  if (command !== 'serve' || !existsSync(designOverlayPluginPath)) {
+    return []
+  }
+
+  try {
+    const overlayModule = (await import(pathToFileURL(designOverlayPluginPath).href)) as {
+      designOverlay?: (options: {
+        project: string
+        designSystems: string[]
+        port: number
+        reuseExisting: boolean
+      }) => Plugin
+    }
+
+    if (typeof overlayModule.designOverlay !== 'function') {
+      return []
+    }
+
+    return [
+      overlayModule.designOverlay({
+        project: __dirname,
+        designSystems: [anthropicDesignSystemPath],
+        port: 4777,
+        reuseExisting: true
+      })
+    ]
+  } catch (e) {
+    console.warn('[vite] design overlay unavailable:', (e as Error).message)
+    return []
+  }
+}
+
+export default defineConfig(async ({ command, mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '')
   const backendUrl = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
   const cpaManagementUrl = env.VITE_CPA_MANAGEMENT_PROXY_TARGET || 'http://127.0.0.1:8317'
   const devPort = Number(env.VITE_DEV_PORT || 3000)
+  const designOverlayPlugins = await loadDesignOverlayPlugin(command)
 
   return {
     plugins: [
@@ -49,14 +110,7 @@ export default defineConfig(({ mode }) => {
         vueTsc: true
       }),
       injectPublicSettings(backendUrl),
-      designOverlay({
-        project: __dirname,
-        designSystems: [
-          '/Users/hinaw/Library/Application Support/Open Design/namespaces/release-stable/data/projects/brand-anthropic-a38199'
-        ],
-        port: 4777,
-        reuseExisting: true
-      })
+      ...designOverlayPlugins
     ],
   resolve: {
     alias: {
