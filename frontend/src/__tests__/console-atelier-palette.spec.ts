@@ -235,7 +235,8 @@ describe('Anthropic design-system component contract', () => {
     }
     expect(targetedRepairSource).toContain('grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));')
     expect(targetedRepairSource).toContain('background: var(--account-card-bg) !important;')
-    expect(targetedRepairSource).toContain('background: var(--account-card-resting-bg) !important;')
+    expect(targetedRepairSource).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(targetedRepairSource).not.toContain('--account-card-resting-bg')
     expect(targetedRepairSource).toContain('transform: none !important;')
     expect(targetedRepairSource).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
     expect(targetedRepairSource).not.toContain('rgba(201, 100, 66, 0.62)')

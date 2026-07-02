@@ -28,6 +28,7 @@ const statusMap: Record<OrderStatus, { key: string; class: string }> = {
   FAILED: { key: 'payment.status.failed', class: 'border-[color-mix(in_srgb,var(--anthropic-error)_32%,transparent)] text-[var(--anthropic-error)]' },
   REFUND_REQUESTED: { key: 'payment.status.refund_requested', class: 'border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] text-[var(--anthropic-warning)]' },
   REFUNDING: { key: 'payment.status.refunding', class: 'border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] text-[var(--anthropic-warning)]' },
+  REFUND_PENDING: { key: 'payment.status.refund_pending', class: 'border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] text-[var(--anthropic-warning)]' },
   REFUNDED: { key: 'payment.status.refunded', class: 'border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] text-[var(--anthropic-info)]' },
   PARTIALLY_REFUNDED: { key: 'payment.status.partially_refunded', class: 'border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] text-[var(--anthropic-info)]' },
   REFUND_FAILED: { key: 'payment.status.refund_failed', class: 'border-[color-mix(in_srgb,var(--anthropic-error)_32%,transparent)] text-[var(--anthropic-error)]' },

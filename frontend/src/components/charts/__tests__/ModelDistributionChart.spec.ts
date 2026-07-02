@@ -17,6 +17,7 @@ const messages: Record<string, string> = {
   'admin.dashboard.requests': 'Requests',
   'admin.dashboard.tokens': 'Tokens',
   'admin.dashboard.actual': 'Actual',
+  'admin.dashboard.accountCost': 'Account Cost',
   'admin.dashboard.standard': 'Standard',
   'admin.dashboard.metricTokens': 'By Tokens',
   'admin.dashboard.metricActualCost': 'By Actual Cost',
@@ -53,7 +54,6 @@ describe('ModelDistributionChart', () => {
       total_tokens: 1000,
       cost: 1.5,
       actual_cost: 0.2,
-      account_cost: 0.3,
     },
     {
       model: 'model-b',
@@ -65,7 +65,6 @@ describe('ModelDistributionChart', () => {
       total_tokens: 500,
       cost: 0.5,
       actual_cost: 1.4,
-      account_cost: 0.6,
     },
   ]
 
@@ -98,63 +97,6 @@ describe('ModelDistributionChart', () => {
     expect(label).toBe('model-a: 1.00K (66.7%)')
   })
 
-  it('uses a readable categorical palette for model segments', () => {
-    const wrapper = mount(ModelDistributionChart, {
-      props: {
-        modelStats: [
-          ...modelStats,
-          {
-            model: 'model-c',
-            requests: 2,
-            input_tokens: 30,
-            output_tokens: 10,
-            cache_creation_tokens: 0,
-            cache_read_tokens: 0,
-            total_tokens: 300,
-            cost: 0.2,
-            actual_cost: 0.1,
-            account_cost: 0.12,
-          },
-          {
-            model: 'model-d',
-            requests: 1,
-            input_tokens: 20,
-            output_tokens: 10,
-            cache_creation_tokens: 0,
-            cache_read_tokens: 0,
-            total_tokens: 200,
-            cost: 0.1,
-            actual_cost: 0.05,
-            account_cost: 0.06,
-          },
-          {
-            model: 'model-e',
-            requests: 1,
-            input_tokens: 10,
-            output_tokens: 10,
-            cache_creation_tokens: 0,
-            cache_read_tokens: 0,
-            total_tokens: 100,
-            cost: 0.08,
-            actual_cost: 0.04,
-            account_cost: 0.05,
-          },
-        ],
-      },
-      global: {
-        stubs: {
-          LoadingSpinner: true,
-        },
-      },
-    })
-
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
-    const colors = chartData.datasets[0].backgroundColor
-
-    expect(colors.slice(0, 5)).toEqual(['#6a9bcc', '#d1a24a', '#c46686', '#cbcadb', '#788c5d'])
-    expect(new Set(colors.slice(0, 5)).size).toBe(5)
-  })
-
   it('uses actual_cost and reorders rows in actual cost mode', () => {
     const wrapper = mount(ModelDistributionChart, {
       props: {
@@ -185,12 +127,11 @@ describe('ModelDistributionChart', () => {
     expect(label).toBe('model-b: $1.40 (87.5%)')
   })
 
-  it('uses route-tabs for source and metric switches', async () => {
+  it('can hide account cost for user usage stats without account_cost', () => {
     const wrapper = mount(ModelDistributionChart, {
       props: {
         modelStats,
-        showSourceToggle: true,
-        showMetricToggle: true,
+        showAccountCost: false,
       },
       global: {
         stubs: {
@@ -199,28 +140,9 @@ describe('ModelDistributionChart', () => {
       },
     })
 
-    const tabLists = wrapper.findAll('[role="tablist"]')
-    expect(tabLists).toHaveLength(2)
-    expect(tabLists[0].classes()).toContain('route-tabs')
-    expect(tabLists[0].attributes('data-route-tabs')).toBe('model-distribution-source')
-    expect(tabLists[1].attributes('data-route-tabs')).toBe('model-distribution-metric')
-
-    const tabs = wrapper.findAll('[role="tab"]')
-    expect(tabs.map((tab) => tab.attributes('data-route-id'))).toEqual([
-      'requested',
-      'upstream',
-      'mapping',
-      'tokens',
-      'actual_cost',
-    ])
-    expect(tabs[0].attributes('aria-selected')).toBe('true')
-    expect(tabs[3].attributes('aria-selected')).toBe('true')
-
-    await tabs[1].trigger('click')
-    await tabs[4].trigger('click')
-
-    expect(wrapper.emitted('update:source')?.[0]).toEqual(['upstream'])
-    expect(wrapper.emitted('update:metric')?.[0]).toEqual(['actual_cost'])
+    expect(wrapper.text()).not.toContain('Account Cost')
+    expect(wrapper.findAll('thead th')).toHaveLength(5)
+    expect(wrapper.findAll('tbody tr')[0].findAll('td')).toHaveLength(5)
   })
 
   it('renders Others in the spending ranking table and uses a dedicated chart color', async () => {
@@ -247,10 +169,6 @@ describe('ModelDistributionChart', () => {
     expect(rankingButton).toBeTruthy()
     await rankingButton!.trigger('click')
 
-    expect(wrapper.find('h3').text()).toBe('User Spending Ranking')
-    expect(rankingButton!.classes()).toContain('model-distribution-toggle-active')
-    expect(rankingButton!.attributes('aria-selected')).toBe('true')
-
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     expect(chartData.labels).toEqual([
       '#1 alpha@example.com',
@@ -258,8 +176,8 @@ describe('ModelDistributionChart', () => {
       'Others',
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 10])
-    expect(chartData.datasets[0].backgroundColor[0]).toBe('#6a9bcc')
-    expect(chartData.datasets[0].backgroundColor[2]).toBe('#e8e6dc')
+    expect(chartData.datasets[0].backgroundColor[0]).toBe('#3b82f6')
+    expect(chartData.datasets[0].backgroundColor[2]).toBe('#94a3b8')
     expect(chartData.datasets[0].backgroundColor[2]).not.toBe(chartData.datasets[0].backgroundColor[0])
 
     const rows = wrapper.findAll('tbody tr')

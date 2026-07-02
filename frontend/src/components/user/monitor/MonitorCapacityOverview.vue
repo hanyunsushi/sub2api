@@ -477,12 +477,18 @@ function formatBalance(value: number) {
     box-shadow 0.25s ease;
 }
 
-.monitor-capacity-card:hover,
-.monitor-capacity-card:focus-visible {
-  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
-  background: var(--anthropic-page, #faf9f5);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+.monitor-capacity-card:hover {
+  border-color: var(--atelier-material-edge-strong);
+  background: var(--atelier-surface-muted);
   outline: 0;
+  text-decoration: none;
+}
+
+.monitor-capacity-card:focus-visible {
+  border-color: var(--atelier-material-edge-strong);
+  background: var(--atelier-surface-muted);
+  outline: 2px solid var(--atelier-focus);
+  outline-offset: 2px;
   text-decoration: none;
 }
 

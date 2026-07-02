@@ -59,7 +59,7 @@
               <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.creditedAmount') }}</span>
               <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ order.order_type === 'balance' ? '$' + order.amount.toFixed(2) : formatGatewayAmount(order.amount) }}</span>
             </div>
-            <div class="flex justify-between">
+            <div v-if="hasPaymentMethod" class="flex justify-between">
               <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.paymentMethod') }}</span>
               <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t(paymentMethodI18nKey(order.payment_type), normalizedOrderPaymentType(order.payment_type)) }}</span>
             </div>
@@ -107,7 +107,7 @@ import {
   readPaymentRecoverySnapshot,
 } from '@/components/payment/paymentFlow'
 import { usePaymentStore } from '@/stores/payment'
-import { paymentAPI } from '@/api/payment'
+import { paymentAPI, type PublicOrderVerifyResult } from '@/api/payment'
 import type { PaymentOrder } from '@/types/payment'
 import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import { normalizePaymentMethodForDisplay, paymentMethodI18nKey } from './paymentUx'
@@ -171,6 +171,10 @@ const isPending = computed(() => {
   return isPendingStatus(order.value?.status)
 })
 
+const hasPaymentMethod = computed(() => {
+  return Boolean(order.value?.payment_type)
+})
+
 const statusTitle = computed(() => {
   if (isSuccess.value) {
     return t('payment.result.success')
@@ -193,6 +197,34 @@ function setResolvedOrder(nextOrder: PaymentOrder | null): void {
   order.value = nextOrder
   if (nextOrder?.currency) {
     currency.value = normalizePaymentCurrency(nextOrder.currency)
+  }
+}
+
+function publicResultToPaymentOrder(result: PublicOrderVerifyResult): PaymentOrder {
+  const partialOrder = result as Partial<PaymentOrder>
+  const amount = Number(partialOrder.amount ?? partialOrder.pay_amount ?? 0)
+  return {
+    id: Number(partialOrder.id ?? 0),
+    user_id: Number(partialOrder.user_id ?? 0),
+    amount,
+    pay_amount: Number(partialOrder.pay_amount ?? amount),
+    currency: partialOrder.currency,
+    fee_rate: Number(partialOrder.fee_rate ?? 0),
+    payment_type: partialOrder.payment_type ?? '',
+    out_trade_no: partialOrder.out_trade_no ?? result.out_trade_no,
+    status: (partialOrder.status ?? result.status) as PaymentOrder['status'],
+    order_type: partialOrder.order_type ?? 'balance',
+    created_at: partialOrder.created_at ?? result.created_at,
+    expires_at: partialOrder.expires_at ?? result.expires_at,
+    paid_at: partialOrder.paid_at,
+    completed_at: partialOrder.completed_at,
+    refund_amount: Number(partialOrder.refund_amount ?? 0),
+    refund_reason: partialOrder.refund_reason,
+    refund_requested_at: partialOrder.refund_requested_at,
+    refund_requested_by: partialOrder.refund_requested_by,
+    refund_request_reason: partialOrder.refund_request_reason,
+    plan_id: partialOrder.plan_id,
+    provider_instance_id: partialOrder.provider_instance_id,
   }
 }
 
@@ -259,7 +291,7 @@ function restoreRecoverySnapshot(context: {
 async function resolveOrderFromResumeToken(resumeToken: string): Promise<PaymentOrder | null> {
   try {
     const result = await paymentAPI.resolveOrderPublicByResumeToken(resumeToken)
-    return result.data
+    return publicResultToPaymentOrder(result.data)
   } catch (_err: unknown) {
     return null
   }
@@ -272,7 +304,7 @@ async function resolveOrderFromOutTradeNo(outTradeNo: string): Promise<PaymentOr
   } catch (_err: unknown) {
     try {
       const result = await paymentAPI.verifyOrderPublic(outTradeNo)
-      return result.data
+      return publicResultToPaymentOrder(result.data)
     } catch (_innerErr: unknown) {
       return null
     }

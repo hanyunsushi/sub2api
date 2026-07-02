@@ -66,7 +66,7 @@ const props = defineProps<{
   label: string
   utilization: number // Percentage (0-100+)
   resetsAt?: string | null
-  color: 'neutral' | 'success' | 'warning'
+  color: 'neutral' | 'success' | 'warning' | 'indigo' | 'emerald' | 'purple' | 'amber'
   windowStats?: WindowStats | null
   showNowWhenIdle?: boolean
 }>()
@@ -101,7 +101,11 @@ const labelClass = computed(() => {
   const colors = {
     neutral: 'border border-[var(--anthropic-border-subtle)] bg-transparent text-[var(--anthropic-muted)]',
     success: 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]',
-    warning: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
+    warning: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]',
+    indigo: 'border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] bg-transparent text-[var(--anthropic-info)]',
+    emerald: 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]',
+    purple: 'border border-[color-mix(in_srgb,var(--anthropic-neutral)_42%,transparent)] bg-transparent text-[var(--anthropic-muted)]',
+    amber: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
   }
   return colors[props.color]
 })

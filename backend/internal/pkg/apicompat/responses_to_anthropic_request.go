@@ -558,7 +558,12 @@ func convertResponsesToAnthropicTools(tools []ResponsesTool) []AnthropicTool {
 		if name == "" && t.Type == "web_search" {
 			name = "web_search"
 		}
+		toolType := t.Type
+		if t.Type == "function" || t.Type == "custom" || t.Type == "web_search" {
+			toolType = ""
+		}
 		out = append(out, AnthropicTool{
+			Type:        toolType,
 			Name:        name,
 			Description: t.Description,
 			InputSchema: normalizeAnthropicInputSchema(t.Parameters),
@@ -567,12 +572,39 @@ func convertResponsesToAnthropicTools(tools []ResponsesTool) []AnthropicTool {
 	return out
 }
 
-// normalizeAnthropicInputSchema ensures the input_schema has a "type" field.
+// normalizeAnthropicInputSchema ensures input_schema is a valid object schema.
 func normalizeAnthropicInputSchema(schema json.RawMessage) json.RawMessage {
-	if len(schema) == 0 || string(schema) == "null" {
+	const emptyObjectSchema = `{"type":"object","properties":{}}`
+
+	trimmed := strings.TrimSpace(string(schema))
+	if trimmed == "" || trimmed == "null" {
+		return json.RawMessage(emptyObjectSchema)
+	}
+
+	var m map[string]json.RawMessage
+	if err := json.Unmarshal(schema, &m); err != nil {
 		return json.RawMessage(`{"type":"object","properties":{}}`)
 	}
-	return schema
+
+	typeRaw, ok := m["type"]
+	if !ok || strings.TrimSpace(string(typeRaw)) == "" || string(typeRaw) == "null" {
+		m["type"] = json.RawMessage(`"object"`)
+	} else {
+		var typ string
+		if err := json.Unmarshal(typeRaw, &typ); err != nil || typ != "object" {
+			return json.RawMessage(emptyObjectSchema)
+		}
+	}
+
+	if _, ok := m["properties"]; !ok {
+		m["properties"] = json.RawMessage(`{}`)
+	}
+
+	out, err := json.Marshal(m)
+	if err != nil {
+		return json.RawMessage(emptyObjectSchema)
+	}
+	return out
 }
 
 // convertResponsesToAnthropicToolChoice maps Responses tool_choice to Anthropic format.

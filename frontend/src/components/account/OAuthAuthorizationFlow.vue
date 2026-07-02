@@ -1,95 +1,106 @@
 <template>
   <div
-    class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-info-bg)]"
+    class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/30"
   >
       <div class="flex items-start gap-4">
-      <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--anthropic-info)]">
+      <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-500">
         <Icon name="link" size="md" class="text-white" />
       </div>
       <div class="flex-1">
-        <h4 class="mb-3 font-semibold text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{ oauthTitle }}</h4>
+        <h4 class="mb-3 font-semibold text-blue-900 dark:text-blue-200">{{ oauthTitle }}</h4>
 
         <!-- Auth Method Selection -->
         <div v-if="showMethodSelection" class="mb-4">
-          <label class="mb-2 block text-sm font-medium text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+          <label class="mb-2 block text-sm font-medium text-blue-800 dark:text-blue-300">
             {{ methodLabel }}
           </label>
           <div class="flex flex-wrap gap-4">
             <label class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="manual"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
                 t('admin.accounts.oauth.manualAuth')
               }}</span>
             </label>
             <label v-if="showCookieOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-2"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="cookie"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
                 t('admin.accounts.oauth.cookieAutoAuth')
               }}</span>
             </label>
             <label v-if="showRefreshTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-3"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="refresh_token"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
                 t(getOAuthKey('refreshTokenAuth'))
               }}</span>
             </label>
             <label v-if="showMobileRefreshTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-4"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="mobile_refresh_token"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
-                t('admin.accounts.oauth.openai.mobileRefreshTokenAuth', '手动输入 Mobile RT')
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
+                t('admin.accounts.oauth.openai.mobileRefreshTokenAuth')
               }}</span>
             </label>
             <label v-if="showSessionTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-5"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="session_token"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
                 t(getOAuthKey('sessionTokenAuth'))
               }}</span>
             </label>
             <label v-if="showAccessTokenOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-6"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="access_token"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
-                t('admin.accounts.oauth.openai.accessTokenAuth', '手动输入 AT')
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
+                t('admin.accounts.oauth.openai.accessTokenAuth')
               }}</span>
             </label>
             <label v-if="showCodexSessionImportOption" class="flex cursor-pointer items-center gap-2">
-              <input data-testid="account-o-auth-authorization-flow-input-input-method-7"
+              <input
                 v-model="inputMethod"
                 type="radio"
                 value="codex_session"
-                class="text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
+                class="text-blue-600 focus:ring-blue-500"
               />
-              <span class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">{{
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
                 t('admin.accounts.oauth.openai.codexSessionAuth')
+              }}</span>
+            </label>
+            <label v-if="showCodexPatOption" class="flex cursor-pointer items-center gap-2">
+              <input
+                v-model="inputMethod"
+                type="radio"
+                value="codex_pat"
+                class="text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
+                t('admin.accounts.oauth.openai.codexPatAuth')
               }}</span>
             </label>
           </div>
@@ -98,27 +109,27 @@
         <!-- Refresh Token Input (OpenAI / Antigravity / Mobile RT) -->
         <div v-if="inputMethod === 'refresh_token' || inputMethod === 'mobile_refresh_token'" class="space-y-4">
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
-            <p class="mb-3 text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+            <p class="mb-3 text-sm text-blue-700 dark:text-blue-300">
               {{ t(getOAuthKey('refreshTokenDesc')) }}
             </p>
 
             <!-- Refresh Token Input -->
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
               >
-                <Icon name="key" size="sm" class="text-[var(--anthropic-info)]" />
+                <Icon name="key" size="sm" class="text-blue-500" />
                 Refresh Token
                 <span
                   v-if="parsedRefreshTokenCount > 1"
-                  class="rounded-full bg-[var(--anthropic-info)] px-2 py-0.5 text-xs text-white"
+                  class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedRefreshTokenCount }) }}
                 </span>
               </label>
-              <textarea data-testid="account-o-auth-authorization-flow-textarea-refresh-token-input"
+              <textarea
                 v-model="refreshTokenInput"
                 rows="3"
                 class="input w-full resize-y font-mono text-sm"
@@ -126,7 +137,7 @@
               ></textarea>
               <p
                 v-if="parsedRefreshTokenCount > 1"
-                class="mt-1 text-xs text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]"
+                class="mt-1 text-xs text-blue-600 dark:text-blue-400"
               >
                 {{ t('admin.accounts.oauth.batchCreateAccounts', { count: parsedRefreshTokenCount }) }}
               </p>
@@ -143,7 +154,7 @@
             </div>
 
             <!-- Validate Button -->
-            <button data-testid="account-o-auth-authorization-flow-button-handle-validate-refresh-token"
+            <button
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !refreshTokenInput.trim()"
@@ -179,36 +190,36 @@
           </div>
         </div>
 
-        <!-- Codex JSON / AT 批量输入 -->
+        <!-- Codex OAuth/session JSON batch import -->
         <div v-if="inputMethod === 'codex_session'" class="space-y-4">
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
-            <p class="mb-3 text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+            <p class="mb-3 text-sm text-blue-700 dark:text-blue-300">
               {{ t('admin.accounts.oauth.openai.codexSessionDesc') }}
             </p>
 
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
               >
-                <Icon name="key" size="sm" class="text-[var(--anthropic-info)]" />
+                <Icon name="key" size="sm" class="text-blue-500" />
                 {{ t('admin.accounts.oauth.openai.codexSessionInputLabel') }}
                 <span
                   v-if="parsedCodexSessionCount > 1"
-                  class="rounded-full bg-[var(--anthropic-info)] px-2 py-0.5 text-xs text-white"
+                  class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedCodexSessionCount }) }}
                 </span>
               </label>
-              <textarea data-testid="account-o-auth-authorization-flow-textarea-codex-session-input"
+              <textarea
                 v-model="codexSessionInput"
                 rows="8"
                 class="input w-full resize-y font-mono text-sm"
                 :placeholder="t('admin.accounts.oauth.openai.codexSessionPlaceholder')"
                 spellcheck="false"
               ></textarea>
-              <p class="mt-1 text-xs text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+              <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
                 {{ t('admin.accounts.oauth.openai.codexSessionHint') }}
               </p>
             </div>
@@ -222,7 +233,7 @@
               </p>
             </div>
 
-            <button data-testid="account-o-auth-authorization-flow-button-handle-import-codex-session"
+            <button
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !codexSessionInput.trim()"
@@ -258,32 +269,105 @@
           </div>
         </div>
 
+        <!-- Codex Personal Access Token -->
+        <div v-if="inputMethod === 'codex_pat'" class="space-y-4">
+          <div
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
+          >
+            <p class="mb-3 text-sm text-blue-700 dark:text-blue-300">
+              {{ t('admin.accounts.oauth.openai.codexPatDesc') }}
+            </p>
+
+            <div class="mb-4">
+              <label
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                <Icon name="key" size="sm" class="text-blue-500" />
+                {{ t('admin.accounts.oauth.openai.codexPatInputLabel') }}
+              </label>
+              <textarea
+                v-model="codexPATInput"
+                rows="3"
+                class="input w-full resize-y font-mono text-sm"
+                :placeholder="t('admin.accounts.oauth.openai.codexPatPlaceholder')"
+                spellcheck="false"
+              ></textarea>
+              <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                {{ t('admin.accounts.oauth.openai.codexPatHint') }}
+              </p>
+            </div>
+
+            <div
+              v-if="error"
+              class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-700 dark:bg-red-900/30"
+            >
+              <p class="whitespace-pre-line text-sm text-red-600 dark:text-red-400">
+                {{ error }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary w-full"
+              :disabled="loading || !codexPATInput.trim()"
+              @click="handleImportCodexPAT"
+            >
+              <svg
+                v-if="loading"
+                class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <Icon v-else name="sparkles" size="sm" class="mr-2" />
+              {{
+                loading
+                  ? t('admin.accounts.oauth.openai.validating')
+                  : t('admin.accounts.oauth.openai.codexPatImportAndCreate')
+              }}
+            </button>
+          </div>
+        </div>
+
         <!-- Cookie Auto-Auth Form -->
         <div v-if="inputMethod === 'cookie'" class="space-y-4">
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
-            <p class="mb-3 text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+            <p class="mb-3 text-sm text-blue-700 dark:text-blue-300">
               {{ t('admin.accounts.oauth.cookieAutoAuthDesc') }}
             </p>
 
             <!-- sessionKey Input -->
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
               >
-                <Icon name="key" size="sm" class="text-[var(--anthropic-info)]" />
+                <Icon name="key" size="sm" class="text-blue-500" />
                 {{ t('admin.accounts.oauth.sessionKey') }}
                 <span
                   v-if="parsedKeyCount > 1 && allowMultiple"
-                  class="rounded-full bg-[var(--anthropic-info)] px-2 py-0.5 text-xs text-white"
+                  class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedKeyCount }) }}
                 </span>
-                <button data-testid="account-o-auth-authorization-flow-button-show-help-dialog-show-help-dialog"
+                <button
                   v-if="showHelp"
                   type="button"
-                  class="text-[var(--anthropic-info)] hover:text-[var(--anthropic-info)]"
+                  class="text-blue-500 hover:text-blue-600"
                   @click="showHelpDialog = !showHelpDialog"
                 >
                   <svg
@@ -301,7 +385,7 @@
                   </svg>
                 </button>
               </label>
-              <textarea data-testid="account-o-auth-authorization-flow-textarea-session-key-input"
+              <textarea
                 v-model="sessionKeyInput"
                 rows="3"
                 class="input w-full resize-y font-mono text-sm"
@@ -313,7 +397,7 @@
               ></textarea>
               <p
                 v-if="parsedKeyCount > 1 && allowMultiple"
-                class="mt-1 text-xs text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]"
+                class="mt-1 text-xs text-blue-600 dark:text-blue-400"
               >
                 {{ t('admin.accounts.oauth.batchCreateAccounts', { count: parsedKeyCount }) }}
               </p>
@@ -354,7 +438,7 @@
             </div>
 
             <!-- Auth Button -->
-            <button data-testid="account-o-auth-authorization-flow-button-handle-cookie-auth"
+            <button
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !sessionKeyInput.trim()"
@@ -392,32 +476,32 @@
 
         <!-- Manual Authorization Flow -->
         <div v-if="inputMethod === 'manual'" class="space-y-4">
-          <p class="mb-4 text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+          <p class="mb-4 text-sm text-blue-800 dark:text-blue-300">
             {{ oauthFollowSteps }}
           </p>
 
           <!-- Step 1: Generate Auth URL -->
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--anthropic-info)] text-xs font-bold text-white"
+                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
               >
                 1
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+                <p class="mb-2 font-medium text-blue-900 dark:text-blue-200">
                   {{ oauthStep1GenerateUrl }}
                 </p>
                 <div v-if="showProjectId && platform === 'gemini'" class="mb-3">
                   <label class="input-label flex items-center gap-2">
                     {{ t('admin.accounts.oauth.gemini.projectIdLabel') }}
-                    <a data-testid="account-o-auth-authorization-flow-link-a"
+                    <a
                       href="https://console.cloud.google.com/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 text-xs font-normal text-[var(--anthropic-info)] hover:text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]"
+                      class="inline-flex items-center gap-1 text-xs font-normal text-blue-500 hover:text-blue-600 dark:text-blue-400"
                     >
                       <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -425,17 +509,17 @@
                       {{ t('admin.accounts.oauth.gemini.howToGetProjectId') }}
                     </a>
                   </label>
-                  <input data-testid="account-o-auth-authorization-flow-input-project-id"
+                  <input
                     v-model="projectId"
                     type="text"
                     class="input w-full font-mono text-sm"
                     :placeholder="t('admin.accounts.oauth.gemini.projectIdPlaceholder')"
                   />
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     {{ t('admin.accounts.oauth.gemini.projectIdHint') }}
                   </p>
                 </div>
-                <button data-testid="account-o-auth-authorization-flow-button-handle-generate-url"
+                <button
                   v-if="!authUrl"
                   type="button"
                   :disabled="loading"
@@ -467,13 +551,13 @@
                 </button>
                 <div v-else class="space-y-3">
                   <div class="flex items-center gap-2">
-                    <input data-testid="account-o-auth-authorization-flow-input-text"
+                    <input
                       :value="authUrl"
                       readonly
                       type="text"
-                      class="input flex-1 bg-[var(--anthropic-section)] font-mono text-xs dark:bg-[var(--anthropic-section)]"
+                      class="input flex-1 bg-gray-50 font-mono text-xs dark:bg-gray-700"
                     />
-                    <button data-testid="account-o-auth-authorization-flow-button-handle-copy-url"
+                    <button
                       type="button"
                       class="btn btn-secondary p-2"
                       title="Copy URL"
@@ -502,9 +586,9 @@
                       />
                     </button>
                   </div>
-                  <button data-testid="account-o-auth-authorization-flow-button-handle-regenerate"
+                  <button
                     type="button"
-                    class="text-xs text-[var(--anthropic-info)] hover:text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]"
+                    class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
                     @click="handleRegenerate"
                   >
                     <Icon name="refresh" size="xs" class="mr-1 inline" />
@@ -517,24 +601,24 @@
 
           <!-- Step 2: Open URL and authorize -->
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--anthropic-info)] text-xs font-bold text-white"
+                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
               >
                 2
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+                <p class="mb-2 font-medium text-blue-900 dark:text-blue-200">
                   {{ oauthStep2OpenUrl }}
                 </p>
-                <p class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+                <p class="text-sm text-blue-700 dark:text-blue-300">
                   {{ oauthOpenUrlDesc }}
                 </p>
-                <!-- OpenAI Important Notice -->
+                <!-- Local callback notice -->
                 <div
-                  v-if="isOpenAI"
+                  v-if="showLocalCallbackNotice"
                   class="mt-2 rounded border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/30"
                 >
                   <p
@@ -558,34 +642,34 @@
 
           <!-- Step 3: Enter authorization code -->
           <div
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-lg border border-blue-300 bg-white/80 p-4 dark:border-blue-600 dark:bg-gray-800/80"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--anthropic-info)] text-xs font-bold text-white"
+                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
               >
                 3
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+                <p class="mb-2 font-medium text-blue-900 dark:text-blue-200">
                   {{ oauthStep3EnterCode }}
                 </p>
                 <p
-                  class="mb-3 text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]"
+                  class="mb-3 text-sm text-blue-700 dark:text-blue-300"
                   v-text="oauthAuthCodeDesc"
                 ></p>
                 <div>
                   <label class="input-label">
-                    <Icon name="key" size="sm" class="mr-1 inline text-[var(--anthropic-info)]" />
+                    <Icon name="key" size="sm" class="mr-1 inline text-blue-500" />
                     {{ oauthAuthCode }}
                   </label>
-                  <textarea data-testid="account-o-auth-authorization-flow-textarea-auth-code-input"
+                  <textarea
                     v-model="authCodeInput"
                     rows="3"
                     class="input w-full resize-none font-mono text-sm"
                     :placeholder="oauthAuthCodePlaceholder"
                   ></textarea>
-                  <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     <Icon name="infoCircle" size="xs" class="mr-1 inline" />
                     {{ oauthAuthCodeHint }}
                   </p>
@@ -652,6 +736,7 @@ interface Props {
   showSessionTokenOption?: boolean
   showAccessTokenOption?: boolean
   showCodexSessionImportOption?: boolean
+  showCodexPatOption?: boolean
   platform?: AccountPlatform // Platform type for different UI/text
   showProjectId?: boolean // New prop to control project ID visibility
 }
@@ -671,6 +756,7 @@ const props = withDefaults(defineProps<Props>(), {
   showSessionTokenOption: false,
   showAccessTokenOption: false,
   showCodexSessionImportOption: false,
+  showCodexPatOption: false,
   platform: 'anthropic',
   showProjectId: true
 })
@@ -684,18 +770,20 @@ const emit = defineEmits<{
   'validate-session-token': [sessionToken: string]
   'import-access-token': [accessToken: string]
   'import-codex-session': [content: string]
+  'import-codex-pat': [accessToken: string]
   'update:inputMethod': [method: AuthInputMethod]
 }>()
 
 const { t } = useI18n()
 
-const isOpenAI = computed(() => props.platform === 'openai')
+const showLocalCallbackNotice = computed(() => props.platform === 'openai' || props.platform === 'grok')
 
 // Get translation key based on platform
 const getOAuthKey = (key: string) => {
   if (props.platform === 'openai') return `admin.accounts.oauth.openai.${key}`
   if (props.platform === 'gemini') return `admin.accounts.oauth.gemini.${key}`
   if (props.platform === 'antigravity') return `admin.accounts.oauth.antigravity.${key}`
+  if (props.platform === 'grok') return `admin.accounts.oauth.grok.${key}`
   return `admin.accounts.oauth.${key}`
 }
 
@@ -714,6 +802,7 @@ const oauthAuthCodeHint = computed(() => t(getOAuthKey('authCodeHint')))
 const oauthImportantNotice = computed(() => {
   if (props.platform === 'openai') return t('admin.accounts.oauth.openai.importantNotice')
   if (props.platform === 'antigravity') return t('admin.accounts.oauth.antigravity.importantNotice')
+  if (props.platform === 'grok') return t('admin.accounts.oauth.grok.importantNotice')
   return ''
 })
 
@@ -724,12 +813,13 @@ const sessionKeyInput = ref('')
 const refreshTokenInput = ref('')
 const sessionTokenInput = ref('')
 const codexSessionInput = ref('')
+const codexPATInput = ref('')
 const showHelpDialog = ref(false)
 const oauthState = ref('')
 const projectId = ref('')
 
 // Computed: show method selection when either cookie or refresh token option is enabled
-const showMethodSelection = computed(() => props.showCookieOption || props.showRefreshTokenOption || props.showMobileRefreshTokenOption || props.showSessionTokenOption || props.showAccessTokenOption || props.showCodexSessionImportOption)
+const showMethodSelection = computed(() => props.showCookieOption || props.showRefreshTokenOption || props.showMobileRefreshTokenOption || props.showSessionTokenOption || props.showAccessTokenOption || props.showCodexSessionImportOption || props.showCodexPatOption)
 
 // Clipboard
 const { copied, copyToClipboard } = useClipboard()
@@ -765,20 +855,20 @@ watch(inputMethod, (newVal) => {
   emit('update:inputMethod', newVal)
 })
 
-// Auto-extract code from callback URL (OpenAI/Gemini/Antigravity)
+// Auto-extract code from callback URL (OpenAI/Gemini/Antigravity/Grok)
 // e.g., http://localhost:8085/callback?code=xxx...&state=...
 watch(authCodeInput, (newVal) => {
-  if (props.platform !== 'openai' && props.platform !== 'gemini' && props.platform !== 'antigravity') return
+  if (props.platform !== 'openai' && props.platform !== 'gemini' && props.platform !== 'antigravity' && props.platform !== 'grok') return
 
   const trimmed = newVal.trim()
   // Check if it looks like a URL with code parameter
-  if (trimmed.includes('?') && trimmed.includes('code=')) {
+  if (trimmed.includes('code=')) {
     try {
       // Try to parse as URL
-      const url = new URL(trimmed)
+      const url = trimmed.includes('?') ? new URL(trimmed) : new URL(`http://localhost/callback?${trimmed.replace(/^\?/, '')}`)
       const code = url.searchParams.get('code')
       const stateParam = url.searchParams.get('state')
-      if ((props.platform === 'openai' || props.platform === 'gemini' || props.platform === 'antigravity') && stateParam) {
+      if ((props.platform === 'openai' || props.platform === 'gemini' || props.platform === 'antigravity' || props.platform === 'grok') && stateParam) {
         oauthState.value = stateParam
       }
       if (code && code !== trimmed) {
@@ -789,7 +879,7 @@ watch(authCodeInput, (newVal) => {
       // If URL parsing fails, try regex extraction
       const match = trimmed.match(/[?&]code=([^&]+)/)
       const stateMatch = trimmed.match(/[?&]state=([^&]+)/)
-      if ((props.platform === 'openai' || props.platform === 'gemini' || props.platform === 'antigravity') && stateMatch && stateMatch[1]) {
+      if ((props.platform === 'openai' || props.platform === 'gemini' || props.platform === 'antigravity' || props.platform === 'grok') && stateMatch && stateMatch[1]) {
         oauthState.value = stateMatch[1]
       }
       if (match && match[1] && match[1] !== trimmed) {
@@ -837,6 +927,12 @@ const handleImportCodexSession = () => {
   }
 }
 
+const handleImportCodexPAT = () => {
+  if (codexPATInput.value.trim()) {
+    emit('import-codex-pat', codexPATInput.value.trim())
+  }
+}
+
 // Expose methods and state
 defineExpose({
   authCode: authCodeInput,
@@ -846,6 +942,7 @@ defineExpose({
   refreshToken: refreshTokenInput,
   sessionToken: sessionTokenInput,
   codexSession: codexSessionInput,
+  codexPAT: codexPATInput,
   inputMethod,
   reset: () => {
     authCodeInput.value = ''
@@ -855,6 +952,7 @@ defineExpose({
     refreshTokenInput.value = ''
     sessionTokenInput.value = ''
     codexSessionInput.value = ''
+    codexPATInput.value = ''
     inputMethod.value = 'manual'
     showHelpDialog.value = false
   }
