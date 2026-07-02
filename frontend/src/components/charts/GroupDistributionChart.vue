@@ -92,7 +92,7 @@
                   ${{ formatCost(group.actual_cost) }}
                 </td>
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                  ${{ formatCost(group.account_cost) }}
+                  ${{ formatCost(group.account_cost ?? 0) }}
                 </td>
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   ${{ formatCost(group.cost) }}

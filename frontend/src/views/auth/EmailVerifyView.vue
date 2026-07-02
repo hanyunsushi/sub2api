@@ -35,7 +35,8 @@
           <label for="code" class="input-label text-center">
             {{ t('auth.verificationCode') }}
           </label>
-          <input data-testid="auth-email-verify-input-verify-code"
+          <input
+            data-testid="auth-email-verify-input-verify-code"
             id="code"
             v-model="verifyCode"
             type="text"
@@ -105,7 +106,8 @@
 
         <!-- Resend Code -->
         <div class="text-center">
-          <button data-testid="auth-email-verify-button-button"
+          <button
+            data-testid="auth-email-verify-button-button"
             v-if="countdown > 0"
             type="button"
             disabled
@@ -113,7 +115,8 @@
           >
             {{ t('auth.resendCountdown', { countdown }) }}
           </button>
-          <button data-testid="auth-email-verify-button-handle-resend-code"
+          <button
+            data-testid="auth-email-verify-button-handle-resend-code"
             v-else
             type="button"
             @click="handleResendCode"
@@ -134,7 +137,8 @@
 
     <!-- Footer -->
     <template #footer>
-      <button data-testid="auth-email-verify-button-handle-back"
+      <button
+        data-testid="auth-email-verify-button-handle-back"
         @click="handleBack"
         class="flex items-center gap-2 text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:text-dark-400 dark:hover:text-gray-300"
       >
@@ -504,11 +508,15 @@ async function handleVerify(): Promise<void> {
         email: email.value,
         password: password.value,
         verify_code: verifyCode.value.trim(),
-        ...(invitationCode.value ? { invitation_code: invitationCode.value } : {}),
-        ...oauthAffiliatePayload(affCode.value || loadAffiliateReferralCode())
+        ...oauthAffiliatePayload(affCode.value || loadAffiliateReferralCode()),
       }
-      if (pendingAdoptionDecision.value) {
+      if (invitationCode.value) {
+        payload.invitation_code = invitationCode.value
+      }
+      if (pendingAdoptionDecision.value?.adoptDisplayName !== undefined) {
         payload.adopt_display_name = pendingAdoptionDecision.value.adoptDisplayName
+      }
+      if (pendingAdoptionDecision.value?.adoptAvatar !== undefined) {
         payload.adopt_avatar = pendingAdoptionDecision.value.adoptAvatar
       }
 

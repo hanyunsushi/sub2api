@@ -2,8 +2,8 @@
   <div class="space-y-4">
     <div class="card p-4 order-filter-card table-page-filter-section">
       <div class="table-filter-shell order-table-filter-shell flex flex-wrap items-center gap-3">
-        <div class="flex-1 sm:max-w-64">
-          <input data-testid="admin-payment-admin-order-table-input-search-query"
+        <div class="table-filter-left flex flex-1 sm:max-w-64">
+          <input
             v-model="searchQuery"
             type="text"
             :placeholder="t('payment.admin.searchOrders')"
@@ -29,14 +29,13 @@
           class="w-36"
           @change="emitFiltersChanged"
         />
-        <div class="table-filter-actions flex flex-1 flex-wrap items-center justify-end gap-3">
-          <button data-testid="admin-payment-admin-order-table-button-emit-refresh"
+        <div class="table-filter-actions flex flex-1 flex-wrap items-center justify-end gap-2">
+          <button
             @click="emit('refresh')"
             :disabled="loading"
             class="btn btn-primary anthropic-refresh-action-button order-table-refresh-button"
-            :title="t('common.refresh')"
           >
-            {{ t("common.refresh") }}
+            {{ t('common.refresh') }}
           </button>
         </div>
       </div>
@@ -48,23 +47,23 @@
       </template>
 
       <template #cell-user_id="{ value }">
-        <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">#{{ value }}</span>
+        <span class="text-sm text-gray-600 dark:text-gray-400">#{{ value }}</span>
       </template>
 
       <template #cell-pay_amount="{ value, row }">
         <div class="text-sm">
-          <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">¥{{ value.toFixed(2) }}</span>
-          <span v-if="row.fee_rate > 0" class="ml-1 text-xs text-[var(--anthropic-muted)]" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
+          <span class="font-medium text-gray-900 dark:text-white">{{ paymentAmountSymbol(row) }}{{ value.toFixed(2) }}</span>
+          <span v-if="row.fee_rate > 0" class="ml-1 text-xs text-gray-400" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
             ({{ row.fee_rate }}%)
           </span>
-          <div v-if="row.amount !== row.pay_amount" class="text-xs text-[var(--anthropic-muted)]">
-            {{ t('payment.orders.creditedAmount') }}: {{ row.order_type === 'balance' ? '$' : '¥' }}{{ row.amount.toFixed(2) }}
+          <div v-if="row.amount !== row.pay_amount" class="text-xs text-gray-500">
+            {{ t('payment.orders.creditedAmount') }}: {{ creditedAmountSymbol }}{{ row.amount.toFixed(2) }}
           </div>
         </div>
       </template>
 
       <template #cell-payment_type="{ value }">
-        <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="text-sm text-gray-700 dark:text-gray-300">
           {{ t('payment.methods.' + value, value) }}
         </span>
       </template>
@@ -76,44 +75,44 @@
       </template>
 
       <template #cell-order_type="{ value }">
-        <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="text-sm text-gray-700 dark:text-gray-300">
           {{ t('payment.admin.' + value + 'Order', value) }}
         </span>
       </template>
 
       <template #cell-created_at="{ value }">
-        <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatDateTime(value) }}</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDateTime(value) }}</span>
       </template>
 
       <template #cell-actions="{ row }">
         <div class="flex items-center gap-2">
-          <button data-testid="admin-payment-admin-order-table-button-emit-detail-row"
+          <button
             @click="emit('detail', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]/50 dark:hover:text-gray-300"
+            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
           >
             <Icon name="eye" size="sm" />
             <span class="text-xs">{{ t('common.view') }}</span>
           </button>
-          <button data-testid="admin-payment-admin-order-table-button-emit-cancel-row"
+          <button
             v-if="row.status === 'PENDING'"
             @click="emit('cancel', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-yellow-50 hover:text-yellow-600 dark:hover:bg-yellow-900/20 dark:hover:text-yellow-400"
+            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-yellow-50 hover:text-yellow-600 dark:hover:bg-yellow-900/20 dark:hover:text-yellow-400"
           >
             <Icon name="x" size="sm" />
             <span class="text-xs">{{ t('payment.orders.cancel') }}</span>
           </button>
-          <button data-testid="admin-payment-admin-order-table-button-emit-retry-row"
+          <button
             v-if="row.status === 'FAILED'"
             @click="emit('retry', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]"
+            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
           >
             <Icon name="refresh" size="sm" />
             <span class="text-xs">{{ t('payment.admin.retry') }}</span>
           </button>
-          <button data-testid="admin-payment-admin-order-table-button-emit-refund-row"
+          <button
             v-if="canRefundRow(row)"
             @click="emit('refund', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
           >
             <Icon name="dollar" size="sm" />
             <span class="text-xs">{{ t('payment.admin.refund') }}</span>
@@ -143,6 +142,7 @@ import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { statusBadgeClass, canRefund, formatOrderDateTime } from '@/components/payment/orderUtils'
+import { currencySymbol } from '@/components/payment/currency'
 
 const { t } = useI18n()
 
@@ -167,6 +167,11 @@ const emit = defineEmits<{
 
 const searchQuery = ref('')
 const filters = reactive({ status: '', payment_type: '', order_type: '' })
+const creditedAmountSymbol = currencySymbol('USD')
+
+function paymentAmountSymbol(order: PaymentOrder): string {
+  return currencySymbol(order.currency)
+}
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 function handleSearch() {
@@ -204,6 +209,7 @@ const statusFilterOptions = computed(() => [
   { value: 'FAILED', label: t('payment.status.failed') },
   { value: 'REFUNDED', label: t('payment.status.refunded') },
   { value: 'REFUND_REQUESTED', label: t('payment.status.refund_requested') },
+  { value: 'REFUND_PENDING', label: t('payment.status.refund_pending') },
   { value: 'REFUND_FAILED', label: t('payment.status.refund_failed') },
 ])
 

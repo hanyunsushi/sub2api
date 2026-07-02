@@ -172,7 +172,6 @@ export interface CustomMenuItem {
   page_slug?: string
   visibility: 'user' | 'admin'
   sort_order: number
-  open_mode?: 'iframe' | 'redirect'
 }
 
 export interface CustomEndpoint {
@@ -210,6 +209,10 @@ export interface PublicSettings {
   doc_url: string
   home_content: string
   hide_ccs_import_button: boolean
+  appearance_theme_default?: 'cloudflare' | 'anthropic'
+  ai_logo_cdn_base_url?: string
+  custom_ai_logo_presets?: string[]
+  custom_menu_svg_icon_presets?: string[]
   payment_enabled: boolean
   risk_control_enabled: boolean
   table_default_page_size: number
@@ -228,6 +231,10 @@ export interface PublicSettings {
   google_oauth_enabled: boolean
   backend_mode_enabled: boolean
   version: string
+  // 服务器全局时区（IANA 名称与当前 UTC 偏移），高峰时段等服务端本地时间窗口的展示标注用；
+  // 可选：注入的 __APP_CONFIG__ 旧缓存可能缺失
+  server_timezone?: string
+  server_utc_offset?: string
   balance_low_notify_enabled: boolean
   account_quota_notify_enabled: boolean
   balance_low_notify_threshold: number
@@ -238,10 +245,6 @@ export interface PublicSettings {
   available_channels_enabled: boolean
   service_quota_enabled: boolean
   affiliate_enabled: boolean
-  appearance_theme_default: 'cloudflare' | 'anthropic'
-  ai_logo_cdn_base_url?: string
-  custom_ai_logo_presets?: string[]
-  custom_menu_svg_icon_presets?: string[]
   allow_user_view_error_requests?: boolean
 }
 
@@ -508,7 +511,7 @@ export interface OpenAIMessagesDispatchModelConfig {
 export interface Group {
   id: number
   name: string
-  logo_url?: string
+  logo_url?: string | null
   description: string | null
   platform: GroupPlatform
   rate_multiplier: number
@@ -526,6 +529,11 @@ export interface Group {
   image_price_1k: number | null
   image_price_2k: number | null
   image_price_4k: number | null
+  // 高峰时段倍率配置
+  peak_rate_enabled: boolean
+  peak_start: string
+  peak_end: string
+  peak_rate_multiplier: number
   // Claude Code 客户端限制
   claude_code_only: boolean
   fallback_group_id: number | null
@@ -575,7 +583,7 @@ export interface ApiKey {
   user_id: number
   key: string
   name: string
-  logo_url?: string
+  logo_url?: string | null
   group_id: number | null
   status: 'active' | 'inactive' | 'quota_exhausted' | 'expired'
   ip_whitelist: string[]
@@ -617,7 +625,7 @@ export interface CreateApiKeyRequest {
 
 export interface UpdateApiKeyRequest {
   name?: string
-  logo_url?: string
+  logo_url?: string | null
   group_id?: number | null
   status?: 'active' | 'inactive'
   ip_whitelist?: string[]
@@ -633,7 +641,6 @@ export interface UpdateApiKeyRequest {
 
 export interface CreateGroupRequest {
   name: string
-  logo_url?: string
   description?: string | null
   platform?: GroupPlatform
   rate_multiplier?: number
@@ -648,6 +655,10 @@ export interface CreateGroupRequest {
   image_price_1k?: number | null
   image_price_2k?: number | null
   image_price_4k?: number | null
+  peak_rate_enabled?: boolean
+  peak_start?: string
+  peak_end?: string
+  peak_rate_multiplier?: number
   claude_code_only?: boolean
   fallback_group_id?: number | null
   fallback_group_id_on_invalid_request?: number | null
@@ -668,7 +679,6 @@ export interface CreateGroupRequest {
 
 export interface UpdateGroupRequest {
   name?: string
-  logo_url?: string
   description?: string | null
   platform?: GroupPlatform
   rate_multiplier?: number
@@ -684,6 +694,10 @@ export interface UpdateGroupRequest {
   image_price_1k?: number | null
   image_price_2k?: number | null
   image_price_4k?: number | null
+  peak_rate_enabled?: boolean
+  peak_start?: string
+  peak_end?: string
+  peak_rate_multiplier?: number
   claude_code_only?: boolean
   fallback_group_id?: number | null
   fallback_group_id_on_invalid_request?: number | null
@@ -868,7 +882,7 @@ export interface Account {
 
   // Rate limit & scheduling fields
   schedulable: boolean
-  schedule_locked: boolean
+  schedule_locked?: boolean
   rate_limited_at: string | null
   rate_limit_reset_at: string | null
   overload_until: string | null
@@ -927,12 +941,22 @@ export interface Account {
   quota_reset_timezone?: string | null
   quota_daily_reset_at?: string | null
   quota_weekly_reset_at?: string | null
+  external_quota_token_stats?: Record<string, WindowStats | null>
 
   // 运行时状态（仅当启用对应限制时返回）
   current_window_cost?: number | null // 当前窗口费用
   active_sessions?: number | null // 当前活跃会话数
   current_rpm?: number | null // 当前分钟 RPM 计数
-  external_quota_token_stats?: Record<string, WindowStats> | null
+
+  // 影子账号关系（spark 维度影子）
+  parent_account_id?: number | null
+  quota_dimension?: string
+  // 影子账号回填的母账号信息（仅影子非空）
+  parent_email?: string
+  parent_plan_type?: string
+  parent_privacy_mode?: string
+  parent_subscription_expires_at?: string
+  parent_chatgpt_account_id?: string
 }
 
 // Account Usage types
@@ -959,6 +983,13 @@ export interface AntigravityModelQuota {
   reset_time: string  // 重置时间 ISO8601
 }
 
+export interface GrokQuotaWindow {
+  limit?: number
+  remaining?: number
+  reset_unix?: number
+  reset_at?: string
+}
+
 export interface AccountUsageInfo {
   source?: 'passive' | 'active'
   updated_at: string | null
@@ -972,6 +1003,15 @@ export interface AccountUsageInfo {
   gemini_pro_minute?: UsageProgress | null
   gemini_flash_minute?: UsageProgress | null
   antigravity_quota?: Record<string, AntigravityModelQuota> | null
+  grok_request_quota?: GrokQuotaWindow | null
+  grok_token_quota?: GrokQuotaWindow | null
+  grok_retry_after_seconds?: number | null
+  grok_entitlement_status?: string
+  grok_quota_snapshot_state?: string
+  grok_last_quota_probe_at?: string
+  grok_last_headers_seen_at?: string
+  grok_last_status_code?: number
+  grok_local_usage?: WindowStats | null
   ai_credits?: Array<{
     credit_type?: string
     amount?: number
@@ -1126,6 +1166,8 @@ export interface AdminDataPayload {
   exported_at: string
   proxies: AdminDataProxy[]
   accounts: AdminDataAccount[]
+  // 导出时被排除的 spark 影子账号数量(影子不持凭据、其调度配置不在备份范围)。
+  skipped_shadows?: number
 }
 
 export interface AdminDataProxy {
@@ -1186,6 +1228,24 @@ export interface CodexSessionImportRequest {
   credential_extras?: Record<string, unknown>
   extra?: Record<string, unknown>
   update_existing?: boolean
+  skip_default_group_bind?: boolean
+  confirm_mixed_channel_risk?: boolean
+}
+
+export interface OpenAICodexPATCreateRequest {
+  access_token: string
+  name?: string
+  notes?: string | null
+  group_ids?: number[]
+  proxy_id?: number | null
+  concurrency?: number
+  priority?: number
+  rate_multiplier?: number
+  load_factor?: number | null
+  expires_at?: number | null
+  auto_pause_on_expired?: boolean
+  credential_extras?: Record<string, unknown>
+  extra?: Record<string, unknown>
   skip_default_group_bind?: boolean
   confirm_mixed_channel_risk?: boolean
 }
@@ -1271,6 +1331,7 @@ export interface UsageLog {
 
   // User-Agent
   user_agent: string | null
+  ip_address?: string | null
 
   // Cache TTL Override
   cache_ttl_overridden: boolean
@@ -1303,9 +1364,6 @@ export interface AdminUsageLog extends UsageLog {
   // 渠道 ID 和计费等级（仅管理员可见）
   channel_id?: number | null
   billing_tier?: string | null
-
-  // 用户请求 IP（仅管理员可见）
-  ip_address?: string | null
 
   // 最小账号信息（仅管理员接口返回）
   account?: UsageLogAccountSummary
@@ -1449,6 +1507,9 @@ export interface UsageStatsResponse {
   total_actual_cost: number // 实际扣除
   average_duration_ms: number
   models?: Record<string, number>
+  endpoints?: EndpointStat[]
+  upstream_endpoints?: EndpointStat[]
+  endpoint_paths?: EndpointStat[]
 }
 
 // ==================== Trend & Chart Types ====================
@@ -1475,7 +1536,7 @@ export interface ModelStat {
   total_tokens: number
   cost: number // 标准计费
   actual_cost: number // 实际扣除
-  account_cost: number // 账号成本
+  account_cost?: number // 账号成本（仅管理员接口返回）
 }
 
 export interface EndpointStat {
@@ -1493,7 +1554,7 @@ export interface GroupStat {
   total_tokens: number
   cost: number // 标准计费
   actual_cost: number // 实际扣除
-  account_cost: number // 账号成本
+  account_cost?: number // 账号成本（仅管理员接口返回）
 }
 
 export interface UserBreakdownItem {
@@ -1570,7 +1631,7 @@ export interface UserSubscription {
   id: number
   user_id: number
   group_id: number
-  status: 'active' | 'expired' | 'revoked'
+  status: 'active' | 'expired' | 'revoked' | 'suspended'
   starts_at: string
   daily_usage_usd: number
   weekly_usage_usd: number
@@ -1580,6 +1641,7 @@ export interface UserSubscription {
   monthly_window_start: string | null
   created_at: string
   updated_at: string
+  revoked_at?: string | null
   expires_at: string | null
   user?: User
   group?: Group
@@ -1668,8 +1730,10 @@ export interface UsageQueryParams {
   request_type?: UsageRequestType
   stream?: boolean
   billing_type?: number | null
+  billing_mode?: string | null
   start_date?: string
   end_date?: string
+  timezone?: string
   sort_by?: string
   sort_order?: 'asc' | 'desc'
 }

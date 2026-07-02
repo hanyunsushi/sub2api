@@ -18,7 +18,7 @@
             :aria-label="t('admin.settings.title')"
           >
             <div class="settings-tabs">
-              <button data-testid="admin-settings-button-select-settings-tab-tab-key"
+              <button
                 v-for="tab in settingsTabs"
                 :key="tab.key"
                 :id="`settings-tab-${tab.key}`"
@@ -33,6 +33,9 @@
                 @click="selectSettingsTab(tab.key)"
                 @keydown="handleSettingsTabKeydown($event, tab.key)"
               >
+                <span class="settings-tab-icon">
+                  <Icon :name="tab.icon" size="sm" />
+                </span>
                 <span class="settings-tab-label">{{
                   t(`admin.settings.tabs.${tab.key}`)
                 }}</span>
@@ -46,12 +49,12 @@
           <!-- Admin API Key Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.adminApiKey.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.adminApiKey.description") }}
               </p>
             </div>
@@ -75,7 +78,7 @@
               <!-- Loading State -->
               <div
                 v-if="adminApiKeyLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -88,10 +91,10 @@
                 v-else-if="!adminApiKeyExists"
                 class="flex items-center justify-between"
               >
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <span class="text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.adminApiKey.notConfigured") }}
                 </span>
-                <button data-testid="admin-settings-button-create-admin-api-key"
+                <button
                   type="button"
                   @click="createAdminApiKey"
                   :disabled="adminApiKeyOperating"
@@ -130,18 +133,18 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <label
-                      class="mb-1 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.adminApiKey.currentKey") }}
                     </label>
                     <code
-                      class="rounded bg-[var(--anthropic-raised)] px-2 py-1 font-mono text-sm text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                      class="rounded bg-gray-100 px-2 py-1 font-mono text-sm text-gray-900 dark:bg-dark-700 dark:text-gray-100"
                     >
                       {{ adminApiKeyMasked }}
                     </code>
                   </div>
                   <div class="flex gap-2">
-                    <button data-testid="admin-settings-button-regenerate-admin-api-key"
+                    <button
                       type="button"
                       @click="regenerateAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -153,7 +156,7 @@
                           : t("admin.settings.adminApiKey.regenerate")
                       }}
                     </button>
-                    <button data-testid="admin-settings-button-delete-admin-api-key"
+                    <button
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -176,11 +179,11 @@
                   </p>
                   <div class="flex items-center gap-2">
                     <code
-                      class="flex-1 select-all break-all rounded border border-green-300 bg-[var(--anthropic-page)] px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-[var(--anthropic-section)]"
+                      class="flex-1 select-all break-all rounded border border-green-300 bg-white px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-dark-800"
                     >
                       {{ newAdminApiKey }}
                     </code>
-                    <button data-testid="admin-settings-button-copy-new-key"
+                    <button
                       type="button"
                       @click="copyNewKey"
                       class="btn btn-primary btn-sm flex-shrink-0"
@@ -203,19 +206,19 @@
           <!-- Overload Cooldown (529) Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.overloadCooldown.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.overloadCooldown.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div
                 v-if="overloadCooldownLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -226,10 +229,10 @@
               <template v-else>
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                    <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.overloadCooldown.enabled")
                     }}</label>
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.overloadCooldown.enabledHint") }}
                     </p>
                   </div>
@@ -238,22 +241,22 @@
 
                 <div
                   v-if="overloadCooldownForm.enabled"
-                  class="space-y-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.overloadCooldown.cooldownMinutes") }}
                     </label>
-                    <input data-testid="admin-settings-input-overload-cooldown-form-cooldown-minutes"
+                    <input
                       v-model.number="overloadCooldownForm.cooldown_minutes"
                       type="number"
                       min="1"
                       max="120"
                       class="input w-32"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         t("admin.settings.overloadCooldown.cooldownMinutesHint")
                       }}
@@ -262,9 +265,9 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button data-testid="admin-settings-button-save-overload-cooldown-settings"
+                  <button
                     type="button"
                     @click="saveOverloadCooldownSettings"
                     :disabled="overloadCooldownSaving"
@@ -304,19 +307,19 @@
           <!-- Rate Limit Cooldown (429) Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.rateLimit429Cooldown.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.rateLimit429Cooldown.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div
                 v-if="rateLimit429CooldownLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -327,10 +330,10 @@
               <template v-else>
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                    <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.rateLimit429Cooldown.enabled")
                     }}</label>
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.rateLimit429Cooldown.enabledHint") }}
                     </p>
                   </div>
@@ -339,11 +342,11 @@
 
                 <div
                   v-if="rateLimit429CooldownForm.enabled"
-                  class="space-y-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{
                         t(
@@ -351,14 +354,14 @@
                         )
                       }}
                     </label>
-                    <input data-testid="admin-settings-input-rate-limit429-cooldown-form-cooldown-seconds"
+                    <input
                       v-model.number="rateLimit429CooldownForm.cooldown_seconds"
                       type="number"
                       min="1"
                       max="7200"
                       class="input w-32"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         t(
                           "admin.settings.rateLimit429Cooldown.cooldownSecondsHint",
@@ -369,9 +372,9 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button data-testid="admin-settings-button-save-rate-limit429-cooldown-settings"
+                  <button
                     type="button"
                     @click="saveRateLimit429CooldownSettings"
                     :disabled="rateLimit429CooldownSaving"
@@ -411,12 +414,12 @@
           <!-- Stream Timeout Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.streamTimeout.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.streamTimeout.description") }}
               </p>
             </div>
@@ -424,7 +427,7 @@
               <!-- Loading State -->
               <div
                 v-if="streamTimeoutLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -436,10 +439,10 @@
                 <!-- Enable Stream Timeout -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                    <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.streamTimeout.enabled")
                     }}</label>
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.streamTimeout.enabledHint") }}
                     </p>
                   </div>
@@ -449,16 +452,16 @@
                 <!-- Settings - Only show when enabled -->
                 <div
                   v-if="streamTimeoutForm.enabled"
-                  class="space-y-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <!-- Action -->
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.streamTimeout.action") }}
                     </label>
-                    <select data-testid="admin-settings-select-stream-timeout-form-action"
+                    <select
                       v-model="streamTimeoutForm.action"
                       class="input w-64"
                     >
@@ -474,7 +477,7 @@
                         {{ t("admin.settings.streamTimeout.actionNone") }}
                       </option>
                     </select>
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.streamTimeout.actionHint") }}
                     </p>
                   </div>
@@ -482,18 +485,18 @@
                   <!-- Temp Unsched Minutes (only show when action is temp_unsched) -->
                   <div v-if="streamTimeoutForm.action === 'temp_unsched'">
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.streamTimeout.tempUnschedMinutes") }}
                     </label>
-                    <input data-testid="admin-settings-input-stream-timeout-form-temp-unsched-minutes"
+                    <input
                       v-model.number="streamTimeoutForm.temp_unsched_minutes"
                       type="number"
                       min="1"
                       max="60"
                       class="input w-32"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         t("admin.settings.streamTimeout.tempUnschedMinutesHint")
                       }}
@@ -503,18 +506,18 @@
                   <!-- Threshold Count -->
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.streamTimeout.thresholdCount") }}
                     </label>
-                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-count"
+                    <input
                       v-model.number="streamTimeoutForm.threshold_count"
                       type="number"
                       min="1"
                       max="10"
                       class="input w-32"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.streamTimeout.thresholdCountHint") }}
                     </p>
                   </div>
@@ -522,13 +525,13 @@
                   <!-- Threshold Window Minutes -->
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{
                         t("admin.settings.streamTimeout.thresholdWindowMinutes")
                       }}
                     </label>
-                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-window-minutes"
+                    <input
                       v-model.number="
                         streamTimeoutForm.threshold_window_minutes
                       "
@@ -537,7 +540,7 @@
                       max="60"
                       class="input w-32"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         t(
                           "admin.settings.streamTimeout.thresholdWindowMinutesHint",
@@ -549,9 +552,9 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button data-testid="admin-settings-button-save-stream-timeout-settings"
+                  <button
                     type="button"
                     @click="saveStreamTimeoutSettings"
                     :disabled="streamTimeoutSaving"
@@ -591,12 +594,12 @@
           <!-- Request Rectifier Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.rectifier.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.rectifier.description") }}
               </p>
             </div>
@@ -604,7 +607,7 @@
               <!-- Loading State -->
               <div
                 v-if="rectifierLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -616,10 +619,10 @@
                 <!-- Master Toggle -->
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                    <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.rectifier.enabled")
                     }}</label>
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.rectifier.enabledHint") }}
                     </p>
                   </div>
@@ -629,18 +632,18 @@
                 <!-- Sub-toggles (only show when master is enabled) -->
                 <div
                   v-if="rectifierForm.enabled"
-                  class="space-y-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <!-- Thinking Signature Rectifier -->
                   <div class="flex items-center justify-between">
                     <div>
                       <label
-                        class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >{{
                           t("admin.settings.rectifier.thinkingSignature")
                         }}</label
                       >
-                      <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{
                           t("admin.settings.rectifier.thinkingSignatureHint")
                         }}
@@ -655,12 +658,12 @@
                   <div class="flex items-center justify-between">
                     <div>
                       <label
-                        class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >{{
                           t("admin.settings.rectifier.thinkingBudget")
                         }}</label
                       >
-                      <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.rectifier.thinkingBudgetHint") }}
                       </p>
                     </div>
@@ -671,12 +674,12 @@
                   <div class="flex items-center justify-between">
                     <div>
                       <label
-                        class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >{{
                           t("admin.settings.rectifier.apikeySignature")
                         }}</label
                       >
-                      <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.rectifier.apikeySignatureHint") }}
                       </p>
                     </div>
@@ -686,16 +689,16 @@
                   <!-- Custom Patterns (only when apikey_signature_enabled) -->
                   <div
                     v-if="rectifierForm.apikey_signature_enabled"
-                    class="ml-4 space-y-3 border-l-2 border-[var(--anthropic-border)] pl-4 dark:border-[var(--anthropic-border)]"
+                    class="ml-4 space-y-3 border-l-2 border-gray-200 pl-4 dark:border-dark-600"
                   >
                     <div>
                       <label
-                        class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >{{
                           t("admin.settings.rectifier.apikeyPatterns")
                         }}</label
                       >
-                      <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.rectifier.apikeyPatternsHint") }}
                       </p>
                     </div>
@@ -706,7 +709,7 @@
                       :key="index"
                       class="flex items-center gap-2"
                     >
-                      <input data-testid="admin-settings-input-rectifier-form-apikey-signature-patterns-index"
+                      <input
                         v-model="rectifierForm.apikey_signature_patterns[index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -714,7 +717,7 @@
                           t('admin.settings.rectifier.apikeyPatternPlaceholder')
                         "
                       />
-                      <button data-testid="admin-settings-button-button"
+                      <button
                         type="button"
                         @click="
                           rectifierForm.apikey_signature_patterns.splice(
@@ -739,7 +742,7 @@
                         </svg>
                       </button>
                     </div>
-                    <button data-testid="admin-settings-button-push"
+                    <button
                       type="button"
                       @click="rectifierForm.apikey_signature_patterns.push('')"
                       class="btn btn-ghost btn-xs text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
@@ -751,9 +754,9 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button data-testid="admin-settings-button-save-rectifier-settings"
+                  <button
                     type="button"
                     @click="saveRectifierSettings"
                     :disabled="rectifierSaving"
@@ -790,12 +793,12 @@
           <!-- Beta Policy Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.betaPolicy.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.betaPolicy.description") }}
               </p>
             </div>
@@ -803,7 +806,7 @@
               <!-- Loading State -->
               <div
                 v-if="betaPolicyLoading"
-                class="flex items-center gap-2 text-[var(--anthropic-muted)]"
+                class="flex items-center gap-2 text-gray-500"
               >
                 <div
                   class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
@@ -816,16 +819,16 @@
                 <div
                   v-for="rule in betaPolicyForm.rules"
                   :key="rule.beta_token"
-                  class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                  class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
                 >
                   <div class="mb-3 flex items-center gap-2">
                     <span
-                      class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                      class="text-sm font-medium text-gray-900 dark:text-white"
                     >
                       {{ getBetaDisplayName(rule.beta_token) }}
                     </span>
                     <span
-                      class="rounded bg-[var(--anthropic-raised)] px-2 py-0.5 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                      class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-dark-700 dark:text-gray-400"
                     >
                       {{ rule.beta_token }}
                     </span>
@@ -835,7 +838,7 @@
                     <!-- Action -->
                     <div>
                       <label
-                        class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                       >
                         {{ t("admin.settings.betaPolicy.action") }}
                       </label>
@@ -849,7 +852,7 @@
                     <!-- Scope -->
                     <div>
                       <label
-                        class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                       >
                         {{ t("admin.settings.betaPolicy.scope") }}
                       </label>
@@ -864,11 +867,11 @@
                   <!-- Error Message (only when action=block) -->
                   <div v-if="rule.action === 'block'" class="mt-3">
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.betaPolicy.errorMessage") }}
                     </label>
-                    <input data-testid="admin-settings-input-rule-error-message"
+                    <input
                       v-model="rule.error_message"
                       type="text"
                       class="input"
@@ -876,7 +879,7 @@
                         t('admin.settings.betaPolicy.errorMessagePlaceholder')
                       "
                     />
-                    <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.betaPolicy.errorMessageHint") }}
                     </p>
                   </div>
@@ -884,16 +887,16 @@
                   <!-- Quick Presets (only for tokens with presets) -->
                   <div v-if="betaPresets[rule.beta_token]?.length" class="mt-3">
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.betaPolicy.quickPresets") }}
                     </label>
                     <div class="flex flex-wrap gap-2">
-                      <button data-testid="admin-settings-button-apply-beta-preset-rule-preset"
+                      <button
                         v-for="preset in betaPresets[rule.beta_token]"
                         :key="preset.label"
                         type="button"
-                        class="inline-flex items-center gap-1 rounded-md border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] transition-colors hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)]"
+                        class="inline-flex items-center gap-1 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] transition-colors hover:bg-[var(--anthropic-section)] dark:border-primary-800 dark:bg-[var(--anthropic-section)] dark:text-primary-300 dark:hover:bg-primary-900/50"
                         @click="applyBetaPreset(rule, preset)"
                         :title="preset.description"
                       >
@@ -905,11 +908,11 @@
                   <!-- Model Whitelist -->
                   <div class="mt-3">
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.betaPolicy.modelWhitelist") }}
                     </label>
-                    <p class="mb-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mb-2 text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.betaPolicy.modelWhitelistHint") }}
                     </p>
                     <!-- Existing patterns -->
@@ -918,7 +921,7 @@
                       :key="index"
                       class="mb-1.5 flex items-center gap-2"
                     >
-                      <input data-testid="admin-settings-input-rule-model-whitelist-index"
+                      <input
                         v-model="rule.model_whitelist![index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -926,7 +929,7 @@
                           t('admin.settings.betaPolicy.modelPatternPlaceholder')
                         "
                       />
-                      <button data-testid="admin-settings-button-button-2"
+                      <button
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
                         class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -947,13 +950,13 @@
                       </button>
                     </div>
                     <!-- Add pattern button -->
-                    <button data-testid="admin-settings-button-button-3"
+                    <button
                       type="button"
                       @click="
                         if (!rule.model_whitelist) rule.model_whitelist = [];
                         rule.model_whitelist.push('');
                       "
-                      class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                      class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                     >
                       <svg
                         class="h-3.5 w-3.5"
@@ -972,16 +975,16 @@
                     </button>
                     <!-- Common pattern chips -->
                     <div class="flex flex-wrap items-center gap-1.5">
-                      <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      <span class="text-xs text-gray-400 dark:text-gray-500"
                         >{{
                           t("admin.settings.betaPolicy.commonPatterns")
                         }}:</span
                       >
-                      <button data-testid="admin-settings-button-add-quick-pattern-rule-pattern"
+                      <button
                         v-for="pattern in commonModelPatterns"
                         :key="pattern"
                         type="button"
-                        class="rounded border border-[var(--anthropic-border)] px-2 py-0.5 text-xs text-[var(--anthropic-muted)] transition-colors hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
+                        class="rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300"
                         @click="addQuickPattern(rule, pattern)"
                       >
                         {{ pattern }}
@@ -997,7 +1000,7 @@
                     class="mt-3"
                   >
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.betaPolicy.fallbackAction") }}
                     </label>
@@ -1006,12 +1009,12 @@
                       @update:modelValue="rule.fallback_action = $event as any"
                       :options="betaPolicyActionOptions"
                     />
-                    <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.betaPolicy.fallbackActionHint") }}
                     </p>
                     <!-- Fallback Error Message (only when fallback_action=block) -->
                     <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                      <input data-testid="admin-settings-input-rule-fallback-error-message"
+                      <input
                         v-model="rule.fallback_error_message"
                         type="text"
                         class="input"
@@ -1021,7 +1024,7 @@
                           )
                         "
                       />
-                      <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                         {{ t("admin.settings.betaPolicy.errorMessageHint") }}
                       </p>
                     </div>
@@ -1030,9 +1033,9 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button data-testid="admin-settings-button-save-beta-policy-settings"
+                  <button
                     type="button"
                     @click="saveBetaPolicySettings"
                     :disabled="betaPolicySaving"
@@ -1069,12 +1072,12 @@
           <!-- OpenAI Fast/Flex Policy Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.openaiFastPolicy.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.openaiFastPolicy.description") }}
               </p>
             </div>
@@ -1082,7 +1085,7 @@
               <!-- Empty state -->
               <div
                 v-if="openaiFastPolicyForm.rules.length === 0"
-                class="rounded-lg border border-dashed border-[var(--anthropic-border)] p-6 text-center text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]"
+                class="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
               >
                 {{ t("admin.settings.openaiFastPolicy.empty") }}
               </div>
@@ -1091,11 +1094,11 @@
               <div
                 v-for="(rule, ruleIndex) in openaiFastPolicyForm.rules"
                 :key="ruleIndex"
-                class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
                 <div class="mb-3 flex items-center justify-between">
                   <span
-                    class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                    class="text-sm font-medium text-gray-900 dark:text-white"
                   >
                     {{
                       t("admin.settings.openaiFastPolicy.ruleHeader", {
@@ -1103,7 +1106,7 @@
                       })
                     }}
                   </span>
-                  <button data-testid="admin-settings-button-remove-open-ai-fast-policy-rule-rule-index"
+                  <button
                     type="button"
                     @click="removeOpenAIFastPolicyRule(ruleIndex)"
                     class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1129,7 +1132,7 @@
                   <!-- Service Tier -->
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.openaiFastPolicy.serviceTier") }}
                     </label>
@@ -1148,7 +1151,7 @@
                   <!-- Action -->
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.openaiFastPolicy.action") }}
                     </label>
@@ -1164,7 +1167,7 @@
                   <!-- Scope -->
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.openaiFastPolicy.scope") }}
                     </label>
@@ -1185,11 +1188,11 @@
                 <!-- Error Message (only when action=block) -->
                 <div v-if="rule.action === 'block'" class="mt-3">
                   <label
-                    class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                   >
                     {{ t("admin.settings.openaiFastPolicy.errorMessage") }}
                   </label>
-                  <input data-testid="admin-settings-input-rule-error-message-2"
+                  <input
                     v-model="rule.error_message"
                     type="text"
                     class="input"
@@ -1199,7 +1202,7 @@
                       )
                     "
                   />
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     {{ t("admin.settings.openaiFastPolicy.errorMessageHint") }}
                   </p>
                 </div>
@@ -1207,11 +1210,11 @@
                 <!-- Model Whitelist -->
                 <div class="mt-3">
                   <label
-                    class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                   >
                     {{ t("admin.settings.openaiFastPolicy.modelWhitelist") }}
                   </label>
-                  <p class="mb-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mb-2 text-xs text-gray-400 dark:text-gray-500">
                     {{
                       t("admin.settings.openaiFastPolicy.modelWhitelistHint")
                     }}
@@ -1221,7 +1224,7 @@
                     :key="patternIdx"
                     class="mb-1.5 flex items-center gap-2"
                   >
-                    <input data-testid="admin-settings-input-rule-model-whitelist-pattern-idx"
+                    <input
                       v-model="rule.model_whitelist![patternIdx]"
                       type="text"
                       class="input input-sm flex-1"
@@ -1231,7 +1234,7 @@
                         )
                       "
                     />
-                    <button data-testid="admin-settings-button-button-4"
+                    <button
                       type="button"
                       @click="
                         removeOpenAIFastPolicyModelPattern(rule, patternIdx)
@@ -1253,10 +1256,10 @@
                       </svg>
                     </button>
                   </div>
-                  <button data-testid="admin-settings-button-add-open-ai-fast-policy-model-pattern-rule"
+                  <button
                     type="button"
                     @click="addOpenAIFastPolicyModelPattern(rule)"
-                    class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                    class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                   >
                     <svg
                       class="h-3.5 w-3.5"
@@ -1283,7 +1286,7 @@
                   class="mt-3"
                 >
                   <label
-                    class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                   >
                     {{ t("admin.settings.openaiFastPolicy.fallbackAction") }}
                   </label>
@@ -1297,13 +1300,13 @@
                     "
                     :options="openaiFastPolicyActionOptions"
                   />
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     {{
                       t("admin.settings.openaiFastPolicy.fallbackActionHint")
                     }}
                   </p>
                   <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                    <input data-testid="admin-settings-input-rule-fallback-error-message-2"
+                    <input
                       v-model="rule.fallback_error_message"
                       type="text"
                       class="input"
@@ -1319,7 +1322,7 @@
 
               <!-- Add Rule Button -->
               <div>
-                <button data-testid="admin-settings-button-add-open-ai-fast-policy-rule"
+                <button
                   type="button"
                   @click="addOpenAIFastPolicyRule"
                   class="btn btn-secondary btn-sm inline-flex items-center gap-1"
@@ -1339,7 +1342,7 @@
                   </svg>
                   {{ t("admin.settings.openaiFastPolicy.addRule") }}
                 </button>
-                <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                   {{ t("admin.settings.openaiFastPolicy.saveHint") }}
                 </p>
               </div>
@@ -1353,12 +1356,12 @@
           <!-- Registration Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.registration.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.registration.description") }}
               </p>
             </div>
@@ -1366,10 +1369,10 @@
               <!-- Enable Registration -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.enableRegistration")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{
                       t("admin.settings.registration.enableRegistrationHint")
                     }}
@@ -1380,13 +1383,13 @@
 
               <!-- Email Verification -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.emailVerification")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.emailVerificationHint") }}
                   </p>
                 </div>
@@ -1394,28 +1397,28 @@
               </div>
 
               <!-- Email Suffix Whitelist -->
-              <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
-                <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <label class="font-medium text-gray-900 dark:text-white">{{
                   t("admin.settings.registration.emailSuffixWhitelist")
                 }}</label>
-                <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {{
                     t("admin.settings.registration.emailSuffixWhitelistHint")
                   }}
                 </p>
                 <div
-                  class="mt-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  class="mt-3 rounded-lg border border-gray-300 bg-white p-2 dark:border-dark-500 dark:bg-dark-700"
                 >
                   <div class="flex flex-wrap items-center gap-2">
                     <span
                       v-for="suffix in registrationEmailSuffixWhitelistTags"
                       :key="suffix"
-                      class="inline-flex items-center gap-1 rounded bg-[var(--anthropic-raised)] px-2 py-1 text-xs font-mono text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                      class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-xs font-mono text-gray-700 dark:bg-dark-600 dark:text-gray-200"
                     >
                       <span>{{ suffix }}</span>
-                      <button data-testid="admin-settings-button-button-5"
+                      <button
                         type="button"
-                        class="rounded-full text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500 dark:hover:text-white"
+                        class="rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
                         @click="
                           removeRegistrationEmailSuffixWhitelistTag(suffix)
                         "
@@ -1430,12 +1433,12 @@
                     </span>
 
                     <div
-                      class="flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-[var(--anthropic-fg)] dark:focus-within:border-[var(--anthropic-fg)]"
+                      class="flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
                     >
-                      <input data-testid="admin-settings-input-registration-email-suffix-whitelist-draft"
+                      <input
                         v-model="registrationEmailSuffixWhitelistDraft"
                         type="text"
-                        class="w-full bg-transparent text-sm font-mono text-[var(--anthropic-fg)] outline-none placeholder:text-[var(--anthropic-muted)] dark:text-[var(--anthropic-fg)] dark:placeholder:text-[var(--anthropic-muted)]"
+                        class="w-full bg-transparent text-sm font-mono text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
                         :placeholder="
                           t(
                             'admin.settings.registration.emailSuffixWhitelistPlaceholder',
@@ -1453,7 +1456,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                   {{
                     t(
                       "admin.settings.registration.emailSuffixWhitelistInputHint",
@@ -1464,13 +1467,13 @@
 
               <!-- Promo Code -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.promoCode")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.promoCodeHint") }}
                   </p>
                 </div>
@@ -1479,13 +1482,13 @@
 
               <!-- Invitation Code -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.invitationCode")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.invitationCodeHint") }}
                   </p>
                 </div>
@@ -1494,13 +1497,13 @@
               <!-- Password Reset - Only show when email verification is enabled -->
               <div
                 v-if="form.email_verify_enabled"
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.passwordReset")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.passwordResetHint") }}
                   </p>
                 </div>
@@ -1509,14 +1512,14 @@
               <!-- Frontend URL - Only show when password reset is enabled -->
               <div
                 v-if="form.email_verify_enabled && form.password_reset_enabled"
-                class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.registration.frontendUrl") }}
                 </label>
-                <input data-testid="admin-settings-input-form-frontend-url"
+                <input
                   v-model="form.frontend_url"
                   type="url"
                   class="input"
@@ -1524,20 +1527,20 @@
                     t('admin.settings.registration.frontendUrlPlaceholder')
                   "
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.registration.frontendUrlHint") }}
                 </p>
               </div>
 
               <!-- TOTP 2FA -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.totp")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.registration.totpHint") }}
                   </p>
                   <!-- Warning when encryption key not configured -->
@@ -1559,22 +1562,22 @@
           <!-- API Key IP ACL Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.apiKeyAcl.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.apiKeyAcl.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <label class="font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.apiKeyAcl.trustForwardedIp") }}
                   </label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.apiKeyAcl.trustForwardedIpHint") }}
                   </p>
                 </div>
@@ -1586,12 +1589,12 @@
           <!-- Cloudflare Turnstile Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.turnstile.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.turnstile.description") }}
               </p>
             </div>
@@ -1599,10 +1602,10 @@
               <!-- Enable Turnstile -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.turnstile.enableTurnstile")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.turnstile.enableTurnstileHint") }}
                   </p>
                 </div>
@@ -1612,24 +1615,24 @@
               <!-- Turnstile Keys - Only show when enabled -->
               <div
                 v-if="form.turnstile_enabled"
-                class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div class="grid grid-cols-1 gap-6">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.turnstile.siteKey") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-turnstile-site-key"
+                    <input
                       v-model="form.turnstile_site_key"
                       type="text"
                       class="input font-mono text-sm"
                       placeholder="0x4AAAAAAA..."
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.turnstile.siteKeyHint") }}
-                      <a data-testid="admin-settings-link-a"
+                      <a
                         href="https://dash.cloudflare.com/"
                         target="_blank"
                         class="text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]"
@@ -1641,17 +1644,17 @@
                   </div>
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.turnstile.secretKey") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-turnstile-secret-key"
+                    <input
                       v-model="form.turnstile_secret_key"
                       type="password"
                       class="input font-mono text-sm"
                       placeholder="0x4AAAAAAA..."
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         form.turnstile_secret_key_configured
                           ? t(
@@ -1669,22 +1672,22 @@
           <!-- LinuxDo Connect OAuth 登录 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.linuxdo.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.linuxdo.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.linuxdo.enable")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.linuxdo.enableHint") }}
                   </p>
                 </div>
@@ -1693,16 +1696,16 @@
 
               <div
                 v-if="form.linuxdo_connect_enabled"
-                class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div class="grid grid-cols-1 gap-6">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.linuxdo.clientId") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-linuxdo-connect-client-id"
+                    <input
                       v-model="form.linuxdo_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -1710,18 +1713,18 @@
                         t('admin.settings.linuxdo.clientIdPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.linuxdo.clientIdHint") }}
                     </p>
                   </div>
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.linuxdo.clientSecret") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-linuxdo-connect-client-secret"
+                    <input
                       v-model="form.linuxdo_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -1733,7 +1736,7 @@
                           : t('admin.settings.linuxdo.clientSecretPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         form.linuxdo_connect_client_secret_configured
                           ? t(
@@ -1746,11 +1749,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.linuxdo.redirectUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-linuxdo-connect-redirect-url"
+                    <input
                       v-model="form.linuxdo_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -1761,7 +1764,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button data-testid="admin-settings-button-set-and-copy-linuxdo-redirect-url"
+                      <button
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyLinuxdoRedirectUrl"
@@ -1770,12 +1773,12 @@
                       </button>
                       <code
                         v-if="linuxdoRedirectUrlSuggestion"
-                        class="select-all break-all rounded bg-[var(--anthropic-section)] px-2 py-1 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                        class="select-all break-all rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300"
                       >
                         {{ linuxdoRedirectUrlSuggestion }}
                       </code>
                     </div>
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.linuxdo.redirectUrlHint") }}
                     </p>
                   </div>
@@ -1787,12 +1790,12 @@
           <!-- GitHub / Google 邮箱快捷登录 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ localText("邮箱快捷登录", "Email OAuth Sign-in") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{
                   localText(
                     "开启 GitHub 或 Google 邮箱授权登录后，系统会读取已验证邮箱，存在则直接登录，不存在则自动注册。",
@@ -1803,13 +1806,13 @@
             </div>
             <div class="space-y-6 p-6">
               <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <div class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]">
+                <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-700">
                   <div class="flex items-start justify-between gap-4">
                     <div>
-                      <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <h3 class="font-medium text-gray-900 dark:text-white">
                         GitHub
                       </h3>
-                      <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {{
                           localText(
                             "GitHub OAuth App 需要 read:user user:email 权限，回调地址填写下方后端地址。",
@@ -1822,7 +1825,7 @@
                   </div>
 
                   <div v-if="form.github_oauth_enabled" class="mt-4 space-y-4">
-                    <div class="rounded-lg bg-[var(--anthropic-section)] px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
+                    <div class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300">
                       <template v-if="isZhLocale">
                         开通引导：GitHub Settings → Developer settings →
                         <a
@@ -1849,8 +1852,8 @@
 
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
-                        <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Client ID</label>
-                        <input data-testid="admin-settings-input-form-github-oauth-client-id"
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
+                        <input
                           v-model="form.github_oauth_client_id"
                           type="text"
                           class="input font-mono text-sm"
@@ -1858,8 +1861,8 @@
                         />
                       </div>
                       <div>
-                        <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Client Secret</label>
-                        <input data-testid="admin-settings-input-form-github-oauth-client-secret"
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client Secret</label>
+                        <input
                           v-model="form.github_oauth_client_secret"
                           type="password"
                           class="input font-mono text-sm"
@@ -1873,17 +1876,17 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("后端回调地址", "Backend Callback URL") }}
                       </label>
-                      <input data-testid="admin-settings-input-form-github-oauth-redirect-url"
+                      <input
                         v-model="form.github_oauth_redirect_url"
                         type="url"
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/github/callback"
                       />
                       <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                        <button data-testid="admin-settings-button-set-and-copy-email-o-auth-redirect-url-github"
+                        <button
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
                           @click="setAndCopyEmailOAuthRedirectUrl('github')"
@@ -1892,7 +1895,7 @@
                         </button>
                         <code
                           v-if="githubOAuthRedirectUrlSuggestion"
-                          class="select-all break-all rounded bg-[var(--anthropic-section)] px-2 py-1 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                          class="select-all break-all rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300"
                         >
                           {{ githubOAuthRedirectUrlSuggestion }}
                         </code>
@@ -1900,10 +1903,10 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("前端回跳地址", "Frontend Callback URL") }}
                       </label>
-                      <input data-testid="admin-settings-input-form-github-oauth-frontend-redirect-url"
+                      <input
                         v-model="form.github_oauth_frontend_redirect_url"
                         type="text"
                         class="input font-mono text-sm"
@@ -1913,13 +1916,13 @@
                   </div>
                 </div>
 
-                <div class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]">
+                <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-700">
                   <div class="flex items-start justify-between gap-4">
                     <div>
-                      <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <h3 class="font-medium text-gray-900 dark:text-white">
                         Google
                       </h3>
-                      <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {{
                           localText(
                             "Google OAuth 客户端需要 openid email profile 范围，并在凭据里登记后端回调地址。",
@@ -1932,7 +1935,7 @@
                   </div>
 
                   <div v-if="form.google_oauth_enabled" class="mt-4 space-y-4">
-                    <div class="rounded-lg bg-[var(--anthropic-section)] px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
+                    <div class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300">
                       {{
                         localText(
                           "开通引导：Google Cloud Console → APIs & Services → OAuth consent screen 完成同意屏幕；Credentials → Create Credentials → OAuth client ID，类型选择 Web application，并把下面地址加入 Authorized redirect URIs。",
@@ -1943,8 +1946,8 @@
 
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
-                        <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Client ID</label>
-                        <input data-testid="admin-settings-input-form-google-oauth-client-id"
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
+                        <input
                           v-model="form.google_oauth_client_id"
                           type="text"
                           class="input font-mono text-sm"
@@ -1952,8 +1955,8 @@
                         />
                       </div>
                       <div>
-                        <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Client Secret</label>
-                        <input data-testid="admin-settings-input-form-google-oauth-client-secret"
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client Secret</label>
+                        <input
                           v-model="form.google_oauth_client_secret"
                           type="password"
                           class="input font-mono text-sm"
@@ -1967,17 +1970,17 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("后端回调地址", "Backend Callback URL") }}
                       </label>
-                      <input data-testid="admin-settings-input-form-google-oauth-redirect-url"
+                      <input
                         v-model="form.google_oauth_redirect_url"
                         type="url"
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/google/callback"
                       />
                       <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-                        <button data-testid="admin-settings-button-set-and-copy-email-o-auth-redirect-url-google"
+                        <button
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
                           @click="setAndCopyEmailOAuthRedirectUrl('google')"
@@ -1986,7 +1989,7 @@
                         </button>
                         <code
                           v-if="googleOAuthRedirectUrlSuggestion"
-                          class="select-all break-all rounded bg-[var(--anthropic-section)] px-2 py-1 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                          class="select-all break-all rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300"
                         >
                           {{ googleOAuthRedirectUrlSuggestion }}
                         </code>
@@ -1994,10 +1997,10 @@
                     </div>
 
                     <div>
-                      <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         {{ localText("前端回跳地址", "Frontend Callback URL") }}
                       </label>
-                      <input data-testid="admin-settings-input-form-google-oauth-frontend-redirect-url"
+                      <input
                         v-model="form.google_oauth_frontend_redirect_url"
                         type="text"
                         class="input font-mono text-sm"
@@ -2013,22 +2016,22 @@
           <!-- WeChat Connect OAuth 登录 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.wechatConnect.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.wechatConnect.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.wechatConnect.enabledLabel")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.wechatConnect.enabledHint") }}
                   </p>
                 </div>
@@ -2040,18 +2043,18 @@
 
               <div
                 v-if="form.wechat_connect_enabled"
-                class="space-y-6 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="space-y-6 border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div class="space-y-4">
                   <div
-                    class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                    class="rounded-lg border border-gray-200 p-4 dark:border-dark-700"
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                        <h3 class="font-medium text-gray-900 dark:text-white">
                           {{ localText("PC 应用", "PC App") }}
                         </h3>
-                        <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           {{
                             localText(
                               "桌面浏览器通过微信开放平台扫码登录。可与公众号或移动应用同时存在。",
@@ -2072,7 +2075,7 @@
                     >
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ localText("PC AppID", "PC App ID") }}
                         </label>
@@ -2091,7 +2094,7 @@
                       </div>
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ localText("PC AppSecret", "PC App Secret") }}
                         </label>
@@ -2117,14 +2120,14 @@
                   </div>
 
                   <div
-                    class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                    class="rounded-lg border border-gray-200 p-4 dark:border-dark-700"
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                        <h3 class="font-medium text-gray-900 dark:text-white">
                           {{ localText("公众号", "Official Account") }}
                         </h3>
-                        <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           {{
                             localText(
                               "仅在微信内浏览器可用；非微信环境下会显示不可用。",
@@ -2145,7 +2148,7 @@
                     >
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ localText("公众号 AppID", "Official Account App ID") }}
                         </label>
@@ -2164,7 +2167,7 @@
                       </div>
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{
                             localText(
@@ -2195,14 +2198,14 @@
                   </div>
 
                   <div
-                    class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                    class="rounded-lg border border-gray-200 p-4 dark:border-dark-700"
                   >
                     <div class="flex items-start justify-between gap-4">
                       <div>
-                        <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                        <h3 class="font-medium text-gray-900 dark:text-white">
                           {{ localText("移动应用", "Mobile App") }}
                         </h3>
-                        <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                           {{
                             localText(
                               "原生移动端通过微信 SDK 唤起授权，网页端不会直接发起该流程。",
@@ -2223,7 +2226,7 @@
                     >
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ localText("移动应用 AppID", "Mobile App ID") }}
                         </label>
@@ -2242,7 +2245,7 @@
                       </div>
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ localText("移动应用 AppSecret", "Mobile App Secret") }}
                         </label>
@@ -2287,7 +2290,7 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{
                         localText(
@@ -2303,7 +2306,7 @@
                       class="input font-mono text-sm"
                       :placeholder="t('admin.settings.wechatConnect.redirectUrlPlaceholder')"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
                           "用于 PC 应用和公众号的网页回调。移动应用走原生 SDK 时不直接使用这个浏览器回调。",
@@ -2314,7 +2317,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button data-testid="admin-settings-button-set-and-copy-we-chat-redirect-url"
+                      <button
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyWeChatRedirectUrl"
@@ -2323,7 +2326,7 @@
                       </button>
                       <code
                         v-if="wechatRedirectUrlSuggestion"
-                        class="select-all break-all rounded bg-[var(--anthropic-section)] px-2 py-1 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                        class="select-all break-all rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300"
                       >
                         {{ wechatRedirectUrlSuggestion }}
                       </code>
@@ -2333,7 +2336,7 @@
 
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.wechatConnect.frontendRedirectUrlLabel") }}
                   </label>
@@ -2344,7 +2347,7 @@
                     class="input font-mono text-sm"
                     :placeholder="t('admin.settings.wechatConnect.frontendRedirectUrlPlaceholder')"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.wechatConnect.frontendRedirectUrlHint") }}
                   </p>
                 </div>
@@ -2355,22 +2358,22 @@
           <!-- DingTalk Connect OAuth 登录 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.dingtalk.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.dingtalk.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.dingtalk.enable")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.dingtalk.enableHint") }}
                   </p>
                 </div>
@@ -2379,16 +2382,16 @@
 
               <div
                 v-if="form.dingtalk_connect_enabled"
-                class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div class="grid grid-cols-1 gap-6">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.dingtalk.clientId") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-dingtalk-connect-client-id"
+                    <input
                       v-model="form.dingtalk_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -2396,18 +2399,18 @@
                         t('admin.settings.dingtalk.clientIdPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.dingtalk.clientIdHint") }}
                     </p>
                   </div>
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.dingtalk.clientSecret") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-dingtalk-connect-client-secret"
+                    <input
                       v-model="form.dingtalk_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -2419,7 +2422,7 @@
                           : t('admin.settings.dingtalk.clientSecretPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         form.dingtalk_connect_client_secret_configured
                           ? t(
@@ -2432,11 +2435,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.dingtalk.redirectUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-dingtalk-connect-redirect-url"
+                    <input
                       v-model="form.dingtalk_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2444,39 +2447,39 @@
                         t('admin.settings.dingtalk.redirectUrlPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.dingtalk.redirectUrlHint") }}
                     </p>
                   </div>
 
                   <!-- Corp Restriction Policy -->
-                  <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
-                    <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       {{ t("admin.settings.dingtalk.corpPolicy.label") }}
                     </label>
-                    <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.dingtalk.corpPolicy.hint") }}
                     </p>
                     <div class="space-y-2">
                       <label class="flex cursor-pointer items-center gap-3">
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-corp-restriction-policy"
+                        <input
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="none"
                           class="h-4 w-4 text-[var(--anthropic-fg)]"
                         />
-                        <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">
                           {{ t("admin.settings.dingtalk.corpPolicy.none") }}
                         </span>
                       </label>
                       <label class="flex cursor-pointer items-center gap-3">
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-corp-restriction-policy-2"
+                        <input
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="internal_only"
                           class="h-4 w-4 text-[var(--anthropic-fg)]"
                         />
-                        <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">
                           {{ t("admin.settings.dingtalk.corpPolicy.internalOnly") }}
                         </span>
                       </label>
@@ -2486,13 +2489,13 @@
                   <!-- bypass_registration toggle（仅 internal_only 模式下可见可用） -->
                   <div
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
-                    class="flex items-center justify-between pt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
+                    class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                      <label class="font-medium text-gray-900 dark:text-white">{{
                         t("admin.settings.dingtalk.bypassRegistration")
                       }}</label>
-                      <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.dingtalk.bypassRegistrationHint") }}
                       </p>
                     </div>
@@ -2502,14 +2505,14 @@
                   <!-- 身份同步开关（仅 internal_only 模式下可见） -->
                   <div
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
-                    class="pt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] space-y-2"
+                    class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                        <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncDisplayName")
                         }}</label>
-                        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncDisplayNameHint") }}
                         </p>
                       </div>
@@ -2517,10 +2520,10 @@
                     </div>
                     <div v-if="form.dingtalk_connect_sync_display_name" class="space-y-2">
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDisplayNameTarget") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-display-name-attr-key"
+                        <input
                           v-model="form.dingtalk_connect_sync_display_name_attr_key"
                           type="text"
                           placeholder="dingtalk_name"
@@ -2528,31 +2531,31 @@
                         />
                       </div>
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-display-name-attr-name"
+                        <input
                           v-model="form.dingtalk_connect_sync_display_name_attr_name"
                           type="text"
-                          placeholder="钉钉姓名"
+                          :placeholder="localText('钉钉姓名', 'DingTalk Name')"
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
                     </div>
-                    <p v-if="form.dingtalk_connect_sync_display_name" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p v-if="form.dingtalk_connect_sync_display_name" class="text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.dingtalk.syncDisplayNameTargetHint") }}
                     </p>
                   </div>
                   <div
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
-                    class="pt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] space-y-2"
+                    class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                        <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncCorpEmail")
                         }}</label>
-                        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncCorpEmailHint") }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
@@ -2563,10 +2566,10 @@
                     </div>
                     <div v-if="form.dingtalk_connect_sync_corp_email" class="space-y-2">
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncCorpEmailTarget") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-corp-email-attr-key"
+                        <input
                           v-model="form.dingtalk_connect_sync_corp_email_attr_key"
                           type="text"
                           placeholder="dingtalk_email"
@@ -2574,31 +2577,31 @@
                         />
                       </div>
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-corp-email-attr-name"
+                        <input
                           v-model="form.dingtalk_connect_sync_corp_email_attr_name"
                           type="text"
-                          placeholder="钉钉企业邮箱"
+                          :placeholder="localText('钉钉企业邮箱', 'DingTalk Corporate Email')"
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
                     </div>
-                    <p v-if="form.dingtalk_connect_sync_corp_email" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p v-if="form.dingtalk_connect_sync_corp_email" class="text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.dingtalk.syncCorpEmailTargetHint") }}
                     </p>
                   </div>
                   <div
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
-                    class="pt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] space-y-2"
+                    class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
                     <div class="flex items-center justify-between">
                       <div>
-                        <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                        <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncDept")
                         }}</label>
-                        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncDeptHint") }}
                         </p>
                         <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
@@ -2609,10 +2612,10 @@
                     </div>
                     <div v-if="form.dingtalk_connect_sync_dept" class="space-y-2">
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDeptTarget") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-dept-attr-key"
+                        <input
                           v-model="form.dingtalk_connect_sync_dept_attr_key"
                           type="text"
                           placeholder="dingtalk_department"
@@ -2620,18 +2623,18 @@
                         />
                       </div>
                       <div class="flex items-center gap-2">
-                        <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-nowrap min-w-[5rem]">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
-                        <input data-testid="admin-settings-input-form-dingtalk-connect-sync-dept-attr-name"
+                        <input
                           v-model="form.dingtalk_connect_sync_dept_attr_name"
                           type="text"
-                          placeholder="钉钉部门"
+                          :placeholder="localText('钉钉部门', 'DingTalk Department')"
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
                     </div>
-                    <p v-if="form.dingtalk_connect_sync_dept" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p v-if="form.dingtalk_connect_sync_dept" class="text-xs text-gray-400 dark:text-gray-500">
                       {{ t("admin.settings.dingtalk.syncDeptTargetHint") }}
                     </p>
                   </div>
@@ -2643,22 +2646,22 @@
           <!-- Generic OIDC OAuth 登录 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.oidc.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.oidc.description") }}
               </p>
             </div>
             <div class="space-y-5 p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.oidc.enable")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.oidc.enableHint") }}
                   </p>
                 </div>
@@ -2667,16 +2670,16 @@
 
               <div
                 v-if="form.oidc_connect_enabled"
-                class="space-y-6 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="space-y-6 border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.providerName") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-provider-name"
+                    <input
                       v-model="form.oidc_connect_provider_name"
                       type="text"
                       class="input"
@@ -2688,11 +2691,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.clientId") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-client-id"
+                    <input
                       v-model="form.oidc_connect_client_id"
                       type="text"
                       class="input font-mono text-sm"
@@ -2704,11 +2707,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.clientSecret") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-client-secret"
+                    <input
                       v-model="form.oidc_connect_client_secret"
                       type="password"
                       class="input font-mono text-sm"
@@ -2720,7 +2723,7 @@
                           : t('admin.settings.oidc.clientSecretPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         form.oidc_connect_client_secret_configured
                           ? t("admin.settings.oidc.clientSecretConfiguredHint")
@@ -2733,11 +2736,11 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.issuerUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-issuer-url"
+                    <input
                       v-model="form.oidc_connect_issuer_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2749,11 +2752,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.discoveryUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-discovery-url"
+                    <input
                       v-model="form.oidc_connect_discovery_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2765,11 +2768,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.authorizeUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-authorize-url"
+                    <input
                       v-model="form.oidc_connect_authorize_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2781,11 +2784,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.tokenUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-token-url"
+                    <input
                       v-model="form.oidc_connect_token_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2797,11 +2800,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.userinfoUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-url"
+                    <input
                       v-model="form.oidc_connect_userinfo_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2813,11 +2816,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.jwksUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-jwks-url"
+                    <input
                       v-model="form.oidc_connect_jwks_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2829,28 +2832,28 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.scopes") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-scopes"
+                    <input
                       v-model="form.oidc_connect_scopes"
                       type="text"
                       class="input font-mono text-sm"
                       :placeholder="t('admin.settings.oidc.scopesPlaceholder')"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.oidc.scopesHint") }}
                     </p>
                   </div>
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.redirectUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-redirect-url"
+                    <input
                       v-model="form.oidc_connect_redirect_url"
                       type="url"
                       class="input font-mono text-sm"
@@ -2861,7 +2864,7 @@
                     <div
                       class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
-                      <button data-testid="admin-settings-button-set-and-copy-oidc-redirect-url"
+                      <button
                         type="button"
                         class="btn btn-secondary btn-sm w-fit"
                         @click="setAndCopyOIDCRedirectUrl"
@@ -2870,23 +2873,23 @@
                       </button>
                       <code
                         v-if="oidcRedirectUrlSuggestion"
-                        class="select-all break-all rounded bg-[var(--anthropic-section)] px-2 py-1 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                        class="select-all break-all rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600 dark:bg-dark-800 dark:text-gray-300"
                       >
                         {{ oidcRedirectUrlSuggestion }}
                       </code>
                     </div>
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.oidc.redirectUrlHint") }}
                     </p>
                   </div>
 
                   <div class="lg:col-span-2">
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.frontendRedirectUrl") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-frontend-redirect-url"
+                    <input
                       v-model="form.oidc_connect_frontend_redirect_url"
                       type="text"
                       class="input font-mono text-sm"
@@ -2894,7 +2897,7 @@
                         t('admin.settings.oidc.frontendRedirectUrlPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.oidc.frontendRedirectUrlHint") }}
                     </p>
                   </div>
@@ -2903,11 +2906,11 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.tokenAuthMethod") }}
                     </label>
-                    <select data-testid="admin-settings-select-form-oidc-connect-token-auth-method"
+                    <select
                       v-model="form.oidc_connect_token_auth_method"
                       class="input font-mono text-sm"
                     >
@@ -2923,11 +2926,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.clockSkewSeconds") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-clock-skew-seconds"
+                    <input
                       v-model.number="form.oidc_connect_clock_skew_seconds"
                       type="number"
                       min="0"
@@ -2938,11 +2941,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.allowedSigningAlgs") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-allowed-signing-algs"
+                    <input
                       v-model="form.oidc_connect_allowed_signing_algs"
                       type="text"
                       class="input font-mono text-sm"
@@ -2955,10 +2958,10 @@
 
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div
-                    class="flex items-center justify-between rounded border border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]"
+                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <label class="font-medium text-gray-900 dark:text-white">
                         {{ t("admin.settings.oidc.usePkce") }}
                       </label>
                     </div>
@@ -2969,10 +2972,10 @@
                   </div>
 
                   <div
-                    class="flex items-center justify-between rounded border border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]"
+                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <label class="font-medium text-gray-900 dark:text-white">
                         {{ t("admin.settings.oidc.validateIdToken") }}
                       </label>
                     </div>
@@ -2983,10 +2986,10 @@
                   </div>
 
                   <div
-                    class="flex items-center justify-between rounded border border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]"
+                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
-                      <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <label class="font-medium text-gray-900 dark:text-white">
                         {{ t("admin.settings.oidc.requireEmailVerified") }}
                       </label>
                     </div>
@@ -2999,11 +3002,11 @@
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.userinfoEmailPath") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-email-path"
+                    <input
                       v-model="form.oidc_connect_userinfo_email_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3015,11 +3018,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.userinfoIdPath") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-id-path"
+                    <input
                       v-model="form.oidc_connect_userinfo_id_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3031,11 +3034,11 @@
 
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.oidc.userinfoUsernamePath") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-oidc-connect-userinfo-username-path"
+                    <input
                       v-model="form.oidc_connect_userinfo_username_path"
                       type="text"
                       class="input font-mono text-sm"
@@ -3056,12 +3059,12 @@
           <!-- Default Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.defaults.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.defaults.description") }}
               </p>
             </div>
@@ -3069,11 +3072,11 @@
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.defaults.defaultBalance") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-default-balance"
+                  <input
                     v-model.number="form.default_balance"
                     type="number"
                     step="0.01"
@@ -3081,34 +3084,34 @@
                     class="input"
                     placeholder="0.00"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.defaults.defaultBalanceHint") }}
                   </p>
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.defaults.defaultConcurrency") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-default-concurrency"
+                  <input
                     v-model.number="form.default_concurrency"
                     type="number"
                     min="1"
                     class="input"
                     placeholder="1"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.defaults.defaultConcurrencyHint") }}
                   </p>
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.defaults.defaultUserRpmLimit") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-default-user-rpm-limit"
+                  <input
                     v-model.number="form.default_user_rpm_limit"
                     type="number"
                     min="0"
@@ -3116,25 +3119,25 @@
                     class="input"
                     placeholder="0"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.defaults.defaultUserRpmLimitHint") }}
                   </p>
                 </div>
               </div>
 
-              <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
                 <div class="mb-3 flex items-center justify-between">
                   <div>
-                    <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    <label class="font-medium text-gray-900 dark:text-white">
                       {{ t("admin.settings.defaults.defaultSubscriptions") }}
                     </label>
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{
                         t("admin.settings.defaults.defaultSubscriptionsHint")
                       }}
                     </p>
                   </div>
-                  <button data-testid="admin-settings-button-add-default-subscription"
+                  <button
                     type="button"
                     class="btn btn-secondary btn-sm"
                     @click="addDefaultSubscription"
@@ -3146,7 +3149,7 @@
 
                 <div
                   v-if="form.default_subscriptions.length === 0"
-                  class="rounded border border-dashed border-[var(--anthropic-border)] px-4 py-3 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]"
+                  class="rounded border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
                 >
                   {{ t("admin.settings.defaults.defaultSubscriptionsEmpty") }}
                 </div>
@@ -3155,11 +3158,11 @@
                   <div
                     v-for="(item, index) in form.default_subscriptions"
                     :key="`default-sub-${index}`"
-                    class="grid grid-cols-1 gap-3 rounded border border-[var(--anthropic-border)] p-3 md:grid-cols-[1fr_160px_auto] dark:border-[var(--anthropic-border)]"
+                    class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
                   >
                     <div>
                       <label
-                        class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                       >
                         {{ t("admin.settings.defaults.subscriptionGroup") }}
                       </label>
@@ -3195,7 +3198,7 @@
                               ).rate
                             "
                           />
-                          <span v-else class="text-[var(--anthropic-muted)]">
+                          <span v-else class="text-gray-400">
                             {{ t("admin.settings.defaults.subscriptionGroup") }}
                           </span>
                         </template>
@@ -3233,13 +3236,13 @@
                     </div>
                     <div>
                       <label
-                        class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                       >
                         {{
                           t("admin.settings.defaults.subscriptionValidityDays")
                         }}
                       </label>
-                      <input data-testid="admin-settings-input-item-validity-days"
+                      <input
                         v-model.number="item.validity_days"
                         type="number"
                         min="1"
@@ -3248,7 +3251,7 @@
                       />
                     </div>
                     <div class="flex items-end">
-                      <button data-testid="admin-settings-button-remove-default-subscription-index"
+                      <button
                         type="button"
                         class="btn btn-secondary default-sub-delete-btn w-full text-red-600 hover:text-red-700 dark:text-red-400"
                         @click="removeDefaultSubscription(index)"
@@ -3261,12 +3264,12 @@
               </div>
 
               <!-- ★ 新增：系统全局默认平台限额矩阵 -->
-              <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
                 <div class="mb-3">
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <label class="font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.defaults.defaultPlatformQuotas") }}
                   </label>
-                  <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.defaults.defaultPlatformQuotasHint") }}
                   </p>
                   <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
@@ -3276,7 +3279,7 @@
                 <div class="overflow-x-auto">
                   <table class="min-w-full text-sm">
                     <thead>
-                      <tr class="text-left text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
@@ -3284,12 +3287,12 @@
                       </tr>
                     </thead>
                     <tbody class="space-y-2">
-                      <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity'] as const)" :key="p" class="align-top">
+                      <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok'] as const)" :key="p" class="align-top">
                         <td class="pr-4 py-1">
-                          <span class="font-mono text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ p }}</span>
+                          <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
                         </td>
                         <td class="pr-4 py-1">
-                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-daily"
+                          <input
                             v-model.number="form.default_platform_quotas[p]!.daily"
                             type="number"
                             step="0.01"
@@ -3299,7 +3302,7 @@
                           />
                         </td>
                         <td class="pr-4 py-1">
-                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-weekly"
+                          <input
                             v-model.number="form.default_platform_quotas[p]!.weekly"
                             type="number"
                             step="0.01"
@@ -3309,7 +3312,7 @@
                           />
                         </td>
                         <td class="py-1">
-                          <input data-testid="admin-settings-input-form-default-platform-quotas-p-monthly"
+                          <input
                             v-model.number="form.default_platform_quotas[p]!.monthly"
                             type="number"
                             step="0.01"
@@ -3329,24 +3332,24 @@
 
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.authSourceDefaults.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.authSourceDefaults.description") }}
               </p>
             </div>
             <div class="space-y-6 p-6">
               <div
-                class="flex items-center justify-between rounded border border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <label class="font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.authSourceDefaults.requireEmailLabel") }}
                   </label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.authSourceDefaults.requireEmailHint") }}
                   </p>
                 </div>
@@ -3357,14 +3360,14 @@
                 <div
                   v-for="authSource in authSourceDefaultsMeta"
                   :key="authSource.source"
-                  class="rounded-xl border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                  class="rounded-xl border border-gray-200 p-4 dark:border-dark-700"
                 >
                   <div class="flex items-center justify-between gap-4">
                     <div>
-                      <div class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <div class="font-medium text-gray-900 dark:text-white">
                         {{ authSource.title }}
                       </div>
-                      <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {{ authSource.description }}
                       </p>
                     </div>
@@ -3379,20 +3382,20 @@
                   <div
                     v-if="authSourceDefaults[authSource.source].grant_on_signup"
                     :data-testid="`auth-source-${authSource.source}-panel`"
-                    class="mt-4 space-y-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                    class="mt-4 space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                   >
-                    <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.authSourceDefaults.enabledHint") }}
                     </p>
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ t("admin.settings.defaults.defaultBalance") }}
                         </label>
-                        <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-balance"
+                        <input
                           v-model.number="
                             authSourceDefaults[authSource.source].balance
                           "
@@ -3405,11 +3408,11 @@
                       </div>
                       <div>
                         <label
-                          class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                           {{ t("admin.settings.defaults.defaultConcurrency") }}
                         </label>
-                        <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-concurrency"
+                        <input
                           v-model.number="
                             authSourceDefaults[authSource.source].concurrency
                           "
@@ -3422,16 +3425,16 @@
                     </div>
 
                     <div
-                      class="flex items-center justify-between rounded border border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]"
+                      class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                     >
                       <div>
                         <label
-                          class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                          class="font-medium text-gray-900 dark:text-white"
                         >
                           {{ t("admin.settings.authSourceDefaults.grantOnFirstBindLabel") }}
                         </label>
                         <p
-                          class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mt-0.5 text-xs text-gray-500 dark:text-gray-400"
                         >
                           {{ t("admin.settings.authSourceDefaults.grantOnFirstBindHint") }}
                         </p>
@@ -3447,15 +3450,15 @@
                     <div class="mb-3 flex items-center justify-between">
                       <div>
                         <label
-                          class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                          class="font-medium text-gray-900 dark:text-white"
                         >
                           {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsLabel") }}
                         </label>
-                        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsHint") }}
                         </p>
                       </div>
-                      <button data-testid="admin-settings-button-button-6"
+                      <button
                         type="button"
                         class="btn btn-secondary btn-sm"
                         @click="
@@ -3474,7 +3477,7 @@
                         authSourceDefaults[authSource.source].subscriptions
                           .length === 0
                       "
-                      class="rounded border border-dashed border-[var(--anthropic-border)] px-4 py-3 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]"
+                      class="rounded border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.authSourceDefaults.noSourceSubscriptions") }}
                     </div>
@@ -3485,11 +3488,11 @@
                           authSource.source
                         ].subscriptions"
                         :key="`${authSource.source}-sub-${index}`"
-                        class="grid grid-cols-1 gap-3 rounded border border-[var(--anthropic-border)] p-3 md:grid-cols-[1fr_160px_auto] dark:border-[var(--anthropic-border)]"
+                        class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
                       >
                         <div>
                           <label
-                            class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                            class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                           >
                             {{ t("admin.settings.defaults.subscriptionGroup") }}
                           </label>
@@ -3525,7 +3528,7 @@
                                   ).rate
                                 "
                               />
-                              <span v-else class="text-[var(--anthropic-muted)]">
+                              <span v-else class="text-gray-400">
                                 {{
                                   t("admin.settings.defaults.subscriptionGroup")
                                 }}
@@ -3565,7 +3568,7 @@
                         </div>
                         <div>
                           <label
-                            class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                            class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                           >
                             {{
                               t(
@@ -3573,7 +3576,7 @@
                               )
                             }}
                           </label>
-                          <input data-testid="admin-settings-input-item-validity-days-2"
+                          <input
                             v-model.number="item.validity_days"
                             type="number"
                             min="1"
@@ -3582,7 +3585,7 @@
                           />
                         </div>
                         <div class="flex items-end">
-                          <button data-testid="admin-settings-button-button-7"
+                          <button
                             type="button"
                             class="btn btn-secondary w-full text-red-600 hover:text-red-700 dark:text-red-400"
                             @click="
@@ -3599,19 +3602,19 @@
                     </div>
 
                     <!-- ★ 新增：auth source 平台限额覆盖区块 -->
-                    <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+                    <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
                       <div class="mb-3">
-                        <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                        <label class="font-medium text-gray-900 dark:text-white">
                           {{ t("admin.settings.authSourceDefaults.platformQuotasOverride") }}
                         </label>
-                        <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.authSourceDefaults.platformQuotasOverrideHint") }}
                         </p>
                       </div>
                       <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
                           <thead>
-                            <tr class="text-left text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                            <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
                               <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
                               <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
                               <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
@@ -3619,12 +3622,12 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity'] as const)" :key="`${authSource.source}-pq-${p}`" class="align-top">
+                            <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok'] as const)" :key="`${authSource.source}-pq-${p}`" class="align-top">
                               <td class="pr-4 py-1">
-                                <span class="font-mono text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ p }}</span>
+                                <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
                               </td>
                               <td class="pr-4 py-1">
-                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-daily"
+                                <input
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.daily"
                                   type="number"
                                   step="0.01"
@@ -3634,7 +3637,7 @@
                                 />
                               </td>
                               <td class="pr-4 py-1">
-                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-weekly"
+                                <input
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.weekly"
                                   type="number"
                                   step="0.01"
@@ -3644,7 +3647,7 @@
                                 />
                               </td>
                               <td class="py-1">
-                                <input data-testid="admin-settings-input-auth-source-defaults-auth-source-source-platform-quotas-p-monthly"
+                                <input
                                   v-model.number="authSourceDefaults[authSource.source].platform_quotas[p]!.monthly"
                                   type="number"
                                   step="0.01"
@@ -3672,23 +3675,23 @@
           <!-- Claude Code Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.claudeCode.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.claudeCode.description") }}
               </p>
             </div>
             <div class="p-6">
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.claudeCode.minVersion") }}
                 </label>
-                <input data-testid="admin-settings-input-form-min-claude-code-version"
+                <input
                   v-model="form.min_claude_code_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -3696,17 +3699,17 @@
                     t('admin.settings.claudeCode.minVersionPlaceholder')
                   "
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.claudeCode.minVersionHint") }}
                 </p>
               </div>
               <div class="mt-4">
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.claudeCode.maxVersion") }}
                 </label>
-                <input data-testid="admin-settings-input-form-max-claude-code-version"
+                <input
                   v-model="form.max_claude_code_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -3714,63 +3717,270 @@
                     t('admin.settings.claudeCode.maxVersionPlaceholder')
                   "
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.claudeCode.maxVersionHint") }}
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- External Subscription Settings -->
+          <!-- Codex Settings -->
           <div class="card">
-            <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                {{ localText("外部订阅", "External subscriptions") }}
+            <div
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+            >
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ t("admin.settings.gatewayForwarding.codexHardeningTitle") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                {{
-                  localText(
-                    "外部余额与订阅额度已拆分为独立子页面，新增供应商会自动进入右上角余额和匹配账号卡片。",
-                    "External balances and subscription quotas now live on a dedicated subpage. New providers automatically appear in the header balance area and matching account cards.",
-                  )
-                }}
-              </p>
             </div>
-            <div class="p-6">
-              <div class="flex flex-col gap-4 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] md:flex-row md:items-center md:justify-between">
+            <div class="p-6 space-y-4">
                 <div>
-                  <h3 class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                    {{ localText("统一管理外部订阅源", "Manage external subscription providers") }}
+                  <h3 class="text-base font-semibold text-gray-900 dark:text-white">
+                    {{ t("admin.settings.gatewayForwarding.codexClientRestrictionTitle") }}
                   </h3>
-                  <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{
-                      localText(
-                        "支持 NewAPI 控制台和 Active Subscriptions 两种预设模板，可配置 Token、用户 ID、匹配关键词和显示顺序。",
-                        "Supports NewAPI console and Active Subscriptions presets with token, user ID, match keywords, and display order settings.",
-                      )
-                    }}
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.gatewayForwarding.codexHardeningDesc") }}
                   </p>
                 </div>
-                <router-link
-                  to="/admin/settings/external-subscriptions"
-                  class="btn btn-primary shrink-0"
-                >
-                  <Icon name="creditCard" size="sm" class="mr-2" />
-                  {{ localText("管理外部订阅", "Manage external subscriptions") }}
-                </router-link>
-              </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ t("admin.settings.gatewayForwarding.minCodexVersion") }}
+                    </label>
+                    <input
+                      v-model="form.min_codex_version"
+                      type="text"
+                      class="input w-full font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.minCodexVersionPlaceholder',
+                        )
+                      "
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{ t("admin.settings.gatewayForwarding.maxCodexVersion") }}
+                    </label>
+                    <input
+                      v-model="form.max_codex_version"
+                      type="text"
+                      class="input w-full font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.maxCodexVersionPlaceholder',
+                        )
+                      "
+                    />
+                  </div>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ t("admin.settings.gatewayForwarding.codexVersionHint") }}
+                </p>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t("admin.settings.gatewayForwarding.codexFingerprintSignals") }}
+                  </label>
+                  <p class="mb-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.gatewayForwarding.codexFingerprintSignalsDesc") }}
+                  </p>
+                  <div
+                    v-for="(row, i) in codexFingerprintRows"
+                    :key="`codex-fp-${i}`"
+                    class="mb-2 flex items-center gap-2"
+                  >
+                    <select v-model="row.type" class="input w-32 text-sm">
+                      <option value="header_exact">{{ t("admin.settings.gatewayForwarding.codexFpTypeHeaderExact") }}</option>
+                      <option value="header_prefix">{{ t("admin.settings.gatewayForwarding.codexFpTypeHeaderPrefix") }}</option>
+                      <option value="body_path">{{ t("admin.settings.gatewayForwarding.codexFpTypeBodyPath") }}</option>
+                    </select>
+                    <input
+                      v-model="row.match"
+                      type="text"
+                      class="input flex-1 font-mono text-sm"
+                      :placeholder="t('admin.settings.gatewayForwarding.codexFpMatchPlaceholder')"
+                    />
+                    <label class="flex shrink-0 items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                      <input v-model="row.required" type="checkbox" />
+                      {{ t("admin.settings.gatewayForwarding.codexFpRequired") }}
+                    </label>
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      @click="removeCodexFingerprintRow(i)"
+                    >
+                      {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-secondary btn-sm" @click="addCodexFingerprintRow">
+                    {{ t("admin.settings.gatewayForwarding.codexAddRow") }}
+                  </button>
+                  <p
+                    v-if="codexFingerprintNoRequired"
+                    class="mt-2 text-xs text-amber-600 dark:text-amber-500"
+                  >
+                    {{ t("admin.settings.gatewayForwarding.codexFingerprintNoRequiredWarn") }}
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <div class="pr-4">
+                    <label
+                      class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {{
+                        t("admin.settings.gatewayForwarding.codexAllowAppServer")
+                      }}
+                    </label>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {{
+                        t(
+                          "admin.settings.gatewayForwarding.codexAllowAppServerDesc",
+                        )
+                      }}
+                    </p>
+                  </div>
+                  <Toggle
+                    v-model="form.codex_cli_only_allow_app_server_clients"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ t("admin.settings.gatewayForwarding.codexBlacklist") }}
+                  </label>
+                  <p class="mb-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.gatewayForwarding.codexBlacklistDesc") }}
+                  </p>
+                  <div
+                    v-for="(row, i) in codexBlacklistRows"
+                    :key="`codex-bl-${i}`"
+                    class="mb-2 flex gap-2"
+                  >
+                    <input
+                      v-model="row.originator"
+                      type="text"
+                      class="input w-1/3 font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.codexOriginatorPlaceholder',
+                        )
+                      "
+                    />
+                    <input
+                      v-model="row.uaContains"
+                      type="text"
+                      class="input flex-1 font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.codexUaContainsPlaceholder',
+                        )
+                      "
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      @click="removeCodexBlacklistRow(i)"
+                    >
+                      {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    @click="addCodexBlacklistRow"
+                  >
+                    {{ t("admin.settings.gatewayForwarding.codexAddRow") }}
+                  </button>
+                </div>
+
+                <div>
+                  <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ t("admin.settings.gatewayForwarding.codexWhitelist") }}
+                  </label>
+                  <p class="mb-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.gatewayForwarding.codexWhitelistDesc") }}
+                  </p>
+                  <div
+                    v-for="(row, i) in codexWhitelistRows"
+                    :key="`codex-wl-${i}`"
+                    class="mb-2 flex gap-2"
+                  >
+                    <input
+                      v-model="row.originator"
+                      type="text"
+                      class="input w-1/3 font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.codexOriginatorPlaceholder',
+                        )
+                      "
+                    />
+                    <input
+                      v-model="row.uaContains"
+                      type="text"
+                      class="input flex-1 font-mono text-sm"
+                      :placeholder="
+                        t(
+                          'admin.settings.gatewayForwarding.codexUaContainsPlaceholder',
+                        )
+                      "
+                    />
+                    <label
+                      class="flex shrink-0 items-center gap-1 text-xs text-gray-600 dark:text-gray-400"
+                      :title="
+                        t(
+                          'admin.settings.gatewayForwarding.codexWhitelistSkipFingerprintTooltip',
+                        )
+                      "
+                    >
+                      <input
+                        v-model="row.skipEngineFingerprint"
+                        type="checkbox"
+                      />
+                      {{
+                        t(
+                          'admin.settings.gatewayForwarding.codexWhitelistSkipFingerprint',
+                        )
+                      }}
+                    </label>
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      @click="removeCodexWhitelistRow(i)"
+                    >
+                      {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    @click="addCodexWhitelistRow"
+                  >
+                    {{ t("admin.settings.gatewayForwarding.codexAddRow") }}
+                  </button>
+                </div>
             </div>
           </div>
 
           <!-- Gateway Scheduling Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.scheduling.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.scheduling.description") }}
               </p>
             </div>
@@ -3778,11 +3988,11 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.scheduling.allowUngroupedKey") }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.scheduling.allowUngroupedKeyHint") }}
                   </p>
                 </div>
@@ -3792,11 +4002,11 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.openaiExperimentalScheduler.title") }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t("admin.settings.openaiExperimentalScheduler.description")
                     }}
@@ -3810,12 +4020,12 @@
           <!-- Gateway Forwarding Behavior -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.gatewayForwarding.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.gatewayForwarding.description") }}
               </p>
             </div>
@@ -3824,7 +4034,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t(
@@ -3832,7 +4042,7 @@
                       )
                     }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t(
                         "admin.settings.gatewayForwarding.fingerprintUnificationHint",
@@ -3847,13 +4057,13 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t("admin.settings.gatewayForwarding.metadataPassthrough")
                     }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t(
                         "admin.settings.gatewayForwarding.metadataPassthroughHint",
@@ -3868,11 +4078,11 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.gatewayForwarding.cchSigning") }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.gatewayForwarding.cchSigningHint") }}
                   </p>
                 </div>
@@ -3883,7 +4093,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t(
@@ -3891,7 +4101,7 @@
                       )
                     }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t(
                         "admin.settings.gatewayForwarding.claudeOAuthSystemPromptInjectionHint",
@@ -3906,7 +4116,7 @@
 
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{
                     t(
@@ -3918,7 +4128,7 @@
                   <div
                     v-for="(block, index) in claudeOAuthSystemPromptBlocks"
                     :key="block.id"
-                    class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                    class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800/60"
                   >
                     <div
                       :class="[
@@ -3928,7 +4138,7 @@
                     >
                       <div class="min-w-0">
                         <div
-                          class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                          class="text-sm font-medium text-gray-900 dark:text-white"
                         >
                           {{
                             t(
@@ -3938,7 +4148,7 @@
                           }}
                         </div>
                         <div
-                          class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mt-0.5 text-xs text-gray-500 dark:text-gray-400"
                         >
                           {{ getClaudeOAuthPresetLabel(block.preset) }}
                         </div>
@@ -4005,7 +4215,7 @@
                       <div class="grid gap-3 md:grid-cols-2">
                         <div>
                           <label
-                            class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                            class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300"
                           >
                             {{
                               t(
@@ -4024,7 +4234,7 @@
                         </div>
                         <div>
                           <label
-                            class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                            class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300"
                           >
                             {{
                               t(
@@ -4041,7 +4251,7 @@
 
                       <div class="mt-3">
                         <label
-                          class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300"
                         >
                           {{ t("admin.settings.gatewayForwarding.systemBlockText") }}
                         </label>
@@ -4059,7 +4269,7 @@
                         <div class="flex items-center justify-between gap-4">
                           <div>
                             <label
-                              class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                              class="text-xs font-medium text-gray-600 dark:text-gray-300"
                             >
                               {{
                                 t(
@@ -4101,7 +4311,7 @@
                     }}
                   </button>
                 </div>
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{
                     t(
                       "admin.settings.gatewayForwarding.claudeOAuthSystemPromptBlocksHint",
@@ -4114,7 +4324,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t(
@@ -4122,7 +4332,7 @@
                       )
                     }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t(
                         "admin.settings.gatewayForwarding.anthropicCacheTTL1hInjectionHint",
@@ -4139,7 +4349,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t(
@@ -4147,7 +4357,7 @@
                       )
                     }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       t(
                         "admin.settings.gatewayForwarding.rewriteMessageCacheControlHint",
@@ -4158,10 +4368,35 @@
                 <Toggle v-model="form.rewrite_message_cache_control" />
               </div>
 
+              <!-- 客户端 dateline 归一化（仅 Anthropic OAuth/SetupToken） -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <label
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{
+                      t(
+                        "admin.settings.gatewayForwarding.clientDatelineNormalization",
+                      )
+                    }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      t(
+                        "admin.settings.gatewayForwarding.clientDatelineNormalizationHint",
+                      )
+                    }}
+                  </p>
+                </div>
+                <Toggle
+                  v-model="form.enable_client_dateline_normalization"
+                />
+              </div>
+
               <!-- Antigravity UA 版本 -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{
                     t(
@@ -4169,7 +4404,7 @@
                     )
                   }}
                 </label>
-                <input data-testid="admin-settings-input-form-antigravity-user-agent-version"
+                <input
                   v-model="form.antigravity_user_agent_version"
                   type="text"
                   class="input max-w-xs font-mono text-sm"
@@ -4179,7 +4414,7 @@
                     )
                   "
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{
                     t(
                       "admin.settings.gatewayForwarding.antigravityUserAgentVersionHint",
@@ -4191,7 +4426,7 @@
               <!-- OpenAI Codex UA -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{
                     t(
@@ -4199,7 +4434,7 @@
                     )
                   }}
                 </label>
-                <input data-testid="admin-settings-input-form-openai-codex-user-agent"
+                <input
                   v-model="form.openai_codex_user_agent"
                   type="text"
                   class="input w-full font-mono text-sm"
@@ -4209,7 +4444,7 @@
                     )
                   "
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{
                     t(
                       "admin.settings.gatewayForwarding.openaiCodexUserAgentHint",
@@ -4218,29 +4453,18 @@
                 </p>
               </div>
 
-              <!-- 是否允许在 Claude Code 中使用 Codex 插件（全局开关） -->
-              <div class="flex items-center justify-between">
-                <div class="pr-4">
-                  <label class="block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ t("admin.settings.gatewayForwarding.openaiAllowClaudeCodeCodexPlugin") }}
-                  </label>
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ t("admin.settings.gatewayForwarding.openaiAllowClaudeCodeCodexPluginDesc") }}
-                  </p>
-                </div>
-                <Toggle v-model="form.openai_allow_claude_code_codex_plugin" />
-              </div>
             </div>
           </div>
+
           <!-- Web Search Emulation -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.webSearchEmulation.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.webSearchEmulation.description") }}
               </p>
             </div>
@@ -4249,11 +4473,11 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.webSearchEmulation.enabled") }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.webSearchEmulation.enabledHint") }}
                   </p>
                 </div>
@@ -4264,11 +4488,11 @@
               <div v-if="webSearchConfig.enabled" class="space-y-4">
                 <div class="flex items-center justify-between">
                   <label
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.webSearchEmulation.providers") }}
                   </label>
-                  <button data-testid="admin-settings-button-add-web-search-provider"
+                  <button
                     type="button"
                     class="btn btn-secondary btn-sm"
                     @click="addWebSearchProvider"
@@ -4279,7 +4503,7 @@
 
                 <div
                   v-if="webSearchConfig.providers.length === 0"
-                  class="rounded-lg border border-dashed border-[var(--anthropic-border)] p-4 text-center text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)]"
+                  class="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-gray-400 dark:border-dark-600"
                 >
                   {{ t("admin.settings.webSearchEmulation.noProviders") }}
                 </div>
@@ -4287,16 +4511,16 @@
                 <div
                   v-for="(provider, pIdx) in webSearchConfig.providers"
                   :key="pIdx"
-                  class="rounded-lg border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
+                  class="rounded-lg border border-gray-200 dark:border-dark-600"
                 >
                   <!-- Collapsible header -->
-                  <div data-testid="admin-settings-div-toggle-provider-expand-p-idx"
+                  <div
                     class="flex cursor-pointer items-center justify-between px-4 py-3"
                     @click="toggleProviderExpand(pIdx)"
                   >
                     <div class="flex items-center gap-3">
                       <svg
-                        class="h-4 w-4 text-[var(--anthropic-muted)] transition-transform"
+                        class="h-4 w-4 text-gray-400 transition-transform"
                         :class="{ 'rotate-90': expandedProviders[pIdx] }"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -4319,7 +4543,7 @@
                         @click.stop
                       />
                       <!-- Quota summary (always visible) -->
-                      <span class="text-xs text-[var(--anthropic-muted)]">
+                      <span class="text-xs text-gray-400">
                         {{ provider.quota_used ?? 0 }} /
                         {{
                           provider.quota_limit != null &&
@@ -4342,7 +4566,7 @@
                         }}
                       </span>
                     </div>
-                    <button data-testid="admin-settings-button-remove-web-search-provider-p-idx"
+                    <button
                       type="button"
                       class="text-red-500 hover:text-red-700 text-xs"
                       @click.stop="removeWebSearchProvider(pIdx)"
@@ -4356,15 +4580,15 @@
                   <!-- Expanded content -->
                   <div
                     v-if="expandedProviders[pIdx]"
-                    class="space-y-3 border-t border-[var(--anthropic-border)] px-4 pb-4 pt-3 dark:border-[var(--anthropic-border)]"
+                    class="space-y-3 border-t border-gray-100 px-4 pb-4 pt-3 dark:border-dark-700"
                   >
                     <!-- API Key with inline show/copy -->
                     <div>
-                      <label class="text-xs text-[var(--anthropic-muted)]">{{
+                      <label class="text-xs text-gray-500">{{
                         t("admin.settings.webSearchEmulation.apiKey")
                       }}</label>
                       <div class="relative">
-                        <input data-testid="admin-settings-input-provider-api-key"
+                        <input
                           v-model="provider.api_key"
                           :type="apiKeyVisible[pIdx] ? 'text' : 'password'"
                           class="input w-full text-sm"
@@ -4385,9 +4609,9 @@
                           v-if="provider.api_key || provider.api_key_configured"
                           class="absolute inset-y-0 right-0 flex items-center pr-1.5"
                         >
-                          <button data-testid="admin-settings-button-api-key-visible-p-idx-api-key-visible-p-idx"
+                          <button
                             type="button"
-                            class="rounded p-1 text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300"
+                            class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :title="
                               apiKeyVisible[pIdx]
                                 ? t(
@@ -4434,9 +4658,9 @@
                               />
                             </svg>
                           </button>
-                          <button data-testid="admin-settings-button-copy-api-key-p-idx"
+                          <button
                             type="button"
-                            class="rounded p-1 text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300"
+                            class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :class="{
                               'opacity-30 cursor-not-allowed':
                                 !provider.api_key,
@@ -4468,17 +4692,17 @@
                     <!-- Quota + Subscription in compact row -->
                     <div class="grid grid-cols-2 gap-3">
                       <div>
-                        <label class="text-xs text-[var(--anthropic-muted)]">{{
+                        <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.quotaLimit")
                         }}</label>
-                        <input data-testid="admin-settings-input-provider-quota-limit"
+                        <input
                           v-model="provider.quota_limit"
                           type="number"
                           min="1"
                           class="input text-sm"
                           :placeholder="'∞'"
                         />
-                        <p class="mt-0.5 text-xs text-[var(--anthropic-muted)]">
+                        <p class="mt-0.5 text-xs text-gray-400">
                           {{
                             t(
                               "admin.settings.webSearchEmulation.quotaLimitHint",
@@ -4487,10 +4711,10 @@
                         </p>
                       </div>
                       <div>
-                        <label class="text-xs text-[var(--anthropic-muted)]">{{
+                        <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.subscribedAt")
                         }}</label>
-                        <input data-testid="admin-settings-input-date"
+                        <input
                           :value="formatSubscribedAt(provider.subscribed_at)"
                           type="date"
                           class="input text-sm"
@@ -4500,7 +4724,7 @@
                             )
                           "
                         />
-                        <p class="mt-0.5 text-xs text-[var(--anthropic-muted)]">
+                        <p class="mt-0.5 text-xs text-gray-400">
                           {{
                             t(
                               "admin.settings.webSearchEmulation.subscribedAtHint",
@@ -4512,7 +4736,7 @@
 
                     <!-- Usage display -->
                     <div class="flex items-center gap-2">
-                      <span class="text-xs text-[var(--anthropic-muted)]"
+                      <span class="text-xs text-gray-500"
                         >{{
                           t("admin.settings.webSearchEmulation.quotaUsage")
                         }}:</span
@@ -4522,7 +4746,7 @@
                           provider.quota_limit != null &&
                           provider.quota_limit > 0
                         "
-                        class="flex-1 rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"
+                        class="flex-1 rounded-full bg-gray-200 dark:bg-dark-600"
                         style="height: 6px"
                       >
                         <div
@@ -4541,7 +4765,7 @@
                         />
                       </div>
                       <div v-else class="flex-1" />
-                      <span class="text-xs text-[var(--anthropic-muted)]"
+                      <span class="text-xs text-gray-500"
                         >{{ provider.quota_used ?? 0 }} /
                         {{
                           provider.quota_limit != null &&
@@ -4550,7 +4774,7 @@
                             : "∞"
                         }}</span
                       >
-                      <button data-testid="admin-settings-button-reset-web-search-usage-p-idx"
+                      <button
                         v-if="(provider.quota_used ?? 0) > 0"
                         type="button"
                         class="text-xs text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]"
@@ -4563,7 +4787,7 @@
                     <!-- Proxy + Test on same row -->
                     <div class="flex items-end gap-3">
                       <div class="flex-1">
-                        <label class="text-xs text-[var(--anthropic-muted)]">{{
+                        <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.proxy")
                         }}</label>
                         <ProxySelector
@@ -4571,7 +4795,7 @@
                           :proxies="webSearchProxies"
                         />
                       </div>
-                      <button data-testid="admin-settings-button-open-test-dialog"
+                      <button
                         type="button"
                         class="btn btn-secondary btn-sm whitespace-nowrap"
                         @click="openTestDialog()"
@@ -4586,21 +4810,21 @@
           </div>
 
           <!-- Web Search Test Dialog -->
-          <div data-testid="admin-settings-div-ws-test-dialog-open-off"
+          <div
             v-if="wsTestDialogOpen"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
             @click.self="wsTestDialogOpen = false"
           >
             <div
-              class="mx-4 w-full max-w-lg rounded-xl bg-[var(--anthropic-page)] p-6 shadow-none dark:bg-[var(--anthropic-section)]"
+              class="mx-4 w-full max-w-lg rounded-xl border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]"
             >
               <h3
-                class="mb-4 text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                class="mb-4 text-lg font-semibold text-gray-900 dark:text-white"
               >
                 {{ t("admin.settings.webSearchEmulation.testResultTitle") }}
               </h3>
               <div class="flex items-center gap-2">
-                <input data-testid="admin-settings-input-ws-test-query"
+                <input
                   v-model="wsTestQuery"
                   type="text"
                   class="input flex-1 text-sm"
@@ -4609,7 +4833,7 @@
                   "
                   @keyup.enter="testWebSearchProvider()"
                 />
-                <button data-testid="admin-settings-button-test-web-search-provider"
+                <button
                   type="button"
                   class="btn btn-primary btn-sm"
                   :disabled="wsTestLoading"
@@ -4625,10 +4849,10 @@
               <!-- Test results -->
               <div
                 v-if="wsTestResult"
-                class="mt-4 max-h-80 overflow-y-auto rounded-lg bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]"
+                class="mt-4 max-h-80 overflow-y-auto rounded-lg bg-gray-50 p-4 dark:bg-dark-700"
               >
                 <p
-                  class="mb-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{
                     t("admin.settings.webSearchEmulation.testResultProvider")
@@ -4636,28 +4860,28 @@
                 </p>
                 <div
                   v-if="wsTestResult.results.length === 0"
-                  class="text-sm text-[var(--anthropic-muted)]"
+                  class="text-sm text-gray-400"
                 >
                   {{ t("admin.settings.webSearchEmulation.testNoResults") }}
                 </div>
                 <div
                   v-for="(r, rIdx) in wsTestResult.results"
                   :key="rIdx"
-                  class="mt-2 border-t border-[var(--anthropic-border)] pt-2 first:mt-0 first:border-0 first:pt-0 dark:border-[var(--anthropic-border)]"
+                  class="mt-2 border-t border-gray-200 pt-2 first:mt-0 first:border-0 first:pt-0 dark:border-dark-600"
                 >
-                  <a data-testid="admin-settings-link-a-2"
+                  <a
                     :href="r.url"
                     target="_blank"
-                    class="text-sm font-medium text-[var(--anthropic-info)] hover:underline dark:text-[var(--anthropic-info)]"
+                    class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
                     >{{ r.title }}</a
                   >
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ r.snippet }}
                   </p>
                 </div>
               </div>
               <div class="mt-4 flex justify-end">
-                <button data-testid="admin-settings-button-ws-test-dialog-open-off"
+                <button
                   type="button"
                   class="btn btn-secondary btn-sm"
                   @click="wsTestDialogOpen = false"
@@ -4670,11 +4894,11 @@
 
         <!-- Usage Records Settings -->
         <div class="card">
-          <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-            <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.usageRecords.title') }}
             </h2>
-            <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.usageRecords.description') }}
             </p>
           </div>
@@ -4682,15 +4906,15 @@
             <!-- User error requests visibility -->
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.user_error_view.label') }}
                 </label>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.user_error_view.description') }}
                 </p>
               </div>
               <label class="toggle">
-                <input data-testid="admin-settings-input-form-allow-user-view-error-requests" v-model="form.allow_user_view_error_requests" type="checkbox" />
+                <input v-model="form.allow_user_view_error_requests" type="checkbox" />
                 <span class="toggle-slider"></span>
               </label>
             </div>
@@ -4704,12 +4928,12 @@
           <!-- Site Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.site.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.site.description") }}
               </p>
             </div>
@@ -4719,10 +4943,10 @@
                 class="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
               >
                 <div>
-                  <h3 class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.site.backendMode") }}
                   </h3>
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.backendModeDescription") }}
                   </p>
 	                </div>
@@ -4732,27 +4956,27 @@
 	              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.site.siteName") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-site-name"
+                  <input
                     v-model="form.site_name"
                     type="text"
                     class="input"
                     :placeholder="t('admin.settings.site.siteNamePlaceholder')"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.siteNameHint") }}
                   </p>
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.site.siteSubtitle") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-site-subtitle"
+                  <input
                     v-model="form.site_subtitle"
                     type="text"
                     class="input"
@@ -4760,40 +4984,8 @@
                       t('admin.settings.site.siteSubtitlePlaceholder')
                     "
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.siteSubtitleHint") }}
-                  </p>
-                </div>
-                <div>
-                  <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
-                  >
-                    {{ t("admin.settings.site.defaultTheme") }}
-                  </label>
-                  <div class="theme-default-picker" role="radiogroup">
-                    <button
-                      v-for="theme in appearanceThemeOptions"
-                      :key="theme.id"
-                      type="button"
-                      data-testid="settings-default-theme-option"
-                      class="theme-default-option"
-                      :class="form.appearance_theme_default === theme.id && 'theme-default-option-active'"
-                      :aria-checked="form.appearance_theme_default === theme.id"
-                      role="radio"
-                      @click="form.appearance_theme_default = theme.id"
-                    >
-                      <ThemeLogo :theme-id="theme.id" class="theme-default-option-logo" />
-                      <span>{{ theme.label }}</span>
-                      <Icon
-                        v-if="form.appearance_theme_default === theme.id"
-                        name="check"
-                        size="sm"
-                        class="theme-default-option-check"
-                      />
-                    </button>
-                  </div>
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ t("admin.settings.site.defaultThemeHint") }}
                   </p>
                 </div>
               </div>
@@ -4801,37 +4993,37 @@
               <!-- API Base URL -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.apiBaseUrl") }}
                 </label>
-                <input data-testid="admin-settings-input-form-api-base-url"
+                <input
                   v-model="form.api_base_url"
                   type="text"
                   class="input font-mono text-sm"
                   :placeholder="t('admin.settings.site.apiBaseUrlPlaceholder')"
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.apiBaseUrlHint") }}
                 </p>
               </div>
 
               <!-- Global Table Preferences -->
-              <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
-                <h3 class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                   {{ t("admin.settings.site.tablePreferencesTitle") }}
                 </h3>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.tablePreferencesDescription") }}
                 </p>
                 <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.site.tableDefaultPageSize") }}
                     </label>
-                    <input data-testid="admin-settings-input-form-table-default-page-size"
+                    <input
                       v-model.number="form.table_default_page_size"
                       type="number"
                       min="5"
@@ -4839,17 +5031,17 @@
                       step="1"
                       class="input w-40"
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.site.tableDefaultPageSizeHint") }}
                     </p>
                   </div>
                   <div>
                     <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                       {{ t("admin.settings.site.tablePageSizeOptions") }}
                     </label>
-                    <input data-testid="admin-settings-input-table-page-size-options-input"
+                    <input
                       v-model="tablePageSizeOptionsInput"
                       type="text"
                       class="input font-mono text-sm"
@@ -4857,7 +5049,7 @@
                         t('admin.settings.site.tablePageSizeOptionsPlaceholder')
                       "
                     />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.site.tablePageSizeOptionsHint") }}
                     </p>
                   </div>
@@ -4867,11 +5059,11 @@
               <!-- Custom Endpoints -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.customEndpoints.title") }}
                 </label>
-                <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.customEndpoints.description") }}
                 </p>
 
@@ -4879,11 +5071,11 @@
                   <div
                     v-for="(ep, index) in form.custom_endpoints"
                     :key="index"
-                    class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                    class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
                   >
                     <div class="mb-3 flex items-center justify-between">
                       <span
-                        class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                        class="text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
                         {{
                           t("admin.settings.site.customEndpoints.itemLabel", {
@@ -4891,7 +5083,7 @@
                           })
                         }}
                       </span>
-                      <button data-testid="admin-settings-button-remove-endpoint-index"
+                      <button
                         type="button"
                         class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                         @click="removeEndpoint(index)"
@@ -4914,11 +5106,11 @@
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <label
-                          class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                         >
                           {{ t("admin.settings.site.customEndpoints.name") }}
                         </label>
-                        <input data-testid="admin-settings-input-ep-name"
+                        <input
                           v-model="ep.name"
                           type="text"
                           class="input text-sm"
@@ -4931,13 +5123,13 @@
                       </div>
                       <div>
                         <label
-                          class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                         >
                           {{
                             t("admin.settings.site.customEndpoints.endpointUrl")
                           }}
                         </label>
-                        <input data-testid="admin-settings-input-ep-endpoint"
+                        <input
                           v-model="ep.endpoint"
                           type="url"
                           class="input font-mono text-sm"
@@ -4950,7 +5142,7 @@
                       </div>
                       <div class="sm:col-span-2">
                         <label
-                          class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                          class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                         >
                           {{
                             t(
@@ -4958,7 +5150,7 @@
                             )
                           }}
                         </label>
-                        <input data-testid="admin-settings-input-ep-description"
+                        <input
                           v-model="ep.description"
                           type="text"
                           class="input text-sm"
@@ -4973,9 +5165,9 @@
                   </div>
                 </div>
 
-                <button data-testid="admin-settings-button-add-endpoint"
+                <button
                   type="button"
-                  class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[var(--anthropic-border)] px-4 py-2.5 text-sm text-[var(--anthropic-muted)] transition-colors hover:border-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                  class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                   @click="addEndpoint"
                 >
                   <svg
@@ -4998,17 +5190,17 @@
               <!-- Contact Info -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.contactInfo") }}
                 </label>
-                <input data-testid="admin-settings-input-form-contact-info"
+                <input
                   v-model="form.contact_info"
                   type="text"
                   class="input"
                   :placeholder="t('admin.settings.site.contactInfoPlaceholder')"
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.contactInfoHint") }}
                 </p>
               </div>
@@ -5016,17 +5208,17 @@
               <!-- Doc URL -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.docUrl") }}
                 </label>
-                <input data-testid="admin-settings-input-form-doc-url"
+                <input
                   v-model="form.doc_url"
                   type="url"
                   class="input font-mono text-sm"
                   :placeholder="t('admin.settings.site.docUrlPlaceholder')"
                 />
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.docUrlHint") }}
                 </p>
               </div>
@@ -5034,7 +5226,7 @@
               <!-- Site Logo Upload -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.siteLogo") }}
                 </label>
@@ -5044,83 +5236,24 @@
                   :upload-label="t('admin.settings.site.uploadImage')"
                   :remove-label="t('admin.settings.site.remove')"
                   :hint="t('admin.settings.site.logoHint')"
-                  :max-size="null"
+                  :max-size="300 * 1024"
                 />
-              </div>
-
-              <!-- AI Logo Library -->
-              <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
-                <h3 class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                  {{ localText("AI logo 图床", "AI logo library") }}
-                </h3>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                  {{
-                    localText(
-                      "系统预设和自定义 AI logo 会合并展示；这里保存的是服务器共享配置，不写入本地浏览器存储。",
-                      "System presets and custom AI logos are merged for display; these are shared server settings, not browser-local storage.",
-                    )
-                  }}
-                </p>
-                <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
-                    >
-                      {{ localText("AI logo 图床基础 URL", "AI logo CDN base URL") }}
-                    </label>
-                    <input data-testid="admin-settings-input-form-ai-logo-cdn-base-url"
-                      v-model="form.ai_logo_cdn_base_url"
-                      type="url"
-                      class="input font-mono text-sm"
-                      placeholder="https://unpkg.com/@lobehub/icons-static-png@1.91.0/light"
-                    />
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                      {{
-                        localText(
-                          "默认固定到当前 LobeHub 图标版本以保证稳定；如需自动跟随上游，可改成 @latest 或你自己的图床目录。",
-                          "The default pins the current LobeHub icon version for stability; switch to @latest or your own CDN directory when you want upstream changes.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                  <div>
-                    <label
-                      class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
-                    >
-                      {{ localText("共享自定义 AI logo", "Shared custom AI logos") }}
-                    </label>
-                    <textarea data-testid="admin-settings-textarea-custom-ai-logo-presets-input"
-                      v-model="customAILogoPresetsInput"
-                      rows="5"
-                      class="input font-mono text-sm"
-                      placeholder="https://img.example.com/openai-alt.png&#10;https://img.example.com/provider.svg"
-                    ></textarea>
-                    <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                      {{
-                        localText(
-                          "每行一个 http/https 图片 URL。用户在 LogoPicker 中确认过的自定义 URL 也会自动追加到同一个服务器列表。",
-                          "One http/https image URL per line. Custom URLs confirmed in LogoPicker are appended to this same server-side list.",
-                        )
-                      }}
-                    </p>
-                  </div>
-                </div>
               </div>
 
               <!-- Home Content -->
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   {{ t("admin.settings.site.homeContent") }}
                 </label>
-                <textarea data-testid="admin-settings-textarea-form-home-content"
+                <textarea
                   v-model="form.home_content"
                   rows="6"
                   class="input font-mono text-sm"
                   :placeholder="t('admin.settings.site.homeContentPlaceholder')"
                 ></textarea>
-                <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.homeContentHint") }}
                 </p>
                 <!-- iframe CSP Warning -->
@@ -5131,13 +5264,13 @@
 
               <!-- Hide CCS Import Button -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.site.hideCcsImportButton")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.site.hideCcsImportButtonHint") }}
                   </p>
                 </div>
@@ -5149,100 +5282,25 @@
           <!-- Custom Menu Items -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.customMenu.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.customMenu.description") }}
               </p>
             </div>
             <div class="space-y-4 p-6">
-              <div
-                v-if="form.custom_menu_items.length"
-                class="custom-menu-order-list rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
-              >
-                <div class="mb-3">
-                  <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                    {{ t("admin.settings.customMenu.orderTitle") }}
-                  </h3>
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ t("admin.settings.customMenu.orderDescription") }}
-                  </p>
-                </div>
-                <div class="grid gap-2">
-                  <div
-                    v-for="(item, index) in form.custom_menu_items"
-                    :key="`order-${item.id || index}`"
-                    class="flex min-h-11 items-center gap-3 rounded-md border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
-                  >
-                    <span class="w-8 flex-shrink-0 text-xs font-semibold tabular-nums text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                      {{ index + 1 }}
-                    </span>
-                    <span class="min-w-0 flex-1 truncate text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
-                      {{
-                        item.label ||
-                        t("admin.settings.customMenu.itemLabel", { n: index + 1 })
-                      }}
-                    </span>
-                    <div class="flex flex-shrink-0 items-center gap-1">
-                      <button data-testid="admin-settings-button-move-menu-item-index-1"
-                        type="button"
-                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
-                        :disabled="index === 0"
-                        :title="t('admin.settings.customMenu.moveUp')"
-                        @click="moveMenuItem(index, -1)"
-                      >
-                        <svg
-                          class="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M5 15l7-7 7 7"
-                          />
-                        </svg>
-                      </button>
-                      <button data-testid="admin-settings-button-move-menu-item-index-1-2"
-                        type="button"
-                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
-                        :disabled="index === form.custom_menu_items.length - 1"
-                        :title="t('admin.settings.customMenu.moveDown')"
-                        @click="moveMenuItem(index, 1)"
-                      >
-                        <svg
-                          class="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <!-- Existing menu items -->
               <div
                 v-for="(item, index) in form.custom_menu_items"
                 :key="item.id || index"
-                class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
                 <div class="mb-3 flex items-center justify-between">
                   <span
-                    class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{
                       t("admin.settings.customMenu.itemLabel", { n: index + 1 })
@@ -5250,10 +5308,10 @@
                   </span>
                   <div class="flex items-center gap-2">
                     <!-- Move up -->
-                    <button data-testid="admin-settings-button-move-menu-item-index-1-3"
+                    <button
                       v-if="index > 0"
                       type="button"
-                      class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
                       :title="t('admin.settings.customMenu.moveUp')"
                       @click="moveMenuItem(index, -1)"
                     >
@@ -5272,10 +5330,10 @@
                       </svg>
                     </button>
                     <!-- Move down -->
-                    <button data-testid="admin-settings-button-move-menu-item-index-1-4"
+                    <button
                       v-if="index < form.custom_menu_items.length - 1"
                       type="button"
-                      class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
                       :title="t('admin.settings.customMenu.moveDown')"
                       @click="moveMenuItem(index, 1)"
                     >
@@ -5294,7 +5352,7 @@
                       </svg>
                     </button>
                     <!-- Delete -->
-                    <button data-testid="admin-settings-button-remove-menu-item-index"
+                    <button
                       type="button"
                       class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                       :title="t('admin.settings.customMenu.remove')"
@@ -5321,11 +5379,11 @@
                   <!-- Label -->
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.customMenu.name") }}
                     </label>
-                    <input data-testid="admin-settings-input-item-label"
+                    <input
                       v-model="item.label"
                       type="text"
                       class="input text-sm"
@@ -5338,11 +5396,11 @@
                   <!-- Visibility -->
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.customMenu.visibility") }}
                     </label>
-                    <select data-testid="admin-settings-select-item-visibility" v-model="item.visibility" class="input text-sm">
+                    <select v-model="item.visibility" class="input text-sm">
                       <option value="user">
                         {{ t("admin.settings.customMenu.visibilityUser") }}
                       </option>
@@ -5352,34 +5410,14 @@
                     </select>
                   </div>
 
-                  <!-- Open mode -->
-                  <div>
-                    <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
-                    >
-                      {{ t("admin.settings.customMenu.openMode") }}
-                    </label>
-                    <select data-testid="admin-settings-select-item-open-mode" v-model="item.open_mode" class="input text-sm">
-                      <option value="iframe">
-                        {{ t("admin.settings.customMenu.openModeIframe") }}
-                      </option>
-                      <option value="redirect">
-                        {{ t("admin.settings.customMenu.openModeRedirect") }}
-                      </option>
-                    </select>
-                    <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                      {{ t("admin.settings.customMenu.openModeHint") }}
-                    </p>
-                  </div>
-
                   <!-- URL (full width) -->
                   <div class="sm:col-span-2">
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.customMenu.url") }}
                     </label>
-                    <input data-testid="admin-settings-input-item-url"
+                    <input
                       v-model="item.url"
                       type="url"
                       class="input font-mono text-sm"
@@ -5392,29 +5430,26 @@
                   <!-- SVG Icon (full width) -->
                   <div class="sm:col-span-2">
                     <label
-                      class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
                     >
                       {{ t("admin.settings.customMenu.iconSvg") }}
                     </label>
-                    <CustomMenuIconPicker
+                    <ImageUpload
                       :model-value="item.icon_svg"
+                      mode="svg"
+                      size="sm"
                       :upload-label="t('admin.settings.customMenu.uploadSvg')"
                       :remove-label="t('admin.settings.customMenu.removeSvg')"
-                      :url-label="t('admin.settings.customMenu.svgUrl')"
-                      :url-placeholder="t('admin.settings.customMenu.svgUrlPlaceholder')"
-                      :url-hint="t('admin.settings.customMenu.svgUrlHint')"
-                      :presets-label="t('admin.settings.customMenu.savedSvgIcons')"
                       @update:model-value="(v: string) => (item.icon_svg = v)"
-                      @presets-updated="handleCustomMenuIconPresetsUpdated"
                     />
                   </div>
                 </div>
               </div>
 
               <!-- Add button -->
-              <button data-testid="admin-settings-button-add-menu-item"
+              <button
                 type="button"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[var(--anthropic-border)] py-3 text-sm text-[var(--anthropic-muted)] transition-colors hover:border-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                 @click="addMenuItem"
               >
                 <svg
@@ -5440,13 +5475,13 @@
 	        <!-- Tab: Login Agreement -->
 	        <div v-show="activeTab === 'agreement'" class="space-y-6">
 	          <div class="card">
-	            <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
+	            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
 	              <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
 	                <div>
-	                  <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+	                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
 	                    {{ localText("登录条款确认", "Login agreement") }}
 	                  </h2>
-	                  <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+	                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
 	                    {{
 	                      localText(
 	                        "控制登录页是否要求用户先阅读并同意服务条款、隐私政策或其他 Markdown 文档。",
@@ -5456,7 +5491,7 @@
 	                  </p>
 	                </div>
 	                <div class="flex items-center gap-3">
-	                  <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+	                  <span class="text-sm text-gray-600 dark:text-gray-300">
 	                    {{ form.login_agreement_enabled ? localText("已启用", "Enabled") : localText("未启用", "Disabled") }}
 	                  </span>
 	                  <Toggle v-model="form.login_agreement_enabled" />
@@ -5467,30 +5502,30 @@
 	            <div class="space-y-6 p-6">
 	              <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_220px]">
 	                <div>
-	                  <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+	                  <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
 	                    {{ localText("展示形式", "Display mode") }}
 	                  </label>
-	                  <div class="grid grid-cols-2 gap-2 rounded-lg bg-[var(--anthropic-raised)] p-1 dark:bg-[var(--anthropic-section)]">
-                    <button data-testid="admin-settings-button-login-agreement-mode-modal"
+	                  <div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
+                    <button
                       type="button"
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
                         form.login_agreement_mode === 'modal'
-                          ? 'bg-[var(--anthropic-page)] text-[var(--anthropic-fg)] shadow-none dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                          : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-fg)] dark:text-dark-300 dark:hover:text-white'
+                          ? 'bg-white text-[var(--anthropic-fg)] shadow-sm dark:bg-dark-800 dark:text-primary-300'
+                          : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
                       "
                       @click="form.login_agreement_mode = 'modal'"
                     >
                       <Icon name="shield" size="sm" />
                       {{ localText("弹窗", "Modal") }}
                     </button>
-                    <button data-testid="admin-settings-button-login-agreement-mode-checkbox"
+                    <button
                       type="button"
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
                         form.login_agreement_mode === 'checkbox'
-                          ? 'bg-[var(--anthropic-page)] text-[var(--anthropic-fg)] shadow-none dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                          : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-fg)] dark:text-dark-300 dark:hover:text-white'
+                          ? 'bg-white text-[var(--anthropic-fg)] shadow-sm dark:bg-dark-800 dark:text-primary-300'
+                          : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
                       "
                       @click="form.login_agreement_mode = 'checkbox'"
                     >
@@ -5498,7 +5533,7 @@
                       {{ localText("复选框", "Checkbox") }}
                     </button>
                   </div>
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       form.login_agreement_mode === "checkbox"
                         ? localText("复选框会显示在登录按钮下方，未勾选前所有登录入口禁用。", "The checkbox appears below the login button and gates all login actions.")
@@ -5508,15 +5543,15 @@
                 </div>
 
                 <div>
-                  <label class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ localText("条款更新日期", "Updated date") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-login-agreement-updated-at"
+                  <input
                     v-model="form.login_agreement_updated_at"
                     type="date"
                     class="input"
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ localText("日期或文档内容变化后，用户需要重新同意。", "Changing the date or content requires fresh consent.") }}
                   </p>
                 </div>
@@ -5525,10 +5560,10 @@
               <div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                       {{ localText("协议文档", "Agreement documents") }}
                     </h3>
-                    <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       {{
                         localText(
                           "文档名称可自定义，内容按 Markdown 保存。可参考：服务条款、使用政策、支持的国家和地区、服务特定条款。",
@@ -5537,7 +5572,7 @@
                       }}
                     </p>
                   </div>
-                  <button data-testid="admin-settings-button-add-login-agreement-document"
+                  <button
                     type="button"
                     class="btn btn-primary btn-sm inline-flex items-center gap-1.5"
                     @click="addLoginAgreementDocument"
@@ -5551,11 +5586,11 @@
                   <div
                     v-for="(doc, index) in form.login_agreement_documents"
                     :key="doc.id || index"
-                    class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                    class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800/60"
                   >
                     <div class="mb-3 flex items-center justify-between gap-3">
                       <div class="flex min-w-0 items-center gap-3">
-                        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-dark-200">
+                        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-dark-200">
                           <Icon
                             :name="
                               index === 1
@@ -5570,15 +5605,15 @@
                           />
                         </span>
                         <div class="min-w-0">
-                          <p class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                          <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">
                             {{ doc.title || localText("未命名文档", "Untitled document") }}
                           </p>
-                          <p class="truncate text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
                             {{ loginAgreementRoutePath(doc, index) }}
                           </p>
                         </div>
                       </div>
-                      <button data-testid="admin-settings-button-remove-login-agreement-document-index"
+                      <button
                         type="button"
                         class="rounded-md p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-900/20"
                         :disabled="
@@ -5593,10 +5628,10 @@
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                       <div>
-                        <label class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           {{ localText("文档名称", "Document title") }}
                         </label>
-                        <input data-testid="admin-settings-input-doc-title"
+                        <input
                           v-model="doc.title"
                           type="text"
                           class="input text-sm"
@@ -5604,27 +5639,27 @@
                         />
                       </div>
                       <div>
-                        <label class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                        <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           {{ localText("路由标识", "Route slug") }}
                         </label>
-                        <div class="flex overflow-hidden rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] focus-within:border-[var(--anthropic-fg)] focus-within:ring-1 focus-within:ring-[var(--atelier-line)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-                          <span class="inline-flex flex-shrink-0 items-center border-r border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-dark-400">
+                        <div class="flex overflow-hidden rounded-lg border border-gray-300 bg-white focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 dark:border-dark-600 dark:bg-dark-900">
+                          <span class="inline-flex flex-shrink-0 items-center border-r border-gray-200 bg-gray-50 px-3 text-sm text-gray-500 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-400">
                             /legal/
                           </span>
-                          <input data-testid="admin-settings-input-doc-id"
+                          <input
                             v-model="doc.id"
                             type="text"
-                            class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[var(--anthropic-fg)] outline-none placeholder:text-[var(--anthropic-muted)] focus:ring-0 dark:text-[var(--anthropic-fg)] dark:placeholder:text-dark-500"
+                            class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
                             placeholder="usage-policy"
                           />
                         </div>
                       </div>
                     </div>
                     <div class="mt-3">
-                      <label class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                         {{ localText("Markdown 内容", "Markdown content") }}
                       </label>
-                        <textarea data-testid="admin-settings-textarea-doc-content-md"
+                        <textarea
                           v-model="doc.content_md"
                           rows="8"
                           class="input font-mono text-sm"
@@ -5643,11 +5678,11 @@
         <div v-show="activeTab === 'features'" class="space-y-6">
 
         <div class="card">
-          <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-            <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.features.channelMonitor.title') }}
             </h2>
-            <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.features.channelMonitor.description') }}
             </p>
             <p class="mt-1.5 text-xs">
@@ -5663,10 +5698,10 @@
           <div class="space-y-5 p-6">
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.channelMonitor.enabled') }}
                 </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.features.channelMonitor.enabledHint') }}
                 </p>
               </div>
@@ -5678,54 +5713,26 @@
                 {{ t('admin.settings.features.channelMonitor.defaultInterval') }}
                 <span class="text-red-500">*</span>
               </label>
-              <input data-testid="admin-settings-input-form-channel-monitor-default-interval-seconds"
+              <input
                 v-model.number="form.channel_monitor_default_interval_seconds"
                 type="number"
                 min="15"
                 max="3600"
                 class="input"
               />
-              <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-xs text-gray-400">
                 {{ t('admin.settings.features.channelMonitor.defaultIntervalHint') }}
-              </p>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                  {{ t('admin.settings.features.channelMonitor.accountAutoSchedule') }}
-                </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                  {{ t('admin.settings.features.channelMonitor.accountAutoScheduleHint') }}
-                </p>
-              </div>
-              <Toggle v-model="form.channel_monitor_account_auto_schedule_enabled" />
-            </div>
-
-            <div v-if="form.channel_monitor_account_auto_schedule_enabled">
-              <label class="input-label">
-                {{ t('admin.settings.features.channelMonitor.autoScheduleFailureThreshold') }}
-              </label>
-              <input data-testid="admin-settings-input-form-channel-monitor-account-auto-schedule-failure-threshold"
-                v-model.number="form.channel_monitor_account_auto_schedule_failure_threshold"
-                type="number"
-                min="1"
-                max="10"
-                class="input"
-              />
-              <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
-                {{ t('admin.settings.features.channelMonitor.autoScheduleFailureThresholdHint') }}
               </p>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-            <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.features.availableChannels.title') }}
             </h2>
-            <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.features.availableChannels.description') }}
             </p>
             <p class="mt-1.5 text-xs">
@@ -5741,10 +5748,10 @@
           <div class="space-y-5 p-6">
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.availableChannels.enabled') }}
                 </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.features.availableChannels.enabledHint') }}
                 </p>
               </div>
@@ -5754,11 +5761,11 @@
         </div>
 
         <div class="card">
-          <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-            <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.features.riskControl.title') }}
             </h2>
-            <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.features.riskControl.description') }}
             </p>
             <p class="mt-1.5 text-xs">
@@ -5774,10 +5781,10 @@
           <div class="space-y-5 p-6">
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.riskControl.enabled') }}
                 </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.features.riskControl.enabledHint') }}
                 </p>
               </div>
@@ -5786,10 +5793,10 @@
 
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.riskControl.cyberSessionBlock') }}
                 </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.features.riskControl.cyberSessionBlockHint') }}
                 </p>
               </div>
@@ -5813,21 +5820,21 @@
 
         <!-- Affiliate (邀请返利) feature card -->
         <div class="card">
-          <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
-            <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.features.affiliate.title') }}
             </h2>
-            <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.features.affiliate.description') }}
             </p>
           </div>
           <div class="space-y-5 p-6">
             <div class="flex items-center justify-between">
               <div>
-                <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.affiliate.enabled') }}
                 </label>
-                <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.settings.features.affiliate.enabledHint') }}
                 </p>
               </div>
@@ -5840,7 +5847,7 @@
                   {{ t('admin.settings.features.affiliate.rebateRate') }}
                 </label>
                 <div class="relative">
-                  <input data-testid="admin-settings-input-form-affiliate-rebate-rate"
+                  <input
                     v-model.number="form.affiliate_rebate_rate"
                     type="number"
                     step="0.01"
@@ -5849,9 +5856,9 @@
                     class="input pr-8"
                     placeholder="20"
                   />
-                  <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">%</span>
+                  <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
                 </div>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.rebateRateHint') }}
                 </p>
               </div>
@@ -5860,7 +5867,7 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.freezeHours') }}
                 </label>
-                <input data-testid="admin-settings-input-form-affiliate-rebate-freeze-hours"
+                <input
                   v-model.number="form.affiliate_rebate_freeze_hours"
                   type="number"
                   step="1"
@@ -5868,7 +5875,7 @@
                   max="720"
                   class="input"
                 />
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.freezeHoursDesc') }}
                 </p>
               </div>
@@ -5877,7 +5884,7 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.durationDays') }}
                 </label>
-                <input data-testid="admin-settings-input-form-affiliate-rebate-duration-days"
+                <input
                   v-model.number="form.affiliate_rebate_duration_days"
                   type="number"
                   step="1"
@@ -5885,7 +5892,7 @@
                   max="3650"
                   class="input"
                 />
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.durationDaysDesc') }}
                 </p>
               </div>
@@ -5894,30 +5901,30 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.affiliate.perInviteeCap') }}
                 </label>
-                <input data-testid="admin-settings-input-form-affiliate-rebate-per-invitee-cap"
+                <input
                   v-model.number="form.affiliate_rebate_per_invitee_cap"
                   type="number"
                   step="0.01"
                   min="0"
                   class="input"
                 />
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.perInviteeCapDesc') }}
                 </p>
               </div>
 
               <!-- 专属用户管理 -->
-              <div class="border-t border-[var(--anthropic-border)] pt-6 dark:border-[var(--anthropic-border)]">
+              <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
                 <div class="mb-3 flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                       {{ t('admin.settings.features.affiliate.customUsers.title') }}
                     </h3>
-                    <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {{ t('admin.settings.features.affiliate.customUsers.description') }}
                     </p>
                   </div>
-                  <button data-testid="admin-settings-button-open-affiliate-modal-null"
+                  <button
                     type="button"
                     class="btn btn-primary btn-sm"
                     @click="openAffiliateModal(null)"
@@ -5927,14 +5934,14 @@
                 </div>
 
                 <div class="mb-3 flex items-center gap-2">
-                  <input data-testid="admin-settings-input-affiliate-state-search"
+                  <input
                     v-model="affiliateState.search"
                     type="text"
                     class="input flex-1"
                     :placeholder="t('admin.settings.features.affiliate.customUsers.searchPlaceholder')"
                     @input="onAffiliateSearchInput"
                   />
-                  <button data-testid="admin-settings-button-open-affiliate-batch-modal"
+                  <button
                     v-if="affiliateState.selected.length > 0"
                     type="button"
                     class="btn btn-secondary btn-sm"
@@ -5944,62 +5951,62 @@
                   </button>
                 </div>
 
-                <div class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+                <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-dark-700">
                   <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-                    <thead class="bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
+                    <thead class="bg-gray-50 dark:bg-dark-800">
                       <tr>
                         <th class="px-3 py-2 text-left">
-                          <input data-testid="admin-settings-input-checkbox"
+                          <input
                             type="checkbox"
                             :checked="affiliateState.entries.length > 0 && affiliateState.selected.length === affiliateState.entries.length"
                             @change="toggleAffiliateSelectAll"
                           />
                         </th>
-                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.col.email') }}</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.col.username') }}</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.col.code') }}</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.col.rate') }}</th>
-                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.col.actions') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ t('admin.settings.features.affiliate.customUsers.col.email') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ t('admin.settings.features.affiliate.customUsers.col.username') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ t('admin.settings.features.affiliate.customUsers.col.code') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ t('admin.settings.features.affiliate.customUsers.col.rate') }}</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500">{{ t('admin.settings.features.affiliate.customUsers.col.actions') }}</th>
                       </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 bg-[var(--anthropic-page)] dark:divide-dark-700 dark:bg-[var(--anthropic-section)]">
+                    <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-900">
                       <tr v-if="affiliateState.loading">
-                        <td colspan="6" class="px-3 py-6 text-center text-sm text-[var(--anthropic-muted)]">
+                        <td colspan="6" class="px-3 py-6 text-center text-sm text-gray-500">
                           {{ t('common.loading') }}
                         </td>
                       </tr>
                       <tr v-else-if="affiliateState.entries.length === 0">
-                        <td colspan="6" class="px-3 py-6 text-center text-sm text-[var(--anthropic-muted)]">
+                        <td colspan="6" class="px-3 py-6 text-center text-sm text-gray-500">
                           {{ t('admin.settings.features.affiliate.customUsers.empty') }}
                         </td>
                       </tr>
                       <tr v-for="entry in affiliateState.entries" :key="entry.user_id">
                         <td class="px-3 py-2">
-                          <input data-testid="admin-settings-input-checkbox-2"
+                          <input
                             type="checkbox"
                             :checked="affiliateState.selected.includes(entry.user_id)"
                             @change="toggleAffiliateSelect(entry.user_id)"
                           />
                         </td>
-                        <td class="px-3 py-2 text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ entry.email }}</td>
-                        <td class="px-3 py-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ entry.username }}</td>
+                        <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">{{ entry.email }}</td>
+                        <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-300">{{ entry.username }}</td>
                         <td class="px-3 py-2 text-sm font-mono">
                           {{ entry.aff_code }}
                           <span
                             v-if="entry.aff_code_custom"
-                            class="ml-1 inline-block rounded bg-[var(--anthropic-section)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
+                            class="ml-1 inline-block rounded bg-[var(--anthropic-section)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-primary-300"
                           >{{ t('admin.settings.features.affiliate.customUsers.customBadge') }}</span>
                         </td>
                         <td class="px-3 py-2 text-sm">
                           <span v-if="entry.aff_rebate_rate_percent != null">{{ entry.aff_rebate_rate_percent }}%</span>
-                          <span v-else class="text-[var(--anthropic-muted)]">{{ t('admin.settings.features.affiliate.customUsers.useGlobal') }}</span>
+                          <span v-else class="text-gray-400">{{ t('admin.settings.features.affiliate.customUsers.useGlobal') }}</span>
                         </td>
                         <td class="px-3 py-2 text-sm">
                           <div class="flex items-center gap-2">
-                            <button data-testid="admin-settings-button-open-affiliate-modal-entry" type="button" class="text-[var(--anthropic-fg)] hover:underline" @click="openAffiliateModal(entry)">
+                            <button type="button" class="text-[var(--anthropic-fg)] hover:underline" @click="openAffiliateModal(entry)">
                               {{ t('common.edit') }}
                             </button>
-                            <button data-testid="admin-settings-button-ask-reset-affiliate-user-entry"
+                            <button
                               type="button"
                               class="text-red-600 hover:underline"
                               @click="askResetAffiliateUser(entry)"
@@ -6014,11 +6021,11 @@
                 </div>
 
                 <div v-if="affiliateState.total > affiliateState.pageSize" class="mt-3 flex items-center justify-between text-sm">
-                  <span class="text-[var(--anthropic-muted)]">
+                  <span class="text-gray-500">
                     {{ t('admin.settings.features.affiliate.customUsers.totalLabel', { total: affiliateState.total }) }}
                   </span>
                   <div class="flex items-center gap-2">
-                    <button data-testid="admin-settings-button-change-affiliate-page-affiliate-state-page-1"
+                    <button
                       type="button"
                       class="btn btn-secondary btn-sm"
                       :disabled="affiliateState.page <= 1"
@@ -6026,8 +6033,8 @@
                     >
                       {{ t('pagination.previous') }}
                     </button>
-                    <span class="text-[var(--anthropic-muted)]">{{ affiliateState.page }} / {{ Math.max(1, Math.ceil(affiliateState.total / affiliateState.pageSize)) }}</span>
-                    <button data-testid="admin-settings-button-change-affiliate-page-affiliate-state-page-1-2"
+                    <span class="text-gray-500">{{ affiliateState.page }} / {{ Math.max(1, Math.ceil(affiliateState.total / affiliateState.pageSize)) }}</span>
+                    <button
                       type="button"
                       class="btn btn-secondary btn-sm"
                       :disabled="affiliateState.page >= Math.ceil(affiliateState.total / affiliateState.pageSize)"
@@ -6043,12 +6050,12 @@
         </div>
 
         <!-- Affiliate add/edit modal -->
-        <div data-testid="admin-settings-div-close-affiliate-modal"
+        <div
           v-if="affiliateModal.open"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="closeAffiliateModal"
         >
-          <div class="w-full max-w-md rounded-lg bg-[var(--anthropic-page)] p-6 shadow-none dark:bg-[var(--anthropic-section)]">
+          <div class="w-full max-w-md rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]">
             <h3 class="mb-4 text-lg font-semibold">
               {{ affiliateModal.mode === 'add' ? t('admin.settings.features.affiliate.modal.addTitle') : t('admin.settings.features.affiliate.modal.editTitle') }}
             </h3>
@@ -6058,15 +6065,15 @@
                 <!-- Chip showing the picked user; clicking it re-opens the search -->
                 <div
                   v-if="affiliateModal.selectedUser"
-                  class="flex items-center justify-between rounded-md border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
+                  class="flex items-center justify-between rounded-md border border-primary-200 bg-primary-50 px-3 py-2 dark:border-primary-700/50 dark:bg-primary-900/20"
                 >
                   <div class="text-sm">
-                    <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ affiliateModal.selectedUser.email }}</span>
-                    <span class="ml-1 text-xs text-[var(--anthropic-muted)]">({{ affiliateModal.selectedUser.username }})</span>
+                    <span class="font-medium text-gray-900 dark:text-white">{{ affiliateModal.selectedUser.email }}</span>
+                    <span class="ml-1 text-xs text-gray-500">({{ affiliateModal.selectedUser.username }})</span>
                   </div>
-                  <button data-testid="admin-settings-button-clear-selected-affiliate-user"
+                  <button
                     type="button"
-                    class="text-lg leading-none text-[var(--anthropic-muted)] hover:text-red-600"
+                    class="text-lg leading-none text-gray-400 hover:text-red-600"
                     :title="t('admin.settings.features.affiliate.modal.changeUser')"
                     @click="clearSelectedAffiliateUser"
                   >
@@ -6075,7 +6082,7 @@
                 </div>
                 <!-- Search input + result dropdown — hidden once a selection is made -->
                 <template v-else>
-                  <input data-testid="admin-settings-input-affiliate-modal-user-query"
+                  <input
                     v-model="affiliateModal.userQuery"
                     type="text"
                     class="input"
@@ -6084,23 +6091,23 @@
                   />
                   <div
                     v-if="affiliateModal.userResults.length > 0"
-                    class="mt-1 max-h-40 overflow-y-auto rounded border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
+                    class="mt-1 max-h-40 overflow-y-auto rounded border border-gray-200 dark:border-dark-700"
                   >
-                    <button data-testid="admin-settings-button-select-affiliate-user-u"
+                    <button
                       v-for="u in affiliateModal.userResults"
                       :key="u.id"
                       type="button"
-                      class="w-full px-3 py-1.5 text-left text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-800"
                       @click="selectAffiliateUser(u)"
                     >
-                      {{ u.email }} <span class="text-xs text-[var(--anthropic-muted)]">({{ u.username }})</span>
+                      {{ u.email }} <span class="text-xs text-gray-500">({{ u.username }})</span>
                     </button>
                   </div>
                 </template>
               </div>
               <div v-else>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.userLabel') }}</label>
-                <input data-testid="admin-settings-input-text"
+                <input
                   type="text"
                   class="input"
                   :value="affiliateModal.editingEntry ? affiliateModal.editingEntry.email : ''"
@@ -6110,14 +6117,14 @@
 
               <div>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.codeLabel') }}</label>
-                <input data-testid="admin-settings-input-affiliate-modal-code"
+                <input
                   v-model="affiliateModal.code"
                   type="text"
                   class="input font-mono"
                   :placeholder="t('admin.settings.features.affiliate.modal.codePlaceholder')"
                   maxlength="32"
                 />
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.modal.codeHint') }}
                 </p>
               </div>
@@ -6125,7 +6132,7 @@
               <div>
                 <label class="input-label">{{ t('admin.settings.features.affiliate.modal.rateLabel') }}</label>
                 <div class="relative">
-                  <input data-testid="admin-settings-input-affiliate-modal-rate"
+                  <input
                     v-model="affiliateModal.rate"
                     type="number"
                     step="0.01"
@@ -6134,9 +6141,9 @@
                     class="input pr-8"
                     :placeholder="t('admin.settings.features.affiliate.modal.ratePlaceholder')"
                   />
-                  <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">%</span>
+                  <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
                 </div>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-400">
                   {{ t('admin.settings.features.affiliate.modal.rateHint') }}
                 </p>
               </div>
@@ -6145,16 +6152,16 @@
             <div class="mt-6 flex items-center justify-between gap-3">
               <p
                 v-if="!affiliateModalCanSubmit"
-                class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="text-xs text-gray-500 dark:text-gray-400"
               >
                 {{ t('admin.settings.features.affiliate.modal.errorEmpty') }}
               </p>
               <span v-else></span>
               <div class="flex gap-2">
-                <button data-testid="admin-settings-button-close-affiliate-modal" type="button" class="btn btn-secondary" @click="closeAffiliateModal">
+                <button type="button" class="btn btn-secondary" @click="closeAffiliateModal">
                   {{ t('common.cancel') }}
                 </button>
-                <button data-testid="admin-settings-button-submit-affiliate-modal"
+                <button
                   type="button"
                   class="btn btn-primary"
                   :disabled="affiliateModal.saving || !affiliateModalCanSubmit"
@@ -6168,20 +6175,20 @@
         </div>
 
         <!-- Affiliate batch rate modal -->
-        <div data-testid="admin-settings-div-open-off"
+        <div
           v-if="affiliateBatchModal.open"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="affiliateBatchModal.open = false"
         >
-          <div class="w-full max-w-md rounded-lg bg-[var(--anthropic-page)] p-6 shadow-none dark:bg-[var(--anthropic-section)]">
+          <div class="w-full max-w-md rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]">
             <h3 class="mb-4 text-lg font-semibold">
               {{ t('admin.settings.features.affiliate.batchModal.title', { count: affiliateState.selected.length }) }}
             </h3>
-            <p class="mb-4 text-sm text-[var(--anthropic-muted)]">
+            <p class="mb-4 text-sm text-gray-500">
               {{ t('admin.settings.features.affiliate.batchModal.hint') }}
             </p>
             <div class="relative">
-              <input data-testid="admin-settings-input-affiliate-batch-modal-rate"
+              <input
                 v-model="affiliateBatchModal.rate"
                 type="number"
                 step="0.01"
@@ -6190,16 +6197,16 @@
                 class="input pr-8"
                 :placeholder="t('admin.settings.features.affiliate.batchModal.placeholder')"
               />
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">%</span>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
             </div>
-            <p class="mt-2 text-xs text-[var(--anthropic-muted)]">
+            <p class="mt-2 text-xs text-gray-400">
               {{ t('admin.settings.features.affiliate.batchModal.clearHint') }}
             </p>
             <div class="mt-6 flex justify-end gap-2">
-              <button data-testid="admin-settings-button-open-off" type="button" class="btn btn-secondary" @click="affiliateBatchModal.open = false">
+              <button type="button" class="btn btn-secondary" @click="affiliateBatchModal.open = false">
                 {{ t('common.cancel') }}
               </button>
-              <button data-testid="admin-settings-button-submit-affiliate-batch-modal"
+              <button
                 type="button"
                 class="btn btn-primary"
                 :disabled="affiliateBatchModal.saving"
@@ -6219,18 +6226,18 @@
           <!-- Payment System Settings -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.payment.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.payment.description") }}
-                <a data-testid="admin-settings-link-a-3"
+                <a
                   :href="paymentGuideHref"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="ml-2 inline-flex items-center text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                  class="ml-2 inline-flex items-center text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                 >
                   <svg
                     class="mr-0.5 h-3.5 w-3.5"
@@ -6253,10 +6260,10 @@
               <!-- Enable toggle -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.payment.enabled")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.payment.enabledHint") }}
                   </p>
                 </div>
@@ -6269,7 +6276,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
                     }}</label
-                    ><input data-testid="admin-settings-input-form-payment-product-name-prefix"
+                    ><input
                       v-model="form.payment_product_name_prefix"
                       type="text"
                       class="input"
@@ -6280,7 +6287,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNameSuffix")
                     }}</label
-                    ><input data-testid="admin-settings-input-form-payment-product-name-suffix"
+                    ><input
                       v-model="form.payment_product_name_suffix"
                       type="text"
                       class="input"
@@ -6292,7 +6299,7 @@
                       t("admin.settings.payment.preview")
                     }}</label>
                     <div
-                      class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                      class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300"
                     >
                       {{
                         (form.payment_product_name_prefix || "Sub2API") +
@@ -6308,7 +6315,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
                     }}</label
-                    ><input data-testid="admin-settings-input-number"
+                    ><input
                       :value="form.payment_min_amount || ''"
                       @input="
                         form.payment_min_amount =
@@ -6327,7 +6334,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxAmount")
                     }}</label
-                    ><input data-testid="admin-settings-input-number-2"
+                    ><input
                       :value="form.payment_max_amount || ''"
                       @input="
                         form.payment_max_amount =
@@ -6346,7 +6353,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.dailyLimit")
                     }}</label
-                    ><input data-testid="admin-settings-input-number-3"
+                    ><input
                       :value="form.payment_daily_limit || ''"
                       @input="
                         form.payment_daily_limit =
@@ -6365,7 +6372,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.balanceRechargeMultiplier")
                     }}</label>
-                    <input data-testid="admin-settings-input-number-4"
+                    <input
                       :value="form.payment_balance_recharge_multiplier || ''"
                       @input="
                         form.payment_balance_recharge_multiplier =
@@ -6378,7 +6385,7 @@
                       min="0.01"
                       class="input"
                     />
-                    <p class="mt-0.5 text-xs text-[var(--anthropic-muted)]">
+                    <p class="mt-0.5 text-xs text-gray-400">
                       {{
                         t(
                           "admin.settings.payment.balanceRechargeMultiplierHint",
@@ -6403,7 +6410,7 @@
                       t("admin.settings.payment.rechargeFeeRate")
                     }}</label>
                     <div class="relative">
-                      <input data-testid="admin-settings-input-number-5"
+                      <input
                         :value="form.payment_recharge_fee_rate ?? ''"
                         @input="
                           form.payment_recharge_fee_rate = Math.min(
@@ -6426,11 +6433,11 @@
                         class="input pr-8"
                       />
                       <span
-                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--anthropic-muted)]"
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
                         >%</span
                       >
                     </div>
-                    <p class="mt-0.5 text-xs text-[var(--anthropic-muted)]">
+                    <p class="mt-0.5 text-xs text-gray-400">
                       {{ t("admin.settings.payment.rechargeFeeRateHint") }}
                     </p>
                     <p
@@ -6450,14 +6457,14 @@
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
                       <span class="text-red-500">*</span></label
-                    ><input data-testid="admin-settings-input-form-payment-order-timeout-minutes"
+                    ><input
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
                       min="1"
                       class="input"
                       required
                     />
-                    <p class="mt-0.5 text-xs text-[var(--anthropic-muted)]">
+                    <p class="mt-0.5 text-xs text-gray-400">
                       {{ t("admin.settings.payment.orderTimeoutHint") }}
                     </p>
                   </div>
@@ -6468,7 +6475,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
                     }}</label
-                    ><input data-testid="admin-settings-input-form-payment-max-pending-orders"
+                    ><input
                       v-model.number="form.payment_max_pending_orders"
                       type="number"
                       min="1"
@@ -6490,13 +6497,13 @@
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button data-testid="admin-settings-button-button-8"
+                      <button
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                           form.payment_cancel_rate_limit_enabled
                             ? 'bg-[var(--anthropic-fg)]'
-                            : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
+                            : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
                           form.payment_cancel_rate_limit_enabled =
@@ -6505,7 +6512,7 @@
                       >
                         <span
                           :class="[
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                             form.payment_cancel_rate_limit_enabled
                               ? 'translate-x-5'
                               : 'translate-x-0',
@@ -6522,14 +6529,14 @@
                         :class="[
                           'text-sm whitespace-nowrap',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
-                            : 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]',
+                            ? 'text-gray-700 dark:text-gray-300'
+                            : 'text-gray-400 dark:text-gray-600',
                         ]"
                         >{{
                           t("admin.settings.payment.cancelRateLimitEvery")
                         }}</span
                       >
-                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-window"
+                      <input
                         v-model.number="form.payment_cancel_rate_limit_window"
                         type="number"
                         min="1"
@@ -6547,14 +6554,14 @@
                         :class="[
                           'text-sm whitespace-nowrap',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
-                            : 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]',
+                            ? 'text-gray-700 dark:text-gray-300'
+                            : 'text-gray-400 dark:text-gray-600',
                         ]"
                         >{{
                           t("admin.settings.payment.cancelRateLimitAllowMax")
                         }}</span
                       >
-                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-max"
+                      <input
                         v-model.number="form.payment_cancel_rate_limit_max"
                         type="number"
                         min="1"
@@ -6566,8 +6573,8 @@
                         :class="[
                           'text-sm whitespace-nowrap',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
-                            : 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]',
+                            ? 'text-gray-700 dark:text-gray-300'
+                            : 'text-gray-400 dark:text-gray-600',
                         ]"
                         >{{
                           t("admin.settings.payment.cancelRateLimitTimes")
@@ -6580,13 +6587,13 @@
                       t("admin.settings.payment.alipayForceQRCode")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button data-testid="admin-settings-button-button-9"
+                      <button
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                           form.payment_alipay_force_qrcode
                             ? 'bg-[var(--anthropic-fg)]'
-                            : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
+                            : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
                           form.payment_alipay_force_qrcode =
@@ -6595,14 +6602,14 @@
                       >
                         <span
                           :class="[
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                             form.payment_alipay_force_qrcode
                               ? 'translate-x-5'
                               : 'translate-x-0',
                           ]"
                         />
                       </button>
-                      <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
+                      <span class="text-sm text-gray-500 dark:text-gray-400">{{
                         t("admin.settings.payment.alipayForceQRCodeHint")
                       }}</span>
                     </div>
@@ -6614,7 +6621,7 @@
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
                   <div class="mt-1.5 flex flex-wrap gap-2">
-                    <button data-testid="admin-settings-button-toggle-payment-type-pt-value"
+                    <button
                       v-for="pt in allPaymentTypes"
                       :key="pt.value"
                       type="button"
@@ -6622,20 +6629,20 @@
                       :class="[
                         'rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
                         isPaymentTypeEnabled(pt.value)
-                          ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-white shadow-none'
-                          : 'border-[var(--anthropic-border)] bg-[var(--anthropic-page)] text-[var(--anthropic-muted)] hover:border-[var(--anthropic-border)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:border-dark-500',
+                          ? 'border-primary-500 bg-[var(--anthropic-fg)] text-white shadow-sm'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
                       ]"
                     >
                       {{ pt.label }}
                     </button>
                   </div>
-                  <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                     {{ t("admin.settings.payment.enabledPaymentTypesHint") }}
-                    <a data-testid="admin-settings-link-a-4"
+                    <a
                       :href="paymentMethodsHref"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="ml-1 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                      class="ml-1 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                     >
                       {{ t("admin.settings.payment.findProvider") }}
                       <svg
@@ -6673,7 +6680,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.helpText")
                     }}</label>
-                    <textarea data-testid="admin-settings-textarea-form-payment-help-text"
+                    <textarea
                       v-model="form.payment_help_text"
                       rows="3"
                       class="input"
@@ -6714,13 +6721,13 @@
                 <Icon
                   name="mail"
                   size="md"
-                  class="mt-0.5 flex-shrink-0 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500"
                 />
                 <div>
-                  <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <h3 class="font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.emailTabDisabledTitle") }}
                   </h3>
-                  <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.emailTabDisabledHint") }}
                   </p>
                 </div>
@@ -6731,17 +6738,17 @@
           <!-- SMTP Settings - Only show when email verification is enabled -->
           <div v-if="form.email_verify_enabled" class="card">
             <div
-              class="flex items-center justify-between border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
               <div>
-                <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                   {{ t("admin.settings.smtp.title") }}
                 </h2>
-                <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.smtp.description") }}
                 </p>
               </div>
-              <button data-testid="admin-settings-button-test-smtp-connection"
+              <button
                 type="button"
                 @click="testSmtpConnection"
                 :disabled="testingSmtp || loadFailed"
@@ -6778,11 +6785,11 @@
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.host") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-host"
+                  <input
                     v-model="form.smtp_host"
                     type="text"
                     class="input"
@@ -6791,11 +6798,11 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.port") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-port"
+                  <input
                     v-model.number="form.smtp_port"
                     type="number"
                     min="1"
@@ -6806,11 +6813,11 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.username") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-username"
+                  <input
                     v-model="form.smtp_username"
                     type="text"
                     class="input"
@@ -6819,11 +6826,11 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.password") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-password"
+                  <input
                     v-model="form.smtp_password"
                     type="password"
                     class="input"
@@ -6838,7 +6845,7 @@
                         : t('admin.settings.smtp.passwordPlaceholder')
                     "
                   />
-                  <p class="mt-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                     {{
                       form.smtp_password_configured
                         ? t("admin.settings.smtp.passwordConfiguredHint")
@@ -6848,11 +6855,11 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.fromEmail") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-from-email"
+                  <input
                     v-model="form.smtp_from_email"
                     type="email"
                     class="input"
@@ -6861,11 +6868,11 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.smtp.fromName") }}
                   </label>
-                  <input data-testid="admin-settings-input-form-smtp-from-name"
+                  <input
                     v-model="form.smtp_from_name"
                     type="text"
                     class="input"
@@ -6876,13 +6883,13 @@
 
               <!-- Use TLS Toggle -->
               <div
-                class="flex items-center justify-between border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
-                  <label class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+                  <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.smtp.useTls")
                   }}</label>
-                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.smtp.useTlsHint") }}
                   </p>
                 </div>
@@ -6894,12 +6901,12 @@
           <!-- Send Test Email - Only show when email verification is enabled -->
           <div v-if="form.email_verify_enabled" class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ t("admin.settings.testEmail.title") }}
               </h2>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.testEmail.description") }}
               </p>
             </div>
@@ -6907,11 +6914,11 @@
               <div class="flex items-end gap-4">
                 <div class="flex-1">
                   <label
-                    class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.testEmail.recipientEmail") }}
                   </label>
-                  <input data-testid="admin-settings-input-test-email-address"
+                  <input
                     v-model="testEmailAddress"
                     type="email"
                     class="input"
@@ -6920,7 +6927,7 @@
                     "
                   />
                 </div>
-                <button data-testid="admin-settings-button-send-test-email"
+                <button
                   type="button"
                   @click="sendTestEmail"
                   :disabled="
@@ -6961,12 +6968,12 @@
           <!-- 订阅到期提醒 -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h3 class="text-base font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h3 class="text-base font-medium text-gray-900 dark:text-white">
                 {{ t("admin.settings.subscriptionExpiryNotify.title") }}
               </h3>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.subscriptionExpiryNotify.description") }}
               </p>
             </div>
@@ -6974,11 +6981,11 @@
               <div class="flex items-center justify-between gap-4">
                 <div>
                   <label
-                    class="mb-0 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     {{ t("admin.settings.subscriptionExpiryNotify.enabled") }}
                   </label>
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.subscriptionExpiryNotify.enabledHint") }}
                   </p>
                 </div>
@@ -6992,34 +6999,34 @@
           <!-- Balance Low Notification -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h3 class="text-base font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h3 class="text-base font-medium text-gray-900 dark:text-white">
                 {{ t("admin.settings.balanceNotify.title") }}
               </h3>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.balanceNotify.description") }}
               </p>
             </div>
             <div class="px-6 py-6 space-y-4">
               <div class="flex items-center justify-between">
                 <label
-                  class="mb-0 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.balanceNotify.enabled") }}</label
                 >
                 <Toggle v-model="form.balance_low_notify_enabled" />
               </div>
               <div v-if="form.balance_low_notify_enabled">
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.balanceNotify.threshold") }}</label
                 >
                 <div class="relative">
                   <span
-                    class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     >$</span
                   >
-                  <input data-testid="admin-settings-input-form-balance-low-notify-threshold"
+                  <input
                     v-model.number="form.balance_low_notify_threshold"
                     type="number"
                     min="0"
@@ -7027,22 +7034,22 @@
                     class="input pl-7"
                   />
                 </div>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.balanceNotify.thresholdHint") }}
                 </p>
               </div>
               <div>
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.balanceNotify.rechargeUrl") }}</label
                 >
-                <input data-testid="admin-settings-input-form-balance-low-notify-recharge-url"
+                <input
                   v-model="form.balance_low_notify_recharge_url"
                   type="url"
                   class="input"
                   :placeholder="currentOrigin"
                 />
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.balanceNotify.rechargeUrlHint") }}
                 </p>
               </div>
@@ -7052,26 +7059,26 @@
           <!-- Account Quota Notification -->
           <div class="card">
             <div
-              class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
-              <h3 class="text-base font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <h3 class="text-base font-medium text-gray-900 dark:text-white">
                 {{ t("admin.settings.quotaNotify.title") }}
               </h3>
-              <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("admin.settings.quotaNotify.description") }}
               </p>
             </div>
             <div class="px-6 py-6 space-y-4">
               <div class="flex items-center justify-between">
                 <label
-                  class="mb-0 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.quotaNotify.enabled") }}</label
                 >
                 <Toggle v-model="form.account_quota_notify_enabled" />
               </div>
               <div v-if="form.account_quota_notify_enabled">
                 <label
-                  class="mb-2 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.quotaNotify.emails") }}</label
                 >
                 <div class="space-y-2">
@@ -7084,17 +7091,17 @@
                     <label
                       class="relative inline-flex items-center cursor-pointer shrink-0"
                     >
-                      <input data-testid="admin-settings-input-checkbox-3"
+                      <input
                         type="checkbox"
                         :checked="!entry.disabled"
                         @change="entry.disabled = !entry.disabled"
                         class="sr-only peer"
                       />
                       <div
-                        class="w-9 h-5 bg-[var(--anthropic-raised)] peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--anthropic-page)] after:border-[var(--anthropic-border)] after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-[var(--atelier-focus)]"
+                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-[var(--anthropic-fg)]"
                       ></div>
                     </label>
-                    <input data-testid="admin-settings-input-entry-email"
+                    <input
                       v-model="entry.email"
                       type="email"
                       class="input flex-1"
@@ -7102,7 +7109,7 @@
                         t('admin.settings.quotaNotify.emailPlaceholder')
                       "
                     />
-                    <button data-testid="admin-settings-button-splice-index-1"
+                    <button
                       @click="form.account_quota_notify_emails.splice(index, 1)"
                       class="btn btn-secondary px-2"
                       type="button"
@@ -7110,7 +7117,7 @@
                       <Icon name="x" size="xs" class="h-4 w-4" />
                     </button>
                   </div>
-                  <button data-testid="admin-settings-button-add-quota-notify-email"
+                  <button
                     @click="addQuotaNotifyEmail"
                     class="btn btn-secondary btn-sm"
                     type="button"
@@ -7118,7 +7125,7 @@
                     + {{ t("admin.settings.quotaNotify.addEmail") }}
                   </button>
                 </div>
-                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.quotaNotify.emailsHint") }}
                 </p>
               </div>
@@ -7134,7 +7141,7 @@
 
         <!-- Save Button -->
         <div v-show="activeTab !== 'backup'" class="flex justify-end">
-          <button data-testid="admin-settings-button-submit"
+          <button
             type="submit"
             :disabled="saving || loadFailed"
             class="btn btn-primary"
@@ -7232,7 +7239,6 @@ import type {
 } from "@/api/admin/settings";
 import type {
   AdminGroup,
-  CustomMenuItem,
   LoginAgreementDocument,
   NotifyEmailEntry,
   Proxy,
@@ -7249,12 +7255,9 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
-import ThemeLogo from "@/components/common/ThemeLogo.vue";
-import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue';
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import { useClipboard } from "@/composables/useClipboard";
-import { appearanceThemeOptions, type AppearanceThemeId } from "@/composables/useAppearanceTheme";
 import { affiliatesAPI, type AffiliateAdminEntry, type SimpleUser as AffiliateSimpleUser } from "@/api/admin/affiliates";
 import { extractApiErrorMessage, extractI18nErrorMessage } from "@/utils/apiError";
 import { useAppStore } from "@/stores";
@@ -7267,9 +7270,11 @@ import {
   parseRegistrationEmailSuffixWhitelistInput,
 } from "@/utils/registrationEmailPolicy";
 import {
-  normalizeCustomMenuSVGIconPresetURLs,
-  setCustomMenuIconRuntimeConfig,
-} from "@/utils/customMenuIconPresets";
+  parseFingerprintSignalsToRows,
+  serializeFingerprintRowsToJSON,
+  defaultFingerprintSignalRows,
+  type FingerprintSignalRow,
+} from "./codexFingerprintSignals";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -7304,15 +7309,15 @@ type SettingsTab =
   | "backup";
 const activeTab = ref<SettingsTab>("general");
 const settingsTabs = [
-  { key: "general" as SettingsTab },
-  { key: "agreement" as SettingsTab },
-  { key: "features" as SettingsTab },
-  { key: "security" as SettingsTab },
-  { key: "users" as SettingsTab },
-  { key: "gateway" as SettingsTab },
-  { key: "payment" as SettingsTab },
-  { key: "email" as SettingsTab },
-  { key: "backup" as SettingsTab },
+  { key: "general" as SettingsTab, icon: "home" as const },
+  { key: "agreement" as SettingsTab, icon: "document" as const },
+  { key: "features" as SettingsTab, icon: "bolt" as const },
+  { key: "security" as SettingsTab, icon: "shield" as const },
+  { key: "users" as SettingsTab, icon: "user" as const },
+  { key: "gateway" as SettingsTab, icon: "server" as const },
+  { key: "payment" as SettingsTab, icon: "creditCard" as const },
+  { key: "email" as SettingsTab, icon: "mail" as const },
+  { key: "backup" as SettingsTab, icon: "database" as const },
 ];
 
 const settingsTabKeyboardActions = {
@@ -7377,9 +7382,6 @@ const testEmailAddress = ref("");
 const registrationEmailSuffixWhitelistTags = ref<string[]>([]);
 const registrationEmailSuffixWhitelistDraft = ref("");
 const tablePageSizeOptionsInput = ref("10, 20, 50, 100");
-const defaultAILogoCDNBaseURL =
-  "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light";
-const customAILogoPresetsInput = ref("");
 
 // Admin API Key 状态
 const adminApiKeyLoading = ref(true);
@@ -7458,22 +7460,22 @@ function defaultLoginAgreementDocuments(): LoginAgreementDocument[] {
   return [
     {
       id: "terms",
-      title: "服务条款",
+      title: localText("服务条款", "Terms of Service"),
       content_md: "",
     },
     {
       id: "usage-policy",
-      title: "使用政策",
+      title: localText("使用政策", "Usage Policy"),
       content_md: "",
     },
     {
       id: "supported-regions",
-      title: "支持的国家和地区",
+      title: localText("支持的国家和地区", "Supported Countries and Regions"),
       content_md: "",
     },
     {
       id: "service-specific-terms",
-      title: "服务特定条款",
+      title: localText("服务特定条款", "Service-Specific Terms"),
       content_md: "",
     },
   ];
@@ -7937,10 +7939,6 @@ const form = reactive<SettingsForm>({
   home_content: "",
   backend_mode_enabled: false,
   hide_ccs_import_button: false,
-  appearance_theme_default: "cloudflare",
-  ai_logo_cdn_base_url: defaultAILogoCDNBaseURL,
-  custom_ai_logo_presets: [],
-  custom_menu_svg_icon_presets: [],
   payment_enabled: false,
   risk_control_enabled: false,
   cyber_session_block_enabled: false,
@@ -7974,7 +7972,6 @@ const form = reactive<SettingsForm>({
     url: string;
     visibility: "user" | "admin";
     sort_order: number;
-    open_mode: "iframe" | "redirect";
   }>,
   custom_endpoints: [] as Array<{
     name: string;
@@ -8017,9 +8014,9 @@ const form = reactive<SettingsForm>({
   dingtalk_connect_sync_corp_email_attr_key: "dingtalk_email",
   dingtalk_connect_sync_display_name_attr_key: "dingtalk_name",
   dingtalk_connect_sync_dept_attr_key: "dingtalk_department",
-  dingtalk_connect_sync_corp_email_attr_name: "钉钉企业邮箱",
-  dingtalk_connect_sync_display_name_attr_name: "钉钉姓名",
-  dingtalk_connect_sync_dept_attr_name: "钉钉部门",
+  dingtalk_connect_sync_corp_email_attr_name: localText("钉钉企业邮箱", "DingTalk Corporate Email"),
+  dingtalk_connect_sync_display_name_attr_name: localText("钉钉姓名", "DingTalk Name"),
+  dingtalk_connect_sync_dept_attr_name: localText("钉钉部门", "DingTalk Department"),
   wechat_connect_enabled: false,
   wechat_connect_app_id: "",
   wechat_connect_app_secret: "",
@@ -8106,9 +8103,16 @@ const form = reactive<SettingsForm>({
   claude_oauth_system_prompt_blocks: defaultClaudeOAuthSystemPromptBlocks,
   enable_anthropic_cache_ttl_1h_injection: false,
   rewrite_message_cache_control: false,
+  enable_client_dateline_normalization: true,
   antigravity_user_agent_version: "",
   openai_codex_user_agent: "",
-  openai_allow_claude_code_codex_plugin: false,
+  // codex_cli_only 加固
+  min_codex_version: "",
+  max_codex_version: "",
+  codex_cli_only_blacklist: "",
+  codex_cli_only_whitelist: "",
+  codex_cli_only_allow_app_server_clients: false,
+  codex_cli_only_engine_fingerprint_signals: "",
   // 余额、订阅到期与账号限额通知
   balance_low_notify_enabled: false,
   balance_low_notify_threshold: 0,
@@ -8119,8 +8123,6 @@ const form = reactive<SettingsForm>({
   // Channel Monitor feature switch
   channel_monitor_enabled: true,
   channel_monitor_default_interval_seconds: 60,
-  channel_monitor_account_auto_schedule_enabled: false,
-  channel_monitor_account_auto_schedule_failure_threshold: 2,
   // Available Channels feature switch
   available_channels_enabled: false,
   // Affiliate (邀请返利) feature switch
@@ -8128,12 +8130,6 @@ const form = reactive<SettingsForm>({
   // Allow user view error requests
   allow_user_view_error_requests: false,
 });
-
-const appearanceThemeIds = appearanceThemeOptions.map(theme => theme.id);
-
-function isAppearanceThemeId(value: unknown): value is AppearanceThemeId {
-  return typeof value === "string" && appearanceThemeIds.includes(value as AppearanceThemeId);
-}
 
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
   buildAuthSourceDefaultsState({}),
@@ -8178,7 +8174,7 @@ const authSourceDefaultsMeta = computed(() => [
   },
   {
     source: "dingtalk" as AuthSourceType,
-    title: "钉钉",
+    title: t("auth.dingtalkProviderName"),
     description: localText(
       "通过钉钉首次注册或首次绑定时应用。",
       "Applied on first signup or first bind through DingTalk.",
@@ -8471,13 +8467,15 @@ const addQuotaNotifyEmail = () => {
 const currentOrigin =
   typeof window !== "undefined" ? window.location.origin : "";
 
+function buildApiCallbackUrl(path: string): string {
+  const base = (form.api_base_url || currentOrigin).replace(/\/+$/, "");
+  const apiRoot = base.endsWith("/api/v1") ? base : `${base}/api/v1`;
+  return `${apiRoot}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 // LinuxDo OAuth redirect URL suggestion
 const linuxdoRedirectUrlSuggestion = computed(() => {
-  if (typeof window === "undefined") return "";
-  const origin =
-    window.location.origin ||
-    `${window.location.protocol}//${window.location.host}`;
-  return `${origin}/api/v1/auth/oauth/linuxdo/callback`;
+  return buildApiCallbackUrl("/auth/oauth/linuxdo/callback");
 });
 
 async function setAndCopyLinuxdoRedirectUrl() {
@@ -8494,19 +8492,11 @@ async function setAndCopyLinuxdoRedirectUrl() {
 type EmailOAuthProvider = "github" | "google";
 
 const githubOAuthRedirectUrlSuggestion = computed(() => {
-  if (typeof window === "undefined") return "";
-  const origin =
-    window.location.origin ||
-    `${window.location.protocol}//${window.location.host}`;
-  return `${origin}/api/v1/auth/oauth/github/callback`;
+  return buildApiCallbackUrl("/auth/oauth/github/callback");
 });
 
 const googleOAuthRedirectUrlSuggestion = computed(() => {
-  if (typeof window === "undefined") return "";
-  const origin =
-    window.location.origin ||
-    `${window.location.protocol}//${window.location.host}`;
-  return `${origin}/api/v1/auth/oauth/google/callback`;
+  return buildApiCallbackUrl("/auth/oauth/google/callback");
 });
 
 async function setAndCopyEmailOAuthRedirectUrl(provider: EmailOAuthProvider) {
@@ -8528,11 +8518,7 @@ async function setAndCopyEmailOAuthRedirectUrl(provider: EmailOAuthProvider) {
 }
 
 const wechatRedirectUrlSuggestion = computed(() => {
-  if (typeof window === "undefined") return "";
-  const origin =
-    window.location.origin ||
-    `${window.location.protocol}//${window.location.host}`;
-  return `${origin}/api/v1/auth/oauth/wechat/callback`;
+  return buildApiCallbackUrl("/auth/oauth/wechat/callback");
 });
 
 function syncWeChatConnectMode(preferredMode?: WeChatConnectMode) {
@@ -8597,11 +8583,7 @@ async function setAndCopyWeChatRedirectUrl() {
 }
 
 const oidcRedirectUrlSuggestion = computed(() => {
-  if (typeof window === "undefined") return "";
-  const origin =
-    window.location.origin ||
-    `${window.location.protocol}//${window.location.host}`;
-  return `${origin}/api/v1/auth/oauth/oidc/callback`;
+  return buildApiCallbackUrl("/auth/oauth/oidc/callback");
 });
 
 async function setAndCopyOIDCRedirectUrl() {
@@ -8621,7 +8603,6 @@ function addMenuItem() {
     url: "",
     visibility: "user",
     sort_order: form.custom_menu_items.length,
-    open_mode: "iframe",
   });
 }
 
@@ -8643,13 +8624,6 @@ function moveMenuItem(index: number, direction: -1 | 1) {
   // Re-index sort_order
   items.forEach((item, i) => {
     item.sort_order = i;
-  });
-}
-
-function handleCustomMenuIconPresetsUpdated(urls: string[]) {
-  form.custom_menu_svg_icon_presets = normalizeCustomMenuSVGIconPresetURLs(urls);
-  setCustomMenuIconRuntimeConfig({
-    custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
   });
 }
 
@@ -8730,35 +8704,80 @@ function parseTablePageSizeOptionsInput(raw: string): number[] | null {
   return deduped;
 }
 
-function normalizeCustomAILogoPresetsInput(raw: string): string[] | null {
-  const seen = new Set<string>();
-  const result: string[] = [];
-  const tokens = raw
-    .split(/\r?\n/)
-    .map((token) => token.trim())
-    .filter((token) => token.length > 0);
+// ── codex_cli_only 黑/白名单结构化编辑（行 ↔ JSON）──
+interface CodexClientRow {
+  originator: string;
+  uaContains: string; // 逗号分隔，序列化时拆成 ua_contains 数组
+  skipEngineFingerprint?: boolean; // 仅白名单：命中即跳过引擎指纹门
+}
+const codexBlacklistRows = ref<CodexClientRow[]>([]);
+const codexWhitelistRows = ref<CodexClientRow[]>([]);
+const codexFingerprintRows = ref<FingerprintSignalRow[]>([]);
+const codexFingerprintNoRequired = computed(
+  () => !codexFingerprintRows.value.some((r) => r.required),
+);
+function addCodexFingerprintRow(): void {
+  codexFingerprintRows.value.push({ type: "header_exact", match: "", required: false });
+}
+function removeCodexFingerprintRow(i: number): void {
+  codexFingerprintRows.value.splice(i, 1);
+}
 
-  for (const token of tokens) {
-    try {
-      const parsed = new URL(token);
-      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-        return null;
-      }
-      const url = parsed.toString();
-      if (seen.has(url)) {
-        continue;
-      }
-      seen.add(url);
-      result.push(url);
-      if (result.length >= 48) {
-        break;
-      }
-    } catch {
-      return null;
-    }
+function parseCodexEntriesToRows(raw: string): CodexClientRow[] {
+  if (!raw || !raw.trim()) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr.map((e) => ({
+      originator: typeof e?.originator === "string" ? e.originator : "",
+      uaContains: Array.isArray(e?.ua_contains)
+        ? e.ua_contains
+            .filter((x: unknown) => typeof x === "string")
+            .join(", ")
+        : "",
+      skipEngineFingerprint: e?.skip_engine_fingerprint === true,
+    }));
+  } catch {
+    return [];
   }
+}
 
-  return result;
+function serializeCodexRowsToJSON(rows: CodexClientRow[]): string {
+  const entries = rows
+    .map((r) => {
+      const entry: {
+        originator: string;
+        ua_contains: string[];
+        skip_engine_fingerprint?: boolean;
+      } = {
+        originator: r.originator.trim(),
+        ua_contains: r.uaContains
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0),
+      };
+      if (r.skipEngineFingerprint) entry.skip_engine_fingerprint = true;
+      return entry;
+    })
+    .filter((e) => e.originator !== "" || e.ua_contains.length > 0);
+  return entries.length > 0 ? JSON.stringify(entries) : "";
+}
+
+function addCodexBlacklistRow(): void {
+  codexBlacklistRows.value.push({ originator: "", uaContains: "" });
+}
+function removeCodexBlacklistRow(i: number): void {
+  codexBlacklistRows.value.splice(i, 1);
+}
+function addCodexWhitelistRow(): void {
+  codexWhitelistRows.value.push({
+    originator: "",
+    uaContains: "",
+    skipEngineFingerprint: false,
+  });
+}
+function removeCodexWhitelistRow(i: number): void {
+  codexWhitelistRows.value.splice(i, 1);
 }
 
 async function loadSettings() {
@@ -8774,15 +8793,6 @@ async function loadSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
-    form.appearance_theme_default = isAppearanceThemeId(settings.appearance_theme_default)
-      ? settings.appearance_theme_default
-      : "cloudflare";
-    form.custom_menu_items = Array.isArray(settings.custom_menu_items)
-      ? settings.custom_menu_items.map((item) => ({
-          ...item,
-          open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
-        }))
-      : [];
     if (!form.claude_oauth_system_prompt_blocks?.trim()) {
       form.claude_oauth_system_prompt_blocks =
         defaultClaudeOAuthSystemPromptBlocks;
@@ -8792,6 +8802,15 @@ async function loadSettings() {
       form.claude_oauth_system_prompt,
     );
     syncClaudeOAuthSystemPromptBlocksFormField();
+    codexBlacklistRows.value = parseCodexEntriesToRows(
+      form.codex_cli_only_blacklist,
+    );
+    codexWhitelistRows.value = parseCodexEntriesToRows(
+      form.codex_cli_only_whitelist,
+    );
+    codexFingerprintRows.value = form.codex_cli_only_engine_fingerprint_signals
+      ? parseFingerprintSignalsToRows(form.codex_cli_only_engine_fingerprint_signals)
+      : defaultFingerprintSignalRows();
     form.login_agreement_mode =
       settings.login_agreement_mode === "checkbox" ? "checkbox" : "modal";
     form.login_agreement_updated_at =
@@ -8820,18 +8839,6 @@ async function loadSettings() {
         ? settings.table_page_size_options
         : [10, 20, 50, 100],
     );
-    form.ai_logo_cdn_base_url =
-      settings.ai_logo_cdn_base_url || defaultAILogoCDNBaseURL;
-    form.custom_ai_logo_presets = Array.isArray(settings.custom_ai_logo_presets)
-      ? settings.custom_ai_logo_presets
-      : [];
-    form.custom_menu_svg_icon_presets = Array.isArray(settings.custom_menu_svg_icon_presets)
-      ? settings.custom_menu_svg_icon_presets
-      : [];
-    setCustomMenuIconRuntimeConfig({
-      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
-    });
-    customAILogoPresetsInput.value = form.custom_ai_logo_presets.join("\n");
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
     smtpPasswordManuallyEdited.value = false;
@@ -9029,9 +9036,6 @@ async function saveSettings() {
 
     form.table_default_page_size = normalizedTableDefaultPageSize;
     form.table_page_size_options = normalizedTablePageSizeOptions;
-    form.appearance_theme_default = isAppearanceThemeId(form.appearance_theme_default)
-      ? form.appearance_theme_default
-      : "cloudflare";
 
     const normalizedLoginAgreementDocuments =
       normalizeLoginAgreementDocumentsForSave();
@@ -9129,23 +9133,6 @@ async function saveSettings() {
     // Optional URL fields: auto-clear invalid values so they don't cause backend 400 errors
     if (!isValidHttpUrl(form.frontend_url)) form.frontend_url = "";
     if (!isValidHttpUrl(form.doc_url)) form.doc_url = "";
-    if (!isValidHttpUrl(form.ai_logo_cdn_base_url)) {
-      form.ai_logo_cdn_base_url = defaultAILogoCDNBaseURL;
-    }
-    const normalizedCustomAILogoPresets = normalizeCustomAILogoPresetsInput(
-      customAILogoPresetsInput.value,
-    );
-    if (!normalizedCustomAILogoPresets) {
-      appStore.showError(
-        localText(
-          "共享自定义 AI logo 只能填写 http/https 图片 URL。",
-          "Shared custom AI logos only accept http/https image URLs.",
-        ),
-      );
-      return;
-    }
-    form.custom_ai_logo_presets = normalizedCustomAILogoPresets;
-    customAILogoPresetsInput.value = normalizedCustomAILogoPresets.join("\n");
     syncWeChatConnectMode();
     const wechatStoredMode = deriveWeChatConnectStoredMode(
       form.wechat_connect_open_enabled,
@@ -9153,10 +9140,6 @@ async function saveSettings() {
       form.wechat_connect_mobile_enabled,
       form.wechat_connect_mode,
     );
-    const normalizedCustomMenuItems = form.custom_menu_items.map((item): CustomMenuItem => ({
-      ...item,
-      open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
-    }));
     const claudeOAuthSystemPromptBlocksJSON =
       serializeClaudeOAuthSystemPromptBlocksToJSON(
         claudeOAuthSystemPromptBlocks.value,
@@ -9200,13 +9183,9 @@ async function saveSettings() {
       home_content: form.home_content,
       backend_mode_enabled: form.backend_mode_enabled,
       hide_ccs_import_button: form.hide_ccs_import_button,
-      appearance_theme_default: form.appearance_theme_default,
-      ai_logo_cdn_base_url: form.ai_logo_cdn_base_url,
-      custom_ai_logo_presets: form.custom_ai_logo_presets,
-      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
-      custom_menu_items: normalizedCustomMenuItems,
+      custom_menu_items: form.custom_menu_items,
       custom_endpoints: form.custom_endpoints,
       frontend_url: form.frontend_url,
       smtp_host: form.smtp_host,
@@ -9329,11 +9308,25 @@ async function saveSettings() {
       enable_anthropic_cache_ttl_1h_injection:
         form.enable_anthropic_cache_ttl_1h_injection,
       rewrite_message_cache_control: form.rewrite_message_cache_control,
+      enable_client_dateline_normalization:
+        form.enable_client_dateline_normalization,
       antigravity_user_agent_version:
         form.antigravity_user_agent_version?.trim() || "",
       openai_codex_user_agent:
         form.openai_codex_user_agent?.trim() || "",
-      openai_allow_claude_code_codex_plugin: form.openai_allow_claude_code_codex_plugin,
+      min_codex_version: form.min_codex_version?.trim() || "",
+      max_codex_version: form.max_codex_version?.trim() || "",
+      codex_cli_only_allow_app_server_clients:
+        form.codex_cli_only_allow_app_server_clients,
+      codex_cli_only_engine_fingerprint_signals: serializeFingerprintRowsToJSON(
+        codexFingerprintRows.value,
+      ),
+      codex_cli_only_blacklist: serializeCodexRowsToJSON(
+        codexBlacklistRows.value,
+      ),
+      codex_cli_only_whitelist: serializeCodexRowsToJSON(
+        codexWhitelistRows.value,
+      ),
       // Payment configuration
       payment_enabled: form.payment_enabled,
       risk_control_enabled: form.risk_control_enabled,
@@ -9382,10 +9375,6 @@ async function saveSettings() {
       channel_monitor_enabled: form.channel_monitor_enabled,
       channel_monitor_default_interval_seconds:
         Number(form.channel_monitor_default_interval_seconds) || 60,
-      channel_monitor_account_auto_schedule_enabled:
-        form.channel_monitor_account_auto_schedule_enabled,
-      channel_monitor_account_auto_schedule_failure_threshold:
-        Number(form.channel_monitor_account_auto_schedule_failure_threshold) || 2,
       // Available Channels feature switch
       available_channels_enabled: form.available_channels_enabled,
       // Affiliate (邀请返利) feature switch
@@ -10148,7 +10137,15 @@ async function loadProviders() {
   providersLoading.value = true;
   try {
     const res = await adminAPI.payment.getProviders();
-    providers.value = res.data || [];
+    // Normalize supported_types: backend returns null when the list is empty
+    // (Go nil slice → JSON null). Without this, ProviderCard's isSelected()
+    // throws TypeError on null.includes(), causing the card to vanish.
+    providers.value = (res.data || []).map((p) => ({
+      ...p,
+      supported_types: Array.isArray(p.supported_types)
+        ? p.supported_types
+        : [],
+    }));
   } catch (err: unknown) {
     appStore.showError(extractI18nErrorMessage(err, t, "payment.errors", t("common.error")));
   } finally {
@@ -10242,9 +10239,12 @@ async function handleToggleField(
 }
 
 async function handleToggleType(provider: ProviderInstance, type: string) {
-  const updated = provider.supported_types.includes(type)
-    ? provider.supported_types.filter((t) => t !== type)
-    : [...provider.supported_types, type];
+  const currentTypes = Array.isArray(provider.supported_types)
+    ? provider.supported_types
+    : [];
+  const updated = currentTypes.includes(type)
+    ? currentTypes.filter((t) => t !== type)
+    : [...currentTypes, type];
   const conflict = findProviderEnablementConflict({
     id: provider.id,
     provider_key: provider.provider_key,
@@ -10691,75 +10691,17 @@ watch(
   @apply h-[42px];
 }
 
-.theme-default-picker {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.theme-default-option {
-  align-items: center;
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 0.5rem;
-  background: var(--atelier-paper-2);
-  color: var(--atelier-ink);
-  display: flex;
-  font-size: 0.8125rem;
-  font-weight: 650;
-  gap: 0.5rem;
-  justify-content: center;
-  min-height: 2.625rem;
-  min-width: 0;
-  padding: 0 0.75rem;
-  transition: background 0.18s var(--atelier-ease), border-color 0.18s var(--atelier-ease);
-}
-
-.theme-default-option:hover {
-  border-color: var(--atelier-line-strong);
-  background: var(--atelier-ui-hover-surface);
-}
-
-.theme-default-option-active,
-.theme-default-option-active:hover {
-  border-color: var(--atelier-blue);
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
-}
-
-.theme-default-option-logo {
-  height: 1.125rem;
-  width: 1.125rem;
-  flex: 0 0 auto;
-}
-
-.theme-default-option-check {
-  flex: 0 0 auto;
-}
-
-.theme-default-option-active :where(.theme-default-option-logo, .theme-default-option-check, span) {
-  color: var(--atelier-white);
-}
-
-@media (max-width: 640px) {
-  .theme-default-picker {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ============ 系统设置 Tab 导航 ============ */
 .settings-tabs-shell {
-  @apply sticky z-20 -mx-1 p-0;
+  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
   top: 4.75rem;
-  border: 0;
-  background: var(--anthropic-page, var(--atelier-paper));
-  box-shadow: none;
+  box-shadow:
+    0 12px 28px rgb(15 23 42 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.9) inset;
 }
 
 .settings-tabs-scroll {
   @apply overflow-x-auto;
-  display: flex;
-  width: 100%;
-  justify-content: center;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -10769,12 +10711,11 @@ watch(
 }
 
 .settings-tabs {
-  @apply flex min-w-max items-center justify-center gap-2;
+  @apply flex min-w-max items-center gap-1;
 }
 
 .settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-transparent px-3 text-center text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
-  background: transparent;
+  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
 }
 
 @media (min-width: 768px) {
@@ -10785,12 +10726,16 @@ watch(
   .settings-tab {
     @apply min-w-0 flex-1 basis-0 overflow-hidden px-2 text-[13px];
   }
+
+  .settings-tab-icon {
+    @apply h-6 w-6;
+  }
 }
 
 .settings-tab::before {
   @apply absolute inset-0 -z-10 rounded-xl opacity-0 transition-opacity duration-200;
   content: "";
-  background: var(--atelier-paper-2);
+  background: linear-gradient(135deg, rgb(248 250 252 / 0.95), rgb(241 245 249 / 0.8));
 }
 
 .settings-tab:hover::before,
@@ -10799,26 +10744,46 @@ watch(
 }
 
 .settings-tab:focus-visible {
-  @apply ring-2 ring-[var(--atelier-line)] ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
+  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
 }
 
 .settings-tab-active {
-  @apply shadow-none;
-  border-color: transparent;
-  background: transparent;
-  color: var(--atelier-ink);
-  box-shadow: none;
+  @apply border-primary-200/80 bg-white text-[var(--anthropic-fg)] shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
+  box-shadow:
+    0 8px 18px rgb(15 23 42 / 0.08),
+    0 1px 0 rgb(255 255 255 / 0.92) inset;
 }
 
 .settings-tab-active::before {
   opacity: 0;
 }
 
+.settings-tab-active::after {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  left: 0.75rem;
+  height: 2px;
+  border-radius: 9999px;
+  content: "";
+  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
+}
+
+.settings-tab-icon {
+  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
+}
+
+.settings-tab:hover .settings-tab-icon,
+.settings-tab:focus-visible .settings-tab-icon {
+  @apply text-gray-700 dark:text-gray-200;
+}
+
+.settings-tab-active .settings-tab-icon {
+  @apply bg-primary-50 text-[var(--anthropic-fg)] dark:bg-primary-400/10 dark:text-primary-300;
+}
+
 .settings-tab-label {
   @apply min-w-0 overflow-hidden text-ellipsis whitespace-nowrap leading-none;
-  display: block;
-  width: 100%;
-  text-align: center;
 }
 </style>
 
@@ -10827,9 +10792,11 @@ watch(
    because Vue's scoped-CSS compiler was dropping the `:global(.dark) ...`
    rules in the production build, leaving inactive tabs unreadable on dark. */
 .dark .settings-tabs-shell {
-  border-color: transparent;
-  background: var(--anthropic-page, rgb(15 23 42));
-  box-shadow: none;
+  border-color: rgb(51 65 85 / 0.65);
+  background: rgb(15 23 42 / 0.86);
+  box-shadow:
+    0 16px 36px rgb(0 0 0 / 0.28),
+    0 1px 0 rgb(255 255 255 / 0.06) inset;
 }
 
 .dark .settings-tab::before {
@@ -10837,6 +10804,8 @@ watch(
 }
 
 .dark .settings-tab-active {
-  box-shadow: none;
+  box-shadow:
+    0 12px 26px rgb(0 0 0 / 0.22),
+    0 1px 0 rgb(255 255 255 / 0.08) inset;
 }
 </style>

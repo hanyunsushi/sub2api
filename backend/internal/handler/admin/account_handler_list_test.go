@@ -90,7 +90,7 @@ func setupAccountListRouterWithTokenQuotaResetAt(tokenResetAt string) (*gin.Engi
 			service.SettingKeyExternalSubscriptionAccountQuotaProgress: `{"303:mimo:mimo_token_plan:xiaomi mimo":{"enabled":true,"mode":"token_total","tokenTotal":1000000,"tokenResetAt":"` + tokenResetAt + `"}}`,
 		},
 	}
-	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, service.NewUsageCache(), nil, nil)
+	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, nil, nil, service.NewUsageCache(), nil, nil)
 	externalConfigService := service.NewExternalSubscriptionConfigService(service.NewSettingService(settingRepo, &config.Config{}))
 	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
 	router.GET("/api/v1/admin/accounts", handler.List)
@@ -126,7 +126,7 @@ func setupAccountListRouterWithTokenQuotaSettings(settings string) (*gin.Engine,
 			service.SettingKeyExternalSubscriptionAccountQuotaProgress: settings,
 		},
 	}
-	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, service.NewUsageCache(), nil, nil)
+	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, nil, nil, service.NewUsageCache(), nil, nil)
 	externalConfigService := service.NewExternalSubscriptionConfigService(service.NewSettingService(settingRepo, &config.Config{}))
 	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
 	router.GET("/api/v1/admin/accounts", handler.List)
