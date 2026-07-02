@@ -110,9 +110,9 @@ const options = computed(() => ({
 </script>
 
 <template>
-  <div class="ops-monitor-panel ops-chart-card ops-error-distribution-card flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="ops-monitor-panel ops-chart-card ops-error-distribution-card flex h-full flex-col anthropic-card-shell p-6">
     <div class="mb-4 flex items-center justify-between">
-      <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+      <h3 class="flex items-center gap-2 text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
         <svg class="ops-icon-butter ops-error-icon h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
@@ -126,7 +126,7 @@ const options = computed(() => ({
       </h3>
       <button data-testid="admin-ops-components-ops-error-distribution-chart-button-emit-open-details"
         type="button"
-        class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-300 dark:hover:bg-dark-800"
+        class="inline-flex items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
         :disabled="state !== 'ready'"
         :title="t('admin.ops.errorTrend')"
         @click="emit('openDetails')"
@@ -141,20 +141,20 @@ const options = computed(() => ({
           <Doughnut :data="chartData" :options="{ ...options, cutout: '65%' }" />
         </div>
         <div class="mt-4 flex flex-col items-center gap-2">
-          <div v-if="topReason" class="text-xs font-bold text-gray-900 dark:text-white">
+          <div v-if="topReason" class="text-xs font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('admin.ops.top') }}: <span :style="{ color: topReason.color }">{{ topReason.label }}</span>
           </div>
           <div class="flex flex-wrap justify-center gap-3">
             <div v-for="item in categories" :key="item.label" class="flex items-center gap-1.5 text-xs">
               <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: item.color }"></span>
-              <span class="text-gray-500 dark:text-gray-400">{{ item.count }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ item.count }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div v-else class="flex h-full items-center justify-center">
-        <div v-if="state === 'loading'" class="animate-pulse text-sm text-gray-400">{{ t('common.loading') }}</div>
+        <div v-if="state === 'loading'" class="animate-pulse text-sm text-[var(--anthropic-muted)]">{{ t('common.loading') }}</div>
         <EmptyState v-else :title="t('common.noData')" :description="t('admin.ops.charts.emptyError')" />
       </div>
     </div>

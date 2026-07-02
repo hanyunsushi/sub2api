@@ -42,10 +42,74 @@ describe('home CTA StarBorder integration', () => {
     expect(home).not.toContain('class="home-cta-glow"')
     expect(home).not.toContain('shadow-glow transition-colors')
     expect(ctaBlock).not.toContain('background: var(--atelier-blue);')
+    expect(ctaBlock).not.toContain('background: var(--anthropic-fg, #141413);')
+    expect(ctaHoverBlock).not.toContain('background: var(--anthropic-fg-hover, #3d3d3a);')
     expect(ctaBlock).not.toContain('rgba(0, 47, 167, 0.78)')
     expect(ctaHoverBlock).not.toContain('rgba(0, 47, 167, 0.9)')
     expect(ctaBlock).not.toContain('border: 1px solid rgba(255, 250, 240, 0.32);')
     expect(ctaBlock).not.toContain('rgba(246, 130, 31, 0.82)')
+  })
+
+  it('keeps the hero index module on the original translucent DarkVeil surface', () => {
+    const home = readFile('src/views/HomeView.vue')
+    const indexBlock = cssBlock(home, '.home-index-card')
+    const indexRowBlock = cssBlock(home, '.home-index-row')
+    const indexNumberBlock = cssBlock(home, '.home-index-row b')
+    const indexMetaBlock = cssBlock(home, '.home-index-row span:last-child')
+
+    expect(indexBlock).toContain('border: 1px solid rgba(255, 250, 240, 0.14);')
+    expect(indexBlock).toContain('background: rgba(7, 16, 30, 0.13);')
+    expect(indexBlock).toContain('backdrop-filter: blur(12px) saturate(1.08);')
+    expect(indexBlock).toContain('inset 0 1px 0 rgba(255, 250, 240, 0.08),')
+    expect(indexBlock).toContain('0 18px 50px -44px rgba(0, 0, 0, 0.68);')
+    expect(indexRowBlock).toContain('border-bottom: 1px dotted rgba(255, 250, 240, 0.2);')
+    expect(indexRowBlock).toContain('color: rgba(255, 250, 240, 0.84);')
+    expect(indexNumberBlock).toContain('color: var(--atelier-butter);')
+    expect(indexMetaBlock).toContain('color: rgba(255, 250, 240, 0.68);')
+    expect(indexBlock).not.toContain('background: var(--anthropic-section, #f0eee6);')
+    expect(indexBlock).not.toContain('backdrop-filter: none;')
+    expect(indexRowBlock).not.toContain('color: var(--anthropic-fg, #141413);')
+  })
+
+  it('keeps provider cards color-unified with linked hover treatment', () => {
+    const home = readFile('src/views/HomeView.vue')
+    const gridBlock = cssBlock(home, '.home-provider-specimen-grid')
+    const cardBlock = cssBlock(home, '.home-ascii-shell .home-provider-specimen')
+    const siblingHoverBlock = cssBlock(
+      home,
+      '.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:hover) .home-provider-specimen:not(:hover),\n.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:focus-within) .home-provider-specimen:not(:focus-within)',
+    )
+    const cardHoverBlock = cssBlock(
+      home,
+      '.home-ascii-shell .home-provider-specimen:hover,\n.home-ascii-shell .home-provider-specimen:focus-within',
+    )
+    const featuredBlock = cssBlock(home, '.home-ascii-shell .home-provider-specimen-featured')
+    const inkBlock = cssBlock(home, '.home-ascii-shell .home-provider-specimen-ink')
+    const swatchBlock = cssBlock(home, '.home-provider-swatch')
+    const featuredSwatchBlock = cssBlock(home, '.home-provider-specimen-featured .home-provider-swatch')
+
+    expect(gridBlock).toContain('grid-template-columns: repeat(5, minmax(0, 1fr));')
+    expect(cardBlock).toContain('--home-chip-surface: rgba(7, 16, 30, 0.13);')
+    expect(cardBlock).toContain('--home-chip-text: rgba(255, 250, 240, 0.9);')
+    expect(cardBlock).toContain('--home-provider-card-hover-bg: rgba(7, 16, 30, 0.2);')
+    expect(cardBlock).toContain('--home-provider-card-muted-bg: rgba(7, 16, 30, 0.08);')
+    expect(cardBlock).toContain('border: 1px solid var(--home-provider-card-border);')
+    expect(cardBlock).toContain('background: var(--home-chip-surface);')
+    expect(cardBlock).toContain('backdrop-filter: blur(12px) saturate(1.08);')
+    expect(cardBlock).toContain('inset 0 1px 0 rgba(255, 250, 240, 0.08),')
+    expect(siblingHoverBlock).toContain('background: var(--home-provider-card-muted-bg);')
+    expect(siblingHoverBlock).toContain('border-color: rgba(255, 250, 240, 0.1);')
+    expect(cardHoverBlock).toContain('border-color: var(--home-provider-card-hover-border);')
+    expect(cardHoverBlock).toContain('background: var(--home-provider-card-hover-bg);')
+    expect(featuredBlock).toContain('--home-chip-surface: rgba(7, 16, 30, 0.13);')
+    expect(inkBlock).toContain('--home-chip-surface: rgba(7, 16, 30, 0.13);')
+    expect(swatchBlock).toContain('border-bottom: 1px solid rgba(255, 250, 240, 0.14);')
+    expect(swatchBlock).toContain('rgba(255, 250, 240, 0.08);')
+    expect(featuredSwatchBlock).toContain('rgba(255, 250, 240, 0.08);')
+    expect(cardBlock).not.toContain('--home-chip-surface: var(--home-surface-paper);')
+    expect(featuredBlock).not.toContain('--home-chip-surface: var(--atelier-blue);')
+    expect(inkBlock).not.toContain('--home-chip-surface: var(--home-surface-ink);')
+    expect(cardBlock).not.toContain('transform: translate3d(0, -4px, 0);')
   })
 
   it('ports the pasted React Bits StarBorder layers to Vue', () => {

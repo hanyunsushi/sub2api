@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import {
+  accountStatsChartColors,
   chartCategoricalColors,
   getOpsChartColors,
   getThemeAccent,
@@ -9,49 +10,65 @@ import {
 } from '@/utils/chartColors'
 
 describe('chartColors', () => {
-  it('uses a Cloudflare-informed categorical palette with distinct semantic companions', () => {
+  it('uses the Anthropic auxiliary palette with distinct semantic companions', () => {
     expect(chartCategoricalColors.slice(0, 6)).toEqual([
-      '#4290F0',
-      '#F5B647',
-      '#E8649D',
-      '#8D58EE',
-      '#50C3B6',
-      '#D37536',
+      '#6a9bcc',
+      '#d1a24a',
+      '#c46686',
+      '#cbcadb',
+      '#788c5d',
+      '#d97757',
     ])
     expect(new Set(chartCategoricalColors).size).toBe(chartCategoricalColors.length)
   })
 
   it('uses functional token trend colors instead of a single brand hue', () => {
     expect(tokenTrendColors).toEqual({
-      input: '#4290F0',
-      output: '#F5B647',
-      cacheCreation: '#E8649D',
-      cacheRead: '#50C3B6',
-      cacheHitRate: '#D37536',
+      input: '#6a9bcc',
+      output: '#d1a24a',
+      cacheCreation: '#c46686',
+      cacheRead: '#788c5d',
+      cacheHitRate: '#d97757',
     })
   })
 
-  it('exposes an ops semantic palette for request, error and neutral chart lines', () => {
+  it('exposes account statistics colors from the same chart palette', () => {
+    expect(accountStatsChartColors).toEqual({
+      accountBilled: '#6a9bcc',
+      userBilled: '#788c5d',
+      requests: '#d97757',
+    })
+  })
+
+  it('exposes the Anthropic semantic palette for ops status lines', () => {
     expect(getOpsChartColors()).toMatchObject({
-      brand: '#F48120',
-      throughput: '#4290F0',
-      tokenRate: '#F5B647',
-      switchRate: '#50C3B6',
-      requestError: '#F8A054',
-      upstreamError: '#FC574A',
-      businessLimited: '#B9D6FF',
-      critical: '#FC574A',
-      warning: '#F8A054',
-      success: '#00A63E',
+      brand: '#d97757',
+      throughput: '#6396d6',
+      tokenRate: '#eda100',
+      switchRate: '#788c5d',
+      requestError: '#b53333',
+      upstreamError: '#6396d6',
+      businessLimited: '#eda100',
+      critical: '#b53333',
+      warning: '#eda100',
+      success: '#6ea100',
+      neutral: '#e8e6dc',
     })
   })
 
-  it('uses official Cloudflare orange as theme-accent fallback and alpha source', () => {
-    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-      getPropertyValue: () => '',
-    } as unknown as CSSStyleDeclaration)
+  it('uses Slate as theme-accent fallback and alpha source', () => {
+    expect(getThemeAccent()).toBe('#141413')
+    expect(withChartAlpha('#141413', 0.2)).toBe('rgba(20, 20, 19, 0.2)')
+  })
 
-    expect(getThemeAccent()).toBe('#F48120')
-    expect(withChartAlpha('#F48120', 0.2)).toBe('rgba(244, 129, 32, 0.2)')
+  it('reads the runtime accent when a browser-like document is available', () => {
+    vi.stubGlobal('document', { documentElement: {} })
+    vi.stubGlobal('getComputedStyle', () => ({
+      getPropertyValue: () => ' #6a9bcc ',
+    }))
+
+    expect(getThemeAccent()).toBe('#6a9bcc')
+
+    vi.unstubAllGlobals()
   })
 })

@@ -2,7 +2,7 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell flex flex-wrap items-center gap-3">
+        <div class="table-filter-shell promo-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-64">
@@ -15,6 +15,7 @@
               />
             </div>
             <Select
+              variant="text-control"
               v-model="filters.status"
               :options="filterStatusOptions"
               class="w-36"
@@ -23,17 +24,16 @@
           </div>
 
           <!-- Right: Action buttons -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
+          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button data-testid="admin-promo-codes-button-load-codes"
               @click="loadCodes"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-primary anthropic-refresh-action-button promo-refresh-button"
               :title="t('common.refresh')"
             >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              {{ t("common.refresh") }}
             </button>
-            <button data-testid="admin-promo-codes-button-show-create-dialog-on" @click="showCreateDialog = true" class="btn btn-primary">
-              <Icon name="plus" size="md" class="mr-1" />
+            <button data-testid="admin-promo-codes-button-show-create-dialog-on" @click="showCreateDialog = true" class="btn btn-primary promo-create-button">
               {{ t('admin.promo.createCode') }}
             </button>
           </div>
@@ -52,14 +52,14 @@
         >
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
-              <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
+              <code class="font-mono text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ value }}</code>
               <button data-testid="admin-promo-codes-button-copy-to-clipboard-value"
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
                     ? 'text-green-500'
-                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                    : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
               >
@@ -77,13 +77,13 @@
           </template>
 
           <template #cell-bonus_amount="{ value }">
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
+            <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
               ${{ value.toFixed(2) }}
             </span>
           </template>
 
           <template #cell-usage="{ row }">
-            <span class="text-sm text-gray-600 dark:text-gray-300">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ row.used_count }} / {{ row.max_uses === 0 ? '∞' : row.max_uses }}
             </span>
           </template>
@@ -97,13 +97,13 @@
           </template>
 
           <template #cell-expires_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ value ? formatDateTime(value) : t('admin.promo.neverExpires') }}
             </span>
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ formatDateTime(value) }}
             </span>
           </template>
@@ -112,28 +112,28 @@
             <div class="flex items-center space-x-1">
               <button data-testid="admin-promo-codes-button-copy-register-link-row"
                 @click="copyRegisterLink(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
                 :title="t('admin.promo.copyRegisterLink')"
               >
                 <Icon name="link" size="sm" />
               </button>
               <button data-testid="admin-promo-codes-button-handle-view-usages-row"
                 @click="handleViewUsages(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]"
                 :title="t('admin.promo.viewUsages')"
               >
                 <Icon name="eye" size="sm" />
               </button>
               <button data-testid="admin-promo-codes-button-handle-edit-row"
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-600 dark:hover:text-gray-300"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-300"
                 :title="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
               </button>
               <button data-testid="admin-promo-codes-button-handle-delete-row"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -166,7 +166,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.code') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.autoGenerate') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.autoGenerate') }})</span>
           </label>
           <input data-testid="admin-promo-codes-input-create-form-code"
             v-model="createForm.code"
@@ -189,7 +189,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
           <input data-testid="admin-promo-codes-input-create-form-max-uses"
             v-model.number="createForm.max_uses"
@@ -201,7 +201,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
           </label>
           <input data-testid="admin-promo-codes-input-create-form-expires-at-str"
             v-model="createForm.expires_at_str"
@@ -212,7 +212,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
           </label>
           <textarea data-testid="admin-promo-codes-textarea-create-form-notes"
             v-model="createForm.notes"
@@ -264,7 +264,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
           <input data-testid="admin-promo-codes-input-edit-form-max-uses"
             v-model.number="editForm.max_uses"
@@ -280,7 +280,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
           </label>
           <input data-testid="admin-promo-codes-input-edit-form-expires-at-str"
             v-model="editForm.expires_at_str"
@@ -291,7 +291,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
           </label>
           <textarea data-testid="admin-promo-codes-textarea-edit-form-notes"
             v-model="editForm.notes"
@@ -320,26 +320,26 @@
       @close="showUsagesDialog = false"
     >
       <div v-if="usagesLoading" class="flex items-center justify-center py-8">
-        <Icon name="refresh" size="lg" class="animate-spin text-gray-400" />
+        <Icon name="refresh" size="lg" class="animate-spin text-[var(--anthropic-muted)]" />
       </div>
-      <div v-else-if="usages.length === 0" class="py-8 text-center text-gray-500 dark:text-gray-400">
+      <div v-else-if="usages.length === 0" class="py-8 text-center text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         {{ t('admin.promo.noUsages') }}
       </div>
       <div v-else class="space-y-3">
         <div
           v-for="usage in usages"
           :key="usage.id"
-          class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-dark-600"
+          class="flex items-center justify-between rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]"
         >
           <div class="flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Icon name="user" size="sm" class="text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ usage.user?.email || t('admin.promo.userPrefix', { id: usage.user_id }) }}
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ formatDateTime(usage.used_at) }}
               </p>
             </div>
@@ -489,14 +489,12 @@ const columns = computed<Column[]>(() => [
 // Helpers
 const getStatusClass = (status: string, row: PromoCode) => {
   if (row.expires_at && new Date(row.expires_at) < new Date()) {
-    return 'semantic-badge semantic-badge--danger'
+    return ['badge', 'badge-danger']
   }
   if (row.max_uses > 0 && row.used_count >= row.max_uses) {
-    return 'semantic-badge semantic-badge--neutral'
+    return ['badge', 'badge-gray']
   }
-  return status === 'active'
-    ? 'semantic-badge semantic-badge--success'
-    : 'semantic-badge semantic-badge--neutral'
+  return ['badge', status === 'active' ? 'badge-success' : 'badge-gray']
 }
 
 const getStatusLabel = (status: string, row: PromoCode) => {

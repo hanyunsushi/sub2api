@@ -1,7 +1,12 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import GroupDistributionChart from '../GroupDistributionChart.vue'
+
+const source = readFileSync(resolve(__dirname, '../GroupDistributionChart.vue'), 'utf8')
 
 const messages: Record<string, string> = {
   'admin.dashboard.groupDistribution': 'Group Distribution',
@@ -128,7 +133,7 @@ describe('GroupDistributionChart', () => {
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     const colors = chartData.datasets[0].backgroundColor
 
-    expect(colors.slice(0, 5)).toEqual(['#4290F0', '#F5B647', '#E8649D', '#8D58EE', '#50C3B6'])
+    expect(colors.slice(0, 5)).toEqual(['#6a9bcc', '#d1a24a', '#c46686', '#cbcadb', '#788c5d'])
     expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
@@ -160,5 +165,47 @@ describe('GroupDistributionChart', () => {
       dataset: { data: [0.9, 0.1] },
     })
     expect(label).toBe('group-b: $0.900 (90.0%)')
+  })
+
+  it('uses route-tabs for the metric switch', async () => {
+    const wrapper = mount(GroupDistributionChart, {
+      props: {
+        groupStats,
+        showMetricToggle: true,
+      },
+      global: {
+        stubs: {
+          LoadingSpinner: true,
+        },
+      },
+    })
+
+    const tabList = wrapper.find('[role="tablist"]')
+    expect(tabList.exists()).toBe(true)
+    expect(tabList.classes()).toContain('route-tabs')
+    expect(tabList.attributes('data-route-tabs')).toBe('group-distribution-metric')
+
+    const tabs = wrapper.findAll('[role="tab"]')
+    expect(tabs.map((tab) => tab.attributes('data-route-id'))).toEqual(['tokens', 'actual_cost'])
+    expect(tabs[0].attributes('aria-selected')).toBe('true')
+
+    await tabs[1].trigger('click')
+
+    expect(wrapper.emitted('update:metric')?.[0]).toEqual(['actual_cost'])
+  })
+
+  it('guards route-tabs and same-surface table header source', () => {
+    expect(source).toContain('class="route-tabs group-distribution-control-group group-distribution-route-tabs inline-flex"')
+    expect(source).toContain('data-route-tabs="group-distribution-metric"')
+    expect(source).toContain('role="tablist"')
+    expect(source).toContain('role="tab"')
+    expect(source).toContain(':aria-selected="metric === \'tokens\'"')
+    expect(source).toContain(':aria-selected="metric === \'actual_cost\'"')
+    expect(source).toContain('class="group-distribution-table-wrap max-h-48 flex-1 overflow-y-auto"')
+    expect(source).toContain('class="group-distribution-header-row text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"')
+    expect(source).toContain('.group-distribution-table-wrap :where(table, thead, tbody, tr, th, td)')
+    expect(source).toContain('.group-distribution-header-row :where(th)')
+    expect(source).not.toContain('bg-[var(--anthropic-section)] p-0.5')
+    expect(source).not.toContain('rounded-md px-2.5 py-1 text-xs')
   })
 })

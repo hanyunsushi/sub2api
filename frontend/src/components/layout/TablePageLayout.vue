@@ -62,8 +62,8 @@ onUnmounted(() => {
 
 .layout-section-fixed {
   @apply flex-shrink-0;
-  border-color: var(--atelier-line);
-  background: var(--atelier-surface);
+  border-color: var(--anthropic-border-subtle, var(--atelier-line));
+  background: var(--anthropic-section, var(--atelier-paper-2));
 }
 
 .layout-section-scrollable {
@@ -91,7 +91,7 @@ onUnmounted(() => {
 
 .table-scroll-container :deep(thead) {
   @apply dark:bg-dark-800/80;
-  background: var(--atelier-dust-soft);
+  background: var(--anthropic-page, var(--atelier-surface));
 }
 
 .table-scroll-container :deep(tbody) {
@@ -100,11 +100,14 @@ onUnmounted(() => {
 
 .table-scroll-container :deep(th) {
   @apply px-5 py-4 text-left text-sm font-medium dark:text-dark-300 border-b border-accent-200 dark:border-dark-700;
-  color: var(--atelier-ink);
+  border-color: var(--anthropic-cookbook-border, var(--atelier-line));
+  background: var(--anthropic-page, var(--atelier-surface));
+  color: var(--anthropic-muted, var(--atelier-muted));
 }
 
 .table-scroll-container :deep(td) {
   @apply px-5 py-4 text-sm dark:text-gray-300 border-b border-accent-100 dark:border-dark-800;
+  border-color: var(--anthropic-border-soft, var(--atelier-line));
   color: var(--atelier-ink);
 }
 

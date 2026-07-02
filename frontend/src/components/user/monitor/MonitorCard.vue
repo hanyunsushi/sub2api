@@ -1,19 +1,19 @@
 <template>
   <button data-testid="user-monitor-monitor-card-button-emit-click"
     type="button"
-    class="monitor-channel-card group text-left p-5 rounded-2xl min-h-[280px] w-full bg-white/70 border border-gray-200/80 dark:bg-dark-800/60 dark:border-dark-700/70 transition-all duration-300 ease-out flex flex-col"
+    class="monitor-channel-card monitor-linked-card group text-left p-5 rounded-lg min-h-[280px] w-full bg-[var(--anthropic-page)] border border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] transition-all duration-300 ease-out flex flex-col"
     @click="emit('click')"
   >
     <!-- Header: icon + name/model + status chip -->
     <div class="flex items-start gap-3">
       <span
-        class="monitor-provider-logo-shell w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
+        class="monitor-provider-logo-shell w-9 h-9 rounded-xl ring-1 ring-[var(--anthropic-border-subtle)] dark:ring-[var(--anthropic-border-subtle)] grid place-items-center flex-shrink-0"
         :class="[providerGradient(item.provider), providerTintClass, monitorProviderClass(item.provider)]"
       >
         <ProviderBrandIcon :provider="item.provider" :model="item.primary_model" :logo-url="item.logo_url" />
       </span>
       <div class="flex-1 min-w-0">
-        <div class="text-base font-semibold truncate text-gray-900 dark:text-gray-100">
+        <div class="text-base font-semibold truncate text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
           {{ item.name }}
         </div>
         <div class="mt-0.5 flex items-center gap-1.5 min-w-0">
@@ -23,12 +23,12 @@
           >
             {{ providerLabel(item.provider) }}
           </span>
-          <span class="font-mono text-xs truncate text-gray-500 dark:text-gray-400">
+          <span class="font-mono text-xs truncate text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ item.primary_model }}
           </span>
           <span
             v-if="item.group_name"
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300 flex-shrink-0"
+            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] flex-shrink-0"
           >
             {{ item.group_name }}
           </span>
@@ -55,7 +55,7 @@
     />
 
     <!-- Divider -->
-    <div class="mt-4 border-t border-gray-100 dark:border-dark-700/60"></div>
+    <div class="mt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
 
     <!-- Availability row -->
     <MonitorAvailabilityRow
@@ -89,7 +89,7 @@ import MonitorTimeline from './MonitorTimeline.vue'
 const PROVIDER_TINT: Record<string, string> = {
   openai: 'text-emerald-600 dark:text-emerald-300',
   anthropic: 'text-orange-600 dark:text-orange-300',
-  gemini: 'text-sky-600 dark:text-sky-300',
+  gemini: 'text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]',
 }
 
 const props = defineProps<{
@@ -113,7 +113,7 @@ const {
 } = useChannelMonitorFormat()
 
 const providerTintClass = computed(() =>
-  PROVIDER_TINT[props.item.provider] ?? 'text-gray-500 dark:text-gray-300'
+  PROVIDER_TINT[props.item.provider] ?? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
 )
 
 function monitorProviderClass(provider: string): string {

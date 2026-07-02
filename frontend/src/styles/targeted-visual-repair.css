@@ -1,0 +1,3308 @@
+/* Anthropic design-system component runtime contract.
+   Imported after style.css; keep this taxonomy-based, not page-by-page paint locks. */
+
+:root,
+:root.theme-anthropic,
+:root[data-theme="anthropic"] {
+  --anthropic-page: #faf9f5;
+  --anthropic-cookbook-hover: #f5f4ed;
+  --anthropic-section: #f0eee6;
+  --anthropic-raised: #e8e6dc;
+  --anthropic-panel: #e3dacc;
+  --anthropic-fg: #141413;
+  --anthropic-fg-hover: #3d3d3a;
+  --anthropic-muted: #5e5d59;
+  --anthropic-quiet: #87867f;
+  --anthropic-disabled: #b0aea5;
+  --anthropic-border: #d1cfc5;
+  --anthropic-border-soft: #f0eee6;
+  --anthropic-cookbook-border: rgba(20, 19, 19, 0.08);
+  --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
+  --anthropic-border-subtle: rgba(20, 19, 19, 0.08);
+  --anthropic-border-hover: rgba(20, 19, 19, 0.16);
+  --anthropic-accent: #d97757;
+  --anthropic-accent-hover: #c6613f;
+  --anthropic-clay-interactive: #c96442;
+  --anthropic-focus: #2c84db;
+  --creepee-home-card-hover-transform: translate3d(0, -4px, 0);
+  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
+  --anthropic-success: #6ea100;
+  --anthropic-success-bg: #f1f8e8;
+  --anthropic-success-border: #c9dfaa;
+  --anthropic-info: #6396d6;
+  --anthropic-info-bg: #eef5fb;
+  --anthropic-info-border: #c7dcef;
+  --anthropic-warning: #eda100;
+  --anthropic-warning-bg: #fff9ef;
+  --anthropic-warning-border: #ffedcc;
+  --anthropic-error: #b53333;
+  --anthropic-error-bg: #fff1f0;
+  --anthropic-error-border: #ebcece;
+  --anthropic-dropdown-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  --anthropic-button-ring: 0 0 0 var(--button-spacer, 0) var(--button-bg, transparent), 0 0 0 var(--button-border-width, 1px) var(--button-border, var(--anthropic-border));
+  --anthropic-button-ring-hover: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg, transparent), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover, var(--button-border, var(--anthropic-border)));
+  --anthropic-control-gap: 0.75rem;
+  --anthropic-control-group-gap: 1rem;
+  --anthropic-control-height: 2rem;
+  --anthropic-control-font-size: 0.8125rem;
+  --anthropic-control-line-height: 1.25rem;
+  --anthropic-control-font-weight: 500;
+  --atelier-paper: var(--anthropic-page);
+  --atelier-paper-2: var(--anthropic-section);
+  --atelier-surface-muted: var(--anthropic-raised);
+  --atelier-surface-panel: var(--anthropic-panel);
+  --atelier-ink: var(--anthropic-fg);
+  --atelier-dark: var(--anthropic-fg-hover);
+  --atelier-text: var(--anthropic-fg-hover);
+  --atelier-muted: var(--anthropic-muted);
+  --atelier-dust: var(--anthropic-quiet);
+  --atelier-ring: var(--anthropic-border);
+  --atelier-line: var(--anthropic-border-soft);
+  --atelier-line-strong: var(--anthropic-border);
+  --atelier-focus: var(--anthropic-focus);
+  --atelier-blue: var(--anthropic-fg);
+  --atelier-blue-dark: var(--anthropic-fg-hover);
+  --atelier-butter: var(--anthropic-accent);
+  --atelier-butter-dark: var(--anthropic-accent-hover);
+  --atelier-status-success: var(--anthropic-success);
+  --atelier-status-info: var(--anthropic-info);
+  --atelier-status-warning: var(--anthropic-warning);
+  --atelier-status-danger: var(--anthropic-error);
+  --atelier-status-critical: var(--anthropic-error);
+  --atelier-status-neutral: var(--anthropic-raised);
+  --atelier-canvas: var(--anthropic-page);
+  --atelier-surface: var(--anthropic-page);
+  --atelier-surface-strong: var(--anthropic-page);
+  --atelier-surface-cool: var(--anthropic-section);
+  --atelier-surface-dust: var(--anthropic-raised);
+  --atelier-surface-blue: var(--anthropic-section);
+  --atelier-material-1: var(--anthropic-section);
+  --atelier-material-2: var(--anthropic-section);
+  --atelier-material-blue: var(--anthropic-section);
+  --atelier-material-dust: var(--anthropic-raised);
+  --atelier-material-edge: var(--anthropic-border);
+  --atelier-material-edge-strong: var(--anthropic-border);
+  --atelier-material-shadow: none;
+  --atelier-material-shadow-hover: none;
+  --atelier-ui-hover-surface: var(--anthropic-cookbook-hover);
+  --atelier-filter-action-surface: var(--anthropic-section);
+  --atelier-slab-surface: var(--anthropic-section);
+  --atelier-slab-field: var(--anthropic-page);
+  --atelier-slab-text: var(--anthropic-fg);
+  --atelier-slab-edge: var(--anthropic-border);
+  --atelier-slab-edge-soft: var(--anthropic-border-soft);
+  --atelier-slab-muted: var(--anthropic-muted);
+  --atelier-slab-field-hover: var(--anthropic-cookbook-hover);
+}
+
+html,
+body,
+#app,
+.app-layout-shell,
+.app-layout-content {
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  font-family: var(--atelier-font-sans);
+}
+
+.app-layout-content :where(h1, h2, h3, .page-title, .modal-title, .dialog-header h2, .dialog-header h3, .empty-state-title) {
+  color: var(--anthropic-fg);
+  font-family: var(--atelier-font-serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.app-layout-content :where(.numeric, .mono, .font-mono, .tabular-nums, td[data-column-key*="usage"], td[data-column-key*="quota"], td[data-column-key*="token"], [class*="amount"], [class*="balance"], [class*="price"]) {
+  font-family: var(--atelier-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.app-layout-content :where(:focus-visible),
+:where(.floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(:focus-visible) {
+  outline: 2px solid var(--anthropic-focus);
+  outline-offset: 2px;
+}
+
+.app-header-atelier,
+.sidebar,
+.sidebar-header,
+.sidebar-footer {
+  border-color: var(--anthropic-border-soft);
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+.app-header-atelier :where(.app-header-control-group) {
+  align-items: center;
+  gap: var(--anthropic-control-gap);
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+.app-header-atelier :where(.app-header-control-group > *, .app-header-control-group :where(a, button, [role="button"], .select-trigger, .date-picker-trigger, .header-balance-chip-fixed, .user-menu-trigger)) {
+  min-height: var(--anthropic-control-height);
+  align-items: center;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+.app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger),
+.sidebar-link {
+  color: var(--anthropic-muted);
+  background: transparent;
+  box-shadow: none;
+  text-decoration: none;
+  text-decoration-line: none;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+}
+
+.app-header-atelier :where(a:hover, a:focus-visible, button:hover, button:focus-visible):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger) {
+  background: transparent;
+  color: var(--anthropic-fg);
+  text-decoration-color: currentColor;
+}
+
+.app-header-atelier :where(.announcement-trigger-text, .header-balance-chip-fixed, .user-menu-trigger) {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.announcement-trigger-text {
+  min-width: max-content;
+}
+
+.announcement-trigger-dot {
+  position: relative;
+  flex: 0 0 0.5rem;
+}
+
+.topbar-menu-caret {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-grid;
+  place-items: center;
+  color: currentColor;
+  transform: translateY(1px) rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.topbar-menu-caret::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.topbar-menu-caret-open {
+  transform: translateY(1px) rotate(180deg);
+}
+
+.app-layout-content .filter-menu-button-with-caret {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.app-layout-content .filter-menu-caret {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-grid;
+  place-items: center;
+  color: currentColor;
+  transform: translateY(1px) rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.app-layout-content .filter-menu-caret::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.app-layout-content .filter-menu-button-with-caret:hover .filter-menu-caret,
+.app-layout-content .filter-menu-button-with-caret:focus-visible .filter-menu-caret,
+.app-layout-content .filter-menu-button-open .filter-menu-caret {
+  transform: translateY(1px) rotate(180deg);
+}
+
+.header-balance-dropdown-list {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.75rem;
+}
+
+.topbar-underline-menu {
+  padding: 0.75rem;
+}
+
+.topbar-underline-menu :where(.dropdown-item, .balance-row) {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--anthropic-muted);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+}
+
+.topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible) {
+  background: transparent;
+  color: var(--anthropic-fg);
+  text-decoration-color: currentColor;
+}
+
+.language-bar-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: var(--anthropic-control-height);
+  border: 1px solid var(--anthropic-border-soft);
+  border-radius: 12px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-muted);
+  padding: 0 0.625rem;
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  text-decoration-line: none;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.language-bar-trigger:hover,
+.language-bar-trigger:focus-visible {
+  border-color: var(--anthropic-border-soft);
+  background: var(--anthropic-raised);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+}
+
+.language-bar-trigger-on-deep {
+  border-color: rgba(250, 249, 245, 0.3);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.language-bar-trigger-on-deep:hover,
+.language-bar-trigger-on-deep:focus-visible {
+  border-color: rgba(250, 249, 245, 0.48);
+  background: rgba(250, 249, 245, 0.12);
+  color: #fff;
+}
+
+.language-bar-menu {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: var(--dropdown-bg, var(--control-bg, var(--anthropic-page))) !important;
+}
+
+.language-bar-option {
+  min-height: 2.5rem;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  color: var(--anthropic-muted);
+  text-decoration-line: none;
+}
+
+.language-bar-option:hover,
+.language-bar-option:focus-visible,
+.language-bar-option-active {
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+}
+
+.sidebar .sidebar-link:hover,
+.sidebar .sidebar-link:focus-visible {
+  border-color: var(--anthropic-border-soft);
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+  text-decoration-color: transparent;
+}
+
+.sidebar .sidebar-link-active,
+.sidebar .sidebar-link-active:hover,
+.sidebar .sidebar-link-active:focus-visible {
+  border-color: var(--anthropic-border-soft);
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+  box-shadow: none;
+}
+
+.sidebar .sidebar-link-active::after {
+  display: none;
+  content: none;
+}
+
+.app-layout-content :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .layout-section-fixed, .table-container, .table-wrapper, .table-scroll-container, .codex-panel, .codex-account-card, .ops-metric-card, .ops-system-card, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .external-subscription-card, .global-pricing-card-frame, .pricing-row) {
+  border-color: var(--anthropic-cookbook-border);
+  border-radius: 8px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+#app .app-layout-content .settings-tabs-shell {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .settings-tabs-scroll {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+#app .app-layout-content .settings-tabs {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .settings-tab {
+  justify-content: center;
+  text-align: center;
+  background: transparent !important;
+}
+
+#app .app-layout-content .settings-tab svg,
+#app .app-layout-content .settings-tab .settings-tab-icon {
+  display: none !important;
+}
+
+.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .codex-account-card, .external-subscription-card):where(:hover, :focus-visible) {
+  border-color: var(--anthropic-cookbook-border-hover);
+  background: var(--anthropic-cookbook-hover);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+:where(.modal-content, .dialog-container) {
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 16px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-dropdown-shadow) !important;
+}
+
+:where(.toast) {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 16px !important;
+  box-shadow: var(--anthropic-dropdown-shadow) !important;
+}
+
+:where(.toast:not(.toast-themed)) {
+  border-color: var(--anthropic-cookbook-border);
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(.anthropic-card-shell, .anthropic-panel, .anthropic-stat-card, .anthropic-option-card, .anthropic-image-card, .anthropic-note, .anthropic-segmented) {
+  border: 1px solid var(--anthropic-cookbook-border);
+  border-radius: 8px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-card-shell.card-hover, .anthropic-option-card, .anthropic-image-card):where(:hover, :focus-visible) {
+  border-color: var(--anthropic-cookbook-border-hover);
+  background: var(--anthropic-cookbook-hover);
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(.card, .anthropic-card-shell, .ops-monitor-panel, .ops-card-filter-bar, .ops-card-filter-grid, .table-container, .table-wrapper, .table-scroll-container) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
+  border: 1px solid var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .ops-metric-card, .ops-system-card, .ops-health-score-card, .ops-monitor-panel.anthropic-card-shell) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .ops-metric-card, .ops-system-card, .ops-health-score-card, .ops-monitor-panel.anthropic-card-shell):where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where([class*="border-[var(--anthropic-border)]"], .border-\[var\(--anthropic-border\)\], .ring-gray-900\/5, .ring-gray-200) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  --tw-ring-color: var(--anthropic-cookbook-border) !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(thead, .ops-resource-band, .ops-card-filter-bar, .ops-card-filter-grid) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(tbody tr.cursor-pointer:hover, tbody tr.cursor-pointer:hover td, .table-row.cursor-pointer:hover) {
+  background: var(--anthropic-cookbook-hover) !important;
+}
+
+#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(.ops-metric-card, .ops-system-card, .ops-health-score-card) {
+  border: 1px solid var(--anthropic-cookbook-border);
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.anthropic-card-shell, .ops-monitor-panel, .ops-metric-card, .ops-system-card, .ops-health-score-card):where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled) {
+  --button-bg: transparent;
+  --button-border: var(--anthropic-cookbook-border);
+  --button-border-hover: var(--anthropic-cookbook-border-hover);
+  min-height: 1.75rem;
+  padding: 0.375rem 0.625rem;
+  border-color: var(--button-border) !important;
+  border-radius: 8px;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled):hover {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+.app-layout-content :where(.anthropic-panel) {
+  padding: 1rem;
+}
+
+.app-layout-content :where(.anthropic-stat-card) {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.app-layout-content :where(.anthropic-stat-card .stat-value, .anthropic-stat-value) {
+  color: var(--anthropic-fg);
+  font-family: var(--atelier-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.app-layout-content :where(.anthropic-icon-tile, .anthropic-stat-icon) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--anthropic-border-subtle);
+  border-radius: 8px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-muted);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-icon-tile, .anthropic-stat-icon) :where(svg, path, circle, rect, polygon) {
+  color: inherit;
+  stroke: currentColor;
+}
+
+.app-layout-content :where(.anthropic-icon-tile-active, .anthropic-stat-icon-primary) {
+  border-color: var(--anthropic-fg);
+  background: var(--anthropic-fg);
+  color: var(--anthropic-page);
+}
+
+.app-layout-content :where(.anthropic-stat-icon-success) {
+  border-color: var(--anthropic-success-border);
+  background: var(--anthropic-success-bg);
+  color: var(--anthropic-success);
+}
+
+.app-layout-content :where(.anthropic-stat-icon-info) {
+  border-color: var(--anthropic-info-border);
+  background: var(--anthropic-info-bg);
+  color: var(--anthropic-info);
+}
+
+.app-layout-content :where(.anthropic-stat-icon-warning) {
+  border-color: var(--anthropic-warning-border);
+  background: var(--anthropic-warning-bg);
+  color: var(--anthropic-warning);
+}
+
+.app-layout-content :where(.anthropic-option-card) {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.75rem;
+  text-align: left;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.app-layout-content :where(.anthropic-option-card-active) {
+  border-color: var(--anthropic-fg);
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-fg);
+}
+
+.app-layout-content :where(.anthropic-segmented) {
+  display: flex;
+  gap: 0;
+  padding: 0.25rem;
+  border-radius: 16px;
+  background: var(--anthropic-raised);
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.app-layout-content :where(.anthropic-segmented-option) {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--anthropic-quiet);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-segmented-option:hover, .anthropic-segmented-option:focus-visible) {
+  color: var(--anthropic-fg);
+  background: transparent;
+}
+
+.app-layout-content :where(.anthropic-segmented-option-active) {
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.app-layout-content :where(.anthropic-step, .anthropic-chip) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--anthropic-border-subtle);
+  border-radius: 8px;
+  background: var(--anthropic-section);
+  color: var(--anthropic-muted);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-step-active, .anthropic-chip-active) {
+  border-color: var(--anthropic-fg);
+  background: var(--anthropic-fg);
+  color: var(--anthropic-page);
+}
+
+.app-layout-content :where(.anthropic-radio, .anthropic-checkbox) {
+  border-color: var(--anthropic-border);
+  color: var(--anthropic-fg);
+  accent-color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-radio:focus, .anthropic-radio:focus-visible, .anthropic-checkbox:focus, .anthropic-checkbox:focus-visible) {
+  outline: 2px solid var(--anthropic-focus);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-switch) {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.5rem;
+  border: 1px solid var(--anthropic-border);
+  border-radius: 999px;
+  background: var(--anthropic-raised);
+  box-shadow: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.app-layout-content :where(.anthropic-switch-active) {
+  border-color: transparent;
+  background: var(--anthropic-focus);
+}
+
+.app-layout-content :where(.anthropic-switch-thumb) {
+  pointer-events: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  transform: translateX(0);
+  border: 1px solid var(--anthropic-border);
+  border-radius: 999px;
+  background: var(--anthropic-page);
+  box-shadow: var(--anthropic-dropdown-shadow);
+  transition: transform 0.4s cubic-bezier(0.35, 1.5, 0.6, 1), border-color 0.2s ease;
+}
+
+.app-layout-content :where(.anthropic-switch-active .anthropic-switch-thumb) {
+  transform: translateX(1.25rem);
+  border-color: transparent;
+}
+
+.app-layout-content :where(.anthropic-action-icon) {
+  color: var(--anthropic-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.anthropic-action-icon:hover, .anthropic-action-icon:focus-visible) {
+  color: var(--anthropic-fg);
+  background: var(--anthropic-section);
+  text-decoration-line: underline;
+}
+
+.app-layout-content :where(.anthropic-action-icon-danger:hover, .anthropic-action-icon-danger:focus-visible) {
+  color: var(--anthropic-error);
+  background: var(--anthropic-error-bg);
+  text-decoration-line: none;
+}
+
+.app-layout-content :where(.anthropic-note) {
+  padding: 0.75rem;
+  color: var(--anthropic-muted);
+}
+
+.app-layout-content :where(.anthropic-note-info) {
+  border-color: var(--anthropic-info-border);
+  background: var(--anthropic-info-bg);
+  color: var(--anthropic-info);
+}
+
+.app-layout-content :where(.anthropic-note-warning) {
+  border-color: var(--anthropic-warning-border);
+  background: var(--anthropic-warning-bg);
+  color: var(--anthropic-warning);
+}
+
+.app-layout-content :where(.anthropic-image-card) {
+  overflow: hidden;
+  background: var(--anthropic-page);
+}
+
+.app-layout-content :where(.anthropic-terminal) {
+  border: 1px solid #30302e;
+  border-radius: 8px;
+  background: #141413;
+  color: #f0eee6;
+  box-shadow: none;
+}
+
+.app-layout-content :where(thead, th, .sticky-header-cell) {
+  border-color: var(--anthropic-border);
+  background: var(--anthropic-section);
+  color: var(--anthropic-muted);
+  font-family: var(--atelier-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.app-layout-content :where(tbody, tbody tr, td, .sticky-col, .table-cell) {
+  border-color: var(--anthropic-border-soft);
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(tbody tr.cursor-pointer:hover td, tbody tr.cursor-pointer:hover .sticky-col, .table-row.cursor-pointer:hover, .article-row:hover) {
+  background: var(--anthropic-cookbook-hover);
+  color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border-color: var(--button-border);
+  border-radius: 8px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  box-shadow: var(--anthropic-button-ring);
+  text-decoration-line: none;
+}
+
+.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):hover:not(:disabled),
+.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):focus-visible {
+  background: var(--button-bg-hover);
+  color: var(--button-fg-hover);
+  box-shadow: var(--anthropic-button-ring-hover);
+}
+
+.app-layout-content :where(.btn-secondary, .btn-ghost, .btn-tertiary, .btn.tiny, .btn-tiny, .codex-button):not(.codex-button--primary):not(.codex-button--danger):not(.btn-danger):not(.btn-success):not(.btn-warning) {
+  --button-bg: transparent;
+  --button-border: var(--anthropic-border-subtle);
+  --button-border-hover: var(--anthropic-border-hover);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border-color: var(--button-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--anthropic-fg);
+  box-shadow: var(--anthropic-button-ring);
+  text-decoration-line: none;
+}
+
+.app-layout-content :where(.btn-secondary, .btn-ghost, .btn-tertiary, .btn.tiny, .btn-tiny, .codex-button):not(.codex-button--primary):not(.codex-button--danger):not(.btn-danger):not(.btn-success):not(.btn-warning):hover:not(:disabled) {
+  background: transparent;
+  color: var(--anthropic-fg);
+  box-shadow: var(--anthropic-button-ring-hover);
+}
+
+.app-layout-content :where(.btn-success) {
+  border-color: var(--anthropic-success-border);
+  background: var(--anthropic-success-bg);
+  color: var(--anthropic-success);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.btn-warning) {
+  border-color: var(--anthropic-warning-border);
+  background: var(--anthropic-warning-bg);
+  color: var(--anthropic-warning);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.btn-danger, .codex-button--danger, button.bg-red-600, button.bg-red-700, a.bg-red-600, a.bg-red-700, [role="button"].bg-red-600, [role="button"].bg-red-700) {
+  border-color: var(--anthropic-error);
+  background: var(--anthropic-error);
+  color: var(--anthropic-page);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.btn.brand, .btn-brand) {
+  --button-bg: var(--anthropic-clay-interactive);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-clay-interactive);
+  --button-bg-hover: var(--button-bg);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--button-border);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--button-bg);
+  color: var(--anthropic-page);
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border);
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out;
+}
+
+.app-layout-content :where(.btn.brand, .btn-brand):hover:not(:disabled),
+.app-layout-content :where(.btn.brand, .btn-brand):focus-visible {
+  border: 0;
+  background: var(--button-bg-hover);
+  color: var(--button-fg-hover);
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover);
+}
+
+.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea) {
+  border-color: var(--anthropic-border-subtle);
+  border-radius: 8px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
+  outline: 2px solid var(--anthropic-focus);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus, .select-trigger-open, .date-picker-trigger-open):not(:focus-visible),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus, .select-trigger-open, .date-picker-trigger-open):not(:focus-visible) {
+  border-color: var(--anthropic-border-subtle);
+  outline: 0;
+  box-shadow: none;
+}
+
+:where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"]) {
+  z-index: 100000040;
+  border: 1px solid var(--dropdown-border, var(--control-border, var(--anthropic-cookbook-border)));
+  border-radius: 16px;
+  background: var(--dropdown-bg, var(--control-bg, var(--anthropic-page)));
+  color: var(--dropdown-fg, var(--control-fg, var(--anthropic-fg)));
+  box-shadow: var(--anthropic-dropdown-shadow);
+  transform-origin: top;
+}
+
+.dropdown-highlight-menu,
+.select-dropdown-portal {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  overflow: auto;
+  border-radius: 16px;
+}
+
+.dropdown-highlight-item,
+.select-dropdown-portal .select-option,
+.theme-switcher-option {
+  min-height: 2.5rem;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
+:where(.dropdown-item, .action-menu-content button, .action-menu-content a, .select-option, .date-picker-preset, .theme-switcher-option) {
+  color: var(--anthropic-muted);
+  text-decoration-line: none;
+  text-underline-offset: 0.2em;
+}
+
+.dropdown-highlight-item:hover,
+.dropdown-highlight-item:focus-visible,
+.dropdown-highlight-item-active,
+:where(.dropdown-item:hover, .action-menu-content button:hover, .action-menu-content a:hover) {
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+}
+
+:where(.select-option:hover, .select-option-focused, .date-picker-preset:hover, .theme-switcher-option:hover) {
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  text-decoration-line: none;
+  text-underline-offset: 0.2em;
+}
+
+:where(.select-option-selected, .select-option-selected:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .theme-switcher-option-active) {
+  background: var(--anthropic-cookbook-hover);
+  color: var(--anthropic-fg);
+  box-shadow: inset 0 0 0 1px var(--anthropic-cookbook-border);
+}
+
+.app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger) {
+  text-decoration-line: underline;
+}
+
+.topbar-underline-menu :where(.dropdown-item, .balance-row) {
+  border: 0;
+  background: transparent;
+  color: var(--anthropic-muted);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  box-shadow: none;
+}
+
+.topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible) {
+  background: transparent;
+  color: var(--anthropic-fg);
+  text-decoration-color: currentColor;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.route-tabs, .tab-rail, .settings-tabs, .pricing-tabs) {
+  display: inline-flex;
+  width: fit-content;
+  gap: 0;
+  padding: 0.25rem;
+  border-radius: 16px;
+  background: var(--anthropic-raised);
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.app-layout-content :where(.route-tabs button, .tab-rail button, .settings-tabs button, .pricing-tabs button) {
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--anthropic-quiet);
+  padding: 0.5rem 1rem;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.route-tabs button[aria-selected="true"], .tab-rail button[aria-selected="true"], .settings-tabs button[aria-selected="true"], .pricing-tabs button[aria-selected="true"], .route-tabs .active, .tab-rail .active, .settings-tabs .active, .pricing-tabs .active) {
+  color: var(--anthropic-fg);
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.app-layout-content :where(.badge, .api-key-status-badge, .payment-status-badge, .platform-type-badge, .group-token, .monitor-provider-badge, .monitor-status-badge) {
+  border: 1px solid var(--anthropic-border-subtle);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--anthropic-muted);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.app-layout-content :where(.badge-success, .api-key-status-badge.badge-success, .payment-status-badge.badge-success, .bg-emerald-100.text-emerald-700, .bg-green-100.text-green-700) {
+  border-color: color-mix(in srgb, var(--anthropic-success) 32%, transparent);
+  background: transparent;
+  color: var(--anthropic-success);
+}
+
+.app-layout-content :where(.badge-primary, .payment-status-badge.badge-primary, .bg-blue-100.text-blue-700, .bg-sky-100.text-sky-700) {
+  border-color: color-mix(in srgb, var(--anthropic-info) 32%, transparent);
+  background: transparent;
+  color: var(--anthropic-info);
+}
+
+.app-layout-content :where(.badge-warning, .api-key-status-badge.badge-warning, .payment-status-badge.badge-warning, .bg-amber-100.text-amber-700, .bg-yellow-100.text-yellow-700, .bg-orange-100.text-orange-700) {
+  border-color: color-mix(in srgb, var(--anthropic-warning) 32%, transparent);
+  background: transparent;
+  color: var(--anthropic-warning);
+}
+
+.app-layout-content :where(.badge-danger, .api-key-status-badge.badge-danger, .payment-status-badge.badge-danger, .bg-red-100.text-red-700) {
+  border-color: color-mix(in srgb, var(--anthropic-error) 32%, transparent);
+  background: transparent;
+  color: var(--anthropic-error);
+}
+
+.app-layout-content :where(.badge-gray, .api-key-status-badge.badge-gray, .payment-status-badge.badge-gray, .bg-gray-100.text-gray-800, .bg-gray-100.text-gray-600, .bg-accent-200.text-accent-700) {
+  border-color: var(--anthropic-border);
+  background: transparent;
+  color: var(--anthropic-muted);
+}
+
+.app-layout-content :where(.usage-progress-fill--safe, .monitor-timeline-bar--operational, .monitor-capacity-status-segment--available, .bg-green-500, .bg-green-600, .bg-emerald-500, .bg-emerald-600):not(button):not(.btn):not([role="button"]) {
+  background: var(--anthropic-success);
+  border-color: var(--anthropic-success);
+}
+
+.app-layout-content :where(.usage-progress-fill--warning, .monitor-timeline-bar--degraded, .monitor-capacity-status-segment--limited, .bg-amber-500, .bg-amber-600, .bg-yellow-500, .bg-yellow-600, .bg-orange-500, .bg-orange-600):not(button):not(.btn):not([role="button"]) {
+  background: var(--anthropic-warning);
+  border-color: var(--anthropic-warning);
+}
+
+.app-layout-content :where(.usage-progress-fill--danger, .monitor-timeline-bar--failed, .monitor-timeline-bar--error, .monitor-capacity-status-segment--error, .bg-red-500, .bg-red-600, .bg-rose-500):not(button):not(.btn):not([role="button"]) {
+  background: var(--anthropic-error);
+  border-color: var(--anthropic-error);
+}
+
+.app-layout-content :where(.state-card, .empty-state, .loading-state, .error-state) {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  min-height: 11rem;
+  padding: 1.25rem;
+  border: 1px solid var(--anthropic-border-subtle);
+  border-radius: 12px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(.state-card.empty, .empty-state) {
+  border-style: dashed;
+  background: transparent;
+  color: var(--anthropic-muted);
+}
+
+.app-layout-content :where(.state-card.error, .error-state) {
+  border-color: var(--anthropic-error-border);
+  background: var(--anthropic-error-bg);
+}
+
+.app-layout-content :where(.loading-line, .skeleton-line, .skeleton, .animate-pulse) {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section));
+  background-size: 220% 100%;
+  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
+}
+
+@keyframes anthropic-loading-sweep {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+.app-layout-content :where(.batch-switch input:checked + .batch-switch__track, .switch-checked .switch-track, .toggle-switch.bg-primary-500, .toggle-switch.bg-primary-600, [role="switch"][aria-checked="true"]) {
+  border-color: transparent;
+  background: var(--anthropic-focus);
+}
+
+.app-layout-content :where(.table-page-filter-section, .table-page-actions-section, .table-filter-shell, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap, .usage-filter-card, .usage-filter-shell, .global-pricing-filter-card, .order-filter-card, .payment-dashboard-filter-bar, .payment-plans-filter-bar, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .codex-toolbar, .codex-list-actions__filters, .accounts-filter-shell, .users-filter-shell, .keys-filter-shell, .keys-page-actions) {
+  border: 1px solid var(--anthropic-border-hover);
+  border-radius: 8px;
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+  row-gap: var(--anthropic-control-group-gap);
+  column-gap: var(--anthropic-control-gap);
+  padding: 0.75rem 1rem;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+#app .app-layout-content .table-page-filter-section {
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  padding: 0.75rem 1rem !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell,
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.table-filter-left, .table-filter-actions),
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-left, .table-filter-actions, .usage-filter-left, .usage-filter-actions) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  min-height: var(--anthropic-control-height) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left,
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-left, .usage-filter-left) {
+  width: max-content !important;
+  max-width: 100% !important;
+  flex: 0 0 max-content !important;
+  flex-wrap: nowrap !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-actions,
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-actions, .usage-filter-actions) {
+  width: auto !important;
+  flex: 0 0 auto !important;
+  justify-content: flex-end !important;
+  margin-left: auto !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left > .relative.w-full,
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-left, .usage-filter-left) > .relative.w-full {
+  width: min(100%, 16rem) !important;
+  flex: 0 1 16rem !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.select-root--field, .select-root--text-control),
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.select-root--field, .select-root--text-control) {
+  width: max-content !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(button, .btn, .select-trigger, .date-picker-trigger, .input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"]),
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(button, .btn, .select-trigger, .date-picker-trigger, .input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"]) {
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"]),
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"]) {
+  padding-block: 0.375rem !important;
+}
+
+#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.btn),
+#app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.btn) {
+  padding-block: 0.375rem !important;
+}
+
+#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):not(:disabled) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  text-decoration: none !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+}
+
+#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):where(:hover, :focus-visible):not(:disabled) {
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+@media (max-width: 640px) {
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell,
+  #app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.table-filter-left, .table-filter-actions),
+  #app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-left, .table-filter-actions, .usage-filter-left, .usage-filter-actions) {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left > .relative.w-full,
+  #app .app-layout-content .table-page-filter-section > :where(.usage-time-filter-shell, .usage-filter-shell) :where(.table-filter-left, .usage-filter-left) > .relative.w-full {
+    width: 100% !important;
+    flex-basis: 100% !important;
+  }
+}
+
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) {
+  align-items: center;
+  row-gap: var(--anthropic-control-group-gap);
+  column-gap: var(--anthropic-control-gap);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label, .filter-label, a, button, [role="button"], .btn, .select-trigger, .date-picker-trigger, .input, .codex-button, .codex-input, .codex-select, select, input[type="search"], input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"]) {
+  min-height: var(--anthropic-control-height);
+  align-items: center;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+.app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button) {
+  min-height: var(--anthropic-control-height);
+  padding: 0;
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--anthropic-fg);
+  box-shadow: none;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+.app-layout-content :where(.filter-menu-button-danger) {
+  color: var(--anthropic-error);
+}
+
+.app-layout-content :where(.filter-menu-button:hover, .filter-menu-button:focus-visible, .filter-menu-button-open, .ops-toolbar-text-button:hover, .ops-toolbar-text-button:focus-visible) {
+  border-color: transparent;
+  background: transparent;
+  color: var(--anthropic-fg);
+  box-shadow: none;
+  text-decoration-color: currentColor;
+}
+
+#app .app-layout-content :where(.codex-list-actions__filters, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .usage-filter-card, .usage-filter-shell, .table-page-filter-section) :where(.codex-button, .codex-select, .codex-input, .filter-menu-button, .btn, .input, input[type="text"], input[type="search"], input[type="date"], input[type="datetime-local"]) {
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+  letter-spacing: 0 !important;
+}
+
+#app .app-layout-content :where(.codex-list-actions__filters) :where(.codex-select, .codex-input) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.codex-list-actions__filters) .codex-filter-sort-button {
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.dashboard-filter-card, .usage-time-filter-card, .usage-filter-card, .risk-control-toolbar-actions, .risk-control-record-filters, .codex-list-actions__filters) {
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  padding: 0.75rem 1rem !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+  letter-spacing: 0 !important;
+}
+
+#app .app-layout-content :where(.dashboard-filter-card > .dashboard-filter-shell, .usage-time-filter-card > .usage-time-filter-shell, .usage-filter-card > .usage-filter-shell, .table-page-filter-section > .usage-filter-shell, .codex-list-actions__filters, .risk-control-record-filters) {
+  align-items: center !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+}
+
+#app .app-layout-content :where(.table-page-filter-section > .usage-filter-shell, .usage-time-filter-card > .usage-time-filter-shell, .usage-filter-card > .usage-filter-shell) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#app .app-layout-content .codex-list-actions__filters :where(.codex-filter-input, .codex-filter-select) {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  padding: 0 0.75rem !important;
+}
+
+#app .app-layout-content .codex-list-actions__filters .codex-filter-input {
+  width: 14rem !important;
+}
+
+#app .app-layout-content .codex-list-actions__filters .codex-filter-select {
+  width: 9rem !important;
+}
+
+#app .app-layout-content .codex-list-actions__filters .codex-filter-select.w-40 {
+  width: 10rem !important;
+}
+
+#app .app-layout-content .codex-list-actions__filters .codex-filter-select.w-44 {
+  width: 11rem !important;
+}
+
+#app .app-layout-content .risk-control-record-filters .risk-control-logs-refresh-button {
+  width: auto !important;
+}
+
+.app-layout-content :where(.pagination-shell) :where(button, input, .select-trigger) {
+  min-height: var(--anthropic-control-height);
+  height: var(--anthropic-control-height);
+  align-items: center;
+  justify-content: center;
+  padding-block: 0;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+  border-color: var(--anthropic-border);
+  border-radius: 8px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  box-shadow: none;
+}
+
+.app-layout-content :where(.pagination-shell) :where(button:hover, button:focus-visible, .select-trigger:hover, .select-trigger-open) {
+  background: var(--anthropic-raised);
+  color: var(--anthropic-fg);
+  box-shadow: 0 0 0 1px var(--anthropic-border-hover);
+}
+
+.app-layout-content :where(.pagination-shell) :where(button[aria-current="page"]) {
+  border-color: var(--anthropic-border-hover);
+  background: var(--anthropic-raised);
+  color: var(--anthropic-fg);
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-hover);
+}
+
+.text-gradient,
+.auth-ascii-shell .text-gradient {
+  background: none;
+  color: var(--anthropic-fg);
+  -webkit-text-fill-color: var(--anthropic-fg);
+}
+
+.tour-info-box,
+.tour-success-box,
+.tour-warning-box,
+.tour-error-box {
+  border: 1px solid var(--anthropic-border);
+  border-radius: 8px;
+  background: var(--anthropic-section);
+  color: var(--anthropic-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==== Restored account card grid (from HEAD; WIP had flattened to strips) ==== */
+#app .app-layout-content .accounts-table-page .account-bulk-actions-bar {
+  margin-bottom: 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .layout-section-scrollable,
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .account-card-table-frame,
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  border-width: 0 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .layout-section-scrollable,
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .account-card-table-frame,
+#app .app-layout-content .accounts-table-page .table-wrapper.is-page-scroll {
+  flex: none !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow-y: visible !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  overflow: visible !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper thead {
+  display: none;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 0.625rem;
+  background: transparent !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody.table-body {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  background: transparent !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody.table-body > tr + tr {
+  border-top-color: var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+  --account-card-bg: var(--anthropic-page);
+  --account-card-hover-bg: var(--anthropic-cookbook-hover);
+  --home-card-accent: var(--anthropic-info);
+  --creepee-card-hover-surface: var(--account-card-hover-bg);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+  gap: 0.34rem 0.5rem;
+  position: relative;
+  min-width: 0;
+  overflow: clip;
+  border-radius: 7px;
+  border: 1px solid var(--anthropic-border-subtle) !important;
+  background: var(--account-card-bg) !important;
+  box-shadow: none !important;
+  padding: 0.56rem;
+  content-visibility: auto;
+  contain-intrinsic-size: 9.5rem 20rem;
+  transition:
+    background-color 350ms var(--atelier-ease),
+    border-color 250ms var(--atelier-ease),
+    box-shadow 250ms var(--atelier-ease);
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--account-card-hover-bg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr.codex-account-card-calling {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--account-card-bg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr.account-electric-border {
+  isolation: auto;
+  overflow: clip;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td.data-table-row-overlay-cell {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td.data-table-row-overlay-cell::before {
+  content: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-electric-border-canvas {
+  display: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr.account-electric-border:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--atelier-ink) !important;
+  white-space: normal !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"] {
+  grid-column: 1 / -1;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] {
+  grid-column: span 2;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] {
+  grid-column: 2 / -1;
+  align-self: start;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="usage"] {
+  grid-column: 1 / -1;
+  padding-right: 2rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-primary-500 {
+  background: var(--atelier-blue) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-gray-200 {
+  background: color-mix(in srgb, var(--atelier-ink) 16%, var(--atelier-paper-2)) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex > span {
+  background: var(--atelier-white) !important;
+  box-shadow: 0 1px 2px rgba(23, 21, 18, 0.28) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="schedulable"] button.relative.inline-flex.bg-primary-500 > span {
+  background: var(--atelier-white) !important;
+}
+
+#app .app-layout-content .accounts-table-page [data-testid="account-schedule-lock-action"] {
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked svg {
+  color: var(--anthropic-fg) !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-schedule-lock-action-unlocked {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-schedule-lock-action:hover,
+#app .app-layout-content .accounts-table-page .account-schedule-lock-action:focus-visible {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] {
+  position: absolute !important;
+  top: 0.56rem;
+  right: 0.56rem;
+  left: auto !important;
+  z-index: 60;
+  display: inline-flex !important;
+  width: max-content !important;
+  justify-content: flex-end;
+  pointer-events: auto !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"] input[type="checkbox"] {
+  position: relative;
+  z-index: 61;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"] {
+  padding-bottom: 0.36rem !important;
+  border-bottom: 1px dotted var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"] {
+  margin-top: 0.05rem;
+  padding-top: 0.36rem !important;
+  border-top: 1px dotted var(--atelier-material-edge) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] > div {
+  gap: 0.2rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] :where(.gap-1, [class~="gap-1.5"], .gap-2) {
+  gap: 0.2rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="platform_type"] :where(span, div) {
+  line-height: 1.05rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="expires_at"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] > div {
+  gap: 0.18rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="expires_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="notes"] :where(span, div) {
+  line-height: 1.1rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td::before {
+  content: attr(data-column-label);
+  display: block;
+  margin-bottom: 0.22rem;
+  color: var(--atelier-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="select"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="name"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="actions"]::before {
+  content: none;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col {
+  position: static !important;
+  z-index: auto !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col::before,
+#app .app-layout-content .accounts-table-page .table-wrapper .sticky-col::after {
+  content: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] > div {
+  justify-content: flex-start;
+  gap: 0.625rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] button {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--anthropic-muted) !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: transparent !important;
+  text-underline-offset: 0.22em !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] svg {
+  display: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] span {
+  font-size: 0.6875rem !important;
+  line-height: 1rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] button:hover,
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] button:focus-visible {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  text-decoration-color: currentColor !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] .account-card-text-action-danger:hover,
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] .account-card-text-action-danger:focus-visible {
+  color: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-card-controls {
+  isolation: isolate;
+}
+
+#app .app-layout-content .accounts-table-page .account-rate-quick-adjust,
+#app .app-layout-content .accounts-table-page .account-priority-quick-adjust {
+  box-shadow: 0 1px 2px rgba(23, 21, 18, 0.08);
+}
+
+#app .app-layout-content .accounts-table-page .account-priority-step {
+  display: inline-flex;
+  height: 100%;
+  width: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition:
+    background-color 0.16s var(--atelier-ease),
+    color 0.16s var(--atelier-ease);
+}
+
+#app .app-layout-content .accounts-table-page .account-priority-step:not(:disabled):hover {
+  background: color-mix(in srgb, var(--atelier-blue) 10%, transparent);
+  color: var(--atelier-blue);
+}
+
+#app .app-layout-content .accounts-table-page .account-priority-step:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+#app .app-layout-content .accounts-table-page .account-priority-value {
+  min-width: 2rem;
+  padding: 0 0.28rem;
+  text-align: center;
+  border-right: 1px solid color-mix(in srgb, var(--atelier-material-edge) 82%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--atelier-material-edge) 82%, transparent);
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] .account-card-name-main {
+  padding-right: 8.75rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] .account-external-quota {
+  width: 100%;
+  min-width: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-inline: 0 !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-row {
+  display: grid !important;
+  grid-template-columns: minmax(3.25rem, max-content) minmax(0, 1fr);
+  column-gap: 0.75rem !important;
+  align-items: baseline !important;
+  justify-content: stretch !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-row-head {
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-value,
+#app .app-layout-content .accounts-table-page .account-external-quota-link,
+#app .app-layout-content .accounts-table-page .account-external-quota-row > :last-child {
+  justify-self: end;
+  min-width: 0;
+  text-align: right;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .codex-account-card-calling {
+  position: relative;
+  isolation: auto;
+  overflow: clip;
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border .account-electric-border-canvas {
+  display: none !important;
+}
+
+#app .app-layout-content .accounts-table-page > .space-y-3 > .account-electric-border > * {
+  position: relative;
+  z-index: 1;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] > div {
+  gap: 0.5rem !important;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:first-child {
+  line-height: 1.15;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="name"] span:last-child {
+  max-width: 100% !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-provider-logo {
+  align-items: center;
+  background: rgba(255, 250, 240, 0.72);
+  border: 1px solid rgba(23, 21, 18, 0.16);
+  border-radius: 0.375rem;
+  display: inline-flex;
+  flex: 0 0 1.75rem;
+  height: 1.75rem;
+  justify-content: center;
+  overflow: hidden;
+  width: 1.75rem;
+}
+
+#app .app-layout-content .accounts-table-page .account-provider-logo .provider-brand-icon {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-bar {
+  min-width: 0;
+  width: 100%;
+  line-height: 1.1;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-window-stats {
+  margin-bottom: 0.12rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-stats-row {
+  gap: 0.25rem !important;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-stat {
+  padding: 0.08rem 0.3rem !important;
+  font-size: 0.5rem !important;
+  line-height: 0.85rem !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-row {
+  gap: 0.25rem !important;
+  width: 100%;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-label,
+#app .app-layout-content .accounts-table-page .usage-progress-percent {
+  width: 2rem !important;
+  font-size: 0.56rem !important;
+  line-height: 0.95rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-reset {
+  font-size: 0.56rem !important;
+  line-height: 0.95rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-track {
+  width: clamp(6rem, 100%, 11rem) !important;
+  flex: 1 1 auto !important;
+  min-width: 6rem !important;
+  height: 0.25rem !important;
+  background: var(--anthropic-section) !important;
+}
+
+#app .app-layout-content .accounts-table-page :where(.usage-progress-label, .usage-progress-stat, .openai-quota-reset-action) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page :where(.account-usage-query-action, .openai-quota-reset-action) {
+  width: auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  align-items: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  font-size: 0.625rem !important;
+  font-weight: 500 !important;
+  line-height: 1rem !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: transparent !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 0.24em !important;
+}
+
+#app .app-layout-content .accounts-table-page :where(.account-usage-query-action, .openai-quota-reset-action):where(:hover, :focus-visible) {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration-color: currentColor !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--safe {
+  background: var(--anthropic-success) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--warning {
+  background: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content .accounts-table-page .usage-progress-fill--danger {
+  background: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill--safe) {
+  background: var(--anthropic-success) !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill--warning) {
+  background: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content :where(.usage-progress-fill--danger) {
+  background: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-groups-cell {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+}
+
+#app .app-layout-content .accounts-table-page .account-groups-cell__chips {
+  max-height: 3.2rem;
+  overflow: hidden;
+  align-content: flex-start;
+}
+
+#app .app-layout-content .accounts-table-page :where(.platform-type-badge__platform, .platform-type-badge__type, .platform-type-badge__plan, .platform-type-badge__privacy, .group-token, .group-token-label) {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
+  min-height: 1rem !important;
+  padding-block: 0 !important;
+}
+
+#app .app-layout-content .accounts-table-page :where(.platform-type-badge__type, .platform-type-badge__plan, .platform-type-badge__privacy) {
+  margin-left: 0 !important;
+}
+
+#app .app-layout-content .accounts-table-page .group-token,
+#app .app-layout-content .accounts-table-page .group-token-label {
+  border-color: transparent !important;
+}
+
+#app .app-layout-content .accounts-table-page tr.codex-account-card-calling [data-column-key="capacity"] :where(.badge, [class*="border-"][class*="text-"]) {
+  border-color: color-mix(in srgb, var(--anthropic-info) 34%, transparent) !important;
+  color: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content .accounts-table-page .pagination-shell nav {
+  gap: 0.5rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .pagination-shell nav > button {
+  margin-left: 0 !important;
+  border-radius: 8px !important;
+}
+
+@media (max-width: 640px) {
+  #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+    grid-template-columns: 1fr;
+  }
+
+  #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] {
+    grid-column: 1 / -1;
+  }
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+/* Dashboard filter and chart locks: keep the bar dimensions, align only the controls. */
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  padding-block: 0.75rem !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > .dashboard-filter-shell {
+  min-height: var(--anthropic-control-height);
+  align-items: center !important;
+  row-gap: var(--anthropic-control-group-gap);
+  column-gap: var(--anthropic-control-gap);
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.dashboard-filter-range, .dashboard-filter-granularity) {
+  display: inline-flex;
+  min-height: var(--anthropic-control-height);
+  align-items: center !important;
+  gap: 0.375rem !important;
+  line-height: var(--anthropic-control-line-height);
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.filter-label, .dashboard-filter-refresh, .date-picker-trigger, .select-trigger) {
+  display: inline-flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  justify-content: center;
+  margin-block: 0 !important;
+  padding-block: 0 !important;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger, .select-trigger) {
+  gap: 0.1875rem !important;
+  padding-inline: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover, .date-picker-trigger-open, .select-trigger:hover, .select-trigger-open) {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration-color: currentColor;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.select-icon, .date-picker-chevron) {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  margin-left: 0.0625rem !important;
+  flex: 0 0 1.25rem;
+  color: currentColor !important;
+  background: currentColor !important;
+  transform: translateY(1px) rotate(0deg) !important;
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-in-out;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
+  transform: translateY(1px) rotate(180deg) !important;
+}
+
+/* User monitor cards: Anthropic tutorial-card linked hover contract. */
+#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: background-color 350ms ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card:hover, .monitor-card-linked-hover-group .monitor-linked-card:focus-visible) {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
+#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-raised) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+#app .app-layout-content .user-keys-atelier > .table-page-actions-section {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: var(--anthropic-control-height) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier > .table-page-actions-section > .keys-page-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: var(--anthropic-control-gap) !important;
+  width: 100% !important;
+  min-height: var(--anthropic-control-height) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-page-actions :where(.keys-refresh-button, .keys-create-button) {
+  min-width: 5.25rem !important;
+  min-height: 2.5rem !important;
+  height: 2.5rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  padding: 0.5rem 1rem !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-page-actions .keys-create-button:not(:disabled) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-page-actions .keys-create-button:where(:hover, :focus-visible):not(:disabled) {
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-item {
+  min-height: 2.25rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+  padding-block: 0.375rem !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-endpoint {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+  min-height: 1.5rem !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-code {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 1.5rem !important;
+  line-height: 1.5rem !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-icon-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.5rem !important;
+  min-width: 1.5rem !important;
+  height: 1.5rem !important;
+  min-height: 1.5rem !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-icon-action :where(svg, path) {
+  flex: 0 0 auto !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier > .table-page-actions-section > .usage-stats-grid {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Final form focus contract: mouse focus keeps warm hairline only; keyboard focus
+   gets one accessible outline and never a second Tailwind/box-shadow ring. */
+#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea) {
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
+:where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}
+
+/* Account cards: final Anthropic grouped-card contract. Keep this after later
+   dashboard/ops locks so account rows do not regress to flat table chrome. */
+#app .app-layout-content .accounts-table-page .layout-section-scrollable,
+#app .app-layout-content .accounts-table-page .table-scroll-container,
+#app .app-layout-content .accounts-table-page .account-card-table-frame,
+#app .app-layout-content .accounts-table-page .table-wrapper {
+  border-width: 0 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
+  background: var(--account-card-bg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--account-card-hover-bg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--account-card-hover-bg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .external-subscriptions-page .external-subscription-card {
+  --external-subscription-card-bg: var(--anthropic-page);
+  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
+  border-color: var(--anthropic-border-subtle) !important;
+  background: var(--external-subscription-card-bg) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .external-subscriptions-page .external-subscription-card:hover,
+#app .app-layout-content .external-subscriptions-page .external-subscription-card:focus-visible {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--external-subscription-card-hover-bg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+/* Ops page final alignment pass: keep commented browser targets from drifting. */
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 {
+  align-items: center !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar {
+  display: flex !important;
+  width: auto !important;
+  margin-left: auto !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: var(--anthropic-control-gap) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar > * {
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar > button {
+  min-width: 3.25rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-card-filter-bar :where(.select-trigger:focus, .select-trigger-open):not(:focus-visible) {
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(table, thead, thead tr, thead th, tbody, tbody tr, tbody td) {
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(thead, thead tr, thead th) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  color: var(--anthropic-muted) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card:where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card :where(.custom-scrollbar > div, .flex.min-h-0.flex-1.flex-col) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card :where(.border-b) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: transparent !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card :where(.bg-\[var\(--anthropic-section\)\], .bg-\[var\(--anthropic-raised\)\]) {
+  background: transparent !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl .ops-card-filter-bar {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl :where(label, .text-xs) {
+  color: var(--anthropic-muted) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card input[type="checkbox"] {
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+  accent-color: var(--anthropic-fg) !important;
+  border-color: var(--anthropic-border) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card .ops-card-filter-bar {
+  align-items: center !important;
+  gap: var(--anthropic-control-gap) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-danger {
+  --button-bg: transparent;
+  --button-border: color-mix(in srgb, var(--anthropic-error) 32%, transparent);
+  --button-border-hover: color-mix(in srgb, var(--anthropic-error) 48%, transparent);
+  border: 1px solid var(--button-border) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--anthropic-error) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-reset-button, .ops-log-cleanup-button) {
+  width: auto !important;
+  min-width: max-content !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: transparent !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 0.24em !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card .ops-log-reset-button {
+  color: var(--anthropic-fg) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card .ops-log-cleanup-button {
+  color: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-reset-button, .ops-log-cleanup-button):where(:hover, :focus-visible) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration-color: currentColor !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-danger:where(:hover, :focus-visible) {
+  border-color: var(--button-border-hover) !important;
+  background: transparent !important;
+  color: var(--anthropic-error) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-primary:where(:hover, :focus-visible) {
+  --button-bg: var(--anthropic-fg-hover);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border-color: var(--anthropic-fg-hover) !important;
+  background: var(--anthropic-fg-hover) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-runtime-save-button, .ops-log-query-button) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-runtime-save-button, .ops-log-query-button):where(:hover, :focus-visible) {
+  --button-bg: var(--anthropic-fg);
+  --button-border: var(--anthropic-muted);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-primary.ops-log-runtime-save-button:where(:hover, :focus-visible),
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-primary.ops-log-query-button:where(:hover, :focus-visible) {
+  --button-bg: var(--anthropic-fg);
+  --button-border: var(--anthropic-muted);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-header-atelier .header-balance-chip-fixed {
+  width: 8.25rem !important;
+  min-width: 8.25rem !important;
+  max-width: 8.25rem !important;
+  font-size: 0.625rem !important;
+  line-height: 0.95rem !important;
+  border-left: 0 !important;
+}
+
+#app .app-header-atelier .header-balance-chip-fixed :where(.header-balance-provider-name, .header-balance-chip-amount, .header-balance-system-amount) {
+  font-size: 0.625rem !important;
+  line-height: 0.95rem !important;
+}
+
+#app .app-header-atelier .header-balance-chip-fixed:where(
+  .balance-chip-buzz,
+  .balance-chip-qlhazycoder,
+  .balance-chip-packycode,
+  .balance-chip-xhyapi,
+  .balance-chip-pixel,
+  .balance-chip-liust,
+  .balance-chip-tcdmx,
+  .balance-chip-openrouter,
+  .balance-chip-cloudflare,
+  .balance-chip-external
+) {
+  border-left: 0 !important;
+}
+
+/* Ops dashboard locks: outer toolbar owns the frame; controls stay text-like. */
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 4rem !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  padding: 0.75rem 1rem !important;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-meta {
+  display: flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  flex: 1 1 18rem !important;
+  flex-direction: column;
+  justify-content: center !important;
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls {
+  display: flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  align-self: center !important;
+  margin-left: auto !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size);
+  font-weight: var(--anthropic-control-font-weight);
+  line-height: var(--anthropic-control-line-height);
+  letter-spacing: 0;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > * {
+  display: inline-flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  margin: 0 !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > :where(.hidden.h-4.w-\[1px\]) {
+  display: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > :where(.relative, .w-full) {
+  width: auto !important;
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > .ops-toolbar-select {
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > .ops-toolbar-labeled-select {
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-select-label {
+  display: inline-flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  color: var(--anthropic-muted) !important;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger, .ops-toolbar-text-button, .ops-toolbar-primary-button, .ops-toolbar-icon-button) {
+  display: inline-flex !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  justify-content: center;
+  align-self: center !important;
+  margin: 0 !important;
+  padding-block: 0 !important;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+  letter-spacing: 0;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger) > span {
+  min-width: 0 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger, .ops-toolbar-text-button) {
+  gap: 0.1875rem !important;
+  padding-inline: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger:hover, .select-trigger-open, .ops-toolbar-text-button:hover, .ops-toolbar-text-button:focus-visible) {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  text-decoration-color: currentColor;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger:focus, .select-trigger-open):not(:focus-visible) {
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:focus-visible {
+  border-color: transparent !important;
+  outline: 2px solid var(--anthropic-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-icon-button {
+  flex: 0 0 var(--anthropic-control-height) !important;
+  width: var(--anthropic-control-height) !important;
+  padding: 0 !important;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-icon-button:hover {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button {
+  min-width: max-content !important;
+  padding-inline: 1rem !important;
+  border: 1px solid var(--anthropic-fg) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-fg) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button:focus-visible {
+  border-color: var(--anthropic-fg-hover) !important;
+  background: var(--anthropic-fg-hover) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button.anthropic-refresh-action-button,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled) {
+  --button-bg: var(--anthropic-clay-interactive);
+  --button-border: var(--anthropic-clay-interactive);
+  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-clay-interactive) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button.anthropic-refresh-action-button:hover,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button.anthropic-refresh-action-button:focus-visible,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled):hover,
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled):focus-visible {
+  --button-bg: var(--anthropic-clay-interactive);
+  --button-border: var(--anthropic-clay-interactive);
+  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  background: var(--anthropic-clay-interactive) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-icon {
+  display: inline-grid !important;
+  width: 1.25rem !important;
+  min-width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-height: 1.25rem !important;
+  margin-left: -0.125rem !important;
+  place-items: center;
+  flex: 0 0 1.25rem;
+  color: currentColor !important;
+  background: transparent !important;
+  transform: translateY(1px) rotate(0deg) !important;
+  transform-origin: 50% 50%;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-icon::before {
+  content: "" !important;
+  display: block !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  background: currentColor !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger:hover .select-icon,
+#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open .select-icon {
+  transform: translateY(1px) rotate(180deg) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card, .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .anthropic-card-shell) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card, .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .anthropic-card-shell):where(:hover, :focus-within, .card-hover) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-health-score-card, .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .anthropic-card-shell).card-hover,
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-health-score-card, .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .anthropic-card-shell):where(.hover\:shadow-card-hover, .hover\:translate-y-0, .hover\:-translate-y-1) {
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card:where(:hover, :focus-within, .card-hover) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card :where(.custom-scrollbar > div, .flex.min-h-0.flex-1.flex-col, .border-b, .bg-\[var\(--anthropic-section\)\], .bg-\[var\(--anthropic-raised\)\]) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel {
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel:where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-grid:where(:hover, :focus-within),
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-realtime-panel,
+#app .app-layout-content .ops-dashboard-atelier .ops-live-panel .ops-realtime-panel:where(:hover, :focus-within) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card:where(:hover, :focus-within) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring {
+  color: var(--ops-health-score-color) !important;
+  fill: none !important;
+  stroke: var(--ops-health-score-color) !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring :where(circle, path),
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-health-score-track, .ops-health-score-progress) {
+  color: var(--ops-health-score-color) !important;
+  fill: transparent !important;
+  stroke: var(--ops-health-score-color) !important;
+  stroke-opacity: 1 !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring .ops-health-score-track {
+  opacity: 0.22 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier :where(.ops-health-score-value, .ops-health-score-state) {
+  color: var(--ops-health-score-color) !important;
+  transition: none !important;
+  transition-property: none !important;
+}
+
+#app .app-layout-content :where(
+  button.anthropic-refresh-action-button,
+  button.dashboard-filter-refresh,
+  button[data-testid*="refresh"]:not([data-testid*="auto-refresh"]):not([data-testid*="refresh-token"]),
+  button[data-testid*="-button-load"]:not([data-testid*="download"]):not([data-testid^="account-account-usage-cell-button-load-active-usage"]),
+  button[data-testid*="-button-fetch"]:not([data-testid*="download"]),
+  button[title="刷新"],
+  button[title="Refresh"]
+) {
+  width: auto !important;
+  flex: 0 0 auto !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  --button-bg: var(--anthropic-clay-interactive);
+  --button-border: var(--anthropic-clay-interactive);
+  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-clay-interactive) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  padding: 0.375rem 1rem !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+  text-decoration: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content :where(
+  button.anthropic-refresh-action-button,
+  button.dashboard-filter-refresh,
+  button[data-testid*="refresh"]:not([data-testid*="auto-refresh"]):not([data-testid*="refresh-token"]),
+  button[data-testid*="-button-load"]:not([data-testid*="download"]):not([data-testid^="account-account-usage-cell-button-load-active-usage"]),
+  button[data-testid*="-button-fetch"]:not([data-testid*="download"]),
+  button[title="刷新"],
+  button[title="Refresh"]
+):where(:hover, :focus-visible) {
+  --button-bg: var(--anthropic-clay-interactive);
+  --button-border: var(--anthropic-clay-interactive);
+  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  background: var(--anthropic-clay-interactive) !important;
+  color: var(--anthropic-page) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content :where(
+  button.anthropic-refresh-action-button,
+  button.dashboard-filter-refresh,
+  button[data-testid*="refresh"]:not([data-testid*="auto-refresh"]):not([data-testid*="refresh-token"]),
+  button[data-testid*="-button-load"]:not([data-testid*="download"]):not([data-testid^="account-account-usage-cell-button-load-active-usage"]),
+  button[data-testid*="-button-fetch"]:not([data-testid*="download"]),
+  button[title="刷新"],
+  button[title="Refresh"]
+):disabled {
+  opacity: 0.55;
+}
+
+#app .app-layout-content :where(
+  button.anthropic-refresh-action-button,
+  button.dashboard-filter-refresh,
+  button[data-testid*="refresh"]:not([data-testid*="auto-refresh"]):not([data-testid*="refresh-token"]),
+  button[data-testid*="-button-load"]:not([data-testid*="download"]):not([data-testid^="account-account-usage-cell-button-load-active-usage"]),
+  button[data-testid*="-button-fetch"]:not([data-testid*="download"]),
+  button[title="刷新"],
+  button[title="Refresh"]
+) :where(svg, svg *) {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+#app .app-layout-content .empty-state {
+  justify-items: center !important;
+  text-align: center !important;
+}
+
+#app .app-layout-content .empty-state > :first-child {
+  margin-inline: auto !important;
+}
+
+#app .app-layout-content .empty-state .empty-state-icon {
+  display: block !important;
+  margin: auto !important;
+  color: var(--anthropic-muted) !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .groups-filter-shell .groups-refresh-button :where(svg, svg *) {
+  display: none !important;
+}
+
+#app .app-layout-content .groups-filter-shell .groups-create-button {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .groups-filter-shell button.btn-primary.groups-create-button:where(:hover, :focus-visible) {
+  --button-bg: var(--anthropic-fg);
+  --button-border: var(--anthropic-muted);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer-hover: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .groups-filter-shell .groups-sort-button {
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-fg);
+  --button-border: var(--anthropic-fg);
+  --button-bg-hover: var(--anthropic-fg);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-fg);
+  --button-spacer: 0;
+  --button-spacer-hover: 0;
+  --button-border-width: 1px;
+  --button-border-width-hover: 1px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .groups-filter-shell button.btn-secondary.groups-sort-button:where(:hover, :focus-visible) {
+  --button-bg: transparent;
+  --button-border: var(--anthropic-fg);
+  --button-bg-hover: var(--anthropic-fg);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-fg);
+  --button-spacer-hover: 0;
+  --button-border-width-hover: 1px;
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-border-width-hover, 1px) var(--button-bg-hover) !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .group-billing-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  border: 1px solid currentColor !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  padding: 0.125rem 0.5rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  line-height: 1rem !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .group-billing-badge--standard {
+  color: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content .group-billing-badge--subscription {
+  color: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel > .mb-3 {
+  padding-inline-end: 0.75rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-realtime-window-group {
+  padding-inline-end: 1rem !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-metric-card button[data-testid*="open-details"] {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-metric-card button[data-testid*="open-details"]:where(:hover, :focus-visible) {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  text-decoration-color: currentColor;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card,
+#app .app-layout-content .ops-dashboard-atelier .ops-chart-card {
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-chart-card {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card:where(:hover, :focus-within),
+#app .app-layout-content .ops-dashboard-atelier .ops-chart-card:where(:hover, :focus-within) {
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card:where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-chart-card:where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card .model-distribution-visual {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card :where(.model-distribution-table-wrap, .model-distribution-table-wrap table, .model-distribution-table-wrap thead, .model-distribution-table-wrap tbody, .model-distribution-table-wrap tr, .model-distribution-table-wrap th, .model-distribution-table-wrap td) {
+  background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .model-distribution-card .model-distribution-row-clickable:hover {
+  background: var(--anthropic-section) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control {
+  font-size: var(--anthropic-control-font-size) !important;
+  line-height: var(--anthropic-control-line-height) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.select-icon, .date-picker-chevron) {
+  display: inline-grid !important;
+  width: 1.25rem !important;
+  min-width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-height: 1.25rem !important;
+  margin-left: 0 !important;
+  place-items: center;
+  flex: 0 0 1.25rem;
+  color: currentColor !important;
+  background: transparent !important;
+  transform: translateY(1px) rotate(0deg) !important;
+  transform-origin: 50% 50%;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.select-icon, .date-picker-chevron)::before {
+  content: "" !important;
+  display: block !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  background: currentColor !important;
+  transform: none !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
+  transform: translateY(1px) rotate(180deg) !important;
+}

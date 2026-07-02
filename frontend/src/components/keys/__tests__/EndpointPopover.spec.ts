@@ -99,4 +99,21 @@ describe('EndpointPopover', () => {
     expect(wrapper.find('button[aria-label="已复制到剪贴板"]').exists()).toBe(true)
     wrapper.unmount()
   })
+
+  it('uses explicit alignment hooks for the endpoint row controls', () => {
+    const wrapper = mount(EndpointPopover, {
+      attachTo: document.body,
+      props: {
+        apiBaseUrl: 'https://default.example.com/v1',
+        customEndpoints: [],
+      },
+    })
+
+    expect(wrapper.find('.endpoint-popover-item').exists()).toBe(true)
+    expect(wrapper.find('.endpoint-popover-endpoint').exists()).toBe(true)
+    expect(wrapper.find('.endpoint-code').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="keys-endpoint-popover-button-copy-item-endpoint"]').classes()).toContain('endpoint-popover-icon-action')
+    expect(wrapper.find('[data-testid="keys-endpoint-popover-link-a"]').classes()).toContain('endpoint-popover-icon-action')
+    wrapper.unmount()
+  })
 })

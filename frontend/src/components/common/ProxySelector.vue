@@ -27,12 +27,12 @@
       :show="isOpen"
       :trigger-el="triggerRef"
       :match-width="true"
-      panel-class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg shadow-black/10 dark:border-dark-700 dark:bg-dark-800 dark:shadow-black/30"
+      panel-class="w-full overflow-hidden rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none shadow-black/10 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:shadow-black/30"
     >
         <!-- Search and Batch Test Header -->
         <div class="select-header">
           <div class="select-search">
-            <Icon name="search" size="sm" class="text-gray-400" />
+            <Icon name="search" size="sm" class="text-[var(--anthropic-muted)]" />
             <input data-testid="common-proxy-selector-input-search-query"
               ref="searchInputRef"
               v-model="searchQuery"
@@ -77,7 +77,7 @@
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
             <span class="select-option-label">{{ t('admin.accounts.noProxy') }}</span>
-            <Icon v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
+            <Icon v-if="modelValue === null" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
           </div>
 
           <!-- Proxy options -->
@@ -93,7 +93,7 @@
                 <!-- Account count badge -->
                 <span
                   v-if="proxy.account_count !== undefined"
-                  class="inline-flex flex-shrink-0 items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-dark-600 dark:text-gray-400"
+                  class="inline-flex flex-shrink-0 items-center rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
                 >
                   {{ proxy.account_count }}
                 </span>
@@ -118,7 +118,7 @@
                   </span>
                 </template>
               </div>
-              <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+              <div class="truncate text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ proxy.protocol }}://{{ proxy.host }}:{{ proxy.port }}
               </div>
             </div>
@@ -158,7 +158,7 @@
               v-if="modelValue === proxy.id"
               name="check"
               size="sm"
-              class="flex-shrink-0 text-primary-500"
+              class="flex-shrink-0 text-[var(--anthropic-fg)]"
             />
           </div>
 
@@ -327,18 +327,18 @@ onUnmounted(() => {
 <style scoped>
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
-  @apply rounded-xl px-4 py-2.5 text-sm;
-  @apply bg-white dark:bg-dark-800;
-  @apply border border-gray-200 dark:border-dark-600;
-  @apply text-gray-900 dark:text-gray-100;
+  @apply rounded-lg px-4 py-2.5 text-sm;
+  background: var(--atelier-paper);
+  border: 1px solid var(--atelier-line-strong);
+  color: var(--atelier-ink);
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-  @apply hover:border-gray-300 dark:hover:border-dark-500;
+  @apply focus:border-[var(--atelier-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)];
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
+  border-color: var(--atelier-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-focus) 20%, transparent);
 }
 
 .select-trigger-disabled {
@@ -355,10 +355,10 @@ onUnmounted(() => {
 
 .select-dropdown {
   @apply absolute z-[100] mt-2 w-full;
-  @apply bg-white dark:bg-dark-800;
-  @apply rounded-xl;
-  @apply border border-gray-200 dark:border-dark-700;
-  @apply shadow-lg shadow-black/10 dark:shadow-black/30;
+  background: var(--atelier-paper);
+  border: 1px solid var(--atelier-line-strong);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.05);
   @apply overflow-hidden;
 }
 

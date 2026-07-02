@@ -20,7 +20,7 @@
             <button data-testid="common-base-button-emit-close"
               v-if="showCloseButton"
               @click="emit('close')"
-              class="-mr-2 rounded-lg p-2 text-gray-400 transition-colors hover:bg-primary-50 hover:text-gray-600 dark:text-dark-500 dark:hover:bg-dark-700 dark:hover:text-dark-300"
+              class="-mr-2 rounded-lg p-2 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-muted)] dark:text-dark-500 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-dark-300"
               aria-label="Close modal"
             >
               <Icon name="x" size="md" />

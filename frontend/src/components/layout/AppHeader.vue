@@ -1,11 +1,11 @@
 <template>
-  <header class="app-header-atelier paper-surface sticky top-0 z-30 border-b border-gray-200/50 dark:border-dark-700/50">
+  <header class="app-header-atelier paper-surface sticky top-0 z-30 border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
     <div class="flex h-16 items-center justify-between px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex min-w-0 items-center gap-4">
         <button data-testid="layout-app-header-button-toggle-mobile-sidebar"
           @click="toggleMobileSidebar"
-          class="btn-ghost btn-icon lg:hidden"
+          class="btn-ghost btn-icon app-header-menu-toggle lg:hidden"
           aria-label="Toggle Menu"
         >
           <Icon name="menu" size="md" />
@@ -17,7 +17,7 @@
         >
           <div class="flex min-w-0 items-center gap-2">
             <span class="app-header-context-dot" aria-hidden="true"></span>
-            <h1 class="truncate text-sm font-semibold text-gray-900 dark:text-white md:text-base">
+            <h1 class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] md:text-base">
               {{ pageTitle || 'Console' }}
             </h1>
             <span v-if="user" class="app-header-role-chip">{{ headerRoleLabel }}</span>
@@ -29,104 +29,78 @@
         </div>
       </div>
 
-      <!-- Right: Announcements + Docs + Language + Subscriptions + Balance + User Dropdown -->
-      <div class="flex items-center gap-3">
+      <!-- Right: Search + Balance + Announcements + Docs + Language + Subscriptions + User Dropdown -->
+      <div class="app-header-control-group flex items-center gap-3">
         <!-- AI Search -->
         <AISearchBox v-if="user" />
-
-        <!-- Announcement Bell -->
-        <AnnouncementBell v-if="user" />
-
-        <!-- Docs Link -->
-        <a data-testid="layout-app-header-link-a"
-          v-if="docUrl"
-          :href="docUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
-        >
-          <Icon name="book" size="sm" />
-          <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
-        </a>
-
-        <!-- Language Switcher -->
-        <LocaleSwitcher />
-
-        <!-- Subscription Progress (for users with active subscriptions) -->
-        <SubscriptionProgressMini v-if="user" />
 
         <!-- Balance Display -->
         <div
           v-if="user"
-          class="relative hidden sm:block"
+          class="header-balance-chip-shell relative hidden sm:block"
           @mouseenter="openBalanceDropdown"
           @mouseleave="scheduleCloseBalanceDropdown"
+          @pointerenter="openBalanceDropdown"
+          @pointerleave="scheduleCloseBalanceDropdown"
         >
-          <div
+          <button
+            type="button"
             ref="balanceChipRef"
             data-testid="header-balance-chip"
             class="header-balance-chip-fixed flex items-center gap-2 rounded-xl px-3 py-1.5 transition-colors"
             :class="balanceChipClass"
+            aria-haspopup="menu"
+            :aria-expanded="balanceDropdownOpen ? 'true' : 'false'"
+            @click="toggleBalanceDropdown"
+            @focus="openBalanceDropdown"
             @mouseenter="openBalanceDropdown"
             @mouseleave="scheduleCloseBalanceDropdown"
+            @pointerenter="openBalanceDropdown"
+            @pointerleave="scheduleCloseBalanceDropdown"
           >
             <div class="header-balance-chip-identity">
-              <ProviderBrandIcon
-                v-if="currentExternalSubscriptionInChip"
-                data-testid="header-balance-provider-logo"
-                class="header-balance-provider-logo h-4 w-4 flex-shrink-0"
-                :provider="externalSubscriptionLogoProvider(currentExternalSubscriptionInChip)"
-                :model="currentExternalSubscriptionInChip.name"
-                :logo-url="currentExternalSubscriptionInChip.logo_url"
-                :data-logo-url="currentExternalSubscriptionInChip.logo_url || ''"
-              />
-              <svg
-                v-else
-                class="h-4 w-4 flex-shrink-0"
-                :class="balanceIconClass"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-                />
-              </svg>
               <span
                 v-if="currentExternalSubscriptionInChip"
-                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-provider-name min-w-0 truncate text-sm font-semibold']"
+                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-provider-name min-w-0 truncate font-semibold']"
               >
                 {{ externalSubscriptionChipLabel(currentExternalSubscriptionInChip) }}
+              </span>
+              <span
+                v-else
+                class="balance-system-text header-balance-provider-name min-w-0 truncate font-semibold"
+              >
+                {{ t('common.balance') }}
               </span>
             </div>
             <template v-if="currentExternalSubscriptionInChip">
               <span
-                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-chip-amount truncate text-sm font-semibold tabular-nums']"
+                :class="[balanceProviderTextClass(currentExternalSubscriptionInChip), 'header-balance-chip-amount truncate font-semibold tabular-nums']"
               >
                 {{ formatExternalSubscriptionBalance(currentExternalSubscriptionInChip, true, { walletOnly: true }) }}
               </span>
             </template>
             <span
               v-else
-              class="balance-system-text header-balance-system-amount min-w-0 truncate text-sm font-semibold tabular-nums"
+              class="balance-system-text header-balance-system-amount min-w-0 truncate font-semibold tabular-nums"
             >
               {{ formattedSystemBalance }}
             </span>
-          </div>
+            <span class="topbar-menu-caret" :class="{ 'topbar-menu-caret-open': balanceDropdownOpen }" aria-hidden="true"></span>
+          </button>
 
           <FloatingDropdown
             :show="balanceDropdownOpen"
             :trigger-el="balanceChipRef"
             placement="bottom-end"
             :offset="8"
-            panel-class="dropdown header-balance-dropdown-panel w-72 max-w-[calc(100vw-1.5rem)]"
+            panel-class="dropdown topbar-underline-menu header-balance-dropdown-panel w-72 max-w-[calc(100vw-1.5rem)]"
+            @mouseenter="cancelBalanceDropdownClose"
+            @mouseleave="scheduleCloseBalanceDropdown"
+            @close="closeBalanceDropdown"
           >
             <div
               data-testid="header-balance-dropdown"
-              class="space-y-2 p-3"
+              class="header-balance-dropdown-list"
               @mouseenter="cancelBalanceDropdownClose"
               @mouseleave="scheduleCloseBalanceDropdown"
             >
@@ -183,15 +157,49 @@
           </FloatingDropdown>
         </div>
 
+        <!-- Announcement Bell -->
+        <AnnouncementBell v-if="user" />
+
+        <!-- Docs Link -->
+        <a data-testid="layout-app-header-link-a"
+          v-if="docUrl"
+          :href="docUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+            class="flex items-center gap-1.5 px-0 py-1.5 text-sm font-medium text-[var(--anthropic-muted)] underline decoration-transparent underline-offset-[0.22em] transition-colors hover:text-[var(--anthropic-fg)] hover:decoration-current dark:text-dark-400 dark:hover:text-[var(--anthropic-fg)]"
+        >
+          <Icon name="book" size="sm" />
+          <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
+        </a>
+
+        <!-- Language Switcher -->
+        <LocaleSwitcher />
+
+        <!-- Subscription Progress (for users with active subscriptions) -->
+        <SubscriptionProgressMini v-if="user" />
+
         <!-- User Dropdown -->
-        <div v-if="user" class="relative" ref="dropdownRef">
+        <div
+          v-if="user"
+          class="relative"
+          ref="dropdownRef"
+          @mouseenter="openDropdown"
+          @mouseleave="scheduleCloseDropdown"
+          @pointerenter="openDropdown"
+          @pointerleave="scheduleCloseDropdown"
+        >
           <button data-testid="layout-app-header-button-toggle-dropdown"
             ref="dropdownButtonRef"
             @click="toggleDropdown"
-            class="user-menu-trigger flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
+            @focus="openDropdown"
+            @mouseenter="openDropdown"
+            @pointerenter="openDropdown"
+            class="user-menu-trigger flex items-center gap-2 p-1.5 underline decoration-transparent underline-offset-[0.22em] transition-colors hover:decoration-current"
             aria-label="User Menu"
+            aria-haspopup="menu"
+            :aria-expanded="dropdownOpen ? 'true' : 'false'"
           >
-            <div class="user-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
+            <div class="user-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-[var(--atelier-ink)] text-sm font-medium text-white shadow-none">
               <img
                 v-if="avatarUrl"
                 :src="avatarUrl"
@@ -201,14 +209,14 @@
               <span v-else>{{ userInitials }}</span>
             </div>
             <div class="hidden text-left md:block">
-              <div class="text-sm font-medium text-gray-900 dark:text-white">
+              <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ displayName }}
               </div>
-              <div class="text-xs capitalize text-gray-500 dark:text-dark-400">
+              <div class="text-xs capitalize text-[var(--anthropic-muted)] dark:text-dark-400">
                 {{ user.role }}
               </div>
             </div>
-            <Icon name="chevronDown" size="sm" class="hidden text-gray-400 md:block" />
+            <span class="topbar-menu-caret hidden md:inline-grid" :class="{ 'topbar-menu-caret-open': dropdownOpen }" aria-hidden="true"></span>
           </button>
 
           <!-- Dropdown Menu -->
@@ -217,22 +225,25 @@
             :trigger-el="dropdownButtonRef"
             placement="bottom-end"
             :offset="8"
-            panel-class="dropdown w-56"
+            panel-class="dropdown topbar-underline-menu w-56"
+            @mouseenter="cancelDropdownClose"
+            @mouseleave="scheduleCloseDropdown"
+            @close="closeDropdown"
           >
               <!-- User Info -->
-              <div class="border-b border-gray-100 px-4 py-3 dark:border-dark-700">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
+              <div class="border-b border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]">
+                <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ displayName }}
                 </div>
-                <div class="text-xs text-gray-500 dark:text-dark-400">{{ user.email }}</div>
+                <div class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">{{ user.email }}</div>
               </div>
 
               <!-- Balance (mobile only) -->
-              <div class="border-b border-gray-100 px-4 py-2 dark:border-dark-700 sm:hidden">
-                <div class="text-xs text-gray-500 dark:text-dark-400">
+              <div class="border-b border-[var(--anthropic-border)] px-4 py-2 dark:border-[var(--anthropic-border)] sm:hidden">
+                <div class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
                   {{ t('common.balance') }}
                 </div>
-                <div class="text-sm font-semibold text-primary-600 dark:text-primary-400">
+                <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   ${{ user.balance?.toFixed(2) || '0.00' }}
                 </div>
               </div>
@@ -271,9 +282,9 @@
               <!-- Contact Support (only show if configured) -->
               <div
                 v-if="contactInfo"
-                class="border-t border-gray-100 px-4 py-2.5 dark:border-dark-700"
+                class="border-t border-[var(--anthropic-border)] px-4 py-2.5 dark:border-[var(--anthropic-border)]"
               >
-                <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   <svg
                     class="h-3.5 w-3.5 flex-shrink-0"
                     fill="none"
@@ -288,13 +299,13 @@
                     />
                   </svg>
                   <span>{{ t('common.contactSupport') }}:</span>
-                  <span class="font-medium text-gray-700 dark:text-gray-300">{{
+                  <span class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                     contactInfo
                   }}</span>
                 </div>
               </div>
 
-              <div v-if="showOnboardingButton" class="border-t border-gray-100 py-1 dark:border-dark-700">
+              <div v-if="showOnboardingButton" class="border-t border-[var(--anthropic-border)] py-1 dark:border-[var(--anthropic-border)]">
                 <button data-testid="layout-app-header-button-handle-replay-guide" @click="handleReplayGuide" class="dropdown-item w-full">
                   <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
@@ -305,7 +316,7 @@
                 </button>
               </div>
 
-              <div class="border-t border-gray-100 py-1 dark:border-dark-700">
+              <div class="border-t border-[var(--anthropic-border)] py-1 dark:border-[var(--anthropic-border)]">
                 <button data-testid="layout-app-header-button-handle-logout"
                   @click="handleLogout"
                   class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
@@ -367,6 +378,7 @@ const externalSubscriptions = ref<ExternalSubscriptionStatus[]>([])
 const externalSubscriptionsLoading = ref(false)
 let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
+let userDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
 const docUrl = computed(() => appStore.docUrl)
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
@@ -426,13 +438,6 @@ const balanceChipClass = computed(() => {
   return 'balance-chip-system'
 })
 
-const balanceIconClass = computed(() => {
-  if (currentExternalSubscriptionInChip.value) {
-    return balanceProviderTextClass(currentExternalSubscriptionInChip.value)
-  }
-  return 'balance-system-text'
-})
-
 const headerRoleLabel = computed(() => {
   if (!user.value) return ''
   return user.value.role === 'admin' ? 'ADMIN' : 'USER'
@@ -478,16 +483,42 @@ function toggleMobileSidebar() {
 }
 
 function toggleDropdown() {
+  cancelDropdownClose()
   dropdownOpen.value = !dropdownOpen.value
 }
 
+function openDropdown() {
+  cancelDropdownClose()
+  dropdownOpen.value = true
+}
+
 function closeDropdown() {
+  cancelDropdownClose()
   dropdownOpen.value = false
+}
+
+function cancelDropdownClose() {
+  if (userDropdownCloseTimer) {
+    clearTimeout(userDropdownCloseTimer)
+    userDropdownCloseTimer = null
+  }
+}
+
+function scheduleCloseDropdown() {
+  cancelDropdownClose()
+  userDropdownCloseTimer = setTimeout(() => {
+    closeDropdown()
+  }, 120)
 }
 
 function openBalanceDropdown() {
   cancelBalanceDropdownClose()
   balanceDropdownOpen.value = true
+}
+
+function toggleBalanceDropdown() {
+  cancelBalanceDropdownClose()
+  balanceDropdownOpen.value = !balanceDropdownOpen.value
 }
 
 function closeBalanceDropdown() {
@@ -680,6 +711,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
   stopBalanceCarousel()
   cancelBalanceDropdownClose()
+  cancelDropdownClose()
   unsubscribeExternalSubscriptions()
 })
 
@@ -713,7 +745,7 @@ watch(
   height: 4rem;
   min-height: 4rem;
   border: 0 !important;
-  background: var(--atelier-paper-2) !important;
+  background: var(--atelier-paper) !important;
   box-shadow: none !important;
   font-family: var(--atelier-font-sans);
 }
@@ -738,8 +770,8 @@ watch(
   height: 0.5rem;
   flex: 0 0 0.5rem;
   border-radius: 999px;
-  background: var(--atelier-blue);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--atelier-blue) 10%, transparent);
+  background: var(--atelier-butter);
+  box-shadow: none;
 }
 
 .app-header-role-chip {
@@ -750,7 +782,7 @@ watch(
   border-radius: 999px;
   padding: 0 0.45rem;
   background: var(--atelier-paper);
-  color: var(--atelier-blue);
+  color: var(--atelier-muted);
   font-family: var(--atelier-font-mono);
   font-size: 0.625rem;
   font-weight: 700;
@@ -771,36 +803,48 @@ watch(
   border-left: 1px dotted var(--atelier-line-strong);
 }
 
+.app-header-menu-toggle {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-header-menu-toggle:hover,
+.app-header-menu-toggle:focus-visible {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 .user-menu-trigger:hover {
-  background: var(--atelier-ui-hover-surface);
+  background: transparent;
   color: var(--atelier-ink);
 }
 
 .user-avatar {
-  background: var(--atelier-blue);
-  box-shadow: 0 8px 18px -14px rgba(0, 47, 167, 0.62);
+  border: 1px solid var(--atelier-line);
+  background: var(--atelier-ink);
+  box-shadow: none;
 }
 
 .header-balance-chip-fixed {
   display: grid !important;
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  width: 14.4rem;
-  min-width: 14.4rem;
-  max-width: 14.4rem;
+  grid-template-columns: minmax(0, 2.875rem) minmax(0, 3.875rem) auto;
+  width: 8.25rem;
+  min-width: 8.25rem;
+  max-width: 8.25rem;
   align-items: center;
-  column-gap: 0.5rem;
+  column-gap: 0.1875rem;
   justify-content: stretch;
-}
-
-.header-balance-chip-fixed .header-balance-provider-logo {
-  flex: 0 0 auto;
+  font-size: 0.625rem;
+  line-height: 0.95rem;
 }
 
 .header-balance-chip-identity {
   grid-column: 1;
   display: flex;
   min-width: 0;
-  max-width: 8.4rem;
+  max-width: 2.875rem;
   align-items: center;
   justify-self: start;
   gap: 0.5rem;
@@ -812,7 +856,9 @@ watch(
 
 .header-balance-provider-name {
   flex: 1 1 auto;
-  max-width: 7.4rem;
+  max-width: 2.875rem;
+  font-size: 0.625rem;
+  line-height: 0.95rem;
   text-align: left;
 }
 
@@ -826,7 +872,8 @@ watch(
   background: transparent;
   background-color: transparent;
   box-shadow: none;
-  line-height: 1.25;
+  font-size: 0.625rem;
+  line-height: 1.15;
   text-align: center;
 }
 
@@ -840,7 +887,8 @@ watch(
   background: transparent;
   background-color: transparent;
   box-shadow: none;
-  line-height: 1.25;
+  font-size: 0.625rem;
+  line-height: 1.15;
   text-align: center;
 }
 
@@ -866,7 +914,6 @@ watch(
 .balance-chip-cloudflare,
 .balance-chip-external {
   border: 0;
-  border-left: 1px dotted var(--atelier-line-strong);
   border-radius: 0;
   background: transparent;
   color: var(--atelier-ink);
@@ -887,16 +934,18 @@ watch(
 .balance-chip-openrouter:hover,
 .balance-chip-cloudflare:hover,
 .balance-chip-external:hover {
-  background: var(--atelier-ui-hover-surface);
+  background: transparent;
   color: var(--atelier-ink);
+  text-decoration-color: currentColor;
 }
 
 .balance-row {
-  border: 1px solid var(--atelier-line);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .balance-row-system {
-  background: var(--atelier-butter-soft);
   color: var(--atelier-muted);
 }
 
@@ -910,7 +959,7 @@ watch(
 .balance-row-openrouter,
 .balance-row-cloudflare,
 .balance-row-external {
-  background: var(--atelier-butter-soft);
+  background: transparent;
 }
 
 .balance-system-text {
@@ -974,7 +1023,7 @@ watch(
 .dark .balance-chip-openrouter:hover,
 .dark .balance-chip-cloudflare:hover,
 .dark .balance-chip-external:hover {
-  background: var(--buzz-balance-yellow-soft-dark);
+  background: transparent;
 }
 
 .dark .balance-system-text {

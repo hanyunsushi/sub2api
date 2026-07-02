@@ -70,33 +70,47 @@ describe('SettingsView custom menu ordering and SVG icon presets', () => {
   })
 })
 
-describe('SettingsView rounded settings tabs', () => {
-  it('uses rounded hover and active tab surfaces in the final global override layer', () => {
-    const settingsTabBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tab {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab::before {'),
+describe('SettingsView text-only settings tabs', () => {
+  it('removes the tab SVG icons from the settings tabs template and config', () => {
+    const tabsTemplate = settingsSource.slice(
+      settingsSource.indexOf('<div class="settings-tabs">'),
+      settingsSource.indexOf('</nav>', settingsSource.indexOf('<div class="settings-tabs">')),
     )
-    const settingsTabBeforeBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tab::before {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab >'),
-    )
-    const settingsTabActiveBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tab-active,'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab-active::before {'),
+    const tabsConfig = settingsSource.slice(
+      settingsSource.indexOf('const settingsTabs = ['),
+      settingsSource.indexOf('];', settingsSource.indexOf('const settingsTabs = [')),
     )
 
-    expect(settingsTabBlock).toContain('border-radius: 0.625rem !important;')
-    expect(settingsTabBeforeBlock).toContain('border-radius: inherit !important;')
-    expect(settingsTabActiveBlock).toContain('border-radius: 0.625rem !important;')
-    expect(styleSource).toContain('#app .app-layout-content .settings-tab-active:hover::before')
-    expect(styleSource).toContain('#app .app-layout-content .settings-tab-active:focus-visible::before')
-    expect(settingsTabBlock).not.toContain('border-radius: 0 !important;')
+    expect(tabsTemplate).toContain('class="settings-tab-label"')
+    expect(tabsTemplate).not.toContain('settings-tab-icon')
+    expect(tabsTemplate).not.toContain('<Icon')
+    expect(tabsConfig).not.toContain('icon:')
   })
 
-  it('keeps the parent settings menu as system settings while centering the general settings page tabs', () => {
+  it('keeps the parent settings menu as system settings while making settings tabs page-background and centered', () => {
+    const genericSurfaceBlock = styleSource.slice(
+      styleSource.indexOf('.app-layout-content :where(.card, .paper-card'),
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell'),
+    )
     const tabsShellBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell,'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab {', styleSource.indexOf('#app .app-layout-content .settings-tabs-shell,')),
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell {'),
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll', styleSource.indexOf('#app .app-layout-content .settings-tabs-shell {')),
+    )
+    const tabsScrollBlock = styleSource.slice(
+      styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll {'),
+      styleSource.indexOf('#app .app-layout-content .settings-tabs {', styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll {')),
+    )
+    const tabsInnerBlock = styleSource.slice(
+      styleSource.indexOf('#app .app-layout-content .settings-tabs {'),
+      styleSource.indexOf('#app .app-layout-content .settings-tab {', styleSource.indexOf('#app .app-layout-content .settings-tabs {')),
+    )
+    const settingsTabBlock = styleSource.slice(
+      styleSource.indexOf('#app .app-layout-content .settings-tab {'),
+      styleSource.indexOf('#app .app-layout-content .settings-tab svg', styleSource.indexOf('#app .app-layout-content .settings-tab {')),
+    )
+    const hiddenIconBlock = styleSource.slice(
+      styleSource.indexOf('#app .app-layout-content .settings-tab svg,'),
+      styleSource.indexOf('.app-layout-content :where(.card-hover', styleSource.indexOf('#app .app-layout-content .settings-tab svg,')),
     )
 
     expect(zhLocaleSource).toContain("settings: '系统设置'")
@@ -105,10 +119,22 @@ describe('SettingsView rounded settings tabs', () => {
     expect(enLocaleSource).toContain("settings: 'Settings'")
     expect(enLocaleSource).toContain("settingsGeneral: 'General Settings'")
     expect(enLocaleSource).toContain("title: 'General Settings'")
-    expect(tabsShellBlock).toContain('display: flex;')
-    expect(tabsShellBlock).toContain('justify-content: center;')
-    expect(tabsShellBlock).toContain('width: 100%;')
-    expect(tabsShellBlock).toContain('margin-inline: auto;')
-    expect(tabsShellBlock).toContain('align-items: center;')
+    expect(genericSurfaceBlock).not.toContain('.settings-tabs-shell')
+    expect(tabsShellBlock).toContain('border: 0 !important;')
+    expect(tabsShellBlock).toContain('border-radius: 0 !important;')
+    expect(tabsShellBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(tabsShellBlock).toContain('box-shadow: none !important;')
+    expect(tabsScrollBlock).toContain('display: flex;')
+    expect(tabsScrollBlock).toContain('width: 100%;')
+    expect(tabsScrollBlock).toContain('justify-content: center;')
+    expect(tabsScrollBlock).toContain('align-items: center;')
+    expect(tabsInnerBlock).toContain('width: 100%;')
+    expect(tabsInnerBlock).toContain('padding: 0 !important;')
+    expect(tabsInnerBlock).toContain('background: transparent !important;')
+    expect(tabsInnerBlock).toContain('box-shadow: none !important;')
+    expect(settingsTabBlock).toContain('justify-content: center;')
+    expect(settingsTabBlock).toContain('text-align: center;')
+    expect(settingsTabBlock).toContain('background: transparent !important;')
+    expect(hiddenIconBlock).toContain('display: none !important;')
   })
 })

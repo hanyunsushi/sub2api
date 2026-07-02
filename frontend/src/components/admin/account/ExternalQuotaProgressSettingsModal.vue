@@ -7,18 +7,18 @@
     @close="emit('close')"
   >
     <form id="external-quota-progress-settings-form" class="space-y-5" @submit.prevent="handleSubmit">
-      <div class="rounded-lg border border-gray-200 bg-gray-50/70 px-3 py-2 dark:border-dark-700 dark:bg-dark-800/60">
-        <div class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+      <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+        <div class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ account?.name || '-' }}
         </div>
-        <div class="mt-1 flex items-center justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
+        <div class="mt-1 flex items-center justify-between gap-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           <span class="truncate">{{ subscriptionLabel }}</span>
           <span class="font-mono">{{ balanceText }}</span>
         </div>
       </div>
 
-      <label class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-700">
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+      <label class="flex items-center justify-between gap-3 rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
+        <span class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ localText('启用额度条', 'Enable quota bar') }}
         </span>
         <Toggle v-model="form.enabled" />
@@ -119,8 +119,8 @@
         </div>
       </div>
 
-      <div class="external-quota-preview rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-700">
-        <div class="mb-2 flex items-center justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
+      <div class="external-quota-preview rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
+        <div class="mb-2 flex items-center justify-between gap-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           <span>{{ localText('预览', 'Preview') }}</span>
           <span class="font-mono">{{ previewAmountText }}</span>
         </div>
@@ -128,10 +128,10 @@
           v-if="previewMeta"
           label="EXT"
           :utilization="previewMeta.percent"
-          color="emerald"
+          color="success"
           :show-now-when-idle="false"
         />
-        <div v-else class="h-6 rounded bg-gray-100 dark:bg-dark-800"></div>
+        <div v-else class="h-6 rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
       </div>
     </form>
 

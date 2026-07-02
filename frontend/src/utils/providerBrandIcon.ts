@@ -225,11 +225,11 @@ export function systemAILogoPresetIDFromURL(rawURL?: string | null): string {
 }
 
 const fallbackPalettes = [
-  { background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
-  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+  { background: '#f1f8e8', color: '#6ea100', border: '#c9dfaa' },
+  { background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   { background: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
   { background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
-  { background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+  { background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   { background: '#F0FDFA', color: '#0F766E', border: '#99F6E4' },
   { background: '#FEFCE8', color: '#A16207', border: '#FEF08A' },
   { background: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
@@ -246,11 +246,11 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['gemini', 'google-ai-studio'],
-    { iconModel: 'gemini', label: 'G', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+    { iconModel: 'gemini', label: 'G', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   ],
   [
     ['antigravity'],
-    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#EAF2FF', color: '#002FA7', border: '#9DB6FF' },
+    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   ],
   [
     ['deepseek'],
@@ -270,7 +270,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['qlhazycoder', 'qlhazy'],
-    { iconModel: null, label: 'QL', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+    { iconModel: null, label: 'QL', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   ],
   [
     ['packycode', 'packyapi', 'packy'],
@@ -290,7 +290,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['liust'],
-    { iconModel: null, label: 'LS', background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
+    { iconModel: null, label: 'LS', background: '#f1f8e8', color: '#6ea100', border: '#c9dfaa' },
   ],
   [
     ['mistral', 'codestral', 'mixtral'],
@@ -342,7 +342,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['tencent', 'hunyuan'],
-    { iconModel: 'hunyuan', label: 'HY', background: '#EAF2FF', color: '#0053E0', border: '#BBD0FF' },
+    { iconModel: 'hunyuan', label: 'HY', background: '#f0eee6', color: '#0053E0', border: '#BBD0FF' },
   ],
   [
     ['minimax', 'abab'],
@@ -354,7 +354,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['midjourney'],
-    { iconModel: 'midjourney', label: 'MJ', background: '#EAF2FF', color: '#002FA7', border: '#B7D4FF' },
+    { iconModel: 'midjourney', label: 'MJ', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
   ],
   [
     ['suno'],
@@ -366,7 +366,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['dify'],
-    { iconModel: 'dify', label: 'DF', background: '#EAF2FF', color: '#1677FF', border: '#BBD7FF' },
+    { iconModel: 'dify', label: 'DF', background: '#f0eee6', color: '#1677FF', border: '#BBD7FF' },
   ],
   [
     ['coze'],
@@ -406,7 +406,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['voyage'],
-    { iconModel: null, label: 'VO', background: '#ECFDF5', color: '#047857', border: '#A7F3D0' },
+    { iconModel: null, label: 'VO', background: '#f1f8e8', color: '#6ea100', border: '#c9dfaa' },
   ],
   [
     ['ai21'],

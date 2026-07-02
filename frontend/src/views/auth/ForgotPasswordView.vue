@@ -43,7 +43,7 @@
           </label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
+              <Icon name="mail" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
             </div>
             <input data-testid="auth-forgot-password-input-form-data-email"
               id="email"
@@ -348,9 +348,9 @@ async function handleSubmit(): Promise<void> {
 }
 
 .auth-recovery-error {
-  border: 1px solid color-mix(in srgb, #dc2626 35%, var(--atelier-ink) 12%);
-  background: color-mix(in srgb, var(--atelier-paper) 88%, #dc2626 12%);
-  color: color-mix(in srgb, #dc2626 70%, var(--atelier-ink));
+  border: 1px solid color-mix(in srgb, var(--atelier-status-danger) 35%, var(--atelier-ink) 12%);
+  background: color-mix(in srgb, var(--atelier-paper) 88%, var(--atelier-status-danger) 12%);
+  color: color-mix(in srgb, var(--atelier-status-danger) 70%, var(--atelier-ink));
   border-radius: 8px;
   padding: 0.85rem 0.95rem;
 }

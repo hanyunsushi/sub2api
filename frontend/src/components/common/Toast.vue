@@ -17,7 +17,8 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'toast toast-themed pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg border shadow-card'
+            'toast toast-themed pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg border shadow-none',
+            `toast-themed--${toast.type}`
           ]"
         >
           <div class="p-4">
@@ -34,15 +35,15 @@
 
               <!-- Content -->
               <div class="min-w-0 flex-1">
-                <p v-if="toast.title" class="text-sm font-semibold text-gray-900 dark:text-white">
+                <p v-if="toast.title" class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ toast.title }}
                 </p>
                 <p
                   :class="[
                     'text-sm leading-relaxed',
                     toast.title
-                      ? 'mt-1 text-gray-600 dark:text-gray-300'
-                      : 'text-gray-900 dark:text-white'
+                      ? 'mt-1 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+                      : 'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
                   ]"
                 >
                   {{ toast.message }}
@@ -61,7 +62,7 @@
           </div>
 
           <!-- Progress bar -->
-          <div v-if="toast.duration" class="h-1 bg-gray-100 dark:bg-dark-700">
+          <div v-if="toast.duration" class="h-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
             <div
               class="h-full toast-progress"
               :style="{ animationDuration: `${toast.duration}ms` }"
@@ -103,14 +104,33 @@ const removeToast = (id: string) => {
 
 <style scoped>
 .toast-themed {
-  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 28%, transparent);
-  background: color-mix(in srgb, var(--atelier-paper-2, #fffaf0) 96%, var(--atelier-terracotta-action, #c96442));
+  --toast-status-color: var(--atelier-status-info);
+  --toast-status-color-strong: var(--atelier-status-info);
+  border-radius: 16px;
+  border-color: color-mix(in srgb, var(--toast-status-color) 28%, transparent);
+  background: color-mix(in srgb, var(--atelier-paper-2, #fffaf0) 92%, var(--toast-status-color) 8%);
   color: var(--atelier-ink, #171512);
-  box-shadow: 0 18px 44px rgba(20, 20, 19, 0.14);
+  box-shadow: var(--anthropic-dropdown-shadow, 0 4px 24px rgba(0, 0, 0, 0.05));
+}
+
+.toast-themed--success {
+  --toast-status-color: var(--atelier-status-success);
+}
+
+.toast-themed--error {
+  --toast-status-color: var(--atelier-status-danger);
+}
+
+.toast-themed--warning {
+  --toast-status-color: var(--atelier-status-warning);
+}
+
+.toast-themed--info {
+  --toast-status-color: var(--atelier-status-info);
 }
 
 .toast-icon {
-  color: var(--atelier-terracotta-action, #c96442);
+  color: var(--toast-status-color);
 }
 
 .toast-close {
@@ -118,16 +138,16 @@ const removeToast = (id: string) => {
 }
 
 .toast-close:hover {
-  background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 12%, transparent);
-  color: var(--atelier-terracotta-action, #c96442);
+  background: color-mix(in srgb, var(--toast-status-color) 12%, transparent);
+  color: var(--toast-status-color);
 }
 
 .toast-progress {
   width: 100%;
   background: linear-gradient(
     90deg,
-    var(--atelier-terracotta-action, #c96442),
-    var(--atelier-terracotta-action-hover, #d97757)
+    var(--toast-status-color),
+    color-mix(in srgb, var(--toast-status-color) 78%, var(--atelier-white, #ffffff))
   );
   animation-name: toast-progress-shrink;
   animation-timing-function: linear;
@@ -135,8 +155,8 @@ const removeToast = (id: string) => {
 }
 
 :root.dark .toast-themed {
-  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 42%, transparent);
-  background: color-mix(in srgb, var(--atelier-ink, #171512) 92%, var(--atelier-terracotta-action, #c96442));
+  border-color: color-mix(in srgb, var(--toast-status-color) 42%, transparent);
+  background: color-mix(in srgb, var(--atelier-ink, #171512) 90%, var(--toast-status-color) 10%);
   color: var(--atelier-paper-2, #fffaf0);
 }
 

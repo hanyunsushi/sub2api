@@ -1,29 +1,29 @@
 <template>
   <div class="monitor-metric-pair mt-5 grid grid-cols-2 gap-2">
     <div
-      class="min-w-0 rounded-xl p-3 bg-gray-50/80 dark:bg-dark-900/40 border border-gray-100 dark:border-dark-700/50"
+      class="min-w-0 rounded-xl p-3 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
     >
       <div
-        class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400"
+        class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--anthropic-muted)]"
       >
         <Icon :name="primaryIcon" size="xs" />
         <span>{{ primaryLabel }}</span>
       </div>
-      <div class="mt-1.5 truncate text-lg font-bold font-mono tabular-nums text-gray-900 dark:text-gray-100">
-        {{ primaryValue }}<span class="text-xs font-normal text-gray-400 ml-0.5">{{ primaryUnit }}</span>
+      <div class="mt-1.5 truncate text-lg font-bold font-mono tabular-nums text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
+        {{ primaryValue }}<span class="text-xs font-normal text-[var(--anthropic-muted)] ml-0.5">{{ primaryUnit }}</span>
       </div>
     </div>
     <div
-      class="min-w-0 rounded-xl p-3 bg-gray-50/80 dark:bg-dark-900/40 border border-gray-100 dark:border-dark-700/50"
+      class="min-w-0 rounded-xl p-3 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
     >
       <div
-        class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400"
+        class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--anthropic-muted)]"
       >
         <Icon :name="secondaryIcon" size="xs" />
         <span>{{ secondaryLabel }}</span>
       </div>
-      <div class="mt-1.5 truncate text-lg font-bold font-mono tabular-nums text-gray-900 dark:text-gray-100">
-        {{ secondaryValue }}<span class="text-xs font-normal text-gray-400 ml-0.5">{{ secondaryUnit }}</span>
+      <div class="mt-1.5 truncate text-lg font-bold font-mono tabular-nums text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
+        {{ secondaryValue }}<span class="text-xs font-normal text-[var(--anthropic-muted)] ml-0.5">{{ secondaryUnit }}</span>
       </div>
     </div>
   </div>

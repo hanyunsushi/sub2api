@@ -1,29 +1,29 @@
 <template>
   <div v-if="!isDesktopViewport" class="space-y-3">
     <template v-if="loading">
-      <div v-for="i in 5" :key="i" class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900">
+      <div v-for="i in 5" :key="i" class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
         <div class="space-y-3">
           <div v-for="column in dataColumns" :key="column.key" class="flex justify-between">
-            <div class="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
-            <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+            <div class="h-4 w-20 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+            <div class="h-4 w-32 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
           </div>
-          <div v-if="hasActionsColumn" class="border-t border-gray-200 pt-3 dark:border-dark-700">
-            <div class="h-8 w-full animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+          <div v-if="hasActionsColumn" class="border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
+            <div class="h-8 w-full animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
           </div>
         </div>
       </div>
     </template>
 
     <template v-else-if="!data || data.length === 0">
-      <div class="rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-dark-700 dark:bg-dark-900">
+      <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-12 text-center dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
         <slot name="empty">
           <div class="flex flex-col items-center">
             <Icon
               name="inbox"
               size="xl"
-              class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
+              class="mb-4 h-12 w-12 text-[var(--anthropic-muted)] dark:text-dark-500"
             />
-            <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <p class="text-lg font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ t('empty.noData') }}
             </p>
           </div>
@@ -36,7 +36,7 @@
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
         :class="[
-          'rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900',
+          'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]',
           resolveRowClass(row, index)
         ]"
       >
@@ -47,16 +47,16 @@
             :key="column.key"
             class="flex items-start justify-between gap-4"
           >
-            <span class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
+            <span class="text-xs font-medium uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ column.label }}
             </span>
-            <div class="text-right text-sm text-gray-900 dark:text-gray-100">
+            <div class="text-right text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               <slot :name="`cell-${column.key}`" :row="row" :value="row[column.key]" :expanded="actionsExpanded">
                 {{ column.formatter ? column.formatter(row[column.key], row) : row[column.key] }}
               </slot>
             </div>
           </div>
-          <div v-if="hasActionsColumn" class="border-t border-gray-200 pt-3 dark:border-dark-700">
+          <div v-if="hasActionsColumn" class="border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
             <slot name="cell-actions" :row="row" :value="row['actions']" :expanded="actionsExpanded"></slot>
           </div>
         </div>
@@ -75,7 +75,7 @@
     }"
   >
     <table class="w-full min-w-max divide-y divide-gray-200 dark:divide-dark-700">
-      <thead class="table-header bg-gray-50 dark:bg-dark-800">
+      <thead class="table-header bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
         <tr>
           <th data-testid="common-data-table-th-th"
             v-for="(column, index) in columns"
@@ -84,9 +84,9 @@
             :data-column-key="column.key"
             :data-column-label="column.label"
             :class="[
-              'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400',
+              'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-dark-400',
               getAdaptivePaddingClass(),
-              { 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-700': column.sortable },
+              { 'cursor-pointer hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]': column.sortable },
               getStickyColumnClass(column, index),
               column.class
             ]"
@@ -100,7 +100,7 @@
             >
               <div class="flex items-center space-x-1">
                 <span>{{ column.label }}</span>
-                <span v-if="column.sortable" class="text-gray-400 dark:text-dark-500">
+                <span v-if="column.sortable" class="text-[var(--anthropic-muted)] dark:text-dark-500">
                   <svg
                     v-if="sortKey === column.key"
                     class="h-4 w-4"
@@ -125,12 +125,12 @@
           </th>
         </tr>
       </thead>
-      <tbody class="table-body divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-900">
+      <tbody class="table-body divide-y divide-gray-200 bg-[var(--anthropic-page)] dark:divide-dark-700 dark:bg-[var(--anthropic-section)]">
         <!-- Loading skeleton -->
         <tr v-if="loading" v-for="i in 5" :key="i">
           <td v-for="column in columns" :key="column.key" :class="['whitespace-nowrap py-4', getAdaptivePaddingClass()]">
             <div class="animate-pulse">
-              <div class="h-4 w-3/4 rounded bg-gray-200 dark:bg-dark-700"></div>
+              <div class="h-4 w-3/4 rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
             </div>
           </td>
         </tr>
@@ -139,16 +139,16 @@
         <tr v-else-if="!data || data.length === 0">
           <td
             :colspan="columns.length"
-            :class="['py-12 text-center text-gray-500 dark:text-dark-400', getAdaptivePaddingClass()]"
+            :class="['py-12 text-center text-[var(--anthropic-muted)] dark:text-dark-400', getAdaptivePaddingClass()]"
           >
             <slot name="empty">
               <div class="flex flex-col items-center">
                 <Icon
                   name="inbox"
                   size="xl"
-                  class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
+                  class="mb-4 h-12 w-12 text-[var(--anthropic-muted)] dark:text-dark-500"
                 />
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                <p class="text-lg font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
                   {{ t('empty.noData') }}
                 </p>
               </div>
@@ -164,7 +164,7 @@
             :data-row-id="resolveRowKey(row, rowIndex)"
             :data-index="rowIndex"
             :class="[
-              'hover:bg-gray-50 dark:hover:bg-dark-800',
+              'hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]',
               resolveRowClass(row, rowIndex)
             ]"
           >
@@ -182,7 +182,7 @@
               :data-column-key="column.key"
               :data-column-label="column.label"
               :class="[
-                'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
+                'whitespace-nowrap py-4 text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]',
                 getAdaptivePaddingClass(),
                 getStickyColumnClass(column, colIndex),
                 column.class
@@ -212,7 +212,7 @@
             :data-index="virtualRow.index"
             :ref="measureElement"
             :class="[
-              'hover:bg-gray-50 dark:hover:bg-dark-800',
+              'hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]',
               resolveRowClass(sortedData[virtualRow.index], virtualRow.index)
             ]"
           >
@@ -230,7 +230,7 @@
               :data-column-key="column.key"
               :data-column-label="column.label"
               :class="[
-                'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
+                'whitespace-nowrap py-4 text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]',
                 getAdaptivePaddingClass(),
                 getStickyColumnClass(column, colIndex),
                 column.class
@@ -833,11 +833,11 @@ defineExpose({
 /* 表格横向滚动 */
 .table-wrapper {
   --select-col-width: 52px; /* 勾选列宽度：px-6 (24px*2) + checkbox (16px) */
-  --table-surface: var(--atelier-surface);
-  --table-surface-strong: var(--atelier-surface-strong);
-  --table-header-surface: var(--atelier-dust-soft);
-  --table-hover-surface: var(--atelier-blue-soft);
-  --table-edge: var(--atelier-line);
+  --table-surface: var(--anthropic-page, var(--atelier-surface));
+  --table-surface-strong: var(--anthropic-page, var(--atelier-surface-strong));
+  --table-header-surface: var(--anthropic-page, var(--atelier-surface));
+  --table-hover-surface: var(--anthropic-cookbook-hover, var(--anthropic-section, var(--atelier-surface-muted)));
+  --table-edge: var(--anthropic-cookbook-border, var(--atelier-line));
   position: relative;
   overflow-x: auto;
   overflow-y: auto;
@@ -865,7 +865,7 @@ defineExpose({
 }
 
 .dark .table-wrapper .table-header {
-  background-color: #111827;
+  background-color: var(--anthropic-section, var(--atelier-paper-2));
 }
 
 /* 表体保持在表头下方 */
@@ -880,11 +880,11 @@ defineExpose({
   top: 0;
   z-index: 210; /* 必须高于所有表体内容 */
   background-color: var(--table-header-surface);
-  color: var(--atelier-ink);
+  color: var(--anthropic-muted, var(--atelier-muted));
 }
 
 .dark .sticky-header-cell {
-  background-color: #111827;
+  background-color: var(--anthropic-section, var(--atelier-paper-2));
 }
 
 /* Sticky 列基础样式 */
@@ -924,16 +924,18 @@ tbody .sticky-col {
 }
 
 .dark tbody .sticky-col {
-  background-color: #111827;
+  background-color: var(--anthropic-page, var(--atelier-paper));
 }
 
-/* hover 状态保持 */
+/* hover 状态保持：普通单元格和 sticky 列必须同步，否则整行高亮会断开 */
+.table-body > tr:hover > td,
 tbody tr:hover .sticky-col {
   background-color: var(--table-hover-surface);
 }
 
+.dark .table-body > tr:hover > td,
 .dark tbody tr:hover .sticky-col {
-  background-color: rgba(0, 47, 167, 0.18);
+  background-color: var(--table-hover-surface);
 }
 
 /* 阴影只在可滚动时显示 */

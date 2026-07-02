@@ -39,14 +39,6 @@ const cssBlockFrom = (source: string, selectorText: string) => {
   throw new Error(`CSS block not closed for ${selectorText}`)
 }
 
-const cssRuleFrom = (source: string, markerText: string) => {
-  const markerIndex = source.indexOf(markerText)
-  expect(markerIndex, `CSS marker not found: ${markerText}`).toBeGreaterThan(-1)
-  const nextRuleIndex = source.indexOf('\n\n', markerIndex + markerText.length)
-  const ruleEnd = nextRuleIndex === -1 ? source.length : nextRuleIndex
-  return source.slice(markerIndex, ruleEnd)
-}
-
 const baseThemeBlock = cssBlockFrom(
   styleSource,
   '/* Base appearance tokens */\n:root {',
@@ -101,8 +93,10 @@ describe('Cloudflare appearance theme', () => {
     expect(themeLogoSource).toContain('M168.22 41.15')
     expect(themeLogoSource).toContain('#F48120')
     expect(themeLogoSource).toContain('#FAAD3F')
-    expect(themeLogoSource).toContain("import ModelIcon from '@/components/common/ModelIcon.vue'")
-    expect(themeLogoSource).toContain("model: 'claude'")
+    expect(themeLogoSource).not.toContain("import ModelIcon from '@/components/common/ModelIcon.vue'")
+    expect(themeLogoSource).not.toContain("model: 'claude'")
+    expect(themeLogoSource).toContain("viewBox: '0 0 16 16'")
+    expect(themeLogoSource).toContain('m3.127 10.604')
     expect(themeLogoSource).not.toContain('NewspaperLogoMark')
     expect(themeLogoSource).not.toContain('data-theme-logo="newspaper"')
     expect(themeLogoSource).not.toContain('M11.96 3.25')
@@ -156,8 +150,8 @@ describe('Cloudflare appearance theme', () => {
 
   it('uses Anthropic as the neutral fallback base instead of the removed Newspaper theme', () => {
     expect(baseThemeBlock).toContain('--app-theme-name: "Anthropic";')
-    expect(baseThemeBlock).toContain('--atelier-paper: #f5f4ed;')
-    expect(baseThemeBlock).toContain('--atelier-paper-2: #faf9f5;')
+    expect(baseThemeBlock).toContain('--atelier-paper: #faf9f5;')
+    expect(baseThemeBlock).toContain('--atelier-paper-2: #f5f4ed;')
     expect(baseThemeBlock).toContain('--atelier-ink: #141413;')
     expect(baseThemeBlock).toContain('--atelier-blue: #c96442;')
     expect(baseThemeBlock).toContain('--atelier-slab-surface: var(--atelier-paper-2);')
@@ -171,8 +165,8 @@ describe('Cloudflare appearance theme', () => {
   })
 
   it('uses the Anthropic warm editorial palette from the Obsidian design guide', () => {
-    expect(anthropicBlock).toContain('--atelier-paper: #f5f4ed;')
-    expect(anthropicBlock).toContain('--atelier-paper-2: #faf9f5;')
+    expect(anthropicBlock).toContain('--atelier-paper: #faf9f5;')
+    expect(anthropicBlock).toContain('--atelier-paper-2: #f5f4ed;')
     expect(anthropicBlock).toContain('--atelier-ink: #141413;')
     expect(anthropicBlock).toContain('--atelier-dark: #30302e;')
     expect(anthropicBlock).toContain('--atelier-muted: #5e5d59;')
@@ -218,12 +212,12 @@ describe('Cloudflare appearance theme', () => {
     expect(toggleBlock).not.toContain('var(--atelier-ink)')
   })
 
-  it('uses live provider logos in the shared balance chip and capacity cards', () => {
+  it('keeps provider logos out of the topbar balance trigger while preserving detailed rows and capacity cards', () => {
     expect(appHeaderSource).toContain('ProviderBrandIcon')
-    expect(appHeaderSource).toContain('data-testid="header-balance-provider-logo"')
+    expect(appHeaderSource).not.toContain('data-testid="header-balance-provider-logo"')
     expect(appHeaderSource).toContain('data-testid="header-balance-dropdown-provider-logo"')
-    expect(appHeaderSource).toContain(':logo-url="currentExternalSubscriptionInChip.logo_url"')
-    expect(appHeaderSource).toContain(':data-logo-url="currentExternalSubscriptionInChip.logo_url || \'\'"')
+    expect(appHeaderSource).not.toContain(':logo-url="currentExternalSubscriptionInChip.logo_url"')
+    expect(appHeaderSource).not.toContain(':data-logo-url="currentExternalSubscriptionInChip.logo_url || \'\'"')
     expect(appHeaderSource).toContain(':logo-url="subscription.logo_url"')
     expect(appHeaderSource).toContain(':data-logo-url="subscription.logo_url || \'\'"')
     expect(monitorCapacitySource).toContain(':logo-url="logo.logoUrl"')
@@ -253,7 +247,7 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary)')
     expect(styleSource).not.toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary)')
     expect(styleSource).toContain(':root.theme-anthropic :where(.btn-warning)')
-    expect(styleSource).toContain('background: #f59e0b !important;')
+    expect(styleSource).toContain('background: var(--atelier-status-warning) !important;')
     expect(styleSource).toContain('background: var(--atelier-blue) !important;')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section')
@@ -265,45 +259,31 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain('--select-option-selected-surface: var(--atelier-sand);')
   })
 
-  it('keeps Anthropic top-right primary actions terracotta without repainting plain filter buttons', () => {
-    const legacySlabIndex = styleSource.indexOf(
-      '#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
-        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
-        '  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled)',
-    )
-    const anthropicPrimaryIndex = styleSource.indexOf(
-      ':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
-        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
-        '  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)',
-    )
+  it('keeps Anthropic filter buttons in the canonical layer without legacy repaint blocks', () => {
+    const canonicalLayer = styleSource.slice(styleSource.lastIndexOf('Canonical page filter/input layer'))
 
-    expect(legacySlabIndex).toBeGreaterThan(-1)
-    expect(anthropicPrimaryIndex).toBeGreaterThan(legacySlabIndex)
-
-    const primaryFilterRule = cssBlockFrom(
-      styleSource,
-      ':root.theme-anthropic #app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n' +
-        '  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n' +
-        '  :where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)',
-    )
-    expect(primaryFilterRule).toContain('background: var(--atelier-blue) !important;')
-    expect(primaryFilterRule).toContain('color: var(--atelier-paper-2) !important;')
-    expect(primaryFilterRule).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
-    expect(primaryFilterRule).not.toContain(':where(button)')
-    expect(primaryFilterRule).not.toContain('var(--atelier-slab-field)')
+    expect(styleSource).not.toContain('Anthropic theme — final table filter action pass')
+    expect(styleSource).not.toContain('Console terracotta action pass')
+    expect(styleSource).not.toContain('Console readable light action fallback')
+    expect(canonicalLayer).toContain(':not(:has(> svg:only-child)):not(:has(> .icon:only-child))')
+    expect(canonicalLayer).toContain('background: transparent !important;')
+    expect(canonicalLayer).toContain(':where(.btn-primary, .btn-success, .codex-button--primary, button[class*="bg-primary"]):not(:disabled)')
+    expect(canonicalLayer).toContain('background: var(--atelier-ink) !important;')
+    expect(canonicalLayer).not.toContain('var(--atelier-terracotta-action)')
+    expect(canonicalLayer).not.toContain('var(--atelier-slab-field)')
   })
 
   it('keeps the rotating balance provider left-aligned while centering the amount without a painted text band', () => {
     const headerBalanceBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-fixed')
     expect(headerBalanceBlock).toContain('display: grid !important;')
-    expect(headerBalanceBlock).toContain('grid-template-columns: minmax(0, auto) minmax(0, 1fr);')
-    expect(headerBalanceBlock).toContain('width: 14.4rem;')
-    expect(headerBalanceBlock).toContain('min-width: 14.4rem;')
-    expect(headerBalanceBlock).toContain('max-width: 14.4rem;')
+    expect(headerBalanceBlock).toContain('grid-template-columns: minmax(0, 3rem) minmax(0, 4.75rem) auto;')
+    expect(headerBalanceBlock).toContain('width: 9.75rem;')
+    expect(headerBalanceBlock).toContain('min-width: 9.75rem;')
+    expect(headerBalanceBlock).toContain('max-width: 9.75rem;')
+    expect(headerBalanceBlock).toContain('font-size: 0.6875rem;')
     expect(headerBalanceBlock).toContain('justify-content: stretch;')
     expect(headerBalanceBlock).not.toContain('justify-content: flex-end;')
-    expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo {\n  margin-left: auto;')
-    expect(appHeaderSource).toContain('flex: 0 0 auto;')
+    expect(appHeaderSource).not.toContain('.header-balance-chip-fixed .header-balance-provider-logo')
     const identityBlock = cssBlockFrom(appHeaderSource, '.header-balance-chip-identity')
     expect(identityBlock).toContain('justify-self: start;')
     expect(identityBlock).toContain('background: transparent;')
@@ -331,40 +311,37 @@ describe('Cloudflare appearance theme', () => {
     expect(globalPaintResetBlock).toContain('box-shadow: none !important;')
   })
 
-  it('keeps channel status readable and dashboard refresh neutral under Anthropic', () => {
-    expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content .auto-refresh-button')
-    expect(styleSource).toContain('background: var(--atelier-blue) !important;')
-    expect(styleSource).toContain('color: var(--atelier-paper-2) !important;')
-    expect(styleSource).toContain('.auto-refresh-button :where(svg, path, span)')
-    expect(styleSource).toContain('color: var(--atelier-ink) !important;')
+  it('makes dashboard refresh use the Clay highest-instruction button under Anthropic', () => {
+    expect(styleSource).toContain('--anthropic-clay-interactive: #c96442;')
 
     const dashboardRefreshBlock = cssBlockFrom(
       styleSource,
-      '#app .app-layout-content .admin-dashboard-atelier\n' +
-        '  :where(.dashboard-filter-refresh):not(:disabled),',
+      '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled)',
     )
-    expect(dashboardRefreshBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(dashboardRefreshBlock).toContain('color: var(--atelier-slab-text) !important;')
+    expect(dashboardRefreshBlock).toContain('--button-bg: var(--anthropic-clay-interactive);')
+    expect(dashboardRefreshBlock).toContain('--button-border: var(--anthropic-clay-interactive);')
+    expect(dashboardRefreshBlock).toContain('border: 0 !important;')
+    expect(dashboardRefreshBlock).toContain('background: var(--anthropic-clay-interactive) !important;')
+    expect(dashboardRefreshBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(dashboardRefreshBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;')
+    expect(dashboardRefreshBlock).toContain('transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;')
+    expect(dashboardRefreshBlock).toContain('min-height: var(--anthropic-control-height);')
     expect(dashboardRefreshBlock).not.toContain('var(--atelier-terracotta-action)')
-    const dashboardRefreshRestBlock = cssBlockFrom(
-      styleSource,
-      '#app .app-layout-content .admin-dashboard-atelier\n' +
-        '  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):not(:hover)',
-    )
-    expect(dashboardRefreshRestBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(dashboardRefreshRestBlock).not.toContain('background: var(--atelier-slab-field-hover) !important;')
     const dashboardRefreshHoverBlock = cssBlockFrom(
       styleSource,
-      '#app .app-layout-content .admin-dashboard-atelier\n' +
-        '  .dashboard-filter-card .dashboard-filter-refresh.btn.btn-secondary.dashboard-paper-control:not(:disabled):hover',
+      '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled):hover',
     )
-    expect(dashboardRefreshHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
+    expect(dashboardRefreshHoverBlock).toContain('background: var(--anthropic-clay-interactive) !important;')
+    expect(dashboardRefreshHoverBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(dashboardRefreshHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
 
-    const anthropicPrimaryRule = cssRuleFrom(
+    const genericPrimaryBlock = cssBlockFrom(
       styleSource,
-      ':root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary),',
+      '.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe',
     )
-    expect(anthropicPrimaryRule).not.toContain('.dashboard-filter-refresh')
+    expect(genericPrimaryBlock).toContain('--button-bg: var(--anthropic-fg);')
+    expect(genericPrimaryBlock).not.toContain('.dashboard-filter-refresh')
+    expect(genericPrimaryBlock).not.toContain('var(--anthropic-clay-interactive)')
   })
 
   it('keeps ops dashboard primary and blue utility text neutral inside monitoring modules', () => {
@@ -390,21 +367,21 @@ describe('Cloudflare appearance theme', () => {
     )
   })
 
-  it('keeps ops dashboard status utility text on official semantic colors', () => {
+  it('keeps ops dashboard status utility text on shared semantic colors', () => {
     const opsSemanticMarker =
-      '/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */'
+      '/* Ops status colors use shared semantic colors, not Anthropic terracotta accents. */'
     expect(styleSource).toContain(opsSemanticMarker)
     const opsSemanticRule = styleSource.slice(
       styleSource.indexOf(opsSemanticMarker),
       styleSource.indexOf('#app .app-layout-content .settings-tabs-shell', styleSource.indexOf(opsSemanticMarker)),
     )
     expect(opsSemanticRule).toContain('.text-red-600')
-    expect(opsSemanticRule).toContain('color: #dc2626 !important;')
-    expect(opsSemanticRule).toContain('-webkit-text-fill-color: #dc2626 !important;')
+    expect(opsSemanticRule).toContain('color: var(--atelier-status-danger) !important;')
+    expect(opsSemanticRule).toContain('-webkit-text-fill-color: var(--atelier-status-danger) !important;')
     expect(opsSemanticRule).toContain('.text-amber-700')
-    expect(opsSemanticRule).toContain('color: #d97706 !important;')
+    expect(opsSemanticRule).toContain('color: var(--atelier-status-warning) !important;')
     expect(opsSemanticRule).toContain('.text-green-600')
-    expect(opsSemanticRule).toContain('color: #16a34a !important;')
+    expect(opsSemanticRule).toContain('color: var(--atelier-status-success) !important;')
     expect(styleSource.indexOf(opsSemanticMarker)).toBeGreaterThan(
       styleSource.indexOf('.app-layout-content :where([class~="text-red-800"], [class~="text-red-700"], [class~="text-red-600"]'),
     )
@@ -420,7 +397,7 @@ describe('Cloudflare appearance theme', () => {
     expect(opsPrimaryCleanupRule).toContain('.ops-realtime-panel button.bg-primary-500')
     expect(opsPrimaryCleanupRule).toContain('.ops-monitor-toolbar-meta :where(.bg-primary-400, .bg-primary-500, .bg-primary-600)')
     expect(opsPrimaryCleanupRule).toContain('.ops-realtime-panel :where(span.bg-primary-400, span.bg-primary-500)')
-    expect(opsPrimaryCleanupRule).toContain('background: #16a34a !important;')
+    expect(opsPrimaryCleanupRule).toContain('background: var(--atelier-status-info) !important;')
     expect(opsPrimaryCleanupRule).toContain(':where(.text-gray-950, .text-gray-900, .text-gray-800)')
     expect(opsPrimaryCleanupRule).toContain('color: var(--atelier-ink) !important;')
     expect(opsPrimaryCleanupRule).toContain('[class~="bg-primary-400"], [class~="bg-primary-500"], [class~="bg-primary-600"]')
@@ -432,63 +409,33 @@ describe('Cloudflare appearance theme', () => {
     expect(opsPrimaryCleanupRule).toContain('/* Header and onboarding accents stay neutral under Anthropic. */')
     expect(opsPrimaryCleanupRule).toContain('#app .app-header-context-dot')
     expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
-      styleSource.indexOf('/* Ops status colors are official semantic signals, not Anthropic terracotta accents. */'),
+      styleSource.indexOf('/* Ops status colors use shared semantic colors, not Anthropic terracotta accents. */'),
     )
     expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
       styleSource.indexOf('/* Dashboard refresh is a neutral filter control, not a filled action. */'),
     )
   })
 
-  it('marks generic table filter panes so Anthropic keeps a single paper header and terracotta actions', () => {
+  it('marks generic table filter panes so Anthropic keeps a single paper header', () => {
     expect(adminSubscriptionsSource).toContain('table-filter-left')
     expect(adminSubscriptionsSource).toContain('table-filter-actions')
     expect(availableChannelsSource).toContain('table-filter-left')
     expect(availableChannelsSource).toContain('table-filter-actions')
-    expect(styleSource).toContain('Anthropic theme — final table filter action pass')
-    expect(styleSource).toContain(':where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)')
   })
 
-  it('keeps true top-right action buttons terracotta and neutral filter buttons slab-colored', () => {
-    expect(styleSource).toContain('Console terracotta action pass')
+  it('keeps filter button strategy in the canonical layer instead of stale repaint blocks', () => {
     expect(styleSource).toContain('--atelier-terracotta-action: #c96442;')
     expect(styleSource).toContain('--atelier-terracotta-action-hover: #a64f34;')
-    expect(styleSource).toContain('.table-filter-actions')
-    expect(styleSource).toContain('.users-filter-create')
-    expect(styleSource).toContain('.keys-filter-actions')
-    expect(styleSource).toContain('.user-usage-atelier .usage-filter-actions')
-    expect(styleSource).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions')
-    expect(styleSource).toContain('.global-pricing-filter-actions')
-    expect(styleSource).toContain('.table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions')
-    const actionBlock = cssBlockFrom(styleSource, '/* Console terracotta action pass. */')
-    const actionRule = cssRuleFrom(styleSource, '/* Console terracotta action pass. */')
-    expect(actionBlock).toContain('background: var(--atelier-terracotta-action) !important;')
-    expect(actionBlock).toContain('color: var(--atelier-paper-2) !important;')
-    expect(actionBlock).toContain('-webkit-text-fill-color: var(--atelier-paper-2) !important;')
-    expect(actionRule).toContain(':where(.btn-primary, .btn-success, .users-filter-create):not(:disabled)')
-    expect(actionRule).not.toContain('.dashboard-filter-refresh')
-    expect(actionBlock).not.toContain(':where(.btn, button, [role="button"])')
-    expect(actionRule).not.toContain(':where(.btn, button, [role="button"])')
-    const readableFilterButtonBlock = cssBlockFrom(styleSource, '/* Console readable light action fallback. */')
-    const readableFilterButtonHoverBlock = cssBlockFrom(
-      styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(\n' +
-        '  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),\n' +
-        '  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,\n' +
-        '  .user-keys-atelier .keys-filter-actions,\n' +
-        '  .user-usage-atelier .usage-filter-actions,\n' +
-        '  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,\n' +
-        '  .global-pricing-filter-actions\n' +
-        ') :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover',
-    )
-    const readableFilterButtonRule = cssRuleFrom(styleSource, '/* Console readable light action fallback. */')
-    expect(readableFilterButtonBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(readableFilterButtonHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
-    expect(readableFilterButtonBlock).toContain('color: var(--atelier-slab-text) !important;')
-    expect(readableFilterButtonBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
-    expect(readableFilterButtonBlock).not.toContain('background: var(--atelier-terracotta-action)')
-    expect(readableFilterButtonRule).toContain(':where(.btn, button, [role="button"])')
-    expect(readableFilterButtonRule).toContain(':not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh)')
-    expect(actionBlock).not.toContain('var(--atelier-slab-field)')
+
+    const canonicalLayer = styleSource.slice(styleSource.lastIndexOf('Canonical page filter/input layer'))
+    expect(canonicalLayer).toContain('.table-filter-actions')
+    expect(canonicalLayer).toContain('.keys-filter-actions')
+    expect(canonicalLayer).toContain('.user-usage-atelier .usage-filter-actions')
+    expect(canonicalLayer).toContain('.admin-usage-atelier .usage-record-filter-wrap')
+    expect(canonicalLayer).toContain('.global-pricing-filter-actions')
+    expect(canonicalLayer).toContain('border-color: var(--atelier-ink) !important;')
+    expect(canonicalLayer).toContain('background: var(--atelier-ink) !important;')
+    expect(canonicalLayer).toContain('color: var(--atelier-paper) !important;')
   })
 
   it('keeps small user key table icons readable on paper buttons', () => {

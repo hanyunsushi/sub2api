@@ -1,15 +1,15 @@
 <template>
-  <div class="flex items-center gap-2">
+  <div class="account-status-indicator flex items-center gap-2">
     <!-- Rate Limit Display (429) - Two-line layout -->
     <div v-if="isRateLimited" class="flex flex-col items-center gap-1">
-      <span class="badge semantic-badge semantic-badge--warning text-xs">{{ t('admin.accounts.status.rateLimited') }}</span>
-      <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ rateLimitResumeText }}</span>
+      <span class="badge text-xs badge-warning">{{ t('admin.accounts.status.rateLimited') }}</span>
+      <span class="text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ rateLimitResumeText }}</span>
     </div>
 
     <!-- Overload Display (529) - Two-line layout -->
     <div v-else-if="isOverloaded" class="flex flex-col items-center gap-1">
-      <span class="badge semantic-badge semantic-badge--danger text-xs">{{ t('admin.accounts.status.overloaded') }}</span>
-      <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ overloadCountdown }}</span>
+      <span class="badge text-xs badge-danger">{{ t('admin.accounts.status.overloaded') }}</span>
+      <span class="text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ overloadCountdown }}</span>
     </div>
 
     <!-- Main Status Badge (shown when not rate limited/overloaded) -->
@@ -112,7 +112,7 @@
         <!-- 普通模型限流 -->
         <span
           v-else
-          class="inline-flex items-center gap-1 rounded bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+          class="inline-flex items-center gap-1 rounded bg-accent-200 px-1.5 py-0.5 text-xs font-medium text-accent-700 dark:bg-accent-900/30 dark:text-accent-500"
         >
           <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
           {{ formatScopeName(item.model) }}
@@ -400,26 +400,24 @@ const overloadTooltipText = computed(() => (
 // Computed: status badge class
 const statusClass = computed(() => {
   if (!props.account.status) {
-    return 'semantic-badge semantic-badge--neutral account-status-badge account-status-badge--neutral'
+    return 'badge-gray'
   }
   if (hasError.value) {
-    return 'semantic-badge semantic-badge--danger account-status-badge account-status-badge--danger'
+    return 'badge-danger'
   }
   if (isTempUnschedulable.value) {
-    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
+    return 'badge-warning'
   }
   if (props.account.status !== 'active') {
-    return props.account.status === 'error'
-      ? 'semantic-badge semantic-badge--danger account-status-badge account-status-badge--danger'
-      : 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
+    return props.account.status === 'error' ? 'badge-danger' : 'badge-gray'
   }
   if (isQuotaExceeded.value) {
-    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
+    return 'badge-warning'
   }
   if (!props.account.schedulable) {
-    return 'semantic-badge semantic-badge--warning account-status-badge account-status-badge--warning'
+    return 'badge-gray'
   }
-  return 'semantic-badge semantic-badge--success account-status-badge account-status-badge--success'
+  return 'badge-success'
 })
 
 // Computed: status text

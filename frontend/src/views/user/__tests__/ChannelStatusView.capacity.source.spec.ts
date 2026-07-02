@@ -4,20 +4,25 @@ import { resolve } from 'node:path'
 
 const viewSource = readFileSync(resolve(__dirname, '../ChannelStatusView.vue'), 'utf8')
 const componentSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
+const monitorGridSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCardGrid.vue'), 'utf8')
 const monitorCardSource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCard.vue'), 'utf8')
-const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
-const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
-const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
-const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
-const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);'
+const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 
 const cssBlock = (content: string, selector: string): string => {
-  const start = content.indexOf(`${selector} {`)
+  const start = content.indexOf(selector)
   expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
-  const end = content.indexOf('\n}', start)
-  expect(end, `Expected CSS selector ${selector} to close`).toBeGreaterThan(start)
-  return content.slice(start, end + 2)
+  const open = content.indexOf('{', start)
+  expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
+  let depth = 0
+  for (let index = open; index < content.length; index += 1) {
+    const char = content[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return content.slice(open + 1, index)
+    }
+  }
+  throw new Error(`Expected CSS selector ${selector} to close`)
 }
 
 describe('ChannelStatusView shared capacity overview source', () => {
@@ -86,119 +91,74 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("localText('停用', 'Disabled')")
   })
 
-  it('keeps shared capacity card styling intact while adding neutral lift and shadow', () => {
+  it('uses the Anthropic tutorial-card linked hover contract for shared capacity cards', () => {
     const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
-    const capacityBeforeBlock = cssBlock(componentSource, '.monitor-capacity-card::before')
     const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
-    const globalBaseBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
-    )
-    const globalHoverBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
-    )
-    const themedGlobalHoverBlock = cssBlock(
-      styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    const capacitySiblingBlock = cssBlock(
+      componentSource,
+      '.monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
     )
 
-    expect(styleSource).not.toContain(':where(.codex-account-card, .monitor-capacity-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)')
+    expect(componentSource).toContain('monitor-capacity-overview monitor-card-linked-hover-group')
+    expect(componentSource).toContain('monitor-capacity-card monitor-linked-card')
     expect(capacityBaseBlock).not.toContain('--creepee-home-card-hover-shadow')
-    expect(capacityBaseBlock).not.toContain('--creepee-card-hover-surface')
-    expect(capacityBaseBlock).not.toContain('--creepee-card-stable-border')
-    expect(capacityBaseBlock).not.toContain('box-shadow: none')
-    expect(capacityBaseBlock).toContain('transform 0.26s var(--atelier-ease),')
-    expect(capacityBaseBlock).toContain('box-shadow 0.26s var(--atelier-ease);')
-    expect(capacityBaseBlock).not.toContain('background:')
-    expect(capacityBaseBlock).not.toContain('border-color')
-    expect(capacityBeforeBlock).toContain('linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08))')
-    expect(capacityHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
-    expect(capacityHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
-    expect(capacityHoverBlock).not.toContain('background')
-    expect(capacityHoverBlock).not.toContain('border-color')
-    expect(globalBaseBlock).toContain(homepageHoverShadow)
-    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
+    expect(capacityBaseBlock).not.toContain('--creepee-home-card-hover-transform')
+    expect(capacityBaseBlock).toContain('border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));')
+    expect(capacityBaseBlock).toContain('background: var(--anthropic-page, #faf9f5);')
+    expect(capacityBaseBlock).toContain('box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);')
+    expect(capacityBaseBlock).toContain('background-color 350ms ease')
+    expect(capacityBaseBlock).toContain('border-color 0.25s ease')
+    expect(capacityBaseBlock).toContain('box-shadow 0.25s ease')
+    expect(capacityBaseBlock).not.toContain('transform')
+    expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
+    expect(capacityHoverBlock).toContain('background: var(--anthropic-page, #faf9f5);')
+    expect(capacityHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);')
+    expect(capacityHoverBlock).toContain('text-decoration: none;')
+    expect(capacityHoverBlock).not.toContain('translate')
+    expect(capacityHoverBlock).not.toContain('--creepee-home-card-hover')
+    expect(capacitySiblingBlock).toContain('background: var(--anthropic-raised, #e8e6dc);')
+    expect(capacitySiblingBlock).not.toContain('opacity')
+    expect(capacitySiblingBlock).not.toContain('translate')
   })
 
-  it('matches the Creepee homepage recommendation-card hover treatment on channel status cards', () => {
-    const localHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
-    const globalHoverBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+  it('applies the same linked hover treatment to channel monitor cards', () => {
+    const linkedBaseBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card)'
     )
-    const themedGlobalHoverBlock = cssBlock(
-      styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    const linkedHoverBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card:hover'
     )
-    const globalBaseBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
-    )
-    const monitorChannelBaseBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card'
-    )
-    const monitorChannelHoverBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card:hover,\n#app .app-layout-content .monitor-channel-card:focus-visible'
+    const linkedSiblingBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
     )
 
-    expect(componentSource).not.toContain('shadow-card')
-    expect(monitorCardSource).toContain('monitor-channel-card')
+    expect(monitorGridSource).toContain('monitor-channel-card-grid monitor-card-linked-hover-group')
+    expect(monitorCardSource).toContain('monitor-channel-card monitor-linked-card')
     expect(monitorCardSource).not.toContain('shadow-card')
     expect(monitorCardSource).not.toContain('shadow-card-hover')
     expect(monitorCardSource).not.toContain('hover:border')
     expect(monitorCardSource).not.toContain('dark:hover:border')
-    expect(styleSource).toContain('.monitor-channel-card')
-    expect(styleSource).toContain(homepageHoverTransform)
-    expect(styleSource).toContain(homepageHoverShadow)
-    expect(cssBlock(componentSource, '.monitor-capacity-card')).not.toContain(homepageHoverShadow)
-    expect(monitorChannelBaseBlock).toContain('border-color: var(--creepee-card-stable-border) !important;')
-    expect(monitorChannelBaseBlock).toContain('background: var(--creepee-card-hover-surface) !important;')
-    expect(monitorChannelBaseBlock).toContain('box-shadow: none !important;')
-    expect(monitorChannelBaseBlock).not.toContain('hover:border')
-    expect(monitorChannelBaseBlock).not.toContain('shadow-card')
-    expect(monitorChannelHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(monitorChannelHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(monitorChannelHoverBlock).toContain('border-color: var(--creepee-card-stable-border) !important;')
-    expect(monitorChannelHoverBlock).toContain('background: var(--creepee-card-hover-surface) !important;')
-    expect(monitorChannelHoverBlock).not.toContain('translate3d(0, -2px, 0)')
-    expect(monitorChannelHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(monitorChannelHoverBlock).not.toContain('var(--atelier-butter')
-    expect(monitorChannelHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
-    expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
-    expect(localHoverBlock).not.toContain('translateY(-2px)')
-    expect(localHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(localHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(localHoverBlock).not.toContain('var(--atelier-butter')
-    expect(localHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(localHoverBlock).not.toContain('linear-gradient')
-    expect(localHoverBlock).not.toContain('border-color')
-    expect(localHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(globalBaseBlock).toContain(homepageHoverShadow)
-    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(globalHoverBlock).not.toContain('translateY(-2px)')
-    expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(globalHoverBlock).not.toContain('var(--atelier-butter')
-    expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(globalHoverBlock).not.toContain('border-color')
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(themedGlobalHoverBlock).not.toContain('var(--atelier-material-shadow')
-    expect(themedGlobalHoverBlock).not.toContain('rgba(20, 20, 19, 0.024)')
-    expect(themedGlobalHoverBlock).not.toContain('translateY(-2px)')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(themedGlobalHoverBlock).not.toContain('border-color')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(styleSource).toContain(':not(.monitor-capacity-card):not(.external-subscription-card)')
+    expect(linkedBaseBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(linkedBaseBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(linkedBaseBlock).toContain('box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;')
+    expect(linkedBaseBlock).toContain('transform: none !important;')
+    expect(linkedBaseBlock).toContain('opacity: 1 !important;')
+    expect(linkedBaseBlock).toContain('transition: background-color 350ms ease, border-color 0.25s ease, box-shadow 0.25s ease !important;')
+    expect(linkedBaseBlock).not.toContain('--creepee-home-card-hover')
+    expect(linkedBaseBlock).not.toContain('translate3d')
+    expect(linkedHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
+    expect(linkedHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(linkedHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(linkedHoverBlock).toContain('transform: none !important;')
+    expect(linkedHoverBlock).toContain('text-decoration: none !important;')
+    expect(linkedHoverBlock).not.toContain('--creepee-home-card-hover')
+    expect(linkedHoverBlock).not.toContain('translate')
+    expect(linkedSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(linkedSiblingBlock).toContain('opacity: 1 !important;')
+    expect(linkedSiblingBlock).not.toContain('opacity: 0.')
+    expect(linkedSiblingBlock).not.toContain('translate')
   })
 })

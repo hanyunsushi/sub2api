@@ -1,28 +1,25 @@
 <template>
-  <div class="account-bulk-actions-bar mb-4 flex items-center justify-between rounded-lg bg-primary-50 p-3 dark:bg-primary-900/20">
+  <div class="account-bulk-actions-bar mb-4 flex items-center justify-between rounded-lg bg-[var(--anthropic-section)] p-3 dark:bg-[var(--anthropic-section)]">
     <div class="flex flex-wrap items-center gap-2">
-      <span v-if="selectedIds.length > 0" class="text-sm font-medium text-primary-900 dark:text-primary-100">
+      <span v-if="selectedIds.length > 0" class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
         {{ t('admin.accounts.bulkActions.selected', { count: selectedIds.length }) }}
       </span>
-      <span v-else class="text-sm font-medium text-primary-900 dark:text-primary-100">
-        {{ t('admin.accounts.bulkEdit.title') }}
-      </span>
       <template v-if="selectedIds.length > 0">
-      <button
-        @click="$emit('select-page')"
-        class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
-        data-testid="account-bulk-select-page"
-      >
-        {{ t('admin.accounts.bulkActions.selectCurrentPage') }}
-      </button>
-      <span class="text-gray-300 dark:text-primary-800">•</span>
-      <button
-        @click="$emit('clear')"
-        class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
-        data-testid="account-bulk-clear"
-      >
-        {{ t('admin.accounts.bulkActions.clear') }}
-      </button>
+        <button
+          @click="$emit('select-page')"
+          class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+          data-testid="account-bulk-select-page"
+        >
+          {{ t('admin.accounts.bulkActions.selectCurrentPage') }}
+        </button>
+        <span class="text-gray-300 dark:text-[var(--anthropic-fg)]">•</span>
+        <button
+          @click="$emit('clear')"
+          class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+          data-testid="account-bulk-clear"
+        >
+          {{ t('admin.accounts.bulkActions.clear') }}
+        </button>
       </template>
     </div>
     <div class="flex gap-2">

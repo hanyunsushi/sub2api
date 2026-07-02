@@ -1,15 +1,22 @@
 <template>
-  <div class="relative" ref="containerRef">
+  <div
+    :class="['relative', selectRootVariantClass]"
+    ref="containerRef"
+    @pointerenter="openDropdown"
+    @mouseenter="openDropdown"
+    @mouseleave="scheduleHoverClose"
+  >
     <button data-testid="common-select-button-toggle"
       ref="triggerRef"
       type="button"
-      @click="toggle"
+      @click="openDropdown"
       :disabled="disabled"
       :aria-expanded="isOpen"
       :aria-haspopup="true"
-      aria-label="Select option"
+      :aria-label="ariaLabel"
       :class="[
         'select-trigger',
+        selectTriggerVariantClass,
         isOpen && 'select-trigger-open',
         error && 'select-trigger-error',
         disabled && 'select-trigger-disabled'
@@ -34,32 +41,27 @@
       >
         <Icon name="x" size="sm" />
       </span>
-      <span class="select-icon">
-        <Icon
-          name="chevronDown"
-          size="md"
-          :class="['transition-transform duration-200', isOpen && 'rotate-180']"
-        />
-      </span>
+      <span class="select-icon" :class="{ 'select-icon-open': isOpen }" aria-hidden="true"></span>
     </button>
 
     <!-- Teleport dropdown to body to escape stacking context -->
     <Teleport to="body">
-      <Transition name="select-dropdown">
-        <div data-testid="common-select-div-div"
-          v-if="isOpen"
-          ref="dropdownRef"
-          class="select-dropdown-portal"
-          :class="[instanceId, portalClass]"
-          :style="dropdownStyle"
-          role="listbox"
-          @click.stop
-          @mousedown.stop
-          @keydown="onDropdownKeyDown"
-        >
+      <div data-testid="common-select-div-div"
+        v-if="isOpen"
+        ref="dropdownRef"
+        class="select-dropdown-portal dropdown-highlight-menu"
+        :class="[instanceId, portalClass]"
+        :style="dropdownStyle"
+        role="listbox"
+        @mouseenter="cancelHoverClose"
+        @mouseleave="scheduleHoverClose"
+        @click.stop
+        @mousedown.stop
+        @keydown="onDropdownKeyDown"
+      >
           <!-- Search input -->
           <div v-if="isSearchable" class="select-search">
-            <Icon name="search" size="sm" class="text-gray-400" />
+            <Icon name="search" size="sm" class="text-[var(--anthropic-muted)]" />
             <input data-testid="common-select-input-search-query"
               ref="searchInputRef"
               v-model="searchQuery"
@@ -93,14 +95,14 @@
                   v-if="option._creatable"
                   name="search"
                   size="sm"
-                  class="flex-shrink-0 text-gray-400"
+                  class="flex-shrink-0 text-[var(--anthropic-muted)]"
                 />
-                <span class="select-option-label" :class="option._creatable && 'italic text-gray-500 dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
+                <span class="select-option-label" :class="option._creatable && 'italic text-[var(--anthropic-muted)] dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
                 <Icon
                   v-if="isSelected(option)"
                   name="check"
                   size="sm"
-                  class="text-primary-500"
+                  class="text-[var(--anthropic-fg)]"
                   :stroke-width="2"
                 />
               </slot>
@@ -111,8 +113,7 @@
               {{ emptyTextDisplay }}
             </div>
           </div>
-        </div>
-      </Transition>
+      </div>
     </Teleport>
   </div>
 </template>
@@ -121,6 +122,11 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
+import {
+  claimDropdownOwner,
+  onDropdownOwnerClaimed,
+  releaseDropdownOwner
+} from '@/utils/dropdownCoordinator'
 
 const { t } = useI18n()
 
@@ -137,6 +143,8 @@ export interface SelectOption {
 interface Props {
   modelValue: string | number | boolean | null | undefined
   options: SelectOption[] | Array<Record<string, unknown>>
+  variant?: 'field' | 'text-control'
+  ariaLabel?: string
   placeholder?: string
   disabled?: boolean
   error?: boolean
@@ -157,6 +165,8 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  variant: 'field',
+  ariaLabel: 'Select option',
   disabled: false,
   error: false,
   searchable: 'auto',
@@ -180,6 +190,8 @@ const dropdownRef = ref<HTMLElement | null>(null)
 const optionsListRef = ref<HTMLElement | null>(null)
 const dropdownPosition = ref<'bottom' | 'top'>('bottom')
 const triggerRect = ref<DOMRect | null>(null)
+let hoverCloseTimer: ReturnType<typeof setTimeout> | null = null
+let stopDropdownOwnerListener: (() => void) | null = null
 
 // i18n placeholders
 const placeholderText = computed(() => props.placeholder ?? t('common.selectOption'))
@@ -190,6 +202,14 @@ const isSearchable = computed(() => {
   if (props.searchable === 'auto') return props.options.length > 5
   return props.searchable
 })
+
+const selectRootVariantClass = computed(() =>
+  props.variant === 'text-control' ? 'select-root--text-control' : 'select-root--field'
+)
+
+const selectTriggerVariantClass = computed(() =>
+  props.variant === 'text-control' ? 'select-trigger--text-control' : 'select-trigger--field'
+)
 
 // Computed style for teleported dropdown
 const dropdownStyle = computed(() => {
@@ -334,9 +354,40 @@ const calculateDropdownPosition = () => {
   })
 }
 
-const toggle = () => {
+const openDropdown = () => {
   if (props.disabled) return
-  isOpen.value = !isOpen.value
+  cancelHoverClose()
+  claimDropdownOwner(instanceId)
+  isOpen.value = true
+}
+
+const cancelHoverClose = () => {
+  if (!hoverCloseTimer) return
+  clearTimeout(hoverCloseTimer)
+  hoverCloseTimer = null
+}
+
+const scheduleHoverClose = () => {
+  if (hoverCloseTimer) return
+  hoverCloseTimer = setTimeout(() => {
+    isOpen.value = false
+    releaseDropdownOwner(instanceId)
+    hoverCloseTimer = null
+  }, 120)
+}
+
+const isPointerWithinDropdown = (target: EventTarget | null) => {
+  if (!(target instanceof Node)) return false
+  return !!containerRef.value?.contains(target) || !!dropdownRef.value?.contains(target)
+}
+
+const handleDocumentHoverMove = (event: PointerEvent | MouseEvent) => {
+  if (!isOpen.value) return
+  if (isPointerWithinDropdown(event.target)) {
+    cancelHoverClose()
+  } else {
+    scheduleHoverClose()
+  }
 }
 
 watch(isOpen, (open) => {
@@ -359,11 +410,16 @@ watch(isOpen, (open) => {
     // Add scroll listener to update position
     window.addEventListener('scroll', updateTriggerRect, { capture: true, passive: true })
     window.addEventListener('resize', calculateDropdownPosition)
+    document.addEventListener('pointermove', handleDocumentHoverMove, { passive: true })
+    document.addEventListener('mousemove', handleDocumentHoverMove, { passive: true })
   } else {
+    cancelHoverClose()
     searchQuery.value = ''
     focusedIndex.value = -1
     window.removeEventListener('scroll', updateTriggerRect, { capture: true })
     window.removeEventListener('resize', calculateDropdownPosition)
+    document.removeEventListener('pointermove', handleDocumentHoverMove)
+    document.removeEventListener('mousemove', handleDocumentHoverMove)
   }
 })
 
@@ -372,6 +428,7 @@ const selectOption = (option: any) => {
   emit('update:modelValue', value)
   emit('change', value, option)
   isOpen.value = false
+  releaseDropdownOwner(instanceId)
   triggerRef.value?.focus()
 }
 
@@ -384,7 +441,7 @@ const clearSelection = () => {
 // Keyboards
 const onTriggerKeyDown = () => {
   if (!isOpen.value) {
-    isOpen.value = true
+    openDropdown()
   }
 }
 
@@ -410,10 +467,12 @@ const onDropdownKeyDown = (e: KeyboardEvent) => {
     case 'Escape':
       e.preventDefault()
       isOpen.value = false
+      releaseDropdownOwner(instanceId)
       triggerRef.value?.focus()
       break
     case 'Tab':
       isOpen.value = false
+      releaseDropdownOwner(instanceId)
       break
   }
 }
@@ -441,51 +500,304 @@ const handleClickOutside = (event: MouseEvent) => {
 
   if (!isInDropdown && !isInTrigger && isOpen.value) {
     isOpen.value = false
+    releaseDropdownOwner(instanceId)
   }
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  stopDropdownOwnerListener = onDropdownOwnerClaimed((owner) => {
+    if (owner !== instanceId) {
+      isOpen.value = false
+    }
+  })
 })
 
 onUnmounted(() => {
+  cancelHoverClose()
+  releaseDropdownOwner(instanceId)
+  stopDropdownOwnerListener?.()
+  stopDropdownOwnerListener = null
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('scroll', updateTriggerRect, { capture: true })
   window.removeEventListener('resize', calculateDropdownPosition)
+  document.removeEventListener('pointermove', handleDocumentHoverMove)
+  document.removeEventListener('mousemove', handleDocumentHoverMove)
 })
 </script>
 
 <style scoped>
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
-  @apply rounded-xl px-4 py-2.5 text-sm;
-  @apply bg-white dark:bg-dark-800;
-  @apply border border-gray-200 dark:border-dark-600;
-  @apply text-gray-900 dark:text-gray-100;
+  @apply px-4 py-2.5 text-sm;
+  @apply border;
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-  @apply hover:border-gray-300 dark:hover:border-dark-500;
+  @apply focus:outline-none;
   @apply cursor-pointer;
-  --select-surface: var(--atelier-paper-2);
-  --select-muted-surface: var(--atelier-paper-2);
+  --select-component-surface: var(--select-default-surface, var(--atelier-paper-2));
+  --select-surface: var(--select-component-surface);
+  --select-muted-surface: var(--select-component-surface);
+  border-radius: 12px;
   background: var(--select-surface);
-  border-color: var(--atelier-line);
+  background-color: var(--select-surface);
+  border-color: var(--anthropic-border, var(--atelier-line));
   color: var(--atelier-ink);
-  box-shadow: 0 8px 18px -18px rgba(17, 24, 39, 0.32);
+  box-shadow: var(--anthropic-button-ring, 0 0 0 1px var(--anthropic-border-subtle));
+}
+
+.select-trigger:hover {
+  border-color: var(--anthropic-border-hover, var(--atelier-line-strong));
+  background: var(--anthropic-raised, var(--atelier-ui-hover-surface));
+}
+
+.select-trigger:focus-visible {
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+  outline-offset: 3px;
+  background: var(--select-surface);
 }
 
 .select-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
-  background: var(--atelier-blue-soft);
+  border-color: var(--atelier-line-strong);
+  background: var(--select-surface);
+  background-color: var(--select-surface);
+  box-shadow: none;
+}
+
+:global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .select-trigger),
+:global(#app .app-layout-content .table-page-filter-section .select-trigger),
+:global(#app .app-layout-content .table-filter-shell .select-trigger),
+:global(#app .app-layout-content .table-filter-left .select-trigger),
+:global(#app .app-layout-content .table-filter-actions .select-trigger),
+:global(#app .app-layout-content .accounts-filter-shell .select-trigger),
+:global(#app .app-layout-content .accounts-filter-left .select-trigger),
+:global(#app .app-layout-content .accounts-filter-actions .select-trigger),
+:global(#app .app-layout-content .users-filter-shell .select-trigger),
+:global(#app .app-layout-content .users-filter-left .select-trigger),
+:global(#app .app-layout-content .users-filter-actions .select-trigger),
+:global(#app .app-layout-content .users-filter-tools .select-trigger),
+:global(#app .app-layout-content .usage-filter-card .select-trigger),
+:global(#app .app-layout-content .usage-filter-shell .select-trigger),
+:global(#app .app-layout-content .usage-filter-left .select-trigger),
+:global(#app .app-layout-content .usage-filter-actions .select-trigger),
+:global(#app .app-layout-content .keys-filter-shell .select-trigger),
+:global(#app .app-layout-content .keys-filter-left .select-trigger),
+:global(#app .app-layout-content .keys-filter-actions .select-trigger),
+:global(#app .app-layout-content .global-pricing-filter-card .select-trigger),
+:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger),
+:global(#app .app-layout-content .global-pricing-filter-left .select-trigger),
+:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger),
+:global(#app .app-layout-content .dashboard-filter-card .select-trigger),
+:global(#app .app-layout-content .dashboard-filter-shell .select-trigger),
+:global(#app .app-layout-content .dashboard-filter-range .select-trigger),
+:global(#app .app-layout-content .dashboard-filter-granularity .select-trigger),
+:global(#app .app-layout-content .usage-time-filter-card .select-trigger),
+:global(#app .app-layout-content .usage-time-filter-shell .select-trigger),
+:global(#app .app-layout-content .usage-time-filter-range .select-trigger),
+:global(#app .app-layout-content .usage-time-filter-granularity .select-trigger),
+:global(#app .app-layout-content .usage-record-filter-wrap .select-trigger),
+:global(#app .app-layout-content .order-filter-card .select-trigger),
+:global(#app .app-layout-content .payment-dashboard-filter-bar .select-trigger),
+:global(#app .app-layout-content .payment-plans-filter-bar .select-trigger),
+:global(#app .app-layout-content .risk-control-toolbar-actions .select-trigger),
+:global(#app .app-layout-content .risk-control-record-filters .select-trigger),
+:global(#app .app-layout-content .ops-monitor-toolbar-controls .select-trigger),
+:global(#app .app-layout-content .ops-card-filter-bar .select-trigger),
+:global(#app .app-layout-content .ops-card-filter-grid .select-trigger),
+:global(#app .app-layout-content .codex-toolbar .select-trigger),
+:global(#app .app-layout-content .codex-list-actions__primary .select-trigger),
+:global(#app .app-layout-content .codex-list-actions__filters .select-trigger) {
+  --select-default-surface: transparent !important;
+  --select-component-surface: transparent !important;
+  --select-surface: transparent !important;
+  --select-muted-surface: transparent !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  min-height: var(--anthropic-control-height, 2rem) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-size: var(--anthropic-control-font-size, 0.8125rem) !important;
+  font-weight: var(--anthropic-control-font-weight, 500) !important;
+  line-height: var(--anthropic-control-line-height, 1.25rem) !important;
+  letter-spacing: 0 !important;
+}
+
+:global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .table-page-filter-section .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .table-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .table-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .table-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .accounts-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .accounts-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .accounts-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .users-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .users-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .users-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .users-filter-tools .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-filter-card .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .keys-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .keys-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .keys-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .global-pricing-filter-card .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .global-pricing-filter-left .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .dashboard-filter-card .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .dashboard-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .dashboard-filter-range .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .dashboard-filter-granularity .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-time-filter-card .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-time-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-time-filter-range .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-time-filter-granularity .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .usage-record-filter-wrap .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .order-filter-card .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .payment-dashboard-filter-bar .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .payment-plans-filter-bar .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .risk-control-toolbar-actions .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .risk-control-record-filters .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .ops-monitor-toolbar-controls .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .ops-card-filter-bar .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .ops-card-filter-grid .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .codex-toolbar .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .codex-list-actions__primary .select-trigger:is(:hover, .select-trigger-open)),
+:global(#app .app-layout-content .codex-list-actions__filters .select-trigger:is(:hover, .select-trigger-open)) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+}
+
+:global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .select-trigger:focus-visible),
+:global(#app .app-layout-content .table-page-filter-section .select-trigger:focus-visible),
+:global(#app .app-layout-content .table-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .table-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .table-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .accounts-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .accounts-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .accounts-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .users-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .users-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .users-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .users-filter-tools .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-filter-card .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .keys-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .keys-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .keys-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .global-pricing-filter-card .select-trigger:focus-visible),
+:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .global-pricing-filter-left .select-trigger:focus-visible),
+:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .dashboard-filter-card .select-trigger:focus-visible),
+:global(#app .app-layout-content .dashboard-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .dashboard-filter-range .select-trigger:focus-visible),
+:global(#app .app-layout-content .dashboard-filter-granularity .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-time-filter-card .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-time-filter-shell .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-time-filter-range .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-time-filter-granularity .select-trigger:focus-visible),
+:global(#app .app-layout-content .usage-record-filter-wrap .select-trigger:focus-visible),
+:global(#app .app-layout-content .order-filter-card .select-trigger:focus-visible),
+:global(#app .app-layout-content .payment-dashboard-filter-bar .select-trigger:focus-visible),
+:global(#app .app-layout-content .payment-plans-filter-bar .select-trigger:focus-visible),
+:global(#app .app-layout-content .risk-control-toolbar-actions .select-trigger:focus-visible),
+:global(#app .app-layout-content .risk-control-record-filters .select-trigger:focus-visible),
+:global(#app .app-layout-content .ops-monitor-toolbar-controls .select-trigger:focus-visible),
+:global(#app .app-layout-content .ops-card-filter-bar .select-trigger:focus-visible),
+:global(#app .app-layout-content .ops-card-filter-grid .select-trigger:focus-visible),
+:global(#app .app-layout-content .codex-toolbar .select-trigger:focus-visible),
+:global(#app .app-layout-content .codex-list-actions__primary .select-trigger:focus-visible),
+:global(#app .app-layout-content .codex-list-actions__filters .select-trigger:focus-visible) {
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline-offset: 3px !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.select-trigger--text-control {
+  --select-default-surface: transparent !important;
+  --select-component-surface: transparent !important;
+  --select-surface: transparent !important;
+  --select-muted-surface: transparent !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  min-height: var(--anthropic-control-height, 2rem) !important;
+  height: var(--anthropic-control-height, 2rem) !important;
+  justify-content: center !important;
+  gap: 0.125rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  font-family: var(--atelier-font-sans) !important;
+  font-size: var(--anthropic-control-font-size, 0.8125rem) !important;
+  font-weight: var(--anthropic-control-font-weight, 500) !important;
+  line-height: var(--anthropic-control-line-height, 1.25rem) !important;
+  letter-spacing: 0 !important;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
+}
+
+.select-trigger--text-control:hover,
+.select-trigger--text-control.select-trigger-open {
+  border-color: transparent !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--anthropic-fg, var(--atelier-ink)) !important;
+  box-shadow: none !important;
+  text-decoration-color: currentColor;
+}
+
+.select-trigger--text-control:focus-visible {
+  border: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}
+
+.select-trigger--text-control .select-value {
+  flex: 0 1 auto;
+}
+
+.select-trigger--text-control .select-icon {
+  margin-left: -0.125rem;
+  color: currentColor;
 }
 
 .select-trigger-error {
-  @apply border-red-500 focus:border-red-500 focus:ring-red-500/30;
+  border-color: var(--anthropic-error, var(--atelier-status-danger));
 }
 
 .select-trigger-disabled {
-  @apply cursor-not-allowed bg-gray-100 opacity-60 dark:bg-dark-900;
-  background: var(--atelier-surface-muted);
+  @apply cursor-not-allowed opacity-60;
+  background: var(--anthropic-raised, var(--atelier-surface-muted));
+  color: var(--anthropic-disabled, var(--atelier-dust));
 }
 
 .select-value {
@@ -493,83 +805,136 @@ onUnmounted(() => {
 }
 
 .select-icon {
-  @apply flex-shrink-0 text-gray-400 dark:text-dark-400;
+  @apply flex-shrink-0;
+  display: inline-grid;
+  align-items: center;
+  justify-content: center;
+  place-items: center;
+  width: 1.25rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  min-height: 1.25rem;
+  color: var(--atelier-muted);
+  transform: translateY(1px) rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-in-out, color 160ms ease;
+}
+
+.select-icon::before {
+  content: "";
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.select-trigger-open .select-icon,
+.select-icon-open {
+  transform: translateY(1px) rotate(180deg);
 }
 
 .select-clear {
   @apply flex flex-shrink-0 cursor-pointer items-center justify-center;
-  @apply rounded text-gray-400 transition-colors;
-  @apply hover:text-gray-600 dark:hover:text-gray-200;
+  @apply rounded transition-colors;
+  color: var(--anthropic-quiet, var(--atelier-dust));
+}
+
+.select-clear:hover {
+  color: var(--anthropic-fg, var(--atelier-ink));
 }
 </style>
 
 <style>
 .select-dropdown-portal {
   @apply w-max min-w-[200px];
-  @apply bg-white dark:bg-dark-800;
-  @apply rounded-xl;
-  @apply border border-gray-200 dark:border-dark-700;
-  @apply shadow-lg shadow-black/10 dark:shadow-black/30;
+  @apply border;
   @apply overflow-hidden;
-  --select-surface: var(--atelier-paper-2);
-  --select-muted-surface: var(--atelier-paper-2);
+  --select-surface: var(--anthropic-page, var(--atelier-paper));
+  --select-muted-surface: var(--anthropic-page, var(--atelier-paper));
   --select-option-text: var(--atelier-muted);
   --select-option-stable-text: var(--select-option-text);
-  --select-option-hover-surface: var(--atelier-ui-hover-surface);
-  --select-option-focused-surface: var(--atelier-ui-hover-surface);
-  --select-option-selected-surface: var(--atelier-ui-hover-surface);
+  --select-option-hover-surface: var(--anthropic-section, var(--atelier-paper-2));
+  --select-option-focused-surface: var(--select-option-hover-surface);
+  --select-option-selected-surface: var(--anthropic-cookbook-hover, var(--atelier-ui-hover-surface));
   --select-option-selected-text: var(--atelier-ink);
+  padding: 12px;
+  border-radius: 16px;
   background: var(--select-surface);
-  border-color: var(--atelier-line);
+  border-color: var(--anthropic-cookbook-border, var(--atelier-line));
   color: var(--atelier-ink);
-  box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.52);
+  box-shadow: var(--anthropic-dropdown-shadow, 0 4px 24px rgba(0, 0, 0, 0.05));
   pointer-events: auto !important;
 }
 
 .select-dropdown-portal .select-search {
   @apply flex items-center gap-2 px-3 py-2;
-  @apply border-b border-gray-100 dark:border-dark-700;
-  border-color: var(--atelier-line);
+  @apply border-b;
+  margin: 0 0 8px;
+  border-color: var(--anthropic-border-subtle, var(--atelier-line));
   background: var(--select-muted-surface);
 }
 
 .select-dropdown-portal .select-search-input {
   @apply flex-1 bg-transparent text-sm;
-  @apply text-gray-900 dark:text-gray-100;
-  @apply placeholder:text-gray-400 dark:placeholder:text-dark-400;
   @apply focus:outline-none;
+  color: var(--anthropic-fg, var(--atelier-ink));
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.125rem 0.25rem;
+  box-shadow: none;
+}
+
+.select-dropdown-portal .select-search-input:focus {
+  border-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.select-dropdown-portal .select-search-input:focus-visible {
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.select-dropdown-portal .select-search-input::placeholder {
+  color: var(--anthropic-quiet, var(--atelier-dust));
 }
 
 .select-dropdown-portal .select-options {
-  @apply max-h-80 overflow-y-auto py-1 outline-none;
+  @apply max-h-80 overflow-y-auto outline-none;
+  display: grid;
+  gap: 2px;
 }
 
 .select-dropdown-portal .select-option {
   @apply flex items-center justify-between gap-2;
-  @apply px-4 py-2.5 text-sm;
-  @apply text-gray-700 dark:text-gray-300;
+  @apply px-3 py-2 text-sm;
   @apply cursor-pointer transition-colors duration-150;
-  @apply hover:bg-gray-50 dark:hover:bg-dark-700;
-  color: var(--select-option-text);
+  min-height: 2.5rem;
+  border-radius: 8px;
+  color: var(--select-option-stable-text);
+  text-decoration-line: none;
+  text-underline-offset: 0.2em;
   pointer-events: auto !important;
 }
 
 .select-dropdown-portal .select-option-selected {
-  @apply bg-primary-50 dark:bg-primary-900/20;
-  @apply text-primary-700 dark:text-primary-300;
   background: var(--select-option-selected-surface);
   color: var(--select-option-selected-text);
 }
 
 .select-dropdown-portal .select-option-focused {
-  @apply bg-gray-100 dark:bg-dark-700;
   background: var(--select-option-focused-surface);
-  color: var(--select-option-stable-text);
+  color: var(--anthropic-fg, var(--atelier-ink));
+  text-decoration-line: none;
 }
 
 .select-dropdown-portal .select-option:hover {
   background: var(--select-option-hover-surface);
-  color: var(--select-option-stable-text);
+  color: var(--anthropic-fg, var(--atelier-ink));
+  text-decoration-line: none;
 }
 
 .select-dropdown-portal .select-option-selected.select-option-focused,
@@ -586,7 +951,7 @@ onUnmounted(() => {
 
 .select-dropdown-portal .select-option-focused :where(.select-option-label, svg),
 .select-dropdown-portal .select-option:hover :where(.select-option-label, svg) {
-  color: var(--select-option-stable-text);
+  color: var(--anthropic-fg, var(--atelier-ink));
 }
 
 .select-dropdown-portal .select-option-disabled {
@@ -617,8 +982,8 @@ onUnmounted(() => {
   --select-muted-surface: var(--atelier-paper-2);
   --select-option-text: var(--atelier-muted);
   --select-option-stable-text: var(--select-option-text);
-  --select-option-hover-surface: var(--atelier-ui-hover-surface);
-  --select-option-focused-surface: var(--atelier-ui-hover-surface);
+  --select-option-hover-surface: var(--anthropic-section, var(--atelier-paper-2));
+  --select-option-focused-surface: var(--select-option-hover-surface);
   --select-option-selected-surface: var(--atelier-ui-hover-surface);
   --select-option-selected-text: var(--atelier-ink);
   background: var(--select-surface);
@@ -643,7 +1008,7 @@ onUnmounted(() => {
 .dark .select-dropdown-portal .select-option:hover,
 .dark .select-dropdown-portal .select-option-focused {
   background: var(--select-option-hover-surface);
-  color: var(--select-option-stable-text);
+  color: var(--anthropic-fg, var(--atelier-ink));
 }
 
 .dark .select-dropdown-portal .select-option-selected:hover {

@@ -1,12 +1,12 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
+  <div class="flex min-h-screen items-center justify-center bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
     <div
-      class="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+      class="w-full max-w-md space-y-4 rounded-lg border border-slate-200 bg-[var(--anthropic-page)] p-6 shadow-none dark:border-slate-700 dark:bg-[var(--anthropic-section)]"
     >
       <!-- Amount + Order ID -->
       <div v-if="amount" class="text-center">
         <p class="text-3xl font-bold" :style="{ color: methodColor }">¥{{ amount }}</p>
-        <p v-if="orderId" class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+        <p v-if="orderId" class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-slate-400">
           {{ t('payment.orders.orderId') }}: {{ orderId }}
         </p>
       </div>
@@ -19,7 +19,7 @@
           {{ error }}
         </div>
         <button data-testid="user-stripe-popup-button-close-window"
-          class="w-full text-sm underline dark:text-blue-400 dark:hover:text-blue-300"
+          class="w-full text-sm underline dark:text-[var(--anthropic-info)] dark:hover:text-[var(--anthropic-info)]"
           :style="{ color: methodColor }"
           @click="closeWindow"
         >
@@ -30,9 +30,9 @@
       <!-- Success -->
       <div v-else-if="success" class="space-y-3 py-4 text-center">
         <div class="text-5xl text-green-600 dark:text-green-400">✓</div>
-        <p class="text-sm text-gray-500 dark:text-slate-400">{{ t('payment.result.success') }}</p>
+        <p class="text-sm text-[var(--anthropic-muted)] dark:text-slate-400">{{ t('payment.result.success') }}</p>
         <button data-testid="user-stripe-popup-button-close-window-2"
-          class="text-sm underline dark:text-blue-400 dark:hover:text-blue-300"
+          class="text-sm underline dark:text-[var(--anthropic-info)] dark:hover:text-[var(--anthropic-info)]"
           :style="{ color: methodColor }"
           @click="closeWindow"
         >
@@ -46,7 +46,7 @@
           class="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
           :style="{ borderColor: methodColor, borderTopColor: 'transparent' }"
         />
-        <span class="ml-3 text-sm text-gray-500 dark:text-slate-400">{{ hint }}</span>
+        <span class="ml-3 text-sm text-[var(--anthropic-muted)] dark:text-slate-400">{{ hint }}</span>
       </div>
     </div>
   </div>
@@ -67,7 +67,7 @@ const METHOD_COLORS: Record<string, string> = {
   alipay: '#00AEEF',
   wechat_pay: '#07C160',
 }
-const DEFAULT_METHOD_COLOR = '#002FA7'
+const DEFAULT_METHOD_COLOR = '#141413'
 
 const { t } = useI18n()
 const route = useRoute()

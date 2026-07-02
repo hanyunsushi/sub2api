@@ -1,7 +1,7 @@
 <template>
   <BaseDialog :show="show" :title="title" width="narrow" @close="handleCancel">
     <div class="space-y-4">
-      <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
+      <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ message }}</p>
       <slot></slot>
     </div>
 
@@ -10,7 +10,7 @@
         <button data-testid="common-confirm-button-handle-cancel"
           @click="handleCancel"
           type="button"
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:bg-dark-600 dark:focus:ring-offset-dark-800"
+          class="btn btn-secondary px-4 py-2 text-sm font-medium"
         >
           {{ cancelText }}
         </button>
@@ -18,10 +18,10 @@
           @click="handleConfirm"
           type="button"
           :class="[
-            'rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800',
+            'btn px-4 py-2 text-sm font-medium',
             danger
-              ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-              : 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500'
+              ? 'btn-danger confirm-button-danger'
+              : 'btn-primary'
           ]"
         >
           {{ confirmText }}
@@ -69,3 +69,19 @@ const handleCancel = () => {
   emit('cancel')
 }
 </script>
+
+<style scoped>
+.confirm-button-danger {
+  border: 1px solid var(--atelier-status-danger);
+  background: var(--atelier-status-danger) !important;
+  color: var(--anthropic-page, #faf9f5) !important;
+}
+
+.confirm-button-danger:hover {
+  background: color-mix(in srgb, var(--atelier-status-danger) 86%, var(--atelier-ink)) !important;
+}
+
+.confirm-button-danger:focus {
+  --tw-ring-color: color-mix(in srgb, var(--atelier-status-danger) 48%, transparent) !important;
+}
+</style>

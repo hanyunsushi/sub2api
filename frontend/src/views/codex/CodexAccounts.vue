@@ -104,7 +104,6 @@
                       data-testid="codex-accounts-refresh-quota-list"
                       @click="refreshAccounts"
                     >
-                      <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
                       {{ t('admin.codex.accounts.refreshQuotaStatus') }}
                     </button>
                     <input
@@ -122,7 +121,6 @@
                       data-testid="codex-accounts-upload-auth-file"
                       @click="openAuthFilePicker"
                     >
-                      <Icon name="upload" size="sm" />
                       {{
                         uploadingAuthFile
                           ? t('admin.codex.accounts.uploadingAuthFile')
@@ -136,49 +134,47 @@
                       data-testid="codex-accounts-open-oauth"
                       @click="openCodexOAuth"
                     >
-                      <Icon name="externalLink" size="sm" />
                       {{ oauthLoading ? t('admin.codex.accounts.openingOAuth') : t('admin.codex.accounts.codexOAuth') }}
                     </button>
                   </div>
                   <div class="codex-list-actions__filters">
                     <input
                       v-model="searchQuery"
-                      class="codex-input !min-h-9 !w-56"
+                      class="codex-input codex-filter-input w-56"
                       type="search"
                       data-testid="codex-accounts-search"
                       :placeholder="t('admin.codex.accounts.search')"
                     />
-                    <select v-model="statusFilter" class="codex-select !min-h-9 !w-36" data-testid="codex-accounts-filter-status">
+                    <select v-model="statusFilter" class="codex-select codex-filter-select w-36" data-testid="codex-accounts-filter-status">
                       <option v-for="option in statusOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
                     </select>
-                    <select v-model="groupFilter" class="codex-select !min-h-9 !w-40" data-testid="codex-accounts-filter-group">
+                    <select v-model="groupFilter" class="codex-select codex-filter-select w-40" data-testid="codex-accounts-filter-group">
                       <option value="all">{{ t('admin.codex.accounts.allGroups') }}</option>
                       <option value="ungrouped">{{ t('admin.codex.accounts.noGroup') }}</option>
                       <option v-for="group in codexStore.groups" :key="group.id" :value="String(group.id)">
                         {{ group.name }}
                       </option>
                     </select>
-                    <select v-model="usageStateFilter" class="codex-select !min-h-9 !w-36" data-testid="codex-accounts-filter-usage-state">
+                    <select v-model="usageStateFilter" class="codex-select codex-filter-select w-36" data-testid="codex-accounts-filter-usage-state">
                       <option v-for="option in usageStateOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
                     </select>
-                    <select v-model="sortKey" class="codex-select !min-h-9 !w-44" data-testid="codex-accounts-sort-key">
+                    <select v-model="sortKey" class="codex-select codex-filter-select w-44" data-testid="codex-accounts-sort-key">
                       <option v-for="option in sortOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                       </option>
                     </select>
                     <button
                       type="button"
-                      class="codex-button codex-button--compact"
+                      class="filter-menu-button codex-filter-sort-button"
                       :title="sortDirectionLabel"
                       :aria-label="sortDirectionLabel"
                       data-testid="codex-accounts-sort-direction"
                       @click="toggleSortDirection"
                     >
-                      <Icon :name="sortDirection === 'asc' ? 'arrowUp' : 'arrowDown'" size="sm" />
                       {{ sortDirectionText }}
                     </button>
                   </div>

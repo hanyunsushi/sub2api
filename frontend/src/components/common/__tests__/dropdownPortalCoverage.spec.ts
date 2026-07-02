@@ -45,18 +45,17 @@ describe('interactive dropdown portal coverage', () => {
 
   it('forces all FloatingDropdown portals onto the global atelier material layer', () => {
     expect(globalStyleSource).toContain(':where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
-    expect(globalStyleSource).toContain('background: var(--atelier-paper-2) !important;')
+    expect(globalStyleSource).toContain('background: var(--dropdown-bg, var(--control-bg, var(--anthropic-page)))')
     expect(globalStyleSource).not.toContain('background-size: 28px 28px, 28px 28px, auto !important;')
     expect(globalStyleSource).toContain('z-index: 100000040;')
-    expect(globalStyleSource).toContain('.dark .app-layout-shell :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
     expect(globalStyleSource).toContain('.floating-dropdown-portal')
-    expect(globalStyleSource).toContain('.dark :where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal, .action-menu-content, [class*="dropdown"][class*="portal"])')
   })
 
   it('keeps the locale switcher text-only in the console header', () => {
     const localeSwitcherSource = read('components/common/LocaleSwitcher.vue')
 
-    expect(localeSwitcherSource).toContain('currentLocale?.code.toUpperCase()')
+    expect(localeSwitcherSource).toContain('currentLocale?.name')
+    expect(localeSwitcherSource).not.toContain('currentLocale?.code.toUpperCase()')
     expect(localeSwitcherSource).not.toContain('currentLocale?.flag')
     expect(localeSwitcherSource).not.toContain('locale.flag')
   })

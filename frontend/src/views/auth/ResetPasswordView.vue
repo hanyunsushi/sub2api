@@ -66,7 +66,7 @@
           </label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
+              <Icon name="mail" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
             </div>
             <input data-testid="auth-reset-password-input-email"
               id="email"
@@ -86,7 +86,7 @@
           </label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
+              <Icon name="lock" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
             </div>
             <input data-testid="auth-reset-password-input-form-data-password"
               id="password"
@@ -117,7 +117,7 @@
           </label>
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
+              <Icon name="lock" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
             </div>
             <input data-testid="auth-reset-password-input-form-data-confirm-password"
               id="confirmPassword"
@@ -376,8 +376,8 @@ async function handleSubmit(): Promise<void> {
 }
 
 .auth-recovery-status-warning {
-  border-color: color-mix(in srgb, #d97706 32%, var(--atelier-ink) 10%);
-  background: color-mix(in srgb, var(--atelier-paper) 86%, #d97706 14%);
+  border-color: color-mix(in srgb, var(--atelier-status-warning) 32%, var(--atelier-ink) 10%);
+  background: color-mix(in srgb, var(--atelier-paper) 86%, var(--atelier-status-warning) 14%);
 }
 
 .auth-recovery-status-icon {
@@ -394,9 +394,9 @@ async function handleSubmit(): Promise<void> {
 }
 
 .auth-recovery-status-warning .auth-recovery-status-icon {
-  border-color: color-mix(in srgb, #d97706 34%, transparent);
-  background: color-mix(in srgb, var(--atelier-paper-2) 76%, #d97706 24%);
-  color: #92400e;
+  border-color: color-mix(in srgb, var(--atelier-status-warning) 34%, transparent);
+  background: color-mix(in srgb, var(--atelier-paper-2) 76%, var(--atelier-status-warning) 24%);
+  color: var(--atelier-status-warning);
 }
 
 .auth-recovery-status-body {
@@ -419,9 +419,9 @@ async function handleSubmit(): Promise<void> {
 }
 
 .auth-recovery-error {
-  border: 1px solid color-mix(in srgb, #dc2626 35%, var(--atelier-ink) 12%);
-  background: color-mix(in srgb, var(--atelier-paper) 88%, #dc2626 12%);
-  color: color-mix(in srgb, #dc2626 70%, var(--atelier-ink));
+  border: 1px solid color-mix(in srgb, var(--atelier-status-danger) 35%, var(--atelier-ink) 12%);
+  background: color-mix(in srgb, var(--atelier-paper) 88%, var(--atelier-status-danger) 12%);
+  color: color-mix(in srgb, var(--atelier-status-danger) 70%, var(--atelier-ink));
   border-radius: 8px;
   padding: 0.85rem 0.95rem;
 }

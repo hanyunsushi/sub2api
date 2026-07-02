@@ -1,9 +1,15 @@
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 
 import AppHeader from "../AppHeader.vue";
 import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from "@/api/admin/externalSubscriptions";
+
+const appHeaderSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "../AppHeader.vue"), "utf8");
 
 const authState = vi.hoisted(() => ({
   nextUserId: 1,
@@ -269,6 +275,26 @@ function defaultExternalStatuses(
 }
 
 describe("AppHeader BuzzAI balance", () => {
+  it("keeps the top-right balance chip compact and without a provider divider", () => {
+    expect(appHeaderSource.indexOf('<AISearchBox v-if="user" />')).toBeLessThan(
+      appHeaderSource.indexOf('header-balance-chip-shell'),
+    );
+    expect(appHeaderSource.indexOf('header-balance-chip-shell')).toBeLessThan(
+      appHeaderSource.indexOf('<AnnouncementBell v-if="user" />'),
+    );
+    expect(appHeaderSource).toContain("width: 8.25rem;");
+    expect(appHeaderSource).toContain("min-width: 8.25rem;");
+    expect(appHeaderSource).toContain("max-width: 8.25rem;");
+    expect(appHeaderSource).toContain("font-size: 0.625rem;");
+    expect(appHeaderSource).not.toContain("width: 9.75rem;");
+    const providerChipBlock = appHeaderSource.slice(
+      appHeaderSource.indexOf(".balance-chip-buzz,"),
+      appHeaderSource.indexOf(".balance-chip-system:hover,"),
+    );
+    expect(providerChipBlock).toContain("border: 0;");
+    expect(providerChipBlock).not.toContain("border-left:");
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
@@ -292,6 +318,11 @@ describe("AppHeader BuzzAI balance", () => {
     return mount(AppHeader, {
       attachTo: document.body,
       global: {
+        config: {
+          globalProperties: {
+            $t: (key: string) => key,
+          },
+        },
         stubs: {
           Icon: { template: "<span />" },
           LocaleSwitcher: { template: "<div />" },
@@ -600,7 +631,7 @@ describe("AppHeader BuzzAI balance", () => {
     expect(dropdown.text()).toContain("请更新 Token");
   });
 
-  it("renders the active external subscription logo in the top-right balance chip", async () => {
+  it("keeps the top-right balance chip text-only without provider logos", async () => {
     const wrapper = mountHeader();
     await nextTick();
     await Promise.resolve();
@@ -611,8 +642,7 @@ describe("AppHeader BuzzAI balance", () => {
 
     const chip = wrapper.get('[data-testid="header-balance-chip"]');
     expect(chip.text()).toContain("Pixel");
-    const logo = chip.get('[data-testid="header-balance-provider-logo"]');
-    expect(logo.attributes("data-logo-url")).toBe("https://cdn.example.com/pixel.png");
+    expect(chip.find('[data-testid="header-balance-provider-logo"]').exists()).toBe(false);
   });
 
   it("renders external subscription logos in the balance dropdown rows", async () => {
@@ -630,6 +660,29 @@ describe("AppHeader BuzzAI balance", () => {
     expect(logos.some((logo) => logo.attributes("data-logo-url") === "https://cdn.example.com/pixel.png")).toBe(true);
   });
 
+  it("opens the user menu on hover and closes it after leaving", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+    await Promise.resolve();
+    await nextTick();
+
+    const trigger = wrapper.get('[data-testid="layout-app-header-button-toggle-dropdown"]');
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+
+    await trigger.trigger("mouseenter");
+    await nextTick();
+
+    expect(trigger.attributes("aria-expanded")).toBe("true");
+    expect(wrapper.text()).toContain("nav.profile");
+    expect(wrapper.text()).toContain("nav.logout");
+
+    await wrapper.get({ ref: "dropdownRef" }).trigger("mouseleave");
+    await vi.advanceTimersByTimeAsync(121);
+    await nextTick();
+
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+  });
+
   it("keeps the console route context visible in the header", async () => {
     const wrapper = mountHeader();
     await nextTick();
@@ -644,6 +697,22 @@ describe("AppHeader BuzzAI balance", () => {
     expect(contextStrip.text()).not.toContain("$87.66");
     expect(contextStrip.text()).not.toContain("SYS");
     expect(contextStrip.text()).not.toContain("Buzz");
+  });
+
+  it("keeps the mobile sidebar toggle borderless in the Anthropic header", async () => {
+    const wrapper = mountHeader();
+    await nextTick();
+
+    const toggle = wrapper.get('[data-testid="layout-app-header-button-toggle-mobile-sidebar"]');
+    expect(toggle.classes()).toContain("app-header-menu-toggle");
+    expect(appHeaderSource).toContain(".app-header-menu-toggle {");
+    const menuToggleBlock = appHeaderSource.slice(
+      appHeaderSource.indexOf(".app-header-menu-toggle {"),
+      appHeaderSource.indexOf(".user-menu-trigger:hover")
+    );
+    expect(menuToggleBlock).toContain("border-color: transparent !important;");
+    expect(menuToggleBlock).toContain("background: transparent !important;");
+    expect(menuToggleBlock).toContain("box-shadow: none !important;");
   });
 
   it("uses the shared display-status API across header remounts", async () => {

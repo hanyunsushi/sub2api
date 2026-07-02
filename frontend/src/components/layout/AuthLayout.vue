@@ -7,7 +7,7 @@
         <!-- Custom Logo or Default Logo -->
         <template v-if="settingsLoaded">
           <div
-            class="auth-logo mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-white/70 shadow-glow ring-1 ring-primary-200/70 dark:bg-dark-800/70 dark:ring-primary-800/50"
+            class="auth-logo mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-[var(--anthropic-page)] shadow-none ring-1 ring-[var(--atelier-line)] dark:bg-[var(--anthropic-section)] dark:ring-[var(--atelier-line)]"
           >
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Card Container -->
-      <div class="paper-card rounded-lg p-8 shadow-card">
+      <div class="paper-card rounded-lg p-8 shadow-none">
         <slot />
       </div>
 
@@ -59,13 +59,13 @@ onMounted(() => {
 
 <style scoped>
 .text-gradient {
-  @apply bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent;
+  @apply bg-none bg-clip-text text-transparent;
 }
 
 .auth-logo {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-paper-2);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.42);
+  box-shadow: none;
 }
 
 .auth-subtitle,

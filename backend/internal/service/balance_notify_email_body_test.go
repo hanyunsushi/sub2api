@@ -3,7 +3,6 @@
 package service
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -126,22 +125,27 @@ func TestBuildQuotaAlertEmailBody_RemainingClampedAtZero(t *testing.T) {
 	require.Contains(t, body, "$0.00")
 }
 
-// ---------- sanity checks on the CSS `%%` escape ----------
+// ---------- Anthropic shell visual contract ----------
 
-func TestBuildBalanceLowEmailBody_NoCSSFormatError(t *testing.T) {
+func TestBuildBalanceLowEmailBody_UsesAnthropicEmailShell(t *testing.T) {
 	s := &BalanceNotifyService{}
 	body := s.buildBalanceLowEmailBody("u", 1.0, 5.0, "Site", "")
-	// CSS `linear-gradient(135deg, #f59e0b 0%, #d97706 100%)` should appear with
-	// literal percent signs (from the %% escape in the template).
-	require.True(t,
-		strings.Contains(body, "0%") && strings.Contains(body, "100%"),
-		"CSS gradient percentages not rendered; got: %s", body)
+	require.Contains(t, body, "background: #faf9f5")
+	require.Contains(t, body, "background: #f0eee6")
+	require.Contains(t, body, "email-warning")
+	require.NotContains(t, body, "linear-gradient")
+	require.NotContains(t, body, "#f59e0b")
+	require.NotContains(t, body, "#d97706")
 }
 
-func TestBuildQuotaAlertEmailBody_NoCSSFormatError(t *testing.T) {
+func TestBuildQuotaAlertEmailBody_UsesAnthropicEmailShell(t *testing.T) {
 	s := &BalanceNotifyService{}
 	body := s.buildQuotaAlertEmailBody(1, "n", "p", "d", 0, 0, 0, "$0.00", "Site")
-	require.True(t,
-		strings.Contains(body, "0%") && strings.Contains(body, "100%"),
-		"CSS gradient percentages not rendered; got: %s", body)
+	require.Contains(t, body, "background: #faf9f5")
+	require.Contains(t, body, "background: #f0eee6")
+	require.Contains(t, body, "email-danger")
+	require.Contains(t, body, "email-table")
+	require.NotContains(t, body, "linear-gradient")
+	require.NotContains(t, body, "#ef4444")
+	require.NotContains(t, body, "#dc2626")
 }

@@ -22,14 +22,14 @@
             </div>
           </div>
 
-          <div class="global-pricing-filter-card">
-            <div class="global-pricing-filter-shell">
+          <div class="global-pricing-filter-card table-page-filter-section">
+            <div class="global-pricing-filter-shell table-filter-shell">
               <div class="global-pricing-filter-left table-filter-left flex flex-1 flex-wrap items-center gap-3">
                 <div class="relative w-full sm:w-80">
                   <Icon
                     name="search"
                     size="md"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   />
                   <input
                     v-model="searchQuery"
@@ -40,25 +40,25 @@
                   />
                 </div>
 
-                <select v-model="providerFilter" class="input w-full sm:w-44" data-testid="global-pricing-filter-provider">
-                  <option value="">{{ t('globalPricing.filters.allProviders') }}</option>
-                  <option v-for="provider in providerOptions" :key="provider" :value="provider">
-                    {{ provider }}
-                  </option>
-                </select>
+                <Select
+                  v-model="providerFilter"
+                  class="w-full sm:w-44"
+                  :options="providerFilterOptions"
+                  data-testid="global-pricing-filter-provider"
+                />
 
-                <select v-model="modeFilter" class="input w-full sm:w-40" data-testid="global-pricing-filter-mode">
-                  <option value="">{{ t('globalPricing.filters.allModes') }}</option>
-                  <option v-for="mode in modeOptions" :key="mode" :value="mode">
-                    {{ mode }}
-                  </option>
-                </select>
+                <Select
+                  v-model="modeFilter"
+                  class="w-full sm:w-40"
+                  :options="modeFilterOptions"
+                  data-testid="global-pricing-filter-mode"
+                />
 
-                <label class="inline-flex h-10 items-center gap-2 rounded-lg border border-accent-200 bg-white px-3 text-sm text-gray-600 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-300">
+                <label class="global-pricing-checkbox-filter inline-flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   <input
                     v-model="promptCachingOnly"
                     type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600"
+                    class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-0 focus-visible:ring-2 focus-visible:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)]"
                     data-testid="global-pricing-prompt-caching-only"
                   />
                   <span>{{ t('globalPricing.filters.promptCachingOnly') }}</span>
@@ -72,11 +72,11 @@
                 <button
                   @click="loadPricing"
                   :disabled="loading"
-                  class="btn btn-secondary"
+                  class="btn btn-primary anthropic-refresh-action-button global-pricing-refresh-button"
                   data-testid="global-pricing-refresh"
                   :title="t('common.refresh', 'Refresh')"
                 >
-                  <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+                  {{ t("common.refresh", "Refresh") }}
                 </button>
               </div>
             </div>
@@ -119,8 +119,8 @@
             <tbody v-else-if="filteredItems.length === 0" class="global-pricing-empty-body">
               <tr>
                 <td colspan="11" class="py-14 text-center">
-                  <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('globalPricing.empty') }}</p>
+                  <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-[var(--anthropic-muted)]" />
+                  <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('globalPricing.empty') }}</p>
                 </td>
               </tr>
             </tbody>
@@ -134,10 +134,10 @@
                 </td>
                 <td class="model-sticky-col" :data-card-label="t('globalPricing.columns.model')">
                   <div class="min-w-0">
-                    <p class="truncate font-medium text-gray-900 dark:text-white" :title="item.model">
+                    <p class="truncate font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="item.model">
                       {{ item.model }}
                     </p>
-                    <p v-if="item.long_context_input_token_threshold > 0" class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p v-if="item.long_context_input_token_threshold > 0" class="mt-1 text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                       {{ t('globalPricing.longContextThreshold', { count: formatInteger(item.long_context_input_token_threshold) }) }}
                     </p>
                   </div>
@@ -181,7 +181,7 @@
                     <span v-if="hasLongContextMultiplier(item)" class="capability-pill">
                       {{ t('globalPricing.capabilities.longContext') }}
                     </span>
-                    <span v-if="!hasCapabilities(item)" class="text-xs text-gray-400">-</span>
+                    <span v-if="!hasCapabilities(item)" class="text-xs text-[var(--anthropic-muted)]">-</span>
                   </div>
                 </td>
               </tr>
@@ -200,6 +200,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import Select from '@/components/common/Select.vue'
 import pricingAPI, { type GlobalPricingItem, type GlobalPricingResponse } from '@/api/pricing'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -227,6 +228,16 @@ const modeOptions = computed(() =>
     a.localeCompare(b),
   ),
 )
+
+const providerFilterOptions = computed(() => [
+  { value: '', label: t('globalPricing.filters.allProviders') },
+  ...providerOptions.value.map(provider => ({ value: provider, label: provider })),
+])
+
+const modeFilterOptions = computed(() => [
+  { value: '', label: t('globalPricing.filters.allModes') },
+  ...modeOptions.value.map(mode => ({ value: mode, label: mode })),
+])
 
 const filteredItems = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
@@ -314,20 +325,25 @@ onMounted(loadPricing)
 }
 
 .table-wrapper {
-  --material-card-surface: var(--atelier-paper-2);
-  --material-card-edge: var(--atelier-material-edge);
-  --material-card-shadow: rgba(17, 24, 39, 0.36);
+  --material-card-surface: var(--anthropic-page);
+  --material-table-header-surface: var(--anthropic-page);
+  --material-table-cell-surface: var(--anthropic-page);
+  --material-table-hover-surface: var(--anthropic-cookbook-hover);
+  --material-card-edge: var(--anthropic-cookbook-border);
+  --material-row-edge: var(--anthropic-border-soft);
   border: 1px solid var(--material-card-edge);
   border-radius: 8px;
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
 }
 
-.dark .summary-tile,
 .dark .table-wrapper {
-  --material-card-surface: var(--atelier-paper-2);
-  --material-card-edge: var(--atelier-material-edge);
-  --material-card-shadow: rgba(17, 24, 39, 0.36);
+  --material-card-surface: var(--anthropic-page);
+  --material-table-header-surface: var(--anthropic-page);
+  --material-table-cell-surface: var(--anthropic-page);
+  --material-table-hover-surface: var(--anthropic-cookbook-hover);
+  --material-card-edge: var(--anthropic-cookbook-border);
+  --material-row-edge: var(--anthropic-border-soft);
 }
 
 .dark .summary-tile {
@@ -337,7 +353,7 @@ onMounted(loadPricing)
 
 .dark .table-wrapper {
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
 }
 
 .summary-label {
@@ -385,13 +401,16 @@ onMounted(loadPricing)
 
 .global-pricing-table th {
   @apply sticky top-0 z-[1] whitespace-nowrap border-b border-accent-200 px-4 py-3 text-left text-xs font-medium uppercase tracking-wide dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
-  background: var(--atelier-paper-2);
-  color: var(--atelier-ink);
+  border-color: var(--material-row-edge);
+  background: var(--material-table-header-surface);
+  color: var(--anthropic-muted);
 }
 
 .global-pricing-table td {
   @apply whitespace-nowrap border-b border-accent-100 px-4 py-3 align-top dark:border-dark-800 dark:text-gray-300;
-  color: var(--atelier-ink);
+  border-color: var(--material-row-edge);
+  background: var(--material-table-cell-surface);
+  color: var(--anthropic-fg);
 }
 
 .pricing-row {
@@ -399,7 +418,13 @@ onMounted(loadPricing)
 }
 
 .pricing-row:hover {
-  background: var(--atelier-blue-soft);
+  background: var(--material-table-hover-surface);
+}
+
+.pricing-row:hover td,
+.pricing-row:hover .brand-sticky-col,
+.pricing-row:hover .model-sticky-col {
+  background: var(--material-table-hover-surface);
 }
 
 .brand-cell {
@@ -408,20 +433,20 @@ onMounted(loadPricing)
 
 .brand-sticky-col {
   @apply sticky left-0 z-[3] dark:bg-dark-800;
-  background: var(--material-card-surface);
+  background: var(--material-table-cell-surface);
 }
 
 .model-sticky-col {
   @apply sticky left-0 z-[2] dark:bg-dark-800 dark:shadow-[1px_0_0_rgba(55,65,81,0.9)];
   left: 3.5rem;
-  background: var(--material-card-surface);
-  box-shadow: 1px 0 0 var(--atelier-line);
+  background: var(--material-table-cell-surface);
+  box-shadow: 1px 0 0 var(--material-row-edge);
 }
 
 thead .brand-sticky-col,
 thead .model-sticky-col {
   @apply z-[3] dark:bg-dark-800/95;
-  background: var(--atelier-paper-2);
+  background: var(--material-table-header-surface);
 }
 
 .price-cell {

@@ -136,7 +136,7 @@ describe('channel monitor AI logo contract', () => {
     expect(customImageBlock).toContain('object-fit: cover !important;')
   })
 
-  it('keeps monitor timeline status bars on explicit health colors', () => {
+  it('keeps monitor timeline status bars on Anthropic 81k health colors', () => {
     expect(userMonitorTimelineSource).toContain('monitor-timeline-bars')
     expect(userMonitorTimelineSource).toContain('flex: 1 1 0;')
     expect(userMonitorTimelineSource).toContain("operational: 'monitor-timeline-bar--operational'")
@@ -144,17 +144,18 @@ describe('channel monitor AI logo contract', () => {
     expect(userMonitorTimelineSource).not.toContain("operational: 'bg-emerald-500'")
     expect(userMonitorTimelineSource).not.toContain("degraded: 'bg-amber-500'")
 
-    const operationalBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--operational'
+    const final81kLayer = styleSource.slice(
+      styleSource.lastIndexOf('Final EOF Anthropic 81k authoritative status/platform palette lock')
     )
-    expect(operationalBlock).toContain('background: #10a37f !important;')
-
-    const degradedBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-timeline-bar--degraded'
-    )
-    expect(degradedBlock).toContain('background: var(--atelier-butter) !important;')
+    expect(final81kLayer).toContain('.monitor-timeline-bar--operational')
+    expect(final81kLayer).toContain('background: #6ea100 !important;')
+    expect(final81kLayer).toContain('.monitor-timeline-bar--degraded')
+    expect(final81kLayer).toContain('background: #eda100 !important;')
+    expect(final81kLayer).toContain('.monitor-timeline-bar--failed')
+    expect(final81kLayer).toContain('.monitor-timeline-bar--error')
+    expect(final81kLayer).toContain('background: #b53333 !important;')
+    expect(final81kLayer).toContain('.monitor-timeline-bar--empty')
+    expect(final81kLayer).toContain('background: #e8e6dc !important;')
   })
 
   it('keeps the shared auto-refresh button readable in Cloudflare monitor toolbars', () => {

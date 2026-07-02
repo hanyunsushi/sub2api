@@ -143,3 +143,6 @@ output/
 
 # Frontend locator index — generated, read-only analysis output (regenerate locally)
 frontend/.frontend-index/
+frontend/.design-overlay/
+.playwright-cli/
+frontend/.playwright-cli/

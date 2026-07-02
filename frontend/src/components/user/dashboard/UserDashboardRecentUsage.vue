@@ -1,7 +1,7 @@
 <template>
   <div class="card">
-    <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-dark-700">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('dashboard.recentUsage') }}</h2>
+    <div class="flex items-center justify-between border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
+      <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('dashboard.recentUsage') }}</h2>
       <span class="badge badge-gray">{{ t('dashboard.last7Days') }}</span>
     </div>
     <div class="p-6">
@@ -12,26 +12,26 @@
         <EmptyState :title="t('dashboard.noUsageRecords')" :description="t('dashboard.startUsingApi')" />
       </div>
       <div v-else class="space-y-3">
-        <div v-for="log in data" :key="log.id" class="flex items-center justify-between rounded-xl bg-gray-50 p-4 transition-colors hover:bg-primary-50 dark:bg-dark-800/50 dark:hover:bg-dark-800">
+        <div v-for="log in data" :key="log.id" class="flex items-center justify-between rounded-xl bg-[var(--anthropic-section)] p-4 transition-colors hover:bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]">
           <div class="flex items-center gap-4">
             <div class="dashboard-stat-icon">
-              <Icon name="beaker" size="md" class="text-primary-600 dark:text-primary-400" />
+              <Icon name="beaker" size="md" class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" />
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ log.model }}</p>
-              <p class="text-xs text-gray-500 dark:text-dark-400">{{ formatDateTime(log.created_at) }}</p>
+              <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ log.model }}</p>
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(log.created_at) }}</p>
             </div>
           </div>
           <div class="text-right">
             <p class="text-sm font-semibold">
-              <span class="text-primary-500 dark:text-primary-300" :title="t('dashboard.actual')">${{ formatCost(log.actual_cost) }}</span>
-              <span class="font-normal text-gray-400 dark:text-gray-500" :title="t('dashboard.standard')"> / ${{ formatCost(log.total_cost) }}</span>
+              <span class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="t('dashboard.actual')">${{ formatCost(log.actual_cost) }}</span>
+              <span class="font-normal text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" :title="t('dashboard.standard')"> / ${{ formatCost(log.total_cost) }}</span>
             </p>
-            <p class="text-xs text-gray-500 dark:text-dark-400">{{ (log.input_tokens + log.output_tokens).toLocaleString() }} tokens</p>
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">{{ (log.input_tokens + log.output_tokens).toLocaleString() }} tokens</p>
           </div>
         </div>
 
-        <router-link to="/usage" class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+        <router-link to="/usage" class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]">
           {{ t('dashboard.viewAllUsage') }}
           <Icon name="arrowRight" size="sm" />
         </router-link>

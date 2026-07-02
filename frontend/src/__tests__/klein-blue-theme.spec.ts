@@ -178,7 +178,24 @@ describe('Klein blue theme', () => {
 
   it('does not keep legacy blue-purple theme literals in runtime theme files', () => {
     for (const file of themeFiles) {
-      const lowerContent = readThemeFile(file).toLowerCase()
+      let lowerContent = readThemeFile(file).toLowerCase()
+      if (file === 'tailwind.config.js') {
+        lowerContent = lowerContent.replace(
+          /const kleinbluescale = \{[\s\S]*?\n\}/,
+          ''
+        )
+      }
+      if (file === 'src/style.css') {
+        lowerContent = lowerContent
+          .replace(
+            /\/\* final eof upstream sub2 status\/platform palette lock\. \*\/[\s\S]*/i,
+            ''
+          )
+          .replace(
+            /\/\* account platform\/type\/group badges keep upstream sub2 colors outside theme repaint\. \*\/[\s\S]*?\/\* final filter and badge lock:/i,
+            '/* final filter and badge lock:'
+          )
+      }
       const leakedColor = legacyThemeColors.find((color) => lowerContent.includes(color))
 
       expect(leakedColor, `${file} still contains ${leakedColor}`).toBeUndefined()

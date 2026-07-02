@@ -9,17 +9,17 @@
       <!-- Account Info Header -->
       <div
         v-if="account"
-        class="flex items-center justify-between rounded-xl border border-primary-200 bg-gradient-to-r from-primary-50 to-primary-100 p-3 dark:border-primary-700/50 dark:from-primary-900/20 dark:to-primary-800/20"
+        class="anthropic-panel flex items-center justify-between"
       >
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--atelier-ink)]"
           >
-            <Icon name="chartBar" size="md" class="text-white" :stroke-width="2" />
+            <Icon name="chartBar" size="md" class="text-[var(--anthropic-page)]" :stroke-width="2" />
           </div>
           <div>
-            <div class="font-semibold text-gray-900 dark:text-gray-100">{{ account.name }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ account.name }}</div>
+            <div class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.last30DaysUsage') }}
             </div>
           </div>
@@ -29,7 +29,7 @@
             'rounded-full px-2.5 py-1 text-xs font-semibold',
             account.status === 'active'
               ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+              : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
           ]"
         >
           {{ account.status }}
@@ -46,15 +46,15 @@
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- 30-Day Total Cost -->
           <div
-            class="card border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 dark:border-emerald-800/30 dark:from-emerald-900/10 dark:to-dark-700"
+            class="anthropic-stat-card"
           >
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t('admin.accounts.stats.totalCost')
               }}</span>
-              <div class="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-success">
                 <svg
-                  class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                  class="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -68,12 +68,12 @@
                 </svg>
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="anthropic-stat-value text-2xl font-semibold">
               ${{ formatCost(stats.summary.total_cost) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.stats.accumulatedCost') }}
-              <span class="text-gray-400 dark:text-gray-500">
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 ({{ t('usage.userBilled') }}: ${{ formatCost(stats.summary.total_user_cost) }} ·
                 {{ t('admin.accounts.stats.standardCost') }}: ${{
                   formatCost(stats.summary.total_standard_cost)
@@ -84,51 +84,51 @@
 
           <!-- 30-Day Total Requests -->
           <div
-            class="card border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4 dark:border-blue-800/30 dark:from-blue-900/10 dark:to-dark-700"
+            class="anthropic-stat-card"
           >
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t('admin.accounts.stats.totalRequests')
               }}</span>
-              <div class="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
-                <Icon name="bolt" size="sm" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
+              <div class="anthropic-stat-icon anthropic-stat-icon-info">
+                <Icon name="bolt" size="sm" :stroke-width="2" />
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="anthropic-stat-value text-2xl font-semibold">
               {{ formatNumber(stats.summary.total_requests) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.stats.totalCalls') }}
             </p>
           </div>
 
           <!-- Daily Average Cost -->
           <div
-            class="card border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 dark:border-amber-800/30 dark:from-amber-900/10 dark:to-dark-700"
+            class="anthropic-stat-card"
           >
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t('admin.accounts.stats.avgDailyCost')
               }}</span>
-              <div class="rounded-lg bg-amber-100 p-1.5 dark:bg-amber-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-warning">
                 <Icon
                   name="calculator"
                   size="sm"
-                  class="text-amber-600 dark:text-amber-400"
+
                   :stroke-width="2"
                 />
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="anthropic-stat-value text-2xl font-semibold">
               ${{ formatCost(stats.summary.avg_daily_cost) }}
             </p>
-             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+             <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 t('admin.accounts.stats.basedOnActualDays', {
                   days: stats.summary.actual_days_used
                 })
               }}
-              <span class="text-gray-400 dark:text-gray-500">
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 ({{ t('usage.userBilled') }}: ${{ formatCost(stats.summary.avg_daily_user_cost) }})
               </span>
             </p>
@@ -136,15 +136,15 @@
 
           <!-- Daily Average Requests -->
           <div
-            class="card border-purple-200 bg-gradient-to-br from-purple-50 to-white p-4 dark:border-purple-800/30 dark:from-purple-900/10 dark:to-dark-700"
+            class="anthropic-stat-card"
           >
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t('admin.accounts.stats.avgDailyRequests')
               }}</span>
-              <div class="rounded-lg bg-purple-100 p-1.5 dark:bg-purple-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-primary">
                 <svg
-                  class="h-4 w-4 text-purple-600 dark:text-purple-400"
+                  class="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -158,10 +158,10 @@
                 </svg>
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="anthropic-stat-value text-2xl font-semibold">
               {{ formatNumber(Math.round(stats.summary.avg_daily_requests)) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.stats.avgDailyUsage') }}
             </p>
           </div>
@@ -170,11 +170,11 @@
         <!-- Row 2: Today, Highest Cost, Highest Requests -->
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <!-- Today Overview -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-cyan-100 p-1.5 dark:bg-cyan-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-info">
                 <svg
-                  class="h-4 w-4 text-cyan-600 dark:text-cyan-400"
+                  class="h-4 w-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -187,36 +187,36 @@
                   />
                 </svg>
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.todayOverview')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.accountBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.accountBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.today?.cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.userBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.userBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.today?.user_cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.requests')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatNumber(stats.summary.today?.requests || 0)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.tokens')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatTokens(stats.summary.today?.tokens || 0)
                 }}</span>
               </div>
@@ -224,46 +224,46 @@
           </div>
 
           <!-- Highest Cost Day -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-orange-100 p-1.5 dark:bg-orange-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-warning">
                 <Icon
                   name="fire"
                   size="sm"
-                  class="text-orange-600 dark:text-orange-400"
+
                   :stroke-width="2"
                 />
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.highestCostDay')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.date')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   stats.summary.highest_cost_day?.label || '-'
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.accountBilled') }}</span>
-                <span class="text-sm font-semibold text-orange-600 dark:text-orange-400"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.accountBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-warning)]"
                   >${{ formatCost(stats.summary.highest_cost_day?.cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.userBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.userBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.highest_cost_day?.user_cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.requests')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatNumber(stats.summary.highest_cost_day?.requests || 0)
                 }}</span>
               </div>
@@ -271,46 +271,46 @@
           </div>
 
           <!-- Highest Request Day -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-indigo-100 p-1.5 dark:bg-indigo-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-primary">
                 <Icon
                   name="trendingUp"
                   size="sm"
-                  class="text-indigo-600 dark:text-indigo-400"
+
                   :stroke-width="2"
                 />
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.highestRequestDay')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.date')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   stats.summary.highest_request_day?.label || '-'
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.requests')
                 }}</span>
-                <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatNumber(stats.summary.highest_request_day?.requests || 0)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.accountBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.accountBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.highest_request_day?.cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.userBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.userBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.highest_request_day?.user_cost || 0) }}</span
                 >
               </div>
@@ -321,29 +321,29 @@
         <!-- Row 3: Token Stats -->
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <!-- Accumulated Tokens -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-teal-100 p-1.5 dark:bg-teal-900/30">
-                <Icon name="cube" size="sm" class="text-teal-600 dark:text-teal-400" :stroke-width="2" />
+              <div class="anthropic-stat-icon anthropic-stat-icon-info">
+                <Icon name="cube" size="sm" :stroke-width="2" />
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.accumulatedTokens')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.totalTokens')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatTokens(stats.summary.total_tokens)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.dailyAvgTokens')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatTokens(Math.round(stats.summary.avg_daily_tokens))
                 }}</span>
               </div>
@@ -351,29 +351,29 @@
           </div>
 
           <!-- Performance -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-rose-100 p-1.5 dark:bg-rose-900/30">
-                <Icon name="bolt" size="sm" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
+              <div class="anthropic-stat-icon anthropic-stat-icon-warning">
+                <Icon name="bolt" size="sm" :stroke-width="2" />
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.performance')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.avgResponseTime')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatDuration(stats.summary.avg_duration_ms)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.daysActive')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >{{ stats.summary.actual_days_used }} / {{ stats.summary.days }}</span
                 >
               </div>
@@ -381,46 +381,46 @@
           </div>
 
           <!-- Recent Activity -->
-          <div class="card p-4">
+          <div class="anthropic-stat-card">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-lime-100 p-1.5 dark:bg-lime-900/30">
+              <div class="anthropic-stat-icon anthropic-stat-icon-success">
                 <Icon
                   name="clipboard"
                   size="sm"
-                  class="text-lime-600 dark:text-lime-400"
+
                   :stroke-width="2"
                 />
               </div>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+              <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.stats.recentActivity')
               }}</span>
             </div>
             <div class="space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.todayRequests')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatNumber(stats.summary.today?.requests || 0)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t('admin.accounts.stats.todayTokens')
                 }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{
                   formatTokens(stats.summary.today?.tokens || 0)
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.accountBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.accountBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.today?.cost || 0) }}</span
                 >
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.userBilled') }}</span>
-                <span class="text-sm font-semibold text-gray-900 dark:text-white"
+                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('usage.userBilled') }}</span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]"
                   >${{ formatCost(stats.summary.today?.user_cost || 0) }}</span
                 >
               </div>
@@ -429,15 +429,15 @@
         </div>
 
         <!-- Usage Trend Chart -->
-        <div class="card p-4">
-          <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
+        <div class="anthropic-stat-card">
+          <h3 class="mb-4 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('admin.accounts.stats.usageTrend') }}
           </h3>
           <div class="h-64">
             <Line v-if="trendChartData" :data="trendChartData" :options="lineChartOptions" />
             <div
               v-else
-              class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+              class="flex h-full items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
             >
               {{ t('admin.dashboard.noDataAvailable') }}
             </div>
@@ -463,7 +463,7 @@
       <!-- No Data State -->
       <div
         v-else-if="!loading"
-        class="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400"
+        class="flex flex-col items-center justify-center py-12 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
       >
         <Icon name="chartBar" size="xl" class="mb-4 h-12 w-12" :stroke-width="1.5" />
         <p class="text-sm">{{ t('admin.accounts.stats.noData') }}</p>
@@ -474,7 +474,7 @@
       <div class="flex justify-end">
         <button data-testid="account-account-stats-button-handle-close"
           @click="handleClose"
-          class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500"
+          class="btn btn-secondary"
         >
           {{ t('common.close') }}
         </button>
@@ -505,6 +505,7 @@ import EndpointDistributionChart from '@/components/charts/EndpointDistributionC
 import Icon from '@/components/icons/Icon.vue'
 import { adminAPI } from '@/api/admin'
 import type { Account, AccountUsageStatsResponse } from '@/types'
+import { accountStatsChartColors, withChartAlpha } from '@/utils/chartColors'
 
 ChartJS.register(
   CategoryScale,
@@ -552,8 +553,8 @@ const trendChartData = computed(() => {
       {
         label: t('usage.accountBilled') + ' (USD)',
         data: stats.value.history.map((h) => h.actual_cost),
-        borderColor: '#002FA7',
-        backgroundColor: 'rgba(0, 47, 167, 0.1)',
+        borderColor: accountStatsChartColors.accountBilled,
+        backgroundColor: withChartAlpha(accountStatsChartColors.accountBilled, 0.1),
         fill: true,
         tension: 0.3,
         yAxisID: 'y'
@@ -561,8 +562,8 @@ const trendChartData = computed(() => {
       {
         label: t('usage.userBilled') + ' (USD)',
         data: stats.value.history.map((h) => h.user_cost),
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+        borderColor: accountStatsChartColors.userBilled,
+        backgroundColor: withChartAlpha(accountStatsChartColors.userBilled, 0.08),
         fill: false,
         tension: 0.3,
         borderDash: [5, 5],
@@ -571,8 +572,8 @@ const trendChartData = computed(() => {
       {
         label: t('admin.accounts.stats.requests'),
         data: stats.value.history.map((h) => h.requests),
-        borderColor: '#f97316',
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        borderColor: accountStatsChartColors.requests,
+        backgroundColor: withChartAlpha(accountStatsChartColors.requests, 0.1),
         fill: false,
         tension: 0.3,
         yAxisID: 'y1'
@@ -637,7 +638,7 @@ const lineChartOptions = computed(() => ({
         color: chartColors.value.grid
       },
       ticks: {
-        color: '#002FA7',
+        color: accountStatsChartColors.accountBilled,
         font: {
           size: 10
         },
@@ -646,7 +647,7 @@ const lineChartOptions = computed(() => ({
       title: {
         display: true,
         text: t('usage.accountBilled') + ' (USD)',
-        color: '#002FA7',
+        color: accountStatsChartColors.accountBilled,
         font: {
           size: 11
         }
@@ -660,7 +661,7 @@ const lineChartOptions = computed(() => ({
         drawOnChartArea: false
       },
       ticks: {
-        color: '#f97316',
+        color: accountStatsChartColors.requests,
         font: {
           size: 10
         },
@@ -669,7 +670,7 @@ const lineChartOptions = computed(() => ({
       title: {
         display: true,
         text: t('admin.accounts.stats.requests'),
-        color: '#f97316',
+        color: accountStatsChartColors.requests,
         font: {
           size: 11
         }

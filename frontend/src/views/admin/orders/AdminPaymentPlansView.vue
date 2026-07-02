@@ -2,9 +2,9 @@
   <AppLayout>
     <div class="space-y-4">
       <!-- Actions -->
-      <div class="flex items-center justify-end gap-2">
-        <button data-testid="admin-orders-admin-payment-plans-button-load-plans" @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary" :title="t('common.refresh')">
-          <Icon name="refresh" size="md" :class="plansLoading ? 'animate-spin' : ''" />
+      <div class="payment-plans-filter-bar table-page-filter-section flex items-center justify-end gap-3">
+        <button data-testid="admin-orders-admin-payment-plans-button-load-plans" @click="loadPlans" :disabled="plansLoading" class="btn btn-primary anthropic-refresh-action-button payment-plans-refresh-button" :title="t('common.refresh')">
+          {{ t("common.refresh") }}
         </button>
         <button data-testid="admin-orders-admin-payment-plans-button-open-plan-edit-null" @click="openPlanEdit(null)" class="btn btn-primary">{{ t('payment.admin.createPlan') }}</button>
       </div>
@@ -16,7 +16,7 @@
         </template>
         <template #cell-group_id="{ value }">
           <span v-if="isGroupMissing(value)" class="text-sm">
-            <span class="text-gray-400">#{{ value }}</span>
+            <span class="text-[var(--anthropic-muted)]">#{{ value }}</span>
             <span class="ml-1 badge badge-danger">{{ t('payment.admin.groupMissing') }}</span>
           </span>
           <GroupBadge
@@ -25,12 +25,12 @@
             :platform="getGroup(value)!.platform"
             :rate-multiplier="getGroup(value)!.rate_multiplier"
           />
-          <span v-else class="text-sm text-gray-400">-</span>
+          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
         </template>
         <template #cell-price="{ value, row }">
           <div class="text-sm">
-            <span class="font-medium text-gray-900 dark:text-white">${{ (value ?? 0).toFixed(2) }}</span>
-            <span v-if="row.original_price" class="ml-1 text-xs text-gray-400 line-through">${{ row.original_price.toFixed(2) }}</span>
+            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ (value ?? 0).toFixed(2) }}</span>
+            <span v-if="row.original_price" class="ml-1 text-xs text-[var(--anthropic-muted)] line-through">${{ row.original_price.toFixed(2) }}</span>
           </div>
         </template>
         <template #cell-validity_days="{ value, row }">
@@ -40,24 +40,24 @@
           <button data-testid="admin-orders-admin-payment-plans-button-toggle-for-sale-row"
             type="button"
             :class="[
-              'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              value ? 'bg-primary-500' : 'bg-gray-300 dark:bg-dark-600'
+              'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2',
+              value ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
             ]"
             @click="toggleForSale(row)"
           >
             <span :class="[
-              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
               value ? 'translate-x-4' : 'translate-x-0'
             ]" />
           </button>
         </template>
         <template #cell-actions="{ row }">
           <div class="flex items-center gap-2">
-            <button data-testid="admin-orders-admin-payment-plans-button-open-plan-edit-row" @click="openPlanEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400">
+            <button data-testid="admin-orders-admin-payment-plans-button-open-plan-edit-row" @click="openPlanEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]">
               <Icon name="edit" size="sm" />
               <span class="text-xs">{{ t('common.edit') }}</span>
             </button>
-            <button data-testid="admin-orders-admin-payment-plans-button-confirm-delete-plan-row" @click="confirmDeletePlan(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+            <button data-testid="admin-orders-admin-payment-plans-button-confirm-delete-plan-row" @click="confirmDeletePlan(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
               <Icon name="trash" size="sm" />
               <span class="text-xs">{{ t('common.delete') }}</span>
             </button>
@@ -114,7 +114,7 @@ function isGroupMissing(id: number): boolean {
 
 function getPlanNameClass(groupId: number): string {
   const group = getGroup(groupId)
-  return group ? platformTextClass(group.platform) : 'text-gray-900 dark:text-white'
+  return group ? platformTextClass(group.platform) : 'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
 }
 
 

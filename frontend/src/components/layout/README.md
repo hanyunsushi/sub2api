@@ -114,7 +114,7 @@ Simple centered layout for authentication pages (login/register).
     <template #footer>
       <p>
         Don't have an account?
-        <router-link to="/register" class="text-indigo-600 hover:underline"> Sign up </router-link>
+        <router-link to="/register" class="underline underline-offset-[0.22em]"> Sign up </router-link>
       </p>
     </template>
   </AuthLayout>
@@ -132,7 +132,7 @@ function handleLogin() {
 **Features:**
 
 - Centered card container
-- Gradient background
+- Warm Anthropic paper background
 - Logo/brand at top
 - Main content slot
 - Optional footer slot for links
@@ -176,7 +176,7 @@ Make sure these stores are properly initialized in your app.
 
 ## Styling
 
-All components use TailwindCSS utility classes. Make sure your `tailwind.config.js` includes the component paths:
+All components use TailwindCSS utility classes plus the shared Anthropic component contract from `src/style.css`. Use Slate primary actions, paper surfaces, underline header/filter hover, and blue only for keyboard focus or checked switches. Make sure your `tailwind.config.js` includes the component paths:
 
 ```js
 module.exports = {

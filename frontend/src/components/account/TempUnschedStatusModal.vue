@@ -7,7 +7,7 @@
   >
     <div class="space-y-4">
       <div v-if="loading" class="flex items-center justify-center py-8">
-        <svg class="h-6 w-6 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 animate-spin text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24">
           <circle
             class="opacity-25"
             cx="12"
@@ -24,7 +24,7 @@
         </svg>
       </div>
 
-      <div v-else-if="!isActive" class="rounded-lg border border-gray-200 p-4 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400">
+      <div v-else-if="!isActive" class="rounded-lg border border-[var(--anthropic-border)] p-4 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
         {{ t('admin.accounts.tempUnschedulable.notActive') }}
       </div>
 
@@ -33,71 +33,71 @@
           {{ t('admin.accounts.recoverStateHint') }}
         </div>
 
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-600">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('admin.accounts.tempUnschedulable.accountName') }}
           </p>
-          <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+          <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ account?.name || '-' }}
           </p>
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.triggeredAt') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ triggeredAtText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.until') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ untilText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.remaining') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ remainingText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.errorCode') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ state?.status_code || '-' }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.matchedKeyword') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ state?.matched_keyword || '-' }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t('admin.accounts.tempUnschedulable.ruleOrder') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
               {{ ruleIndexDisplay }}
             </p>
           </div>
         </div>
 
-        <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('admin.accounts.tempUnschedulable.errorMessage') }}
           </p>
-          <div class="mt-2 rounded bg-gray-50 p-2 text-xs text-gray-700 dark:bg-dark-700 dark:text-gray-300">
+          <div class="mt-2 rounded bg-[var(--anthropic-section)] p-2 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
             {{ state?.error_message || '-' }}
           </div>
         </div>

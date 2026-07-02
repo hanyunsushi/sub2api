@@ -4,20 +4,21 @@
       <UsageStatsCards :stats="usageStats" />
       <!-- Charts Section -->
       <div class="space-y-4">
-        <div class="card p-4 usage-time-filter-card">
-          <div class="usage-time-filter-shell flex flex-wrap items-center gap-4">
-            <div class="usage-time-filter-range flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.timeRange') }}:</span>
+        <div class="card p-4 usage-time-filter-card table-page-filter-section">
+          <div class="table-filter-shell usage-time-filter-shell flex flex-wrap items-center gap-3">
+            <div class="usage-time-filter-range flex items-center gap-1.5">
+              <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.dashboard.timeRange') }}:</span>
               <DateRangePicker
+                variant="text-control"
                 v-model:start-date="startDate"
                 v-model:end-date="endDate"
                 @change="onDateRangeChange"
               />
             </div>
-            <div class="usage-time-filter-granularity ml-auto flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.granularity') }}:</span>
+            <div class="usage-time-filter-granularity flex items-center gap-1.5">
+              <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.dashboard.granularity') }}:</span>
               <div class="w-28">
-                <Select v-model="granularity" :options="granularityOptions" @change="loadChartData" />
+                <Select variant="text-control" v-model="granularity" :options="granularityOptions" @change="loadChartData" />
               </div>
             </div>
           </div>
@@ -64,76 +65,118 @@
           <TokenUsageTrend :trend-data="trendData" :loading="chartsLoading" />
         </div>
       </div>
-      <div class="usage-record-filter-wrap">
-        <UsageFilters v-model="filters" :start-date="startDate" :end-date="endDate" :exporting="exporting" :model-options="modelNameOptions" @change="applyFilters" @refresh="refreshData" @reset="resetFilters" @cleanup="openCleanupDialog" @export="exportToExcel">
+      <UsageFilters v-model="filters" :start-date="startDate" :end-date="endDate" :exporting="exporting" :model-options="modelNameOptions" @change="applyFilters" @refresh="refreshData" @reset="resetFilters" @cleanup="openCleanupDialog" @export="exportToExcel">
         <template #after-reset>
-          <div class="relative" ref="columnDropdownRef">
+          <div
+            class="relative"
+            ref="columnDropdownRef"
+            @pointerenter="openColumnDropdown"
+            @mouseenter="openColumnDropdown"
+            @mouseleave="scheduleColumnDropdownClose"
+          >
             <button data-testid="admin-usage-button-show-column-dropdown-show-column-dropdown"
               ref="columnDropdownButtonRef"
-              @click="showColumnDropdown = !showColumnDropdown"
-              class="btn btn-secondary px-2 md:px-3"
+              @click="openColumnDropdown"
+              class="filter-menu-button"
+              :class="{ 'filter-menu-button-open': showColumnDropdown }"
               :title="t('admin.users.columnSettings')"
             >
-              <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
-              </svg>
-              <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
+              <span>{{ t('admin.users.columnSettings') }}</span>
             </button>
             <FloatingDropdown
               :show="showColumnDropdown"
               :trigger-el="columnDropdownButtonRef"
               placement="bottom-end"
-              panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+              panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              @mouseenter="cancelColumnDropdownClose"
+              @mouseleave="scheduleColumnDropdownClose"
+              @close="showColumnDropdown = false"
             >
               <button data-testid="admin-usage-button-toggle-column-col-key"
                 v-for="col in toggleableColumns"
                 :key="col.key"
                 @click="toggleColumn(col.key)"
-                class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
               >
                 <span>{{ col.label }}</span>
                 <Icon
                   v-if="isColumnVisible(col.key)"
                   name="check"
                   size="sm"
-                  class="text-primary-500"
+                  class="text-[var(--anthropic-fg)]"
                   :stroke-width="2"
                 />
               </button>
             </FloatingDropdown>
           </div>
         </template>
-        </UsageFilters>
-      </div>
-      <div class="mb-4 flex gap-2 border-b border-gray-200 dark:border-dark-700">
-        <button data-testid="admin-usage-button-active-tab-usage" class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
-          {{ t('usage.tabs.usage') }}
-        </button>
-        <button data-testid="admin-usage-button-switch-to-errors-tab" class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrorsTab">
-          {{ t('usage.tabs.errors') }}
-        </button>
-      </div>
-      <div v-show="activeTab === 'usage'">
-        <UsageTable
-          :data="usageLogs"
-          :loading="loading"
-          :columns="visibleColumns"
-          :server-side-sort="true"
-          :default-sort-key="'created_at'"
-          :default-sort-order="'desc'"
-          @sort="handleSort"
-          @userClick="handleUserClick"
-        />
-        <Pagination v-if="pagination.total > 0" :page="pagination.page" :total="pagination.total" :page-size="pagination.page_size" @update:page="handlePageChange" @update:pageSize="handlePageSizeChange" />
-      </div>
-      <div v-show="activeTab === 'errors'">
-        <OpsErrorLogTable
-          :rows="errRows" :total="errTotal" :loading="errLoading"
-          :page="errPage" :page-size="errPageSize"
-          @openErrorDetail="openError"
-          @update:page="onErrPage"
-          @update:pageSize="onErrPageSize" />
-        <OpsErrorDetailModal v-model:show="showErrorModal" :error-id="selectedErrorId" :error-type="'request'" />
+      </UsageFilters>
+      <div class="route-shell usage-detail-route-shell">
+        <div
+          ref="usageTabsRef"
+          class="route-tabs usage-detail-route-tabs"
+          data-route-tabs="admin-usage-detail"
+          role="tablist"
+          @mouseleave="moveUsageIndicatorToSelected"
+          @focusout="handleUsageTabsFocusout"
+        >
+          <button data-testid="admin-usage-button-active-tab-usage"
+            type="button"
+            role="tab"
+            data-route-id="usage"
+            :aria-selected="activeTab === 'usage'"
+            @mouseenter="moveUsageIndicatorFromEvent"
+            @focus="moveUsageIndicatorFromEvent"
+            @click="setUsageTab('usage')"
+          >
+            {{ t('usage.tabs.usage') }}
+          </button>
+          <button data-testid="admin-usage-button-switch-to-errors-tab"
+            type="button"
+            role="tab"
+            data-route-id="errors"
+            :aria-selected="activeTab === 'errors'"
+            @mouseenter="moveUsageIndicatorFromEvent"
+            @focus="moveUsageIndicatorFromEvent"
+            @click="switchToErrorsTab"
+          >
+            {{ t('usage.tabs.errors') }}
+          </button>
+        </div>
+        <div class="route-panels usage-detail-route-panels">
+          <div
+            class="route-panel usage-detail-route-panel"
+            data-route-group="admin-usage-detail"
+            data-route-panel="usage"
+            :class="{ active: activeTab === 'usage' }"
+          >
+            <UsageTable
+              :data="usageLogs"
+              :loading="loading"
+              :columns="visibleColumns"
+              :server-side-sort="true"
+              :default-sort-key="'created_at'"
+              :default-sort-order="'desc'"
+              @sort="handleSort"
+              @userClick="handleUserClick"
+            />
+            <Pagination v-if="pagination.total > 0" :page="pagination.page" :total="pagination.total" :page-size="pagination.page_size" @update:page="handlePageChange" @update:pageSize="handlePageSizeChange" />
+          </div>
+          <div
+            class="route-panel usage-detail-route-panel"
+            data-route-group="admin-usage-detail"
+            data-route-panel="errors"
+            :class="{ active: activeTab === 'errors' }"
+          >
+            <OpsErrorLogTable
+              :rows="errRows" :total="errTotal" :loading="errLoading"
+              :page="errPage" :page-size="errPageSize"
+              @openErrorDetail="openError"
+              @update:page="onErrPage"
+              @update:pageSize="onErrPageSize" />
+            <OpsErrorDetailModal v-model:show="showErrorModal" :error-id="selectedErrorId" :error-type="'request'" />
+          </div>
+        </div>
       </div>
     </div>
   </AppLayout>
@@ -155,7 +198,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { saveAs } from 'file-saver'
 import { useRoute } from 'vue-router'
@@ -631,6 +674,7 @@ const loadSavedColumns = () => {
 
 // Error tab state
 const activeTab = ref<'usage' | 'errors'>('usage')
+const usageTabsRef = ref<HTMLElement | null>(null)
 const errRows = ref<OpsErrorLog[]>([])
 const errLoading = ref(false)
 const errPage = ref(1)
@@ -671,11 +715,70 @@ const loadAdminErrors = async () => {
 const onErrPage = (p: number) => { errPage.value = p; loadAdminErrors() }
 const onErrPageSize = (s: number) => { errPageSize.value = s; errPage.value = 1; loadAdminErrors() }
 const openError = (id: number) => { selectedErrorId.value = id; showErrorModal.value = true }
-const switchToErrorsTab = () => { activeTab.value = 'errors'; if (errRows.value.length === 0) loadAdminErrors() }
+const setUsageTab = (tab: 'usage' | 'errors') => {
+  activeTab.value = tab
+  void nextTick(moveUsageIndicatorToSelected)
+}
+const switchToErrorsTab = () => {
+  setUsageTab('errors')
+  if (errRows.value.length === 0) loadAdminErrors()
+}
+
+function moveUsageIndicator(button: HTMLElement | null) {
+  const tabs = usageTabsRef.value
+  if (!tabs || !button) return
+
+  const tabsRect = tabs.getBoundingClientRect()
+  const buttonRect = button.getBoundingClientRect()
+  tabs.style.setProperty('--route-indicator-x', `${buttonRect.left - tabsRect.left}px`)
+  tabs.style.setProperty('--route-indicator-w', `${buttonRect.width}px`)
+}
+
+function selectedUsageTabButton() {
+  return usageTabsRef.value?.querySelector<HTMLElement>(
+    `button[data-route-id="${activeTab.value}"]`
+  ) ?? null
+}
+
+function moveUsageIndicatorToSelected() {
+  moveUsageIndicator(selectedUsageTabButton())
+}
+
+function moveUsageIndicatorFromEvent(event: Event) {
+  moveUsageIndicator(event.currentTarget as HTMLElement | null)
+}
+
+function handleUsageTabsFocusout(event: FocusEvent) {
+  const nextTarget = event.relatedTarget
+  if (!(nextTarget instanceof Node) || !usageTabsRef.value?.contains(nextTarget)) {
+    moveUsageIndicatorToSelected()
+  }
+}
 
 const showColumnDropdown = ref(false)
 const columnDropdownRef = ref<HTMLElement | null>(null)
 const columnDropdownButtonRef = ref<HTMLElement | null>(null)
+let columnDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
+
+const cancelColumnDropdownClose = () => {
+  if (columnDropdownCloseTimer) {
+    clearTimeout(columnDropdownCloseTimer)
+    columnDropdownCloseTimer = null
+  }
+}
+
+const openColumnDropdown = () => {
+  cancelColumnDropdownClose()
+  showColumnDropdown.value = true
+}
+
+const scheduleColumnDropdownClose = () => {
+  cancelColumnDropdownClose()
+  columnDropdownCloseTimer = setTimeout(() => {
+    showColumnDropdown.value = false
+    columnDropdownCloseTimer = null
+  }, 160)
+}
 
 const handleColumnClickOutside = (event: MouseEvent) => {
   if (columnDropdownRef.value && !columnDropdownRef.value.contains(event.target as HTMLElement)) {
@@ -692,13 +795,106 @@ onMounted(() => {
     void loadChartData()
   }, 120)
   loadSavedColumns()
+  void nextTick(moveUsageIndicatorToSelected)
+  window.addEventListener('resize', moveUsageIndicatorToSelected)
   document.addEventListener('click', handleColumnClickOutside)
 })
-onUnmounted(() => { abortController?.abort(); exportAbortController?.abort(); document.removeEventListener('click', handleColumnClickOutside) })
+onUnmounted(() => {
+  abortController?.abort()
+  exportAbortController?.abort()
+  window.removeEventListener('resize', moveUsageIndicatorToSelected)
+  document.removeEventListener('click', handleColumnClickOutside)
+})
 
 watch(modelDistributionSource, (source) => {
   void loadModelStats(source)
 })
 
+watch(activeTab, () => {
+  void nextTick(moveUsageIndicatorToSelected)
+})
+
 defineExpose({ requestedModelStats, refreshData })
 </script>
+
+<style scoped>
+.usage-detail-route-shell {
+  gap: 1rem;
+}
+
+.usage-detail-route-tabs {
+  --route-indicator-x: 0.25rem;
+  --route-indicator-w: 0px;
+  position: relative;
+  isolation: isolate;
+  margin-bottom: 0;
+  align-items: center;
+}
+
+.usage-detail-route-tabs::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0;
+  width: var(--route-indicator-w);
+  border-radius: 12px;
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+  transform: translateX(var(--route-indicator-x));
+  transition:
+    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  pointer-events: none;
+}
+
+.usage-detail-route-tabs button {
+  position: relative;
+  z-index: 1;
+  font-family: var(--atelier-font-sans);
+  font-size: var(--anthropic-control-font-size, 0.8125rem);
+  font-weight: var(--anthropic-control-font-weight, 500);
+  line-height: var(--anthropic-control-line-height, 1.25rem);
+  letter-spacing: 0;
+  text-decoration-line: none;
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.1s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.usage-detail-route-tabs button:hover,
+.usage-detail-route-tabs button:focus-visible,
+.usage-detail-route-tabs button[aria-selected="true"] {
+  color: var(--anthropic-fg);
+  background: transparent;
+  box-shadow: none;
+}
+
+.usage-detail-route-panels {
+  display: grid;
+}
+
+.usage-detail-route-panel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity 0.25s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    transform 0.25s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    visibility 0s 0.25s;
+}
+
+.usage-detail-route-panel.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+</style>
