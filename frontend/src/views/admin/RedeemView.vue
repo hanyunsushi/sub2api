@@ -1,8 +1,8 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout class="admin-redeem-atelier">
       <template #filters>
-        <div class="table-filter-shell flex flex-wrap items-center gap-3">
+        <div class="table-filter-shell redeem-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-64">
@@ -15,12 +15,14 @@
               />
             </div>
             <Select
+              variant="text-control"
               v-model="filters.type"
               :options="filterTypeOptions"
               class="w-36"
               @change="loadCodes"
             />
             <Select
+              variant="text-control"
               v-model="filters.status"
               :options="filterStatusOptions"
               class="w-36"
@@ -29,28 +31,27 @@
           </div>
 
           <!-- Right: Action buttons -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
+          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button data-testid="admin-redeem-button-load-codes"
               @click="loadCodes"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-primary anthropic-refresh-action-button redeem-refresh-button"
               :title="t('common.refresh')"
             >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              {{ t("common.refresh") }}
             </button>
-            <button data-testid="admin-redeem-button-handle-export-codes" @click="handleExportCodes" class="btn btn-secondary">
+            <button data-testid="admin-redeem-button-handle-export-codes" @click="handleExportCodes" class="filter-menu-button">
               {{ t('admin.redeem.exportCsv') }}
             </button>
             <button data-testid="batch-update-open"
               data-test="batch-update-open"
               @click="openBatchUpdateDialog"
               :disabled="selectedCount === 0 || batchUpdating"
-              class="btn btn-secondary"
+              class="filter-menu-button"
             >
-              <Icon name="edit" size="md" class="mr-2" />
               {{ t('admin.redeem.batchUpdate') }}
             </button>
-            <button data-testid="admin-redeem-button-show-generate-dialog-on" @click="showGenerateDialog = true" class="btn btn-primary">
+            <button data-testid="admin-redeem-button-show-generate-dialog-on" @click="showGenerateDialog = true" class="btn btn-primary redeem-generate-button">
               {{ t('admin.redeem.generateCodes') }}
             </button>
           </div>
@@ -71,7 +72,7 @@
             <input data-testid="select-all-codes"
               data-test="select-all-codes"
               type="checkbox"
-              class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 cursor-pointer rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
               :checked="allVisibleSelected"
               @click.stop
               @change="toggleSelectAllVisible($event)"
@@ -82,7 +83,7 @@
             <input data-testid="select-code"
               data-test="select-code"
               type="checkbox"
-              class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 cursor-pointer rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
               :checked="selectedCodeIds.has(row.id)"
               @click.stop
               @change="toggleSelectRow(row.id, $event)"
@@ -91,14 +92,14 @@
 
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
-              <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
+              <code class="font-mono text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ value }}</code>
               <button data-testid="admin-redeem-button-copy-to-clipboard-value"
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
                     ? 'text-green-500'
-                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                    : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
               >
@@ -124,11 +125,11 @@
           </template>
 
           <template #cell-value="{ value, row }">
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
+            <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
               <template v-if="row.type === 'balance'">${{ value.toFixed(2) }}</template>
               <template v-else-if="row.type === 'subscription'">
                 {{ row.validity_days || 30 }} {{ t('admin.redeem.days') }}
-                <span v-if="row.group" class="ml-1 text-xs text-gray-500 dark:text-gray-400"
+                <span v-if="row.group" class="ml-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >({{ row.group.name }})</span
                 >
               </template>
@@ -145,13 +146,13 @@
           </template>
 
           <template #cell-used_by="{ value, row }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ row.user?.email || (value ? t('admin.redeem.userPrefix', { id: value }) : '-') }}
             </span>
           </template>
 
           <template #cell-used_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">{{
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{
               value ? formatDateTime(value) : '-'
             }}</span>
           </template>
@@ -162,7 +163,7 @@
                 'text-sm',
                 row.status === 'expired'
                   ? 'text-red-600 dark:text-red-400'
-                  : 'text-gray-500 dark:text-dark-400'
+                  : 'text-[var(--anthropic-muted)] dark:text-dark-400'
               ]"
             >
               {{ value ? formatDateTime(value) : t('admin.redeem.neverExpires') }}
@@ -174,7 +175,7 @@
               <button data-testid="admin-redeem-button-handle-delete-row"
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -186,7 +187,7 @@
                 </svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
-              <span v-else class="text-gray-400 dark:text-dark-500">-</span>
+              <span v-else class="text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
             </div>
           </template>
         </DataTable>
@@ -195,15 +196,15 @@
       <template #pagination>
         <div
           v-if="selectedCount > 0"
-          class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary-50 p-3 dark:bg-primary-900/20"
+          class="admin-redeem-selected-bar mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-[var(--anthropic-section)] p-3 dark:bg-[var(--anthropic-section)]"
         >
-          <span class="text-sm font-medium text-primary-900 dark:text-primary-100">
+          <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('admin.redeem.selectedCount', { count: selectedCount }) }}
           </span>
           <div class="flex flex-wrap items-center gap-2">
             <button data-testid="admin-redeem-button-clear-selected-codes"
               type="button"
-              class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
+              class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
               @click="clearSelectedCodes"
             >
               {{ t('admin.redeem.clearSelection') }}
@@ -265,9 +266,9 @@
       <div v-if="showGenerateDialog" class="fixed inset-0 z-50 flex items-center justify-center">
         <div data-testid="admin-redeem-div-show-generate-dialog-off" class="fixed inset-0 bg-black/50" @click="showGenerateDialog = false"></div>
         <div
-          class="relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-dark-800"
+          class="relative z-10 w-full max-w-md rounded-xl bg-[var(--anthropic-page)] p-6 shadow-none dark:bg-[var(--anthropic-section)]"
         >
-          <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 class="mb-4 text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('admin.redeem.generateCodesTitle') }}
           </h2>
           <form @submit.prevent="handleGenerateCodes" class="space-y-4">
@@ -316,7 +317,7 @@
                       :subscription-type="(option as unknown as GroupOption).subscriptionType"
                       :rate-multiplier="(option as unknown as GroupOption).rate"
                     />
-                    <span v-else class="text-gray-400">{{
+                    <span v-else class="text-[var(--anthropic-muted)]">{{
                       t('admin.redeem.selectGroupPlaceholder')
                     }}</span>
                   </template>
@@ -355,8 +356,8 @@
                   :class="[
                     'rounded-lg border px-3 py-2 text-sm transition-colors',
                     generateForm.expiry_option === option.value
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
-                      : 'border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-dark-600 dark:text-gray-300 dark:hover:bg-dark-700'
+                      ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                      : 'border-[var(--anthropic-border)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]'
                   ]"
                 >
                   {{ option.label }}
@@ -405,23 +406,23 @@
       >
         <div data-testid="admin-redeem-div-close-batch-update-dialog" class="fixed inset-0 bg-black/50" @click="closeBatchUpdateDialog"></div>
         <div
-          class="relative z-10 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-dark-800"
+          class="relative z-10 w-full max-w-lg rounded-xl bg-[var(--anthropic-page)] p-6 shadow-none dark:bg-[var(--anthropic-section)]"
         >
-          <h2 class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 class="mb-1 text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('admin.redeem.batchUpdateTitle') }}
           </h2>
-          <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          <p class="mb-4 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('admin.redeem.selectedCount', { count: selectedCount }) }}
           </p>
 
           <form data-test="batch-update-form" class="space-y-4" @submit.prevent="handleBatchUpdate">
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <input data-testid="batch-field-status"
                   data-test="batch-field-status"
                   v-model="batchUpdateForm.update_status"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
                 {{ t('admin.redeem.batchFields.status') }}
               </label>
@@ -434,11 +435,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <input data-testid="admin-redeem-input-batch-update-form-update-expires-at"
                   v-model="batchUpdateForm.update_expires_at"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
                 {{ t('admin.redeem.batchFields.expiresAt') }}
               </label>
@@ -454,12 +455,12 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <input data-testid="batch-field-notes"
                   data-test="batch-field-notes"
                   v-model="batchUpdateForm.update_notes"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
                 {{ t('admin.redeem.batchFields.notes') }}
               </label>
@@ -474,11 +475,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <input data-testid="admin-redeem-input-batch-update-form-update-group-id"
                   v-model="batchUpdateForm.update_group_id"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
                 {{ t('admin.redeem.batchFields.group') }}
               </label>
@@ -512,10 +513,10 @@
     <Teleport to="body">
       <div v-if="showResultDialog" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div data-testid="admin-redeem-div-close-result-dialog" class="fixed inset-0 bg-black/50" @click="closeResultDialog"></div>
-        <div class="relative z-10 w-full max-w-lg rounded-xl bg-white shadow-xl dark:bg-dark-800">
+        <div class="relative z-10 w-full max-w-lg rounded-xl bg-[var(--anthropic-page)] shadow-none dark:bg-[var(--anthropic-section)]">
           <!-- Header -->
           <div
-            class="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-dark-600"
+            class="flex items-center justify-between border-b border-[var(--anthropic-border)] px-5 py-4 dark:border-[var(--anthropic-border)]"
           >
             <div class="flex items-center gap-3">
               <div
@@ -536,17 +537,17 @@
                 </svg>
               </div>
               <div>
-                <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+                <h2 class="text-base font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ t('admin.redeem.generatedSuccessfully') }}
                 </h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.redeem.codesCreated', { count: generatedCodes.length }) }}
                 </p>
               </div>
             </div>
             <button data-testid="admin-redeem-button-close-result-dialog"
               @click="closeResultDialog"
-              class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300"
+              class="rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-300"
             >
               <Icon name="x" size="md" :stroke-width="2" />
             </button>
@@ -558,13 +559,13 @@
                 readonly
                 :value="generatedCodesText"
                 :style="{ height: textareaHeight }"
-                class="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-sm text-gray-800 focus:outline-none dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200"
+                class="w-full resize-none rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-3 font-mono text-sm text-[var(--anthropic-fg)] focus:outline-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
               ></textarea>
             </div>
           </div>
           <!-- Footer -->
           <div
-            class="flex justify-end gap-2 rounded-b-xl border-t border-gray-200 bg-gray-50 px-5 py-4 dark:border-dark-600 dark:bg-dark-700/50"
+            class="flex justify-end gap-2 rounded-b-xl border-t border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-5 py-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
           >
             <button data-testid="admin-redeem-button-copy-generated-codes"
               @click="copyGeneratedCodes"
@@ -743,23 +744,23 @@ const filterStatusOptions = computed(() => [
 ])
 
 const redeemTypeBadgeClass = (value: string) => [
-  'badge semantic-badge',
+  'badge',
   value === 'balance'
-    ? 'semantic-badge--success'
+    ? 'badge-success'
     : value === 'subscription'
-      ? 'semantic-badge--warning'
+      ? 'badge-warning'
       : value === 'invitation'
-        ? 'semantic-badge--info'
-        : 'semantic-badge--primary'
+        ? 'badge-primary'
+        : 'badge-primary'
 ]
 
 const redeemStatusBadgeClass = (value: string) => [
-  'badge semantic-badge',
+  'badge',
   value === 'unused'
-    ? 'semantic-badge--success'
+    ? 'badge-success'
     : value === 'used'
-      ? 'semantic-badge--neutral'
-      : 'semantic-badge--danger'
+      ? 'badge-gray'
+      : 'badge-danger'
 ]
 
 const batchStatusOptions = computed(() => [
@@ -1198,11 +1199,11 @@ onUnmounted(() => {
 
 <style scoped>
 .redeem-invitation-hint {
-  border: 1px solid color-mix(in srgb, var(--atelier-blue) 18%, var(--atelier-line));
-  background: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper-2));
+  border: 1px solid var(--atelier-ink);
+  background: #e3dacc;
 }
 
 .redeem-invitation-hint-text {
-  color: var(--atelier-blue-dark);
+  color: var(--atelier-ink);
 }
 </style>

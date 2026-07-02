@@ -7,6 +7,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import UsageView from '../UsageView.vue'
 
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 
 const { list, getStats, getSnapshotV2, getById, getModelStats, listErrorLogs } = vi.hoisted(() => {
   vi.stubGlobal('localStorage', {
@@ -41,23 +42,6 @@ const formatLocalDate = (date: Date): string => {
 
 const cssBlock = (source: string, selector: string): string => {
   const start = source.indexOf(selector)
-  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
-  const open = source.indexOf('{', start)
-  expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
-  let depth = 0
-  for (let index = open; index < source.length; index += 1) {
-    const char = source[index]
-    if (char === '{') depth += 1
-    if (char === '}') {
-      depth -= 1
-      if (depth === 0) return source.slice(open + 1, index)
-    }
-  }
-  throw new Error(`CSS block not closed for ${selector}`)
-}
-
-const lastCssBlock = (source: string, selector: string): string => {
-  const start = source.lastIndexOf(selector)
   expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
   const open = source.indexOf('{', start)
   expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
@@ -378,8 +362,8 @@ describe('admin UsageView errors tab filter forwarding', () => {
     vm.filters.group_id = 3
     await flushPromises()
 
-    // 切换到「错误请求」标签（第二个 .tab 按钮）触发 loadAdminErrors
-    const tabs = wrapper.findAll('button.tab')
+    // 切换到「错误请求」route tab 触发 loadAdminErrors
+    const tabs = wrapper.findAll('[role="tab"]')
     await tabs[1].trigger('click')
     await flushPromises()
 
@@ -393,38 +377,74 @@ describe('admin UsageView errors tab filter forwarding', () => {
 })
 
 describe('admin UsageView visual source guards', () => {
-  it('keeps usage tabs as opaque buttons before and after selection', () => {
-    const tabBlock = cssBlock(styleSource, '#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab')
-    const activeBlock = cssBlock(styleSource, '#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .tab-active')
+  it('uses the Anthropic route-tabs contract for usage detail switching', () => {
+    const source = readFileSync(resolve(__dirname, '../UsageView.vue'), 'utf8')
 
-    expect(tabBlock).toContain('background: var(--atelier-paper-2) !important;')
-    expect(tabBlock).toContain('background-color: var(--atelier-paper-2) !important;')
-    expect(tabBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(activeBlock).toContain('background: var(--atelier-terracotta-action) !important;')
-    expect(activeBlock).toContain('background-color: var(--atelier-terracotta-action) !important;')
-    expect(activeBlock).toContain('color: var(--atelier-paper-2) !important;')
+    expect(source).toContain('class="route-shell usage-detail-route-shell"')
+    expect(source).toContain('class="route-tabs usage-detail-route-tabs"')
+    expect(source).toContain('data-route-tabs="admin-usage-detail"')
+    expect(source).toContain('role="tablist"')
+    expect(source).toContain('role="tab"')
+    expect(source).toContain('data-route-id="usage"')
+    expect(source).toContain('data-route-id="errors"')
+    expect(source).toContain(':aria-selected="activeTab === \'usage\'"')
+    expect(source).toContain(':aria-selected="activeTab === \'errors\'"')
+    expect(source).toContain('class="route-panels usage-detail-route-panels"')
+    expect(source).toContain('class="route-panel usage-detail-route-panel"')
+    expect(source).toContain('data-route-group="admin-usage-detail"')
+    expect(source).toContain('data-route-panel="usage"')
+    expect(source).toContain('data-route-panel="errors"')
+    expect(source).toContain('setUsageTab(\'usage\')')
+    expect(source).toContain("tabs.style.setProperty('--route-indicator-x'")
+    expect(source).toContain("tabs.style.setProperty('--route-indicator-w'")
+    expect(source).toContain('@mouseleave="moveUsageIndicatorToSelected"')
+    expect(source).toContain('@focusout="handleUsageTabsFocusout"')
+    expect(source).not.toContain('class="tab"')
+    expect(source).not.toContain('tab-active')
+
+    const routeTabsBlock = cssBlock(source, '.usage-detail-route-tabs::before')
+    expect(routeTabsBlock).toContain('width: var(--route-indicator-w);')
+    expect(routeTabsBlock).toContain('background: var(--anthropic-page);')
+    expect(routeTabsBlock).toContain('box-shadow: 0 0 0 1px var(--anthropic-border-soft);')
+    expect(routeTabsBlock).toContain('transform: translateX(var(--route-indicator-x));')
+    const panelBlock = cssBlock(source, '.usage-detail-route-panel {')
+    expect(panelBlock).toContain('opacity: 0;')
+    expect(panelBlock).toContain('visibility: hidden;')
+    expect(panelBlock).toContain('transform: translateY(8px);')
+    const activePanelBlock = cssBlock(source, '.usage-detail-route-panel.active')
+    expect(activePanelBlock).toContain('opacity: 1;')
+    expect(activePanelBlock).toContain('visibility: visible;')
+    expect(activePanelBlock).toContain('transform: translateY(0);')
   })
 
-  it('uses dashboard slab popup colors for usage dropdown portals', () => {
-    const usagePortalBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal,')
-    const usageOptionBlock = cssBlock(styleSource, 'body:has(.admin-usage-atelier) .select-dropdown-portal :where(.select-option, .select-option-label, .select-empty, svg),')
+  it('uses the shared light highlight dropdown menu contract for usage selects', () => {
+    const portalBlock = cssBlock(styleSource, '.dropdown-highlight-menu,')
+    const optionBlock = cssBlock(styleSource, '.dropdown-highlight-item,')
+    const hoverBlock = cssBlock(styleSource, ':where(.select-option:hover, .select-option-focused, .date-picker-preset:hover, .theme-switcher-option:hover)')
+    const selectedBlock = cssBlock(styleSource, ':where(.select-option-selected, .select-option-selected:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .theme-switcher-option-active)')
 
-    expect(usagePortalBlock).toContain('border-color: var(--atelier-material-edge) !important;')
-    expect(usagePortalBlock).toContain('background: var(--atelier-paper-2) !important;')
-    expect(usagePortalBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(usagePortalBlock).toContain('box-shadow: var(--atelier-material-shadow) !important;')
-    expect(usageOptionBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(usagePortalBlock).not.toContain('background: var(--atelier-slab-field) !important;')
-    expect(usagePortalBlock).not.toContain('box-shadow: none !important;')
+    expect(portalBlock).toContain('display: grid;')
+    expect(portalBlock).toContain('gap: 2px;')
+    expect(portalBlock).toContain('padding: 12px;')
+    expect(portalBlock).toContain('border-radius: 16px;')
+    expect(optionBlock).toContain('min-height: 2.5rem;')
+    expect(optionBlock).toContain('border-radius: 8px;')
+    expect(hoverBlock).toContain('background: var(--anthropic-section);')
+    expect(selectedBlock).toContain('background: var(--anthropic-cookbook-hover);')
+    expect(selectedBlock).toContain('box-shadow: inset 0 0 0 1px var(--anthropic-cookbook-border);')
   })
 
-  it('removes the top stitch from dashboard and usage filter cards', () => {
-    const stitchBlock = lastCssBlock(styleSource, '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card::after,')
+  it('keeps dashboard and usage filter cards single-framed with no stitch pseudo-element', () => {
+    const cardBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.dashboard-filter-card, .usage-time-filter-card, .usage-filter-card, .risk-control-toolbar-actions, .risk-control-record-filters, .codex-list-actions__filters)')
+    const shellBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.table-page-filter-section > .usage-filter-shell, .usage-time-filter-card > .usage-time-filter-shell, .usage-filter-card > .usage-filter-shell)')
 
-    expect(stitchBlock).toContain('content: "" !important;')
-    expect(stitchBlock).toContain('var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat')
-    expect(stitchBlock).toContain('var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat')
-    expect(stitchBlock).toContain('var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat')
-    expect(stitchBlock).not.toContain('top left / 100% 1px no-repeat')
+    expect(cardBlock).toContain('border: 1px solid var(--anthropic-cookbook-border) !important;')
+    expect(cardBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(cardBlock).toContain('box-shadow: none !important;')
+    expect(cardBlock).toContain('padding: 0.75rem 1rem !important;')
+    expect(shellBlock).toContain('border: 0 !important;')
+    expect(shellBlock).toContain('background: transparent !important;')
+    expect(targetedRepairSource).not.toContain('.dashboard-filter-card::after')
+    expect(targetedRepairSource).not.toContain('.usage-time-filter-card::after')
   })
 })

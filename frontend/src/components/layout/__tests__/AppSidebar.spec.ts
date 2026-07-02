@@ -8,24 +8,38 @@ const componentPath = resolve(dirname(fileURLToPath(import.meta.url)), '../AppSi
 const componentSource = readFileSync(componentPath, 'utf8')
 const stylePath = resolve(dirname(fileURLToPath(import.meta.url)), '../../../style.css')
 const styleSource = readFileSync(stylePath, 'utf8')
+const zhLocaleSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../../i18n/locales/zh.ts'), 'utf8')
+const enLocaleSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../../i18n/locales/en.ts'), 'utf8')
+const navTemplateSource = componentSource.slice(
+  componentSource.indexOf('<nav ref="sidebarNavRef"'),
+  componentSource.indexOf('</nav>') + '</nav>'.length,
+)
 
-describe('AppSidebar custom SVG styles', () => {
-  it('does not override uploaded SVG fill or stroke colors', () => {
-    expect(componentSource).toContain('.sidebar-svg-icon {')
-    expect(componentSource).toContain('color: currentColor;')
-    expect(componentSource).toContain('display: block;')
-    expect(componentSource).not.toContain('stroke: currentColor;')
-    expect(componentSource).not.toContain('fill: none;')
+describe('AppSidebar nav icon rendering', () => {
+  it('renders sidebar navigation as text without SVG or custom uploaded icon surfaces', () => {
+    expect(navTemplateSource).toContain('sidebar-initial')
+    expect(navTemplateSource).toContain('{{ getNavInitial(item.label) }}')
+    expect(navTemplateSource).toContain('{{ getNavInitial(child.label) }}')
+    expect(navTemplateSource).not.toContain('<component :is="item.icon"')
+    expect(navTemplateSource).not.toContain('<component :is="child.icon"')
+    expect(navTemplateSource).not.toContain('renderCustomMenuIcon(item.iconSvg)')
+    expect(navTemplateSource).not.toContain('isCustomMenuIconURL(item.iconSvg)')
+    expect(navTemplateSource).not.toContain('v-html="sanitizeSvg(item.iconSvg)"')
+    expect(navTemplateSource).not.toContain('sidebar-svg-icon')
+    expect(navTemplateSource).not.toContain('<img')
   })
 
-  it('renders custom menu icon URLs as images while keeping inline SVG sanitized', () => {
-    expect(componentSource).toContain('function isCustomMenuIconURL')
-    expect(componentSource).toContain('function renderCustomMenuIcon')
-    expect(componentSource).toContain("isCustomMenuIconURL(item.iconSvg)")
-    expect(componentSource).toContain('<img')
-    expect(componentSource).toContain('sidebar-svg-icon-image')
-    expect(componentSource).toContain(':src="item.iconSvg"')
-    expect(componentSource).toContain('v-html="sanitizeSvg(item.iconSvg)"')
+  it('uses text caret controls instead of sidebar SVG arrow components', () => {
+    expect(navTemplateSource).toContain('sidebar-group-caret')
+    expect(componentSource).toContain('.sidebar-group-caret::before')
+    expect(componentSource).toContain('.sidebar-collapse-mark')
+    expect(componentSource).toContain('function getNavInitial')
+    expect(componentSource).not.toContain('sanitizeSvg')
+    expect(componentSource).not.toContain('isCustomMenuIconURL')
+    expect(componentSource).not.toContain('renderCustomMenuIcon')
+    expect(componentSource).not.toContain('const ChevronDownIcon')
+    expect(componentSource).not.toContain('const ChevronDoubleLeftIcon')
+    expect(componentSource).not.toContain('const ChevronDoubleRightIcon')
   })
 })
 
@@ -78,7 +92,22 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
-  it('uses paper-2 sidebar material from the color guidance and keeps Klein blue isolated to active structure', () => {
+  it('labels the admin and personal sidebar sections with the same title treatment', () => {
+    const adminSectionTitleIndex = navTemplateSource.indexOf("{{ t('nav.adminInterface') }}")
+    const firstAdminItemIndex = navTemplateSource.indexOf('v-for="item in adminNavItems"')
+    const personalSectionTitleIndex = navTemplateSource.indexOf("{{ t('nav.myAccount') }}")
+    const firstPersonalItemIndex = navTemplateSource.indexOf('v-for="item in personalNavItems"')
+
+    expect(adminSectionTitleIndex).toBeGreaterThan(-1)
+    expect(personalSectionTitleIndex).toBeGreaterThan(-1)
+    expect(adminSectionTitleIndex).toBeLessThan(firstAdminItemIndex)
+    expect(personalSectionTitleIndex).toBeLessThan(firstPersonalItemIndex)
+    expect(navTemplateSource.match(/sidebar-section-title/g)?.length).toBeGreaterThanOrEqual(2)
+    expect(zhLocaleSource).toContain("adminInterface: '管理员界面'")
+    expect(enLocaleSource).toContain("adminInterface: 'Admin Interface'")
+  })
+
+  it('uses docs-sidebar paper states without colored active blocks', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
       styleSource.indexOf('.sidebar-header {')
@@ -93,21 +122,27 @@ describe('AppSidebar atelier palette', () => {
     expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-paper-2);')
     expect(sidebarBlock).toContain('--sidebar-text: var(--atelier-ink);')
     expect(sidebarBlock).toContain('--sidebar-line-strong: rgba(23, 21, 18, 0.36);')
-    expect(sidebarBlock).toContain('--sidebar-hover: var(--atelier-butter);')
-    expect(sidebarBlock).toContain('--sidebar-active-bg: var(--atelier-blue);')
-    expect(sidebarBlock).toContain('--sidebar-active-text: var(--atelier-white);')
-    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-blue);')
+    expect(sidebarBlock).toContain('--sidebar-hover: var(--atelier-paper-2);')
+    expect(sidebarBlock).toContain('--sidebar-active-bg: var(--atelier-paper-2);')
+    expect(sidebarBlock).toContain('--sidebar-active-text: var(--atelier-ink);')
+    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-line);')
     expect(sidebarBlock).toContain('background: var(--sidebar-bg);')
     expect(sidebarBlock).toContain('border-right: 1px dotted var(--sidebar-line-strong);')
     expect(sidebarBlock).not.toContain('--sidebar-bg: var(--atelier-ink);')
     expect(sidebarBlock).not.toContain('--sidebar-bg-strong: #050505;')
+    expect(sidebarBlock).not.toContain('--sidebar-hover: var(--atelier-butter);')
+    expect(sidebarBlock).not.toContain('--sidebar-active-bg: var(--atelier-blue);')
+    expect(sidebarBlock).not.toContain('--sidebar-active-text: var(--atelier-white);')
+    expect(sidebarBlock).not.toContain('--sidebar-active-border: var(--atelier-blue);')
     expect(sidebarBlock).not.toContain('linear-gradient(90deg, rgba(23, 21, 18, 0.04) 1px, transparent 1px)')
     expect(sidebarBlock).not.toContain('linear-gradient(180deg, rgba(0, 47, 167, 0.98), rgba(0, 26, 107, 0.98))')
     expect(styleSource).toContain('.sidebar .sidebar-link-active')
     expect(styleSource).toContain('.sidebar .sidebar-link-active::after')
-    expect(styleSource).toContain('background: var(--sidebar-active-text);')
+    expect(styleSource).toContain('display: none;')
+    expect(styleSource).toContain('content: none;')
     expect(styleSource).toContain('padding-left: 0.625rem;')
-    expect(styleSource).toContain('margin-left: 0.625rem;')
+    expect(styleSource).not.toContain('background: var(--sidebar-active-text);')
+    expect(styleSource).not.toContain('margin-left: 0.625rem;')
     expect(styleSource).not.toContain('inset 3px 0 0 var(--sidebar-active-border)')
     expect(styleSource).not.toContain('color-mix(in srgb, var(--atelier-butter) 58%, transparent)')
     expect(componentSource).not.toContain('color-mix(in srgb, var(--atelier-butter)')
@@ -124,7 +159,7 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).toContain("{ path: '/admin/channels/monitor', label: t('nav.channelMonitor')")
     expect(styleSource).toContain('.sidebar .sidebar-channel-child-link')
     expect(styleSource).toContain('font-size: 0.75rem;')
-    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link :where(svg, .sidebar-svg-icon)')
+    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link .sidebar-child-initial')
   })
 
   it('uses a smaller dedicated font size for the system-settings children', () => {
@@ -133,14 +168,15 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link')
     expect(styleSource).toContain('font-size: 0.75rem;')
-    expect(styleSource).toContain('.sidebar .sidebar-system-child-link :where(svg, .sidebar-svg-icon)')
+    expect(styleSource).toContain('.sidebar .sidebar-system-child-link .sidebar-child-initial')
   })
 
   it('keeps active sidebar descendants readable when the selected item is hovered', () => {
     expect(styleSource).toContain('.sidebar .sidebar-link-active:hover')
-    expect(styleSource).toContain('.sidebar .sidebar-link-active:hover :where(svg, .sidebar-svg-icon, .sidebar-label, span)')
+    expect(styleSource).toContain('.sidebar .sidebar-link-active:hover :where(.sidebar-initial, .sidebar-label, span)')
     expect(styleSource).toContain('color: var(--sidebar-active-text) !important;')
     expect(styleSource).toContain('-webkit-text-fill-color: currentColor !important;')
+    expect(styleSource).not.toContain('background: var(--sidebar-active-text);')
   })
 
   it('uses rounded hover and active surfaces instead of square full-width slabs', () => {
@@ -156,21 +192,21 @@ describe('AppSidebar atelier palette', () => {
       styleSource.indexOf('.sidebar .sidebar-link-active {'),
       styleSource.indexOf('.sidebar .sidebar-link-active :where'),
     )
-    const cloudflareSidebarHoverBlock = styleSource.slice(
-      styleSource.indexOf(':root.theme-cloudflare .sidebar .sidebar-link:hover {'),
-      styleSource.indexOf(':root.theme-cloudflare .sidebar .sidebar-link:hover :where'),
-    )
-
     expect(sidebarLinkBlock).toContain('border-radius: 0.625rem;')
     expect(sidebarLinkBlock).toContain('padding-left: 0.625rem;')
     expect(sidebarLinkBlock).toContain('padding-right: 0.625rem;')
     expect(sidebarHoverBlock).toContain('border-color:')
+    expect(sidebarHoverBlock).toContain('background: var(--sidebar-hover);')
+    expect(sidebarHoverBlock).toContain('text-decoration-line: none;')
+    expect(sidebarHoverBlock).toContain('text-decoration-color: transparent;')
     expect(sidebarHoverBlock).toContain('padding-left: 0.625rem;')
     expect(sidebarActiveBlock).toContain('border-radius: 0.625rem;')
+    expect(sidebarActiveBlock).toContain('background: var(--sidebar-active-bg);')
+    expect(sidebarActiveBlock).toContain('border-color: var(--sidebar-active-border);')
     expect(sidebarActiveBlock).toContain('padding-left: 0.625rem;')
     expect(sidebarActiveBlock).toContain('padding-right: 0.625rem;')
-    expect(cloudflareSidebarHoverBlock).toContain('border-color: var(--atelier-material-edge) !important;')
-    expect(cloudflareSidebarHoverBlock).not.toContain('border-bottom-color')
+    expect(styleSource).not.toContain(':root.theme-cloudflare .sidebar .sidebar-link:hover')
+    expect(styleSource).not.toContain('border-bottom-color')
   })
 })
 

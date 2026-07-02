@@ -166,7 +166,7 @@ Both views use:
 **Design System:**
 
 - TailwindCSS utility classes
-- Consistent color scheme (indigo primary)
+- Consistent Anthropic paper / Slate action color scheme
 - Responsive design
 - Accessible form controls
 - Loading states with spinner animations

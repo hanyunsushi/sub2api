@@ -1,21 +1,21 @@
 <template>
-  <div class="min-h-screen bg-gray-50 px-4 py-10 dark:bg-dark-900">
+  <div class="auth-standalone-shell min-h-screen bg-[var(--anthropic-section)] px-4 py-10 dark:bg-[var(--anthropic-section)]">
     <div class="mx-auto max-w-2xl">
       <div v-if="isProcessing" class="card p-6 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
-        <h1 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[var(--anthropic-fg)] border-t-transparent"></div>
+        <h1 class="mt-4 text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('auth.oauth.callbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ t('auth.oauth.callbackHint') }}
         </p>
       </div>
 
       <div v-else-if="needsRegistrationCompletion" class="card p-6">
-        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('auth.oidc.callbackTitle', { providerName }) }}
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ registrationHint }}
         </p>
 
@@ -80,10 +80,10 @@
       </div>
 
       <div v-else-if="invalidCallback" class="card p-6 text-center">
-        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('auth.oauth.invalidCallbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ t('auth.oauth.invalidCallbackHint') }}
         </p>
         <button data-testid="auth-o-auth-callback-button-replace-login" class="btn btn-primary mt-6" type="button" @click="router.replace('/login')">
@@ -92,10 +92,10 @@
       </div>
 
       <div v-else class="card p-6">
-        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('auth.oauth.callbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ t('auth.oauth.callbackHint') }}
         </p>
 

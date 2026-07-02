@@ -1,6 +1,6 @@
 <template>
   <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
+    <h3 class="mb-4 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
       {{ t('payment.admin.dailyRevenue') }}
     </h3>
     <div class="h-64">
@@ -10,7 +10,7 @@
       <Line v-else-if="chartData" :data="chartData" :options="chartOptions" />
       <div
         v-else
-        class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+        class="flex h-full items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
       >
         {{ t('payment.admin.noData') }}
       </div>
@@ -51,8 +51,8 @@ const chartData = computed(() => {
       {
         label: t('payment.admin.revenue'),
         data: props.data.map(d => d.amount),
-        borderColor: 'rgb(0, 47, 167)',
-        backgroundColor: 'rgba(0, 47, 167, 0.1)',
+        borderColor: '#141413',
+        backgroundColor: 'rgba(20, 19, 19, 0.08)',
         fill: true,
         tension: 0.3,
         pointRadius: 3,

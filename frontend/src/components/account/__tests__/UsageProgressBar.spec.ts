@@ -29,7 +29,7 @@ describe('UsageProgressBar', () => {
         utilization: 0,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: true,
-        color: 'indigo'
+        color: 'neutral'
       }
     })
 
@@ -44,7 +44,7 @@ describe('UsageProgressBar', () => {
         utilization: 12,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: true,
-        color: 'emerald'
+        color: 'success'
       }
     })
 
@@ -60,7 +60,7 @@ describe('UsageProgressBar', () => {
         utilization: 0,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: false,
-        color: 'indigo'
+        color: 'neutral'
       }
     })
 
@@ -75,7 +75,7 @@ describe('UsageProgressBar', () => {
         utilization: 53,
         // 早于 fake system time 2026-03-17T00:00:00Z
         resetsAt: '2026-03-16T22:00:00Z',
-        color: 'indigo'
+        color: 'neutral'
       }
     })
 
@@ -89,7 +89,7 @@ describe('UsageProgressBar', () => {
         label: '5h',
         utilization: 0,
         resetsAt: '2026-03-16T22:00:00Z',
-        color: 'indigo'
+        color: 'neutral'
       }
     })
 
@@ -97,31 +97,34 @@ describe('UsageProgressBar', () => {
     expect(wrapper.text()).not.toContain('usage.resetPending')
   })
 
-  it('uses official green amber red thresholds for quota utilization', () => {
+  it('uses semantic threshold classes for quota utilization', () => {
     const safe = mount(UsageProgressBar, {
       props: {
         label: 'EXT',
         utilization: 69,
-        color: 'emerald',
+        color: 'success',
       },
     })
     const warning = mount(UsageProgressBar, {
       props: {
         label: 'EXT',
         utilization: 70,
-        color: 'emerald',
+        color: 'success',
       },
     })
     const danger = mount(UsageProgressBar, {
       props: {
         label: 'EXT',
         utilization: 90,
-        color: 'emerald',
+        color: 'success',
       },
     })
 
     expect(safe.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--safe')
+    expect(safe.find('.usage-progress-fill').classes()).toContain('bg-green-500')
     expect(warning.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--warning')
+    expect(warning.find('.usage-progress-fill').classes()).toContain('bg-amber-500')
     expect(danger.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--danger')
+    expect(danger.find('.usage-progress-fill').classes()).toContain('bg-red-500')
   })
 })

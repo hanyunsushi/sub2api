@@ -1,358 +1,1199 @@
 import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const styleSource = readFileSync(resolve(frontendRoot, 'style.css'), 'utf8')
-const selectSource = readFileSync(resolve(frontendRoot, 'components/common/Select.vue'), 'utf8')
-const dateRangePickerSource = readFileSync(resolve(frontendRoot, 'components/common/DateRangePicker.vue'), 'utf8')
-const onboardingSource = readFileSync(resolve(frontendRoot, 'styles/onboarding.css'), 'utf8')
-const adminUsageTableSource = readFileSync(resolve(frontendRoot, 'components/admin/usage/UsageTable.vue'), 'utf8')
-const adminUsageSource = readFileSync(resolve(frontendRoot, 'views/admin/UsageView.vue'), 'utf8')
-const userUsageSource = readFileSync(resolve(frontendRoot, 'views/user/UsageView.vue'), 'utf8')
-const quickActionsSource = readFileSync(resolve(frontendRoot, 'components/user/dashboard/UserDashboardQuickActions.vue'), 'utf8')
-const groupDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/GroupDistributionChart.vue'), 'utf8')
-const modelDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/ModelDistributionChart.vue'), 'utf8')
-const endpointDistributionSource = readFileSync(resolve(frontendRoot, 'components/charts/EndpointDistributionChart.vue'), 'utf8')
+const styleSource = readFileSync(resolve(__dirname, '../style.css'), 'utf8')
+const targetedRepairSource = readFileSync(resolve(__dirname, '../styles/targeted-visual-repair.css'), 'utf8')
+const selectSource = readFileSync(resolve(__dirname, '../components/common/Select.vue'), 'utf8')
+const floatingDropdownSource = readFileSync(resolve(__dirname, '../components/common/FloatingDropdown.vue'), 'utf8')
+const adminDashboardSource = readFileSync(resolve(__dirname, '../views/admin/DashboardView.vue'), 'utf8')
+const modelDistributionSource = readFileSync(resolve(__dirname, '../components/charts/ModelDistributionChart.vue'), 'utf8')
+const appHeaderSource = readFileSync(resolve(__dirname, '../components/layout/AppHeader.vue'), 'utf8')
+const announcementBellSource = readFileSync(resolve(__dirname, '../components/common/AnnouncementBell.vue'), 'utf8')
+const localeSwitcherSource = readFileSync(resolve(__dirname, '../components/common/LocaleSwitcher.vue'), 'utf8')
+const dateRangePickerSource = readFileSync(resolve(__dirname, '../components/common/DateRangePicker.vue'), 'utf8')
+const dataTableSource = readFileSync(resolve(__dirname, '../components/common/DataTable.vue'), 'utf8')
+const tablePageLayoutSource = readFileSync(resolve(__dirname, '../components/layout/TablePageLayout.vue'), 'utf8')
+const accountsViewSource = readFileSync(resolve(__dirname, '../views/admin/AccountsView.vue'), 'utf8')
+const accountTableActionsSource = readFileSync(resolve(__dirname, '../components/admin/account/AccountTableActions.vue'), 'utf8')
+const accountBulkActionsBarSource = readFileSync(resolve(__dirname, '../components/admin/account/AccountBulkActionsBar.vue'), 'utf8')
+const accountUsageCellSource = readFileSync(resolve(__dirname, '../components/account/AccountUsageCell.vue'), 'utf8')
+const openAIQuotaResetCellSource = readFileSync(resolve(__dirname, '../components/account/OpenAIQuotaResetCell.vue'), 'utf8')
+const usersViewSource = readFileSync(resolve(__dirname, '../views/admin/UsersView.vue'), 'utf8')
+const subscriptionsViewSource = readFileSync(resolve(__dirname, '../views/admin/SubscriptionsView.vue'), 'utf8')
+const channelsViewSource = readFileSync(resolve(__dirname, '../views/admin/ChannelsView.vue'), 'utf8')
+const proxiesViewSource = readFileSync(resolve(__dirname, '../views/admin/ProxiesView.vue'), 'utf8')
+const redeemViewSource = readFileSync(resolve(__dirname, '../views/admin/RedeemView.vue'), 'utf8')
+const promoCodesViewSource = readFileSync(resolve(__dirname, '../views/admin/PromoCodesView.vue'), 'utf8')
+const externalSubscriptionsViewSource = readFileSync(resolve(__dirname, '../views/admin/ExternalSubscriptionsView.vue'), 'utf8')
+const announcementsViewSource = readFileSync(resolve(__dirname, '../views/admin/AnnouncementsView.vue'), 'utf8')
+const adminOrdersViewSource = readFileSync(resolve(__dirname, '../views/admin/orders/AdminOrdersView.vue'), 'utf8')
+const adminPaymentDashboardViewSource = readFileSync(resolve(__dirname, '../views/admin/orders/AdminPaymentDashboardView.vue'), 'utf8')
+const adminPaymentPlansViewSource = readFileSync(resolve(__dirname, '../views/admin/orders/AdminPaymentPlansView.vue'), 'utf8')
+const adminOrderTableSource = readFileSync(resolve(__dirname, '../components/admin/payment/AdminOrderTable.vue'), 'utf8')
+const adminAffiliateRecordsSource = readFileSync(resolve(__dirname, '../views/admin/affiliates/AdminAffiliateRecordsTable.vue'), 'utf8')
+const monitorFiltersBarSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorFiltersBar.vue'), 'utf8')
+const usageViewSource = readFileSync(resolve(__dirname, '../views/admin/UsageView.vue'), 'utf8')
+const usageFiltersSource = readFileSync(resolve(__dirname, '../components/admin/usage/UsageFilters.vue'), 'utf8')
+const userKeysViewSource = readFileSync(resolve(__dirname, '../views/user/KeysView.vue'), 'utf8')
+const userUsageViewSource = readFileSync(resolve(__dirname, '../views/user/UsageView.vue'), 'utf8')
+const userOrdersViewSource = readFileSync(resolve(__dirname, '../views/user/UserOrdersView.vue'), 'utf8')
+const globalPricingViewSource = readFileSync(resolve(__dirname, '../views/user/GlobalPricingView.vue'), 'utf8')
+const availableChannelsViewSource = readFileSync(resolve(__dirname, '../views/user/AvailableChannelsView.vue'), 'utf8')
+const groupsViewSource = readFileSync(resolve(__dirname, '../views/admin/GroupsView.vue'), 'utf8')
+const opsConcurrencySource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsConcurrencyCard.vue'), 'utf8')
+const userDashboardChartsSource = readFileSync(resolve(__dirname, '../components/user/dashboard/UserDashboardCharts.vue'), 'utf8')
+const codexAccountsSource = readFileSync(resolve(__dirname, '../views/codex/CodexAccounts.vue'), 'utf8')
+const opsSystemLogTableSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsSystemLogTable.vue'), 'utf8')
+const opsOpenAITokenStatsSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsOpenAITokenStatsCard.vue'), 'utf8')
+const opsAlertEventsSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsAlertEventsCard.vue'), 'utf8')
+const riskControlViewSource = readFileSync(resolve(__dirname, '../views/admin/RiskControlView.vue'), 'utf8')
+const designSystemRoot = resolve(__dirname, '../../../../Library/Application Support/Open Design/namespaces/release-stable/data/projects/brand-anthropic-a38199')
+const designSystemSource = readFileSync(resolve(designSystemRoot, 'DESIGN.md'), 'utf8')
+const designSystemManifestSource = readFileSync(resolve(designSystemRoot, 'SYSTEM-MANIFEST.json'), 'utf8')
+const designSystemBrandSource = readFileSync(resolve(designSystemRoot, 'brand.json'), 'utf8')
+const designSystemCssSource = readFileSync(resolve(designSystemRoot, 'colors_and_type.css'), 'utf8')
 
-// Pull the appended "Global hover/highlight logic" section so assertions are
-// scoped to the new calm-surface layer, not the legacy rules above it.
-const marker = 'Global hover/highlight logic (all themes)'
-const cfFilterMarker = 'Cloudflare theme — complete de-slab pass'
-const stableHoverMarker = 'Global hover typography stability (all themes)'
-const sharedToggleMarker = 'Shared toggle visibility'
-const anthropicMarker = 'Anthropic theme — editorial component pass'
-const calmLayer = styleSource.slice(
-  styleSource.indexOf(marker),
-  styleSource.indexOf(cfFilterMarker),
-)
-const stableHoverLayer = styleSource.slice(styleSource.indexOf(stableHoverMarker))
-const finalStabilityLayer = styleSource.slice(
-  styleSource.lastIndexOf(stableHoverMarker),
-  styleSource.indexOf(sharedToggleMarker),
-)
-const broadDropdownHoverBlock = stableHoverLayer.slice(
-  stableHoverLayer.indexOf(':where(\n  .dropdown-item:hover'),
-  stableHoverLayer.indexOf('.select-dropdown-portal {'),
-)
-const datePresetHoverBlock = stableHoverLayer.slice(
-  stableHoverLayer.indexOf('body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active)'),
-  stableHoverLayer.indexOf('.theme-switcher-option:hover:not(.theme-switcher-option-active)')
-)
-const onboardingCloseHoverBlock = onboardingSource.slice(
-  onboardingSource.indexOf('.theme-tour-popover .driver-popover-close-btn:hover'),
-  onboardingSource.indexOf('/* 4. Body Content */'),
-)
-const onboardingPrevHoverBlock = onboardingSource.slice(
-  onboardingSource.indexOf('.theme-tour-popover .driver-popover-prev-btn:hover'),
-  onboardingSource.indexOf('.dark .theme-tour-popover .driver-popover-prev-btn'),
-)
-
-const cssBlockContaining = (needle: string): string => {
-  const start = styleSource.indexOf(needle)
-  expect(start, `Could not find CSS block containing ${needle}`).toBeGreaterThanOrEqual(0)
-  const open = styleSource.indexOf('{', start)
-  const close = styleSource.indexOf('}', open)
-  return styleSource.slice(start, close + 1)
+const cssBlock = (source: string, selector: string) => {
+  const selectorIndex = source.indexOf(selector)
+  expect(selectorIndex, `selector not found: ${selector}`).toBeGreaterThan(-1)
+  const openBraceIndex = source.indexOf('{', selectorIndex)
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(openBraceIndex + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
 }
 
-describe('global hover logic — calm non-interactive surfaces', () => {
-  it('appends a dedicated calm-hover override layer', () => {
-    expect(styleSource).toContain(marker)
-    // Surfaces freeze their paint on hover: no transform/lift.
-    expect(calmLayer).toContain('transform: none !important;')
-  })
+const sourceSlice = (source: string, startText: string, endText: string) => {
+  const startIndex = source.indexOf(startText)
+  expect(startIndex, `start marker not found: ${startText}`).toBeGreaterThan(-1)
+  const endIndex = source.indexOf(endText, startIndex)
+  expect(endIndex, `end marker not found: ${endText}`).toBeGreaterThan(startIndex)
+  return source.slice(startIndex, endIndex)
+}
 
-  it('neutralizes hover recolor for cards, panels, tables and filter shells', () => {
-    for (const surface of [
-      '.card', '.paper-card', '.stat-card', '.summary-tile',
-      '.codex-panel', '.ops-metric-card', '.table-wrapper',
-      '.layout-section-fixed', '.dashboard-filter-card',
-    ]) {
-      expect(calmLayer, `calm layer should cover ${surface}`).toContain(surface)
+describe('Anthropic hover and overlay taxonomy', () => {
+  it('keeps component hover behavior local instead of using broad page locks', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('.app-layout-content :where(.card, .paper-card')
+      expect(source).toContain(':where(:hover, :focus-within)')
+      expect(source).toContain('--anthropic-cookbook-hover: #f5f4ed;')
+      expect(source).toContain('--anthropic-cookbook-border: rgba(20, 19, 19, 0.08);')
+      expect(source).toContain('--anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);')
+      const cardHoverBlock = cssBlock(source, '.app-layout-content :where(.card, .paper-card, .paper-surface')
+      expect(cardHoverBlock).toContain('border-color: var(--anthropic-cookbook-border);')
+      expect(cardHoverBlock).toContain('background: var(--anthropic-page);')
+      expect(cardHoverBlock).not.toContain('.modal-content')
+      expect(cardHoverBlock).not.toContain('.dialog-container')
+      expect(cardHoverBlock).not.toContain('.toast')
+      const cardHoverStateBlock = cssBlock(source, '.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .codex-account-card, .external-subscription-card):where(:hover, :focus-visible)')
+      expect(cardHoverStateBlock).toContain('border-color: var(--anthropic-cookbook-border-hover);')
+      expect(cardHoverStateBlock).toContain('background: var(--anthropic-cookbook-hover);')
+      expect(cardHoverStateBlock).not.toContain('.modal-content')
+      expect(cardHoverStateBlock).not.toContain('.dialog-container')
+      expect(cardHoverStateBlock).not.toContain('.toast')
+      const anthropicInteractiveCardBlock = cssBlock(source, '.app-layout-content :where(.anthropic-card-shell.card-hover, .anthropic-option-card, .anthropic-image-card):where(:hover, :focus-visible)')
+      expect(anthropicInteractiveCardBlock).toContain('border-color: var(--anthropic-cookbook-border-hover);')
+      expect(anthropicInteractiveCardBlock).toContain('background: var(--anthropic-cookbook-hover);')
+      expect(source).not.toContain('.app-layout-content :where(.anthropic-card-shell, .anthropic-panel, .anthropic-stat-card, .anthropic-option-card, .anthropic-image-card):where(:hover, :focus-within)')
+      const globalRowHoverBlock = cssBlock(source, '.app-layout-content :where(tbody tr.cursor-pointer:hover td')
+      expect(globalRowHoverBlock).toContain('background: var(--anthropic-cookbook-hover);')
+      const overlayShellBlock = cssBlock(source, ':where(.modal-content, .dialog-container)')
+      expect(overlayShellBlock).toContain('border-radius: 16px !important;')
+      expect(overlayShellBlock).toContain('box-shadow: var(--anthropic-dropdown-shadow) !important;')
+      const toastOverlayBlock = cssBlock(source, ':where(.toast)')
+      expect(toastOverlayBlock).toContain('border-radius: 16px !important;')
+      expect(toastOverlayBlock).toContain('box-shadow: var(--anthropic-dropdown-shadow) !important;')
+      expect(cardHoverBlock).not.toContain('border-color: var(--anthropic-border-hover);')
+      expect(source).not.toContain('Global hover/highlight logic')
+      expect(source).not.toContain('#app .app-layout-content.app-layout-content')
+      expect(source).not.toContain(':where(tbody tr:hover td, tbody tr:hover .sticky-col, .table-row:hover, .article-row:hover)')
+      expect(source).not.toMatch(/:where\(\.btn-secondary, \.btn-ghost, button\):not\(\.btn-primary\)/)
     }
-    // Table rows get a subtle neutral hover tint (CF dashboards highlight rows),
-    // without lift/shadow/butter.
-    expect(calmLayer).toContain('tbody tr:hover')
-    expect(calmLayer).toContain('background: var(--atelier-ui-hover-surface) !important;')
   })
 
-  it('keeps the calm-surface layer separate from true navigation and button affordances', () => {
-    // Sidebar links and buttons keep affordance styling; menu/list options are
-    // stabilized by the final typography layer instead of the surface layer.
-    for (const interactive of ['.btn-primary', '.btn-secondary', '.sidebar-link']) {
-      expect(calmLayer, `calm layer must leave ${interactive} alone`).not.toContain(interactive)
+  it('applies the Cookbook page-level contract to dashboard and ops surfaces', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      const pageBlock = cssBlock(source, '#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(.card, .anthropic-card-shell')
+      expect(pageBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+      expect(pageBlock).toContain('background: var(--anthropic-page) !important;')
+      expect(pageBlock).toContain('box-shadow: none !important;')
+      expect(pageBlock).not.toContain('.ops-monitor-toolbar-controls')
+      expect(pageBlock).not.toContain('.dashboard-filter-card')
+      const dashboardFilterFrameBlock = cssBlock(source, '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,')
+      expect(dashboardFilterFrameBlock).toContain('border: 1px solid var(--anthropic-cookbook-border-hover) !important;')
+      expect(dashboardFilterFrameBlock).toContain('background: var(--anthropic-page) !important;')
+      const dashboardFilterOverrideBlock = cssBlock(source, '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card {\n  border-color')
+      expect(dashboardFilterOverrideBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+      expect(dashboardFilterOverrideBlock).toContain('background: var(--anthropic-page) !important;')
+
+      const utilityBorderBlock = cssBlock(source, '#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where([class*="border-[var(--anthropic-border)]"]')
+      expect(utilityBorderBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+      expect(utilityBorderBlock).toContain('--tw-ring-color: var(--anthropic-cookbook-border) !important;')
+
+      const rowHoverBlock = cssBlock(source, '#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(tbody tr.cursor-pointer:hover')
+      expect(rowHoverBlock).toContain('background: var(--anthropic-cookbook-hover) !important;')
+      expect(source).not.toContain(':where(tbody tr:hover, tbody tr:hover td, .table-row:hover)')
+
+      const pageHoverBlock = cssBlock(source, '#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card')
+      expect(pageHoverBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+      expect(pageHoverBlock).toContain('background: var(--anthropic-page) !important;')
+      expect(pageHoverBlock).toContain('box-shadow: none !important;')
+      expect(pageHoverBlock).toContain('transform: none !important;')
+      expect(source).not.toContain(':where(.admin-dashboard-atelier, .ops-dashboard-atelier) :where(.card, .anthropic-card-shell, .ops-monitor-panel, .ops-metric-card, .ops-system-card, .ops-health-score-card):where(:hover, :focus-within)')
+    }
+
+    const chartModuleBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-dashboard-atelier .model-distribution-card {\n  border-color')
+    expect(chartModuleBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(chartModuleBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(chartModuleBlock).toContain('box-shadow: none !important;')
+    expect(chartModuleBlock).toContain('transform: none !important;')
+
+    const chartModuleHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-dashboard-atelier .model-distribution-card:where(:hover, :focus-within) {\n  border-color')
+    expect(chartModuleHoverBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(chartModuleHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(chartModuleHoverBlock).toContain('box-shadow: none !important;')
+    expect(chartModuleHoverBlock).toContain('transform: none !important;')
+
+    expect(adminDashboardSource).not.toContain('--dashboard-module-rule')
+    expect(adminDashboardSource).not.toContain('atelier-filter-stitch')
+    expect(adminDashboardSource).not.toContain('background: var(--atelier-paper-2) !important')
+    expect(adminDashboardSource).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    const dashboardCardHoverBlock = cssBlock(adminDashboardSource, '.admin-dashboard-atelier :deep(.card:hover)')
+    expect(dashboardCardHoverBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(dashboardCardHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(dashboardCardHoverBlock).not.toContain('var(--anthropic-cookbook-border-hover)')
+    expect(dashboardCardHoverBlock).not.toContain('var(--anthropic-cookbook-hover)')
+  })
+
+  it('keeps the model list light and limits hover to clickable rows', () => {
+    expect(modelDistributionSource).toContain('card model-distribution-card')
+    expect(modelDistributionSource).toContain('model-distribution-control-group')
+    expect(modelDistributionSource).toContain('model-distribution-toggle')
+    expect(modelDistributionSource).toContain('model-distribution-toggle-active')
+    expect(modelDistributionSource).not.toContain("bg-[var(--anthropic-cookbook-hover)] text-[var(--anthropic-fg)]")
+    expect(modelDistributionSource).toContain('model-distribution-visual h-48 w-48')
+    expect(modelDistributionSource).toContain('model-distribution-table-wrap max-h-48 flex-1 overflow-y-auto')
+    expect(modelDistributionSource).toContain('model-distribution-row border-t border-[var(--anthropic-border)]')
+    expect(modelDistributionSource).toContain('model-distribution-row model-distribution-row-clickable')
+
+    const internalSurfaceBlock = cssBlock(modelDistributionSource, '.model-distribution-card :where(.model-distribution-control-group, .model-distribution-table-wrap)')
+    expect(internalSurfaceBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(internalSurfaceBlock).toContain('border: 1px solid var(--anthropic-cookbook-border);')
+    const toggleRailBlock = cssBlock(modelDistributionSource, '.model-distribution-control-group {')
+    expect(toggleRailBlock).toContain('--route-indicator-x: 0.25rem;')
+    expect(toggleRailBlock).toContain('--route-indicator-w: 0px;')
+    expect(toggleRailBlock).toContain('position: relative;')
+    expect(toggleRailBlock).toContain('isolation: isolate;')
+    expect(toggleRailBlock).toContain('min-height: 3rem;')
+    expect(toggleRailBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(toggleRailBlock).toContain('box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);')
+    const toggleButtonBlock = cssBlock(modelDistributionSource, '.model-distribution-toggle {')
+    expect(toggleButtonBlock).toContain('display: inline-flex;')
+    expect(toggleButtonBlock).toContain('min-height: 2.5rem;')
+    expect(toggleButtonBlock).toContain('padding: 0.5rem 1rem;')
+    expect(toggleButtonBlock).toContain('font-size: var(--anthropic-control-font-size, 0.8125rem);')
+    expect(toggleButtonBlock).toContain('line-height: var(--anthropic-control-line-height, 1.25rem);')
+    const toggleActiveBlock = cssBlock(modelDistributionSource, '.model-distribution-toggle-active')
+    expect(toggleActiveBlock).toContain('background: transparent !important;')
+    expect(toggleActiveBlock).toContain('box-shadow: none !important;')
+    expect(modelDistributionSource).toContain('role="tablist"')
+    expect(modelDistributionSource).toContain('role="tab"')
+    expect(modelDistributionSource).toContain('model-distribution-route-tabs')
+    expect(modelDistributionSource).toContain('data-route-tabs="model-distribution-source"')
+    expect(modelDistributionSource).toContain('data-route-tabs="model-distribution-metric"')
+    expect(modelDistributionSource).toContain('data-route-tabs="model-distribution"')
+    expect(modelDistributionSource).toContain('data-route-id="requested"')
+    expect(modelDistributionSource).toContain('data-route-id="upstream"')
+    expect(modelDistributionSource).toContain('data-route-id="mapping"')
+    expect(modelDistributionSource).toContain('data-route-id="tokens"')
+    expect(modelDistributionSource).toContain('data-route-id="actual_cost"')
+    expect(modelDistributionSource).toContain('data-route-id="model_distribution"')
+    expect(modelDistributionSource).toContain('data-route-id="spending_ranking"')
+    expect(modelDistributionSource).toContain(":aria-selected=\"source === 'requested'\"")
+    expect(modelDistributionSource).toContain(":aria-selected=\"metric === 'tokens'\"")
+    expect(modelDistributionSource).toContain(":aria-selected=\"activeView === 'model_distribution'\"")
+    expect(modelDistributionSource).toContain(":aria-selected=\"activeView === 'spending_ranking'\"")
+    expect(modelDistributionSource).toContain('const setActiveView = (view:')
+    expect(modelDistributionSource).toContain("tabs.style.setProperty('--route-indicator-x'")
+    expect(modelDistributionSource).toContain("tabs.style.setProperty('--route-indicator-w'")
+    expect(modelDistributionSource).toContain('function moveRankingIndicatorToSelected')
+    expect(modelDistributionSource).toContain('@mouseleave="moveRankingIndicatorToSelected"')
+    expect(modelDistributionSource).toContain('@focusout="handleRankingTabsFocusout"')
+
+    const routeTabsBlock = cssBlock(modelDistributionSource, '.model-distribution-route-tabs::before')
+    expect(routeTabsBlock).toContain('width: var(--route-indicator-w);')
+    expect(routeTabsBlock).toContain('background: var(--anthropic-page);')
+    expect(routeTabsBlock).toContain('box-shadow: 0 0 0 1px var(--anthropic-border-soft);')
+    expect(routeTabsBlock).toContain('transform: translateX(var(--route-indicator-x));')
+    expect(routeTabsBlock).toContain('pointer-events: none;')
+
+    const visualBlock = cssBlock(modelDistributionSource, '.model-distribution-visual {')
+    expect(visualBlock).toContain('background: transparent !important;')
+    expect(visualBlock).toContain('border: 0 !important;')
+    expect(visualBlock).toContain('box-shadow: none !important;')
+
+    const tableSurfaceBlock = cssBlock(modelDistributionSource, '.model-distribution-table-wrap :where(table, thead, tbody, tr, th, td)')
+    expect(tableSurfaceBlock).toContain('background: var(--anthropic-page) !important;')
+
+    const rowHoverBlock = cssBlock(modelDistributionSource, '.model-distribution-row-clickable:hover')
+    expect(rowHoverBlock).toContain('background: var(--anthropic-section) !important;')
+    expect(modelDistributionSource).not.toContain('.model-distribution-row:hover')
+    expect(internalSurfaceBlock).not.toContain('background: var(--anthropic-raised) !important;')
+    expect(tableSurfaceBlock).not.toContain('background: var(--anthropic-raised) !important;')
+  })
+
+  it('keeps header and sidebar hover aligned with the Anthropic examples', () => {
+    const headerBlock = cssBlock(styleSource, '.app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger)')
+    expect(headerBlock).toContain('background: transparent')
+    expect(headerBlock).toContain('box-shadow: none')
+    expect(headerBlock).toContain('text-decoration-color: transparent')
+    const headerHoverBlock = cssBlock(styleSource, '.app-header-atelier :where(a:hover, a:focus-visible, button:hover, button:focus-visible):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger)')
+    expect(headerHoverBlock).toContain('background: transparent')
+    expect(headerHoverBlock).toContain('text-decoration-color: currentColor')
+    expect(headerHoverBlock).not.toContain('var(--anthropic-section)')
+    expect(headerHoverBlock).not.toContain('var(--anthropic-accent)')
+    const languageTriggerBlock = cssBlock(styleSource, '.language-bar-trigger {')
+    expect(languageTriggerBlock).toContain('border: 1px solid var(--anthropic-border-soft);')
+    expect(languageTriggerBlock).toContain('border-radius: 12px;')
+    expect(languageTriggerBlock).toContain('background: var(--anthropic-page);')
+    const languageHoverBlock = cssBlock(styleSource, '.language-bar-trigger:hover,')
+    expect(languageHoverBlock).toContain('background: var(--anthropic-raised);')
+    expect(languageHoverBlock).toContain('text-decoration-line: none;')
+    const topbarMenuBlock = cssBlock(styleSource, '.topbar-underline-menu :where(.dropdown-item, .balance-row) {')
+    expect(topbarMenuBlock).toContain('background: transparent;')
+    expect(topbarMenuBlock).toContain('text-decoration-line: underline;')
+    const topbarMenuHoverBlock = cssBlock(styleSource, '.topbar-underline-menu :where(.dropdown-item:hover')
+    expect(topbarMenuHoverBlock).toContain('background: transparent;')
+    expect(topbarMenuHoverBlock).toContain('text-decoration-color: currentColor;')
+    const sidebarActiveBlock = cssBlock(styleSource, '.sidebar .sidebar-link-active,')
+    expect(sidebarActiveBlock).toContain('background: var(--anthropic-section);')
+    expect(sidebarActiveBlock).toContain('box-shadow: none;')
+    expect(sidebarActiveBlock).toContain('text-decoration-line: none;')
+    const sidebarHoverBlock = cssBlock(styleSource, '.sidebar .sidebar-link:hover,')
+    expect(sidebarHoverBlock).toContain('background: var(--anthropic-section);')
+    expect(sidebarHoverBlock).toContain('text-decoration-line: none;')
+    expect(appHeaderSource).not.toContain('data-testid="header-balance-provider-logo"')
+    expect(appHeaderSource).toContain('data-testid="header-balance-dropdown-provider-logo"')
+    expect(appHeaderSource).toContain('class="topbar-menu-caret"')
+    expect(appHeaderSource).toContain('.balance-row {\n  border: 0;\n  background: transparent;')
+    expect(appHeaderSource).not.toContain('.balance-row-system {\n  background: var(--atelier-butter-soft);')
+    expect(appHeaderSource).toContain('@mouseenter="openDropdown"')
+    expect(appHeaderSource).toContain('@pointerenter="openDropdown"')
+    expect(appHeaderSource).toContain('@pointerenter="openBalanceDropdown"')
+    expect(appHeaderSource).toContain('function scheduleCloseDropdown')
+    expect(announcementBellSource).toContain('announcement-trigger-text')
+    expect(announcementBellSource).not.toContain('<Icon name="bell" size="md" />')
+    expect(localeSwitcherSource).toContain('language-bar-trigger')
+    expect(localeSwitcherSource).toContain('language-bar-menu')
+    expect(localeSwitcherSource).toContain('@pointerenter="openDropdown"')
+    expect(localeSwitcherSource).not.toContain('panel-class="dropdown-highlight-menu w-36"')
+  })
+
+  it('keeps topbar and filter parallel controls on one spacing and type contract', () => {
+    expect(appHeaderSource).toContain('app-header-control-group flex items-center gap-3')
+    expect(designSystemSource).toContain('并列控件组必须统一节奏')
+    expect(designSystemManifestSource).toContain('Parallel topbar/filter controls must share 12px inline gap')
+    expect(designSystemBrandSource).toContain('parallelControlGroups')
+
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('--anthropic-control-gap: 0.75rem;')
+      expect(source).toContain('--anthropic-control-group-gap: 1rem;')
+      expect(source).toContain('--anthropic-control-height: 2rem;')
+      expect(source).toContain('--anthropic-control-font-size: 0.8125rem;')
+      expect(source).toContain('--anthropic-control-line-height: 1.25rem;')
+
+      const headerGroupBlock = cssBlock(source, '.app-header-atelier :where(.app-header-control-group)')
+      expect(headerGroupBlock).toContain('gap: var(--anthropic-control-gap);')
+      expect(headerGroupBlock).toContain('font-family: var(--atelier-font-sans);')
+      expect(headerGroupBlock).toContain('font-size: var(--anthropic-control-font-size);')
+      expect(headerGroupBlock).toContain('line-height: var(--anthropic-control-line-height);')
+
+      const filterShellBlock = cssBlock(source, '.app-layout-content :where(.table-page-filter-section')
+      expect(filterShellBlock).toContain('border: 1px solid var(--anthropic-border-hover);')
+      expect(filterShellBlock).toContain('row-gap: var(--anthropic-control-group-gap);')
+      expect(filterShellBlock).toContain('column-gap: var(--anthropic-control-gap);')
+      expect(filterShellBlock).not.toContain('.ops-monitor-toolbar-controls')
+      expect(filterShellBlock).toContain('font-family: var(--atelier-font-sans);')
+      expect(filterShellBlock).toContain('font-size: var(--anthropic-control-font-size);')
+      expect(filterShellBlock).toContain('line-height: var(--anthropic-control-line-height);')
+
+      const filterGroupBlock = cssBlock(source, '.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions')
+      expect(filterGroupBlock).toContain('row-gap: var(--anthropic-control-group-gap);')
+      expect(filterGroupBlock).toContain('column-gap: var(--anthropic-control-gap);')
+      expect(source).toContain('.usage-filter-shell')
+      expect(source).toContain('.dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity')
+      expect(source).toContain('.ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid')
+
+      const filterChildrenBlock = cssBlock(source, '.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label')
+      expect(filterChildrenBlock).toContain('min-height: var(--anthropic-control-height);')
+      expect(filterChildrenBlock).toContain('font-size: var(--anthropic-control-font-size);')
+      expect(filterChildrenBlock).toContain('line-height: var(--anthropic-control-line-height);')
+      expect(filterChildrenBlock).not.toContain('span,')
+    }
+
+    expect(selectSource).toContain('min-height: var(--anthropic-control-height, 2rem) !important;')
+    expect(dateRangePickerSource).toContain('min-height: var(--anthropic-control-height, 2rem) !important;')
+    expect(adminDashboardSource).toContain('font-size: var(--anthropic-control-font-size, 0.8125rem);')
+    expect(adminDashboardSource).toContain('min-height: var(--anthropic-control-height, 2rem);')
+    expect(selectSource).not.toContain('min-height: 21px !important;')
+    expect(dateRangePickerSource).not.toContain('min-height: 21px !important;')
+    expect(adminDashboardSource).not.toContain('line-height: 21px;')
+  })
+
+  it('keeps filter text controls out of the button/focus-blue taxonomy', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      const filterShellBlock = cssBlock(source, '.app-layout-content :where(.table-page-filter-section')
+      expect(filterShellBlock).toContain('row-gap: var(--anthropic-control-group-gap);')
+      expect(filterShellBlock).toContain('column-gap: var(--anthropic-control-gap);')
+      expect(filterShellBlock).toContain('padding: 0.75rem 1rem;')
+
+      const filterButtonBlock = cssBlock(source, '.app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)')
+      expect(filterButtonBlock).toContain('background: transparent;')
+      expect(filterButtonBlock).toContain('box-shadow: none;')
+      expect(filterButtonBlock).toContain('text-decoration-color: transparent;')
+
+      const filterHoverBlock = cssBlock(source, '.app-layout-content :where(.filter-menu-button:hover')
+      expect(filterHoverBlock).toContain('background: transparent;')
+      expect(filterHoverBlock).toContain('box-shadow: none;')
+      expect(filterHoverBlock).toContain('text-decoration-color: currentColor;')
+      expect(filterHoverBlock).not.toContain('var(--anthropic-focus)')
+
+      const focusBlock = cssBlock(source, '.app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
+      expect(focusBlock).toContain('outline: 2px solid var(--anthropic-focus);')
+      expect(focusBlock).toContain('outline-offset: 3px;')
+      expect(focusBlock).toContain('box-shadow: none;')
+      expect(focusBlock).not.toContain('border-color: var(--anthropic-focus)')
+    }
+
+    const finalFormBaseBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea)')
+    const finalFormMouseFocusBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible)')
+    const finalFormKeyboardFocusBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
+
+    expect(finalFormBaseBlock).toContain('--tw-ring-color: transparent !important;')
+    expect(finalFormBaseBlock).toContain('--tw-ring-shadow: 0 0 #0000 !important;')
+    expect(finalFormBaseBlock).toContain('border-color: var(--anthropic-cookbook-border')
+    expect(finalFormBaseBlock).toContain('box-shadow: none !important;')
+    expect(finalFormMouseFocusBlock).toContain('outline: 0 !important;')
+    expect(finalFormMouseFocusBlock).toContain('box-shadow: none !important;')
+    expect(finalFormKeyboardFocusBlock).toContain('outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;')
+    expect(finalFormKeyboardFocusBlock).toContain('outline-offset: 3px !important;')
+    expect(finalFormKeyboardFocusBlock).toContain('box-shadow: none !important;')
+    expect(finalFormKeyboardFocusBlock).not.toContain('box-shadow: 0 0 0 3px')
+
+    expect(selectSource).toContain('.select-trigger:focus-visible')
+    expect(selectSource).toContain('outline: 2px solid var(--anthropic-focus')
+    expect(selectSource).toContain('outline-offset: 3px;')
+    expect(selectSource).not.toContain('border-color: var(--anthropic-focus, var(--atelier-focus));\n  outline: 2px solid var(--anthropic-focus')
+    expect(selectSource).toContain('.select-trigger:is(:hover, .select-trigger-open)')
+    expect(selectSource).not.toContain('.select-trigger:is(:hover, :focus, .select-trigger-open)')
+    expect(selectSource).not.toContain('.select-trigger:is(:hover, :focus, :focus-visible, .select-trigger-open)')
+    expect(selectSource).toContain('.ops-monitor-toolbar-controls .select-trigger:focus-visible')
+    expect(dateRangePickerSource).toContain('.date-picker-trigger:is(:hover, .date-picker-trigger-open)')
+    expect(dateRangePickerSource).toContain('outline-offset: 3px;')
+    expect(dateRangePickerSource).not.toContain('border-color: var(--anthropic-focus, var(--atelier-focus));\n  outline: 2px solid var(--anthropic-focus')
+    expect(dateRangePickerSource).not.toContain('.date-picker-trigger:is(:hover, :focus, .date-picker-trigger-open)')
+    expect(dateRangePickerSource).not.toContain('.date-picker-trigger:is(:hover, :focus, :focus-visible, .date-picker-trigger-open)')
+    expect(dateRangePickerSource).toContain('.ops-monitor-toolbar-controls .date-picker-trigger:focus-visible')
+    expect(selectSource).toContain('outline: 0 !important;')
+
+    for (const source of [accountsViewSource, usersViewSource, subscriptionsViewSource, usageViewSource, usageFiltersSource]) {
+      expect(source).not.toMatch(/filter-menu-button[^"]*\bbtn\b/)
+      expect(source).not.toMatch(/\bbtn\b[^"]*filter-menu-button/)
     }
   })
-})
 
-describe('global hover logic — stable typography for neutral option controls', () => {
-  it('appends a final all-theme layer for hover text stability', () => {
-    expect(styleSource).toContain(stableHoverMarker)
-    expect(styleSource.lastIndexOf(stableHoverMarker)).toBeGreaterThan(styleSource.indexOf(cfFilterMarker))
+  it('keeps table filter sections single-framed and management pages on the shared toolbar contract', () => {
+    const tableFilterSectionBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section')
+    expect(tableFilterSectionBlock).toContain('border: 1px solid var(--anthropic-cookbook-border) !important;')
+    expect(tableFilterSectionBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(tableFilterSectionBlock).toContain('padding: 0.75rem 1rem !important;')
 
-    for (const selector of [
-      '.dropdown-item:hover',
-      '.select-dropdown-portal .select-option:not(.select-option-selected):not(.select-option-group)',
-      '.select-dropdown-portal .select-option:hover',
-      '.select-dropdown-portal .select-option-focused',
-      '.date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active)',
-      '.date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active)',
-      '.theme-switcher-option:hover:not(.theme-switcher-option-active)',
-      '.action-menu-trigger:hover',
-    ]) {
-      expect(stableHoverLayer, `stable hover layer should cover ${selector}`).toContain(selector)
-    }
-  })
+    const nestedFilterShellBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell')
+    expect(nestedFilterShellBlock).toContain('flex-direction: row !important;')
+    expect(nestedFilterShellBlock).toContain('align-items: center !important;')
+    expect(nestedFilterShellBlock).toContain('gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;')
+    expect(nestedFilterShellBlock).toContain('width: 100% !important;')
+    expect(nestedFilterShellBlock).toContain('padding: 0 !important;')
+    expect(nestedFilterShellBlock).toContain('border: 0 !important;')
+    expect(nestedFilterShellBlock).toContain('background: transparent !important;')
+    expect(nestedFilterShellBlock).toContain('box-shadow: none !important;')
 
-  it('keeps neutral option text tied to its resting token while hover uses surface only', () => {
-    expect(stableHoverLayer).toContain('--select-option-stable-text: var(--select-option-text, var(--atelier-muted));')
-    expect(stableHoverLayer).toContain(':root.theme-cloudflare body.dashboard-filter-menu-open .select-dropdown-portal')
-    expect(stableHoverLayer).toContain('--select-option-stable-text: var(--atelier-ink);')
-    expect(stableHoverLayer).toContain('color: var(--select-option-stable-text) !important;')
-    expect(stableHoverLayer).toContain('color: var(--date-picker-muted-text, var(--atelier-muted)) !important;')
-    expect(stableHoverLayer).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(stableHoverLayer).toContain('-webkit-text-fill-color: currentColor !important;')
-    expect(datePresetHoverBlock).not.toContain('color: var(--atelier-ink) !important;')
-    expect(datePresetHoverBlock).toContain('color: var(--date-picker-muted-text, var(--atelier-muted)) !important;')
-  })
+    const nestedGroupsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.table-filter-left, .table-filter-actions)')
+    expect(nestedGroupsBlock).toContain('align-items: center !important;')
+    expect(nestedGroupsBlock).toContain('gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;')
+    expect(nestedGroupsBlock).toContain('min-height: var(--anthropic-control-height) !important;')
 
-  it('keeps selected select option text stable across hover and focus', () => {
-    expect(stableHoverLayer).toContain('--select-option-selected-stable-text: var(--select-option-selected-text, var(--atelier-ink));')
+    const nestedLeftBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left')
+    expect(nestedLeftBlock).toContain('width: max-content !important;')
+    expect(nestedLeftBlock).toContain('flex: 0 0 max-content !important;')
+    expect(nestedLeftBlock).toContain('flex-wrap: nowrap !important;')
 
-    const selectedOptionBlock = stableHoverLayer.slice(
-      stableHoverLayer.indexOf('.select-dropdown-portal .select-option-selected,'),
-      stableHoverLayer.indexOf('.date-picker-dropdown-portal .date-picker-preset:not(.date-picker-preset-active)'),
+    const nestedActionsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-actions')
+    expect(nestedActionsBlock).toContain('margin-left: auto !important;')
+
+    const nestedControlsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(button, .btn, .select-trigger')
+    expect(nestedControlsBlock).toContain('min-height: var(--anthropic-control-height) !important;')
+    expect(nestedControlsBlock).toContain('height: var(--anthropic-control-height) !important;')
+    expect(nestedControlsBlock).toContain('font-size: var(--anthropic-control-font-size) !important;')
+
+    const selectRootBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.select-root--field, .select-root--text-control)')
+    expect(selectRootBlock).toContain('width: max-content !important;')
+    expect(selectRootBlock).toContain('flex: 0 0 auto !important;')
+
+    const refreshButtonBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(\n  button.anthropic-refresh-action-button')
+    expect(refreshButtonBlock).toContain('width: auto !important;')
+    expect(refreshButtonBlock).toContain('height: var(--anthropic-control-height) !important;')
+    expect(refreshButtonBlock).toContain('padding: 0.375rem 1rem !important;')
+    expect(refreshButtonBlock).toContain('--button-bg: var(--anthropic-clay-interactive);')
+    expect(refreshButtonBlock).toContain('border: 0 !important;')
+    expect(refreshButtonBlock).toContain('background: var(--anthropic-clay-interactive) !important;')
+    expect(refreshButtonBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(refreshButtonBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;')
+    expect(refreshButtonBlock).toContain('transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;')
+    const refreshButtonHoverBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content :where(\n' +
+        '  button.anthropic-refresh-action-button,\n' +
+        '  button.dashboard-filter-refresh,\n' +
+        '  button[data-testid*="refresh"]:not([data-testid*="auto-refresh"]):not([data-testid*="refresh-token"]),\n' +
+        '  button[data-testid*="-button-load"]:not([data-testid*="download"]):not([data-testid^="account-account-usage-cell-button-load-active-usage"]),\n' +
+        '  button[data-testid*="-button-fetch"]:not([data-testid*="download"]),\n' +
+        '  button[title="刷新"],\n' +
+        '  button[title="Refresh"]\n' +
+        '):where(:hover, :focus-visible)',
     )
-    for (const selector of [
-      '.select-dropdown-portal .select-option-selected,',
-      '.select-dropdown-portal .select-option-selected:hover,',
-      '.select-dropdown-portal .select-option-selected.select-option-focused,',
-      '.dark .select-dropdown-portal .select-option-selected:hover,',
-    ]) {
-      expect(selectedOptionBlock, `selected option block should cover ${selector}`).toContain(selector)
+    expect(refreshButtonHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+
+    expect(groupsViewSource).toContain('groups-filter-shell')
+    expect(groupsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button groups-refresh-button"')
+    expect(groupsViewSource).toContain('class="btn btn-secondary groups-sort-button"')
+    expect(groupsViewSource).toContain('class="btn btn-primary groups-create-button"')
+    expect(groupsViewSource).toContain('{{ t("common.refresh") }}')
+    expect(groupsViewSource).not.toContain('name="refresh"\n                size="md"')
+
+    expect(usersViewSource).toContain('table-filter-shell users-filter-shell')
+    expect(usersViewSource).toContain('table-filter-left users-filter-left')
+    expect(usersViewSource).toContain('table-filter-actions users-filter-actions')
+    expect(usersViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button users-refresh-button"')
+    expect(usersViewSource).toContain('class="btn btn-primary users-filter-create flex-1 md:flex-initial"')
+    expect(usersViewSource).toContain('class="filter-menu-button filter-menu-button-with-caret"')
+    expect(usersViewSource.match(/class="filter-menu-button filter-menu-button-with-caret"/g)).toHaveLength(2)
+    expect(usersViewSource.match(/class="filter-menu-caret"/g)).toHaveLength(2)
+    expect(usersViewSource).toContain('class="filter-menu-button"\n                :title="t(\'admin.users.attributes.configButton\')"')
+    expect(usersViewSource).not.toContain('class="users-filter-shell flex flex-wrap items-center gap-3"')
+    expect(usersViewSource).not.toContain('class="users-filter-create filter-menu-button')
+
+    expect(accountsViewSource).toContain('class="table-filter-shell accounts-filter-shell')
+    expect(accountsViewSource).toContain('<AccountTableFilters')
+    expect(accountsViewSource).toContain('<AccountTableActions')
+    expect(accountsViewSource).not.toContain('class="accounts-filter-shell flex flex-wrap-reverse')
+    expect(accountTableActionsSource).toContain('class="btn btn-primary anthropic-refresh-action-button accounts-refresh-button"')
+    expect(accountTableActionsSource).toContain('class="btn btn-primary accounts-create-button"')
+    expect(accountTableActionsSource).not.toContain('class="filter-menu-button">\n      {{ t(\'common.refresh\') }}')
+    expect(accountTableActionsSource).not.toContain('class="filter-menu-button">\n      {{ t(\'admin.accounts.createAccount\') }}')
+
+    expect(subscriptionsViewSource).toContain('class="table-filter-shell subscriptions-filter-shell')
+    expect(subscriptionsViewSource).toContain('class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto"')
+    expect(subscriptionsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button subscriptions-refresh-button"')
+    expect(subscriptionsViewSource).toContain('{{ t("common.refresh") }}')
+    expect(subscriptionsViewSource).toContain('class="filter-menu-button subscriptions-guide-button"')
+    expect(subscriptionsViewSource).not.toContain('<Icon name="questionCircle"')
+
+    expect(channelsViewSource).toContain('class="table-filter-shell channels-filter-shell')
+    expect(channelsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button channels-refresh-button"')
+    expect(channelsViewSource).toContain('class="btn btn-primary channels-create-button"')
+    expect(channelsViewSource).toContain('{{ t("common.refresh", "Refresh") }}')
+    expect(channelsViewSource).not.toContain('<Icon name="refresh" size="md" :class="loading ? \'animate-spin\' : \'\'" />')
+
+    expect(proxiesViewSource).toContain('class="table-filter-shell proxies-filter-shell')
+    expect(proxiesViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button proxies-refresh-button"')
+    expect(proxiesViewSource).toContain('{{ t("common.refresh") }}')
+    expect(proxiesViewSource).toContain('class="filter-menu-button"')
+    expect(proxiesViewSource).not.toContain('<Icon name="refresh" size="md" :class="loading ? \'animate-spin\' : \'\'" />')
+
+    expect(redeemViewSource).toContain('class="table-filter-shell redeem-filter-shell')
+    expect(redeemViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button redeem-refresh-button"')
+    expect(redeemViewSource).toContain('{{ t("common.refresh") }}')
+    expect(redeemViewSource).toContain('class="btn btn-primary redeem-generate-button"')
+
+    expect(promoCodesViewSource).toContain('class="table-filter-shell promo-filter-shell')
+    expect(promoCodesViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button promo-refresh-button"')
+    expect(promoCodesViewSource).toContain('{{ t("common.refresh") }}')
+    expect(promoCodesViewSource).toContain('class="btn btn-primary promo-create-button"')
+
+    expect(usageViewSource).toContain('class="card p-4 usage-time-filter-card table-page-filter-section"')
+    expect(usageFiltersSource).toContain('class="card p-6 usage-filter-card table-page-filter-section"')
+    expect(usageFiltersSource).toContain('class="usage-filter-shell table-filter-shell')
+    expect(usageFiltersSource).toContain('class="btn btn-primary anthropic-refresh-action-button usage-refresh-button"')
+    expect(usageFiltersSource).toContain('{{ t("common.refresh") }}')
+
+    expect(externalSubscriptionsViewSource).toContain('class="table-filter-shell external-subscriptions-filter-shell')
+    expect(externalSubscriptionsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button external-subscriptions-refresh-button"')
+    expect(externalSubscriptionsViewSource).toContain('class="btn btn-primary external-subscriptions-create-button"')
+
+    expect(announcementsViewSource).toContain('class="table-filter-shell announcements-filter-shell')
+    expect(announcementsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button announcements-refresh-button"')
+    expect(announcementsViewSource).toContain('class="btn btn-primary announcements-create-button"')
+
+    expect(monitorFiltersBarSource).toContain('class="table-filter-shell monitor-filter-shell')
+    expect(monitorFiltersBarSource).toContain('class="btn btn-primary anthropic-refresh-action-button monitor-refresh-button"')
+    expect(monitorFiltersBarSource).toContain('class="btn btn-primary monitor-create-button"')
+
+    expect(adminOrdersViewSource).toContain('class="table-filter-shell order-filter-shell')
+    expect(adminOrdersViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button orders-refresh-button"')
+    expect(adminOrdersViewSource).not.toContain('<Icon name="refresh" size="md" :class="ordersLoading ? \'animate-spin\' : \'\'" />')
+
+    expect(adminPaymentDashboardViewSource).toContain('class="payment-dashboard-filter-bar table-page-filter-section')
+    expect(adminPaymentDashboardViewSource).toContain('class="payment-dashboard-filter-shell table-filter-shell')
+    expect(adminPaymentDashboardViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button payment-dashboard-refresh-button"')
+    expect(adminPaymentDashboardViewSource).not.toContain('<Icon name="refresh" size="md" :class="loading ? \'animate-spin\' : \'\'" />')
+
+    expect(adminPaymentPlansViewSource).toContain('class="payment-plans-filter-bar table-page-filter-section')
+    expect(adminPaymentPlansViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button payment-plans-refresh-button"')
+    expect(adminPaymentPlansViewSource).not.toContain('<Icon name="refresh" size="md" :class="plansLoading ? \'animate-spin\' : \'\'" />')
+
+    expect(adminOrderTableSource).toContain('class="card p-4 order-filter-card table-page-filter-section"')
+    expect(adminOrderTableSource).toContain('class="table-filter-shell order-table-filter-shell')
+    expect(adminOrderTableSource).toContain('class="btn btn-primary anthropic-refresh-action-button order-table-refresh-button"')
+
+    expect(adminAffiliateRecordsSource).toContain('class="table-filter-shell affiliate-records-filter-shell')
+    expect(adminAffiliateRecordsSource).toContain('class="btn btn-primary anthropic-refresh-action-button affiliate-records-refresh-button"')
+
+    expect(userKeysViewSource).toContain('class="keys-filter-shell table-filter-shell')
+    expect(userKeysViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button keys-refresh-button"')
+    expect(userKeysViewSource).toContain('class="btn btn-primary keys-create-button"')
+    const keysActionsSectionBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier > .table-page-actions-section')
+    expect(keysActionsSectionBlock).toContain('justify-content: flex-end !important;')
+    expect(keysActionsSectionBlock).toContain('padding: 0 !important;')
+    expect(keysActionsSectionBlock).toContain('border: 0 !important;')
+    expect(keysActionsSectionBlock).toContain('background: transparent !important;')
+    expect(keysActionsSectionBlock).toContain('box-shadow: none !important;')
+    const keysActionsInnerBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier > .table-page-actions-section > .keys-page-actions')
+    expect(keysActionsInnerBlock).toContain('gap: var(--anthropic-control-gap) !important;')
+    expect(keysActionsInnerBlock).toContain('padding: 0 !important;')
+    expect(keysActionsInnerBlock).toContain('border: 0 !important;')
+    expect(keysActionsInnerBlock).toContain('background: transparent !important;')
+    const keysActionButtonsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier .keys-page-actions :where(.keys-refresh-button, .keys-create-button)')
+    expect(keysActionButtonsBlock).toContain('min-width: 5.25rem !important;')
+    expect(keysActionButtonsBlock).toContain('min-height: 2.5rem !important;')
+    expect(keysActionButtonsBlock).toContain('height: 2.5rem !important;')
+    expect(keysActionButtonsBlock).toContain('padding: 0.5rem 1rem !important;')
+    const endpointItemBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier .endpoint-popover-item')
+    expect(endpointItemBlock).toContain('display: inline-flex !important;')
+    expect(endpointItemBlock).toContain('align-items: center !important;')
+    const endpointCodeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier .endpoint-code')
+    expect(endpointCodeBlock).toContain('display: inline-flex !important;')
+    expect(endpointCodeBlock).toContain('align-items: center !important;')
+    expect(endpointCodeBlock).toContain('line-height: 1.5rem !important;')
+    const endpointIconBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-keys-atelier .endpoint-popover-icon-action')
+    expect(endpointIconBlock).toContain('display: inline-flex !important;')
+    expect(endpointIconBlock).toContain('align-items: center !important;')
+    expect(endpointIconBlock).toContain('justify-content: center !important;')
+    expect(endpointIconBlock).toContain('height: 1.5rem !important;')
+
+    expect(userUsageViewSource).toContain('class="usage-filter-shell table-filter-shell')
+    expect(userUsageViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button user-usage-refresh-button"')
+    expect(userUsageViewSource).toContain('class="filter-menu-button user-usage-reset-button"')
+    expect(userUsageViewSource).toContain('class="btn btn-primary user-usage-export-button"')
+    expect(userUsageViewSource).not.toContain('class="card usage-filter-card table-page-filter-section"')
+    expect(userUsageViewSource).not.toContain('class="usage-filter-shell table-filter-shell flex flex-wrap items-end gap-3">\n          <div class="px-6 py-4"')
+    const usageActionsSectionBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-usage-atelier > .table-page-actions-section')
+    expect(usageActionsSectionBlock).toContain('width: 100% !important;')
+    expect(usageActionsSectionBlock).toContain('padding: 0 !important;')
+    expect(usageActionsSectionBlock).toContain('border: 0 !important;')
+    expect(usageActionsSectionBlock).toContain('background: transparent !important;')
+    expect(usageActionsSectionBlock).toContain('box-shadow: none !important;')
+    const usageStatsGridBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .user-usage-atelier > .table-page-actions-section > .usage-stats-grid')
+    expect(usageStatsGridBlock).toContain('width: 100% !important;')
+    expect(usageStatsGridBlock).toContain('padding: 0 !important;')
+    expect(usageStatsGridBlock).toContain('border: 0 !important;')
+    expect(usageStatsGridBlock).toContain('background: transparent !important;')
+    expect(usageStatsGridBlock).toContain('box-shadow: none !important;')
+
+    expect(userOrdersViewSource).toContain('class="card p-4 order-filter-card table-page-filter-section"')
+    expect(userOrdersViewSource).toContain('class="table-filter-shell user-orders-filter-shell')
+    expect(userOrdersViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button user-orders-refresh-button"')
+
+    expect(globalPricingViewSource).toContain('class="global-pricing-filter-card table-page-filter-section"')
+    expect(globalPricingViewSource).toContain('class="global-pricing-filter-shell table-filter-shell"')
+    expect(globalPricingViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button global-pricing-refresh-button"')
+    expect(globalPricingViewSource).not.toContain('<Icon name="refresh" size="md" :class="loading ? \'animate-spin\' : \'\'" />')
+    const globalPricingTableWrapperBlock = cssBlock(globalPricingViewSource, '.table-wrapper')
+    expect(globalPricingTableWrapperBlock).toContain('--material-card-surface: var(--anthropic-page);')
+    expect(globalPricingTableWrapperBlock).toContain('--material-table-header-surface: var(--anthropic-page);')
+    expect(globalPricingTableWrapperBlock).toContain('--material-table-cell-surface: var(--anthropic-page);')
+    expect(globalPricingTableWrapperBlock).toContain('--material-table-hover-surface: var(--anthropic-cookbook-hover);')
+    expect(globalPricingTableWrapperBlock).toContain('--material-card-edge: var(--anthropic-cookbook-border);')
+    expect(globalPricingTableWrapperBlock).toContain('box-shadow: none;')
+    expect(globalPricingTableWrapperBlock).not.toContain('--material-card-surface: var(--atelier-paper-2);')
+    const globalPricingHeaderBlock = cssBlock(globalPricingViewSource, '.global-pricing-table th')
+    expect(globalPricingHeaderBlock).toContain('background: var(--material-table-header-surface);')
+    const globalPricingCellBlock = cssBlock(globalPricingViewSource, '.global-pricing-table td')
+    expect(globalPricingCellBlock).toContain('background: var(--material-table-cell-surface);')
+    const globalPricingRowHoverBlock = cssBlock(globalPricingViewSource, '.pricing-row:hover')
+    expect(globalPricingRowHoverBlock).toContain('background: var(--material-table-hover-surface);')
+    expect(globalPricingRowHoverBlock).not.toContain('background: var(--atelier-blue-soft);')
+    expect(globalPricingViewSource).toContain('.pricing-row:hover td,')
+    expect(globalPricingViewSource).toContain('background: var(--material-table-hover-surface);')
+    expect(globalPricingViewSource).toContain('box-shadow: 1px 0 0 var(--material-row-edge);')
+
+    expect(availableChannelsViewSource).toContain('class="table-filter-shell available-channels-filter-shell')
+    expect(availableChannelsViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button available-channels-refresh-button"')
+
+    expect(groupsViewSource).toContain('group-billing-badge--standard')
+    expect(groupsViewSource).toContain('group-billing-badge--subscription')
+
+    const billingBadgeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .group-billing-badge')
+    expect(billingBadgeBlock).toContain('background: transparent !important;')
+    expect(billingBadgeBlock).toContain('border: 1px solid currentColor !important;')
+    const standardBadgeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .group-billing-badge--standard')
+    expect(standardBadgeBlock).toContain('color: var(--anthropic-info) !important;')
+    const subscriptionBadgeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .group-billing-badge--subscription')
+    expect(subscriptionBadgeBlock).toContain('color: var(--anthropic-warning) !important;')
+  })
+
+  it('keeps DataTable headers light and row hover continuous across sticky and regular cells', () => {
+    const tableWrapperBlock = cssBlock(dataTableSource, '.table-wrapper {')
+    expect(tableWrapperBlock).toContain('--table-surface: var(--anthropic-page, var(--atelier-surface));')
+    expect(tableWrapperBlock).toContain('--table-header-surface: var(--anthropic-page, var(--atelier-surface));')
+    expect(tableWrapperBlock).toContain('--table-hover-surface: var(--anthropic-cookbook-hover, var(--anthropic-section, var(--atelier-surface-muted)));')
+    expect(tableWrapperBlock).not.toContain('--table-header-surface: var(--atelier-dust-soft);')
+
+    const stickyHeaderBlock = cssBlock(dataTableSource, '.sticky-header-cell {')
+    expect(stickyHeaderBlock).toContain('background-color: var(--table-header-surface);')
+    expect(stickyHeaderBlock).toContain('color: var(--anthropic-muted, var(--atelier-muted));')
+
+    expect(dataTableSource).toContain('.table-body > tr:hover > td,\ntbody tr:hover .sticky-col')
+    const rowHoverBlock = cssBlock(dataTableSource, '.table-body > tr:hover > td,')
+    expect(rowHoverBlock).toContain('background-color: var(--table-hover-surface);')
+    expect(rowHoverBlock).not.toContain('var(--anthropic-raised')
+    expect(dataTableSource).toContain('.dark .table-body > tr:hover > td,\n.dark tbody tr:hover .sticky-col')
+
+    expect(accountUsageCellSource).toContain('class="account-usage-query-action inline-flex')
+    expect(openAIQuotaResetCellSource).toContain('class="openai-quota-reset-action inline-flex')
+    const accountUsageActionBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page :where(.account-usage-query-action, .openai-quota-reset-action)')
+    expect(accountUsageActionBlock).toContain('min-height: 0 !important;')
+    expect(accountUsageActionBlock).toContain('height: auto !important;')
+    expect(accountUsageActionBlock).toContain('border: 0 !important;')
+    expect(accountUsageActionBlock).toContain('border-radius: 0 !important;')
+    expect(accountUsageActionBlock).toContain('background: transparent !important;')
+    expect(accountUsageActionBlock).toContain('box-shadow: none !important;')
+    expect(accountUsageActionBlock).toContain('padding: 0 !important;')
+    expect(accountUsageActionBlock).toContain('text-decoration-line: underline !important;')
+    expect(accountUsageActionBlock).toContain('text-decoration-color: transparent !important;')
+    expect(accountUsageActionBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const accountUsageActionHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page :where(.account-usage-query-action, .openai-quota-reset-action):where(:hover, :focus-visible)')
+    expect(accountUsageActionHoverBlock).toContain('background: transparent !important;')
+    expect(accountUsageActionHoverBlock).toContain('box-shadow: none !important;')
+    expect(accountUsageActionHoverBlock).toContain('text-decoration-color: currentColor !important;')
+
+    const layoutHeadBlock = cssBlock(tablePageLayoutSource, '.table-scroll-container :deep(thead)')
+    expect(layoutHeadBlock).toContain('background: var(--anthropic-page, var(--atelier-surface));')
+    expect(layoutHeadBlock).not.toContain('background: var(--atelier-dust-soft);')
+    const layoutHeaderCellBlock = cssBlock(tablePageLayoutSource, '.table-scroll-container :deep(th)')
+    expect(layoutHeaderCellBlock).toContain('border-color: var(--anthropic-cookbook-border, var(--atelier-line));')
+    expect(layoutHeaderCellBlock).toContain('background: var(--anthropic-page, var(--atelier-surface));')
+    expect(layoutHeaderCellBlock).toContain('color: var(--anthropic-muted, var(--atelier-muted));')
+    expect(layoutHeaderCellBlock).not.toContain('color: var(--atelier-ink);')
+  })
+
+  it('restores the ops toolbar frame while keeping ops modules hover-static', () => {
+    const opsToolbarBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar {\n  display')
+    expect(opsToolbarBlock).toContain('align-items: center !important;')
+    expect(opsToolbarBlock).toContain('padding: 0.75rem 1rem !important;')
+    expect(opsToolbarBlock).toContain('border: 1px solid var(--anthropic-cookbook-border) !important;')
+    expect(opsToolbarBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(opsToolbarBlock).toContain('gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;')
+    expect(opsToolbarBlock).toContain('transition: none !important;')
+    expect(opsToolbarBlock).toContain('transition-property: none !important;')
+
+    const opsToolbarControlsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls')
+    expect(opsToolbarControlsBlock).toContain('padding: 0 !important;')
+    expect(opsToolbarControlsBlock).toContain('border: 0 !important;')
+    expect(opsToolbarControlsBlock).toContain('background: transparent !important;')
+    expect(opsToolbarControlsBlock).toContain('margin-left: auto !important;')
+    expect(opsToolbarControlsBlock).toContain('align-self: center !important;')
+    expect(opsToolbarControlsBlock).toContain('gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;')
+    expect(opsToolbarControlsBlock).toContain('transition: none !important;')
+    expect(opsToolbarControlsBlock).toContain('transition-property: none !important;')
+
+    const opsToolbarChildrenBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > *')
+    expect(opsToolbarChildrenBlock).toContain('display: inline-flex !important;')
+    expect(opsToolbarChildrenBlock).toContain('min-height: var(--anthropic-control-height) !important;')
+    expect(opsToolbarChildrenBlock).toContain('height: var(--anthropic-control-height) !important;')
+    expect(opsToolbarChildrenBlock).toContain('align-items: center !important;')
+    expect(opsToolbarChildrenBlock).toContain('align-self: center !important;')
+    expect(opsToolbarChildrenBlock).toContain('transition: none !important;')
+    expect(opsToolbarChildrenBlock).toContain('transition-property: none !important;')
+
+    const opsTextControlBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger, .ops-toolbar-text-button)')
+    expect(opsTextControlBlock).toContain('gap: 0.1875rem !important;')
+    expect(opsTextControlBlock).toContain('background: transparent !important;')
+    expect(opsTextControlBlock).toContain('text-decoration-color: transparent;')
+
+    const opsCaretBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-icon')
+    expect(opsCaretBlock).toContain('margin-left: -0.125rem !important;')
+    expect(opsCaretBlock).toContain('width: 1.25rem !important;')
+    expect(opsCaretBlock).toContain('height: 1.25rem !important;')
+    expect(targetedRepairSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger-open .select-icon')
+    expect(targetedRepairSource).not.toContain('.ops-monitor-toolbar-controls :where(.select-trigger:hover .select-icon, .select-trigger-open .select-icon)')
+
+    const opsToolbarDividerBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > :where(.hidden.h-4.w-\\[1px\\])')
+    expect(opsToolbarDividerBlock).toContain('display: none !important;')
+
+    const opsSelectWrapperBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > :where(.relative, .w-full)')
+    expect(opsSelectWrapperBlock).toContain('width: auto !important;')
+    expect(opsSelectWrapperBlock).toContain('flex: 0 0 auto !important;')
+
+    const opsToolbarSelectBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls > .ops-toolbar-select')
+    expect(opsToolbarSelectBlock).toContain('width: auto !important;')
+    expect(opsToolbarSelectBlock).toContain('min-width: 0 !important;')
+    expect(opsToolbarSelectBlock).toContain('flex: 0 0 auto !important;')
+
+    const opsControlBaseBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger, .ops-toolbar-text-button, .ops-toolbar-primary-button, .ops-toolbar-icon-button)')
+    expect(opsControlBaseBlock).toContain('height: var(--anthropic-control-height) !important;')
+    expect(opsControlBaseBlock).toContain('transition-property: none !important;')
+
+    const opsIconButtonBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-icon-button')
+    expect(opsIconButtonBlock).toContain('flex: 0 0 var(--anthropic-control-height) !important;')
+    expect(opsIconButtonBlock).toContain('width: var(--anthropic-control-height) !important;')
+
+    const opsPrimaryButtonBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button')
+    expect(opsPrimaryButtonBlock).toContain('padding-inline: 1rem !important;')
+    expect(opsPrimaryButtonBlock).toContain('background: var(--anthropic-fg) !important;')
+    expect(opsPrimaryButtonBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(targetedRepairSource).not.toContain('.ops-toolbar-icon-button.anthropic-refresh-action-button')
+
+    const opsDiagnosisPopoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover')
+    expect(opsDiagnosisPopoverBlock).toContain('display: none !important;')
+    expect(opsDiagnosisPopoverBlock).toContain('width: 0 !important;')
+    expect(opsDiagnosisPopoverBlock).toContain('height: 0 !important;')
+    expect(opsDiagnosisPopoverBlock).toContain('pointer-events: none !important;')
+
+    const opsRestSelector = '#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card'
+    expect(targetedRepairSource).toContain(opsRestSelector)
+    const opsModuleRestBlock = cssBlock(targetedRepairSource, opsRestSelector)
+    expect(opsModuleRestBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(opsModuleRestBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(opsModuleRestBlock).toContain('box-shadow: none !important;')
+    expect(opsModuleRestBlock).toContain('transform: none !important;')
+    expect(opsModuleRestBlock).toContain('transition: none !important;')
+    expect(opsModuleRestBlock).toContain('transition-property: none !important;')
+
+    const opsHoverSelector = '#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card, .ops-metric-card, .ops-system-card, .ops-monitor-panel'
+    expect(targetedRepairSource).toContain(opsHoverSelector)
+    const opsModuleHoverBlock = cssBlock(targetedRepairSource, opsHoverSelector)
+    expect(opsModuleHoverBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(opsModuleHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(opsModuleHoverBlock).toContain('box-shadow: none !important;')
+    expect(opsModuleHoverBlock).toContain('transform: none !important;')
+    expect(opsModuleHoverBlock).toContain('transition: none !important;')
+    expect(opsModuleHoverBlock).toContain('transition-property: none !important;')
+
+    const opsHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-live-panel')
+    expect(opsHoverBlock).toContain('border: 1px solid var(--anthropic-cookbook-border) !important;')
+    expect(opsHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(opsHoverBlock).toContain('box-shadow: none !important;')
+    expect(opsHoverBlock).toContain('transform: none !important;')
+    expect(opsHoverBlock).toContain('transition: none !important;')
+    expect(opsHoverBlock).not.toContain('--creepee-home-card-hover-transform')
+    expect(opsHoverBlock).not.toContain('translate3d')
+    const opsLiveGridBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-live-grid,')
+    expect(opsLiveGridBlock).toContain('border: 0 !important;')
+    expect(opsLiveGridBlock).toContain('background: transparent !important;')
+    expect(targetedRepairSource).toContain('.ops-live-panel .ops-realtime-panel')
+    const opsHealthCardBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card,')
+    expect(opsHealthCardBlock).toContain('border: 0 !important;')
+    expect(opsHealthCardBlock).toContain('background: transparent !important;')
+    expect(opsConcurrencySource).toContain('border border-[var(--anthropic-border)] bg-transparent')
+    expect(opsConcurrencySource).toContain('border-b border-[var(--anthropic-border)] bg-transparent')
+    expect(opsConcurrencySource).not.toContain('border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)]')
+    expect(targetedRepairSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring :where(circle, path)')
+    const opsHealthRingBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring')
+    expect(opsHealthRingBlock).toContain('fill: none !important;')
+    expect(opsHealthRingBlock).toContain('stroke: var(--ops-health-score-color) !important;')
+    expect(opsHealthRingBlock).toContain('transition: none !important;')
+    expect(opsHealthRingBlock).toContain('transition-property: none !important;')
+    const opsHealthShapeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring :where(circle, path)')
+    expect(opsHealthShapeBlock).toContain('color: var(--ops-health-score-color) !important;')
+    expect(opsHealthShapeBlock).toContain('fill: transparent !important;')
+    expect(opsHealthShapeBlock).toContain('stroke: var(--ops-health-score-color) !important;')
+    expect(opsHealthShapeBlock).toContain('stroke-opacity: 1 !important;')
+    expect(opsHealthShapeBlock).toContain('transition: none !important;')
+    expect(opsHealthShapeBlock).toContain('transition-property: none !important;')
+      const opsHealthTrackBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring .ops-health-score-track')
+      expect(opsHealthTrackBlock).toContain('opacity: 0.22 !important;')
+      const opsBaseHealthShapeBlock = cssBlock(styleSource, '#app .app-layout-content .ops-dashboard-atelier .ops-health-score-ring,')
+      expect(opsBaseHealthShapeBlock).toContain('stroke: var(--ops-health-score-color) !important;')
+      const opsHealthTextBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier :where(.ops-health-score-value')
+    expect(opsHealthTextBlock).toContain('color: var(--ops-health-score-color) !important;')
+    expect(opsHealthTextBlock).toContain('transition: none !important;')
+    expect(opsHealthTextBlock).toContain('transition-property: none !important;')
+    expect(targetedRepairSource).not.toContain('#app .app-layout-content .ops-dashboard-atelier :where(.ops-live-panel, .ops-health-score-card, .ops-realtime-panel, .ops-metric-card, .ops-system-card, .ops-monitor-panel, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .anthropic-card-shell):where(:hover, :focus-within)')
+  })
+
+  it('uses the official 20px caret mask for shared select and date controls', () => {
+    for (const source of [selectSource, dateRangePickerSource]) {
+      expect(source).toContain("viewBox='0 0 20 20'")
+      expect(source).toContain('width: 1.25rem;')
+      expect(source).toContain('height: 1.25rem;')
+      expect(source).toContain('transform: translateY(1px) rotate(0deg);')
+      expect(source).toContain('transform: translateY(1px) rotate(180deg);')
+      expect(source).not.toContain("viewBox='0 0 8 5'")
+      expect(source).not.toContain("width='12' height='6.13'")
+      expect(source).not.toContain('center / 12px 6.13px no-repeat')
     }
-
-    expect(selectedOptionBlock).toContain('color: var(--select-option-selected-stable-text) !important;')
-    expect(selectedOptionBlock).toContain('-webkit-text-fill-color: currentColor !important;')
-    expect(selectedOptionBlock).toContain(':where(.select-option-label, svg)')
-    expect(selectedOptionBlock).toContain('color: inherit !important;')
   })
 
-  it('does not let the broad dropdown hover rule catch filled action buttons', () => {
-    expect(broadDropdownHoverBlock).toContain('.date-picker-apply')
-    expect(broadDropdownHoverBlock).toContain(':not(.date-picker-apply)')
-    expect(broadDropdownHoverBlock).toContain(':not(.codex-button--primary)')
+  it('does not repaint SVG elements that carry an explicit stroke color', () => {
+    expect(styleSource).toContain('.app-layout-content :where(svg:not([stroke]), path:not([stroke]), circle:not([stroke]), rect:not([stroke]), polygon:not([stroke]))')
+    expect(styleSource).not.toContain('.app-layout-content :where(svg, path, circle, rect, polygon) {')
+    expect(targetedRepairSource).not.toContain('.app-layout-content :where(svg, path, circle, rect, polygon) {')
   })
 
-  it('removes component-level hover text repaint tokens for select options', () => {
-    expect(selectSource).not.toContain('--select-option-hover-text')
-    expect(selectSource).toContain('--select-option-stable-text: var(--select-option-text);')
-    expect(selectSource).toContain('color: var(--select-option-stable-text);')
+  it('preserves account rows as domain cards instead of flattening them to generic tables', () => {
+    expect(targetedRepairSource).toContain('#app .app-layout-content .accounts-table-page .account-card-table-frame')
+    expect(targetedRepairSource).toContain('grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));')
+    expect(targetedRepairSource).toContain('background: var(--account-card-bg) !important;')
+    expect(targetedRepairSource).toContain('--account-card-hover-bg: var(--anthropic-cookbook-hover);')
+    expect(targetedRepairSource).not.toContain('--account-card-resting-bg')
+    expect(targetedRepairSource).not.toContain('tbody:has(tr:hover) tr:not(:hover)')
+    const wrapperChromeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .layout-section-scrollable,')
+    expect(wrapperChromeBlock).toContain('border-width: 0 !important;')
+    expect(wrapperChromeBlock).toContain('background: transparent !important;')
+    expect(wrapperChromeBlock).toContain('box-shadow: none !important;')
+    const domainCardHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover')
+    expect(domainCardHoverBlock).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(domainCardHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(domainCardHoverBlock).toContain('transform: none !important;')
+    expect(targetedRepairSource).toContain('codex-account-card-calling')
   })
 
-  it('keeps date presets from repainting neutral text on hover in dark mode', () => {
-    expect(dateRangePickerSource).not.toContain('color: #f8fbff;')
-    expect(dateRangePickerSource).not.toContain('background: rgba(0, 47, 167, 0.24);')
-    expect(dateRangePickerSource).toContain('.date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active)')
-    expect(dateRangePickerSource).toContain('color: var(--date-picker-muted-text);')
+  it('keeps the account bulk actions bar frameless and avoids duplicate filtered edit entry points', () => {
+    expect(accountBulkActionsBarSource).toContain('account-bulk-actions-bar')
+    expect(accountBulkActionsBarSource).not.toContain('account-bulk-edit-filtered-empty')
+    expect(accountBulkActionsBarSource).toContain('data-testid="account-bulk-edit-filtered"')
+    expect(accountBulkActionsBarSource).toContain('data-testid="account-bulk-edit-selected"')
+    const bulkBarBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-bulk-actions-bar')
+    expect(bulkBarBlock).toContain('border: 0 !important;')
+    expect(bulkBarBlock).toContain('border-radius: 0 !important;')
+    expect(bulkBarBlock).toContain('background: transparent !important;')
+    expect(bulkBarBlock).toContain('color: var(--anthropic-fg) !important;')
+    expect(bulkBarBlock).toContain('box-shadow: none !important;')
+    expect(bulkBarBlock).not.toContain('var(--atelier-paper-2)')
+    expect(bulkBarBlock).not.toContain('var(--atelier-material-edge)')
   })
 
-  it('keeps dashboard date controls from forcing paper text on Cloudflare slabs', () => {
-    const dashboardRangeHoverBlock = cssBlockContaining(
-      '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-range:hover :where(span, svg)',
+  it('keeps pagination controls on the shared 13px by 32px control contract', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      const paginationBlock = cssBlock(source, '.app-layout-content :where(.pagination-shell) :where(button, input, .select-trigger)')
+      expect(paginationBlock).toContain('min-height: var(--anthropic-control-height);')
+      expect(paginationBlock).toContain('height: var(--anthropic-control-height);')
+      expect(paginationBlock).toContain('font-size: var(--anthropic-control-font-size);')
+      expect(paginationBlock).toContain('line-height: var(--anthropic-control-line-height);')
+      expect(paginationBlock).toContain('box-shadow: none;')
+
+      const paginationHoverBlock = cssBlock(source, '.app-layout-content :where(.pagination-shell) :where(button:hover')
+      expect(paginationHoverBlock).toContain('background: var(--anthropic-raised);')
+      expect(paginationHoverBlock).toContain('box-shadow: 0 0 0 1px var(--anthropic-border-hover);')
+      expect(paginationHoverBlock).not.toContain('--creepee-home-card-hover-transform')
+
+      const paginationCurrentBlock = cssBlock(source, '.app-layout-content :where(.pagination-shell) :where(button[aria-current="page"])')
+      expect(paginationCurrentBlock).toContain('background: var(--anthropic-raised);')
+      expect(paginationCurrentBlock).toContain('color: var(--anthropic-fg);')
+      expect(paginationCurrentBlock).not.toContain('background: var(--anthropic-fg);')
+      expect(paginationCurrentBlock).not.toContain('color: var(--anthropic-page);')
+    }
+  })
+
+  it('uses the official double-ring model for action buttons', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('--anthropic-button-ring-hover: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg, transparent), 0 0 0 var(--button-border-width-hover, 2px)')
+    }
+    const primaryBlock = cssBlock(styleSource, '.app-layout-content :where(.btn-primary')
+    expect(primaryBlock).toContain('--button-bg: var(--anthropic-fg);')
+    expect(primaryBlock).toContain('--button-fg: var(--anthropic-page);')
+    expect(primaryBlock).toContain('--button-border: var(--anthropic-muted);')
+    expect(primaryBlock).toContain('--button-spacer-hover: 1px;')
+    expect(primaryBlock).toContain('--button-border-width-hover: 2px;')
+    expect(primaryBlock).toContain('box-shadow: var(--anthropic-button-ring);')
+    expect(styleSource).toContain('.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh)')
+    expect(primaryBlock).not.toContain('var(--anthropic-accent)')
+    expect(primaryBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const secondaryBlock = cssBlock(styleSource, '.app-layout-content :where(.btn-secondary')
+    expect(secondaryBlock).toContain('--button-bg: transparent;')
+    expect(secondaryBlock).toContain('--button-spacer-hover: 1px;')
+    expect(secondaryBlock).toContain('--button-border-width-hover: 2px;')
+    expect(secondaryBlock).toContain('box-shadow: var(--anthropic-button-ring);')
+    expect(secondaryBlock).not.toContain('background: var(--anthropic-fg);')
+
+    const repairedPrimaryBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.btn-primary')
+    expect(targetedRepairSource).toContain('#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):not(:disabled)')
+    expect(repairedPrimaryBlock).toContain('--button-spacer-hover: 1px;')
+    expect(repairedPrimaryBlock).toContain('--button-border-width-hover: 2px;')
+    expect(repairedPrimaryBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;')
+    const repairedPrimaryHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):where(:hover')
+    expect(repairedPrimaryHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+    expect(repairedPrimaryHoverBlock).not.toContain('var(--anthropic-clay-interactive)')
+
+    const brandBlock = cssBlock(styleSource, '.app-layout-content :where(.btn.brand, .btn-brand)')
+    expect(brandBlock).toContain('--button-bg: var(--anthropic-clay-interactive);')
+    expect(brandBlock).toContain('--button-border: var(--anthropic-clay-interactive);')
+    expect(brandBlock).toContain('--button-spacer-hover: 1px;')
+    expect(brandBlock).toContain('--button-border-width-hover: 2px;')
+    expect(brandBlock).toContain('border: 0;')
+    expect(brandBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border);')
+    expect(brandBlock).toContain('transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out;')
+    const brandHoverBlock = cssBlock(styleSource, '.app-layout-content :where(.btn.brand, .btn-brand):hover:not(:disabled),')
+    expect(brandHoverBlock).toContain('border: 0;')
+    expect(brandHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover);')
+  })
+
+  it('locks the current ops comments to the final visual repair rules', () => {
+    const alertFilterBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar')
+    expect(alertFilterBlock).toContain('width: auto !important;')
+    expect(alertFilterBlock).toContain('margin-left: auto !important;')
+    expect(alertFilterBlock).toContain('justify-content: flex-end !important;')
+    expect(alertFilterBlock).toContain('gap: var(--anthropic-control-gap) !important;')
+    const opsCardSelectMouseOpenBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-card-filter-bar :where(.select-trigger:focus, .select-trigger-open):not(:focus-visible)')
+    expect(opsCardSelectMouseOpenBlock).toContain('border-color: transparent !important;')
+    expect(opsCardSelectMouseOpenBlock).toContain('outline: 0 !important;')
+    expect(opsCardSelectMouseOpenBlock).toContain('box-shadow: none !important;')
+
+    const opsTableBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card) :where(table, thead')
+    expect(opsTableBlock).toContain('background: var(--anthropic-page) !important;')
+
+    const concurrencyBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card,')
+    expect(concurrencyBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(concurrencyBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(concurrencyBlock).not.toContain('background: var(--anthropic-panel) !important;')
+    expect(targetedRepairSource.lastIndexOf('#app .app-layout-content .ops-dashboard-atelier .ops-concurrency-card,')).toBeGreaterThan(
+      targetedRepairSource.indexOf('#app .app-layout-content .ops-dashboard-atelier :where(.card, .ops-health-score-card')
     )
-    expect(dashboardRangeHoverBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(dashboardRangeHoverBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
 
-    const dashboardDatePortalBlock = styleSource.slice(
-      styleSource.indexOf('body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-presets'),
-      styleSource.indexOf('body:has(.admin-dashboard-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover'),
-    )
-    expect(dashboardDatePortalBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(dashboardDatePortalBlock).not.toContain('border-color: var(--atelier-paper)')
-    expect(dashboardDatePortalBlock).not.toContain('rgba(255, 250, 240')
-    expect(dashboardDatePortalBlock).toContain('border-color: var(--atelier-slab-edge-soft) !important;')
-    expect(dashboardDatePortalBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
+    const runtimePanelBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl')
+    expect(runtimePanelBlock).toContain('background: var(--anthropic-page) !important;')
 
-    const tableDatePortalBlock = styleSource.slice(
-      styleSource.indexOf('body:has(.table-page-layout) .date-picker-dropdown-portal,\nbody:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-presets'),
-      styleSource.indexOf('body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover'),
-    )
-    expect(tableDatePortalBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(tableDatePortalBlock).not.toContain('border-color: var(--atelier-paper)')
-    expect(tableDatePortalBlock).not.toContain('rgba(255, 250, 240')
-    expect(tableDatePortalBlock).toContain('border-color: var(--atelier-slab-edge-soft) !important;')
-    expect(tableDatePortalBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
+    const checkboxBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card input[type="checkbox"]')
+    expect(checkboxBlock).toContain('accent-color: var(--anthropic-fg) !important;')
+
+    const logTextButtonBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-reset-button, .ops-log-cleanup-button)')
+    expect(logTextButtonBlock).toContain('border: 0 !important;')
+    expect(logTextButtonBlock).toContain('background: transparent !important;')
+    expect(logTextButtonBlock).toContain('box-shadow: none !important;')
+    expect(logTextButtonBlock).toContain('text-decoration-color: transparent !important;')
+    const logTextButtonHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-reset-button, .ops-log-cleanup-button):where(:hover')
+    expect(logTextButtonHoverBlock).toContain('background: transparent !important;')
+    expect(logTextButtonHoverBlock).toContain('box-shadow: none !important;')
+    expect(logTextButtonHoverBlock).toContain('text-decoration-color: currentColor !important;')
+
+    const dangerBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-danger')
+    expect(dangerBlock).toContain('background: transparent !important;')
+    expect(dangerBlock).toContain('color: var(--anthropic-error) !important;')
+    expect(dangerBlock).toContain('box-shadow: var(--anthropic-button-ring) !important;')
+
+    const primaryHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-primary:where(:hover')
+    expect(primaryHoverBlock).toContain('--button-spacer-hover: 1px;')
+    expect(primaryHoverBlock).toContain('--button-border-width-hover: 2px;')
+    expect(primaryHoverBlock).toContain('box-shadow: var(--anthropic-button-ring-hover) !important;')
+
+    const logPrimaryBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-runtime-save-button, .ops-log-query-button)')
+    expect(logPrimaryBlock).toContain('--button-bg: var(--anthropic-fg);')
+    expect(logPrimaryBlock).toContain('--button-fg: var(--anthropic-page);')
+    expect(logPrimaryBlock).toContain('--button-border: var(--anthropic-muted);')
+    expect(logPrimaryBlock).toContain('--button-spacer-hover: 1px;')
+    expect(logPrimaryBlock).toContain('--button-border-width-hover: 2px;')
+    expect(logPrimaryBlock).toContain('border: 0 !important;')
+    expect(logPrimaryBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;')
+    expect(logPrimaryBlock).toContain('transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;')
+    expect(logPrimaryBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const logPrimaryHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card :where(.ops-log-runtime-save-button, .ops-log-query-button):where(:hover')
+    expect(logPrimaryHoverBlock).toContain('--button-spacer-hover: 1px;')
+    expect(logPrimaryHoverBlock).toContain('--button-border-width-hover: 2px;')
+    expect(logPrimaryHoverBlock).toContain('border: 0 !important;')
+    expect(logPrimaryHoverBlock).toContain('background: var(--button-bg-hover) !important;')
+    expect(logPrimaryHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+    expect(logPrimaryHoverBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const logPrimarySpecificHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .ops-dashboard-atelier .ops-log-card button.btn-primary.ops-log-runtime-save-button:where(:hover')
+    expect(logPrimarySpecificHoverBlock).toContain('--button-spacer-hover: 1px;')
+    expect(logPrimarySpecificHoverBlock).toContain('--button-border-width-hover: 2px;')
+    expect(logPrimarySpecificHoverBlock).toContain('border: 0 !important;')
+    expect(logPrimarySpecificHoverBlock).toContain('background: var(--button-bg-hover) !important;')
+    expect(logPrimarySpecificHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+    expect(logPrimarySpecificHoverBlock).not.toContain('var(--anthropic-clay-interactive)')
+
+    expect(targetedRepairSource).toContain('.header-balance-chip-fixed')
+    expect(targetedRepairSource).toContain('width: 8.25rem !important;')
+    expect(targetedRepairSource).not.toContain('width: 9.75rem !important;')
+    expect(targetedRepairSource).toContain('border-left: 0 !important;')
+
+    const filterMenuCaretBlock = cssBlock(targetedRepairSource, '.app-layout-content .filter-menu-caret')
+    expect(filterMenuCaretBlock).toContain('width: 1.25rem;')
+    expect(filterMenuCaretBlock).toContain('height: 1.25rem;')
+    expect(filterMenuCaretBlock).toContain('transform: translateY(1px) rotate(0deg);')
+    expect(filterMenuCaretBlock).toContain('transition: transform 0.2s ease-in-out;')
+    const filterMenuCaretBeforeBlock = cssBlock(targetedRepairSource, '.app-layout-content .filter-menu-caret::before')
+    expect(filterMenuCaretBeforeBlock).toContain('viewBox')
+    expect(filterMenuCaretBeforeBlock).toContain('M14.128 7.16482')
+    const filterMenuCaretOpenBlock = cssBlock(targetedRepairSource, '.app-layout-content .filter-menu-button-with-caret:hover .filter-menu-caret')
+    expect(filterMenuCaretOpenBlock).toContain('transform: translateY(1px) rotate(180deg);')
+
+    const groupsCreateBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .groups-filter-shell .groups-create-button')
+    expect(groupsCreateBlock).toContain('--button-bg: var(--anthropic-fg);')
+    expect(groupsCreateBlock).toContain('--button-fg: var(--anthropic-page);')
+    expect(groupsCreateBlock).toContain('--button-border: var(--anthropic-muted);')
+    expect(groupsCreateBlock).toContain('--button-spacer-hover: 1px;')
+    expect(groupsCreateBlock).toContain('--button-border-width-hover: 2px;')
+    expect(groupsCreateBlock).toContain('border: 0 !important;')
+    expect(groupsCreateBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const groupsCreateHoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .groups-filter-shell button.btn-primary.groups-create-button:where(:hover')
+    expect(groupsCreateHoverBlock).toContain('--button-spacer-hover: 1px;')
+    expect(groupsCreateHoverBlock).toContain('--button-border-width-hover: 2px;')
+    expect(groupsCreateHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+    expect(groupsCreateHoverBlock).not.toContain('var(--anthropic-clay-interactive)')
+    const groupsSortBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .groups-filter-shell .groups-sort-button')
+    expect(groupsSortBlock).toContain('--button-bg: transparent;')
+    expect(groupsSortBlock).toContain('--button-fg: var(--anthropic-fg);')
+    expect(groupsSortBlock).toContain('--button-bg-hover: var(--anthropic-fg);')
+    expect(groupsSortBlock).toContain('--button-fg-hover: var(--anthropic-page);')
+    expect(groupsSortBlock).toContain('--button-spacer-hover: 0;')
+    expect(groupsSortBlock).toContain('--button-border-width-hover: 1px;')
+    expect(groupsSortBlock).not.toContain('--button-spacer-hover: 2px;')
+    expect(groupsSortBlock).not.toContain('--button-border-width-hover: 4px;')
+    expect(opsConcurrencySource).not.toContain('border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)]')
   })
 
-  it('uses neutral ink tokens for onboarding tour filled buttons', () => {
-    expect(onboardingSource).not.toContain('background-color: #002FA7 !important;')
-    expect(onboardingSource).not.toContain('rgba(0, 47, 167')
-    expect(onboardingSource).toContain('.theme-tour-popover .driver-popover-next-btn')
-    expect(onboardingSource).toContain('background-color: var(--atelier-ink) !important;')
-    expect(onboardingSource).toContain('background-color: var(--atelier-dark) !important;')
-    expect(onboardingSource).not.toContain('box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--atelier-blue)')
+  it('keeps empty-state icons centered and action buttons on the shared primary fixture', () => {
+    const emptyStateBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .empty-state')
+    expect(emptyStateBlock).toContain('justify-items: center !important;')
+    expect(emptyStateBlock).toContain('text-align: center !important;')
+    const emptyStateFirstChildBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .empty-state > :first-child')
+    expect(emptyStateFirstChildBlock).toContain('margin-inline: auto !important;')
+    const emptyStateIconBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .empty-state .empty-state-icon')
+    expect(emptyStateIconBlock).toContain('display: block !important;')
+    expect(emptyStateIconBlock).toContain('margin: auto !important;')
+    expect(emptyStateIconBlock).toContain('transform: none !important;')
+    expect(channelsViewSource).toContain('class="btn btn-primary channels-create-button"')
+    expect(channelsViewSource).not.toContain('class="btn btn-primary">\n              {{ t(\'admin.channels.createChannel\'')
   })
 
-  it('keeps onboarding neutral controls from repainting text to accent on hover', () => {
-    expect(onboardingSource).toContain('.theme-tour-popover .driver-popover-close-btn:hover')
-    expect(onboardingSource).toContain('.theme-tour-popover .driver-popover-prev-btn:hover')
-    expect(onboardingCloseHoverBlock).not.toContain('color: var(--atelier-blue-dark) !important;')
-    expect(onboardingPrevHoverBlock).not.toContain('color: var(--atelier-blue-dark) !important;')
-    expect(onboardingCloseHoverBlock).toContain('background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important;')
-    expect(onboardingPrevHoverBlock).toContain('background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important;')
+  it('keeps remaining filter bars on the dashboard and ops toolbar contract', () => {
+    expect(userDashboardChartsSource).toContain('class="dashboard-filter-shell flex flex-wrap items-center gap-3"')
+    expect(userDashboardChartsSource).toContain('variant="text-control"')
+    expect(userDashboardChartsSource).toContain('class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"')
+    expect(userDashboardChartsSource).not.toContain('class="btn btn-secondary dashboard-paper-control dashboard-filter-refresh"')
+
+    expect(codexAccountsSource).toContain('codex-list-actions__filters')
+    expect(codexAccountsSource).toContain('class="codex-input codex-filter-input')
+    expect(codexAccountsSource).toContain('class="codex-select codex-filter-select')
+    expect(codexAccountsSource).toContain('class="filter-menu-button codex-filter-sort-button"')
+    const codexFilterSlice = sourceSlice(codexAccountsSource, '<div class="codex-list-actions__filters">', '<div v-if="filteredAccounts.length > 0"')
+    expect(codexFilterSlice).not.toContain('!min-h-9')
+    expect(codexFilterSlice).not.toContain('class="codex-button codex-button--compact"')
+
+    expect(opsSystemLogTableSource).toContain('class="btn btn-primary ops-log-query-button"')
+    expect(opsSystemLogTableSource).toContain('class="btn btn-primary ops-log-runtime-save-button"')
+    expect(opsSystemLogTableSource).toContain('class="filter-menu-button ops-log-reset-button"')
+    expect(opsSystemLogTableSource).toContain('class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button"')
+    expect(opsSystemLogTableSource).toContain('class="btn btn-primary anthropic-refresh-action-button ops-log-health-refresh-button"')
+    expect(opsSystemLogTableSource).toContain('class="filter-menu-button ops-log-runtime-reset-button"')
+    expect(opsSystemLogTableSource).not.toContain('class="btn btn-primary anthropic-refresh-action-button ops-log-query-button"')
+    expect(opsSystemLogTableSource).not.toContain('class="btn btn-primary anthropic-refresh-action-button ops-log-runtime-save-button"')
+    expect(opsSystemLogTableSource).not.toContain('class="btn btn-secondary btn-sm"')
+
+    expect(opsOpenAITokenStatsSource).toContain('class="filter-menu-button ops-token-page-button"')
+    expect(opsOpenAITokenStatsSource).not.toContain('class="btn btn-secondary btn-sm"')
+
+    expect(opsAlertEventsSource).toContain('class="btn btn-primary anthropic-refresh-action-button ops-alert-events-refresh-button"')
+    const opsAlertFilterSlice = sourceSlice(opsAlertEventsSource, '<div class="ops-card-filter-bar flex items-center gap-2">', '<div v-if="loading"')
+    expect(opsAlertFilterSlice).not.toContain('bg-[var(--anthropic-raised)]')
+
+    expect(riskControlViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button risk-control-refresh-button"')
+    expect(riskControlViewSource).toContain('class="btn btn-primary risk-control-settings-button"')
+    expect(riskControlViewSource).toContain('class="btn btn-primary anthropic-refresh-action-button risk-control-logs-refresh-button"')
+    expect(riskControlViewSource).toContain('class="risk-control-record-filters table-filter-shell')
+    expect(riskControlViewSource).not.toContain('<Icon name="refresh" size="sm"')
+    expect(riskControlViewSource).not.toContain('class="btn btn-primary inline-flex items-center gap-2" @click="openSettings"')
+
+    expect(usageViewSource).not.toContain('usage-record-filter-wrap')
+
+    const remainingFilterButtonBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.codex-list-actions__filters, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .usage-filter-card, .usage-filter-shell, .table-page-filter-section) :where(.codex-button, .codex-select, .codex-input, .filter-menu-button, .btn, .input, input[type="text"], input[type="search"], input[type="date"], input[type="datetime-local"])')
+    expect(remainingFilterButtonBlock).toContain('min-height: var(--anthropic-control-height) !important;')
+    expect(remainingFilterButtonBlock).toContain('height: var(--anthropic-control-height) !important;')
+    expect(remainingFilterButtonBlock).toContain('font-size: var(--anthropic-control-font-size) !important;')
+    expect(remainingFilterButtonBlock).toContain('line-height: var(--anthropic-control-line-height) !important;')
+
+    const usageInnerFilterBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.table-page-filter-section > .usage-filter-shell, .usage-time-filter-card > .usage-time-filter-shell, .usage-filter-card > .usage-filter-shell)')
+    expect(usageInnerFilterBlock).toContain('border: 0 !important;')
+    expect(usageInnerFilterBlock).toContain('background: transparent !important;')
+    expect(usageInnerFilterBlock).toContain('padding: 0 !important;')
   })
 
-  it('removes source-level hover text repaint classes from dashboard and usage data regions', () => {
-    for (const [name, source] of [
-      ['admin usage table', adminUsageTableSource],
-      ['admin usage view', adminUsageSource],
-      ['user usage view', userUsageSource],
-      ['quick actions', quickActionsSource],
-      ['group chart', groupDistributionSource],
-      ['model chart', modelDistributionSource],
-      ['endpoint chart', endpointDistributionSource],
-    ] as const) {
-      expect(source, `${name} should not repaint text with group-hover`).not.toMatch(/group-hover:(?:text|bg)-/)
-      expect(source, `${name} should not repaint neutral text on hover`).not.toMatch(/hover:text-(?:gray|blue|primary)-/)
+  it('keeps dropdowns inherited, warm, and lightly shadowed', () => {
+    expect(floatingDropdownSource).toContain('floating-dropdown-portal')
+    expect(selectSource).toContain('select-dropdown-portal')
+    for (const source of [styleSource, targetedRepairSource]) {
+      const dropdownBlock = cssBlock(source, ':where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal')
+      expect(dropdownBlock).toContain('border-radius: 16px;')
+      expect(dropdownBlock).toContain('var(--anthropic-cookbook-border)')
+      expect(dropdownBlock).toContain('var(--dropdown-bg, var(--control-bg, var(--anthropic-page)))')
+      expect(dropdownBlock).toContain('box-shadow: var(--anthropic-dropdown-shadow);')
+      expect(dropdownBlock).not.toContain('box-shadow: 0 12px')
+      const highlightMenuBlock = cssBlock(source, '.dropdown-highlight-menu,')
+      expect(highlightMenuBlock).toContain('padding: 12px;')
+      expect(highlightMenuBlock).toContain('gap: 2px;')
+      const highlightItemBlock = cssBlock(source, '.dropdown-highlight-item,')
+      expect(highlightItemBlock).toContain('border-radius: 8px;')
+      expect(highlightItemBlock).toContain('padding: 0.5rem 0.75rem;')
+      const optionHoverBlock = cssBlock(source, ':where(.select-option:hover, .select-option-focused')
+      expect(optionHoverBlock).toContain('background: var(--anthropic-section);')
+      expect(optionHoverBlock).toContain('text-decoration-line: none;')
+      const optionSelectedBlock = cssBlock(source, ':where(.select-option-selected, .select-option-selected:hover')
+      expect(optionSelectedBlock).toContain('background: var(--anthropic-cookbook-hover);')
+      expect(optionSelectedBlock).toContain('box-shadow: inset 0 0 0 1px var(--anthropic-cookbook-border);')
     }
   })
 
-  it('pins dashboard, ops and usage top panels to static hover surfaces at the final layer', () => {
-    for (const wrapper of [
-      '.admin-dashboard-atelier:hover',
-      '.ops-dashboard-atelier:hover',
-      '.admin-usage-atelier:hover',
-      '.user-usage-atelier:hover',
-      '.user-dashboard:hover',
-    ]) {
-      expect(finalStabilityLayer, `final stability layer should not repaint page wrapper ${wrapper}`).not.toContain(wrapper)
+  it('keeps user role badges visually distinct instead of collapsing admin and user into neutral', () => {
+    expect(usersViewSource).toContain("role === 'admin' ? 'badge-primary' : 'badge-gray'")
+    for (const source of [styleSource, targetedRepairSource]) {
+      const primaryBadgeBlock = cssBlock(source, '.app-layout-content :where(.badge-primary')
+      expect(primaryBadgeBlock).toContain('color: var(--anthropic-info);')
+      const neutralBadgeBlock = cssBlock(source, '.app-layout-content :where(.badge-gray')
+      expect(neutralBadgeBlock).toContain('color: var(--anthropic-muted);')
+      expect(neutralBadgeBlock).not.toContain('.badge-purple')
     }
-    for (const selector of [
-      '.card',
-      '.usage-stat-card',
-      '.app-header-atelier',
-      '.ops-live-panel',
-      '.ops-health-score-card',
-      '.ops-realtime-panel',
-      '.ops-chart-card',
-      '.ops-concurrency-card',
-    ]) {
-      expect(finalStabilityLayer, `final stability layer should cover ${selector}`).toContain(selector)
+  })
+
+  it('uses blue only for focus and checked switches', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('--anthropic-focus: #2c84db;')
+      expect(source).toContain('outline: 2px solid var(--anthropic-focus);')
+      expect(source).toContain('background: var(--anthropic-focus);')
+      expect(source).not.toContain('#1677ff')
+      expect(source).not.toContain('focus: #d97757')
     }
-    expect(finalStabilityLayer).toContain('box-shadow: var(--atelier-material-shadow) !important;')
-    expect(finalStabilityLayer).toContain('border-color: var(--atelier-material-edge) !important;')
-    expect(finalStabilityLayer).not.toContain('var(--atelier-material-shadow-hover)')
-    expect(finalStabilityLayer).not.toContain('translate3d(0, -2px')
-    expect(finalStabilityLayer).not.toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(finalStabilityLayer).not.toContain('background-color: var(--atelier-ui-hover-surface) !important;')
-    expect(finalStabilityLayer).not.toMatch(/:hover\s+:where\([^)]*\.text-/)
-    expect(finalStabilityLayer).not.toContain('color: var(--atelier-muted) !important;')
-    expect(finalStabilityLayer).not.toContain('color: var(--atelier-blue) !important;')
-    expect(finalStabilityLayer).not.toContain('color: var(--atelier-green) !important;')
-    expect(finalStabilityLayer).not.toContain('color: var(--atelier-orange) !important;')
-    expect(finalStabilityLayer).not.toContain('.app-header-atelier:hover :where')
-    expect(finalStabilityLayer).not.toContain('-webkit-text-fill-color')
-    expect(finalStabilityLayer).not.toContain('):hover :where(.text-gray-400, .text-gray-500, .text-gray-600, .text-gray-700, .text-primary-500, .text-primary-600, .text-blue-500, .text-blue-600) {\n  color: inherit !important;')
-  })
-})
-
-describe('Cloudflare theme — filter bars are not a black slab', () => {
-  const cfMarker = 'Cloudflare theme — complete de-slab pass'
-  const finalHoverMarker = 'Final authoritative CF hover for neutral filter-bar buttons'
-  const cfLayer = styleSource.slice(
-    styleSource.indexOf(cfMarker),
-    styleSource.indexOf(anthropicMarker),
-  )
-
-  it('repaints ink-filled filter shells to a light panel under the Cloudflare theme', () => {
-    expect(styleSource).toContain(cfMarker)
-    expect(cfLayer).toContain(':root.theme-cloudflare')
-    expect(cfLayer).toContain('.table-page-filter-section')
-    expect(cfLayer).toContain('.dashboard-filter-card')
-    expect(cfLayer).toContain('.usage-time-filter-card')
-    // Light surface + ink text instead of --atelier-ink slab.
-    expect(cfLayer).toContain('background: var(--atelier-paper-2) !important;')
-    expect(cfLayer).toContain('color: var(--atelier-ink) !important;')
-    // The scoped overrides must not paint these shells with the ink slab.
-    expect(cfLayer).not.toContain('background: var(--atelier-ink) !important;')
   })
 
-  it('keeps a last-wins neutral hover for filter-bar buttons that are not filled actions', () => {
-    expect(styleSource).toContain(finalHoverMarker)
-    expect(styleSource.lastIndexOf(finalHoverMarker)).toBeGreaterThan(styleSource.indexOf('CF filter-action button hover'))
-    expect(styleSource.lastIndexOf(finalHoverMarker)).toBeGreaterThan(styleSource.indexOf(stableHoverMarker))
-
-    const finalHoverLayer = styleSource.slice(styleSource.lastIndexOf(finalHoverMarker))
-    expect(finalHoverLayer).toContain(':root.theme-cloudflare body #app .app-layout-content .table-page-layout .table-page-filter-section')
-    for (const zone of [
-      '.table-filter-actions',
-      '.users-filter-actions',
-      '.usage-filter-actions',
-      '.table-filter-left',
-      '.users-filter-left',
-      '.usage-filter-left',
-      '.users-filter-tools',
-    ]) {
-      expect(finalHoverLayer).toContain(zone)
-    }
-    expect(finalHoverLayer).toContain(':not(.btn-primary):not(.btn-success):not(.users-filter-create):not(:disabled):hover')
-    expect(finalHoverLayer).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(finalHoverLayer).toContain('border-color: var(--atelier-line-strong) !important;')
-    expect(finalHoverLayer).toContain('color: var(--atelier-ink) !important;')
-  })
-
-  it('uses the dashboard slab field color for neutral filter buttons', () => {
-    const readableFilterButtonBlock = cssBlockContaining('/* Console readable light action fallback. */')
-    const readableFilterButtonHoverBlock = cssBlockContaining(
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(\n' +
-        '  .table-page-layout > .layout-section-fixed.table-page-filter-section :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions, .ml-auto),\n' +
-        '  .table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section .table-filter-actions,\n' +
-        '  .user-keys-atelier .keys-filter-actions,\n' +
-        '  .user-usage-atelier .usage-filter-actions,\n' +
-        '  .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions,\n' +
-        '  .global-pricing-filter-actions\n' +
-        ') :where(.btn, button, [role="button"]):not(.btn-primary):not(.btn-success):not(.users-filter-create):not(.dashboard-filter-refresh):not(.btn-danger):not(.date-picker-trigger):not(.select-trigger):not([aria-haspopup="listbox"]):not(:disabled):hover',
-    )
-    expect(readableFilterButtonBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(readableFilterButtonHoverBlock).toContain('background: var(--atelier-slab-field-hover) !important;')
-    expect(readableFilterButtonBlock).toContain('color: var(--atelier-slab-text) !important;')
-  })
-
-  it('keeps Cloudflare filled action borders on brand orange instead of ink black', () => {
-    expect(cfLayer).toContain(':root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-warning, .btn-stripe, .date-picker-apply, .codex-button--primary)')
-    expect(cfLayer).toContain('border-color: var(--atelier-blue) !important;')
-  })
-
-  it('keeps Cloudflare date picker apply hover as a filled action, not a neutral preset', () => {
-    expect(cfLayer).toContain(':root.theme-cloudflare :where(.date-picker-dropdown-portal .date-picker-apply):hover:not(:disabled)')
-    expect(cfLayer).toContain('background: var(--atelier-blue-dark) !important;')
-    expect(cfLayer).toContain('color: var(--atelier-white) !important;')
-  })
-
-  it('uses neutral edge tokens instead of ink-black borders for filter and toolbar controls', () => {
-    for (const needle of [
-      '.app-layout-content .table-page-layout > .layout-section-fixed :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input)',
-      '#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n  :where(.table-filter-left, .users-filter-left, .usage-filter-left)\n  :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)',
-      '#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section\n  :where(.table-filter-actions, .users-filter-actions, .usage-filter-actions)\n  :where(.btn-secondary, .btn-ghost, .btn-primary, .btn-danger, button):not(:disabled)',
-      '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card,\n#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover',
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-card',
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-range .date-picker-trigger',
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger,',
-      '#app .app-layout-content .user-keys-atelier .keys-filter-left :where(.select-trigger, input.input)',
-      '#app .app-layout-content .user-usage-atelier .usage-filter-left :where(.select-trigger, .date-picker-trigger, input.input)',
-      '#app .app-layout-content .user-usage-atelier .usage-filter-actions :where(.btn-secondary, .btn-primary, button):not(:disabled)',
-      '#app .app-layout-content .global-pricing-filter-left :where(input.input, select.input)',
-      '#app .app-layout-content .global-pricing-filter-actions :where(.btn-secondary, button):not(:disabled)',
-      '#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .select-trigger,',
-    ]) {
-      const block = cssBlockContaining(needle)
-      expect(block, `${needle} should not keep ink-black borders`).not.toContain('border-color: var(--atelier-ink)')
-      expect(block, `${needle} should not keep light-on-dark inset outlines`).not.toContain('rgba(255, 250, 240')
-      expect(block, `${needle} should use an edge token`).toMatch(/border-color: var\(--atelier-(?:slab-edge|material-edge|line-strong)\) !important;/)
-    }
+  it('mirrors the design-system text selection token contract', () => {
+    expect(styleSource).toContain(':root.theme-anthropic ::selection')
+    expect(styleSource).toContain('--color-clay: #d97757;')
+    expect(styleSource).toContain('--color-slate-dark: #141413;')
+    expect(styleSource).toContain('--selection-bg: color-mix(in srgb, var(--color-clay) 50%, transparent);')
+    expect(styleSource).toContain('--selection-text: var(--color-slate-dark);')
+    expect(styleSource).toContain('background: var(--selection-bg);')
+    expect(styleSource).toContain('background: var(--selection-bg, color-mix(in srgb, var(--anthropic-accent) 50%, transparent));')
+    expect(styleSource).toContain('color: var(--selection-text, var(--anthropic-fg));')
+    expect(designSystemSource).toContain('全局文本选择背景使用 `color-mix(in srgb, clay 50%, transparent)`')
+    expect(designSystemCssSource).toContain('--selection-bg: color-mix(in srgb, var(--color-clay) 50%, transparent);')
+    expect(designSystemCssSource).toContain('background: var(--selection-bg);')
   })
 })

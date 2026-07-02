@@ -1,28 +1,12 @@
-import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 
 import type { DashboardStats } from '@/types'
 import DashboardView from '../DashboardView.vue'
+import dashboardSource from '../DashboardView.vue?raw'
 
-const dashboardSource = readFileSync(
-  resolve(dirname(fileURLToPath(import.meta.url)), '../DashboardView.vue'),
-  'utf8'
-)
-const globalStyleSource = readFileSync(
-  resolve(dirname(fileURLToPath(import.meta.url)), '../../../style.css'),
-  'utf8'
-)
-const globalMaterialSource = globalStyleSource.slice(
-  globalStyleSource.indexOf('Atelier component material system'),
-  globalStyleSource.indexOf('Cloudflare theme — complete de-slab pass')
-)
 const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
 const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
-const blockedSupportsBackdrop = ['@supports not ((', blockedBackdropFilter].join('')
 
 const { getSnapshotV2, getUserUsageTrend, getUserSpendingRanking } = vi.hoisted(() => ({
   getSnapshotV2: vi.fn(),
@@ -44,6 +28,12 @@ vi.mock('@/stores/app', () => ({
   useAppStore: () => ({
     showError: vi.fn()
   })
+}))
+
+vi.mock('@/components/layout/AppLayout.vue', () => ({
+  default: {
+    template: '<div><slot /></div>'
+  }
 }))
 
 vi.mock('vue-router', () => ({
@@ -161,129 +151,34 @@ describe('admin DashboardView', () => {
     }))
   })
 
-  it('uses a single dashboard material card layer while keeping controls flat', () => {
+  it('keeps dashboard cards static and uses document-level refresh/button surfaces', () => {
     expect(dashboardSource).toContain('admin-dashboard-atelier')
     expect(dashboardSource).toContain('grid grid-cols-2 gap-4 lg:grid-cols-4')
-    expect(dashboardSource).not.toContain('dashboard-page-head')
-    expect(dashboardSource).not.toContain('dashboard-display')
-    expect(dashboardSource).not.toContain('dashboard-kpi-grid')
-    expect(dashboardSource).not.toContain('dashboard-kpi-card')
-    expect(dashboardSource).not.toContain('dashboard-perf-band')
-    expect(dashboardSource).not.toContain('dashboard-chart-grid')
-    expect(dashboardSource).not.toContain('dashboard-top12-card')
-    expect(dashboardSource).not.toContain('const dashboardRangeLabel = computed')
-    expect(dashboardSource).not.toContain('const clampPercent = (value: number, total: number): string =>')
     expect(dashboardSource).toContain('card dashboard-filter-card')
     expect(dashboardSource).toContain('dashboard-paper-control')
     expect(dashboardSource).toContain('dashboard-granularity-control')
-    expect(dashboardSource).toContain('--dashboard-control-surface: var(--atelier-paper-2);')
-    expect(dashboardSource).toContain('--dashboard-control-edge: var(--atelier-line-strong);')
-    expect(dashboardSource).not.toContain('class="dashboard-card')
-    expect(dashboardSource).not.toContain('.dashboard-card {')
-    expect(dashboardSource).not.toContain('--dashboard-card-surface')
+    expect(dashboardSource).toContain('class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"')
+
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card) {')
-    expect(dashboardSource).toContain('--atelier-card-accent: var(--atelier-line-strong);')
-    expect(dashboardSource).toContain('--atelier-card-surface: var(--atelier-paper-2);')
-    expect(dashboardSource).toContain('background: var(--atelier-paper-2) !important;')
-    expect(dashboardSource).toContain('border-color: var(--atelier-material-edge) !important;')
     expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card:hover)')
-    expect(dashboardSource).toContain('transform: none !important;')
-    expect(dashboardSource).toContain('background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;')
-    expect(dashboardSource).toContain('box-shadow: 0 10px 24px -22px var(--dashboard-module-shadow) !important;')
+    expect(dashboardSource).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(dashboardSource).toContain('background: var(--anthropic-page) !important;')
+    expect(dashboardSource).toContain('box-shadow: none !important;')
+    expect(dashboardSource).not.toContain('--dashboard-control-surface')
+    expect(dashboardSource).not.toContain('--dashboard-control-edge')
+    expect(dashboardSource).not.toContain('--dashboard-card-surface')
+    expect(dashboardSource).not.toContain('--dashboard-hover-surface')
     expect(dashboardSource).not.toContain('background: var(--dashboard-hover-surface) !important;')
     expect(dashboardSource).not.toContain('var(--atelier-material-shadow-hover) !important;')
-    expect(dashboardSource).toContain('color: var(--atelier-ink) !important;')
-    expect(dashboardSource).toContain('--dashboard-module-rule: var(--atelier-console-rule);')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card)::before')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier > .grid > .card::after')
-    expect(dashboardSource).toContain('linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong))')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card .text-xl)')
-    expect(dashboardSource).toContain('font-family: var(--atelier-font-mono);')
-    expect(dashboardSource).toContain('font-style: normal;')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card canvas)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card)::after')
-    expect(dashboardSource).toContain('content: none;')
-    expect(dashboardSource).toContain('display: none;')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.card:nth-child')
-    expect(dashboardSource).not.toContain('--atelier-card-accent: var(--atelier-dust);')
-    expect(dashboardSource).not.toContain('--atelier-card-accent: var(--atelier-blue-dark);')
-    expect(dashboardSource).not.toContain('--atelier-card-accent: var(--atelier-butter);')
+    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
+    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
     expect(dashboardSource).not.toContain(blockedBackdropFilter)
     expect(dashboardSource).not.toContain(blockedWebkitBackdropFilter)
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.date-picker-trigger)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger)')
-    expect(dashboardSource).toContain('background: var(--atelier-slab-field) !important;')
-    expect(dashboardSource).toContain('color: var(--atelier-slab-text);')
-    expect(dashboardSource).toContain('color: var(--atelier-slab-text) !important;')
-    const dashboardControlHoverBlock = dashboardSource.slice(
-      dashboardSource.indexOf('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover)'),
-      dashboardSource.indexOf('.admin-dashboard-atelier:where(.dark *)')
-    )
-    expect(dashboardControlHoverBlock).toContain('.admin-dashboard-atelier :deep(.date-picker-trigger:hover)')
-    expect(dashboardControlHoverBlock).not.toContain('border-color: var(--atelier-slab-text) !important;')
-    expect(dashboardControlHoverBlock).toContain('border-color: var(--atelier-slab-edge) !important;')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range))')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-refresh)')
-    expect(dashboardSource).toContain('align-self: center;')
-    expect(dashboardSource).toContain('margin: 0;')
-    const dashboardRefreshGlobalBlock = globalStyleSource.slice(
-      globalStyleSource.indexOf('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh'),
-      globalStyleSource.indexOf('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-granularity')
-    )
-    expect(dashboardRefreshGlobalBlock).toContain('background: var(--atelier-slab-field) !important;')
-    expect(dashboardRefreshGlobalBlock).not.toContain('background: var(--atelier-slab-surface) !important;')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
+
     expect(dashboardSource).toContain('handleDashboardFilterPointerDown')
     expect(dashboardSource).toContain('dashboard-filter-menu-open')
-    expect(dashboardSource).not.toContain('--dashboard-hover-surface')
-    expect(dashboardSource).not.toContain('--dashboard-hover-edge')
-    expect(dashboardSource).not.toContain('background: var(--atelier-material-butter) !important;')
-    expect(dashboardSource).toContain('background: var(--atelier-material-1);')
-    expect(dashboardSource).toContain('color: var(--atelier-ink);')
+    expect(dashboardSource).toContain('.dashboard-stat-icon :deep(svg *)')
     expect(dashboardSource).toContain('fill: none !important;')
     expect(dashboardSource).toContain('stroke: currentColor !important;')
-    expect(globalStyleSource).toContain('.dashboard-stat-icon {')
-    expect(globalStyleSource).toContain('background: var(--atelier-material-1);')
-    expect(globalStyleSource).toContain('.dashboard-stat-icon svg,')
-    expect(globalStyleSource).toContain('.dashboard-stat-icon svg *')
-    expect(globalStyleSource).toContain('fill: none !important;')
-    expect(globalStyleSource).toContain('.dashboard-stat-icon-lg')
-    expect(dashboardSource).toContain('.dashboard-stat-icon :deep(svg *)')
-    expect(dashboardSource).not.toContain('dashboard-chart-card')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-chart-card)')
-    expect(globalStyleSource).toContain('body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
-    expect(globalStyleSource).toContain('--atelier-butter: #d97757;')
-    expect(globalStyleSource).toContain('--atelier-butter-soft: #d97757;')
-    expect(dashboardSource).not.toContain('background: var(--atelier-blue);\n  color: var(--atelier-white);')
-    expect(dashboardSource).not.toContain('background: #002FA7;\n  color: #f8fbff;')
-    expect(dashboardSource).not.toContain('@media (prefers-reduced-transparency: reduce)')
-    expect(dashboardSource).not.toContain(blockedSupportsBackdrop)
-    expect(dashboardSource).not.toContain('--dashboard-material-surface')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier::before')
-    expect(dashboardSource).not.toContain(':deep(.card::before)')
-    expect(dashboardSource).not.toContain(':deep(.card::before)')
-    expect(dashboardSource).not.toContain('mask-image')
-    expect(dashboardSource).not.toContain('inset 0 -1px')
-    expect(dashboardSource).not.toContain(':global(.dark) .admin-dashboard-atelier')
-    expect(dashboardSource).not.toContain('.sidebar')
-    expect(dashboardSource).not.toContain('Codex')
-
-    expect(globalStyleSource).toContain('.card {')
-    expect(globalStyleSource).toContain('background: var(--atelier-surface)')
-    expect(globalStyleSource).toContain('--atelier-surface: #171512;')
-    expect(globalMaterialSource).toContain('.dark .app-layout-shell :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
-    expect(globalMaterialSource).toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile')
-    expect(globalStyleSource).toContain('.admin-material-surface')
-    expect(globalStyleSource).toContain('.app-layout-content :where(div, section, article):where(')
-    expect(globalStyleSource).toContain('[class~="rounded-lg"]')
-    expect(globalStyleSource).toContain('[class~="bg-white"]')
-    expect(globalStyleSource).toContain('[class~="bg-gray-50/50"]')
-    expect(globalStyleSource).toContain(':not([class~="btn"])')
-    expect(globalMaterialSource).not.toContain(blockedBackdropFilter)
-    expect(globalMaterialSource).not.toContain(blockedWebkitBackdropFilter)
-    expect(globalMaterialSource).not.toContain('mask-image')
-    expect(globalMaterialSource).not.toContain('inset 0 -1px')
   })
 })

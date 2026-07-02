@@ -122,6 +122,82 @@ func TestNotificationEmailAuthTemplatesAreListedAndPreviewable(t *testing.T) {
 	require.Contains(t, resetPreview.HTML, "https://example.com/reset?token=abc")
 }
 
+func TestNotificationEmailAuthTemplatesUseAnthropicEmailShell(t *testing.T) {
+	ctx := context.Background()
+	svc := NewNotificationEmailService(newNotificationEmailMemorySettingRepo(), nil)
+
+	for _, check := range []struct {
+		name       string
+		event      string
+		locale     string
+		mustHave   []string
+		mustReject []string
+	}{
+		{
+			name:     "verify code",
+			event:    NotificationEmailEventAuthVerifyCode,
+			locale:   "zh",
+			mustHave: []string{"background: #faf9f5", "background: #f0eee6", "class=\"email-code\"", "#c96442"},
+		},
+		{
+			name:     "password reset",
+			event:    NotificationEmailEventAuthPasswordReset,
+			locale:   "en",
+			mustHave: []string{"background: #faf9f5", "background: #141413", "Reset password", "class=\"button\""},
+		},
+		{
+			name:     "notification email verify",
+			event:    NotificationEmailEventNotificationEmailVerifyCode,
+			locale:   "en",
+			mustHave: []string{"background: #faf9f5", "class=\"email-code\"", "Notification email verification"},
+		},
+	} {
+		t.Run(check.name, func(t *testing.T) {
+			preview, err := svc.PreviewTemplate(ctx, NotificationEmailPreviewInput{Event: check.event, Locale: check.locale})
+			require.NoError(t, err)
+			for _, expected := range check.mustHave {
+				require.Contains(t, preview.HTML, expected)
+			}
+			for _, rejected := range append(check.mustReject, "linear-gradient", "#667eea", "#764ba2", "box-shadow: 0 8px 30px") {
+				require.NotContains(t, preview.HTML, rejected)
+			}
+		})
+	}
+}
+
+func TestNotificationEmailOfficialTemplatesUseSharedAnthropicShell(t *testing.T) {
+	ctx := context.Background()
+	svc := NewNotificationEmailService(newNotificationEmailMemorySettingRepo(), nil)
+
+	for _, event := range notificationEmailEventOrder {
+		for _, locale := range notificationEmailLocales {
+			t.Run(event+"/"+locale, func(t *testing.T) {
+				preview, err := svc.PreviewTemplate(ctx, NotificationEmailPreviewInput{Event: event, Locale: locale})
+				require.NoError(t, err)
+				require.Contains(t, preview.HTML, `class="email-canvas"`)
+				require.Contains(t, preview.HTML, `class="email-head"`)
+				require.Contains(t, preview.HTML, `background: #faf9f5`)
+				require.Contains(t, preview.HTML, `background: #f0eee6`)
+				require.NotContains(t, preview.HTML, "linear-gradient")
+				require.NotContains(t, preview.HTML, "#4f46e5")
+				require.NotContains(t, preview.HTML, "#7c3aed")
+				require.NotContains(t, preview.HTML, "#0ea5e9")
+				require.NotContains(t, preview.HTML, "#2563eb")
+				require.NotContains(t, preview.HTML, "#f97316")
+				require.NotContains(t, preview.HTML, "#d97706")
+				require.NotContains(t, preview.HTML, "#16a34a")
+				require.NotContains(t, preview.HTML, "#dc2626")
+				require.NotContains(t, preview.HTML, "#ef4444")
+				require.NotContains(t, preview.HTML, "#b91c1c")
+				require.NotContains(t, preview.HTML, "#ea580c")
+				require.NotContains(t, preview.HTML, "#0891b2")
+				require.NotContains(t, preview.HTML, `style="width:100%;border-collapse:collapse;"`)
+				require.NotContains(t, preview.HTML, "box-shadow: 0 8px 30px")
+			})
+		}
+	}
+}
+
 func TestNotificationEmailAdditionalEventsAreListedAndPreviewable(t *testing.T) {
 	ctx := context.Background()
 	svc := NewNotificationEmailService(newNotificationEmailMemorySettingRepo(), nil)

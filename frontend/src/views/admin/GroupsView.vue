@@ -3,7 +3,7 @@
     <TablePageLayout>
       <template #filters>
         <div
-          class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start"
+          class="table-filter-shell groups-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start"
         >
           <!-- Left: fuzzy search + filters (can wrap to multiple lines) -->
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
@@ -11,7 +11,7 @@
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               />
               <input data-testid="admin-groups-input-search-query"
                 v-model="searchQuery"
@@ -51,29 +51,23 @@
             <button data-testid="admin-groups-button-load-groups"
               @click="loadGroups"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-primary anthropic-refresh-action-button groups-refresh-button"
               :title="t('common.refresh')"
             >
-              <Icon
-                name="refresh"
-                size="md"
-                :class="loading ? 'animate-spin' : ''"
-              />
+              {{ t("common.refresh") }}
             </button>
             <button data-testid="admin-groups-button-open-sort-modal"
               @click="openSortModal"
-              class="btn btn-secondary"
+              class="btn btn-secondary groups-sort-button"
               :title="t('admin.groups.sortOrder')"
             >
-              <Icon name="arrowsUpDown" size="md" class="mr-2" />
               {{ t("admin.groups.sortOrder") }}
             </button>
             <button data-testid="admin-groups-button-open-create-modal"
               @click="openCreateModal"
-              class="btn btn-primary"
+              class="btn btn-primary groups-create-button"
               data-tour="groups-create-btn"
             >
-              <Icon name="plus" size="md" class="mr-2" />
               {{ t("admin.groups.createGroup") }}
             </button>
           </div>
@@ -100,7 +94,7 @@
                 <ProviderBrandIcon :provider="row.name" :model="row.name" :logo-url="row.logo_url" />
               </span>
               <Icon v-else name="grid" size="sm" class="entity-logo-fallback" />
-              <span class="font-medium text-gray-900 dark:text-white">{{
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
                 value
               }}</span>
             </span>
@@ -115,8 +109,8 @@
                   : value === 'openai'
                     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                     : value === 'antigravity'
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                      ? 'bg-accent-200 text-accent-700 dark:bg-accent-900/30 dark:text-accent-500'
+                      : 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]',
               ]"
             >
               <PlatformIcon :platform="value" size="xs" />
@@ -129,10 +123,10 @@
               <!-- Type Badge -->
               <span
                 :class="[
-                  'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                  'group-billing-badge',
                   row.subscription_type === 'subscription'
-                    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+                    ? 'group-billing-badge--subscription'
+                    : 'group-billing-badge--standard',
                 ]"
               >
                 {{
@@ -144,7 +138,7 @@
               <!-- Subscription Limits - compact single line -->
               <div
                 v-if="row.subscription_type === 'subscription'"
-                class="text-xs text-gray-500 dark:text-gray-400"
+                class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >
                 <template
                   v-if="
@@ -163,7 +157,7 @@
                       row.daily_limit_usd &&
                       (row.weekly_limit_usd || row.monthly_limit_usd)
                     "
-                    class="mx-1 text-gray-300 dark:text-gray-600"
+                    class="mx-1 text-gray-300 dark:text-[var(--anthropic-muted)]"
                     >·</span
                   >
                   <span v-if="row.weekly_limit_usd"
@@ -173,7 +167,7 @@
                   >
                   <span
                     v-if="row.weekly_limit_usd && row.monthly_limit_usd"
-                    class="mx-1 text-gray-300 dark:text-gray-600"
+                    class="mx-1 text-gray-300 dark:text-[var(--anthropic-muted)]"
                     >·</span
                   >
                   <span v-if="row.monthly_limit_usd"
@@ -182,7 +176,7 @@
                     }}</span
                   >
                 </template>
-                <span v-else class="text-gray-400 dark:text-gray-500">{{
+                <span v-else class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.subscription.noLimit")
                 }}</span>
               </div>
@@ -190,7 +184,7 @@
           </template>
 
           <template #cell-rate_multiplier="{ value }">
-            <span class="text-sm text-gray-700 dark:text-gray-300"
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >{{ value }}x</span
             >
           </template>
@@ -206,7 +200,7 @@
           <template #cell-account_count="{ row }">
             <div class="space-y-0.5 text-xs">
               <div>
-                <span class="text-gray-500 dark:text-gray-400">{{
+                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.accountsAvailable")
                 }}</span>
                 <span
@@ -214,12 +208,12 @@
                   >{{ row.active_account_count || 0 }}</span
                 >
                 <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
+                  class="ml-1 inline-flex items-center rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
                   >{{ t("admin.groups.accountsUnit") }}</span
                 >
               </div>
               <div v-if="row.rate_limited_account_count">
-                <span class="text-gray-500 dark:text-gray-400">{{
+                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.accountsRateLimited")
                 }}</span>
                 <span
@@ -227,20 +221,20 @@
                   >{{ row.rate_limited_account_count }}</span
                 >
                 <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
+                  class="ml-1 inline-flex items-center rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
                   >{{ t("admin.groups.accountsUnit") }}</span
                 >
               </div>
               <div>
-                <span class="text-gray-500 dark:text-gray-400">{{
+                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.accountsTotal")
                 }}</span>
                 <span
-                  class="ml-1 font-medium text-gray-700 dark:text-gray-300"
+                  class="ml-1 font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >{{ row.account_count || 0 }}</span
                 >
                 <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
+                  class="ml-1 inline-flex items-center rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
                   >{{ t("admin.groups.accountsUnit") }}</span
                 >
               </div>
@@ -257,27 +251,27 @@
               :rpm-used="capacityMap.get(row.id)!.rpmUsed"
               :rpm-max="capacityMap.get(row.id)!.rpmMax"
             />
-            <span v-else class="text-xs text-gray-400">—</span>
+            <span v-else class="text-xs text-[var(--anthropic-muted)]">—</span>
           </template>
 
           <template #cell-usage="{ row }">
-            <div v-if="usageLoading" class="text-xs text-gray-400">—</div>
+            <div v-if="usageLoading" class="text-xs text-[var(--anthropic-muted)]">—</div>
             <div v-else class="space-y-0.5 text-xs">
-              <div class="text-gray-500 dark:text-gray-400">
-                <span class="text-gray-400 dark:text-gray-500">{{
+              <div class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.usageToday")
                 }}</span>
-                <span class="ml-1 font-medium text-gray-700 dark:text-gray-300"
+                <span class="ml-1 font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >${{
                     formatCost(usageMap.get(row.id)?.today_cost ?? 0)
                   }}</span
                 >
               </div>
-              <div class="text-gray-500 dark:text-gray-400">
-                <span class="text-gray-400 dark:text-gray-500">{{
+              <div class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                   t("admin.groups.usageTotal")
                 }}</span>
-                <span class="ml-1 font-medium text-gray-700 dark:text-gray-300"
+                <span class="ml-1 font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >${{
                     formatCost(usageMap.get(row.id)?.total_cost ?? 0)
                   }}</span
@@ -301,14 +295,14 @@
             <div class="flex items-center gap-1">
               <button data-testid="admin-groups-button-handle-edit-row"
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t("common.edit") }}</span>
               </button>
               <button data-testid="admin-groups-button-handle-rate-multipliers-row"
                 @click="handleRateMultipliers(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-accent-600 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-accent-500"
               >
                 <Icon name="dollar" size="sm" />
                 <span class="text-xs">{{
@@ -317,7 +311,7 @@
               </button>
               <button data-testid="admin-groups-button-handle-rpm-overrides-row"
                 @click="handleRPMOverrides(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-orange-600 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-orange-400"
               >
                 <Icon name="bolt" size="sm" />
                 <span class="text-xs">{{
@@ -326,7 +320,7 @@
               </button>
               <button data-testid="admin-groups-button-handle-delete-row"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t("common.delete") }}</span>
@@ -411,7 +405,7 @@
         <!-- 从分组复制账号 -->
         <div v-if="copyAccountsGroupOptions.length > 0">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.copyAccounts.title") }}
             </label>
             <div class="group relative inline-flex">
@@ -419,19 +413,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.copyAccounts.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -445,7 +439,7 @@
             <span
               v-for="groupId in createForm.copy_accounts_from_group_ids"
               :key="groupId"
-              class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+              class="inline-flex items-center gap-1 rounded-full bg-[var(--anthropic-section)] px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
             >
               {{
                 copyAccountsGroupOptions.find((o) => o.value === groupId)
@@ -459,7 +453,7 @@
                       (id) => id !== groupId,
                     )
                 "
-                class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
+                class="ml-0.5 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
               >
                 <Icon name="x" size="xs" />
               </button>
@@ -529,7 +523,7 @@
           data-tour="group-form-exclusive"
         >
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.form.exclusive") }}
             </label>
             <!-- Help Tooltip -->
@@ -538,14 +532,14 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <!-- Tooltip Popover -->
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="mb-2 text-xs font-medium">
                     {{ t("admin.groups.exclusiveTooltip.title") }}
@@ -553,10 +547,10 @@
                   <p class="mb-2 text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.exclusiveTooltip.description") }}
                   </p>
-                  <div class="rounded bg-gray-800 p-2 dark:bg-gray-700">
+                  <div class="rounded bg-gray-800 p-2 dark:bg-[var(--anthropic-section)]">
                     <p class="text-xs leading-relaxed text-gray-300">
                       <span
-                        class="inline-flex items-center gap-1 text-primary-400"
+                        class="inline-flex items-center gap-1 text-[var(--anthropic-fg)]"
                         ><Icon name="lightbulb" size="xs" />
                         {{ t("admin.groups.exclusiveTooltip.example") }}</span
                       >
@@ -565,7 +559,7 @@
                   </div>
                   <!-- Arrow -->
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -578,18 +572,18 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.is_exclusive
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   createForm.is_exclusive ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 createForm.is_exclusive
                   ? t("admin.groups.exclusive")
@@ -617,7 +611,7 @@
           <!-- Subscription limits (only show when subscription type is selected) -->
           <div
             v-if="createForm.subscription_type === 'subscription'"
-            class="space-y-4 border-l-2 border-primary-200 pl-4 dark:border-primary-800"
+            class="space-y-4 border-l-2 border-[var(--anthropic-fg)] pl-4 dark:border-[var(--anthropic-fg)]"
           >
             <div>
               <label class="input-label">{{
@@ -664,10 +658,10 @@
         <div class="border-t pt-4">
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
-              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.title") }}
               </label>
-              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.hint") }}
               </p>
             </div>
@@ -677,13 +671,13 @@
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors',
                 createModelsListState.enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   createModelsListState.enabled ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
@@ -691,27 +685,27 @@
           </div>
           <div
             v-if="createModelsListState.enabled"
-            class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50/50 dark:border-dark-600 dark:bg-dark-800/40"
+            class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
           >
             <div
               v-if="!createModelsListLoading && createModelsListState.items.length > 0"
-              class="flex items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs dark:border-dark-600 dark:bg-dark-800"
+              class="flex items-center justify-between gap-2 border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 text-xs dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
             >
-              <span class="text-gray-500 dark:text-gray-400">
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 已选 {{ createModelsListSelectedCount }} /
                 {{ createModelsListState.items.length }}
               </span>
               <div class="flex items-center gap-1.5">
                 <button data-testid="admin-groups-button-select-all-models-list-items-create-models-list-state"
                   type="button"
-                  class="rounded px-2 py-1 font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
+                  class="rounded px-2 py-1 font-medium text-[var(--anthropic-fg)] transition-colors hover:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)]"
                   @click="selectAllModelsListItems(createModelsListState)"
                 >
                   全选
                 </button>
                 <button data-testid="admin-groups-button-invert-models-list-selection-create-models-list-state"
                   type="button"
-                  class="rounded px-2 py-1 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                  class="rounded px-2 py-1 font-medium text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
                   @click="invertModelsListSelection(createModelsListState)"
                 >
                   反选
@@ -721,32 +715,32 @@
             <div
               class="max-h-64 space-y-2 overflow-y-auto p-2"
             >
-              <p v-if="createModelsListLoading" class="text-xs text-gray-500 dark:text-gray-400">
+              <p v-if="createModelsListLoading" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.loading") }}
               </p>
               <p
                 v-else-if="createModelsListState.items.length === 0"
-                class="text-xs text-gray-500 dark:text-gray-400"
+                class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >
                 {{ t("admin.groups.modelsList.empty") }}
               </p>
               <div
                 v-for="(item, index) in createModelsListState.items"
                 :key="item.id"
-                class="flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
+                class="flex items-center gap-2 rounded border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               >
                 <input data-testid="admin-groups-input-item-selected"
                   v-model="item.selected"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
-                <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
+                <span class="min-w-0 flex-1 break-all text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ item.id }}
                 </span>
                 <button data-testid="admin-groups-button-move-create-models-list-item-index-index-1"
                   type="button"
                   :disabled="index === 0"
-                  class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
+                  class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:opacity-40 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
                   @click="moveCreateModelsListItem(index, index - 1)"
                 >
                   <Icon name="arrowUp" size="sm" />
@@ -754,7 +748,7 @@
                 <button data-testid="admin-groups-button-move-create-models-list-item-index-index-1-2"
                   type="button"
                   :disabled="index === createModelsListState.items.length - 1"
-                  class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
+                  class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:opacity-40 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
                   @click="moveCreateModelsListItem(index, index + 1)"
                 >
                   <Icon name="arrowDown" size="sm" />
@@ -774,27 +768,27 @@
           class="border-t pt-4"
         >
           <label
-            class="block mb-2 font-medium text-gray-700 dark:text-gray-300"
+            class="block mb-2 font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
           >
             {{ t("admin.groups.imagePricing.title") }}
           </label>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.imagePricing.description") }}
           </p>
           <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-            <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               <input data-testid="admin-groups-input-create-form-allow-image-generation"
                 v-model="createForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
               />
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
-            <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               <input data-testid="admin-groups-input-create-form-image-rate-independent"
                 v-model="createForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
               />
               {{ t("admin.groups.imagePricing.independentMultiplier") }}
             </label>
@@ -850,10 +844,10 @@
               />
             </div>
           </div>
-          <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          <p class="mt-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t("admin.groups.imagePricing.modeHint") }}
           </p>
-          <div class="mt-2 rounded-lg bg-gray-50 p-3 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          <div class="mt-2 rounded-lg bg-[var(--anthropic-section)] p-3 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
             <div class="mb-1 font-medium">
               {{ t("admin.groups.imagePricing.finalPricePreview") }}
             </div>
@@ -871,7 +865,7 @@
         <!-- 支持的模型系列（仅 antigravity 平台） -->
         <div v-if="createForm.platform === 'antigravity'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.supportedScopes.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -880,19 +874,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.supportedScopes.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -904,9 +898,9 @@
                 type="checkbox"
                 :checked="createForm.supported_model_scopes.includes('claude')"
                 @change="toggleCreateScope('claude')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.claude")
               }}</span>
             </label>
@@ -917,9 +911,9 @@
                   createForm.supported_model_scopes.includes('gemini_text')
                 "
                 @change="toggleCreateScope('gemini_text')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.geminiText")
               }}</span>
             </label>
@@ -930,14 +924,14 @@
                   createForm.supported_model_scopes.includes('gemini_image')
                 "
                 @change="toggleCreateScope('gemini_image')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.geminiImage")
               }}</span>
             </label>
           </div>
-          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t("admin.groups.supportedScopes.hint") }}
           </p>
         </div>
@@ -945,7 +939,7 @@
         <!-- MCP XML 协议注入（仅 antigravity 平台） -->
         <div v-if="createForm.platform === 'antigravity'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.mcpXml.title") }}
             </label>
             <div class="group relative inline-flex">
@@ -953,19 +947,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.mcpXml.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -978,18 +972,18 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.mcp_xml_inject
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   createForm.mcp_xml_inject ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 createForm.mcp_xml_inject
                   ? t("admin.groups.mcpXml.enabled")
@@ -1002,7 +996,7 @@
         <!-- Claude Code 客户端限制（仅 anthropic 平台） -->
         <div v-if="createForm.platform === 'anthropic'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.claudeCode.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -1011,19 +1005,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.claudeCode.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -1038,20 +1032,20 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.claude_code_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   createForm.claude_code_only
                     ? 'translate-x-6'
                     : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 createForm.claude_code_only
                   ? t("admin.groups.claudeCode.enabled")
@@ -1078,15 +1072,15 @@
         <!-- OpenAI Messages 调度配置（仅 openai 平台） -->
         <div
           v-if="createForm.platform === 'openai'"
-          class="border-t border-gray-200 dark:border-dark-400 pt-4 mt-4"
+          class="border-t border-[var(--anthropic-border)] dark:border-dark-400 pt-4 mt-4"
         >
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <h4 class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.openaiMessages.title") }}
           </h4>
 
           <!-- 允许 Messages 调度开关 -->
           <div class="flex items-center justify-between">
-            <label class="text-sm text-gray-600 dark:text-gray-400">{{
+            <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
               t("admin.groups.openaiMessages.allowDispatch")
             }}</label>
             <button data-testid="admin-groups-button-button-3"
@@ -1098,12 +1092,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.allow_messages_dispatch
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   createForm.allow_messages_dispatch
                     ? 'translate-x-6'
@@ -1112,27 +1106,27 @@
               />
             </button>
           </div>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-1">
             {{ t("admin.groups.openaiMessages.allowDispatchHint") }}
           </p>
 
           <div v-if="createForm.allow_messages_dispatch" class="mt-3">
             <div
-              class="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-dark-600 dark:bg-dark-800"
+              class="relative overflow-hidden rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
             >
               <div
-                class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
+                class="border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-[var(--anthropic-info)]"></div>
                   <label
-                    class="text-sm font-medium text-gray-900 dark:text-white"
+                    class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     >{{
                       t("admin.groups.openaiMessages.familyMappingTitle")
                     }}</label
                   >
                 </div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t("admin.groups.openaiMessages.familyMappingHint") }}
                 </p>
               </div>
@@ -1182,24 +1176,24 @@
             </div>
 
             <div
-              class="mt-5 relative overflow-hidden rounded-xl border border-primary-200 bg-white shadow-sm dark:border-primary-900/50 dark:bg-dark-800"
+              class="mt-5 relative overflow-hidden rounded-xl border border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
             >
               <div
-                class="border-b border-primary-100 bg-primary-50/80 px-4 py-3 dark:border-primary-900/40 dark:bg-primary-900/20"
+                class="border-b border-primary-100 bg-[var(--anthropic-section)] px-4 py-3 dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div>
                     <div class="flex items-center gap-2">
-                      <div class="h-2 w-2 rounded-full bg-primary-500"></div>
+                      <div class="h-2 w-2 rounded-full bg-[var(--anthropic-fg)]"></div>
                       <label
-                        class="text-sm font-medium text-primary-900 dark:text-primary-100"
+                        class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                         >{{
                           t("admin.groups.openaiMessages.exactMappingTitle")
                         }}</label
                       >
                     </div>
                     <p
-                      class="mt-1 text-xs text-primary-600/90 dark:text-primary-400/90"
+                      class="mt-1 text-xs text-[var(--anthropic-fg)]/90 dark:text-[var(--anthropic-fg)]/90"
                     >
                       {{ t("admin.groups.openaiMessages.exactMappingHint") }}
                     </p>
@@ -1207,10 +1201,10 @@
                 </div>
               </div>
 
-              <div class="p-4 bg-gray-50/30 dark:bg-dark-800/30">
+              <div class="p-4 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
                 <div
                   v-if="createForm.exact_model_mappings.length === 0"
-                  class="flex items-center justify-between gap-3 rounded-xl border-2 border-dashed border-primary-200 bg-white px-5 py-4 text-sm text-primary-700 transition-colors hover:border-primary-300 dark:border-primary-900/40 dark:bg-dark-800 dark:text-primary-300 dark:hover:border-primary-800"
+                  class="flex items-center justify-between gap-3 rounded-xl border-2 border-dashed border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] px-5 py-4 text-sm text-[var(--anthropic-fg)] transition-colors hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:border-[var(--anthropic-fg)]"
                 >
                   <span>{{
                     t("admin.groups.openaiMessages.noExactMappings")
@@ -1218,7 +1212,7 @@
                   <button data-testid="admin-groups-button-add-create-messages-dispatch-mapping"
                     type="button"
                     @click="addCreateMessagesDispatchMapping"
-                    class="flex items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    class="flex items-center gap-1.5 text-sm font-medium text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
                   >
                     <Icon name="plus" size="sm" />
                     {{ t("admin.groups.openaiMessages.addExactMapping") }}
@@ -1229,7 +1223,7 @@
                   <div
                     v-for="row in createForm.exact_model_mappings"
                     :key="getCreateMessagesDispatchRowKey(row)"
-                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
+                    class="group relative rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 shadow-none transition-all hover:border-[var(--anthropic-fg)] hover:shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:hover:border-[var(--anthropic-fg)]"
                   >
                     <div class="flex items-center gap-4">
                       <div
@@ -1247,11 +1241,11 @@
                                 'admin.groups.openaiMessages.claudeModelPlaceholder',
                               )
                             "
-                            class="input bg-gray-50 focus:bg-white dark:bg-dark-800 dark:focus:bg-dark-900"
+                            class="input bg-[var(--anthropic-section)] focus:bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] dark:focus:bg-dark-900"
                           />
                         </div>
                         <div
-                          class="hidden md:flex md:justify-center md:pt-7 text-primary-300 dark:text-primary-700"
+                          class="hidden md:flex md:justify-center md:pt-7 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                         >
                           <Icon
                             name="arrowRight"
@@ -1271,14 +1265,14 @@
                                 'admin.groups.openaiMessages.targetModelPlaceholder',
                               )
                             "
-                            class="input bg-gray-50 focus:bg-white dark:bg-dark-800 dark:focus:bg-dark-900"
+                            class="input bg-[var(--anthropic-section)] focus:bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] dark:focus:bg-dark-900"
                           />
                         </div>
                       </div>
                       <button data-testid="admin-groups-button-remove-create-messages-dispatch-mapping-row"
                         type="button"
                         @click="removeCreateMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -1291,7 +1285,7 @@
                   <button data-testid="admin-groups-button-add-create-messages-dispatch-mapping-2"
                     type="button"
                     @click="addCreateMessagesDispatchMapping"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-500 transition-all hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-primary-800 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-3 text-sm font-medium text-[var(--anthropic-muted)] transition-all hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
                   >
                     <Icon name="plus" size="sm" />
                     {{ t("admin.groups.openaiMessages.addExactMapping") }}
@@ -1309,19 +1303,19 @@
               createForm.platform,
             )
           "
-          class="border-t border-gray-200 dark:border-dark-400 pt-4 mt-4 space-y-4"
+          class="border-t border-[var(--anthropic-border)] dark:border-dark-400 pt-4 mt-4 space-y-4"
         >
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <h4 class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             账号过滤控制
           </h4>
 
           <!-- require_oauth_only toggle -->
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm text-gray-600 dark:text-gray-400"
+              <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                 >仅允许 OAuth 账号</label
               >
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-0.5">
                 {{
                   createForm.require_oauth_only
                     ? "已启用 — 排除 API Key 类型账号"
@@ -1337,12 +1331,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.require_oauth_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   createForm.require_oauth_only
                     ? 'translate-x-6'
@@ -1355,10 +1349,10 @@
           <!-- require_privacy_set toggle -->
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm text-gray-600 dark:text-gray-400"
+              <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                 >仅允许隐私保护已设置的账号</label
               >
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-0.5">
                 {{
                   createForm.require_privacy_set
                     ? "已启用 — Privacy 未设置的账号将被排除"
@@ -1374,12 +1368,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.require_privacy_set
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   createForm.require_privacy_set
                     ? 'translate-x-6'
@@ -1414,7 +1408,7 @@
         <!-- 模型路由配置（仅 anthropic 平台） -->
         <div v-if="createForm.platform === 'anthropic'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.modelRouting.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -1423,19 +1417,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-80 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.modelRouting.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -1452,20 +1446,20 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 createForm.model_routing_enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   createForm.model_routing_enabled
                     ? 'translate-x-6'
                     : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 createForm.model_routing_enabled
                   ? t("admin.groups.modelRouting.enabled")
@@ -1475,11 +1469,11 @@
           </div>
           <p
             v-if="!createForm.model_routing_enabled"
-            class="text-xs text-gray-500 dark:text-gray-400 mb-3"
+            class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3"
           >
             {{ t("admin.groups.modelRouting.disabledHint") }}
           </p>
-          <p v-else class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p v-else class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.modelRouting.noRulesHint") }}
           </p>
           <!-- 路由规则列表（仅在启用时显示） -->
@@ -1487,7 +1481,7 @@
             <div
               v-for="rule in createModelRoutingRules"
               :key="getCreateRuleRenderKey(rule)"
-              class="rounded-lg border border-gray-200 p-3 dark:border-dark-600"
+              class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]"
             >
               <div class="flex items-start gap-3">
                 <div class="flex-1 space-y-2">
@@ -1516,13 +1510,13 @@
                       <span
                         v-for="account in rule.accounts"
                         :key="account.id"
-                        class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                        class="inline-flex items-center gap-1 rounded-full bg-[var(--anthropic-section)] px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
                       >
                         {{ account.name }}
                         <button data-testid="admin-groups-button-remove-selected-account-rule-account-id"
                           type="button"
                           @click="removeSelectedAccount(rule, account.id)"
-                          class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
+                          class="ml-0.5 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
                         >
                           <Icon name="x" size="xs" />
                         </button>
@@ -1554,7 +1548,7 @@
                         "
                         :trigger-el="getAccountSearchInputRef(getCreateRuleSearchKey(rule))"
                         :match-width="true"
-                        panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                        panel-class="max-h-48 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
                       >
                         <button data-testid="admin-groups-button-select-account-rule-account"
                           v-for="account in accountSearchResults[
@@ -1563,7 +1557,7 @@
                           :key="account.id"
                           type="button"
                           @click="selectAccount(rule, account)"
-                          class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
+                          class="w-full px-3 py-2 text-left text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
                           :class="{
                             'opacity-50': rule.accounts.some(
                               (a) => a.id === account.id,
@@ -1574,13 +1568,13 @@
                           "
                         >
                           <span>{{ account.name }}</span>
-                          <span class="ml-2 text-xs text-gray-400"
+                          <span class="ml-2 text-xs text-[var(--anthropic-muted)]"
                             >#{{ account.id }}</span
                           >
                         </button>
                       </FloatingDropdown>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">
+                    <p class="text-xs text-[var(--anthropic-muted)] mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
                     </p>
                   </div>
@@ -1588,7 +1582,7 @@
                 <button data-testid="admin-groups-button-remove-create-routing-rule-rule"
                   type="button"
                   @click="removeCreateRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-[var(--anthropic-muted)] hover:text-red-500 transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -1601,7 +1595,7 @@
             v-if="createForm.model_routing_enabled"
             type="button"
             @click="addCreateRoutingRule"
-            class="mt-3 flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            class="mt-3 flex items-center gap-1.5 text-sm text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
           >
             <Icon name="plus" size="sm" />
             {{ t("admin.groups.modelRouting.addRule") }}
@@ -1704,7 +1698,7 @@
         <!-- 从分组复制账号（编辑时） -->
         <div v-if="copyAccountsGroupOptionsForEdit.length > 0">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.copyAccounts.title") }}
             </label>
             <div class="group relative inline-flex">
@@ -1712,19 +1706,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.copyAccounts.tooltipEdit") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -1738,7 +1732,7 @@
             <span
               v-for="groupId in editForm.copy_accounts_from_group_ids"
               :key="groupId"
-              class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+              class="inline-flex items-center gap-1 rounded-full bg-[var(--anthropic-section)] px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
             >
               {{
                 copyAccountsGroupOptionsForEdit.find((o) => o.value === groupId)
@@ -1752,7 +1746,7 @@
                       (id) => id !== groupId,
                     )
                 "
-                class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
+                class="ml-0.5 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
               >
                 <Icon name="x" size="xs" />
               </button>
@@ -1820,7 +1814,7 @@
         </div>
         <div v-if="editForm.subscription_type !== 'subscription'">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.form.exclusive") }}
             </label>
             <!-- Help Tooltip -->
@@ -1829,14 +1823,14 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <!-- Tooltip Popover -->
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="mb-2 text-xs font-medium">
                     {{ t("admin.groups.exclusiveTooltip.title") }}
@@ -1844,10 +1838,10 @@
                   <p class="mb-2 text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.exclusiveTooltip.description") }}
                   </p>
-                  <div class="rounded bg-gray-800 p-2 dark:bg-gray-700">
+                  <div class="rounded bg-gray-800 p-2 dark:bg-[var(--anthropic-section)]">
                     <p class="text-xs leading-relaxed text-gray-300">
                       <span
-                        class="inline-flex items-center gap-1 text-primary-400"
+                        class="inline-flex items-center gap-1 text-[var(--anthropic-fg)]"
                         ><Icon name="lightbulb" size="xs" />
                         {{ t("admin.groups.exclusiveTooltip.example") }}</span
                       >
@@ -1856,7 +1850,7 @@
                   </div>
                   <!-- Arrow -->
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -1869,18 +1863,18 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.is_exclusive
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   editForm.is_exclusive ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 editForm.is_exclusive
                   ? t("admin.groups.exclusive")
@@ -1913,7 +1907,7 @@
           <!-- Subscription limits (only show when subscription type is selected) -->
           <div
             v-if="editForm.subscription_type === 'subscription'"
-            class="space-y-4 border-l-2 border-primary-200 pl-4 dark:border-primary-800"
+            class="space-y-4 border-l-2 border-[var(--anthropic-fg)] pl-4 dark:border-[var(--anthropic-fg)]"
           >
             <div>
               <label class="input-label">{{
@@ -1960,10 +1954,10 @@
         <div class="border-t pt-4">
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
-              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.title") }}
               </label>
-              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.hint") }}
               </p>
             </div>
@@ -1973,13 +1967,13 @@
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors',
                 editModelsListState.enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   editModelsListState.enabled ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
@@ -1987,27 +1981,27 @@
           </div>
           <div
             v-if="editModelsListState.enabled"
-            class="overflow-hidden rounded-lg border border-gray-200 bg-gray-50/50 dark:border-dark-600 dark:bg-dark-800/40"
+            class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
           >
             <div
               v-if="!editModelsListLoading && editModelsListState.items.length > 0"
-              class="flex items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-3 py-2 text-xs dark:border-dark-600 dark:bg-dark-800"
+              class="flex items-center justify-between gap-2 border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 text-xs dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
             >
-              <span class="text-gray-500 dark:text-gray-400">
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 已选 {{ editModelsListSelectedCount }} /
                 {{ editModelsListState.items.length }}
               </span>
               <div class="flex items-center gap-1.5">
                 <button data-testid="admin-groups-button-select-all-models-list-items-edit-models-list-state"
                   type="button"
-                  class="rounded px-2 py-1 font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
+                  class="rounded px-2 py-1 font-medium text-[var(--anthropic-fg)] transition-colors hover:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)]"
                   @click="selectAllModelsListItems(editModelsListState)"
                 >
                   全选
                 </button>
                 <button data-testid="admin-groups-button-invert-models-list-selection-edit-models-list-state"
                   type="button"
-                  class="rounded px-2 py-1 font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                  class="rounded px-2 py-1 font-medium text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
                   @click="invertModelsListSelection(editModelsListState)"
                 >
                   反选
@@ -2017,32 +2011,32 @@
             <div
               class="max-h-64 space-y-2 overflow-y-auto p-2"
             >
-              <p v-if="editModelsListLoading" class="text-xs text-gray-500 dark:text-gray-400">
+              <p v-if="editModelsListLoading" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t("admin.groups.modelsList.loading") }}
               </p>
               <p
                 v-else-if="editModelsListState.items.length === 0"
-                class="text-xs text-gray-500 dark:text-gray-400"
+                class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >
                 {{ t("admin.groups.modelsList.empty") }}
               </p>
               <div
                 v-for="(item, index) in editModelsListState.items"
                 :key="item.id"
-                class="flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
+                class="flex items-center gap-2 rounded border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               >
                 <input data-testid="admin-groups-input-item-selected-2"
                   v-model="item.selected"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
                 />
-                <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
+                <span class="min-w-0 flex-1 break-all text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ item.id }}
                 </span>
                 <button data-testid="admin-groups-button-move-edit-models-list-item-index-index-1"
                   type="button"
                   :disabled="index === 0"
-                  class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
+                  class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:opacity-40 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
                   @click="moveEditModelsListItem(index, index - 1)"
                 >
                   <Icon name="arrowUp" size="sm" />
@@ -2050,7 +2044,7 @@
                 <button data-testid="admin-groups-button-move-edit-models-list-item-index-index-1-2"
                   type="button"
                   :disabled="index === editModelsListState.items.length - 1"
-                  class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 dark:hover:bg-dark-600 dark:hover:text-gray-200"
+                  class="rounded p-1 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:opacity-40 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
                   @click="moveEditModelsListItem(index, index + 1)"
                 >
                   <Icon name="arrowDown" size="sm" />
@@ -2070,27 +2064,27 @@
           class="border-t pt-4"
         >
           <label
-            class="block mb-2 font-medium text-gray-700 dark:text-gray-300"
+            class="block mb-2 font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
           >
             {{ t("admin.groups.imagePricing.title") }}
           </label>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.imagePricing.description") }}
           </p>
           <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-            <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               <input data-testid="admin-groups-input-edit-form-allow-image-generation"
                 v-model="editForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
               />
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
-            <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               <input data-testid="admin-groups-input-edit-form-image-rate-independent"
                 v-model="editForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-info)] focus:ring-[var(--anthropic-focus)]"
               />
               {{ t("admin.groups.imagePricing.independentMultiplier") }}
             </label>
@@ -2146,10 +2140,10 @@
               />
             </div>
           </div>
-          <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          <p class="mt-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t("admin.groups.imagePricing.modeHint") }}
           </p>
-          <div class="mt-2 rounded-lg bg-gray-50 p-3 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          <div class="mt-2 rounded-lg bg-[var(--anthropic-section)] p-3 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
             <div class="mb-1 font-medium">
               {{ t("admin.groups.imagePricing.finalPricePreview") }}
             </div>
@@ -2167,7 +2161,7 @@
         <!-- 支持的模型系列（仅 antigravity 平台） -->
         <div v-if="editForm.platform === 'antigravity'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.supportedScopes.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -2176,19 +2170,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.supportedScopes.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -2200,9 +2194,9 @@
                 type="checkbox"
                 :checked="editForm.supported_model_scopes.includes('claude')"
                 @change="toggleEditScope('claude')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.claude")
               }}</span>
             </label>
@@ -2213,9 +2207,9 @@
                   editForm.supported_model_scopes.includes('gemini_text')
                 "
                 @change="toggleEditScope('gemini_text')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.geminiText")
               }}</span>
             </label>
@@ -2226,14 +2220,14 @@
                   editForm.supported_model_scopes.includes('gemini_image')
                 "
                 @change="toggleEditScope('gemini_image')"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               />
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{
+              <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
                 t("admin.groups.supportedScopes.geminiImage")
               }}</span>
             </label>
           </div>
-          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p class="mt-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t("admin.groups.supportedScopes.hint") }}
           </p>
         </div>
@@ -2241,7 +2235,7 @@
         <!-- MCP XML 协议注入（仅 antigravity 平台） -->
         <div v-if="editForm.platform === 'antigravity'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.mcpXml.title") }}
             </label>
             <div class="group relative inline-flex">
@@ -2249,19 +2243,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.mcpXml.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -2274,18 +2268,18 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.mcp_xml_inject
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   editForm.mcp_xml_inject ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 editForm.mcp_xml_inject
                   ? t("admin.groups.mcpXml.enabled")
@@ -2298,7 +2292,7 @@
         <!-- Claude Code 客户端限制（仅 anthropic 平台） -->
         <div v-if="editForm.platform === 'anthropic'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.claudeCode.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -2307,19 +2301,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-72 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.claudeCode.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -2332,18 +2326,18 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.claude_code_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   editForm.claude_code_only ? 'translate-x-6' : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 editForm.claude_code_only
                   ? t("admin.groups.claudeCode.enabled")
@@ -2370,15 +2364,15 @@
         <!-- OpenAI Messages 调度配置（仅 openai 平台） -->
         <div
           v-if="editForm.platform === 'openai'"
-          class="border-t border-gray-200 dark:border-dark-400 pt-4 mt-4"
+          class="border-t border-[var(--anthropic-border)] dark:border-dark-400 pt-4 mt-4"
         >
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <h4 class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.openaiMessages.title") }}
           </h4>
 
           <!-- 允许 Messages 调度开关 -->
           <div class="flex items-center justify-between">
-            <label class="text-sm text-gray-600 dark:text-gray-400">{{
+            <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
               t("admin.groups.openaiMessages.allowDispatch")
             }}</label>
             <button data-testid="admin-groups-button-button-8"
@@ -2390,12 +2384,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.allow_messages_dispatch
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   editForm.allow_messages_dispatch
                     ? 'translate-x-6'
@@ -2404,27 +2398,27 @@
               />
             </button>
           </div>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-1">
             {{ t("admin.groups.openaiMessages.allowDispatchHint") }}
           </p>
 
           <div v-if="editForm.allow_messages_dispatch" class="mt-3">
             <div
-              class="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-dark-600 dark:bg-dark-800"
+              class="relative overflow-hidden rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
             >
               <div
-                class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
+                class="border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-[var(--anthropic-info)]"></div>
                   <label
-                    class="text-sm font-medium text-gray-900 dark:text-white"
+                    class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     >{{
                       t("admin.groups.openaiMessages.familyMappingTitle")
                     }}</label
                   >
                 </div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t("admin.groups.openaiMessages.familyMappingHint") }}
                 </p>
               </div>
@@ -2474,24 +2468,24 @@
             </div>
 
             <div
-              class="mt-5 relative overflow-hidden rounded-xl border border-primary-200 bg-white shadow-sm dark:border-primary-900/50 dark:bg-dark-800"
+              class="mt-5 relative overflow-hidden rounded-xl border border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
             >
               <div
-                class="border-b border-primary-100 bg-primary-50/80 px-4 py-3 dark:border-primary-900/40 dark:bg-primary-900/20"
+                class="border-b border-primary-100 bg-[var(--anthropic-section)] px-4 py-3 dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div>
                     <div class="flex items-center gap-2">
-                      <div class="h-2 w-2 rounded-full bg-primary-500"></div>
+                      <div class="h-2 w-2 rounded-full bg-[var(--anthropic-fg)]"></div>
                       <label
-                        class="text-sm font-medium text-primary-900 dark:text-primary-100"
+                        class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                         >{{
                           t("admin.groups.openaiMessages.exactMappingTitle")
                         }}</label
                       >
                     </div>
                     <p
-                      class="mt-1 text-xs text-primary-600/90 dark:text-primary-400/90"
+                      class="mt-1 text-xs text-[var(--anthropic-fg)]/90 dark:text-[var(--anthropic-fg)]/90"
                     >
                       {{ t("admin.groups.openaiMessages.exactMappingHint") }}
                     </p>
@@ -2499,10 +2493,10 @@
                 </div>
               </div>
 
-              <div class="p-4 bg-gray-50/30 dark:bg-dark-800/30">
+              <div class="p-4 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
                 <div
                   v-if="editForm.exact_model_mappings.length === 0"
-                  class="flex items-center justify-between gap-3 rounded-xl border-2 border-dashed border-primary-200 bg-white px-5 py-4 text-sm text-primary-700 transition-colors hover:border-primary-300 dark:border-primary-900/40 dark:bg-dark-800 dark:text-primary-300 dark:hover:border-primary-800"
+                  class="flex items-center justify-between gap-3 rounded-xl border-2 border-dashed border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] px-5 py-4 text-sm text-[var(--anthropic-fg)] transition-colors hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:border-[var(--anthropic-fg)]"
                 >
                   <span>{{
                     t("admin.groups.openaiMessages.noExactMappings")
@@ -2510,7 +2504,7 @@
                   <button data-testid="admin-groups-button-add-edit-messages-dispatch-mapping"
                     type="button"
                     @click="addEditMessagesDispatchMapping"
-                    class="flex items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    class="flex items-center gap-1.5 text-sm font-medium text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
                   >
                     <Icon name="plus" size="sm" />
                     {{ t("admin.groups.openaiMessages.addExactMapping") }}
@@ -2521,7 +2515,7 @@
                   <div
                     v-for="row in editForm.exact_model_mappings"
                     :key="getEditMessagesDispatchRowKey(row)"
-                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
+                    class="group relative rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 shadow-none transition-all hover:border-[var(--anthropic-fg)] hover:shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:hover:border-[var(--anthropic-fg)]"
                   >
                     <div class="flex items-center gap-4">
                       <div
@@ -2539,11 +2533,11 @@
                                 'admin.groups.openaiMessages.claudeModelPlaceholder',
                               )
                             "
-                            class="input bg-gray-50 focus:bg-white dark:bg-dark-800 dark:focus:bg-dark-900"
+                            class="input bg-[var(--anthropic-section)] focus:bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] dark:focus:bg-dark-900"
                           />
                         </div>
                         <div
-                          class="hidden md:flex md:justify-center md:pt-7 text-primary-300 dark:text-primary-700"
+                          class="hidden md:flex md:justify-center md:pt-7 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                         >
                           <Icon
                             name="arrowRight"
@@ -2563,14 +2557,14 @@
                                 'admin.groups.openaiMessages.targetModelPlaceholder',
                               )
                             "
-                            class="input bg-gray-50 focus:bg-white dark:bg-dark-800 dark:focus:bg-dark-900"
+                            class="input bg-[var(--anthropic-section)] focus:bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] dark:focus:bg-dark-900"
                           />
                         </div>
                       </div>
                       <button data-testid="admin-groups-button-remove-edit-messages-dispatch-mapping-row"
                         type="button"
                         @click="removeEditMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -2583,7 +2577,7 @@
                   <button data-testid="admin-groups-button-add-edit-messages-dispatch-mapping-2"
                     type="button"
                     @click="addEditMessagesDispatchMapping"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-500 transition-all hover:border-primary-300 hover:bg-primary-50/50 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-primary-800 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-3 text-sm font-medium text-[var(--anthropic-muted)] transition-all hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
                   >
                     <Icon name="plus" size="sm" />
                     {{ t("admin.groups.openaiMessages.addExactMapping") }}
@@ -2601,19 +2595,19 @@
               editForm.platform,
             )
           "
-          class="border-t border-gray-200 dark:border-dark-400 pt-4 mt-4 space-y-4"
+          class="border-t border-[var(--anthropic-border)] dark:border-dark-400 pt-4 mt-4 space-y-4"
         >
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <h4 class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             账号过滤控制
           </h4>
 
           <!-- require_oauth_only toggle -->
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm text-gray-600 dark:text-gray-400"
+              <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                 >仅允许 OAuth 账号</label
               >
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-0.5">
                 {{
                   editForm.require_oauth_only
                     ? "已启用 — 排除 API Key 类型账号"
@@ -2629,12 +2623,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.require_oauth_only
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   editForm.require_oauth_only
                     ? 'translate-x-6'
@@ -2647,10 +2641,10 @@
           <!-- require_privacy_set toggle -->
           <div class="flex items-center justify-between">
             <div>
-              <label class="text-sm text-gray-600 dark:text-gray-400"
+              <label class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                 >仅允许隐私保护已设置的账号</label
               >
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mt-0.5">
                 {{
                   editForm.require_privacy_set
                     ? "已启用 — Privacy 未设置的账号将被排除"
@@ -2666,12 +2660,12 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.require_privacy_set
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600'
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]'
               "
             >
               <span
-                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out"
                 :class="
                   editForm.require_privacy_set
                     ? 'translate-x-6'
@@ -2706,7 +2700,7 @@
         <!-- 模型路由配置（仅 anthropic 平台） -->
         <div v-if="editForm.platform === 'anthropic'" class="border-t pt-4">
           <div class="mb-1.5 flex items-center gap-1">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ t("admin.groups.modelRouting.title") }}
             </label>
             <!-- Help Tooltip -->
@@ -2715,19 +2709,19 @@
                 name="questionCircle"
                 size="sm"
                 :stroke-width="2"
-                class="cursor-help text-gray-400 transition-colors hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400"
+                class="cursor-help text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:text-[var(--anthropic-fg)]"
               />
               <div
                 class="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-80 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100"
               >
                 <div
-                  class="rounded-lg bg-gray-900 p-3 text-white shadow-lg dark:bg-gray-800"
+                  class="rounded-lg bg-gray-900 p-3 text-white shadow-none dark:bg-[var(--anthropic-section)]"
                 >
                   <p class="text-xs leading-relaxed text-gray-300">
                     {{ t("admin.groups.modelRouting.tooltip") }}
                   </p>
                   <div
-                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-gray-800"
+                    class="absolute -bottom-1.5 left-3 h-3 w-3 rotate-45 bg-gray-900 dark:bg-[var(--anthropic-section)]"
                   ></div>
                 </div>
               </div>
@@ -2743,20 +2737,20 @@
               :class="[
                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                 editForm.model_routing_enabled
-                  ? 'bg-primary-500'
-                  : 'bg-gray-300 dark:bg-dark-600',
+                  ? 'bg-[var(--anthropic-fg)]'
+                  : 'bg-gray-300 dark:bg-[var(--anthropic-section)]',
               ]"
             >
               <span
                 :class="[
-                  'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform',
+                  'inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow transition-transform',
                   editForm.model_routing_enabled
                     ? 'translate-x-6'
                     : 'translate-x-1',
                 ]"
               />
             </button>
-            <span class="text-sm text-gray-500 dark:text-gray-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{
                 editForm.model_routing_enabled
                   ? t("admin.groups.modelRouting.enabled")
@@ -2766,11 +2760,11 @@
           </div>
           <p
             v-if="!editForm.model_routing_enabled"
-            class="text-xs text-gray-500 dark:text-gray-400 mb-3"
+            class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3"
           >
             {{ t("admin.groups.modelRouting.disabledHint") }}
           </p>
-          <p v-else class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p v-else class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-3">
             {{ t("admin.groups.modelRouting.noRulesHint") }}
           </p>
           <!-- 路由规则列表（仅在启用时显示） -->
@@ -2778,7 +2772,7 @@
             <div
               v-for="rule in editModelRoutingRules"
               :key="getEditRuleRenderKey(rule)"
-              class="rounded-lg border border-gray-200 p-3 dark:border-dark-600"
+              class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]"
             >
               <div class="flex items-start gap-3">
                 <div class="flex-1 space-y-2">
@@ -2807,13 +2801,13 @@
                       <span
                         v-for="account in rule.accounts"
                         :key="account.id"
-                        class="inline-flex items-center gap-1 rounded-full bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                        class="inline-flex items-center gap-1 rounded-full bg-[var(--anthropic-section)] px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
                       >
                         {{ account.name }}
                         <button data-testid="admin-groups-button-remove-selected-account-rule-account-id-2"
                           type="button"
                           @click="removeSelectedAccount(rule, account.id, true)"
-                          class="ml-0.5 text-primary-500 hover:text-primary-700 dark:hover:text-primary-200"
+                          class="ml-0.5 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
                         >
                           <Icon name="x" size="xs" />
                         </button>
@@ -2845,7 +2839,7 @@
                         "
                         :trigger-el="getAccountSearchInputRef(getEditRuleSearchKey(rule))"
                         :match-width="true"
-                        panel-class="max-h-48 overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                        panel-class="max-h-48 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
                       >
                         <button data-testid="admin-groups-button-select-account-rule-account-2"
                           v-for="account in accountSearchResults[
@@ -2854,7 +2848,7 @@
                           :key="account.id"
                           type="button"
                           @click="selectAccount(rule, account, true)"
-                          class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
+                          class="w-full px-3 py-2 text-left text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
                           :class="{
                             'opacity-50': rule.accounts.some(
                               (a) => a.id === account.id,
@@ -2865,13 +2859,13 @@
                           "
                         >
                           <span>{{ account.name }}</span>
-                          <span class="ml-2 text-xs text-gray-400"
+                          <span class="ml-2 text-xs text-[var(--anthropic-muted)]"
                             >#{{ account.id }}</span
                           >
                         </button>
                       </FloatingDropdown>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">
+                    <p class="text-xs text-[var(--anthropic-muted)] mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
                     </p>
                   </div>
@@ -2879,7 +2873,7 @@
                 <button data-testid="admin-groups-button-remove-edit-routing-rule-rule"
                   type="button"
                   @click="removeEditRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-[var(--anthropic-muted)] hover:text-red-500 transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -2892,7 +2886,7 @@
             v-if="editForm.model_routing_enabled"
             type="button"
             @click="addEditRoutingRule"
-            class="mt-3 flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            class="mt-3 flex items-center gap-1.5 text-sm text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
           >
             <Icon name="plus" size="sm" />
             {{ t("admin.groups.modelRouting.addRule") }}
@@ -2962,7 +2956,7 @@
       @close="closeSortModal"
     >
       <div class="space-y-4">
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ t("admin.groups.sortOrderHint") }}
         </p>
         <VueDraggable
@@ -2973,16 +2967,16 @@
           <div
             v-for="group in sortableGroups"
             :key="group.id"
-            class="flex cursor-grab items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md active:cursor-grabbing dark:border-dark-600 dark:bg-dark-700"
+            class="flex cursor-grab items-center gap-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-3 transition-shadow hover:shadow-none active:cursor-grabbing dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
           >
-            <div class="text-gray-400">
+            <div class="text-[var(--anthropic-muted)]">
               <Icon name="menu" size="md" />
             </div>
             <div class="flex-1">
-              <div class="font-medium text-gray-900 dark:text-white">
+              <div class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ group.name }}
               </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <span
                   :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
@@ -2991,15 +2985,15 @@
                       : group.platform === 'openai'
                         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                         : group.platform === 'antigravity'
-                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                          ? 'bg-accent-200 text-accent-700 dark:bg-accent-900/30 dark:text-accent-500'
+                          : 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]',
                   ]"
                 >
                   {{ t("admin.groups.platforms." + group.platform) }}
                 </span>
               </div>
             </div>
-            <div class="text-sm text-gray-400">#{{ group.id }}</div>
+            <div class="text-sm text-[var(--anthropic-muted)]">#{{ group.id }}</div>
           </div>
         </VueDraggable>
       </div>

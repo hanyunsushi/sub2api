@@ -181,7 +181,9 @@ onMounted(() => {
 }
 
 .logo-picker-preset {
-  @apply flex h-full w-full items-center justify-center rounded-md border border-gray-200 bg-white p-1 transition dark:border-dark-700 dark:bg-dark-800;
+  @apply flex h-full w-full items-center justify-center rounded-md border p-1 transition;
+  border-color: var(--atelier-line-strong);
+  background: var(--atelier-paper);
 }
 
 .logo-picker-preset:hover,
@@ -195,7 +197,15 @@ onMounted(() => {
 }
 
 .logo-picker-preset-delete {
-  @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white text-[11px] font-semibold leading-none text-gray-500 shadow-sm transition hover:border-red-300 hover:text-red-600 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-red-500 dark:hover:text-red-300;
+  @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border text-[11px] font-semibold leading-none shadow-none transition;
+  border-color: var(--atelier-line-strong);
+  background: var(--atelier-paper);
+  color: var(--atelier-muted);
+}
+
+.logo-picker-preset-delete:hover {
+  border-color: var(--atelier-status-danger);
+  color: var(--atelier-status-danger);
 }
 
 .logo-picker-preview-image {

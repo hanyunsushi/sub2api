@@ -2,14 +2,14 @@
   <AppLayout>
     <div class="space-y-4">
       <!-- Filters -->
-      <div class="card p-4">
-        <div class="flex flex-wrap items-center gap-3">
-          <Select v-model="currentFilter" :options="statusFilters" class="w-36" @change="fetchOrders" />
-          <div class="flex flex-1 items-center justify-end gap-2">
-            <button data-testid="user-user-orders-button-fetch-orders" @click="fetchOrders" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+      <div class="card p-4 order-filter-card table-page-filter-section">
+        <div class="table-filter-shell user-orders-filter-shell flex flex-wrap items-center gap-3">
+          <Select variant="text-control" v-model="currentFilter" :options="statusFilters" class="w-36" @change="fetchOrders" />
+          <div class="table-filter-actions flex flex-1 items-center justify-end gap-3">
+            <button data-testid="user-user-orders-button-fetch-orders" @click="fetchOrders" :disabled="loading" class="btn btn-primary anthropic-refresh-action-button user-orders-refresh-button" :title="t('common.refresh')">
+              {{ t("common.refresh") }}
             </button>
-            <button data-testid="user-user-orders-button-push-purchase" class="btn btn-primary" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
+            <button data-testid="user-user-orders-button-push-purchase" class="filter-menu-button" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
           </div>
         </div>
       </div>
@@ -22,7 +22,7 @@
               <Icon name="x" size="sm" />
               <span>{{ t('payment.orders.cancel') }}</span>
             </button>
-            <button data-testid="user-user-orders-button-open-refund-dialog-row" v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
+            <button data-testid="user-user-orders-button-open-refund-dialog-row" v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-accent-600 hover:bg-accent-100 dark:text-accent-500 dark:hover:bg-accent-900/20">
               <Icon name="dollar" size="sm" />
               <span>{{ t('payment.orders.requestRefund') }}</span>
             </button>
@@ -43,7 +43,7 @@
 
     <!-- Cancel Confirm Dialog -->
     <BaseDialog :show="!!cancelTargetId" :title="t('payment.orders.cancel')" width="narrow" @close="cancelTargetId = null">
-      <p class="text-sm text-gray-600 dark:text-gray-300">{{ t('payment.confirmCancel') }}</p>
+      <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.confirmCancel') }}</p>
       <template #footer>
         <div class="flex justify-end gap-3">
           <button data-testid="user-user-orders-button-cancel-target-id-null" class="btn btn-secondary" @click="cancelTargetId = null">{{ t('common.cancel') }}</button>
@@ -55,14 +55,14 @@
     <!-- Refund Dialog -->
     <BaseDialog :show="!!refundTarget" :title="t('payment.orders.requestRefund')" @close="refundTarget = null">
       <div v-if="refundTarget" class="space-y-4">
-        <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-800">
+        <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
           <div class="flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-            <span class="font-mono text-gray-900 dark:text-white">#{{ refundTarget.id }}</span>
+            <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderId') }}</span>
+            <span class="font-mono text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">#{{ refundTarget.id }}</span>
           </div>
           <div class="mt-2 flex justify-between text-sm">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-            <span class="text-gray-900 dark:text-white">${{ refundTarget.amount.toFixed(2) }}</span>
+            <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.amount') }}</span>
+            <span class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ refundTarget.amount.toFixed(2) }}</span>
           </div>
         </div>
         <div>

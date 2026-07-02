@@ -57,7 +57,7 @@
           <tr data-testid="user-user-error-requests-table-tr-open-detail-row-id"
             v-for="(row, i) in rows"
             :key="i"
-            class="border-t border-gray-100 dark:border-dark-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-800"
+            class="border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] cursor-pointer hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
             @click="openDetail(row.id)"
           >
             <td class="px-4 py-2">{{ row.model || '-' }}</td>
@@ -65,7 +65,7 @@
               <span>{{ row.key_name || '-' }}</span>
               <span
                 v-if="row.key_deleted"
-                class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400"
+                class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
               >{{ t('usage.errors.keyDeleted') }}</span>
             </td>
             <td class="px-4 py-2">{{ row.inbound_endpoint || '-' }}</td>
@@ -76,7 +76,7 @@
             <td class="px-4 py-2">{{ formatDateTime(row.created_at) }}</td>
           </tr>
           <tr v-if="!loading && rows.length === 0">
-            <td colspan="8" class="px-4 py-8 text-center text-gray-400">{{ t('usage.errors.empty') }}</td>
+            <td colspan="8" class="px-4 py-8 text-center text-[var(--anthropic-muted)]">{{ t('usage.errors.empty') }}</td>
           </tr>
         </tbody>
       </table>

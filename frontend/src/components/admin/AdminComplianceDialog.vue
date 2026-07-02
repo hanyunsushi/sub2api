@@ -21,16 +21,16 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
-        <section class="min-h-[320px] max-h-[46vh] overflow-y-auto rounded-lg border border-gray-200 bg-white p-5 dark:border-dark-700 dark:bg-dark-900">
+        <section class="min-h-[320px] max-h-[46vh] overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-5 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
           <div class="legal-document-content" v-html="renderedDocument"></div>
         </section>
 
-        <aside class="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm dark:border-dark-700 dark:bg-dark-900/60">
+        <aside class="space-y-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 text-sm dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
           <div>
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-dark-400">
+            <p class="text-xs font-medium uppercase tracking-wide text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ t('adminCompliance.version') }}
             </p>
-            <p class="mt-1 break-all font-mono text-gray-900 dark:text-white">
+            <p class="mt-1 break-all font-mono text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
               {{ complianceStore.status?.version || 'v2026.06.10' }}
             </p>
           </div>
@@ -38,22 +38,22 @@
             :href="documentUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-primary-600 underline underline-offset-4 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200"
+            class="inline-flex items-center gap-2 text-[var(--anthropic-fg)] underline underline-offset-4 hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
           >
             <Icon name="externalLink" size="sm" />
             {{ t('adminCompliance.openDocument') }}
           </a>
-          <p class="leading-6 text-gray-600 dark:text-dark-300">
+          <p class="leading-6 text-[var(--anthropic-muted)] dark:text-dark-300">
             {{ t('adminCompliance.documentSource') }}
           </p>
         </aside>
       </div>
 
       <div class="space-y-3">
-        <label for="admin-compliance-phrase" class="block text-sm font-semibold text-gray-900 dark:text-white">
+        <label for="admin-compliance-phrase" class="block text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('adminCompliance.inputLabel') }}
         </label>
-        <div class="rounded-lg bg-gray-100 px-3 py-2 font-mono text-sm text-gray-900 dark:bg-dark-800 dark:text-dark-100">
+        <div class="rounded-lg bg-[var(--anthropic-raised)] px-3 py-2 font-mono text-sm text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-dark-100">
           {{ expectedPhrase }}
         </div>
         <Input
@@ -67,7 +67,7 @@
         />
       </div>
 
-      <p class="text-xs leading-5 text-gray-500 dark:text-dark-400">
+      <p class="text-xs leading-5 text-[var(--anthropic-muted)] dark:text-dark-400">
         {{ t('adminCompliance.legalNote') }}
       </p>
     </div>

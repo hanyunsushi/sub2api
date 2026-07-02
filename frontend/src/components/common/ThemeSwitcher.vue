@@ -21,7 +21,7 @@
         v-if="!collapsed"
         name="chevronDown"
         size="xs"
-        class="ml-auto flex-shrink-0 text-gray-400 transition-transform duration-200"
+        class="ml-auto flex-shrink-0 text-[var(--anthropic-muted)] transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }"
       />
     </button>
@@ -42,7 +42,7 @@
       >
         <ThemeLogo :theme-id="theme.id" class="h-4 w-4 flex-shrink-0" />
         <span>{{ theme.label }}</span>
-        <Icon v-if="theme.id === currentTheme" name="check" size="sm" class="ml-auto text-primary-500" />
+        <Icon v-if="theme.id === currentTheme" name="check" size="sm" class="ml-auto text-[var(--anthropic-fg)]" />
       </button>
     </FloatingDropdown>
   </div>

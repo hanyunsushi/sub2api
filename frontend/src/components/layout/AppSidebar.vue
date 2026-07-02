@@ -29,6 +29,12 @@
       <template v-if="isAdmin">
         <!-- Admin Section -->
         <div class="sidebar-section">
+          <div class="sidebar-section-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
+            <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
+              {{ t('nav.adminInterface') }}
+            </span>
+          </div>
+
           <template v-for="item in adminNavItems" :key="item.path">
             <!-- Collapsible group (has children) -->
             <template v-if="item.children?.length">
@@ -42,17 +48,20 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleGroupClick(item)"
               >
-                <component :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+                <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
                 <span
                   class="sidebar-label sidebar-label-flex"
                   :class="{ 'sidebar-label-collapsed': sidebarCollapsed }"
                   :aria-hidden="sidebarCollapsed ? 'true' : 'false'"
                 >
                   <span class="min-w-0 truncate">{{ item.label }}</span>
-                  <ChevronDownIcon
-                    class="h-4 w-4 flex-shrink-0 transition-transform duration-200"
-                    :class="isGroupExpanded(item) ? 'rotate-180' : ''"
-                  />
+                  <span
+                    class="sidebar-group-caret"
+                    :class="{ 'sidebar-group-caret-open': isGroupExpanded(item) }"
+                    aria-hidden="true"
+                  ></span>
                 </span>
               </button>
               <!-- Children -->
@@ -69,7 +78,9 @@
                   }"
                   @click="handleMenuItemClick(child.path)"
                 >
-                  <component :is="child.icon" class="h-4 w-4 flex-shrink-0" />
+                  <span class="sidebar-initial sidebar-child-initial" aria-hidden="true">
+                    {{ getNavInitial(child.label) }}
+                  </span>
                   <span>{{ child.label }}</span>
                 </router-link>
               </div>
@@ -85,9 +96,9 @@
               :title="sidebarCollapsed ? item.label : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path"
@@ -107,9 +118,9 @@
               "
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -135,9 +146,9 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-2"
@@ -149,9 +160,9 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -173,9 +184,9 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-3"
@@ -187,9 +198,9 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <img v-if="renderCustomMenuIcon(item.iconSvg) && isCustomMenuIconURL(item.iconSvg)" :src="item.iconSvg" alt="" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon sidebar-svg-icon-image" />
-              <span v-else-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                {{ getNavInitial(item.label) }}
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -206,8 +217,9 @@
         :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
         :title="sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
       >
-        <ChevronDoubleLeftIcon v-if="!sidebarCollapsed" class="h-5 w-5 flex-shrink-0" />
-        <ChevronDoubleRightIcon v-else class="h-5 w-5 flex-shrink-0" />
+        <span class="sidebar-collapse-mark" aria-hidden="true">
+          {{ sidebarCollapsed ? '›' : '‹' }}
+        </span>
         <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ t('nav.collapse') }}</span>
       </button>
     </div>
@@ -229,8 +241,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import VersionBadge from '@/components/common/VersionBadge.vue'
-import { sanitizeSvg } from '@/utils/sanitize'
-import { isCustomMenuIconURL as isCustomMenuIconURLValue } from '@/utils/customMenuIconPresets'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
 
 interface NavItem {
@@ -556,21 +566,6 @@ const CogIcon = {
     )
 }
 
-const ChevronDoubleLeftIcon = {
-  render: () =>
-    h(
-      'svg',
-      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
-      [
-        h('path', {
-          'stroke-linecap': 'round',
-          'stroke-linejoin': 'round',
-          d: 'm18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5'
-        })
-      ]
-    )
-}
-
 const OrderIcon = {
   render: () =>
     h(
@@ -596,21 +591,6 @@ const OrderListIcon = {
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
           d: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z'
-        })
-      ]
-    )
-}
-
-const ChevronDoubleRightIcon = {
-  render: () =>
-    h(
-      'svg',
-      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
-      [
-        h('path', {
-          'stroke-linecap': 'round',
-          'stroke-linejoin': 'round',
-          d: 'm5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5'
         })
       ]
     )
@@ -666,21 +646,6 @@ const PriceTagIcon = {
     )
 }
 
-const ChevronDownIcon = {
-  render: () =>
-    h(
-      'svg',
-      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
-      [
-        h('path', {
-          'stroke-linecap': 'round',
-          'stroke-linejoin': 'round',
-          d: 'm19.5 8.25-7.5 7.5-7.5-7.5'
-        })
-      ]
-    )
-}
-
 // Public-settings flags go through the registry in utils/featureFlags.ts,
 // which handles the opt-in vs opt-out fallback when settings haven't loaded
 // yet. Admin-only flags (not in public settings) stay inline below.
@@ -707,14 +672,6 @@ function customMenuNavItem(item: {
     iconSvg: item.icon_svg,
     openMode: item.open_mode === 'redirect' ? 'redirect' : 'iframe',
   }
-}
-
-function isCustomMenuIconURL(value?: string | null): boolean {
-  return isCustomMenuIconURLValue(value)
-}
-
-function renderCustomMenuIcon(value?: string | null): string {
-  return (value ?? '').trim()
 }
 
 // buildSelfNavItems 构造用户自己的导航项（用户端主菜单和管理员的"我的账户"子菜单共享这组声明）。
@@ -748,6 +705,10 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
 function finalizeNav(items: NavItem[]): NavItem[] {
   const visible = applyFeatureFlags(items)
   return authStore.isSimpleMode ? visible.filter(item => !item.hideInSimpleMode) : visible
+}
+
+function getNavInitial(label: string): string {
+  return label.trim().slice(0, 1).toUpperCase()
 }
 
 // User navigation items (for regular users)
@@ -1195,20 +1156,72 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-/* Custom SVG icon in sidebar: constrain size and inherit the active theme color. */
-.sidebar-svg-icon {
-  color: currentColor;
-}
-
-.sidebar-svg-icon :deep(svg) {
-  display: block;
+.sidebar-initial {
+  display: none;
   width: 1.25rem;
+  min-width: 1.25rem;
   height: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--sidebar-text, currentColor);
+  font-family: var(--atelier-font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  background: transparent;
 }
 
-.sidebar-svg-icon-image {
+.sidebar-child-initial {
+  width: 1rem;
+  min-width: 1rem;
+  height: 1rem;
+  font-size: 0.625rem;
+}
+
+.sidebar-link-collapsed .sidebar-initial {
+  display: inline-flex;
+}
+
+.sidebar-group-caret {
+  width: 1rem;
+  height: 1rem;
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  color: currentColor;
+  transform: translateY(1px) rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.sidebar-group-caret::before {
+  content: "";
+  width: 100%;
+  height: 100%;
   display: block;
-  object-fit: contain;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M14.128 7.16482C14.3126 6.95983 14.6298 6.94336 14.835 7.12771C15.0402 7.31242 15.0567 7.62952 14.8721 7.83477L10.372 12.835L10.2939 12.9053C10.2093 12.9667 10.1063 13 9.99995 13C9.85833 12.9999 9.72264 12.9402 9.62788 12.835L5.12778 7.83477L5.0682 7.75273C4.95072 7.55225 4.98544 7.28926 5.16489 7.12771C5.34445 6.96617 5.60969 6.95939 5.79674 7.09744L5.87193 7.16482L9.99995 11.7519L14.128 7.16482Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.sidebar-group-caret-open {
+  transform: translateY(1px) rotate(180deg);
+}
+
+.sidebar-collapse-mark {
+  display: inline-flex;
+  width: 1.25rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  font-family: var(--atelier-font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
 </style>

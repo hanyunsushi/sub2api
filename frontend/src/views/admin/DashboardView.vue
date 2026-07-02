@@ -16,13 +16,13 @@
                 <Icon name="key" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.apiKeys') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ stats.total_api_keys }}
                 </p>
-                <p class="text-xs text-gray-600 dark:text-gray-400">
+                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ stats.active_api_keys }} {{ t('common.active') }}
                 </p>
               </div>
@@ -36,17 +36,17 @@
                 <Icon name="server" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.accounts') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ stats.total_accounts }}
                 </p>
                 <p class="text-xs">
-                  <span class="text-gray-600 dark:text-gray-400"
+                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     >{{ stats.normal_accounts }} {{ t('common.active') }}</span
                   >
-                  <span v-if="stats.error_accounts > 0" class="ml-1 text-red-500"
+                  <span v-if="stats.error_accounts > 0" class="ml-1 text-[var(--anthropic-error)]"
                     >{{ stats.error_accounts }} {{ t('common.error') }}</span
                   >
                 </p>
@@ -61,13 +61,13 @@
                 <Icon name="chart" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.todayRequests') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ stats.today_requests }}
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('common.total') }}: {{ formatNumber(stats.total_requests) }}
                 </p>
               </div>
@@ -81,13 +81,13 @@
                 <Icon name="userPlus" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.users') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   +{{ stats.today_new_users }}
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('common.total') }}: {{ formatNumber(stats.total_users) }}
                 </p>
               </div>
@@ -104,27 +104,27 @@
                 <Icon name="cube" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.todayTokens') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ formatTokens(stats.today_tokens) }}
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-gray-700 dark:text-gray-300"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.today_actual_cost) }}</span
                   >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
+                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
                   <span
-                    class="text-gray-600 dark:text-gray-400"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.today_account_cost) }}</span
                   >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
+                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
                   <span
-                    class="text-gray-400 dark:text-gray-500"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.standard')"
                     >${{ formatCost(stats.today_cost) }}</span
                   >
@@ -140,27 +140,27 @@
                 <Icon name="database" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.totalTokens') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ formatTokens(stats.total_tokens) }}
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-gray-700 dark:text-gray-300"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.total_actual_cost) }}</span
                   >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
+                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
                   <span
-                    class="text-gray-600 dark:text-gray-400"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.total_account_cost) }}</span
                   >
-                  <span class="text-gray-400 dark:text-gray-500"> / </span>
+                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
                   <span
-                    class="text-gray-400 dark:text-gray-500"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                     :title="t('admin.dashboard.standard')"
                     >${{ formatCost(stats.total_cost) }}</span
                   >
@@ -176,20 +176,20 @@
                 <Icon name="bolt" size="md" :stroke-width="2" />
               </div>
               <div class="flex-1">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.performance') }}
                 </p>
                 <div class="flex items-baseline gap-2">
-                  <p class="text-xl font-bold text-gray-900 dark:text-white">
+                  <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                     {{ formatTokens(stats.rpm) }}
                   </p>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">RPM</span>
+                  <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">RPM</span>
                 </div>
                 <div class="flex items-baseline gap-2">
-                  <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  <p class="numeric text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                     {{ formatTokens(stats.tpm) }}
                   </p>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">TPM</span>
+                  <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">TPM</span>
                 </div>
               </div>
             </div>
@@ -202,13 +202,13 @@
                 <Icon name="clock" size="md" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ t('admin.dashboard.avgResponse') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ formatDuration(stats.average_duration_ms) }}
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ stats.active_users }} {{ t('admin.dashboard.activeUsers') }}
                 </p>
               </div>
@@ -220,12 +220,13 @@
         <div class="space-y-6">
           <!-- Date Range Filter -->
           <div class="card dashboard-filter-card p-4">
-            <div class="flex flex-wrap items-center gap-4">
-              <div class="dashboard-filter-range flex items-center gap-2">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+            <div class="dashboard-filter-shell flex flex-wrap items-center gap-3">
+              <div class="dashboard-filter-range flex items-center gap-1.5">
+                <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >{{ t('admin.dashboard.timeRange') }}:</span
                 >
                 <DateRangePicker
+                  variant="text-control"
                   v-model:start-date="startDate"
                   v-model:end-date="endDate"
                   @change="onDateRangeChange"
@@ -234,16 +235,17 @@
               <button data-testid="admin-dashboard-button-load-dashboard-stats"
                 @click="loadDashboardStats"
                 :disabled="chartsLoading"
-                class="btn btn-secondary dashboard-paper-control dashboard-filter-refresh"
+                class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"
               >
                 {{ t('common.refresh') }}
               </button>
-              <div class="dashboard-filter-granularity ml-auto flex items-center gap-2">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+              <div class="dashboard-filter-granularity flex items-center gap-1.5">
+                <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   >{{ t('admin.dashboard.granularity') }}:</span
                 >
                 <div class="dashboard-granularity-control w-28">
                   <Select
+                    variant="text-control"
                     v-model="granularity"
                     :options="granularityOptions"
                     @change="loadChartData"
@@ -274,7 +276,7 @@
 
           <!-- User Usage Trend (Full Width) -->
           <div class="card p-4">
-            <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 class="mb-4 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
               {{ t('admin.dashboard.recentUsage') }} (Top 12)
             </h3>
             <div class="h-64">
@@ -284,7 +286,7 @@
               <Line v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
               <div
                 v-else
-                class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+                class="flex h-full items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >
                 {{ t('admin.dashboard.noDataAvailable') }}
               </div>
@@ -710,79 +712,35 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .admin-dashboard-atelier {
-  --dashboard-control-surface: var(--atelier-paper-2);
-  --dashboard-control-edge: var(--atelier-line-strong);
-  --dashboard-control-shadow: rgba(23, 21, 18, 0.2);
-  --dashboard-module-shadow: rgba(23, 21, 18, 0.36);
-  --dashboard-module-rule: var(--atelier-console-rule);
   font-family: var(--atelier-font-sans);
 }
 
 .admin-dashboard-atelier :deep(.card) {
-  border-radius: 8px;
-  --atelier-card-accent: var(--atelier-line-strong);
-  --atelier-card-surface: var(--atelier-paper-2);
   position: relative;
   overflow: hidden;
-  border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-paper-2) !important;
-  box-shadow: 0 10px 24px -22px var(--dashboard-module-shadow);
+  border-color: var(--anthropic-cookbook-border) !important;
+  border-radius: 8px;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
   transition:
-    transform 0.26s var(--atelier-ease),
-    border-color 0.26s var(--atelier-ease),
-    box-shadow 0.26s var(--atelier-ease),
-    background-color 0.26s var(--atelier-ease);
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
-.admin-dashboard-atelier :deep(.card)::after {
+.admin-dashboard-atelier :deep(.card)::after,
+.admin-dashboard-atelier :deep(.card)::before {
   content: none;
   display: none;
 }
 
-.admin-dashboard-atelier :deep(.card)::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 1rem;
-  left: 1rem;
-  height: 1px;
-  background: var(--dashboard-module-rule);
-  opacity: 0.82;
-  pointer-events: none;
-}
-
-.admin-dashboard-atelier :deep(.card:hover) {
+.admin-dashboard-atelier :deep(.card:hover),
+.admin-dashboard-atelier :deep(.card:focus-within) {
   transform: none !important;
-  border-color: var(--atelier-material-edge) !important;
-  background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;
-  box-shadow: 0 10px 24px -22px var(--dashboard-module-shadow) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
   color: var(--atelier-ink) !important;
-}
-
-.admin-dashboard-atelier > .grid > .card::after {
-  content: "";
-  position: absolute;
-  right: 1rem;
-  bottom: 0.75rem;
-  left: 1rem;
-  display: block;
-  height: 3px;
-  background:
-    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 42% 100% no-repeat,
-    var(--atelier-paper);
-  pointer-events: none;
-}
-
-.admin-dashboard-atelier > .grid > .card:nth-child(2n)::after {
-  background:
-    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 58% 100% no-repeat,
-    var(--atelier-paper);
-}
-
-.admin-dashboard-atelier > .grid > .card:nth-child(3n)::after {
-  background:
-    linear-gradient(var(--atelier-line-strong), var(--atelier-line-strong)) 0 0 / 76% 100% no-repeat,
-    var(--atelier-paper);
 }
 
 .admin-dashboard-atelier :deep(.card .text-xl),
@@ -813,48 +771,32 @@ onBeforeUnmount(() => {
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card) {
-  border: 1px solid var(--atelier-slab-edge) !important;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
   border-radius: 8px;
-  background: var(--atelier-slab-surface) !important;
+  background: var(--anthropic-page) !important;
   color: var(--atelier-slab-text);
   box-shadow: none !important;
 }
 
-.admin-dashboard-atelier :deep(.dashboard-filter-card)::before {
-  right: 1rem;
-  left: 1rem;
-  background: repeating-linear-gradient(to right, rgba(23, 21, 18, 0.36), rgba(23, 21, 18, 0.36) 2px, transparent 2px, transparent 8px);
-}
-
+.admin-dashboard-atelier :deep(.dashboard-filter-card)::before,
 .admin-dashboard-atelier :deep(.dashboard-filter-card)::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: block;
-  height: auto;
-  border-radius: inherit;
-  background:
-    var(--atelier-filter-stitch-horizontal) top left / 100% 1px no-repeat,
-    var(--atelier-filter-stitch-horizontal) bottom left / 100% 1px no-repeat,
-    var(--atelier-filter-stitch-vertical) top left / 1px 100% no-repeat,
-    var(--atelier-filter-stitch-vertical) top right / 1px 100% no-repeat;
-  pointer-events: none;
+  content: none;
+  display: none;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div) {
-  min-height: 3.25rem;
+  min-height: 3rem;
   align-items: center;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range) {
-  margin: -1rem 0 -1rem -1rem;
-  padding: 1rem 0.75rem 1rem 1rem;
+  margin: 0;
+  padding: 0;
   align-items: center;
-  align-self: stretch;
+  align-self: center;
   position: relative;
   border-right: 0;
-  background: var(--atelier-slab-surface);
+  background: transparent;
   color: var(--atelier-slab-text);
 }
 
@@ -874,18 +816,22 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
   color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: var(--anthropic-control-font-size, 0.8125rem);
+  font-weight: var(--anthropic-control-font-weight, 500);
+  line-height: var(--anthropic-control-line-height, 1.25rem);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range > span) {
   color: var(--atelier-slab-text) !important;
   -webkit-text-fill-color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: var(--anthropic-control-font-size, 0.8125rem);
+  font-weight: var(--anthropic-control-font-weight, 500);
+  line-height: var(--anthropic-control-line-height, 1.25rem);
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range:hover > span) {
@@ -895,14 +841,14 @@ onBeforeUnmount(() => {
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-granularity) {
   align-self: center;
-  background: var(--atelier-slab-surface) !important;
+  background: transparent !important;
 }
 
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control),
 .admin-dashboard-atelier :deep(.date-picker-trigger),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: var(--atelier-slab-edge-soft) !important;
-  background: var(--atelier-slab-field) !important;
+  border-color: transparent !important;
+  background: transparent !important;
   color: var(--atelier-slab-text) !important;
   font-family: var(--atelier-font-sans);
   box-shadow: none !important;
@@ -921,29 +867,50 @@ onBeforeUnmount(() => {
 .admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover),
 .admin-dashboard-atelier :deep(.date-picker-trigger:hover),
 .admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
-  border-color: var(--atelier-slab-edge) !important;
-  background: var(--atelier-slab-field-hover) !important;
+  border-color: transparent !important;
+  background: transparent !important;
   color: var(--atelier-slab-text) !important;
 }
 
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control) {
+  --button-bg: transparent;
+  --button-border: var(--anthropic-cookbook-border);
+  --button-border-hover: var(--anthropic-cookbook-border-hover);
+  min-height: var(--anthropic-control-height, 2rem);
+  padding: 0.375rem 0.625rem;
+  border-color: var(--button-border) !important;
+  border-radius: 8px;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+  font-size: var(--anthropic-control-font-size, 0.8125rem);
+  font-weight: var(--anthropic-control-font-weight, 500);
+  line-height: var(--anthropic-control-line-height, 1.25rem);
+}
+
+.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:hover) {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
 .admin-dashboard-atelier:where(.dark *) {
-  --dashboard-control-surface: var(--atelier-paper-2);
-  --dashboard-control-edge: rgba(23, 21, 18, 0.18);
-  --dashboard-control-shadow: rgba(17, 24, 39, 0.16);
+  --anthropic-cookbook-border: rgba(20, 19, 19, 0.08);
+  --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
 }
 
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card),
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card .dashboard-paper-control),
 .admin-dashboard-atelier:where(.dark *) :deep(.date-picker-trigger),
 .admin-dashboard-atelier:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: var(--dashboard-control-edge);
-  background: var(--dashboard-control-surface);
+  border-color: transparent;
+  background: transparent;
 }
 
 .dashboard-stat-icon {
-  background: var(--atelier-material-1);
-  border: 1px solid var(--atelier-material-edge);
-  color: var(--atelier-ink);
+  background: transparent;
+  border: 1px solid var(--anthropic-cookbook-border);
+  color: var(--atelier-muted);
   box-shadow: none;
 }
 

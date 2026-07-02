@@ -1,9 +1,9 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-dark-900">
+  <div class="flex min-h-screen items-center justify-center bg-[var(--anthropic-section)] px-4 dark:bg-[var(--anthropic-section)]">
     <div class="w-full max-w-md space-y-6">
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+        <div class="h-8 w-8 animate-spin rounded-full border-4 border-[var(--anthropic-fg)] border-t-transparent"></div>
       </div>
       <template v-else>
         <!-- Status Icon -->
@@ -25,64 +25,64 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h2 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 class="mt-4 text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ statusTitle }}
           </h2>
-          <p v-if="isPending" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <p v-if="isPending" class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('payment.result.processingHint') }}
           </p>
         </div>
         <!-- Order Info -->
-        <div v-if="order" class="rounded-xl bg-white p-5 shadow-sm dark:bg-dark-800">
+        <div v-if="order" class="rounded-xl bg-[var(--anthropic-page)] p-5 shadow-none dark:bg-[var(--anthropic-section)]">
           <div class="space-y-3 text-sm">
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">#{{ order.id }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderId') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">#{{ order.id }}</span>
             </div>
             <div v-if="order.out_trade_no" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ order.out_trade_no }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderNo') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ order.out_trade_no }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.baseAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(baseAmount) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.baseAmount') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatGatewayAmount(baseAmount) }}</span>
             </div>
             <div v-if="order.fee_rate > 0" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.fee') }} ({{ order.fee_rate }}%)</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(feeAmount) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.fee') }} ({{ order.fee_rate }}%)</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatGatewayAmount(feeAmount) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-              <span class="font-bold text-primary-600 dark:text-primary-400">{{ formatGatewayAmount(order.pay_amount) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.payAmount') }}</span>
+              <span class="font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatGatewayAmount(order.pay_amount) }}</span>
             </div>
             <div v-if="order.amount !== order.pay_amount" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.creditedAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ order.order_type === 'balance' ? '$' + order.amount.toFixed(2) : formatGatewayAmount(order.amount) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.creditedAmount') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ order.order_type === 'balance' ? '$' + order.amount.toFixed(2) : formatGatewayAmount(order.amount) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ t(paymentMethodI18nKey(order.payment_type), normalizedOrderPaymentType(order.payment_type)) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.paymentMethod') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t(paymentMethodI18nKey(order.payment_type), normalizedOrderPaymentType(order.payment_type)) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.status') }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.status') }}</span>
               <OrderStatusBadge :status="order.status" />
             </div>
           </div>
         </div>
         <!-- EasyPay return info (when no order loaded) -->
-        <div v-else-if="returnInfo" class="rounded-xl bg-white p-5 shadow-sm dark:bg-dark-800">
+        <div v-else-if="returnInfo" class="rounded-xl bg-[var(--anthropic-page)] p-5 shadow-none dark:bg-[var(--anthropic-section)]">
           <div class="space-y-3 text-sm">
             <div v-if="returnInfo.outTradeNo" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ returnInfo.outTradeNo }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderId') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ returnInfo.outTradeNo }}</span>
             </div>
             <div v-if="returnInfo.money" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(Number(returnInfo.money) || 0) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.payAmount') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatGatewayAmount(Number(returnInfo.money) || 0) }}</span>
             </div>
             <div v-if="returnInfo.type" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ t(paymentMethodI18nKey(returnInfo.type), normalizedOrderPaymentType(returnInfo.type)) }}</span>
+              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.paymentMethod') }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t(paymentMethodI18nKey(returnInfo.type), normalizedOrderPaymentType(returnInfo.type)) }}</span>
             </div>
           </div>
         </div>

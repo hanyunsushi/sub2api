@@ -2,7 +2,7 @@
   <AppLayout>
     <TablePageLayout :scroll-mode="'page'" class="external-subscriptions-page">
       <template #filters>
-        <div class="table-filter-shell flex flex-wrap items-center gap-3">
+        <div class="table-filter-shell external-subscriptions-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-72">
               <input data-testid="admin-external-subscriptions-input-search-query"
@@ -13,29 +13,30 @@
               />
             </div>
             <Select
+              variant="text-control"
               v-model="templateFilter"
               :options="templateFilterOptions"
               class="w-48"
             />
             <Select
+              variant="text-control"
               v-model="enabledFilter"
               :options="enabledFilterOptions"
               class="w-36"
             />
           </div>
 
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
+          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button data-testid="admin-external-subscriptions-button-refresh-all-true"
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-primary anthropic-refresh-action-button external-subscriptions-refresh-button"
               :disabled="loading || statusLoading"
               :title="t('common.refresh')"
               @click="refreshAll(true)"
             >
-              <Icon name="refresh" size="md" :class="loading || statusLoading ? 'animate-spin' : ''" />
+              {{ t("common.refresh") }}
             </button>
-            <button data-testid="admin-external-subscriptions-button-open-create-dialog" type="button" class="btn btn-primary" @click="openCreateDialog">
-              <Icon name="plus" size="md" class="mr-2" />
+            <button data-testid="admin-external-subscriptions-button-open-create-dialog" type="button" class="btn btn-primary external-subscriptions-create-button" @click="openCreateDialog">
               {{ localText('新增订阅', 'Add Provider') }}
             </button>
           </div>
@@ -53,10 +54,10 @@
               :key="index"
               class="external-subscription-card external-subscription-card-main"
             >
-              <div class="h-10 w-10 animate-pulse rounded-lg bg-gray-100 dark:bg-dark-700"></div>
-              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
-              <div class="mt-6 h-12 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
-              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-700"></div>
+              <div class="h-10 w-10 animate-pulse rounded-lg bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+              <div class="mt-6 h-12 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
             </div>
           </div>
 
@@ -84,7 +85,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="min-w-0">
-                      <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                      <h3 class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                         {{ card.name }}
                       </h3>
                       <div class="external-subscription-status-line">
@@ -165,7 +166,7 @@
                   label="EXT"
                   :utilization="getCardQuotaProgress(card)?.percent ?? 0"
                   :title="formatCardQuotaUsage(card)"
-                  color="emerald"
+                  color="success"
                   :show-now-when-idle="false"
                 />
               </div>
@@ -195,7 +196,7 @@
                 >
                   {{ keyword }}
                 </span>
-                <span v-if="card.matchKeywords.length === 0" class="text-xs text-gray-400">-</span>
+                <span v-if="card.matchKeywords.length === 0" class="text-xs text-[var(--anthropic-muted)]">-</span>
               </div>
             </article>
           </div>
@@ -221,11 +222,11 @@
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-console"
             type="button"
-            class="rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-left transition-colors hover:border-primary-300 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:hover:bg-primary-900/30"
+            class="rounded-lg border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
             @click="applyPreset('newapi_console')"
           >
-            <div class="text-sm font-semibold text-primary-700 dark:text-primary-300">NewAPI Console</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">NewAPI Console</div>
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('QL、LIUST、PackyCode 这类控制台余额接口', 'For QL, LIUST, PackyCode style console balance APIs') }}
             </div>
           </button>
@@ -235,27 +236,27 @@
             @click="applyPreset('active_subscriptions')"
           >
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">Active Subscriptions</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-buzz-balance"
             type="button"
-            class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-info-border)] hover:bg-[var(--anthropic-info-bg)] dark:border-[var(--anthropic-info-border)] dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('buzz_balance')"
           >
-            <div class="text-sm font-semibold text-sky-700 dark:text-sky-300">Buzz Balance</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-sm font-semibold text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">Buzz Balance</div>
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-openrouter-credits"
             type="button"
-            class="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-left transition-colors hover:border-sky-300 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-info-border)] hover:bg-[var(--anthropic-info-bg)] dark:border-[var(--anthropic-info-border)] dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('openrouter_credits')"
           >
-            <div class="text-sm font-semibold text-sky-700 dark:text-sky-300">OpenRouter Credits</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-sm font-semibold text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">OpenRouter Credits</div>
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
             </div>
           </button>
@@ -265,7 +266,7 @@
             @click="applyPreset('cloudflare_ai_gateway_credits')"
           >
             <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">Cloudflare AI Gateway</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
             </div>
           </button>
@@ -275,17 +276,17 @@
             @click="applyPreset('rawchat_subscriptions')"
           >
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">RawChat</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-mimo-token-plan"
             type="button"
-            class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800/70 dark:hover:bg-dark-700"
+            class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-border)] hover:bg-[var(--anthropic-raised)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
             @click="applyPreset('mimo_token_plan')"
           >
-            <div class="text-sm font-semibold text-gray-700 dark:text-gray-200">Xiaomi MiMo</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Xiaomi MiMo</div>
+            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
               {{ localText('小米 MiMo Token Plan 余额接口', 'Xiaomi MiMo Token Plan balance API') }}
             </div>
           </button>
@@ -342,10 +343,10 @@
             <label class="input-label">{{ localText('余额策略', 'Balance Strategy') }}</label>
             <Select v-model="form.balance_strategy" :options="balanceStrategyOptions" />
           </div>
-          <div class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-700">
+          <div class="flex items-center justify-between rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
             <div>
-              <div class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ localText('启用', 'Enabled') }}</div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">{{ localText('关闭后不进入余额与账号卡片展示', 'Disabled providers are hidden from balance and account cards') }}</div>
+              <div class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ localText('启用', 'Enabled') }}</div>
+              <div class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ localText('关闭后不进入余额与账号卡片展示', 'Disabled providers are hidden from balance and account cards') }}</div>
             </div>
             <Toggle v-model="form.enabled" />
           </div>
@@ -355,7 +356,7 @@
           <div>
             <label class="input-label">
               API Token
-              <span v-if="editingProvider?.api_token_configured" class="ml-1 text-xs font-normal text-gray-400">
+              <span v-if="editingProvider?.api_token_configured" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
                 leave blank to keep
               </span>
             </label>
@@ -374,7 +375,7 @@
           <div v-if="requiresRefreshToken">
             <label class="input-label">
               Refresh Token
-              <span v-if="editingProvider?.refresh_token_configured" class="ml-1 text-xs font-normal text-gray-400">
+              <span v-if="editingProvider?.refresh_token_configured" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
                 leave blank to keep
               </span>
             </label>
@@ -396,7 +397,7 @@
             class="input font-mono text-sm"
             :placeholder="localText('每行或逗号分隔，例如 packycode, packyapi.com', 'Use one per line or comma separated, e.g. packycode, packyapi.com')"
           ></textarea>
-          <p class="mt-1 text-xs text-gray-400">
+          <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
             {{ localText('会匹配账号名称、备注、平台、类型、base_url、extra.external_provider 等字段。', 'Matches account name, notes, platform, type, base_url, extra.external_provider, and related fields.') }}
           </p>
         </div>
@@ -1044,24 +1045,22 @@ onBeforeUnmount(() => {
 }
 
 .external-subscription-card {
-  --home-card-accent: var(--atelier-blue);
-  --creepee-card-hover-surface: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
-  --creepee-card-stable-border: var(--atelier-material-edge);
-  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
+  --external-subscription-card-bg: var(--anthropic-page);
+  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
   position: relative;
   display: flex;
   min-height: 10.5rem;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--atelier-material-edge);
+  border: 1px solid var(--anthropic-border-subtle);
   border-radius: 8px;
-  background: color-mix(in srgb, var(--atelier-paper-2) 96%, var(--atelier-paper));
+  background: var(--external-subscription-card-bg);
   box-shadow: none;
   padding: 0.875rem;
   transition:
-    transform 280ms var(--atelier-ease),
-    background-color 280ms var(--atelier-ease),
-    box-shadow 280ms var(--atelier-ease);
+    background-color 350ms var(--atelier-ease),
+    border-color 250ms var(--atelier-ease),
+    box-shadow 250ms var(--atelier-ease);
 }
 
 .external-subscription-card::before {
@@ -1077,8 +1076,10 @@ onBeforeUnmount(() => {
 }
 
 .external-subscription-card:hover {
-  box-shadow: var(--creepee-home-card-hover-shadow);
-  transform: var(--creepee-home-card-hover-transform);
+  border-color: var(--anthropic-cookbook-border-hover);
+  background: var(--external-subscription-card-hover-bg);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  transform: none;
 }
 
 .external-subscription-logo {
@@ -1145,19 +1146,19 @@ onBeforeUnmount(() => {
 }
 
 .external-subscription-status-dot--success {
-  background: #10a37f;
+  background: var(--atelier-status-success);
 }
 
 .external-subscription-status-dot--warning {
-  background: #d97706;
+  background: var(--atelier-status-warning);
 }
 
 .external-subscription-status-dot--danger {
-  background: #dc2626;
+  background: var(--atelier-status-danger);
 }
 
 .external-subscription-status-dot--neutral {
-  background: #6b7280;
+  background: var(--atelier-status-neutral);
 }
 
 .external-subscription-status-text {
@@ -1255,8 +1256,9 @@ onBeforeUnmount(() => {
 }
 
 .dark .external-subscription-card {
-  --creepee-card-hover-surface: var(--atelier-paper-2);
-  background: var(--atelier-paper-2);
+  --external-subscription-card-bg: var(--anthropic-page);
+  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
+  background: var(--external-subscription-card-bg);
   box-shadow: none;
 }
 

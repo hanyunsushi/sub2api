@@ -2,13 +2,13 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+        <div class="table-filter-shell available-channels-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-80">
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               />
               <input data-testid="user-available-channels-input-search-query"
                 v-model="searchQuery"
@@ -23,10 +23,10 @@
             <button data-testid="user-available-channels-button-load-channels"
               @click="loadChannels"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-primary anthropic-refresh-action-button available-channels-refresh-button"
               :title="t('common.refresh', 'Refresh')"
             >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              {{ t("common.refresh", "Refresh") }}
             </button>
           </div>
         </div>

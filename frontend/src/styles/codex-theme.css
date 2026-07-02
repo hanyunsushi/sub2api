@@ -6,16 +6,16 @@
   --codex-surface-soft: color-mix(in srgb, var(--atelier-dust) 16%, var(--atelier-paper));
   --codex-border: var(--atelier-material-edge);
   --codex-border-strong: var(--atelier-material-edge-strong);
-  --codex-text: #111827;
+  --codex-text: var(--atelier-ink);
   --codex-muted: var(--atelier-muted);
   --codex-soft: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
-  --codex-accent: #002FA7;
-  --codex-accent-strong: #002FA7;
-  --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
-  --codex-violet: #002FA7;
-  --codex-success: #2f7d59;
-  --codex-warning: #ad6b1f;
-  --codex-danger: #b44536;
+  --codex-accent: var(--atelier-ink);
+  --codex-accent-strong: var(--atelier-dark);
+  --codex-accent-soft: color-mix(in srgb, var(--atelier-ink) 6%, var(--atelier-paper));
+  --codex-violet: var(--atelier-muted);
+  --codex-success: var(--atelier-status-success);
+  --codex-warning: var(--atelier-status-warning);
+  --codex-danger: var(--atelier-status-danger);
   --codex-radius: 8px;
   --codex-module-rule: var(--atelier-console-rule);
   --material-card-surface: var(--atelier-paper-2);
@@ -34,10 +34,10 @@
   --codex-text: var(--atelier-ink);
   --codex-muted: var(--atelier-muted);
   --codex-soft: color-mix(in srgb, var(--atelier-dust) 10%, var(--atelier-paper));
-  --codex-accent: #002FA7;
-  --codex-accent-strong: #002FA7;
-  --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 10%, var(--atelier-paper));
-  --codex-violet: #002FA7;
+  --codex-accent: var(--atelier-ink);
+  --codex-accent-strong: var(--atelier-dark);
+  --codex-accent-soft: color-mix(in srgb, var(--atelier-ink) 6%, var(--atelier-paper));
+  --codex-violet: var(--atelier-muted);
   --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
   --material-card-shadow: rgba(23, 21, 18, 0.34);
@@ -47,7 +47,7 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-bg);
-  box-shadow: 0 10px 28px -24px rgba(17, 24, 39, 0.34);
+  box-shadow: none;
 }
 
 .dark .codex-shell {
@@ -111,12 +111,12 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
 }
 
 .dark .codex-panel {
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
 }
 
 .codex-panel + .codex-panel {
@@ -265,8 +265,10 @@
 .codex-input:focus,
 .codex-select:focus,
 .codex-textarea:focus {
-  border-color: var(--codex-accent);
-  box-shadow: 0 0 0 3px rgba(0, 47, 167, 0.16);
+  border-color: var(--atelier-focus);
+  outline: 2px solid var(--atelier-focus);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .codex-button {
@@ -282,14 +284,14 @@
   color: var(--codex-text);
   font-size: 14px;
   font-weight: 650;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
-  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+  box-shadow: 0 0 0 0 var(--codex-surface), 0 0 0 1px var(--codex-border-strong);
+  transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
 }
 
 .codex-button:hover {
-  border-color: var(--codex-accent);
-  background: var(--codex-accent-soft);
-  box-shadow: 0 8px 18px -16px rgba(0, 47, 167, 0.52);
+  border-color: var(--codex-border-strong);
+  background: transparent;
+  box-shadow: 0 0 0 1px var(--codex-surface), 0 0 0 2px var(--codex-border-strong);
 }
 
 .codex-button:active {
@@ -308,10 +310,10 @@
 }
 
 .codex-button--primary {
-  border-color: #111827;
+  border-color: var(--codex-accent);
   background: var(--codex-accent);
-  color: #f8fbff;
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  color: var(--atelier-paper);
+  box-shadow: 0 0 0 0 var(--codex-accent), 0 0 0 1px var(--codex-muted);
 }
 
 .codex-button--primary:hover {
@@ -340,8 +342,8 @@
   border-radius: var(--codex-radius);
   background: var(--codex-surface-strong);
   color: var(--codex-muted);
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
-  transition: transform 140ms ease, border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+  box-shadow: none;
+  transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease;
 }
 
 .codex-icon-button--tight {
@@ -411,9 +413,8 @@
 
 .codex-account-card {
   --home-card-accent: var(--atelier-blue);
-  --creepee-card-hover-surface: var(--material-card-surface);
-  --creepee-card-stable-border: var(--material-card-edge);
-  --creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);
+  --anthropic-card-hover-surface: var(--atelier-surface-muted);
+  --anthropic-card-stable-border: var(--material-card-edge);
   display: grid;
   grid-template-rows: auto auto auto;
   min-height: 164px;
@@ -424,22 +425,22 @@
   border: 1px solid var(--material-card-edge);
   border-radius: var(--codex-radius);
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
   padding: clamp(10px, 2.4cqi, 14px);
   transition:
-    transform 280ms var(--atelier-ease),
     background-color 280ms var(--atelier-ease),
-    box-shadow 280ms var(--atelier-ease);
+    border-color 280ms var(--atelier-ease);
 }
 
 .dark .codex-account-card {
   background: var(--material-card-surface);
-  box-shadow: 0 10px 24px -22px var(--material-card-shadow);
+  box-shadow: none;
 }
 
 .codex-account-card:hover {
-  transform: var(--creepee-home-card-hover-transform);
-  box-shadow: var(--creepee-home-card-hover-shadow);
+  border-color: var(--anthropic-card-stable-border);
+  background: var(--anthropic-card-hover-surface);
+  box-shadow: none;
 }
 
 .codex-account-card.is-selected {
@@ -448,7 +449,7 @@
 
 .codex-account-card.is-checked {
   border-color: var(--codex-accent);
-  box-shadow: 0 0 0 1px rgba(0, 47, 167, 0.16), 0 8px 22px rgba(0, 47, 167, 0.10);
+  box-shadow: inset 0 0 0 1px var(--codex-accent);
 }
 
 .codex-account-card:active {
@@ -793,7 +794,7 @@
   border: 1px solid var(--codex-border);
   border-radius: var(--codex-radius);
   background: var(--codex-surface-strong, var(--atelier-paper)) !important;
-  box-shadow: 0 24px 60px rgba(7, 12, 27, 0.22);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   padding: 20px;
   opacity: 1;
   isolation: isolate;
@@ -981,7 +982,7 @@
   }
 }
 
-/* Cloudflare appearance theme: the codex admin panel hardcodes Klein-blue
+/* Cloudflare appearance theme: the codex admin panel hardcodes legacy blue
    accents that bypass the --atelier-* token axis. Re-map them to Cloudflare
    orange so the CPA management module matches the rest of the theme. */
 :root.theme-cloudflare .codex-admin,
@@ -994,3 +995,60 @@
   --codex-violet: #f6821f;
 }
 /* Cloudflare appearance theme end */
+
+/* CPA management final Anthropic surface/focus contract. Keep this last because
+   CodexAccounts loads this route stylesheet after the global repair layer. */
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin {
+  --codex-bg: var(--anthropic-page, var(--atelier-paper));
+  --codex-surface: var(--anthropic-page, var(--atelier-paper));
+  --codex-surface-strong: var(--anthropic-page, var(--atelier-paper));
+  --codex-surface-soft: var(--anthropic-page, var(--atelier-paper));
+  --codex-border: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  --codex-border-strong: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  --material-card-surface: var(--anthropic-page, var(--atelier-paper));
+  --material-card-edge: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  background: var(--anthropic-page, var(--atelier-paper)) !important;
+  box-shadow: none !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar {
+  border: 0 !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-panel-header, .codex-selection-bar, .codex-account-grid, .codex-error--compact, .codex-inline-action, .codex-notice, .codex-group-row) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  background: var(--anthropic-page, var(--atelier-paper)) !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-metrics, .codex-metric) {
+  background: transparent !important;
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea) {
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  background: var(--anthropic-page, var(--atelier-paper)) !important;
+  color: var(--anthropic-fg, var(--atelier-ink)) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}

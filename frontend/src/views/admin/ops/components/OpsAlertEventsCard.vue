@@ -329,17 +329,17 @@ function severityBadgeClass(severity: string | undefined): string {
   const s = String(severity || '').trim().toLowerCase()
   if (s === 'p0' || s === 'critical') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
   if (s === 'p1' || s === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (s === 'p2' || s === 'info') return 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-200'
-  if (s === 'p3') return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
-  return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
+  if (s === 'p2' || s === 'info') return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
+  if (s === 'p3') return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+  return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
 }
 
 function statusBadgeClass(status: string | undefined): string {
   const s = String(status || '').trim().toLowerCase()
   if (s === 'firing') return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-500/30'
-  if (s === 'resolved') return 'bg-primary-50 text-primary-800 ring-primary-600/20 dark:bg-primary-900/30 dark:text-primary-200 dark:ring-primary-500/30'
-  if (s === 'manual_resolved') return 'bg-slate-50 text-slate-700 ring-slate-600/20 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-500/30'
-  return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
+  if (s === 'resolved') return 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-500/30'
+  if (s === 'manual_resolved') return 'bg-[var(--anthropic-section)] text-slate-700 ring-slate-600/20 dark:bg-[var(--anthropic-section)] dark:text-slate-300 dark:ring-slate-500/30'
+  return 'bg-[var(--anthropic-section)] text-[var(--anthropic-muted)] ring-gray-600/20 dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:ring-gray-500/30'
 }
 
 function formatStatusLabel(status: string | undefined): string {
@@ -355,32 +355,29 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 </script>
 
 <template>
-  <div class="ops-monitor-panel ops-alert-card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="ops-monitor-panel ops-alert-card anthropic-card-shell p-6">
     <div class="mb-4 flex items-start justify-between gap-4">
       <div>
-        <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.description') }}</p>
+        <h3 class="text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('admin.ops.alertEvents.title') }}</h3>
+        <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.description') }}</p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="ops-card-filter-bar flex items-center gap-2">
         <Select :model-value="timeRange" :options="timeRangeOptions" class="w-[120px]" @change="timeRange = String($event || '24h')" />
         <Select :model-value="severity" :options="severityOptions" class="w-[88px]" @change="severity = String($event || '')" />
         <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
         <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
         <button data-testid="admin-ops-components-ops-alert-events-card-button-load-first-page"
-          class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-primary anthropic-refresh-action-button ops-alert-events-refresh-button"
           :disabled="loading"
           @click="loadFirstPage"
         >
-          <svg class="h-3.5 w-3.5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
           {{ t('common.refresh') }}
         </button>
       </div>
     </div>
 
-    <div v-if="loading" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+    <div v-if="loading" class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
       <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -388,50 +385,50 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
       {{ t('admin.ops.alertEvents.loading') }}
     </div>
 
-    <div v-else-if="empty" class="rounded-xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
+    <div v-else-if="empty" class="rounded-xl border border-dashed border-[var(--anthropic-border)] p-8 text-center text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
       {{ t('admin.ops.alertEvents.empty') }}
     </div>
 
-    <div v-else class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
+    <div v-else class="overflow-hidden rounded-xl border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
       <div class="max-h-[600px] overflow-y-auto" @scroll="onScroll">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-          <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-900">
+          <thead class="sticky top-0 z-10 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
             <tr>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.time') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.severity') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.platform') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.ruleId') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.title') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.duration') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.dimensions') }}
               </th>
-              <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ t('admin.ops.alertEvents.table.email') }}
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-800">
+          <tbody class="divide-y divide-gray-200 bg-[var(--anthropic-page)] dark:divide-dark-700 dark:bg-[var(--anthropic-section)]">
             <tr data-testid="admin-ops-components-ops-alert-events-card-tr-open-detail-row"
               v-for="row in events"
               :key="row.id"
-              class="cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50"
+              class="cursor-pointer hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]/50"
               @click="openDetail(row)"
               :title="row.title || ''"
             >
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ formatDateTime(row.fired_at || row.created_at) }}
               </td>
               <td class="whitespace-nowrap px-4 py-3">
@@ -444,22 +441,22 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                   </span>
                 </div>
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ getDimensionString(row, 'platform') || '-' }}
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <span class="font-mono">#{{ row.rule_id }}</span>
               </td>
-              <td class="min-w-[260px] px-4 py-3 text-xs text-gray-700 dark:text-gray-200">
+              <td class="min-w-[260px] px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 <div class="font-semibold truncate max-w-[360px]">{{ row.title || '-' }}</div>
-                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
+                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ row.description }}
                 </div>
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ formatDurationLabel(row) }}
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-[11px] text-gray-500 dark:text-gray-400">
+              <td class="whitespace-nowrap px-4 py-3 text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ formatDimensionsSummary(row) }}
               </td>
               <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
@@ -471,15 +468,15 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                     v-if="row.email_sent"
                     name="checkCircle"
                     size="sm"
-                    class="text-primary-700 dark:text-primary-300"
+                    class="text-emerald-600 dark:text-emerald-400"
                   />
                   <Icon
                     v-else
                     name="ban"
                     size="sm"
-                    class="text-gray-400 dark:text-gray-500"
+                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                   />
-                  <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300">
+                  <span class="text-[11px] font-bold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                     {{ row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored') }}
                   </span>
                 </span>
@@ -487,14 +484,14 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
             </tr>
           </tbody>
         </table>
-        <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-gray-500 dark:text-gray-400">
+        <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           {{ t('admin.ops.alertEvents.loading') }}
         </div>
-        <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-gray-400">
+        <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-[var(--anthropic-muted)]">
           -
         </div>
       </div>
@@ -507,16 +504,16 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
       :close-on-click-outside="true"
       @close="closeDetail"
     >
-      <div v-if="detailLoading" class="flex items-center justify-center py-10 text-sm text-gray-500 dark:text-gray-400">
+      <div v-if="detailLoading" class="flex items-center justify-center py-10 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         {{ t('admin.ops.alertEvents.detail.loading') }}
       </div>
 
-      <div v-else-if="!selected" class="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+      <div v-else-if="!selected" class="py-10 text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         {{ t('admin.ops.alertEvents.detail.empty') }}
       </div>
 
       <div v-else class="space-y-5">
-        <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
+        <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
@@ -527,17 +524,17 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                   {{ formatStatusLabel(selected.status) }}
                 </span>
               </div>
-              <div class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <div class="mt-2 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ selected.title || '-' }}
               </div>
-              <div v-if="selected.description" class="mt-1 whitespace-pre-wrap text-xs text-gray-600 dark:text-gray-300">
+              <div v-if="selected.description" class="mt-1 whitespace-pre-wrap text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                 {{ selected.description }}
               </div>
             </div>
 
             <div class="flex flex-wrap gap-2">
-              <div class="flex items-center gap-2 rounded-lg bg-white px-2 py-1 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-700">
-                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
+              <div class="flex items-center gap-2 rounded-lg bg-[var(--anthropic-page)] px-2 py-1 ring-1 ring-gray-200 dark:bg-[var(--anthropic-section)] dark:ring-dark-700">
+                <span class="text-[11px] font-bold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
                 <Select
                   :model-value="silenceDuration"
                   :options="silenceDurationOptions"
@@ -559,27 +556,27 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
         </div>
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
-              <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDateTime(selected.fired_at || selected.created_at) }}</div>
+            <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
+              <div class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatDateTime(selected.fired_at || selected.created_at) }}</div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
-              <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selected.resolved_at ? formatDateTime(selected.resolved_at) : '-' }}</div>
+            <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
+              <div class="mt-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ selected.resolved_at ? formatDateTime(selected.resolved_at) : '-' }}</div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
+            <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
               <div class="mt-1 flex flex-wrap items-center gap-2">
-                <div class="font-mono text-sm font-bold text-gray-900 dark:text-white">#{{ selected.rule_id }}</div>
+                <div class="font-mono text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">#{{ selected.rule_id }}</div>
                 <a data-testid="admin-ops-components-ops-alert-events-card-link-a"
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="inline-flex items-center gap-1 rounded-md bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-bold text-[var(--anthropic-muted)] ring-1 ring-gray-200 hover:bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:ring-dark-700 dark:hover:bg-[var(--anthropic-raised)]"
                   :href="`/admin/ops?open_alert_rules=1&alert_rule_id=${selected.rule_id}`"
                 >
                   <Icon name="externalLink" size="xs" />
                   {{ t('admin.ops.alertEvents.detail.viewRule') }}
                 </a>
                 <a data-testid="admin-ops-components-ops-alert-events-card-link-a-2"
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="inline-flex items-center gap-1 rounded-md bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-bold text-[var(--anthropic-muted)] ring-1 ring-gray-200 hover:bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:ring-dark-700 dark:hover:bg-[var(--anthropic-raised)]"
                   :href="`/admin/ops?platform=${encodeURIComponent(getDimensionString(selected,'platform')||'')}&group_id=${selected.dimensions?.group_id || ''}&error_type=request&open_error_details=1`"
                 >
                   <Icon name="externalLink" size="xs" />
@@ -587,9 +584,9 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                 </a>
               </div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
-              <div class="mt-1 text-sm text-gray-900 dark:text-white">
+            <div class="rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
+              <div class="mt-1 text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 <div v-if="getDimensionString(selected, 'platform')">platform={{ getDimensionString(selected, 'platform') }}</div>
                 <div v-if="selected.dimensions?.group_id">group_id={{ selected.dimensions.group_id }}</div>
                 <div v-if="getDimensionString(selected, 'region')">region={{ getDimensionString(selected, 'region') }}</div>
@@ -598,39 +595,39 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           </div>
 
 
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800">
+        <div class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
-              <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
+              <div class="text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
+              <div class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
             </div>
             <Select :model-value="historyRange" :options="historyRangeOptions" class="w-[140px]" @change="historyRange = String($event || '7d')" />
           </div>
 
-          <div v-if="historyLoading" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div v-if="historyLoading" class="py-6 text-center text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('admin.ops.alertEvents.detail.historyLoading') }}
           </div>
-          <div v-else-if="history.length === 0" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div v-else-if="history.length === 0" class="py-6 text-center text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ t('admin.ops.alertEvents.detail.historyEmpty') }}
           </div>
-          <div v-else class="overflow-hidden rounded-lg border border-gray-100 dark:border-dark-700">
+          <div v-else class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
             <table class="min-w-full divide-y divide-gray-100 dark:divide-dark-700">
-              <thead class="bg-gray-50 dark:bg-dark-900">
+              <thead class="bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
                 <tr>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.time') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.status') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.metric') }}</th>
+                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.table.time') }}</th>
+                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.table.status') }}</th>
+                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.table.metric') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-                <tr v-for="it in history" :key="it.id" class="hover:bg-gray-50 dark:hover:bg-dark-700/50">
-                  <td class="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">{{ formatDateTime(it.fired_at || it.created_at) }}</td>
+                <tr v-for="it in history" :key="it.id" class="hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]/50">
+                  <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatDateTime(it.fired_at || it.created_at) }}</td>
                   <td class="px-3 py-2 text-xs">
                     <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold ring-1 ring-inset" :class="statusBadgeClass(it.status)">
                       {{ formatStatusLabel(it.status) }}
                     </span>
                   </td>
-                  <td class="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">
+                  <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                     <span v-if="typeof it.metric_value === 'number' && typeof it.threshold_value === 'number'">
                       {{ it.metric_value.toFixed(2) }} / {{ it.threshold_value.toFixed(2) }}
                     </span>

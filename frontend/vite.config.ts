@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
 import { resolve } from 'path'
+import { designOverlay } from '/Users/hinaw/Documents/Codex/2026-07-01/wo-xai/outputs/design-overlay/src/vite-plugin.js'
 
 /**
  * Vite 插件：开发模式下注入公开配置到 index.html
@@ -47,7 +48,15 @@ export default defineConfig(({ mode }) => {
       checker({
         vueTsc: true
       }),
-      injectPublicSettings(backendUrl)
+      injectPublicSettings(backendUrl),
+      designOverlay({
+        project: __dirname,
+        designSystems: [
+          '/Users/hinaw/Library/Application Support/Open Design/namespaces/release-stable/data/projects/brand-anthropic-a38199'
+        ],
+        port: 4777,
+        reuseExisting: true
+      })
     ],
   resolve: {
     alias: {

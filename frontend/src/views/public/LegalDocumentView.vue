@@ -21,7 +21,7 @@
 
     <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:py-10">
       <div v-if="loading" class="flex min-h-[320px] items-center justify-center">
-        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
+        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"></div>
       </div>
 
       <section
@@ -188,8 +188,8 @@ onMounted(async () => {
 .legal-page {
   color: var(--atelier-ink);
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.1), transparent 30rem),
-    radial-gradient(circle at 78% 6%, rgba(79, 106, 140, 0.1), transparent 24rem),
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--atelier-surface-muted) 56%, transparent), transparent 30rem),
+    radial-gradient(circle at 78% 6%, color-mix(in srgb, var(--atelier-butter) 10%, transparent), transparent 24rem),
     var(--atelier-canvas);
 }
 
@@ -215,7 +215,7 @@ onMounted(async () => {
   border: 1px solid var(--atelier-ink);
   background: var(--atelier-blue);
   color: var(--atelier-white);
-  box-shadow: 0 10px 24px -18px rgba(0, 47, 167, 0.62);
+  box-shadow: none;
 }
 
 .legal-login-button:hover {
@@ -321,7 +321,7 @@ onMounted(async () => {
 :global(.dark) .legal-page {
   color: #f8fbff;
   background:
-    radial-gradient(circle at 18% 0%, rgba(0, 47, 167, 0.12), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(250, 249, 245, 0.08), transparent 34%),
     linear-gradient(180deg, #050505, #0a0a0a);
 }
 

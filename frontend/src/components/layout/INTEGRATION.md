@@ -212,7 +212,7 @@ import { AppLayout } from '@/components/layout'
     <template #footer>
       <p class="text-gray-600">
         Don't have an account?
-        <router-link to="/register" class="text-indigo-600 hover:underline"> Sign up </router-link>
+        <router-link to="/register" class="underline underline-offset-[0.22em]"> Sign up </router-link>
       </p>
     </template>
   </AuthLayout>
@@ -231,13 +231,13 @@ import { AuthLayout } from '@/components/layout'
 
 ### Changing Colors
 
-The components use Tailwind's indigo color scheme by default. To change:
+The components use the local Anthropic design-system contract by default:
 
-```vue
-<!-- Change all instances of indigo-* to your preferred color -->
-<div class="bg-blue-600">   <!-- Instead of bg-indigo-600 -->
-<div class="text-blue-600">  <!-- Instead of text-indigo-600 -->
-```
+- Slate primary actions: `#141413` with hover `#3d3d3a`.
+- Paper surfaces: `#faf9f5`, `#f0eee6`, `#e8e6dc`.
+- Focus blue: `#2c84db`, only for keyboard focus and active switches.
+- Links and topbar/filter controls use underline hover, not colored fills.
+- Account rows stay as domain row-cards with local raised hover.
 
 ### Adding Custom Icons
 
@@ -388,7 +388,7 @@ To enhance further:
 <!-- Add skip to main content link -->
 <a
   href="#main-content"
-  class="sr-only rounded bg-white px-4 py-2 focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
+  class="sr-only rounded bg-[var(--anthropic-page)] px-4 py-2 focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
 >
   Skip to main content
 </a>

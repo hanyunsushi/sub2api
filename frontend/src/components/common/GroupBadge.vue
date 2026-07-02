@@ -1,7 +1,7 @@
 <template>
   <span
     :class="[
-      'group-token inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
+      'group-token inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium',
       badgeClass
     ]"
   >
@@ -95,36 +95,31 @@ const labelText = computed(() => {
 
 // Label style based on type and days remaining
 const labelClass = computed(() => {
-  const base = 'px-1.5 py-0.5 rounded text-[10px] font-semibold'
-
   if (!isSubscription.value) {
-    // Standard: subtle background (不再为专属倍率使用不同的背景色)
-    return `${base} bg-black/10 dark:bg-white/10`
+    return 'group-token-label group-token-label--standard'
   }
 
   // 订阅类型：根据剩余天数显示不同颜色
   if (props.daysRemaining !== null && props.daysRemaining !== undefined) {
     if (props.daysRemaining <= 0 || props.daysRemaining <= 3) {
-      // 已过期或紧急（<=3天）：红色
-      return `${base} bg-red-200/80 text-red-800 dark:bg-red-800/50 dark:text-red-300`
+      return 'group-token-label group-token-label--error'
     }
     if (props.daysRemaining <= 7) {
-      // 警告（<=7天）：橙色
-      return `${base} bg-amber-200/80 text-amber-800 dark:bg-amber-800/50 dark:text-amber-300`
+      return 'group-token-label group-token-label--warning'
     }
   }
 
   // 正常状态或无天数：根据平台显示主题色
   if (props.platform === 'anthropic') {
-    return `${base} bg-orange-200/60 text-orange-800 dark:bg-orange-800/40 dark:text-orange-300`
+    return 'group-token-label group-token-label--anthropic'
   }
   if (props.platform === 'openai') {
-    return `${base} bg-emerald-200/60 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300`
+    return 'group-token-label group-token-label--openai'
   }
   if (props.platform === 'gemini') {
-    return `${base} bg-blue-200/60 text-blue-800 dark:bg-blue-800/40 dark:text-blue-300`
+    return 'group-token-label group-token-label--gemini'
   }
-  return `${base} bg-primary-100 text-primary-800 dark:bg-primary-900/35 dark:text-primary-300`
+  return 'group-token-label group-token-label--neutral'
 })
 
 const platformClass = computed(() => {
@@ -137,25 +132,79 @@ const platformClass = computed(() => {
 // Badge color based on platform and subscription type
 const badgeClass = computed(() => {
   const base = `${platformClass.value} ${isSubscription.value ? 'group-token--subscription' : 'group-token--standard'}`
-  if (props.platform === 'anthropic') {
-    // Claude: orange theme
-    return isSubscription.value
-      ? `${base} bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400`
-      : `${base} bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400`
-  } else if (props.platform === 'openai') {
-    // OpenAI: green theme
-    return isSubscription.value
-      ? `${base} bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400`
-      : `${base} bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400`
-  }
-  if (props.platform === 'gemini') {
-    return isSubscription.value
-      ? `${base} bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400`
-      : `${base} bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400`
-  }
-  // Fallback: match the warm system theme instead of introducing a new default hue.
-  return isSubscription.value
-    ? `${base} bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400`
-    : `${base} bg-accent-100 text-accent-700 dark:bg-dark-700 dark:text-dark-300`
+  return base
 })
 </script>
+
+<style scoped>
+.group-token {
+  --group-token-color: var(--anthropic-muted);
+  --group-token-border: transparent;
+  border: 0;
+  background: transparent;
+  color: var(--group-token-color);
+  box-shadow: none;
+  transition: none;
+}
+
+.group-token--anthropic {
+  --group-token-color: var(--anthropic-warning);
+}
+
+.group-token--openai {
+  --group-token-color: var(--anthropic-success);
+}
+
+.group-token--gemini {
+  --group-token-color: var(--anthropic-info);
+}
+
+.group-token--fallback {
+  --group-token-color: var(--anthropic-muted);
+}
+
+.group-token--subscription {
+  border-style: solid;
+}
+
+.group-token--standard {
+  border-style: solid;
+}
+
+.group-token-label {
+  --group-token-label-color: var(--group-token-color);
+  padding: 0.125rem 0.375rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--group-token-label-color);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.group-token-label--standard,
+.group-token-label--neutral {
+  --group-token-label-color: var(--anthropic-muted);
+}
+
+.group-token-label--anthropic {
+  --group-token-label-color: var(--anthropic-warning);
+}
+
+.group-token-label--openai {
+  --group-token-label-color: var(--anthropic-success);
+}
+
+.group-token-label--gemini {
+  --group-token-label-color: var(--anthropic-info);
+}
+
+.group-token-label--warning {
+  --group-token-label-color: var(--anthropic-warning);
+}
+
+.group-token-label--error {
+  --group-token-label-color: var(--anthropic-error);
+}
+</style>

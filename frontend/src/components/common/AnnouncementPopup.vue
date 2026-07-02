@@ -3,41 +3,36 @@
     <Transition name="popup-fade">
       <div
         v-if="announcementStore.currentPopup"
-        class="fixed inset-0 z-[120] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[8vh]"
+        class="fixed inset-0 z-[120] flex items-start justify-center overflow-y-auto bg-[rgba(20,19,19,0.48)] p-4 pt-[8vh]"
       >
         <div data-testid="common-announcement-popup-div-div"
-          class="w-full max-w-[680px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
+          class="w-full max-w-[680px] overflow-hidden rounded-lg border border-[var(--atelier-line-strong)] bg-[var(--atelier-paper)] shadow-none"
           @click.stop
         >
-          <!-- Header with warm gradient -->
-          <div class="relative overflow-hidden border-b border-primary-100/80 bg-primary-50/80 px-8 py-6 dark:border-dark-700/50 dark:bg-primary-900/10">
-            <!-- Decorative background -->
-            <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-primary-100/30 to-transparent dark:from-primary-900/20"></div>
-
-            <div class="relative z-10">
+          <div class="border-b border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-8 py-6">
+            <div>
               <!-- Icon and badge -->
               <div class="mb-3 flex items-center gap-2">
-                <div class="announcement-popup-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm">
+                <div class="announcement-popup-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-none">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </div>
-                <span class="announcement-popup-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+                <span class="announcement-popup-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-none">
                   <span class="relative flex h-2 w-2">
-                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-                    <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--anthropic-page)] opacity-75"></span>
+                    <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--anthropic-page)]"></span>
                   </span>
                   {{ t('announcements.unread') }}
                 </span>
               </div>
 
               <!-- Title -->
-              <h2 class="mb-2 text-2xl font-bold leading-tight text-gray-900 dark:text-white">
+              <h2 class="mb-2 font-serif text-2xl font-medium leading-tight text-[var(--atelier-ink)]">
                 {{ announcementStore.currentPopup.title }}
               </h2>
 
-              <!-- Time -->
-              <div class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+              <div class="flex items-center gap-1.5 text-sm text-[var(--atelier-muted)]">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -47,7 +42,7 @@
           </div>
 
           <!-- Body -->
-          <div class="max-h-[50vh] overflow-y-auto bg-white px-8 py-8 dark:bg-dark-800">
+          <div class="max-h-[50vh] overflow-y-auto bg-[var(--atelier-paper)] px-8 py-8">
             <div class="relative">
               <div class="announcement-popup-accent absolute bottom-0 left-0 top-0 w-1 rounded-full"></div>
               <div class="pl-6">
@@ -60,11 +55,11 @@
           </div>
 
           <!-- Footer -->
-          <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-5 dark:border-dark-700 dark:bg-dark-900/30">
+          <div class="border-t border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-8 py-5">
             <div class="flex items-center justify-end">
               <button data-testid="common-announcement-popup-button-handle-dismiss"
                 @click="handleDismiss"
-                class="announcement-popup-dismiss rounded-lg px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
+                class="announcement-popup-dismiss rounded-lg px-6 py-2.5 text-sm font-medium text-[var(--atelier-paper)] shadow-none transition-all hover:shadow-none"
               >
                 <span class="flex items-center gap-2">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -147,12 +142,12 @@ watch(
 .announcement-popup-badge,
 .announcement-popup-accent,
 .announcement-popup-dismiss {
-  background: var(--atelier-terracotta-action, #c96442);
-  box-shadow: 0 10px 22px -16px rgba(95, 42, 28, 0.7);
+  background: var(--atelier-ink, #141413);
+  box-shadow: none;
 }
 
 .announcement-popup-dismiss:hover {
-  background: var(--atelier-terracotta-action-hover, #b65336);
+  background: var(--atelier-dark, #3d3d3a);
 }
 
 /* Scrollbar Styling */
@@ -165,11 +160,11 @@ watch(
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  background: var(--atelier-dust, #87867f);
   border-radius: 4px;
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #4b5563, #374151);
+  background: var(--atelier-muted, #5e5d59);
 }
 </style>

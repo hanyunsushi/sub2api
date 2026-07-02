@@ -5,13 +5,13 @@
       <div data-testid="account-model-whitelist-selector-div-toggle-dropdown"
         ref="triggerRef"
         @click="toggleDropdown"
-        class="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-dark-500 dark:bg-dark-700"
+        class="cursor-pointer rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
       >
         <div class="grid grid-cols-2 gap-1.5">
           <span
             v-for="model in modelValue"
             :key="model"
-            class="inline-flex items-center justify-between gap-1 rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-dark-600 dark:text-gray-300"
+            class="inline-flex items-center justify-between gap-1 rounded bg-[var(--anthropic-raised)] px-2 py-1 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
           >
             <span class="flex items-center gap-1 truncate">
               <ModelIcon :model="model" size="14px" />
@@ -20,15 +20,15 @@
             <button data-testid="account-model-whitelist-selector-button-remove-model-model"
               type="button"
               @click.stop="removeModel(model)"
-              class="shrink-0 rounded-full hover:bg-gray-200 dark:hover:bg-dark-500"
+              class="shrink-0 rounded-full hover:bg-[var(--anthropic-raised)] dark:hover:bg-dark-500"
             >
               <Icon name="x" size="xs" class="h-3.5 w-3.5" :stroke-width="2" />
             </button>
           </span>
         </div>
-        <div class="mt-2 flex items-center justify-between border-t border-gray-200 pt-2 dark:border-dark-600">
-          <span class="text-xs text-gray-400">{{ t('admin.accounts.modelCount', { count: modelValue.length }) }}</span>
-          <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="mt-2 flex items-center justify-between border-t border-[var(--anthropic-border)] pt-2 dark:border-[var(--anthropic-border)]">
+          <span class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.accounts.modelCount', { count: modelValue.length }) }}</span>
+          <svg class="h-5 w-5 text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -38,9 +38,9 @@
         :show="showDropdown"
         :trigger-el="triggerRef"
         :match-width="true"
-        panel-class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-700"
+        panel-class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
       >
-        <div class="sticky top-0 border-b border-gray-200 bg-white p-2 dark:border-dark-600 dark:bg-dark-700">
+        <div class="sticky top-0 border-b border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
           <input data-testid="account-model-whitelist-selector-input-search-query"
             v-model="searchQuery"
             type="text"
@@ -55,14 +55,14 @@
             :key="model.value"
             type="button"
             @click="toggleModel(model.value)"
-            class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-600"
+            class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
           >
             <span
               :class="[
                 'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
                 modelValue.includes(model.value)
-                  ? 'border-primary-500 bg-primary-500 text-white'
-                  : 'border-gray-300 dark:border-dark-500'
+                  ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-white'
+                  : 'border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]'
               ]"
             >
               <svg v-if="modelValue.includes(model.value)" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,9 +70,9 @@
               </svg>
             </span>
             <ModelIcon :model="model.value" size="18px" />
-            <span class="truncate text-gray-900 dark:text-white">{{ model.value }}</span>
+            <span class="truncate text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ model.value }}</span>
           </button>
-          <div v-if="filteredModels.length === 0" class="px-3 py-4 text-center text-sm text-gray-500">
+          <div v-if="filteredModels.length === 0" class="px-3 py-4 text-center text-sm text-[var(--anthropic-muted)]">
             {{ t('admin.accounts.noMatchingModels') }}
           </div>
         </div>
@@ -84,7 +84,7 @@
       <button data-testid="account-model-whitelist-selector-button-fill-related"
         type="button"
         @click="fillRelated"
-        class="rounded-lg border border-blue-200 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
+        class="rounded-lg border border-[var(--anthropic-info-border)] px-3 py-1.5 text-sm text-[var(--anthropic-info)] hover:bg-[var(--anthropic-info-bg)] dark:border-[var(--anthropic-info-border)] dark:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)]"
       >
         {{ t('admin.accounts.fillRelatedModels') }}
       </button>
@@ -108,7 +108,7 @@
 
     <!-- Custom Model Input -->
     <div class="mb-3">
-      <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.accounts.customModelName') }}</label>
+      <label class="mb-1.5 block text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.accounts.customModelName') }}</label>
       <div class="flex gap-2">
         <input data-testid="account-model-whitelist-selector-input-custom-model"
           v-model="customModel"
@@ -122,7 +122,7 @@
         <button data-testid="account-model-whitelist-selector-button-add-custom"
           type="button"
           @click="addCustom"
-          class="rounded-lg bg-primary-50 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
+          class="rounded-lg bg-[var(--anthropic-section)] px-4 py-2 text-sm font-medium text-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)]"
         >
           {{ t('admin.accounts.addModel') }}
         </button>

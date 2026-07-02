@@ -1070,19 +1070,19 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventAuthVerifyCode: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Email verification code",
-			HTML: notificationEmailCard("#4f46e5", "Email verification code", `
+			HTML: notificationEmailCard("Email verification code", `
 <p>Hello {{recipient_name}},</p>
 <p>Your verification code is:</p>
-<p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; text-align: center;">{{verification_code}}</p>
+<span class="email-code">{{verification_code}}</span>
 <p>This code expires in <strong>{{expires_in_minutes}}</strong> minutes.</p>
 <p>If you did not request this code, please ignore this email.</p>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 邮箱验证码",
-			HTML: notificationEmailCard("#4f46e5", "邮箱验证码", `
+			HTML: notificationEmailCard("邮箱验证码", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的验证码是：</p>
-<p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; text-align: center;">{{verification_code}}</p>
+<span class="email-code">{{verification_code}}</span>
 <p>验证码将在 <strong>{{expires_in_minutes}}</strong> 分钟后失效。</p>
 <p>如果不是您本人操作，请忽略此邮件。</p>`),
 		},
@@ -1090,7 +1090,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventAuthPasswordReset: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Password reset request",
-			HTML: notificationEmailCard("#7c3aed", "Password reset", `
+			HTML: notificationEmailCard("Password reset", `
 <p>Hello {{recipient_name}},</p>
 <p>We received a request to reset your password. Click the button below to set a new password.</p>
 <p><a class="button" href="{{reset_url}}">Reset password</a></p>
@@ -1100,7 +1100,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 密码重置请求",
-			HTML: notificationEmailCard("#7c3aed", "密码重置", `
+			HTML: notificationEmailCard("密码重置", `
 <p>{{recipient_name}}，您好：</p>
 <p>我们收到了您的密码重置请求，请点击下方按钮设置新密码。</p>
 <p><a class="button" href="{{reset_url}}">重置密码</a></p>
@@ -1112,20 +1112,20 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventNotificationEmailVerifyCode: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Notification email verification code",
-			HTML: notificationEmailCard("#0ea5e9", "Notification email verification", `
+			HTML: notificationEmailCard("Notification email verification", `
 <p>Hello {{recipient_name}},</p>
 <p>You are adding this address as an extra notification email.</p>
 <p>Your verification code is:</p>
-<p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; text-align: center;">{{verification_code}}</p>
+<span class="email-code">{{verification_code}}</span>
 <p>This code expires in <strong>{{expires_in_minutes}}</strong> minutes.</p>
 <p>If you did not request this code, please ignore this email.</p>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 通知邮箱验证码",
-			HTML: notificationEmailCard("#0ea5e9", "通知邮箱验证", `
+			HTML: notificationEmailCard("通知邮箱验证", `
 <p>{{recipient_name}}，您好：</p>
 <p>您正在添加额外的通知邮箱，请输入以下验证码完成验证。</p>
-<p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; text-align: center;">{{verification_code}}</p>
+<span class="email-code">{{verification_code}}</span>
 <p>验证码将在 <strong>{{expires_in_minutes}}</strong> 分钟后失效。</p>
 <p>如果不是您本人操作，请忽略此邮件。</p>`),
 		},
@@ -1133,7 +1133,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventSubscriptionPurchaseSuccess: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Subscription purchase successful",
-			HTML: notificationEmailCard("#2563eb", "Subscription activated", `
+			HTML: notificationEmailCard("Subscription activated", `
 <p>Hello {{recipient_name}},</p>
 <p>Your subscription for <strong>{{subscription_group}}</strong> has been activated for <strong>{{subscription_days}}</strong> days.</p>
 <p>Expiry time: <strong>{{expiry_time}}</strong></p>
@@ -1141,7 +1141,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 订阅购买成功",
-			HTML: notificationEmailCard("#2563eb", "订阅已开通", `
+			HTML: notificationEmailCard("订阅已开通", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的 <strong>{{subscription_group}}</strong> 订阅已成功开通，有效期 <strong>{{subscription_days}}</strong> 天。</p>
 <p>到期时间：<strong>{{expiry_time}}</strong></p>
@@ -1151,7 +1151,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventSubscriptionExpiryReminder: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Subscription expires in {{days_remaining}} day(s)",
-			HTML: notificationEmailCard("#f97316", "Subscription expiry reminder", `
+			HTML: notificationEmailCard("Subscription expiry reminder", `
 <p>Hello {{recipient_name}},</p>
 <p>Your <strong>{{subscription_group}}</strong> subscription will expire in <strong>{{days_remaining}}</strong> day(s).</p>
 <p>Expiry time: <strong>{{expiry_time}}</strong></p>
@@ -1159,7 +1159,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 订阅将在 {{days_remaining}} 天后到期",
-			HTML: notificationEmailCard("#f97316", "订阅到期提醒", `
+			HTML: notificationEmailCard("订阅到期提醒", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的 <strong>{{subscription_group}}</strong> 订阅将在 <strong>{{days_remaining}}</strong> 天后到期。</p>
 <p>到期时间：<strong>{{expiry_time}}</strong></p>
@@ -1169,7 +1169,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventBalanceLow: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Low balance alert",
-			HTML: notificationEmailCard("#d97706", "Low balance alert", `
+			HTML: notificationEmailCard("Low balance alert", `
 <p>Hello {{recipient_name}},</p>
 <p>Your current balance is <strong>${{current_balance}}</strong>, below the configured alert threshold of <strong>${{threshold}}</strong>.</p>
 <p>Please recharge in time to avoid service interruption.</p>
@@ -1178,7 +1178,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 余额不足提醒",
-			HTML: notificationEmailCard("#d97706", "余额不足提醒", `
+			HTML: notificationEmailCard("余额不足提醒", `
 <p>{{recipient_name}}，您好：</p>
 <p>您当前余额为 <strong>${{current_balance}}</strong>，已低于提醒阈值 <strong>${{threshold}}</strong>。</p>
 <p>请及时充值以免服务中断。</p>
@@ -1189,7 +1189,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventBalanceRechargeSuccess: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Balance recharge successful",
-			HTML: notificationEmailCard("#16a34a", "Recharge successful", `
+			HTML: notificationEmailCard("Recharge successful", `
 <p>Hello {{recipient_name}},</p>
 <p>Your balance recharge of <strong>${{recharge_amount}}</strong> has been completed.</p>
 <p>Current balance: <strong>${{current_balance}}</strong></p>
@@ -1197,7 +1197,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 余额充值成功",
-			HTML: notificationEmailCard("#16a34a", "余额充值成功", `
+			HTML: notificationEmailCard("余额充值成功", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的余额充值 <strong>${{recharge_amount}}</strong> 已完成。</p>
 <p>当前余额：<strong>${{current_balance}}</strong></p>
@@ -1207,119 +1207,135 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventAccountQuotaAlert: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Account quota alert - {{account_name}}",
-			HTML: notificationEmailCard("#dc2626", "Account quota alert", `
+			HTML: notificationEmailCard("Account quota alert", `
 <p>The upstream account <strong>{{account_name}}</strong> has crossed its configured quota alert threshold.</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>Account ID</td><td>{{account_id}}</td></tr>
-  <tr><td>Platform</td><td>{{platform}}</td></tr>
-  <tr><td>Dimension</td><td>{{quota_dimension}}</td></tr>
-  <tr><td>Used / Limit</td><td>{{quota_used}} / {{quota_limit}}</td></tr>
-  <tr><td>Remaining</td><td>{{quota_remaining}}</td></tr>
-  <tr><td>Threshold</td><td>{{quota_threshold}}</td></tr>
-</table>`),
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>Account ID</td><td>{{account_id}}</td></tr>
+    <tr><td>Platform</td><td>{{platform}}</td></tr>
+    <tr><td>Dimension</td><td>{{quota_dimension}}</td></tr>
+    <tr><td>Used / Limit</td><td>{{quota_used}} / {{quota_limit}}</td></tr>
+    <tr><td>Remaining</td><td>{{quota_remaining}}</td></tr>
+    <tr><td>Threshold</td><td>{{quota_threshold}}</td></tr>
+  </table>
+</div>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 账号限额告警 - {{account_name}}",
-			HTML: notificationEmailCard("#dc2626", "账号限额告警", `
+			HTML: notificationEmailCard("账号限额告警", `
 <p>上游账号 <strong>{{account_name}}</strong> 已触发配置的额度告警阈值。</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>账号 ID</td><td>{{account_id}}</td></tr>
-  <tr><td>平台</td><td>{{platform}}</td></tr>
-  <tr><td>维度</td><td>{{quota_dimension}}</td></tr>
-  <tr><td>已用 / 限额</td><td>{{quota_used}} / {{quota_limit}}</td></tr>
-  <tr><td>剩余额度</td><td>{{quota_remaining}}</td></tr>
-  <tr><td>告警阈值</td><td>{{quota_threshold}}</td></tr>
-</table>`),
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>账号 ID</td><td>{{account_id}}</td></tr>
+    <tr><td>平台</td><td>{{platform}}</td></tr>
+    <tr><td>维度</td><td>{{quota_dimension}}</td></tr>
+    <tr><td>已用 / 限额</td><td>{{quota_used}} / {{quota_limit}}</td></tr>
+    <tr><td>剩余额度</td><td>{{quota_remaining}}</td></tr>
+    <tr><td>告警阈值</td><td>{{quota_threshold}}</td></tr>
+  </table>
+</div>`),
 		},
 	},
 	NotificationEmailEventContentModerationViolation: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Risk control notice",
-			HTML: notificationEmailCard("#ef4444", "Risk control notice", `
+			HTML: notificationEmailCard("Risk control notice", `
 <p>Hello {{recipient_name}},</p>
 <p>Your API request triggered the platform content moderation/risk-control policy.</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>Triggered at</td><td>{{triggered_at}}</td></tr>
-  <tr><td>Group</td><td>{{group_name}}</td></tr>
-  <tr><td>Category / Score</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
-  <tr><td>Violation count</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>Triggered at</td><td>{{triggered_at}}</td></tr>
+    <tr><td>Group</td><td>{{group_name}}</td></tr>
+    <tr><td>Category / Score</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
+    <tr><td>Violation count</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
+  </table>
+</div>
 <p>Please review your request content to avoid future service interruptions.</p>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 账户风控提醒",
-			HTML: notificationEmailCard("#ef4444", "账户风控提醒", `
+			HTML: notificationEmailCard("账户风控提醒", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的 API 请求触发了平台内容审核/风控策略。</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>触发时间</td><td>{{triggered_at}}</td></tr>
-  <tr><td>所属分组</td><td>{{group_name}}</td></tr>
-  <tr><td>命中类别 / 分数</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
-  <tr><td>累计触发次数</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>触发时间</td><td>{{triggered_at}}</td></tr>
+    <tr><td>所属分组</td><td>{{group_name}}</td></tr>
+    <tr><td>命中类别 / 分数</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
+    <tr><td>累计触发次数</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
+  </table>
+</div>
 <p>请检查请求内容，避免后续服务受到影响。</p>`),
 		},
 	},
 	NotificationEmailEventContentModerationDisabled: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Account disabled by risk control",
-			HTML: notificationEmailCard("#b91c1c", "Account disabled", `
+			HTML: notificationEmailCard("Account disabled", `
 <p>Hello {{recipient_name}},</p>
 <p>Your account has repeatedly triggered platform content moderation/risk-control rules and has been automatically disabled.</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>Disabled at</td><td>{{triggered_at}}</td></tr>
-  <tr><td>Group</td><td>{{group_name}}</td></tr>
-  <tr><td>Category / Score</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
-  <tr><td>Violation count</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>Disabled at</td><td>{{triggered_at}}</td></tr>
+    <tr><td>Group</td><td>{{group_name}}</td></tr>
+    <tr><td>Category / Score</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
+    <tr><td>Violation count</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
+  </table>
+</div>
 <p>Please contact the administrator if you need to appeal or restore access.</p>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 账户已被禁用",
-			HTML: notificationEmailCard("#b91c1c", "账户已被禁用", `
+			HTML: notificationEmailCard("账户已被禁用", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的账户在统计周期内多次触发平台内容审核/风控规则，系统已自动禁用该账户。</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>禁用时间</td><td>{{triggered_at}}</td></tr>
-  <tr><td>所属分组</td><td>{{group_name}}</td></tr>
-  <tr><td>命中类别 / 分数</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
-  <tr><td>累计触发次数</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>禁用时间</td><td>{{triggered_at}}</td></tr>
+    <tr><td>所属分组</td><td>{{group_name}}</td></tr>
+    <tr><td>命中类别 / 分数</td><td>{{moderation_category}} / {{moderation_score}}</td></tr>
+    <tr><td>累计触发次数</td><td>{{violation_count}} / {{ban_threshold}}</td></tr>
+  </table>
+</div>
 <p>如需申诉或恢复账号，请联系平台管理员处理。</p>`),
 		},
 	},
 	NotificationEmailEventCyberPolicyNotice: {
 		notificationEmailDefaultLocale: {
 			Subject: "[{{site_name}}] Cyber-security policy notice",
-			HTML: notificationEmailCard("#ef4444", "Cyber-security policy notice", `
+			HTML: notificationEmailCard("Cyber-security policy notice", `
 <p>Hello {{recipient_name}},</p>
 <p>Your request was blocked by the upstream provider's cyber-security policy.</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>Triggered at</td><td>{{triggered_at}}</td></tr>
-  <tr><td>Model</td><td>{{model}}</td></tr>
-  <tr><td>Group</td><td>{{group_name}}</td></tr>
-  <tr><td>Upstream message</td><td>{{upstream_message}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>Triggered at</td><td>{{triggered_at}}</td></tr>
+    <tr><td>Model</td><td>{{model}}</td></tr>
+    <tr><td>Group</td><td>{{group_name}}</td></tr>
+    <tr><td>Upstream message</td><td>{{upstream_message}}</td></tr>
+  </table>
+</div>
 <p>If you believe this is a mistake, try rephrasing your request, or apply for authorized security access.</p>`),
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[{{site_name}}] 网络安全策略拦截提醒",
-			HTML: notificationEmailCard("#ef4444", "网络安全策略拦截提醒", `
+			HTML: notificationEmailCard("网络安全策略拦截提醒", `
 <p>{{recipient_name}}，您好：</p>
 <p>您的请求被上游服务商的网络安全策略（cyber policy）拦截。</p>
-<table style="width:100%;border-collapse:collapse;">
-  <tr><td>触发时间</td><td>{{triggered_at}}</td></tr>
-  <tr><td>模型</td><td>{{model}}</td></tr>
-  <tr><td>所属分组</td><td>{{group_name}}</td></tr>
-  <tr><td>上游说明</td><td>{{upstream_message}}</td></tr>
-</table>
+<div class="email-block">
+  <table class="email-table">
+    <tr><td>触发时间</td><td>{{triggered_at}}</td></tr>
+    <tr><td>模型</td><td>{{model}}</td></tr>
+    <tr><td>所属分组</td><td>{{group_name}}</td></tr>
+    <tr><td>上游说明</td><td>{{upstream_message}}</td></tr>
+  </table>
+</div>
 <p>如认为系误判，可调整请求措辞后重试，或申请获得授权的安全访问权限。</p>`),
 		},
 	},
 	NotificationEmailEventOpsAlert: {
 		notificationEmailDefaultLocale: {
 			Subject: "[Ops Alert][{{severity}}] {{rule_name}}",
-			HTML: notificationEmailCard("#ea580c", "Ops alert", `
+			HTML: notificationEmailCard("Ops alert", `
 <p><strong>Rule</strong>: {{rule_name}}</p>
 <p><strong>Severity</strong>: {{severity}}</p>
 <p><strong>Status</strong>: {{alert_status}}</p>
@@ -1329,7 +1345,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[运维告警][{{severity}}] {{rule_name}}",
-			HTML: notificationEmailCard("#ea580c", "运维告警", `
+			HTML: notificationEmailCard("运维告警", `
 <p><strong>规则</strong>：{{rule_name}}</p>
 <p><strong>严重级别</strong>：{{severity}}</p>
 <p><strong>状态</strong>：{{alert_status}}</p>
@@ -1341,7 +1357,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	NotificationEmailEventOpsScheduledReport: {
 		notificationEmailDefaultLocale: {
 			Subject: "[Ops Report] {{report_name}}",
-			HTML: notificationEmailCard("#0891b2", "Ops report", `
+			HTML: notificationEmailCard("Ops report", `
 <p><strong>Report</strong>: {{report_name}}</p>
 <p><strong>Type</strong>: {{report_type}}</p>
 <p><strong>Range</strong>: {{report_start_time}} - {{report_end_time}}</p>
@@ -1349,7 +1365,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 		},
 		notificationEmailLocaleChinese: {
 			Subject: "[运维报表] {{report_name}}",
-			HTML: notificationEmailCard("#0891b2", "运维报表", `
+			HTML: notificationEmailCard("运维报表", `
 <p><strong>报表</strong>：{{report_name}}</p>
 <p><strong>类型</strong>：{{report_type}}</p>
 <p><strong>时间范围</strong>：{{report_start_time}} - {{report_end_time}}</p>
@@ -1358,29 +1374,6 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 	},
 }
 
-func notificationEmailCard(accent, title, content string) string {
-	return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { margin: 0; padding: 24px; background: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #18181b; }
-    .container { max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(15, 23, 42, 0.10); }
-    .header { background: ` + accent + `; color: #ffffff; padding: 28px 32px; }
-    .header h1 { margin: 0; font-size: 24px; line-height: 1.25; }
-    .content { padding: 32px; font-size: 15px; line-height: 1.7; }
-    .button { display: inline-block; margin-top: 12px; padding: 11px 18px; border-radius: 8px; background: ` + accent + `; color: #ffffff; text-decoration: none; font-weight: 600; }
-    .muted { color: #71717a; font-size: 13px; }
-    .footer { padding: 18px 32px; background: #fafafa; color: #a1a1aa; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header"><h1>` + title + `</h1></div>
-    <div class="content">` + content + `</div>
-    <div class="footer">This email was sent by {{site_name}}. Please do not reply directly.</div>
-  </div>
-</body>
-</html>`
+func notificationEmailCard(title, content string) string {
+	return buildAnthropicEmailBodyRaw("{{site_name}}", html.EscapeString(title), content)
 }

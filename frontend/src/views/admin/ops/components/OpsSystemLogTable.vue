@@ -92,8 +92,8 @@ const levelBadgeClass = (level: string) => {
   const v = String(level || '').toLowerCase()
   if (v === 'error' || v === 'fatal') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
   if (v === 'warn' || v === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (v === 'debug') return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-  return 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-200'
+  if (v === 'debug') return 'bg-[var(--anthropic-raised)] text-slate-700 dark:bg-[var(--anthropic-section)] dark:text-slate-300'
+  return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
 }
 
 const formatTime = (value: string) => {
@@ -357,63 +357,63 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="ops-monitor-panel ops-log-card rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+  <section class="ops-monitor-panel ops-log-card anthropic-card-shell p-4">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h3 class="text-sm font-bold text-gray-900 dark:text-white">系统日志</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">默认按最新时间倒序，支持筛选搜索与按条件清理。</p>
+        <h3 class="text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">系统日志</h3>
+        <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">默认按最新时间倒序，支持筛选搜索与按条件清理。</p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">队列 {{ health.queue_depth }}/{{ health.queue_capacity }}</span>
-        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">写入 {{ health.written_count }}</span>
+        <span class="rounded-md bg-[var(--anthropic-raised)] px-2 py-1 text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">队列 {{ health.queue_depth }}/{{ health.queue_capacity }}</span>
+        <span class="rounded-md bg-[var(--anthropic-raised)] px-2 py-1 text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">写入 {{ health.written_count }}</span>
         <span class="rounded-md bg-amber-100 px-2 py-1 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">丢弃 {{ health.dropped_count }}</span>
         <span class="rounded-md bg-red-100 px-2 py-1 text-red-700 dark:bg-red-900/30 dark:text-red-300">失败 {{ health.write_failed_count }}</span>
       </div>
     </div>
 
-    <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-800/70">
+    <div class="mb-4 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
       <div class="mb-2 flex items-center justify-between">
-        <div class="text-xs font-semibold text-gray-700 dark:text-gray-200">运行时日志配置（实时生效）</div>
-        <span v-if="runtimeLoading" class="text-xs text-gray-500">加载中...</span>
+        <div class="text-xs font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">运行时日志配置（实时生效）</div>
+        <span v-if="runtimeLoading" class="text-xs text-[var(--anthropic-muted)]">加载中...</span>
       </div>
       <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
-        <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           级别
           <Select v-model="runtimeConfig.level" class="mt-1" :options="runtimeLevelOptions" />
         </label>
-        <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           堆栈阈值
           <Select v-model="runtimeConfig.stacktrace_level" class="mt-1" :options="stacktraceLevelOptions" />
         </label>
-        <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           采样初始
           <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-sampling-initial" v-model.number="runtimeConfig.sampling_initial" type="number" min="1" class="input mt-1" />
         </label>
-        <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           采样后续
           <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-sampling-thereafter" v-model.number="runtimeConfig.sampling_thereafter" type="number" min="1" class="input mt-1" />
         </label>
-        <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           保留天数
           <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-retention-days" v-model.number="runtimeConfig.retention_days" type="number" min="1" max="3650" class="input mt-1" />
         </label>
         <div class="md:col-span-2 xl:col-span-6">
           <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-caller" v-model="runtimeConfig.caller" type="checkbox" />
+              <label class="inline-flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-caller" v-model="runtimeConfig.caller" type="checkbox" class="anthropic-checkbox h-4 w-4 rounded" />
                 caller
               </label>
-              <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-enable-sampling" v-model="runtimeConfig.enable_sampling" type="checkbox" />
+              <label class="inline-flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <input data-testid="admin-ops-components-ops-system-log-table-input-runtime-config-enable-sampling" v-model="runtimeConfig.enable_sampling" type="checkbox" class="anthropic-checkbox h-4 w-4 rounded" />
                 sampling
               </label>
             </div>
-            <div class="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button data-testid="admin-ops-components-ops-system-log-table-button-save-runtime-config" type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving" @click="saveRuntimeConfig">
+            <div class="ops-card-filter-bar flex flex-wrap items-center gap-2 lg:justify-end">
+              <button data-testid="admin-ops-components-ops-system-log-table-button-save-runtime-config" type="button" class="btn btn-primary ops-log-runtime-save-button" :disabled="runtimeSaving" @click="saveRuntimeConfig">
                 {{ runtimeSaving ? '保存中...' : '保存并生效' }}
               </button>
-              <button data-testid="admin-ops-components-ops-system-log-table-button-reset-runtime-config" type="button" class="btn btn-secondary btn-sm" :disabled="runtimeSaving" @click="resetRuntimeConfig">
+              <button data-testid="admin-ops-components-ops-system-log-table-button-reset-runtime-config" type="button" class="filter-menu-button ops-log-runtime-reset-button" :disabled="runtimeSaving" @click="resetRuntimeConfig">
                 回滚默认值
               </button>
             </div>
@@ -423,85 +423,85 @@ onMounted(async () => {
       <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">最近写入错误：{{ health.last_error }}</p>
     </div>
 
-    <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-5">
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+    <div class="ops-card-filter-grid mb-4 grid grid-cols-1 gap-3 md:grid-cols-5">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         时间范围
         <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         开始时间（可选）
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-start-time" v-model="filters.start_time" type="datetime-local" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         结束时间（可选）
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-end-time" v-model="filters.end_time" type="datetime-local" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         级别
         <Select v-model="filters.level" class="mt-1" :options="filterLevelOptions" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         组件
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-component" v-model="filters.component" type="text" class="input mt-1" placeholder="如 http.access" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         request_id
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-request-id" v-model="filters.request_id" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         client_request_id
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-client-request-id" v-model="filters.client_request_id" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         user_id
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-user-id" v-model="filters.user_id" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         account_id
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-account-id" v-model="filters.account_id" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         平台
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-platform" v-model="filters.platform" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         模型
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-model" v-model="filters.model" type="text" class="input mt-1" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         关键词
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-q" v-model="filters.q" type="text" class="input mt-1" placeholder="消息/request_id" />
       </label>
     </div>
 
-    <div class="mb-3 flex flex-wrap gap-2">
-      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-primary btn-sm" @click="applyFilters">查询</button>
-      <button data-testid="admin-ops-components-ops-system-log-table-button-reset-filters" type="button" class="btn btn-secondary btn-sm" @click="resetFilters">重置</button>
-      <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">按当前筛选清理</button>
-      <button data-testid="admin-ops-components-ops-system-log-table-button-fetch-health" type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">刷新健康指标</button>
+    <div class="ops-card-filter-bar mb-3 flex flex-wrap gap-2">
+      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-primary ops-log-query-button" @click="applyFilters">查询</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-reset-filters" type="button" class="filter-menu-button ops-log-reset-button" @click="resetFilters">重置</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button" @click="cleanupCurrentFilter">按当前筛选清理</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-fetch-health" type="button" class="btn btn-primary anthropic-refresh-action-button ops-log-health-refresh-button" @click="fetchHealth">刷新健康指标</button>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
-      <div v-if="loading" class="px-4 py-8 text-center text-sm text-gray-500">加载中...</div>
-      <div v-else-if="!hasData" class="px-4 py-8 text-center text-sm text-gray-500">暂无系统日志</div>
+    <div class="overflow-hidden rounded-xl border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+      <div v-if="loading" class="px-4 py-8 text-center text-sm text-[var(--anthropic-muted)]">加载中...</div>
+      <div v-else-if="!hasData" class="px-4 py-8 text-center text-sm text-[var(--anthropic-muted)]">暂无系统日志</div>
       <div v-else class="overflow-auto">
         <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-dark-700">
-          <thead class="bg-gray-50 dark:bg-dark-900">
+          <thead class="bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
             <tr>
-              <th class="w-[170px] px-3 py-2 text-left text-[11px] font-semibold text-gray-500">时间</th>
-              <th class="w-[80px] px-3 py-2 text-left text-[11px] font-semibold text-gray-500">级别</th>
-              <th class="px-3 py-2 text-left text-[11px] font-semibold text-gray-500">日志详细信息</th>
+              <th class="w-[170px] px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">时间</th>
+              <th class="w-[80px] px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">级别</th>
+              <th class="px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">日志详细信息</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-dark-800">
             <tr v-for="row in logs" :key="row.id" class="align-top">
-              <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300">{{ formatTime(row.created_at) }}</td>
+              <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatTime(row.created_at) }}</td>
               <td class="px-3 py-2 text-xs">
                 <span class="inline-flex rounded-full px-2 py-0.5 font-semibold" :class="levelBadgeClass(row.level)">
                   {{ row.level }}
                 </span>
               </td>
-              <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300 whitespace-normal break-all">
+              <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] whitespace-normal break-all">
                 {{ formatSystemLogDetail(row) }}
               </td>
             </tr>

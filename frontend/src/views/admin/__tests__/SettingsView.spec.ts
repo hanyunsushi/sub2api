@@ -805,9 +805,10 @@ describe("admin SettingsView dark tab styles", () => {
     );
     const blockedBackdropBlur = ["backdrop", "blur-xl"].join("-");
 
-    expect(source).toContain("dark:border-dark-600/70 dark:bg-dark-900/95");
     expect(source).not.toMatch(new RegExp(`settings-tabs-shell\\s*\\{[\\s\\S]*${blockedBackdropBlur}`));
     expect(source).toMatch(/<style>\s*(?:\/\*[\s\S]*?\*\/\s*)?\.dark \.settings-tabs-shell/);
+    expect(source).toMatch(/\.dark \.settings-tabs-shell\s*\{[\s\S]*border-color: transparent;/);
+    expect(source).toMatch(/\.dark \.settings-tabs-shell\s*\{[\s\S]*box-shadow: none;/);
     expect(source).toContain(".dark .settings-tab::before");
     expect(source).toContain(".dark .settings-tab-active");
     expect(source).not.toContain(":global(.dark) .settings-tabs-shell");

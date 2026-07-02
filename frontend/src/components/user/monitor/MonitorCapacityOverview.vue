@@ -1,22 +1,22 @@
 <template>
   <section
     v-if="cards.length > 0"
-    class="monitor-capacity-overview mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+    class="monitor-capacity-overview monitor-card-linked-hover-group mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
     aria-label="Platform shared capacity"
   >
     <article
       v-for="card in cards"
       :key="card.groupKey"
-      class="monitor-capacity-card rounded-2xl border border-gray-200/80 bg-white/75 p-4 dark:border-dark-700/70 dark:bg-dark-800/60"
+      class="monitor-capacity-card monitor-linked-card rounded-lg border p-4"
       data-testid="monitor-capacity-card"
       :data-capacity-group="card.groupKey"
     >
       <div class="flex items-start justify-between gap-3">
         <div>
-          <div class="text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+          <div class="text-[10px] font-semibold uppercase tracking-widest text-[var(--anthropic-muted)]">
             {{ localText('共享容量', 'Shared capacity') }}
           </div>
-          <div class="mt-1 text-lg font-semibold uppercase text-gray-900 dark:text-gray-100">
+          <div class="mt-1 text-lg font-semibold uppercase text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ card.group }}
           </div>
         </div>
@@ -37,24 +37,24 @@
       </div>
 
       <div class="mt-5">
-        <div class="font-mono text-3xl font-bold tabular-nums leading-none text-gray-900 dark:text-white">
+        <div class="font-mono text-3xl font-bold tabular-nums leading-none text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ formatBalance(card.balanceTotal) }}
         </div>
-        <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
           {{ localText('账号余额加总', 'Total account balance') }}
         </div>
       </div>
 
       <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-        <div class="rounded-xl border border-gray-100 bg-gray-50/80 p-2 dark:border-dark-700/50 dark:bg-dark-900/40">
-          <div class="text-gray-400">{{ localText('余额来源', 'Sources') }}</div>
-          <div class="mt-1 font-mono font-semibold text-gray-800 dark:text-gray-100">
+        <div class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+          <div class="text-[var(--anthropic-muted)]">{{ localText('余额来源', 'Sources') }}</div>
+          <div class="mt-1 font-mono font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ card.balanceSourceCount }}
           </div>
         </div>
-        <div class="rounded-xl border border-gray-100 bg-gray-50/80 p-2 dark:border-dark-700/50 dark:bg-dark-900/40">
-          <div class="text-gray-400">{{ localText('监控渠道', 'Channels') }}</div>
-          <div class="mt-1 font-mono font-semibold text-gray-800 dark:text-gray-100">
+        <div class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+          <div class="text-[var(--anthropic-muted)]">{{ localText('监控渠道', 'Channels') }}</div>
+          <div class="mt-1 font-mono font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ card.monitorCount }}
           </div>
         </div>
@@ -62,10 +62,10 @@
 
       <div class="mt-4">
         <div class="mb-2 flex items-center justify-between text-xs">
-          <span class="font-medium text-gray-500 dark:text-gray-400">
+          <span class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ localText('账号状态', 'Account status') }}
           </span>
-          <span class="font-mono text-gray-400">
+          <span class="font-mono text-[var(--anthropic-muted)]">
             {{ card.monitorCount }}
           </span>
         </div>
@@ -467,22 +467,28 @@ function formatBalance(value: number) {
   position: relative;
   overflow: hidden;
   min-width: 0;
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-page, #faf9f5);
+  color: var(--atelier-ink);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   transition:
-    transform 0.26s var(--atelier-ease),
-    box-shadow 0.26s var(--atelier-ease);
+    background-color 350ms ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.monitor-capacity-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent 45%, rgba(16, 163, 127, 0.08));
-  pointer-events: none;
+.monitor-capacity-card:hover,
+.monitor-capacity-card:focus-visible {
+  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
+  background: var(--anthropic-page, #faf9f5);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  outline: 0;
+  text-decoration: none;
 }
 
-.monitor-capacity-card:hover {
-  transform: var(--creepee-home-card-hover-transform);
-  box-shadow: var(--creepee-home-card-hover-shadow);
+.monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
+.monitor-card-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
+  background: var(--anthropic-raised, #e8e6dc);
 }
 
 .monitor-capacity-card > * {
@@ -491,9 +497,9 @@ function formatBalance(value: number) {
 
 .monitor-capacity-logo {
   align-items: center;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(17, 24, 39, 0.08);
-  border-radius: 0.625rem;
+  background: var(--atelier-paper);
+  border: 1px solid var(--atelier-line);
+  border-radius: 0.5rem;
   display: inline-flex;
   height: 2rem;
   justify-content: center;
@@ -516,7 +522,7 @@ function formatBalance(value: number) {
   min-width: 0;
   overflow: hidden;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--atelier-dust) 20%, transparent);
+  background: var(--atelier-surface-muted);
 }
 
 .monitor-capacity-status-grid {
@@ -530,7 +536,7 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-status-segment + .monitor-capacity-status-segment {
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.58);
+  box-shadow: inset 1px 0 0 var(--atelier-paper);
 }
 
 .monitor-capacity-status-stat {
@@ -558,23 +564,23 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-status-segment--available {
-  background: #10a37f;
+  background: var(--atelier-status-success);
 }
 
 .monitor-capacity-status-segment--limited {
-  background: #f59e0b;
+  background: var(--atelier-status-warning);
 }
 
 .monitor-capacity-status-segment--error {
-  background: #ef4444;
+  background: var(--atelier-status-danger);
 }
 
 .monitor-capacity-status-segment--disabled {
-  background: #6b7280;
+  background: var(--atelier-dust);
 }
 
 .dark .monitor-capacity-logo {
-  background: rgba(15, 23, 42, 0.88);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: var(--atelier-surface);
+  border-color: var(--atelier-line);
 }
 </style>

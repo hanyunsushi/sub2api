@@ -5,19 +5,19 @@
       v-if="windowStats && (windowStats.requests > 0 || windowStats.tokens > 0)"
       class="usage-progress-window-stats mb-0.5 flex items-center"
     >
-      <div class="usage-progress-stats-row flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
-        <span class="usage-progress-stat rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+      <div class="usage-progress-stats-row flex items-center gap-1.5 text-[9px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="usage-progress-stat rounded px-1.5 py-0.5">
           {{ formatRequests }} req
         </span>
-        <span class="usage-progress-stat rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+        <span class="usage-progress-stat rounded px-1.5 py-0.5">
           {{ formatTokens }}
         </span>
-        <span class="usage-progress-stat rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
+        <span class="usage-progress-stat rounded px-1.5 py-0.5" :title="t('usage.accountBilled')">
           A ${{ formatAccountCost }}
         </span>
         <span
           v-if="windowStats?.user_cost != null"
-          class="usage-progress-stat rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
+          class="usage-progress-stat rounded px-1.5 py-0.5"
           :title="t('usage.userBilled')"
         >
           U ${{ formatUserCost }}
@@ -35,7 +35,7 @@
       </span>
 
       <!-- Progress bar container -->
-      <div class="usage-progress-track h-1.5 w-8 shrink-0 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+      <div class="usage-progress-track h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
         <div
           :class="['usage-progress-fill h-full transition-all duration-300', barClass]"
           :style="{ width: barWidth }"
@@ -48,7 +48,7 @@
       </span>
 
       <!-- Reset time -->
-      <span v-if="shouldShowResetTime" class="usage-progress-reset shrink-0 text-[10px] text-gray-400">
+      <span v-if="shouldShowResetTime" class="usage-progress-reset shrink-0 text-[10px] text-[var(--anthropic-muted)]">
         {{ formatResetTime }}
       </span>
     </div>
@@ -66,7 +66,7 @@ const props = defineProps<{
   label: string
   utilization: number // Percentage (0-100+)
   resetsAt?: string | null
-  color: 'indigo' | 'emerald' | 'purple' | 'amber'
+  color: 'neutral' | 'success' | 'warning'
   windowStats?: WindowStats | null
   showNowWhenIdle?: boolean
 }>()
@@ -99,10 +99,9 @@ watch(
 // Label background colors
 const labelClass = computed(() => {
   const colors = {
-    indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-    purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+    neutral: 'border border-[var(--anthropic-border-subtle)] bg-transparent text-[var(--anthropic-muted)]',
+    success: 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]',
+    warning: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
   }
   return colors[props.color]
 })
@@ -125,7 +124,7 @@ const textClass = computed(() => {
   } else if (props.utilization >= 70) {
     return 'text-amber-600 dark:text-amber-400'
   } else {
-    return 'text-gray-600 dark:text-gray-400'
+    return 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
   }
 })
 

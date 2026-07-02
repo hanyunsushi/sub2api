@@ -1,23 +1,29 @@
 <template>
   <Teleport to="body">
-    <Transition name="floating-dropdown">
-      <div data-testid="common-floating-dropdown-div-div"
-        v-if="show && triggerEl"
-        ref="panelRef"
-        class="floating-dropdown-portal"
-        :class="panelClass"
-        :style="dropdownStyle"
-        @click.stop
-        @mousedown.stop
-      >
-        <slot />
-      </div>
-    </Transition>
+    <div data-testid="common-floating-dropdown-div-div"
+      v-if="isVisible"
+      ref="panelRef"
+      class="floating-dropdown-portal"
+      :class="panelClass"
+      :style="dropdownStyle"
+      @mouseenter="emit('mouseenter', $event)"
+      @mouseleave="emit('mouseleave', $event)"
+      @click.stop
+      @mousedown.stop
+    >
+      <slot />
+    </div>
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import {
+  activeDropdownOwner,
+  claimDropdownOwner,
+  onDropdownOwnerClaimed,
+  releaseDropdownOwner
+} from '@/utils/dropdownCoordinator'
 
 type DropdownPlacement = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'
 
@@ -41,9 +47,29 @@ const props = withDefaults(defineProps<Props>(), {
   panelClass: ''
 })
 
+const emit = defineEmits<{
+  (e: 'mouseenter', event: MouseEvent): void
+  (e: 'mouseleave', event: MouseEvent): void
+  (e: 'close'): void
+}>()
+
+const instanceId = `floating-dropdown-${Math.random().toString(36).substring(2, 9)}`
 const panelRef = ref<HTMLElement | null>(null)
 const triggerRect = ref<DOMRect | null>(null)
 const effectivePlacement = ref<DropdownPlacement>(props.placement)
+let stopDropdownOwnerListener: (() => void) | null = null
+let detachTriggerListeners: (() => void) | null = null
+let closeEmittedForForeignOwner = false
+
+const isVisible = computed(() => (
+  props.show && !!props.triggerEl && activeDropdownOwner.value === instanceId
+))
+
+const claimOwnerIfOpen = () => {
+  if (props.show && props.triggerEl) {
+    claimDropdownOwner(instanceId)
+  }
+}
 
 const updatePosition = () => {
   if (!props.triggerEl) return
@@ -97,7 +123,7 @@ const dropdownStyle = computed(() => {
 })
 
 watch(
-  () => [props.show, props.triggerEl, props.placement],
+  () => [isVisible.value, props.triggerEl, props.placement],
   ([show]) => {
     if (show) {
       effectivePlacement.value = props.placement
@@ -112,7 +138,50 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => props.show,
+  (show) => {
+    if (show) {
+      closeEmittedForForeignOwner = false
+      claimOwnerIfOpen()
+    } else {
+      closeEmittedForForeignOwner = false
+      releaseDropdownOwner(instanceId)
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => props.triggerEl,
+  (triggerEl) => {
+    detachTriggerListeners?.()
+    detachTriggerListeners = null
+    if (!triggerEl) return
+
+    const events = ['pointerenter', 'mouseenter', 'click', 'focusin'] as const
+    events.forEach((eventName) => triggerEl.addEventListener(eventName, claimOwnerIfOpen))
+    detachTriggerListeners = () => {
+      events.forEach((eventName) => triggerEl.removeEventListener(eventName, claimOwnerIfOpen))
+    }
+    claimOwnerIfOpen()
+  },
+  { immediate: true }
+)
+
+stopDropdownOwnerListener = onDropdownOwnerClaimed((owner) => {
+  if (owner !== instanceId && props.show && !closeEmittedForForeignOwner) {
+    closeEmittedForForeignOwner = true
+    emit('close')
+  }
+})
+
 onBeforeUnmount(() => {
+  releaseDropdownOwner(instanceId)
+  stopDropdownOwnerListener?.()
+  stopDropdownOwnerListener = null
+  detachTriggerListeners?.()
+  detachTriggerListeners = null
   window.removeEventListener('scroll', updatePosition, { capture: true })
   window.removeEventListener('resize', updatePosition)
 })
@@ -121,6 +190,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .floating-dropdown-portal {
   pointer-events: auto;
+  z-index: 100000040;
+  border: 1px solid var(--dropdown-border, var(--control-border, var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)))) !important;
+  border-radius: 16px !important;
+  background: var(--dropdown-bg, var(--control-bg, var(--anthropic-page, #faf9f5))) !important;
+  color: var(--dropdown-fg, var(--control-fg, var(--anthropic-fg, #141413))) !important;
+  box-shadow: var(--anthropic-dropdown-shadow, 0 4px 24px rgba(0, 0, 0, 0.05)) !important;
+  transform-origin: top;
 }
 
 .floating-dropdown-enter-active,

@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+  <div class="table-filter-shell monitor-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
     <!-- Left: Search + Filters -->
     <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
       <div class="relative w-full sm:w-64">
         <Icon
           name="search"
           size="md"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
         />
         <input data-testid="admin-monitor-monitor-filters-bar-input-search"
           v-model="search"
@@ -18,6 +18,7 @@
       </div>
 
       <Select
+        variant="text-control"
         v-model="provider"
         :options="providerFilterOptions"
         :placeholder="t('admin.channelMonitor.allProviders')"
@@ -49,6 +50,7 @@
       </Select>
 
       <Select
+        variant="text-control"
         v-model="enabled"
         :options="enabledFilterOptions"
         :placeholder="t('admin.channelMonitor.enabledFilter')"
@@ -62,21 +64,19 @@
       <button data-testid="admin-monitor-monitor-filters-bar-button-emit-reload"
         @click="$emit('reload')"
         :disabled="loading"
-        class="btn btn-secondary"
+        class="btn btn-primary anthropic-refresh-action-button monitor-refresh-button"
         :title="t('common.refresh')"
       >
-        <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+        {{ t("common.refresh") }}
       </button>
       <button data-testid="admin-monitor-monitor-filters-bar-button-emit-manage-templates"
         @click="$emit('manage-templates')"
-        class="btn btn-secondary"
+        class="filter-menu-button"
         :title="t('admin.channelMonitor.template.manageButton')"
       >
-        <Icon name="cog" size="md" class="mr-2" />
         {{ t('admin.channelMonitor.template.manageButton') }}
       </button>
-      <button data-testid="admin-monitor-monitor-filters-bar-button-emit-create" @click="$emit('create')" class="btn btn-primary">
-        <Icon name="plus" size="md" class="mr-2" />
+      <button data-testid="admin-monitor-monitor-filters-bar-button-emit-create" @click="$emit('create')" class="btn btn-primary monitor-create-button">
         {{ t('admin.channelMonitor.createButton') }}
       </button>
     </div>

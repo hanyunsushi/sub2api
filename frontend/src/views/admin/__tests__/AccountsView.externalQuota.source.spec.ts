@@ -5,6 +5,8 @@ import { resolve } from 'node:path'
 const sourcePath = resolve(__dirname, '../AccountsView.vue')
 const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
+const bulkActionsSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountBulkActionsBar.vue'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
 const monitorCapacitySource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
@@ -12,11 +14,6 @@ const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../
 const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
-const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
-const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
-const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
-const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);'
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -51,6 +48,9 @@ describe('AccountsView external quota card metadata', () => {
   it('renders external quota details inside the account card name area with provider links', () => {
     expect(source).toContain('data-testid="account-external-quota"')
     expect(source).toContain('account-external-quota-link')
+    expect(source).toContain('account-external-quota-row account-external-quota-row-head')
+    expect(source).toContain('account-external-quota-label')
+    expect(source).toContain('account-external-quota-value')
     expect(source).toContain('account-card-name-main')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedBalance')
     expect(source).toContain('getAccountExternalQuota(row)?.formattedExpiry')
@@ -60,9 +60,13 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain("return localText('长期', 'Long-term')")
     expect(source).not.toContain("return localText('未返回', 'Not returned')")
     expect(source).not.toContain("localText('打开', 'Open')")
-    expect(styleSource).toContain('.account-card-name-main')
-    expect(styleSource).toContain('.account-external-quota')
-    expect(styleSource).toContain('width: 100%;')
+    expect(targetedRepairSource).toContain('.account-card-name-main')
+    expect(targetedRepairSource).toContain('.account-external-quota')
+    expect(targetedRepairSource).toContain('.account-external-quota-row')
+    expect(targetedRepairSource).toContain('.account-external-quota-value')
+    expect(targetedRepairSource).toContain('width: 100%;')
+    expect(targetedRepairSource).toContain('border: 0 !important;')
+    expect(targetedRepairSource).toContain('background: transparent !important;')
     expect(styleSource).not.toMatch(/td\[data-column-key="name"\]\s*\{\s*padding-right: 9\.25rem !important;/)
   })
 
@@ -120,6 +124,9 @@ describe('AccountsView external quota card metadata', () => {
   it('renders a per-account schedule lock next to the scheduling control without changing schedulable directly', () => {
     expect(source).toContain('data-testid="account-schedule-lock-action"')
     expect(source).toContain('row.schedule_locked')
+    expect(source).toContain('account-schedule-lock-action-locked')
+    expect(source).toContain('border-transparent bg-transparent text-[var(--anthropic-fg)]')
+    expect(source).not.toContain('border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]')
     expect(source).toContain('handleToggleScheduleLock(row)')
     expect(source).toContain('togglingScheduleLock')
     expect(source).toContain('adminAPI.accounts.setScheduleLocked')
@@ -207,34 +214,74 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain('adminAPI.accounts.update(row.id, { rate_multiplier')
   })
 
-  it('marks actively used account rows with the pasted canvas ElectricBorder treatment', () => {
+  it('keeps account-card inline actions as text links without svg chrome', () => {
+    const actionsTemplate = source.slice(
+      source.indexOf('<template #cell-actions="{ row }">'),
+      source.indexOf('</template>', source.indexOf('<template #cell-actions="{ row }">')),
+    )
+
+    expect(actionsTemplate).toContain('account-card-text-action')
+    expect(actionsTemplate).not.toContain('<svg')
+    expect(actionsTemplate).not.toContain('<Icon name="chartBar"')
+    expect(targetedRepairSource).toContain('[data-column-key="actions"] svg')
+    expect(targetedRepairSource).toContain('display: none !important;')
+    expect(targetedRepairSource).toContain('text-decoration-color: transparent !important;')
+    expect(targetedRepairSource).toContain('text-decoration-color: currentColor !important;')
+  })
+
+  it('keeps account-card usage stats and platform chips transparent while restoring progress width', () => {
+    expect(targetedRepairSource).toContain('.usage-progress-stat')
+    expect(targetedRepairSource).toContain('background: transparent !important;')
+    expect(targetedRepairSource).toContain('width: clamp(6rem, 100%, 11rem) !important;')
+    expect(targetedRepairSource).toContain('flex: 1 1 auto !important;')
+    expect(targetedRepairSource).toContain('min-width: 6rem !important;')
+    expect(targetedRepairSource).toContain('.platform-type-badge__platform')
+    expect(targetedRepairSource).toContain('.group-token-label')
+    expect(targetedRepairSource).toContain('margin-left: 0 !important;')
+    expect(targetedRepairSource).toContain('tr.codex-account-card-calling [data-column-key="capacity"]')
+    expect(targetedRepairSource).toContain('color: var(--anthropic-info) !important;')
+  })
+
+  it('keeps schedule-lock buttons transparent so only the lock glyph turns black', () => {
+    expect(source).toContain('account-schedule-lock-action-locked border-transparent bg-transparent text-[var(--anthropic-fg)]')
+    expect(source).not.toContain('account-schedule-lock-action-locked border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)]')
+    expect(source).not.toContain('account-schedule-lock-action-locked border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]')
+    const lockedBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked')
+    expect(lockedBlock).toContain('border-color: transparent !important;')
+    expect(lockedBlock).toContain('background: transparent !important;')
+    expect(lockedBlock).toContain('color: var(--anthropic-fg) !important;')
+    const lockedSvgBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked svg')
+    expect(lockedSvgBlock).toContain('color: var(--anthropic-fg) !important;')
+    expect(lockedSvgBlock).toContain('stroke: currentColor !important;')
+    const hoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action:focus-visible')
+    expect(hoverBlock).toContain('background: transparent !important;')
+    expect(hoverBlock).toContain('color: var(--anthropic-fg) !important;')
+  })
+
+  it('marks active and paused account rows with theme card color classes instead of ElectricBorder', () => {
     expect(electricBorderSource).not.toBe('')
-    expect(electricBorderSource).toContain('canvas.getContext')
-    expect(electricBorderSource).toContain('octavedNoise')
-    expect(electricBorderSource).toContain('getRoundedRectPoint')
-    expect(electricBorderSource).toContain('ResizeObserver')
-    expect(electricBorderSource).toContain('requestAnimationFrame')
-    expect(electricBorderSource).toContain('eb-glow-1')
-    expect(electricBorderSource).toContain('ctx.lineWidth = 1')
-    expect(electricBorderSource).not.toContain('ctx.lineWidth = props.thickness')
     expect(dataTableSource).toContain('name="row-overlay"')
-    expect(source).toContain("import ElectricBorder from '@/components/common/ElectricBorder.vue'")
-    expect(source).toContain('<template #row-overlay="{ row }">')
-    expect(source).toContain('<ElectricBorder')
-    expect(source).toContain('color="#c96442"')
-    expect(source).toContain(':speed="1.5"')
-    expect(source).toContain(':chaos="0.02"')
-    expect(source).toContain(':border-radius="16"')
-    expect(source).toContain(':thickness="2"')
+    expect(source).not.toContain("import ElectricBorder from '@/components/common/ElectricBorder.vue'")
+    expect(source).not.toContain('<template #row-overlay="{ row }">')
+    expect(source).not.toContain('<ElectricBorder')
+    expect(source).not.toContain('color="#c96442"')
     expect(source).toContain(':row-class="getAccountRowClass"')
     expect(source).toContain('getAccountRowClass')
     expect(source).toContain('isAccountCalling(row)')
     expect(source).toContain('current_concurrency')
     expect(source).toContain('active_sessions')
     expect(source).toContain('codex-account-card-calling')
-    expect(source).toContain('account-electric-border')
+    expect(source).toContain('codex-account-card-paused')
+    expect(source).toContain("row.status === 'active' && !row.schedulable")
+    expect(source).not.toContain('account-electric-border')
     expect(styleSource).not.toContain('account-electric-border-spin')
     expect(styleSource).not.toContain('conic-gradient(')
+    expect(targetedRepairSource).toContain('.accounts-table-page .table-wrapper tbody tr.codex-account-card-calling')
+    expect(targetedRepairSource).toContain('background: var(--account-card-bg) !important;')
+    expect(targetedRepairSource).toContain('.accounts-table-page .account-electric-border-canvas')
+    expect(targetedRepairSource).toContain('display: none !important;')
+    expect(targetedRepairSource).not.toContain('background: var(--anthropic-learn-personal) !important;')
+    expect(targetedRepairSource).not.toContain('background: var(--anthropic-learn-build) !important;')
   })
 
   it('keeps the active account border alive for one minute after a short activity gap', () => {
@@ -250,87 +297,72 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).toContain('watch(')
   })
 
-  it('matches the Creepee homepage recommendation-card hover treatment on admin account table cards', () => {
+  it('keeps admin account cards on the Anthropic domain-card hover taxonomy', () => {
     const accountRowHoverBlock = cssBlock(
-      styleSource,
+      targetedRepairSource,
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
-    const globalHoverBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
-    )
-    const themedGlobalHoverBlock = cssBlock(
-      styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
-    )
-    const globalBaseBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
-    )
-    const tableResetIndex = styleSource.indexOf(
-      '#app .app-layout-content :where(.table-wrapper, .table-scroll-container) tbody tr:hover'
+    const themedGlobalHoverBlock = lastCssBlock(
+      targetedRepairSource,
+      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
     const finalAccountRowHover = lastCssBlock(
-      styleSource,
+      targetedRepairSource,
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
 
-    expect(styleSource).toContain(homepageHoverTransform)
-    expect(styleSource).toContain(homepageHoverShadow)
-    expect(styleSource).toContain(`--creepee-home-card-hover-shadow: ${homepageHoverShadow.split(': ')[1]}`)
-    expect(accountRowHoverBlock).toContain(homepageHoverShadow)
-    expect(accountRowHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
-    expect(accountRowHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
-    expect(accountRowHoverBlock).not.toContain('translate3d(0, -2px, 0)')
+    expect(accountRowHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
+    expect(accountRowHoverBlock).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(accountRowHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(accountRowHoverBlock).toContain('transform: none')
+    expect(targetedRepairSource).not.toContain('--account-card-resting-bg')
+    expect(targetedRepairSource).not.toContain('tbody:has(tr:hover) tr:not(:hover)')
+    expect(accountRowHoverBlock).not.toContain('translate3d')
     expect(accountRowHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(accountRowHoverBlock).not.toContain('border-color')
-    expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(accountRowHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(accountRowHoverBlock).not.toContain('var(--atelier-butter')
     expect(accountRowHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(globalHoverBlock).toContain('.accounts-table-page .table-wrapper tbody tr')
-    expect(globalBaseBlock).toContain(homepageHoverShadow)
-    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(globalHoverBlock).not.toContain('translateY(-2px)')
-    expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(globalHoverBlock).not.toContain('border-color')
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(globalHoverBlock).not.toContain('var(--atelier-butter')
-    expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(themedGlobalHoverBlock).not.toContain('var(--atelier-material-shadow')
-    expect(themedGlobalHoverBlock).not.toContain('rgba(20, 20, 19, 0.024)')
-    expect(themedGlobalHoverBlock).not.toContain('translateY(-2px)')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(themedGlobalHoverBlock).not.toContain('border-color')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(finalAccountRowHover.start).toBeGreaterThan(tableResetIndex)
-    expect(finalAccountRowHover.block).toContain(homepageHoverShadow)
-    expect(finalAccountRowHover.block).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(finalAccountRowHover.block).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(finalAccountRowHover.block).not.toContain('translate3d(0, -2px, 0)')
+    expect(themedGlobalHoverBlock.block).toContain('transform: none !important;')
+    expect(themedGlobalHoverBlock.block).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(themedGlobalHoverBlock.block).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(themedGlobalHoverBlock.block).not.toContain('var(--atelier-material-shadow')
+    expect(themedGlobalHoverBlock.block).not.toContain('rgba(20, 20, 19, 0.024)')
+    expect(themedGlobalHoverBlock.block).not.toContain('translate')
+    expect(themedGlobalHoverBlock.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
+    expect(finalAccountRowHover.start).toBeGreaterThan(
+      targetedRepairSource.indexOf('#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover')
+    )
+    expect(finalAccountRowHover.block).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
+    expect(finalAccountRowHover.block).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(finalAccountRowHover.block).toContain('transform: none !important;')
+    expect(finalAccountRowHover.block).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(finalAccountRowHover.block).not.toContain('translate3d')
     expect(finalAccountRowHover.block).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(finalAccountRowHover.block).not.toContain('border-color')
-    expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
     expect(finalAccountRowHover.block).not.toContain('var(--atelier-ui-hover-surface)')
     expect(finalAccountRowHover.block).not.toContain('var(--atelier-butter')
     expect(finalAccountRowHover.block).not.toMatch(/(?:amber|yellow)/i)
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards out of the global hover group while allowing local lift and shadow', () => {
+  it('keeps shared capacity cards on local paper-depth hover without lift or shadow', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
-    expect(capacityHoverBlock).toContain('transform: var(--creepee-home-card-hover-transform);')
-    expect(capacityHoverBlock).not.toContain('border-color')
-    expect(capacityHoverBlock).toContain('box-shadow: var(--creepee-home-card-hover-shadow);')
-    expect(capacityHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
+    expect(capacityHoverBlock).toContain('border-color: var(--atelier-material-edge-strong);')
+    expect(capacityHoverBlock).toContain('background: var(--atelier-surface-muted);')
+    expect(capacityHoverBlock).not.toContain('transform:')
+    expect(capacityHoverBlock).not.toContain('box-shadow:')
     expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
+  })
+
+  it('keeps a single filtered bulk update entry and selected-row bulk edit entry', () => {
+    expect(bulkActionsSource).not.toContain('data-testid="account-bulk-edit-filtered-empty"')
+    expect((bulkActionsSource.match(/data-testid="account-bulk-edit-filtered"/g) || [])).toHaveLength(1)
+    expect(bulkActionsSource).toContain('data-testid="account-bulk-edit-selected"')
+    expect(bulkActionsSource).toContain("@click=\"$emit('edit-filtered')\"")
+    expect(bulkActionsSource).toContain('class="btn btn-primary btn-sm"')
+    expect(styleSource).toContain('.app-layout-content :where(.btn-primary')
+    expect(targetedRepairSource).toContain('.app-layout-content :where(.btn-primary')
   })
 })

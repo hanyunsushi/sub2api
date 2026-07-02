@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'animate-pulse bg-gray-200 dark:bg-dark-700',
+      'animate-pulse bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]',
       variant === 'circle' ? 'rounded-full' : 'rounded-lg',
       customClass
     ]"

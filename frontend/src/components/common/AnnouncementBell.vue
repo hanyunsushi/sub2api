@@ -1,17 +1,17 @@
 <template>
   <div>
-    <!-- 铃铛按钮 -->
+    <!-- 公告入口 -->
     <button data-testid="common-announcement-bell-button-open-modal"
       @click="openModal"
-      class="relative flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all hover:scale-105 hover:bg-primary-50 dark:text-gray-400 dark:hover:bg-dark-800"
-      :class="{ 'text-primary-600 dark:text-primary-400': unreadCount > 0 }"
+      class="announcement-trigger-text relative inline-flex items-center gap-1.5 text-[var(--atelier-muted)] transition-colors"
+      :class="{ 'text-[var(--atelier-ink)]': unreadCount > 0 }"
       :aria-label="t('announcements.title')"
     >
-      <Icon name="bell" size="md" />
+      <span>{{ t('announcements.title') }}</span>
       <!-- 未读红点 -->
       <span
         v-if="unreadCount > 0"
-        class="absolute right-1 top-1 flex h-2 w-2"
+        class="announcement-trigger-dot flex h-2 w-2"
       >
         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75"></span>
         <span class="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
@@ -23,27 +23,26 @@
       <Transition name="modal-fade">
         <div data-testid="common-announcement-bell-div-close-modal"
           v-if="isModalOpen"
-          class="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[8vh]"
+          class="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-[rgba(20,19,19,0.48)] p-4 pt-[8vh]"
           @click="closeModal"
         >
           <div data-testid="common-announcement-bell-div-div"
-            class="w-full max-w-[620px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
+            class="w-full max-w-[620px] overflow-hidden rounded-lg border border-[var(--atelier-line-strong)] bg-[var(--atelier-paper)] shadow-none"
             @click.stop
           >
-            <!-- Header with Gradient -->
-            <div class="relative overflow-hidden border-b border-accent-100/80 bg-primary-50/70 px-6 py-5 dark:border-dark-700/50 dark:bg-primary-900/10">
+            <div class="relative overflow-hidden border-b border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-6 py-5">
               <div class="relative z-10 flex items-start justify-between">
                 <div>
                   <div class="flex items-center gap-2">
-                    <div class="announcement-bell-header-icon flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm">
+                    <div class="announcement-bell-header-icon flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-none">
                       <Icon name="bell" size="sm" />
                     </div>
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h2 class="font-serif text-lg font-medium text-[var(--atelier-ink)]">
                       {{ t('announcements.title') }}
                     </h2>
                   </div>
-                  <p v-if="unreadCount > 0" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    <span class="font-medium text-primary-600 dark:text-primary-400">{{ unreadCount }}</span>
+                  <p v-if="unreadCount > 0" class="mt-2 text-sm text-[var(--atelier-muted)]">
+                    <span class="font-medium text-[var(--atelier-ink)]">{{ unreadCount }}</span>
                     {{ t('announcements.unread') }}
                   </p>
                 </div>
@@ -52,30 +51,28 @@
                     v-if="unreadCount > 0"
                     @click="markAllAsRead"
                     :disabled="loading"
-                    class="announcement-bell-mark-all rounded-lg px-4 py-2 text-xs font-medium text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+                    class="announcement-bell-mark-all rounded-lg px-4 py-2 text-xs font-medium text-white shadow-none transition-all hover:shadow-none disabled:opacity-50"
                   >
                     {{ t('announcements.markAllRead') }}
                   </button>
                   <button data-testid="common-announcement-bell-button-close-modal"
                     @click="closeModal"
-                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/50 text-gray-500 transition-all hover:bg-white hover:text-gray-700 dark:bg-dark-700/50 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-300"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--atelier-line)] bg-transparent text-[var(--atelier-muted)] transition-colors hover:bg-[var(--atelier-surface-muted)] hover:text-[var(--atelier-ink)]"
                     :aria-label="t('common.close')"
                   >
                     <Icon name="x" size="sm" />
                   </button>
                 </div>
               </div>
-              <!-- Decorative gradient -->
-              <div class="absolute right-0 top-0 h-full w-48 bg-gradient-to-l from-primary-100/30 to-transparent dark:from-primary-900/10"></div>
             </div>
 
             <!-- Body -->
-            <div class="max-h-[65vh] overflow-y-auto">
+            <div class="max-h-[65vh] overflow-y-auto bg-[var(--atelier-paper)]">
               <!-- Loading -->
               <div v-if="loading" class="flex items-center justify-center py-16">
                 <div class="relative">
-                  <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-primary-600 dark:border-dark-600 dark:border-t-primary-400"></div>
-                  <div class="absolute inset-0 h-12 w-12 animate-pulse rounded-full border-4 border-primary-400/30"></div>
+                  <div class="h-12 w-12 animate-spin rounded-full border-4 border-[var(--atelier-line)] border-t-[var(--atelier-ink)]"></div>
+                  <div class="absolute inset-0 h-12 w-12 animate-pulse rounded-full border-4 border-[var(--atelier-ring)]/30"></div>
                 </div>
               </div>
 
@@ -84,8 +81,8 @@
                 <div data-testid="common-announcement-bell-div-open-detail-item"
                   v-for="item in announcements"
                   :key="item.id"
-                  class="group relative flex items-center gap-4 border-b border-gray-100 px-6 py-4 transition-all hover:bg-gray-50 dark:border-dark-700 dark:hover:bg-dark-700/30"
-                  :class="{ 'bg-primary-50/50 dark:bg-primary-900/10': !item.read_at }"
+                  class="group relative flex items-center gap-4 border-b border-[var(--atelier-line)] px-6 py-4 transition-colors hover:bg-[var(--atelier-surface-muted)]"
+                  :class="{ 'bg-[var(--atelier-paper-2)]': !item.read_at }"
                   style="min-height: 72px"
                   @click="openDetail(item)"
                 >
@@ -93,7 +90,7 @@
                   <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center">
                     <div
                       v-if="!item.read_at"
-                      class="announcement-bell-detail-mark relative flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm"
+                      class="announcement-bell-detail-mark relative flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-none"
                     >
                       <!-- Pulse ring -->
                       <span class="announcement-bell-ping absolute inline-flex h-full w-full animate-ping rounded-lg opacity-75"></span>
@@ -104,7 +101,7 @@
                     </div>
                     <div
                       v-else
-                      class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-600"
+                      class="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--atelier-surface-muted)] text-[var(--atelier-dust)]"
                     >
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -115,20 +112,20 @@
                   <!-- Content -->
                   <div class="flex min-w-0 flex-1 items-center justify-between gap-4">
                     <div class="min-w-0 flex-1">
-                      <h3 class="truncate text-sm font-medium text-gray-900 dark:text-white">
+                      <h3 class="truncate text-sm font-medium text-[var(--atelier-ink)]">
                         {{ item.title }}
                       </h3>
                       <div class="mt-1 flex items-center gap-2">
-                        <time class="text-xs text-gray-500 dark:text-gray-400">
+                        <time class="text-xs text-[var(--atelier-dust)]">
                           {{ formatRelativeTime(item.created_at) }}
                         </time>
                         <span
                           v-if="!item.read_at"
-                          class="inline-flex items-center gap-1 rounded-md bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                          class="inline-flex items-center gap-1 rounded-md border border-[var(--atelier-line-strong)] bg-[var(--atelier-surface-muted)] px-1.5 py-0.5 text-xs font-medium text-[var(--atelier-muted)]"
                         >
                           <span class="relative flex h-1.5 w-1.5">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-500 opacity-75"></span>
-                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary-600"></span>
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--atelier-ink)] opacity-40"></span>
+                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--atelier-ink)]"></span>
                           </span>
                           {{ t('announcements.unread') }}
                         </span>
@@ -138,7 +135,7 @@
                     <!-- Arrow -->
                     <div class="flex-shrink-0">
                       <svg
-                        class="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1 dark:text-gray-600"
+                        class="h-5 w-5 text-[var(--atelier-dust)] transition-transform group-hover:translate-x-1"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -152,7 +149,7 @@
                   <!-- Unread indicator bar -->
                   <div
                     v-if="!item.read_at"
-                    class="absolute left-0 top-0 h-full w-1 bg-primary-500"
+                    class="absolute left-0 top-0 h-full w-1 bg-[var(--atelier-ink)]"
                   ></div>
                 </div>
               </div>
@@ -160,17 +157,17 @@
               <!-- Empty State -->
               <div v-else class="flex flex-col items-center justify-center py-16">
                 <div class="relative mb-4">
-                  <div class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600">
-                    <Icon name="inbox" size="xl" class="text-gray-400 dark:text-gray-500" />
+                  <div class="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-[var(--atelier-line-strong)] bg-[var(--atelier-paper-2)]">
+                    <Icon name="inbox" size="xl" class="text-[var(--atelier-dust)]" />
                   </div>
-                  <div class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white">
+                  <div class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--atelier-status-success)] text-[var(--atelier-paper)]">
                     <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                   </div>
                 </div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ t('announcements.empty') }}</p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('announcements.emptyDescription') }}</p>
+                <p class="text-sm font-medium text-[var(--atelier-ink)]">{{ t('announcements.empty') }}</p>
+                <p class="mt-1 text-xs text-[var(--atelier-muted)]">{{ t('announcements.emptyDescription') }}</p>
               </div>
             </div>
           </div>
@@ -183,38 +180,34 @@
       <Transition name="modal-fade">
         <div data-testid="common-announcement-bell-div-close-detail"
           v-if="detailModalOpen && selectedAnnouncement"
-          class="fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-gradient-to-br from-black/70 via-black/60 to-black/70 p-4 pt-[6vh]"
+          class="fixed inset-0 z-[110] flex items-start justify-center overflow-y-auto bg-[rgba(20,19,19,0.48)] p-4 pt-[6vh]"
           @click="closeDetail"
         >
           <div data-testid="common-announcement-bell-div-div-2"
-            class="w-full max-w-[780px] overflow-hidden rounded-lg bg-white shadow-card-hover ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
+            class="w-full max-w-[780px] overflow-hidden rounded-lg border border-[var(--atelier-line-strong)] bg-[var(--atelier-paper)] shadow-none"
             @click.stop
           >
-            <!-- Header with Decorative Elements -->
-            <div class="relative overflow-hidden border-b border-accent-100 bg-primary-50/80 px-8 py-6 dark:border-dark-700 dark:bg-primary-900/10">
-              <!-- Decorative background elements -->
-              <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-primary-100/30 to-transparent dark:from-primary-900/20"></div>
-
+            <div class="relative overflow-hidden border-b border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-8 py-6">
               <div class="relative z-10 flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
                   <!-- Icon and Category -->
                   <div class="mb-3 flex items-center gap-2">
-                    <div class="announcement-bell-detail-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-sm">
+                    <div class="announcement-bell-detail-icon flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-none">
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div class="flex items-center gap-2">
-                      <span class="rounded-lg bg-primary-100 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                      <span class="rounded-lg border border-[var(--atelier-line-strong)] bg-[var(--atelier-surface-muted)] px-2.5 py-1 text-xs font-medium text-[var(--atelier-muted)]">
                         {{ t('announcements.title') }}
                       </span>
                       <span
                         v-if="!selectedAnnouncement.read_at"
-                        class="announcement-bell-detail-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-sm"
+                        class="announcement-bell-detail-badge inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-white shadow-none"
                       >
                         <span class="relative flex h-2 w-2">
-                          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-                          <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+                          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--anthropic-page)] opacity-75"></span>
+                          <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--anthropic-page)]"></span>
                         </span>
                         {{ t('announcements.unread') }}
                       </span>
@@ -222,12 +215,12 @@
                   </div>
 
                   <!-- Title -->
-                  <h2 class="mb-3 text-2xl font-bold leading-tight text-gray-900 dark:text-white">
+                  <h2 class="mb-3 font-serif text-2xl font-medium leading-tight text-[var(--atelier-ink)]">
                     {{ selectedAnnouncement.title }}
                   </h2>
 
                   <!-- Meta Info -->
-                  <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                  <div class="flex items-center gap-4 text-sm text-[var(--atelier-muted)]">
                     <div class="flex items-center gap-1.5">
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -247,7 +240,7 @@
                 <!-- Close button -->
                 <button data-testid="common-announcement-bell-button-close-detail"
                   @click="closeDetail"
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white/50 text-gray-500 transition-all hover:bg-white hover:text-gray-700 hover:shadow-lg dark:bg-dark-700/50 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-300"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-[var(--atelier-line)] bg-transparent text-[var(--atelier-muted)] transition-colors hover:bg-[var(--atelier-surface-muted)] hover:text-[var(--atelier-ink)]"
                   :aria-label="t('common.close')"
                 >
                   <Icon name="x" size="md" />
@@ -256,7 +249,7 @@
             </div>
 
             <!-- Body with Enhanced Markdown -->
-            <div class="max-h-[60vh] overflow-y-auto bg-white px-8 py-8 dark:bg-dark-800">
+            <div class="max-h-[60vh] overflow-y-auto bg-[var(--atelier-paper)] px-8 py-8">
               <!-- Content with decorative border -->
               <div class="relative">
                 <!-- Decorative left border -->
@@ -272,9 +265,9 @@
             </div>
 
             <!-- Footer with Actions -->
-            <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-5 dark:border-dark-700 dark:bg-dark-900/30">
+            <div class="border-t border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-8 py-5">
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-2 text-xs text-[var(--atelier-muted)]">
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -283,14 +276,14 @@
                 <div class="flex items-center gap-3">
                   <button data-testid="common-announcement-bell-button-close-detail-2"
                     @click="closeDetail"
-                    class="rounded-lg border border-accent-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-primary-50 hover:shadow dark:border-dark-600 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+                    class="rounded-lg border border-[var(--atelier-line-strong)] bg-transparent px-5 py-2.5 text-sm font-medium text-[var(--atelier-ink)] shadow-none transition-colors hover:bg-[var(--atelier-surface-muted)]"
                   >
                     {{ t('common.close') }}
                   </button>
                   <button data-testid="common-announcement-bell-button-mark-as-read-and-close-selected-announcement-id"
                     v-if="!selectedAnnouncement.read_at"
                     @click="markAsReadAndClose(selectedAnnouncement.id)"
-                    class="announcement-bell-detail-mark rounded-lg px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
+                    class="announcement-bell-detail-mark rounded-lg px-5 py-2.5 text-sm font-medium text-[var(--atelier-paper)] shadow-none transition-colors hover:shadow-none"
                   >
                     <span class="flex items-center gap-2">
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -453,20 +446,20 @@ watch(
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  background: var(--atelier-dust, #87867f);
   border-radius: 4px;
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #4b5563, #374151);
+  background: var(--atelier-muted, #5e5d59);
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #94a3b8, #64748b);
+  background: var(--atelier-muted, #5e5d59);
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #6b7280, #4b5563);
+  background: var(--atelier-dark, #3d3d3a);
 }
 
 .announcement-bell-header-icon,
@@ -474,17 +467,17 @@ watch(
 .announcement-bell-detail-icon,
 .announcement-bell-detail-badge,
 .announcement-bell-detail-mark {
-  background: var(--atelier-terracotta-action, #c96442);
-  box-shadow: 0 10px 22px -16px rgba(95, 42, 28, 0.7);
+  background: var(--atelier-ink, #141413);
+  box-shadow: none;
 }
 
 .announcement-bell-mark-all:hover,
 .announcement-bell-detail-mark:hover {
-  background: var(--atelier-terracotta-action-hover, #b65336);
+  background: var(--atelier-dark, #3d3d3a);
 }
 
 .announcement-bell-ping {
-  background: var(--atelier-terracotta-action, #c96442);
+  background: var(--atelier-ink, #141413);
 }
 </style>
 
@@ -492,23 +485,32 @@ watch(
 /* Enhanced Markdown Styles */
 .markdown-body {
   @apply text-[15px] leading-[1.75];
-  @apply text-gray-700 dark:text-gray-300;
+  color: var(--atelier-text);
 }
 
 .markdown-body h1 {
-  @apply mb-6 mt-8 border-b border-gray-200 pb-3 text-3xl font-bold text-gray-900 dark:border-dark-600 dark:text-white;
+  @apply mb-6 mt-8 border-b pb-3 text-3xl font-medium;
+  border-color: var(--atelier-line);
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-serif);
 }
 
 .markdown-body h2 {
-  @apply mb-4 mt-7 border-b border-gray-100 pb-2 text-2xl font-bold text-gray-900 dark:border-dark-700 dark:text-white;
+  @apply mb-4 mt-7 border-b pb-2 text-2xl font-medium;
+  border-color: var(--atelier-line);
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-serif);
 }
 
 .markdown-body h3 {
-  @apply mb-3 mt-6 text-xl font-semibold text-gray-900 dark:text-white;
+  @apply mb-3 mt-6 text-xl font-medium;
+  color: var(--atelier-ink);
+  font-family: var(--atelier-font-serif);
 }
 
 .markdown-body h4 {
-  @apply mb-2 mt-5 text-lg font-semibold text-gray-900 dark:text-white;
+  @apply mb-2 mt-5 text-lg font-medium;
+  color: var(--atelier-ink);
 }
 
 .markdown-body p {
@@ -516,7 +518,13 @@ watch(
 }
 
 .markdown-body a {
-  @apply font-medium text-primary-600 underline decoration-primary-600/30 decoration-2 underline-offset-2 transition-all hover:decoration-primary-600 dark:text-primary-400 dark:decoration-primary-400/30 dark:hover:decoration-primary-400;
+  @apply font-medium underline decoration-1 underline-offset-4 transition-colors;
+  color: var(--atelier-ink);
+  text-decoration-color: color-mix(in srgb, var(--atelier-ink) 26%, transparent);
+}
+
+.markdown-body a:hover {
+  text-decoration-color: currentColor;
 }
 
 .markdown-body ul,
@@ -538,41 +546,53 @@ watch(
 }
 
 .markdown-body li::marker {
-  @apply text-primary-600 dark:text-primary-400;
+  color: var(--atelier-muted);
 }
 
 .markdown-body blockquote {
-  @apply relative my-5 border-l-4 border-primary-500 bg-primary-50/70 py-3 pl-5 pr-4 italic text-gray-700 dark:border-primary-400 dark:bg-primary-900/10 dark:text-gray-300;
+  @apply relative my-5 border-l py-3 pl-5 pr-4 italic;
+  border-color: var(--atelier-line-strong);
+  background: var(--atelier-paper-2);
+  color: var(--atelier-text);
 }
 
 .markdown-body blockquote::before {
   content: '"';
-  @apply absolute -left-1 top-0 text-5xl font-serif text-primary-500/20 dark:text-primary-400/20;
+  @apply absolute -left-1 top-0 text-5xl font-serif;
+  color: color-mix(in srgb, var(--atelier-ink) 14%, transparent);
 }
 
 .markdown-body code {
-  @apply rounded-lg bg-gray-100 px-2 py-1 text-[13px] font-mono text-pink-600 dark:bg-dark-700 dark:text-pink-400;
+  @apply rounded-lg px-2 py-1 text-[13px] font-mono;
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .markdown-body pre {
-  @apply my-5 overflow-x-auto rounded-lg border border-accent-200 bg-primary-50/50 p-5 dark:border-dark-600 dark:bg-dark-900/50;
+  @apply my-5 overflow-x-auto rounded-lg border p-5;
+  border-color: var(--atelier-line-strong);
+  background: var(--atelier-paper-2);
 }
 
 .markdown-body pre code {
-  @apply bg-transparent p-0 text-[13px] text-gray-800 dark:text-gray-200;
+  @apply bg-transparent p-0 text-[13px];
+  color: var(--atelier-ink);
 }
 
 .markdown-body hr {
-  @apply my-8 border-0 border-t-2 border-gray-200 dark:border-dark-700;
+  @apply my-8 border-0 border-t;
+  border-color: var(--atelier-line);
 }
 
 .markdown-body table {
-  @apply mb-5 w-full overflow-hidden rounded-lg border border-gray-200 dark:border-dark-600;
+  @apply mb-5 w-full overflow-hidden rounded-lg border;
+  border-color: var(--atelier-line-strong);
 }
 
 .markdown-body th,
 .markdown-body td {
-  @apply border-r border-b border-gray-200 px-4 py-3 text-left dark:border-dark-600;
+  @apply border-r border-b px-4 py-3 text-left;
+  border-color: var(--atelier-line);
 }
 
 .markdown-body th:last-child,
@@ -585,22 +605,31 @@ watch(
 }
 
 .markdown-body th {
-  @apply bg-primary-50 font-semibold text-gray-900 dark:bg-primary-900/15 dark:text-white;
+  @apply font-semibold;
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .markdown-body tbody tr {
-  @apply transition-colors hover:bg-gray-50 dark:hover:bg-dark-700/30;
+  @apply transition-colors;
+}
+
+.markdown-body tbody tr:hover {
+  background: var(--atelier-surface-muted);
 }
 
 .markdown-body img {
-  @apply my-5 max-w-full rounded-lg border border-accent-200 shadow-md dark:border-dark-600;
+  @apply my-5 max-w-full rounded-lg border shadow-none;
+  border-color: var(--atelier-line-strong);
 }
 
 .markdown-body strong {
-  @apply font-semibold text-gray-900 dark:text-white;
+  @apply font-semibold;
+  color: var(--atelier-ink);
 }
 
 .markdown-body em {
-  @apply italic text-gray-600 dark:text-gray-400;
+  @apply italic;
+  color: var(--atelier-muted);
 }
 </style>

@@ -22,12 +22,12 @@ import {
   STATUS_ERROR,
 } from '@/constants/channelMonitor'
 
-const NEUTRAL_BADGE = 'semantic-badge semantic-badge--neutral'
-
-/** Availability HSL hue multiplier: 0%=red(0) / 50%=yellow(60) / 100%=green(120). */
-const HSL_HUE_PER_PERCENT = 1.2
-const HSL_SATURATION = 72
-const HSL_LIGHTNESS = 42
+const NEUTRAL_BADGE = 'border border-[var(--anthropic-border-subtle)] bg-transparent text-[var(--anthropic-muted)]'
+const SUCCESS_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]'
+const INFO_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] bg-transparent text-[var(--anthropic-info)]'
+const WARNING_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
+const DANGER_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-error)_32%,transparent)] bg-transparent text-[var(--anthropic-error)]'
+const PICKER_BASE = 'border bg-transparent text-[var(--anthropic-muted)]'
 
 export interface AvailabilityRow {
   primary_status: MonitorStatus | ''
@@ -45,13 +45,12 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'semantic-badge semantic-badge--success'
+        return SUCCESS_BADGE
       case STATUS_DEGRADED:
-        return 'semantic-badge semantic-badge--warning'
+        return WARNING_BADGE
       case STATUS_FAILED:
-        return 'semantic-badge semantic-badge--danger'
       case STATUS_ERROR:
-        return 'semantic-badge semantic-badge--danger'
+        return DANGER_BADGE
       default:
         return NEUTRAL_BADGE
     }
@@ -67,11 +66,11 @@ export function useChannelMonitorFormat() {
   function providerBadgeClass(p: Provider | string): string {
     switch (p) {
       case PROVIDER_OPENAI:
-        return 'semantic-badge semantic-badge--provider-openai'
+        return SUCCESS_BADGE
       case PROVIDER_ANTHROPIC:
-        return 'semantic-badge semantic-badge--provider-anthropic'
+        return WARNING_BADGE
       case PROVIDER_GEMINI:
-        return 'semantic-badge semantic-badge--provider-gemini'
+        return INFO_BADGE
       default:
         return NEUTRAL_BADGE
     }
@@ -79,27 +78,26 @@ export function useChannelMonitorFormat() {
 
   /**
    * Tailwind class for a provider radio-button-style picker (active/inactive state).
-   * Reuses the same emerald/orange/sky palette as providerBadgeClass to keep
-   * visual semantics consistent across badges and pickers.
+   * Uses the shared Anthropic semantic set with transparent surfaces.
    */
   function providerPickerClass(p: Provider | string, active: boolean): string {
     switch (p) {
       case PROVIDER_OPENAI:
         return active
-          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-emerald-300 hover:text-emerald-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-emerald-500/50'
+          ? `${PICKER_BASE} border-[color-mix(in_srgb,var(--anthropic-success)_48%,transparent)] text-[var(--anthropic-success)]`
+          : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] hover:text-[var(--anthropic-success)]`
       case PROVIDER_ANTHROPIC:
         return active
-          ? 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-orange-500/50'
+          ? `${PICKER_BASE} border-[color-mix(in_srgb,var(--anthropic-warning)_48%,transparent)] text-[var(--anthropic-warning)]`
+          : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] hover:text-[var(--anthropic-warning)]`
       case PROVIDER_GEMINI:
         return active
-          ? 'border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-sky-500/50'
+          ? `${PICKER_BASE} border-[color-mix(in_srgb,var(--anthropic-info)_48%,transparent)] text-[var(--anthropic-info)]`
+          : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] hover:text-[var(--anthropic-info)]`
       default:
         return active
-          ? 'border-gray-400 bg-gray-50 text-gray-700 dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+          ? `${PICKER_BASE} border-[var(--anthropic-border-hover)]`
+          : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[var(--anthropic-border-hover)]`
     }
   }
 
@@ -146,28 +144,28 @@ export function useChannelMonitorFormat() {
 }
 
 /**
- * Map availability percent to an HSL colour (red -> yellow -> green).
+ * Map availability percent to an Anthropic semantic colour.
  * Returns undefined for null/NaN so callers can fall back to a neutral colour.
  */
 export function hslForPct(pct: number | null | undefined): string | undefined {
   if (pct === null || pct === undefined || Number.isNaN(pct)) return undefined
-  const clamped = Math.max(0, Math.min(100, pct))
-  const hue = clamped * HSL_HUE_PER_PERCENT
-  return `hsl(${hue} ${HSL_SATURATION}% ${HSL_LIGHTNESS}%)`
+  if (pct >= 99) return 'var(--anthropic-success)'
+  if (pct >= 95) return 'var(--anthropic-warning)'
+  return 'var(--anthropic-error)'
 }
 
 /**
- * Tailwind gradient class for the provider icon tile background.
+ * Tailwind surface class for the provider icon tile background.
  */
 export function providerGradient(provider: string): string {
   switch (provider) {
     case PROVIDER_OPENAI:
-      return 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-500/10 dark:to-emerald-500/20'
+      return 'anthropic-stat-icon-success'
     case PROVIDER_ANTHROPIC:
-      return 'bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-500/10 dark:to-amber-500/20'
+      return 'anthropic-stat-icon-warning'
     case PROVIDER_GEMINI:
-      return 'bg-gradient-to-br from-sky-50 to-indigo-100 dark:from-sky-500/10 dark:to-indigo-500/20'
+      return 'anthropic-stat-icon-info'
     default:
-      return 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600'
+      return 'anthropic-icon-tile'
   }
 }

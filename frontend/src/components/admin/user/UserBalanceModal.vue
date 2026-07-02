@@ -1,19 +1,19 @@
 <template>
   <BaseDialog :show="show" :title="operation === 'add' ? t('admin.users.deposit') : t('admin.users.withdraw')" width="narrow" @close="$emit('close')">
     <form v-if="user" id="balance-form" @submit.prevent="handleBalanceSubmit" class="space-y-5">
-      <div class="flex items-center gap-3 rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
-        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100"><span class="text-lg font-medium text-primary-700">{{ user.email.charAt(0).toUpperCase() }}</span></div>
-        <div class="flex-1"><p class="font-medium text-gray-900">{{ user.email }}</p><p class="text-sm text-gray-500">{{ t('admin.users.currentBalance') }}: ${{ formatBalance(user.balance) }}</p></div>
+      <div class="flex items-center gap-3 rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--anthropic-section)]"><span class="text-lg font-medium text-[var(--anthropic-fg)]">{{ user.email.charAt(0).toUpperCase() }}</span></div>
+        <div class="flex-1"><p class="font-medium text-[var(--anthropic-fg)]">{{ user.email }}</p><p class="text-sm text-[var(--anthropic-muted)]">{{ t('admin.users.currentBalance') }}: ${{ formatBalance(user.balance) }}</p></div>
       </div>
       <div>
         <label class="input-label">{{ operation === 'add' ? t('admin.users.depositAmount') : t('admin.users.withdrawAmount') }}</label>
         <div class="relative flex gap-2">
-          <div class="relative flex-1"><div class="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-gray-500">$</div><input data-testid="admin-user-user-balance-input-form-amount" v-model.number="form.amount" type="number" step="any" min="0" required class="input pl-8" /></div>
+          <div class="relative flex-1"><div class="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-[var(--anthropic-muted)]">$</div><input data-testid="admin-user-user-balance-input-form-amount" v-model.number="form.amount" type="number" step="any" min="0" required class="input pl-8" /></div>
           <button data-testid="admin-user-user-balance-button-fill-all-balance" v-if="operation === 'subtract'" type="button" @click="fillAllBalance" class="btn btn-secondary whitespace-nowrap">{{ t('admin.users.withdrawAll') }}</button>
         </div>
       </div>
       <div><label class="input-label">{{ t('admin.users.notes') }}</label><textarea data-testid="admin-user-user-balance-textarea-form-notes" v-model="form.notes" rows="3" class="input"></textarea></div>
-      <div v-if="form.amount > 0" class="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950"><div class="flex items-center justify-between text-sm"><span class="text-gray-700 dark:text-gray-300">{{ t('admin.users.newBalance') }}:</span><span class="font-bold text-gray-900 dark:text-gray-100">${{ formatBalance(calculateNewBalance()) }}</span></div></div>
+      <div v-if="form.amount > 0" class="rounded-xl border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] p-4 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-info-bg)]"><div class="flex items-center justify-between text-sm"><span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.users.newBalance') }}:</span><span class="font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">${{ formatBalance(calculateNewBalance()) }}</span></div></div>
     </form>
     <template #footer>
       <div class="flex justify-end gap-3">

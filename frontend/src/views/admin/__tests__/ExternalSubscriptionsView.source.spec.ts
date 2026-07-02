@@ -6,11 +6,8 @@ const sourcePath = resolve(__dirname, '../ExternalSubscriptionsView.vue')
 const source = existsSync(sourcePath) ? readFileSync(sourcePath, 'utf8') : ''
 const stylePath = resolve(__dirname, '../../../style.css')
 const styleSource = existsSync(stylePath) ? readFileSync(stylePath, 'utf8') : ''
-const creepeeHoverTransform = 'var(--creepee-home-card-hover-transform)'
-const creepeeHoverShadow = 'var(--creepee-home-card-hover-shadow)'
-const homepageHoverTransform = '--creepee-home-card-hover-transform: translate3d(0, -4px, 0);'
-const homepageHoverShadow =
-  '--creepee-home-card-hover-shadow: 0 18px 36px -20px rgba(17, 24, 39, 0.30), 12px 0 28px -24px rgba(17, 24, 39, 0.22), -12px 0 28px -24px rgba(17, 24, 39, 0.22);'
+const targetedRepairPath = resolve(__dirname, '../../../styles/targeted-visual-repair.css')
+const targetedRepairSource = existsSync(targetedRepairPath) ? readFileSync(targetedRepairPath, 'utf8') : ''
 
 const cssBlock = (content: string, selector: string): string => {
   const start = content.indexOf(`${selector} {`)
@@ -112,56 +109,42 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('grid gap-4 md:grid-cols-2 xl:grid-cols-3')
   })
 
-  it('matches the Creepee homepage recommendation-card hover treatment on external subscription cards', () => {
+  it('matches the account-card hover treatment on external subscription cards', () => {
     const localHoverBlock = cssBlock(source, '.external-subscription-card:hover')
-    const globalHoverBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
+    const localBaseBlock = cssBlock(source, '.external-subscription-card')
+    const finalBaseBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .external-subscriptions-page .external-subscription-card'
     )
-    const themedGlobalHoverBlock = cssBlock(
-      styleSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr):hover'
-    )
-    const globalBaseBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content :where(.codex-account-card, .monitor-channel-card, .external-subscription-card, .accounts-table-page .table-wrapper tbody tr)'
+    const finalHoverBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .external-subscriptions-page .external-subscription-card:hover,\n#app .app-layout-content .external-subscriptions-page .external-subscription-card:focus-visible'
     )
 
-    expect(styleSource).toContain(homepageHoverTransform)
-    expect(styleSource).toContain(homepageHoverShadow)
-    expect(cssBlock(source, '.external-subscription-card')).toContain(homepageHoverShadow)
-    expect(cssBlock(source, '.external-subscription-card')).not.toContain('color-mix(in srgb, var(--home-card-accent)')
-    expect(localHoverBlock).toContain(`transform: ${creepeeHoverTransform};`)
-    expect(localHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow};`)
+    expect(localBaseBlock).toContain('--external-subscription-card-bg: var(--anthropic-page);')
+    expect(localBaseBlock).toContain('--external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);')
+    expect(localBaseBlock).toContain('background: var(--external-subscription-card-bg);')
+    expect(localBaseBlock).toContain('box-shadow: none;')
+    expect(localHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover);')
+    expect(localHoverBlock).toContain('background: var(--external-subscription-card-hover-bg);')
+    expect(localHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);')
+    expect(localHoverBlock).toContain('transform: none;')
     expect(localHoverBlock).not.toContain('translateY(-2px)')
-    expect(localHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(localHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
+    expect(localHoverBlock).not.toContain('translate3d')
     expect(localHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(localHoverBlock).not.toContain('var(--atelier-butter')
     expect(localHoverBlock).not.toMatch(/(?:amber|yellow)/i)
     expect(localHoverBlock).not.toContain('var(--atelier-material-shadow)')
-    expect(localHoverBlock).not.toContain('border-color')
-    expect(localHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(globalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(globalBaseBlock).toContain(homepageHoverShadow)
-    expect(globalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(globalHoverBlock).not.toContain('translateY(-2px)')
-    expect(globalHoverBlock).not.toContain('rgba(20, 20, 19, 0.035)')
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(globalHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(globalHoverBlock).not.toContain('var(--atelier-butter')
-    expect(globalHoverBlock).not.toMatch(/(?:amber|yellow)/i)
-    expect(globalHoverBlock).not.toContain('border-color')
-    expect(globalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(themedGlobalHoverBlock).toContain(`transform: ${creepeeHoverTransform} !important;`)
-    expect(themedGlobalHoverBlock).toContain(`box-shadow: ${creepeeHoverShadow} !important;`)
-    expect(themedGlobalHoverBlock).not.toContain('var(--atelier-material-shadow')
-    expect(themedGlobalHoverBlock).not.toContain('rgba(20, 20, 19, 0.024)')
-    expect(themedGlobalHoverBlock).not.toContain('translateY(-2px)')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*background(?:-color)?\s*:/)
-    expect(themedGlobalHoverBlock).not.toContain('border-color')
-    expect(themedGlobalHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
-    expect(styleSource).toContain(':not(.monitor-capacity-card):not(.external-subscription-card)')
+    expect(finalBaseBlock).toContain('--external-subscription-card-bg: var(--anthropic-page);')
+    expect(finalBaseBlock).toContain('--external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);')
+    expect(finalBaseBlock).toContain('background: var(--external-subscription-card-bg) !important;')
+    expect(finalBaseBlock).toContain('box-shadow: none !important;')
+    expect(finalBaseBlock).toContain('transform: none !important;')
+    expect(finalHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
+    expect(finalHoverBlock).toContain('background: var(--external-subscription-card-hover-bg) !important;')
+    expect(finalHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(finalHoverBlock).toContain('transform: none !important;')
+    expect(finalHoverBlock).not.toContain('translate3d')
   })
 
   it('lets the settings page scroll naturally without clipping the card grid', () => {
@@ -206,19 +189,25 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('<UsageProgressBar')
     expect(source).toContain('label="EXT"')
     expect(source).toContain(':utilization="getCardQuotaProgress(card)?.percent ?? 0"')
-    expect(source).toContain('color="emerald"')
+    expect(source).toContain('color="success"')
     expect(source).not.toContain('external-subscription-quota-progress-track')
     expect(source).not.toContain('external-subscription-quota-progress-fill')
     expect(source).not.toContain('externalQuotaProgressFillClass')
   })
 
-  it('keeps quota progress fills on official semantic green amber red colors outside account cards', () => {
-    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--safe)')
-    expect(styleSource).toContain('background: #22c55e !important;')
-    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--warning)')
-    expect(styleSource).toContain('background: #f59e0b !important;')
-    expect(styleSource).toContain('#app .app-layout-content :where(.usage-progress-fill--danger)')
-    expect(styleSource).toContain('background: #ef4444 !important;')
+  it('keeps quota progress fills on the Anthropic 81k semantic palette outside account cards', () => {
+    const safeBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.usage-progress-fill--safe)')
+    const warningBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.usage-progress-fill--warning)')
+    const dangerBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.usage-progress-fill--danger)')
+    expect(styleSource).toContain('.app-layout-content :where(.usage-progress-fill--safe')
+    expect(styleSource).toContain('background: var(--anthropic-success);')
+    expect(styleSource).toContain('.app-layout-content :where(.usage-progress-fill--warning')
+    expect(styleSource).toContain('background: var(--anthropic-warning);')
+    expect(styleSource).toContain('.app-layout-content :where(.usage-progress-fill--danger')
+    expect(styleSource).toContain('background: var(--anthropic-error);')
+    expect(safeBlock).toContain('background: var(--anthropic-success) !important;')
+    expect(warningBlock).toContain('background: var(--anthropic-warning) !important;')
+    expect(dangerBlock).toContain('background: var(--anthropic-error) !important;')
   })
 
   it('offers a Xiaomi MiMo preset without adding extra card information', () => {
@@ -236,15 +225,15 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).not.toContain('{{ card.siteUrl }}')
   })
 
-  it('uses fixed semantic traffic-light status colors instead of theme accent colors', () => {
+  it('uses 81k semantic status tokens instead of theme accent colors', () => {
     expect(source).toContain('external-subscription-status-dot--success')
     expect(source).toContain('external-subscription-status-dot--warning')
     expect(source).toContain('external-subscription-status-dot--danger')
     expect(source).toContain('external-subscription-status-dot--neutral')
-    expect(source).toContain('#10a37f')
-    expect(source).toContain('#d97706')
-    expect(source).toContain('#dc2626')
-    expect(source).toContain('#6b7280')
+    expect(source).toContain('var(--atelier-status-success)')
+    expect(source).toContain('var(--atelier-status-warning)')
+    expect(source).toContain('var(--atelier-status-danger)')
+    expect(source).toContain('var(--atelier-status-neutral)')
     expect(source).not.toContain('external-subscription-status-dot.is-ok')
     expect(source).not.toContain('external-subscription-status-dot.is-error')
     expect(source).not.toContain('external-subscription-status-dot.is-muted')
@@ -256,5 +245,14 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain("const unknown = localText('余额未知', 'Balance unknown')")
     expect(source).toContain('if (total) return `${unknown} / ${total}`')
     expect(source).not.toContain('if (total) return total')
+  })
+
+  it('keeps external subscription cards on the account-card paper ladder in final runtime locks', () => {
+    expect(styleSource).not.toContain('background: var(--anthropic-home-card) !important;')
+    expect(targetedRepairSource).toContain('#app .app-layout-content .external-subscriptions-page .external-subscription-card')
+    expect(targetedRepairSource).toContain('--external-subscription-card-bg: var(--anthropic-page);')
+    expect(targetedRepairSource).toContain('--external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);')
+    expect(targetedRepairSource).toContain('background: var(--external-subscription-card-bg) !important;')
+    expect(targetedRepairSource).toContain('background: var(--external-subscription-card-hover-bg) !important;')
   })
 })

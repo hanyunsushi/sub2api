@@ -5,23 +5,23 @@
 
 const STATUS_BADGE_MAP: Record<string, string> = {
   PENDING: 'badge-warning',
-  PAID: 'badge-info',
-  RECHARGING: 'badge-info',
+  PAID: 'badge-primary',
+  RECHARGING: 'badge-primary',
   COMPLETED: 'badge-success',
-  EXPIRED: 'badge-secondary',
-  CANCELLED: 'badge-secondary',
+  EXPIRED: 'badge-gray',
+  CANCELLED: 'badge-gray',
   FAILED: 'badge-danger',
   REFUND_REQUESTED: 'badge-warning',
   REFUNDING: 'badge-warning',
   PARTIALLY_REFUNDED: 'badge-warning',
-  REFUNDED: 'badge-info',
+  REFUNDED: 'badge-primary',
   REFUND_FAILED: 'badge-danger',
 }
 
 const REFUNDABLE_STATUSES = ['COMPLETED', 'PARTIALLY_REFUNDED', 'REFUND_REQUESTED', 'REFUND_FAILED']
 
 export function statusBadgeClass(status: string): string {
-  return STATUS_BADGE_MAP[status] || 'badge-secondary'
+  return STATUS_BADGE_MAP[status] || 'badge-gray'
 }
 
 export function canRefund(status: string): boolean {

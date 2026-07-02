@@ -1,892 +1,288 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { relative, resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
 const styleSource = readFileSync(resolve(__dirname, '../style.css'), 'utf8')
+const targetedRepairSource = readFileSync(resolve(__dirname, '../styles/targeted-visual-repair.css'), 'utf8')
 const mainSource = readFileSync(resolve(__dirname, '../main.ts'), 'utf8')
-const appHeaderSource = readFileSync(resolve(__dirname, '../components/layout/AppHeader.vue'), 'utf8')
-const appSidebarSource = readFileSync(resolve(__dirname, '../components/layout/AppSidebar.vue'), 'utf8')
-const themeSwitcherSource = readFileSync(resolve(__dirname, '../components/common/ThemeSwitcher.vue'), 'utf8')
-const appearanceThemeSource = readFileSync(resolve(__dirname, '../composables/useAppearanceTheme.ts'), 'utf8')
-const localeSwitcherSource = readFileSync(resolve(__dirname, '../components/common/LocaleSwitcher.vue'), 'utf8')
-const selectSource = readFileSync(resolve(__dirname, '../components/common/Select.vue'), 'utf8')
-const toggleSource = readFileSync(resolve(__dirname, '../components/common/Toggle.vue'), 'utf8')
-const dashboardSource = readFileSync(resolve(__dirname, '../views/admin/DashboardView.vue'), 'utf8')
-const usersSource = readFileSync(resolve(__dirname, '../views/admin/UsersView.vue'), 'utf8')
-const tablePageLayoutSource = readFileSync(resolve(__dirname, '../components/layout/TablePageLayout.vue'), 'utf8')
-const accountsSource = readFileSync(resolve(__dirname, '../views/admin/AccountsView.vue'), 'utf8')
-const accountGroupsCellSource = readFileSync(resolve(__dirname, '../components/account/AccountGroupsCell.vue'), 'utf8')
-const groupsSource = readFileSync(resolve(__dirname, '../views/admin/GroupsView.vue'), 'utf8')
-const channelsSource = readFileSync(resolve(__dirname, '../views/admin/ChannelsView.vue'), 'utf8')
-const proxiesSource = readFileSync(resolve(__dirname, '../views/admin/ProxiesView.vue'), 'utf8')
-const accountTableActionsSource = readFileSync(resolve(__dirname, '../components/admin/account/AccountTableActions.vue'), 'utf8')
-const accountTableFiltersSource = readFileSync(resolve(__dirname, '../components/admin/account/AccountTableFilters.vue'), 'utf8')
-const monitorFiltersBarSource = readFileSync(resolve(__dirname, '../components/admin/monitor/MonitorFiltersBar.vue'), 'utf8')
-const adminUsageFiltersSource = readFileSync(resolve(__dirname, '../components/admin/usage/UsageFilters.vue'), 'utf8')
-const adminUsageStatsCardsSource = readFileSync(resolve(__dirname, '../components/admin/usage/UsageStatsCards.vue'), 'utf8')
-const adminUsageSource = readFileSync(resolve(__dirname, '../views/admin/UsageView.vue'), 'utf8')
-const announcementsSource = readFileSync(resolve(__dirname, '../views/admin/AnnouncementsView.vue'), 'utf8')
-const redeemSource = readFileSync(resolve(__dirname, '../views/admin/RedeemView.vue'), 'utf8')
-const promoCodesSource = readFileSync(resolve(__dirname, '../views/admin/PromoCodesView.vue'), 'utf8')
-const userUsageSource = readFileSync(resolve(__dirname, '../views/user/UsageView.vue'), 'utf8')
-const userKeysSource = readFileSync(resolve(__dirname, '../views/user/KeysView.vue'), 'utf8')
-const keyUsageSource = readFileSync(resolve(__dirname, '../views/KeyUsageView.vue'), 'utf8')
-const homeSource = readFileSync(resolve(__dirname, '../views/HomeView.vue'), 'utf8')
-const endpointPopoverSource = readFileSync(resolve(__dirname, '../components/keys/EndpointPopover.vue'), 'utf8')
-const platformIconSource = readFileSync(resolve(__dirname, '../components/common/PlatformIcon.vue'), 'utf8')
-const modelIconSource = readFileSync(resolve(__dirname, '../components/common/ModelIcon.vue'), 'utf8')
-const guizangAsciiBackgroundSource = readFileSync(resolve(__dirname, '../components/common/GuizangAsciiBackground.vue'), 'utf8')
-const usageProgressBarSource = readFileSync(resolve(__dirname, '../components/account/UsageProgressBar.vue'), 'utf8')
-const settingsSource = readFileSync(resolve(__dirname, '../views/admin/SettingsView.vue'), 'utf8')
-const userMonitorCardSource = readFileSync(resolve(__dirname, '../components/user/monitor/MonitorCard.vue'), 'utf8')
-const userMonitorProviderIconSource = readFileSync(resolve(__dirname, '../components/user/monitor/ProviderIcon.vue'), 'utf8')
-const opsDashboardSource = readFileSync(resolve(__dirname, '../views/admin/ops/OpsDashboard.vue'), 'utf8')
-const opsDashboardHeaderSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsDashboardHeader.vue'), 'utf8')
-const opsConcurrencySource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsConcurrencyCard.vue'), 'utf8')
-const opsSwitchSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsSwitchRateTrendChart.vue'), 'utf8')
-const opsThroughputSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsThroughputTrendChart.vue'), 'utf8')
-const opsLatencySource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsLatencyChart.vue'), 'utf8')
-const opsErrorDistributionSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsErrorDistributionChart.vue'), 'utf8')
-const opsErrorTrendSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsErrorTrendChart.vue'), 'utf8')
-const opsAlertEventsSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsAlertEventsCard.vue'), 'utf8')
-const opsSystemLogSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsSystemLogTable.vue'), 'utf8')
-const codexThemeSource = readFileSync(resolve(__dirname, '../styles/codex-theme.css'), 'utf8')
-const onboardingSource = readFileSync(resolve(__dirname, '../styles/onboarding.css'), 'utf8')
-const globalPricingSource = readFileSync(resolve(__dirname, '../views/user/GlobalPricingView.vue'), 'utf8')
-const indexHtmlSource = readFileSync(resolve(__dirname, '../../index.html'), 'utf8')
-const packageJsonSource = readFileSync(resolve(__dirname, '../../package.json'), 'utf8')
 const tailwindConfigSource = readFileSync(resolve(__dirname, '../../tailwind.config.js'), 'utf8')
 const localFontsPath = resolve(__dirname, '../assets/fonts/local-fonts.css')
 const localFontsSource = existsSync(localFontsPath) ? readFileSync(localFontsPath, 'utf8') : ''
-const localGoogleFontsDir = resolve(__dirname, '../assets/fonts/google')
-const localGoogleFontFiles = existsSync(localGoogleFontsDir) ? readdirSync(localGoogleFontsDir) : []
-const materialSystemBlock = styleSource.slice(
-  styleSource.indexOf('Atelier component material system'),
-  styleSource.length
-)
-const baseThemeBlock = styleSource.slice(
-  styleSource.indexOf('Base appearance tokens'),
-  styleSource.indexOf('Base appearance tokens end')
-)
+const runtimeSourceRoot = resolve(__dirname, '..')
+const docsToGuard = [
+  'components/layout/README.md',
+  'components/layout/EXAMPLES.md',
+  'components/layout/INTEGRATION.md',
+  'views/auth/README.md',
+  'views/auth/VISUAL_GUIDE.md',
+]
+
+type SourceEntry = {
+  path: string
+  source: string
+}
+
+const forbiddenOldLockNeedles = [
+  'Final EOF',
+  'Authoritative EOF',
+  'Global hover/highlight logic',
+  'complete de-slab pass',
+  '2026-06 UI regression pass',
+  'Anthropic 81k authoritative status/platform palette lock',
+  '#app .app-layout-content.app-layout-content',
+  '#app#app',
+  '--claude-system',
+]
+
+const forbiddenAiDefaults = [
+  '#6366f1',
+  '#4f46e5',
+  '#4338ca',
+  '#3730a3',
+  '#8b5cf6',
+  '#7c3aed',
+  '#a855f7',
+  '#1677ff',
+  '#52c41a',
+  '#faad14',
+  '#ff4d4f',
+]
+
+const forbiddenRuntimeColors = [
+  '#8D58EE',
+  '#8d58ee',
+  '#7c3aed',
+  '#6366f1',
+  '#4290F0',
+  '#4290f0',
+  '#B9D6FF',
+  '#b9d6ff',
+  '#E8649D',
+  '#e8649d',
+  '#50C3B6',
+  '#50c3b6',
+  'rgba(59, 130, 246',
+  'rgba(0, 47, 167',
+  'rgb(0, 47, 167',
+  '#10A37F',
+  '#10a37f',
+]
+
+const runtimeAntiPatterns = [
+  /\b(?:from|to|via)-primary-\d/g,
+  /\bbg-gradient-to-[trbl][^\n]*\bprimary-/g,
+  /\bshadow-primary(?:-\w+)?/g,
+  /\bfocus:ring-primary-/g,
+  /\bpeer-focus:ring-primary-/g,
+  /\bfocus:border-primary-/g,
+  /\bpeer-checked:bg-primary-/g,
+  /\bbg-white\b[^\n]{0,100}\bshadow-(?:xl|lg)\b/g,
+]
+
+const collectRuntimeSources = (directory: string): SourceEntry[] => {
+  const entries: SourceEntry[] = []
+  for (const dirent of readdirSync(directory)) {
+    const absolutePath = resolve(directory, dirent)
+    const relativePath = relative(runtimeSourceRoot, absolutePath).replaceAll('\\', '/')
+    if (
+      relativePath.includes('/__tests__/') ||
+      relativePath.endsWith('.spec.ts') ||
+      relativePath.endsWith('.test.ts') ||
+      relativePath.includes('/test/')
+    ) {
+      continue
+    }
+
+    const stat = statSync(absolutePath)
+    if (stat.isDirectory()) {
+      entries.push(...collectRuntimeSources(absolutePath))
+      continue
+    }
+
+    if (!/\.(vue|ts|css)$/.test(relativePath) || relativePath.endsWith('.d.ts')) {
+      continue
+    }
+
+    entries.push({
+      path: relativePath,
+      source: readFileSync(absolutePath, 'utf8'),
+    })
+  }
+  return entries
+}
+
+const runtimeSources = collectRuntimeSources(runtimeSourceRoot)
+const runtimeUiSources = runtimeSources.filter((entry) => entry.path !== 'components/common/ModelIcon.vue')
+const guardedDocs = docsToGuard.map((path) => ({
+  path,
+  source: readFileSync(resolve(runtimeSourceRoot, path), 'utf8'),
+}))
 
 const cssBlock = (source: string, selector: string) => {
-  const selectorIndex = source.indexOf(`${selector} {`)
-  expect(selectorIndex).toBeGreaterThan(-1)
-
+  const selectorIndex = source.indexOf(selector)
+  expect(selectorIndex, `selector not found: ${selector}`).toBeGreaterThan(-1)
   const openBraceIndex = source.indexOf('{', selectorIndex)
-  expect(openBraceIndex).toBeGreaterThan(-1)
-
   let depth = 0
   for (let index = openBraceIndex; index < source.length; index += 1) {
     const char = source[index]
-    if (char === '{') {
-      depth += 1
-    }
+    if (char === '{') depth += 1
     if (char === '}') {
       depth -= 1
-      if (depth === 0) {
-        return source.slice(openBraceIndex + 1, index)
-      }
+      if (depth === 0) return source.slice(openBraceIndex + 1, index)
     }
   }
-
   throw new Error(`CSS block not closed for ${selector}`)
 }
 
-const cssBlocksForSelector = (source: string, selector: string) => {
-  const blocks: string[] = []
-  let searchIndex = 0
-
-  while (searchIndex < source.length) {
-    const selectorIndex = source.indexOf(`${selector} {`, searchIndex)
-    if (selectorIndex === -1) break
-
-    blocks.push(cssBlock(source.slice(selectorIndex), selector))
-    searchIndex = selectorIndex + selector.length
-  }
-
-  return blocks
-}
-
-describe('console atelier palette restyle', () => {
-  it('keeps the app shell on the Anthropic fallback base without introducing glass effects', () => {
-    expect(baseThemeBlock).toContain('--app-theme-name: "Anthropic";')
-    expect(baseThemeBlock).toContain('--atelier-canvas: var(--atelier-paper);')
-    expect(baseThemeBlock).toContain('--atelier-material-1: var(--atelier-paper-2);')
-    expect(baseThemeBlock).toContain('--atelier-material-2: var(--atelier-paper-2);')
-    expect(baseThemeBlock).toContain('--atelier-console-grid-line: rgba(20, 20, 19, 0.026);')
-    expect(baseThemeBlock).toContain('--atelier-console-grid-line-soft: rgba(20, 20, 19, 0.018);')
-    expect(baseThemeBlock).toContain('--atelier-console-grid-size: 32px 32px;')
-    expect(baseThemeBlock).toContain('--atelier-butter: #d97757;')
-    expect(baseThemeBlock).toContain('--atelier-butter-soft: #d97757;')
-    expect(baseThemeBlock).toContain('--sans: -apple-system, BlinkMacSystemFont')
-    expect(baseThemeBlock).toContain('--serif: Georgia, "Times New Roman"')
-    expect(baseThemeBlock).toContain('--mono: ui-monospace, SFMono-Regular')
-    expect(baseThemeBlock).not.toContain('#002FA7')
-    expect(baseThemeBlock).not.toContain('rgba(0, 47, 167')
-    expect(baseThemeBlock).not.toContain('"Newsreader"')
-    expect(baseThemeBlock).not.toContain('"IBM Plex Mono"')
-    expect(styleSource).not.toContain('Variable"')
-    expect(codexThemeSource).toContain('--codex-font-mono: var(--atelier-font-mono);')
-    expect(codexThemeSource).not.toContain('ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas')
-    expect(onboardingSource).not.toContain('ui-monospace, SFMono-Regular, Menlo, Monaco')
-    expect(onboardingSource).toContain('font-family: var(--atelier-font-mono) !important;')
-    expect(guizangAsciiBackgroundSource).toContain('"IBM Plex Mono"')
-    expect(guizangAsciiBackgroundSource).not.toContain('"JetBrains Mono"')
-    expect(guizangAsciiBackgroundSource).not.toContain('"DM Mono"')
-    expect(indexHtmlSource).not.toContain('fonts.googleapis.com')
-    expect(indexHtmlSource).not.toContain('fonts.gstatic.com')
+describe('Anthropic design-system component contract', () => {
+  it('loads the local Anthropic font and runtime contract in the correct order', () => {
     expect(mainSource).toContain("import './assets/fonts/local-fonts.css'")
+    expect(mainSource).toContain("import './style.css'")
+    expect(mainSource).toContain("import './styles/targeted-visual-repair.css'")
     expect(mainSource.indexOf("import './assets/fonts/local-fonts.css'")).toBeLessThan(
-      mainSource.indexOf("import './style.css'")
+      mainSource.indexOf("import './style.css'"),
     )
-    expect(mainSource).not.toContain('@fontsource/')
-    expect(packageJsonSource).not.toContain('"@fontsource/')
-    expect(packageJsonSource).not.toContain('"@fontsource-variable/')
-    expect(localFontsSource).toContain("font-family: 'Source Serif 4'")
-    expect(localFontsSource).toContain("font-family: 'Noto Serif SC'")
-    expect(localFontsSource).toContain("font-family: 'Newsreader'")
-    expect(localFontsSource).toContain("font-family: 'IBM Plex Mono'")
-    expect(localFontsSource).toContain('url("./google/')
-    expect(localFontsSource).not.toContain('https://')
+    expect(mainSource.indexOf("import './style.css'")).toBeLessThan(
+      mainSource.indexOf("import './styles/targeted-visual-repair.css'"),
+    )
+    expect(localFontsSource).toContain("font-family: 'Anthropic Sans'")
+    expect(localFontsSource).toContain("font-family: 'Anthropic Serif'")
+    expect(localFontsSource).toContain("font-family: 'Anthropic Mono'")
     expect(localFontsSource).not.toContain('fonts.googleapis.com')
-    expect(localFontsSource).not.toContain('fonts.gstatic.com')
-    expect(localFontsSource).not.toContain('@fontsource')
-    expect(localFontsSource.match(/@font-face/g)?.length ?? 0).toBeGreaterThan(100)
-    expect(localGoogleFontFiles.some((file) => file.startsWith('sourceserif4-'))).toBe(true)
-    expect(localGoogleFontFiles.some((file) => file.startsWith('notoserifsc-'))).toBe(true)
-    expect(localGoogleFontFiles.some((file) => file.startsWith('newsreader-'))).toBe(true)
-    expect(localGoogleFontFiles.some((file) => file.startsWith('ibmplexmono-'))).toBe(true)
-    expect(tailwindConfigSource).toContain("'Source Serif 4',")
-    expect(tailwindConfigSource).toContain("'Noto Serif SC',")
-    expect(tailwindConfigSource).toContain("'Newsreader',")
-    expect(tailwindConfigSource).toContain("'IBM Plex Mono',\n          'Noto Serif SC'")
-    expect(tailwindConfigSource).not.toContain("'Inter Tight'")
-    expect(styleSource).toContain('#app,')
-    expect(styleSource).toContain('.date-picker-dropdown-portal {')
-    expect(styleSource).not.toContain('radial-gradient(circle at 12% 18%, rgba(0, 47, 167, 0.06), transparent 28rem)')
-    expect(styleSource).not.toContain('radial-gradient(circle at 84% 9%, rgba(199, 154, 58, 0.07), transparent 24rem)')
-    expect(baseThemeBlock).toContain('--atelier-console-rule: none;')
-    expect(styleSource).toContain('background-size: auto, auto, var(--atelier-console-grid-size), var(--atelier-console-grid-size), auto;')
-    expect(styleSource).not.toContain('card-glass')
-    expect(styleSource).not.toContain('glass-card')
-    expect(styleSource).not.toContain('liquid')
-    expect(materialSystemBlock).not.toContain(':where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .codex-panel, .codex-account-card):nth-of-type')
   })
 
-  it('uses uniform paper-2 modules and dotted rules while preserving existing component class hooks', () => {
-    expect(appHeaderSource).toContain('class="app-header-atelier paper-surface sticky')
-    expect(appHeaderSource).toContain('height: 4rem;')
-    expect(appHeaderSource).toContain('data-testid="header-context-strip"')
-    expect(appHeaderSource).toContain('app-header-meta-line')
-    expect(appHeaderSource).toContain('app-header-route-meta')
-    expect(appHeaderSource).toContain('max-w-[44vw]')
-    expect(appHeaderSource).toContain('headerRouteLabel')
-    expect(appHeaderSource).not.toContain('headerBalanceSummary')
-    expect(materialSystemBlock).toContain('.app-header-atelier .balance-chip-buzz')
-    expect(materialSystemBlock).toContain('background: transparent !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(localeSwitcherSource).toContain('currentLocale?.code.toUpperCase()')
-    expect(localeSwitcherSource).not.toContain('currentLocale?.flag')
-    expect(localeSwitcherSource).not.toContain('locale.flag')
-    expect(appSidebarSource).toContain('class="sidebar-link')
-    expect(appSidebarSource).toContain('box-shadow: none;')
-    expect(appSidebarSource).toContain('filter: none;')
-    const sidebarLinkBlock = cssBlock(styleSource, '.sidebar-link')
-    expect(sidebarLinkBlock).toContain('font-family: var(--atelier-font-sans);')
-    expect(sidebarLinkBlock).not.toContain('font-family: var(--atelier-font-mono);')
-    expect(dashboardSource).toContain('admin-dashboard-atelier')
-    expect(dashboardSource).toContain('card dashboard-filter-card')
-    expect(dashboardSource).toContain('grid grid-cols-2 gap-4 lg:grid-cols-4')
-    expect(dashboardSource).not.toContain('dashboard-page-head')
-    expect(dashboardSource).not.toContain('dashboard-kpi-grid')
-    expect(dashboardSource).not.toContain('dashboard-perf-band')
-    expect(dashboardSource).not.toContain('dashboard-chart-grid')
-    expect(dashboardSource).not.toContain('dashboard-kpi-card')
-    expect(dashboardSource).toContain('--dashboard-module-rule: var(--atelier-console-rule);')
-    expect(dashboardSource).toContain('--dashboard-control-surface: var(--atelier-paper-2);')
-    expect(dashboardSource).toContain('dashboard-filter-range flex items-center gap-2')
-    expect(dashboardSource).toContain('dashboard-filter-granularity ml-auto flex items-center gap-2')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)::after')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover > div > .dashboard-filter-range > span)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range))')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
-    expect(styleSource).not.toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-range :where(span, svg)')
-    expect(styleSource).not.toContain('#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover .dashboard-filter-refresh')
-    const dashboardFilterBlock = cssBlock(dashboardSource, '.admin-dashboard-atelier :deep(.dashboard-filter-card)')
-    expect(dashboardFilterBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(dashboardFilterBlock).not.toContain('var(--atelier-butter)')
-    expect(dashboardSource).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(dashboardSource).toContain('color: var(--atelier-slab-text)')
-    expect(dashboardSource).toContain('handleDashboardFilterPointerDown')
-    expect(dashboardSource).toContain('dashboard-filter-menu-open')
-    expect(dashboardSource).not.toContain('dashboard-chart-card')
-    expect(styleSource).toContain('body.dashboard-filter-menu-open :where(.date-picker-dropdown-portal, .select-dropdown-portal)')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card)::before')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier > .grid > .card::after')
-    expect(opsDashboardHeaderSource.match(/ops-metric-card/g)?.length).toBe(6)
-    expect(opsDashboardHeaderSource.match(/ops-system-card/g)?.length).toBe(6)
-    expect(globalPricingSource).toContain('summary-tile admin-material-surface')
-    expect(globalPricingSource).toContain('table-wrapper admin-material-surface')
-    expect(codexThemeSource).toContain('.codex-panel')
-    expect(codexThemeSource).toContain('.codex-account-card')
-
-    expect(materialSystemBlock).toContain('--atelier-card-surface: var(--atelier-paper-2);')
-    expect(materialSystemBlock).toContain('background: var(--atelier-card-surface, var(--atelier-paper-2)) !important;')
-    expect(materialSystemBlock).toContain('.app-layout-content :where(.ops-metric-card, .ops-system-card)')
-    expect(materialSystemBlock).toContain('background: var(--atelier-paper-2) !important;')
-    expect(materialSystemBlock).toContain('transform: translate3d(0, -2px, 0);')
-    expect(materialSystemBlock).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(materialSystemBlock).not.toContain('--atelier-card-rail')
-    expect(materialSystemBlock).toContain('background: var(--atelier-console-rule);')
-    expect(baseThemeBlock).toContain('--atelier-console-rule: none;')
-    expect(baseThemeBlock).toContain('--atelier-console-rule-invert: none;')
-    expect(baseThemeBlock).toContain('--atelier-filter-stitch-horizontal-invert: var(--atelier-console-rule-invert);')
-    expect(baseThemeBlock).toContain('--atelier-filter-stitch-vertical-invert: var(--atelier-console-rule-vertical-invert);')
-    expect(materialSystemBlock).toContain('.ops-monitor-toolbar)::before')
-    expect(materialSystemBlock).toContain('.admin-dashboard-atelier :where(.card, .paper-card')
-    expect(materialSystemBlock).toContain('.user-usage-atelier :where(.card, .paper-card')
-  })
-
-  it('adapts the ops monitoring page to the dashboard module style without moving existing modules', () => {
-    expect(opsDashboardSource).toContain('ops-dashboard-atelier space-y-6 pb-12')
-    expect(opsDashboardSource).toContain('<OpsDashboardHeader')
-    expect(opsDashboardSource).toContain('<OpsConcurrencyCard')
-    expect(opsDashboardSource).toContain('<OpsSwitchRateTrendChart')
-    expect(opsDashboardSource).toContain('<OpsThroughputTrendChart')
-    expect(opsDashboardSource).toContain('<OpsLatencyChart')
-    expect(opsDashboardSource).toContain('<OpsErrorDistributionChart')
-    expect(opsDashboardSource).toContain('<OpsErrorTrendChart')
-    expect(opsDashboardSource).toContain('<OpsAlertEventsCard')
-    expect(opsDashboardSource).toContain('<OpsSystemLogTable')
-    expect(opsDashboardSource).toContain('grid grid-cols-1 gap-6 lg:grid-cols-4')
-    expect(opsDashboardSource).toContain('grid grid-cols-1 gap-6 md:grid-cols-3')
-
-    expect(opsDashboardHeaderSource).toContain('ops-monitor-header')
-    const opsHeaderRootMatch = opsDashboardHeaderSource.match(/<div\s+:class="\['ops-monitor-header[^"]+"/)
-    expect(opsHeaderRootMatch?.[0]).toContain('ops-monitor-header flex flex-col gap-4')
-    const opsHeaderRootClassTokens = opsHeaderRootMatch?.[0].match(/'([^']+)'/)?.[1].split(/\s+/) ?? []
-    expect(opsHeaderRootClassTokens).not.toContain('bg-white')
-    expect(opsHeaderRootClassTokens).not.toContain('shadow-sm')
-    expect(opsHeaderRootClassTokens).not.toContain('ring-1')
-    expect(opsHeaderRootClassTokens).not.toContain('p-6')
-    expect(opsHeaderRootClassTokens).not.toContain('p-8')
-    expect(opsDashboardHeaderSource).toContain('ops-monitor-toolbar')
-    expect(opsDashboardHeaderSource).toContain('ops-monitor-toolbar-meta')
-    expect(opsDashboardHeaderSource).toContain('ops-monitor-toolbar-controls')
-    expect(opsDashboardHeaderSource).toContain('portal-class="ops-toolbar-select-menu"')
-    expect(opsDashboardHeaderSource).toContain('ops-toolbar-icon-button')
-    expect(opsDashboardHeaderSource).toContain('ops-toolbar-text-button')
-    expect(opsDashboardHeaderSource).toContain('ops-live-panel')
-    expect(opsDashboardHeaderSource).toContain('<div class="ops-live-panel lg:col-span-5"')
-    expect(opsDashboardHeaderSource).toContain('aria-label="Health and realtime traffic"')
-    expect(opsDashboardHeaderSource).not.toContain('ops-live-panel rounded-2xl bg-gray-50')
-    expect(opsDashboardHeaderSource).toContain('ops-live-grid')
-    expect(opsDashboardHeaderSource).toContain('ops-health-score-card')
-    expect(opsDashboardHeaderSource).not.toContain('ops-health-score-card group relative flex cursor-pointer')
-    expect(opsDashboardHeaderSource).not.toContain('hover:bg-white/60')
-    expect(opsDashboardHeaderSource).toContain('ops-realtime-panel')
-    expect(opsDashboardHeaderSource).toContain('ops-resource-band')
-    expect(opsConcurrencySource).toContain('ops-monitor-panel ops-concurrency-card')
-    expect(opsSwitchSource).toContain('ops-monitor-panel ops-chart-card ops-switch-card')
-    expect(opsThroughputSource).toContain('ops-monitor-panel ops-chart-card ops-throughput-card')
-    expect(opsLatencySource).toContain('ops-monitor-panel ops-chart-card ops-latency-card')
-    expect(opsErrorDistributionSource).toContain('ops-monitor-panel ops-chart-card ops-error-distribution-card')
-    expect(opsErrorTrendSource).toContain('ops-monitor-panel ops-chart-card ops-error-trend-card')
-    expect(opsAlertEventsSource).toContain('ops-monitor-panel ops-alert-card')
-    expect(opsSystemLogSource).toContain('ops-monitor-panel ops-log-card')
-
-    expect(styleSource).toContain('.ops-dashboard-atelier')
-    expect(styleSource).toContain('--ops-panel-surface: var(--atelier-paper);')
-    expect(styleSource).toContain('--ops-card-surface: var(--atelier-paper-2);')
-    expect(styleSource).toContain('--ops-card-edge: var(--atelier-line);')
-    expect(styleSource).toContain('--ops-card-shadow: 0 10px 24px -22px var(--ops-module-shadow);')
-    expect(styleSource).toContain('--atelier-card-surface: var(--ops-card-surface);')
-    expect(styleSource).toContain('--atelier-material-2: var(--ops-card-surface);')
-    expect(styleSource).toContain('--atelier-material-edge: var(--ops-card-edge);')
-    expect(styleSource).toContain('--atelier-material-shadow: var(--ops-card-shadow);')
-    expect(styleSource).toContain('border: 1px solid var(--ops-card-edge) !important;')
-    expect(styleSource).toContain('border-bottom: 1px dotted var(--ops-line-strong) !important;')
-    expect(styleSource).toContain('font-family: var(--atelier-font-mono)')
-    expect(styleSource).toContain('font-family: var(--atelier-font-mono)')
-    expect(styleSource).not.toContain('th, label, button, .select-trigger, input) {\n  font-family: var(--atelier-font-mono) !important;')
-    expect(styleSource).toContain('th, label, button, .select-trigger, input) {\n  font-family: var(--atelier-font-sans) !important;')
-    expect(styleSource).toContain('font-style: normal;')
-    expect(styleSource).toContain('font-weight: 600 !important;')
-    expect(styleSource).toContain('background: var(--ops-rule);')
-    expect(styleSource).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(styleSource).toContain('.app-layout-content .ops-dashboard-atelier .ops-realtime-panel button.bg-primary-500')
-    expect(styleSource).toContain('background: var(--atelier-blue) !important;')
-    expect(styleSource).toContain('color: var(--atelier-white) !important;')
-    expect(styleSource).toContain('.ops-dashboard-atelier :where(.ops-health-score-card, .ops-realtime-panel)')
-    expect(styleSource).toContain('border: 0 !important;')
-    expect(styleSource).toContain('box-shadow: none !important;')
-    expect(styleSource).toContain('.ops-diagnosis-popover')
-    expect(styleSource).toContain('z-index: 100000200 !important;')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier :where(.ops-monitor-header, .ops-monitor-header > .grid, .ops-live-panel, .ops-live-grid, .ops-health-score-card)')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-realtime-panel')
-    expect(styleSource).not.toContain('#app .app-layout-content .ops-dashboard-atelier .ops-live-panel:has(.ops-health-score-card:hover)')
-    expect(styleSource).toContain('.ops-health-score-card:hover .ops-diagnosis-popover')
-    expect(styleSource).toContain('.ops-diagnosis-popover > div')
-    expect(styleSource).toContain('.ops-diagnosis-popover > div')
-    expect(styleSource).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-diagnosis-popover *')
-    expect(styleSource).toContain('-webkit-text-fill-color: var(--atelier-paper) !important;')
-    expect(styleSource).toContain('.ops-diagnosis-popover :where(svg, path)')
-    expect(styleSource).toContain('fill: currentColor !important;')
-    expect(styleSource).toContain('.ops-dashboard-atelier .ops-realtime-panel .h-8.w-full.overflow-hidden')
-    expect(styleSource).toContain('display: none !important;')
-    expect(styleSource).toContain('.app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header')
-    expect(styleSource).toContain('background: transparent !important;')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header::before')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header::after')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header > .grid')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-live-panel')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-health-score-card')
-    expect(styleSource).toContain('background: var(--ops-card-surface) !important;')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar')
-    expect(styleSource).toContain('.ops-monitor-toolbar-meta')
-    expect(styleSource).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(styleSource).toContain('.ops-monitor-toolbar:hover .ops-monitor-toolbar-meta')
-    expect(styleSource).not.toContain('.ops-monitor-header:hover .ops-monitor-toolbar-meta')
-    expect(styleSource).toContain('.ops-monitor-toolbar-meta :where(h1, div, span, svg)')
-    expect(styleSource).toContain('-webkit-text-fill-color: var(--atelier-paper) !important;')
-    expect(styleSource).toContain('.ops-monitor-toolbar-controls')
-    expect(styleSource).toContain('.ops-toolbar-icon-button')
-    expect(styleSource).toContain('.ops-toolbar-text-button')
-    expect(styleSource).toContain('.select-dropdown-portal.ops-toolbar-select-menu')
-    expect(styleSource).toContain('background: var(--atelier-slab-field) !important;')
-    const opsNestedHoverBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header .ops-metric-card:hover'),
-      styleSource.indexOf('.ops-diagnosis-popover')
-    )
-    expect(opsNestedHoverBlock).not.toContain('--atelier-material-2: var(--atelier-ui-hover-surface);')
-    expect(opsNestedHoverBlock).not.toContain('background-color: var(--atelier-ui-hover-surface) !important;')
-    expect(opsNestedHoverBlock).toContain('--atelier-material-2: var(--ops-card-surface);')
-    expect(opsNestedHoverBlock).toContain('background-color: var(--ops-card-surface) !important;')
-    expect(styleSource).toContain('.ops-dashboard-atelier .ops-monitor-header :where(.ops-metric-card, .ops-system-card)')
-    expect(styleSource).toContain('.ops-dashboard-atelier :where(.ops-metric-card, .ops-system-card):hover')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card):hover')
-    expect(styleSource).toContain('/* Alert and log panels are data regions; keep row hover, not panel hover. */')
-    expect(styleSource).toContain('/* Ops chart and live diagnostic panels are data regions; keep metric hover only. */')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card):hover')
-    expect(styleSource).not.toContain('#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card, .ops-live-panel, .ops-live-grid, .ops-health-score-card, .ops-realtime-panel):hover')
-    expect(styleSource).toContain('transform: none !important;')
-    expect(styleSource).toContain('background: var(--ops-card-surface) !important;')
-    expect(styleSource).not.toContain('--ops-paper-3: #fbf8f0;')
-    expect(styleSource).not.toContain('background: #fbf8f0 !important;')
-    expect(styleSource).not.toContain('border: 1px solid var(--ops-ink) !important;')
-
-    expect(opsSwitchSource).toContain('getOpsChartColors')
-    expect(opsSwitchSource).toContain('switchRate')
-    expect(opsSwitchSource).not.toContain('#14b8a6')
-    expect(opsThroughputSource).toContain('getOpsChartColors')
-    expect(opsThroughputSource).toContain('throughput')
-    expect(opsThroughputSource).not.toContain('#10b981')
-    expect(opsErrorDistributionSource).toContain('getOpsChartColors')
-    expect(opsErrorDistributionSource).toContain('critical')
-    expect(opsErrorDistributionSource).toContain('warning')
-    expect(opsErrorDistributionSource).not.toContain('#f59e0b')
-    expect(opsErrorTrendSource).toContain('getOpsChartColors')
-    expect(opsErrorTrendSource).toContain('requestError')
-    expect(opsErrorTrendSource).toContain('upstreamError')
-    expect(opsErrorTrendSource).toContain('businessLimited')
-    expect(opsErrorTrendSource).not.toContain('#ef4444')
-  })
-
-  it('themes console tables, inputs, and teleported menus as opaque atelier paper surfaces', () => {
-    expect(tablePageLayoutSource).toContain('class="table-page-layout"')
-    expect(tablePageLayoutSource).toContain('class="layout-section-fixed table-page-actions-section"')
-    expect(tablePageLayoutSource).toContain('class="layout-section-fixed table-page-filter-section"')
-    expect(tablePageLayoutSource).toContain('class="layout-section-fixed table-page-pagination-section"')
-    expect(tablePageLayoutSource).toContain('class="card table-scroll-container"')
-    expect(materialSystemBlock).toContain('background: var(--atelier-paper-2) !important;')
-    expect(materialSystemBlock).toContain('border-bottom: 1px solid var(--atelier-material-edge) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-paper-2) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(materialSystemBlock).toContain('border-top: 1px dotted var(--atelier-material-edge) !important;')
-    expect(materialSystemBlock).toContain('Console-wide parity for pages that do not use the dashboard/ops hooks.')
-    expect(materialSystemBlock).toContain('.app-layout-content .table-page-layout > .layout-section-fixed')
-    expect(materialSystemBlock).toContain('table-page-filter-section')
-    expect(usersSource).toContain('users-filter-shell')
-    expect(usersSource).toContain('users-filter-actions')
-    expect(usersSource).toContain('users-filter-create btn btn-primary')
-    expect(usersSource).toContain('userStatusBadgeClass(value)')
-    expect(usersSource).not.toContain("value === 'active' ? 'bg-green-500' : 'bg-red-500'")
-    expect(materialSystemBlock).toContain('.semantic-badge--success')
-    expect(materialSystemBlock).toContain('background: var(--atelier-blue) !important;')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section :where(.btn-primary, .users-filter-create)')
-    expect(materialSystemBlock).toContain('border-image: none !important;')
-    expect(materialSystemBlock).toContain('overflow: hidden;')
-    expect(materialSystemBlock).toContain('.users-filter-create::before')
-    expect(materialSystemBlock).toContain('.users-filter-create::before')
-    expect(materialSystemBlock).toContain('content: none;')
-    expect(accountTableFiltersSource).toContain('table-filter-left flex flex-wrap items-center gap-3')
-    expect(accountTableActionsSource).toContain('table-filter-actions flex flex-wrap items-center gap-3')
-    expect(groupsSource).toContain('table-filter-left flex flex-1 flex-wrap items-center gap-3')
-    expect(groupsSource).toContain('table-filter-actions flex w-full flex-shrink-0')
-    expect(channelsSource).toContain('table-filter-left flex flex-1 flex-wrap items-center gap-3')
-    expect(channelsSource).toContain('table-filter-actions flex w-full flex-shrink-0')
-    expect(proxiesSource).toContain('table-filter-left flex flex-1 flex-wrap items-center gap-3')
-    expect(proxiesSource).toContain('table-filter-search relative w-full sm:w-64')
-    expect(proxiesSource).toContain('table-filter-actions flex w-full flex-shrink-0')
-    expect(monitorFiltersBarSource).toContain('table-filter-left flex flex-1 flex-wrap items-center gap-3')
-    expect(monitorFiltersBarSource).toContain('table-filter-actions flex w-full flex-shrink-0')
-    expect(adminUsageFiltersSource).toContain('usage-filter-card')
-    expect(adminUsageFiltersSource).toContain('usage-filter-shell')
-    expect(adminUsageFiltersSource).toContain('usage-filter-left')
-    expect(adminUsageFiltersSource).toContain('usage-filter-actions')
-    expect(userUsageSource).toContain('card usage-filter-card')
-    expect(userUsageSource).toContain('usage-filter-shell')
-    expect(userUsageSource).toContain('usage-filter-left')
-    expect(userUsageSource).toContain('usage-filter-actions')
-    expect(materialSystemBlock).toContain('.app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section > :where(.flex-wrap, .flex-wrap-reverse, .justify-between, .users-filter-shell)')
-    expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain(':where(.usage-filter-left, .users-filter-left, .table-filter-left)')
-    expect(materialSystemBlock).toContain(':where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section > .flex-col')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section > .flex-col > :first-child')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section > .flex-col > :last-child')
-    expect(materialSystemBlock).toContain('margin: -1rem 0 -1rem -1rem;')
-    expect(materialSystemBlock).toContain('margin: -1rem -1rem -1rem 0;')
-    expect(materialSystemBlock).toContain('> :not(:last-child) :where(.select-trigger, .date-picker-trigger, input[type="date"], input[type="search"], input[type="text"].input, .input)')
-    expect(materialSystemBlock).toContain('border-color: var(--atelier-slab-edge) !important;')
-    expect(materialSystemBlock).toContain('outline: 1px solid var(--atelier-slab-edge-soft) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('color: var(--atelier-paper) !important;')
-    expect(materialSystemBlock).toContain('Non-dashboard/ops filter bars use slab edge tokens, not ink-black borders.')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .table-page-layout > .layout-section-fixed.table-page-filter-section::after')
-    expect(materialSystemBlock).toContain('var(--atelier-filter-stitch-horizontal-invert) top left / 100% 1px no-repeat')
-    expect(materialSystemBlock).toContain('var(--atelier-filter-stitch-vertical-invert) top right / 1px 100% no-repeat')
-    expect(materialSystemBlock).toContain(':where(.usage-filter-actions, .users-filter-actions, .table-filter-actions)::before')
-    expect(materialSystemBlock).toContain('content: none !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('border-color: var(--atelier-slab-edge) !important;')
-    expect(materialSystemBlock).toContain('color: var(--atelier-paper) !important;')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section .relative > svg.absolute')
-    expect(materialSystemBlock).toContain('left: 0.75rem !important;')
-    expect(materialSystemBlock).toContain('input.input.pl-10')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-filter-section .table-filter-search')
-    expect(materialSystemBlock).toContain('.table-filter-search > input.input.pl-10')
-    expect(materialSystemBlock).toContain('box-sizing: border-box;')
-    expect(accountsSource).toContain('class="accounts-table-page"')
-    expect(materialSystemBlock).toContain('.table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section')
-    expect(materialSystemBlock).toContain('.table-page-layout.accounts-table-page > .layout-section-fixed.table-page-filter-section :where(.table-filter-left, .table-filter-actions)')
-    expect(materialSystemBlock).toContain('border-color: var(--atelier-material-edge) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-paper) !important;')
-    expect(materialSystemBlock).toContain('content: none !important;')
-    expect(tablePageLayoutSource).toContain('table-page-pagination-section')
-    expect(materialSystemBlock).toContain('border: 1px solid var(--atelier-material-edge) !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('color: var(--atelier-paper) !important;')
-    expect(materialSystemBlock).toContain('.pagination-shell')
-    expect(materialSystemBlock).toContain('box-shadow: inset 0 -2px 0 var(--atelier-lime) !important;')
-    expect(materialSystemBlock).toContain('.table-page-pagination-section')
-    expect(materialSystemBlock).toContain('.layout-section-fixed.table-page-pagination-section :where(button[aria-current="page"])')
-    expect(materialSystemBlock).toContain('body:has(.table-page-layout) :where(.select-dropdown-portal, .date-picker-dropdown-portal)')
-    expect(materialSystemBlock).toContain('button[aria-selected="true"]')
-    expect(materialSystemBlock).toContain('background: var(--atelier-blue) !important;')
-    expect(materialSystemBlock).toContain('font-variant-numeric: tabular-nums;')
-    expect(materialSystemBlock).toContain('tbody tr:hover :where(td, .sticky-col, .table-cell)')
-    expect(materialSystemBlock).toContain(':where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.table-wrapper, .table-scroll-container) tbody tr:hover')
-    expect(materialSystemBlock).toContain('#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover')
-    expect(materialSystemBlock.indexOf('#app .app-layout-content .ops-dashboard-atelier :where(.ops-concurrency-card, .ops-chart-card):hover')).toBeGreaterThan(
-      materialSystemBlock.indexOf('#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover')
-    )
-    expect(materialSystemBlock.indexOf('#app .app-layout-content .ops-dashboard-atelier :where(.ops-alert-card, .ops-log-card):hover')).toBeGreaterThan(
-      materialSystemBlock.indexOf('#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier, .admin-usage-atelier, .user-usage-atelier) :where(.card, .paper-card, .stat-card, .summary-tile, .admin-material-surface, .ops-metric-card, .ops-system-card):hover')
-    )
-    expect(materialSystemBlock).not.toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-header:hover')
-    expect(materialSystemBlock).not.toContain('.ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card, .ops-health-score-card, .ops-realtime-panel):not(:hover)')
-    expect(materialSystemBlock).not.toContain('.ops-monitor-header:hover :where(.ops-metric-card, .ops-system-card):not(:hover) :where(.text-')
-    expect(materialSystemBlock).not.toContain(':where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card):hover :where(.text-')
-    expect(materialSystemBlock).not.toMatch(/:hover\s+:where\([^)]*\.text-/)
-    expect(materialSystemBlock).toContain(':where(.ops-monitor-header, .ops-live-panel) :where(.ops-metric-card, .ops-system-card) :where([class~="h-2"][class~="w-full"][class~="overflow-hidden"])')
-    expect(materialSystemBlock).toContain('.floating-dropdown-portal')
-    expect(materialSystemBlock).toContain('.select-dropdown-portal')
-    expect(selectSource).toContain('portalClass?: string')
-    expect(selectSource).toContain(':class="[instanceId, portalClass]"')
-    expect(materialSystemBlock).toContain('.date-picker-dropdown-portal')
-    expect(materialSystemBlock).toContain('body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-presets')
-    expect(materialSystemBlock).toContain('.date-picker-dropdown-portal .date-picker-preset-active:hover')
-    expect(materialSystemBlock).toContain('body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-input)')
-    expect(materialSystemBlock).toContain('body:has(.table-page-layout) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover)')
-    expect(materialSystemBlock).toContain('body:has(.admin-usage-atelier) .date-picker-dropdown-portal')
-    expect(materialSystemBlock).toContain('body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-input)')
-    expect(materialSystemBlock).toContain('body:has(.admin-usage-atelier) .date-picker-dropdown-portal :where(.date-picker-preset:hover, .date-picker-preset-active, .date-picker-preset-active:hover, .date-picker-apply, .date-picker-apply:hover)')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-live-grid .ops-health-score-card:hover')
-    expect(materialSystemBlock).toContain('transition: border-color 180ms var(--atelier-ease), background-color 180ms var(--atelier-ease), box-shadow 180ms var(--atelier-ease) !important;')
-    expect(materialSystemBlock).not.toContain('.dropdown {\n  background: transparent !important;')
-  })
-
-  it('keeps the latest filter split, account cards, quota bars, and settings nav palette hooks', () => {
-    expect(accountsSource).toContain('accounts-filter-shell flex flex-wrap-reverse')
-    expect(accountsSource).toContain('account-card-table-frame flex min-h-fit flex-none flex-col overflow-visible')
-    expect(accountsSource).not.toContain('lenis-scroll')
-    expect(adminUsageSource).toContain('usage-record-filter-wrap')
-    expect(materialSystemBlock).toContain('> :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)')
-    expect(materialSystemBlock).toContain('> :where(.ml-auto, .table-filter-actions, .users-filter-actions, .usage-filter-actions)::before')
-    expect(materialSystemBlock).toContain('Current visual iteration: precise split filters, account cards, and settings tabs.')
-    expect(materialSystemBlock).not.toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh::after')
-    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {\n  align-self: center !important;\n  margin: 0 !important;')
-    expect(materialSystemBlock).toContain('border-color: var(--atelier-slab-edge-soft) !important;\n  outline: none !important;\n  outline-offset: 0 !important;')
-    expect(materialSystemBlock).not.toContain('.admin-dashboard-atelier .dashboard-filter-card > div > .dashboard-filter-refresh {\n  align-self: center !important;\n  margin: 0 !important;\n  border-color: var(--atelier-ink) !important;\n  outline: 1px solid rgba(255, 250, 240, 0.42) !important;')
-    expect(materialSystemBlock).toContain('.admin-dashboard-atelier .dashboard-filter-card,\n#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card:hover {\n  transform: none !important;')
-    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-time-filter-card')
-    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-time-filter-granularity::before')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity::before')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions::before')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {\n  background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-card,\n#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell,\n#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity {\n  background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span {\n  color: var(--atelier-slab-text) !important;')
-    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap')
-    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-record-filter-wrap .usage-filter-actions :where(.btn-secondary, button):not(.btn-primary):not(.btn-danger):not(:disabled)')
-    expect(materialSystemBlock).toContain('background: var(--atelier-paper) !important;\n  color: var(--atelier-ink) !important;')
-    const usageGranularityLabelBlocks = cssBlocksForSelector(
-      materialSystemBlock,
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity > span',
-    )
-    expect(usageGranularityLabelBlocks.length).toBeGreaterThan(0)
-    for (const block of usageGranularityLabelBlocks) {
-      expect(block).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
+  it('binds the official Anthropic palette and type roles at token source', () => {
+    const baseThemeBlock = cssBlock(styleSource, '/* Base appearance tokens */\n:root')
+    for (const needle of [
+      '--atelier-paper: #faf9f5;',
+      '--atelier-paper-2: #f0eee6;',
+      '--atelier-surface-muted: #e8e6dc;',
+      '--atelier-surface-panel: var(--atelier-paper-2);',
+      '--atelier-ink: #141413;',
+      '--atelier-dark: #3d3d3a;',
+      '--atelier-muted: #5e5d59;',
+      '--atelier-dust: #87867f;',
+      '--atelier-ring: #d1cfc5;',
+      '--atelier-focus: #2c84db;',
+      '--atelier-blue: #141413;',
+      '--atelier-blue-dark: #3d3d3a;',
+      '--atelier-butter: #d97757;',
+      '--atelier-butter-dark: #c6613f;',
+      '--atelier-status-success: #6ea100;',
+      '--atelier-status-info: #6396d6;',
+      '--atelier-status-warning: #eda100;',
+      '--atelier-status-danger: #b53333;',
+      '--sans: "Anthropic Sans",',
+      '--serif: "Anthropic Serif",',
+      '--mono: "Anthropic Mono",',
+    ]) {
+      expect(baseThemeBlock).toContain(needle)
     }
-    expect(usageGranularityLabelBlocks.at(-1)).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
-    const usageTimeRangeTextBlock = cssBlock(
-      materialSystemBlock,
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-range :where(span, svg, .date-picker-trigger, .date-picker-trigger *)',
-    )
-    expect(usageTimeRangeTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(usageTimeRangeTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
-    const usageGranularityTriggerTextBlock = cssBlock(
-      materialSystemBlock,
-      '#app .app-layout-content .admin-usage-atelier .usage-time-filter-granularity .select-trigger :where(.select-value, .select-icon, svg, path, span)',
-    )
-    expect(usageGranularityTriggerTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(usageGranularityTriggerTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
-    const usageRecordFilterLeftTextBlock = cssBlock(
-      materialSystemBlock,
-      '#app .app-layout-content .admin-usage-atelier .usage-record-filter-wrap .usage-filter-left :where(label, span, svg, .select-value, .select-icon)',
-    )
-    expect(usageRecordFilterLeftTextBlock).not.toContain('-webkit-text-fill-color: var(--atelier-paper)')
-    expect(usageRecordFilterLeftTextBlock).toContain('-webkit-text-fill-color: var(--atelier-slab-text) !important;')
-    expect(adminUsageStatsCardsSource).toContain('usage-stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4')
-    expect(adminUsageStatsCardsSource.match(/card usage-stat-card p-4/g)?.length).toBe(4)
-    expect(adminUsageStatsCardsSource.match(/usage-stat-icon rounded-lg/g)?.length).toBe(4)
-    expect(adminUsageStatsCardsSource).toContain('usage-stat-icon rounded-lg p-2')
-    expect(adminUsageStatsCardsSource).not.toMatch(/usage-stat-icon[^"]*text-(?:blue|amber|green|purple)-600/)
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content :where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon')).toContain('color: var(--atelier-ink) !important;')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card :where(.text-xl)')
-    expect(materialSystemBlock).toContain('.user-usage-atelier > .table-page-actions-section .card:hover')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:hover')
-    expect(materialSystemBlock).toContain('.admin-usage-atelier .usage-time-filter-granularity .select-trigger')
-
-    expect(materialSystemBlock).toContain('.accounts-table-page .table-wrapper tbody')
-    expect(materialSystemBlock).toContain('.accounts-table-page .table-wrapper tbody.table-body')
-    expect(materialSystemBlock).toContain('border-top: 0 !important;')
-    expect(materialSystemBlock).toContain('grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));')
-    expect(materialSystemBlock).toContain('grid-template-columns: repeat(3, minmax(0, 1fr));')
-    expect(materialSystemBlock).toContain('padding-right: 2rem !important;')
-    expect(materialSystemBlock).toContain('td[data-column-key="usage"]')
-    expect(materialSystemBlock).toContain('td[data-column-key="groups"]')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"]')).toContain('grid-column: 2 / -1;')
-    expect(materialSystemBlock).toContain('width: max-content !important;')
-    expect(materialSystemBlock).toContain('z-index: 60;')
-    expect(materialSystemBlock).toContain('pointer-events: auto !important;')
-    expect(materialSystemBlock).toContain('td[data-column-key="select"] input[type="checkbox"]')
-    expect(materialSystemBlock).toContain('z-index: 61;')
-    expect(materialSystemBlock).toContain('grid-column: span 2;')
-    expect(materialSystemBlock).toContain('td[data-column-key="schedulable"] button.relative.inline-flex')
-    expect(materialSystemBlock).toContain('td[data-column-key="schedulable"] button.relative.inline-flex.bg-gray-200')
-    expect(materialSystemBlock).toContain('td[data-column-key="schedulable"] button.relative.inline-flex > span')
-    expect(materialSystemBlock).toContain('.accounts-table-page .table-wrapper tbody tr > td::before')
-    expect(materialSystemBlock).toContain('content: attr(data-column-label);')
-    expect(materialSystemBlock).toContain('.accounts-table-page .usage-progress-bar')
-    expect(materialSystemBlock).toContain('.accounts-table-page .usage-progress-track')
-    expect(materialSystemBlock).toContain('grid-template-columns: 2rem minmax(5rem, 1fr) 2.4rem auto;')
-    expect(materialSystemBlock).toContain('width: 100% !important;')
-    expect(materialSystemBlock).toContain('min-width: 5rem;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-white) !important;')
-    expect(materialSystemBlock).toContain('.usage-progress-fill--safe')
-    expect(materialSystemBlock).toContain('background: #22c55e !important;')
-    expect(materialSystemBlock).toContain('.usage-progress-fill--warning')
-    const warningFillBlock = cssBlock(
-      materialSystemBlock,
-      '#app .app-layout-content .accounts-table-page .usage-progress-fill--warning'
-    )
-    expect(warningFillBlock).toContain('background: #f59e0b !important;')
-    expect(warningFillBlock).not.toContain('var(--atelier-ui-hover-surface)')
-    expect(warningFillBlock).not.toContain('var(--atelier-dust)')
-    expect(warningFillBlock).not.toContain('var(--atelier-butter)')
-    const warningFillBlocks = cssBlocksForSelector(styleSource, '.usage-progress-fill--warning')
-    expect(warningFillBlocks.length).toBeGreaterThan(0)
-    expect(warningFillBlocks.join('\n')).not.toMatch(/var\(--atelier-(?:ui-hover-surface|dust|butter)\)/)
-    expect(materialSystemBlock).toContain('.usage-progress-fill--danger')
-    expect(materialSystemBlock).toContain('background: #ef4444 !important;')
-    expect(usageProgressBarSource).toContain('class="usage-progress-bar"')
-    expect(usageProgressBarSource).toContain('usage-progress-window-stats')
-    expect(usageProgressBarSource).toContain('usage-progress-row')
-    expect(usageProgressBarSource).toContain('usage-progress-track')
-    expect(usageProgressBarSource).toContain('usage-progress-fill--safe bg-green-500')
-    expect(usageProgressBarSource).toContain('usage-progress-fill--warning bg-amber-500')
-    expect(usageProgressBarSource).toContain('usage-progress-fill--danger bg-red-500')
-    expect(accountGroupsCellSource).toContain('account-groups-cell')
-    expect(accountGroupsCellSource).toContain('account-groups-cell__chips')
-    expect(accountGroupsCellSource).not.toContain('relative max-w-56')
-    expect(accountGroupsCellSource).not.toContain('max-h-14 overflow-hidden')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell')).toContain('width: 100% !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell__chips')).toContain('max-height: 3.2rem;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .accounts-table-page .account-groups-cell__chips')).toContain('overflow: hidden;')
-
-    expect(settingsSource).toContain('settings-tab-icon')
-    expect(materialSystemBlock).toContain('.app-layout-content .settings-tab::before')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab')).toContain('border-radius: 0.625rem !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab')).toContain('overflow: hidden !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab')).toContain('background-clip: border-box !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('inset: 0 !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('z-index: 0 !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('border-radius: inherit !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab::before')).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab:hover,\n#app .app-layout-content .settings-tab:focus-visible')).toContain('background: var(--atelier-ui-hover-surface) !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab:hover,\n#app .app-layout-content .settings-tab:focus-visible')).toContain('box-shadow: none !important;')
-    expect(materialSystemBlock).toContain('#app .app-layout-content .settings-tab > :where(.settings-tab-icon, .settings-tab-label)')
-    expect(materialSystemBlock).toContain('.app-layout-content .settings-tab-active .settings-tab-icon')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .settings-tab-active .settings-tab-icon,\n#app .app-layout-content .settings-tab-active:hover .settings-tab-icon,\n#app .app-layout-content .settings-tab-active:focus-visible .settings-tab-icon')).toContain('background: transparent !important;')
-    expect(materialSystemBlock).toContain('background: var(--atelier-blue) !important;')
   })
 
-  it('applies the latest user account, pricing, auth, and theme iteration hooks', () => {
-    expect(userKeysSource).toContain('class="user-keys-atelier"')
-    expect(userKeysSource).toContain('keys-filter-shell')
-    expect(userKeysSource).toContain('keys-filter-left')
-    expect(userKeysSource).toContain('keys-filter-actions')
-    expect(materialSystemBlock).toContain('.user-keys-atelier > .table-page-actions-section {\n  background: var(--atelier-paper-2) !important;')
-    expect(endpointPopoverSource).toContain('endpoint-popover-list')
-    expect(endpointPopoverSource).toContain('endpoint-popover-item')
-    expect(endpointPopoverSource).toContain('endpoint-default-badge')
-    expect(endpointPopoverSource).toContain('endpoint-tooltip')
-    expect(endpointPopoverSource).toContain('<Teleport to="body">')
-    expect(endpointPopoverSource).toContain("position: 'fixed'")
-    expect(endpointPopoverSource).toContain("zIndex: '100000220'")
-    expect(endpointPopoverSource).toContain('endpoint-code')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .keys-filter-shell')
-    expect(materialSystemBlock).toContain('grid-template-columns: minmax(0, 1fr) minmax(18rem, auto);')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .keys-filter-actions::before')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .keys-filter-actions::before,\n#app .app-layout-content .global-pricing-filter-actions::before')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list .endpoint-popover-item')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list .endpoint-default-badge')
-    expect(materialSystemBlock).toContain('.user-keys-atelier .endpoint-popover-list .endpoint-tooltip')
-    expect(materialSystemBlock).toContain('background: var(--atelier-slab-surface) !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list > div :where(span, code, button, a, svg, path)')).toContain('-webkit-text-fill-color: currentColor !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list :where(.endpoint-popover-item, .endpoint-tooltip) :where(span, p, code, button, a, svg, path)')).toContain('-webkit-text-fill-color: currentColor !important;')
-    expect(cssBlock(materialSystemBlock, '#app .app-layout-content .user-keys-atelier .endpoint-popover-list .endpoint-code')).toContain('-webkit-text-fill-color: currentColor !important;')
-
-    for (const source of [announcementsSource, redeemSource, promoCodesSource]) {
-      expect(source).toContain('table-filter-shell flex flex-wrap items-center gap-3')
-      expect(source).toContain('table-filter-left flex flex-1 flex-wrap items-center gap-3')
-      expect(source).toContain('table-filter-search flex-1')
-      expect(source).toContain('table-filter-actions flex w-full flex-shrink-0')
+  it('maps Tailwind primary to Slate actions, not Clay or old AI colors', () => {
+    expect(tailwindConfigSource).toContain("const anthropicSlate = '#141413'")
+    expect(tailwindConfigSource).toContain("500: anthropicSlate")
+    expect(tailwindConfigSource).toContain("600: anthropicSlate")
+    expect(tailwindConfigSource).toContain("700: anthropicSlateHover")
+    for (const color of forbiddenAiDefaults) {
+      expect(tailwindConfigSource).not.toContain(color)
     }
-    expect(materialSystemBlock).toContain('> :where(.flex-wrap, .flex-wrap-reverse, .flex-col, .users-filter-shell, .accounts-filter-shell, .table-filter-shell)')
-
-    expect(userUsageSource).toContain('class="user-usage-atelier" scroll-mode="page"')
-    expect(userUsageSource).toContain('usage-stats-grid grid grid-cols-2 gap-4 lg:grid-cols-4')
-    expect(userUsageSource.match(/card usage-stat-card p-4/g)?.length).toBe(4)
-    expect(userUsageSource.match(/usage-stat-icon rounded-lg/g)?.length).toBe(4)
-    expect(userUsageSource).toContain('vertical-scroll-mode="page"')
-    expect(userUsageSource).not.toContain('lenis-scroll')
-    expect(materialSystemBlock).toContain('.user-usage-atelier > .table-page-actions-section')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card::before')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card::after')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:nth-child(2n)::after')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card:nth-child(3n)::after')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-icon')
-    expect(materialSystemBlock).toContain(':where(.admin-usage-atelier, .user-usage-atelier) .usage-stat-card :where(.text-xl)')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .usage-filter-shell')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .usage-filter-shell {\n  display: grid !important;\n  grid-template-columns: minmax(0, 1fr) auto;')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .usage-filter-shell {\n  display: grid !important;\n  grid-template-columns: minmax(0, 1fr) auto;')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .usage-filter-left {\n  align-self: stretch !important;\n  position: relative !important;')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .usage-filter-left {\n  align-self: stretch !important;\n  position: relative !important;\n  z-index: 0;\n  margin: 0 !important;\n  padding: 1rem !important;\n  background: var(--atelier-slab-surface) !important;')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .table-wrapper.is-page-scroll')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .table-scroll-container {\n  max-width: 100% !important;\n  overflow: hidden !important;')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .table-scroll-container:hover {\n  --atelier-card-surface: var(--atelier-paper-2);')
-    expect(materialSystemBlock).toContain('.user-usage-atelier .table-wrapper.is-page-scroll {\n  width: 100% !important;\n  max-width: 100% !important;\n  overflow-x: auto !important;\n  overflow-y: visible !important;')
-
-    expect(globalPricingSource).toContain('class="global-pricing-atelier" scroll-mode="page"')
-    expect(globalPricingSource).toContain('global-pricing-summary-row')
-    expect(globalPricingSource).toContain('global-pricing-filter-card')
-    expect(globalPricingSource).toContain('global-pricing-filter-shell')
-    expect(globalPricingSource).toContain('global-pricing-card-frame')
-    expect(globalPricingSource).toContain('global-pricing-card-body')
-    expect(globalPricingSource).toContain(':data-card-label="t(\'globalPricing.columns.model\')"')
-    expect(materialSystemBlock).toContain('.global-pricing-summary-row .summary-tile:hover')
-    expect(materialSystemBlock).toContain('.global-pricing-atelier .global-pricing-summary-row .summary-tile:hover')
-    expect(materialSystemBlock).toContain('.global-pricing-card-frame .global-pricing-card-body')
-    expect(materialSystemBlock).toContain('.global-pricing-card-frame .pricing-row')
-    expect(materialSystemBlock).toContain('content: attr(data-card-label);')
-
-    expect(appSidebarSource).not.toContain('toggleTheme')
-    expect(appSidebarSource).not.toContain('MoonIcon')
-    expect(appSidebarSource).not.toContain('SunIcon')
-    expect(homeSource).not.toContain('toggleTheme')
-    expect(keyUsageSource).not.toContain('toggleTheme')
-    expect(styleSource).toContain('.auth-ascii-shell .paper-card')
-    expect(cssBlocksForSelector(styleSource, '.auth-ascii-shell .paper-card').at(-1)).toContain('border-radius: 16px !important;')
-    expect(cssBlocksForSelector(styleSource, '.auth-ascii-shell h2').at(-1)).toContain('font-style: normal;')
-    expect(cssBlocksForSelector(styleSource, '.auth-ascii-shell h2').at(-1)).toContain('font-weight: 500 !important;')
-    expect(cssBlocksForSelector(styleSource, '.auth-ascii-shell .text-gradient').at(-1)).toContain('font-weight: 500 !important;')
-    expect(cssBlocksForSelector(styleSource, '.auth-ascii-shell .text-gradient').at(-1)).not.toContain('font-style: italic')
-    expect(styleSource).toContain(':root.theme-anthropic :where(.btn-warning)')
-    expect(cssBlock(styleSource, ':root.theme-anthropic :where(.btn-warning),\n:root[data-theme="anthropic"] :where(.btn-warning)')).toContain('background: #f59e0b !important;')
-    expect(styleSource).toContain(':root.theme-anthropic .sidebar,\n:root[data-theme="anthropic"] .sidebar')
-    expect(cssBlock(styleSource, ':root.theme-anthropic .sidebar,\n:root[data-theme="anthropic"] .sidebar')).toContain('backdrop-filter: blur(18px);')
-    expect(cssBlock(styleSource, ':root.theme-anthropic #app .app-layout-content .app-header-atelier,\n:root[data-theme="anthropic"] #app .app-layout-content .app-header-atelier')).toContain('backdrop-filter: blur(18px);')
-    expect(homeSource).toContain('.home-ascii-shell .home-cap-card-featured {\n  background: var(--atelier-blue);')
-    expect(homeSource).not.toContain('.home-ascii-shell .home-cap-card-featured {\n  grid-column: span 2;')
-    expect(homeSource).toContain('.home-ascii-shell .home-provider-specimen-featured {\n  --home-chip-accent: var(--atelier-blue-dark);')
-    expect(homeSource).not.toContain('.home-ascii-shell .home-provider-specimen-featured {\n  grid-column: span 6;')
-    expect(styleSource).toContain('.home-ascii-shell .home-provider-logo-mark .provider-brand-icon')
-    expect(styleSource).toContain('.home-ascii-shell .home-provider-logo-mark {\n  background: transparent !important;')
-    expect(styleSource).toContain('width: 72px !important;\n  height: 72px !important;')
-    expect(styleSource).not.toContain('width: 96px !important;\n  height: 96px !important;')
-    expect(styleSource).not.toContain('width: auto !important;\n  height: auto !important;')
-    expect(styleSource).not.toContain('width: 144px !important;')
-    expect(styleSource).toContain('border: 0 !important;\n  border-radius: 0 !important;')
-    expect(styleSource).not.toContain('.home-ascii-shell .home-provider-logo-mark {\n  background: var(--atelier-paper)')
-    expect(opsErrorDistributionSource).toContain('ops-error-icon')
-    expect(opsErrorTrendSource).toContain('ops-error-icon')
-    expect(styleSource).toContain('.ops-dashboard-atelier .ops-error-icon {\n  color: var(--atelier-ink) !important;')
   })
 
-  it('keeps CPA/Codex panels on the same module palette without moving their layout', () => {
-    expect(codexThemeSource).toContain('--codex-module-rule: var(--atelier-console-rule);')
-    expect(codexThemeSource).toContain('border-bottom: 1px dotted var(--codex-border-strong);')
-    expect(codexThemeSource).toContain('box-shadow: 0 10px 24px -22px var(--material-card-shadow);')
-    expect(codexThemeSource).not.toContain('inset 4px 0 0 var(--codex-accent)')
-    expect(codexThemeSource).not.toContain('grid-template-columns: minmax(0, 1fr) 420px;')
-    expect(codexThemeSource).toContain('grid-template-columns: minmax(0, 1fr) 360px;')
+  it('uses a taxonomy-based component contract in both CSS entry points', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('Anthropic design-system component')
+      expect(source).toContain('--anthropic-page: #faf9f5;')
+      expect(source).toContain('--anthropic-cookbook-hover: #f5f4ed;')
+      expect(source).toContain('--anthropic-section: #f0eee6;')
+      expect(source).toContain('--anthropic-raised: #e8e6dc;')
+      expect(source).toContain('--anthropic-cookbook-border: rgba(20, 19, 19, 0.08);')
+      expect(source).toContain('--anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);')
+      expect(source).toContain('--anthropic-fg: #141413;')
+      expect(source).toContain('--anthropic-focus: #2c84db;')
+      expect(source).toContain('--anthropic-dropdown-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);')
+      expect(source).toContain('--anthropic-button-ring:')
+      expect(source).toContain('.app-layout-content :where(.btn-primary')
+      expect(source).toContain('.app-layout-content :where(.btn-secondary')
+      expect(source).toContain('.app-layout-content :where(.input')
+      expect(source).toContain(':where(.dropdown, .floating-dropdown-portal, .select-dropdown-portal')
+      expect(source).toContain('background: var(--anthropic-cookbook-hover);')
+      expect(source).toContain('#app .app-layout-content :where(.admin-dashboard-atelier, .ops-dashboard-atelier)')
+      expect(source).toContain('.app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)')
+      expect(source).toContain('.app-layout-content :where(.route-tabs')
+      expect(source).toContain('.app-layout-content :where(.badge')
+      expect(source).toContain('.app-layout-content :where(.state-card, .empty-state')
+    }
+    expect(targetedRepairSource).toContain('#app .app-layout-content .accounts-table-page .account-card-table-frame')
   })
 
-  it('keeps platform logos brand colored inside themed select dropdowns', () => {
-    expect(platformIconSource).toContain('platformIconClass')
-    expect(platformIconSource).toContain("'platform-icon'")
-    expect(platformIconSource).toContain('platform-icon--openai')
-    expect(platformIconSource).toContain('platform-icon--anthropic')
-    expect(platformIconSource).toContain('platform-icon--gemini')
-    expect(platformIconSource).toContain('platform-icon--antigravity')
-    expect(styleSource).toContain('.select-dropdown-portal .platform-icon')
-    expect(styleSource).toContain('.platform-icon,\n.platform-icon :where(path, circle, rect, polygon)')
-    expect(styleSource).toContain('color: var(--platform-icon-color, currentColor) !important;')
-    expect(styleSource).toContain('body .select-dropdown-portal.ops-toolbar-select-menu .platform-icon')
-    expect(styleSource).toContain('.platform-icon--openai')
-    expect(styleSource).toContain('.platform-icon--anthropic')
-    expect(modelIconSource).toContain("openai: {\n    color: '#10A37F'")
-    expect(modelIconSource).not.toContain("color: '#000000'")
+  it('guards the admin-console rules that are easy to misread from the examples', () => {
+    for (const source of [styleSource, targetedRepairSource]) {
+      expect(source).toContain('--anthropic-control-gap: 0.75rem;')
+      expect(source).toContain('--anthropic-control-group-gap: 1rem;')
+      expect(source).toContain('row-gap: var(--anthropic-control-group-gap);')
+      expect(source).toContain('column-gap: var(--anthropic-control-gap);')
+      expect(source).toContain('text-decoration-color: transparent;')
+      expect(source).toContain('text-decoration-color: currentColor;')
+      expect(source).toContain(':where(:focus-visible)')
+      expect(source).toContain(':where(:focus, .select-trigger-open, .date-picker-trigger-open):not(:focus-visible)')
+      expect(source).toContain('outline: 0;')
+      expect(source).not.toContain('--sidebar-active-bg: var(--atelier-blue);')
+      expect(source).not.toContain('--sidebar-active-text: var(--atelier-white);')
+      expect(source).not.toContain('background: var(--sidebar-active-text);')
+    }
+    expect(targetedRepairSource).toContain('grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));')
+    expect(targetedRepairSource).toContain('background: var(--account-card-bg) !important;')
+    expect(targetedRepairSource).toContain('background: var(--account-card-resting-bg) !important;')
+    expect(targetedRepairSource).toContain('transform: none !important;')
+    expect(targetedRepairSource).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
+    expect(targetedRepairSource).not.toContain('rgba(201, 100, 66, 0.62)')
+    expect(targetedRepairSource).not.toContain('rgba(201, 100, 66, 0.72)')
   })
 
-  it('keeps channel status cards provider and status markers brand colored', () => {
-    expect(userMonitorProviderIconSource).toContain("'platform-icon'")
-    expect(userMonitorProviderIconSource).toContain('platform-icon--openai')
-    expect(userMonitorProviderIconSource).toContain('platform-icon--anthropic')
-    expect(userMonitorProviderIconSource).toContain('platform-icon--gemini')
-    expect(userMonitorProviderIconSource).toContain('providerIconClass')
-    expect(userMonitorCardSource).toContain('monitor-channel-card')
-    expect(userMonitorCardSource).toContain('monitorProviderClass(item.provider)')
-    expect(userMonitorCardSource).toContain('monitor-provider-badge')
-    expect(userMonitorCardSource).toContain('monitorStatusClass(item.primary_status)')
-    expect(styleSource).toContain('.monitor-provider-openai')
-    expect(styleSource).toContain('--monitor-provider-color: #10a37f;')
-    expect(styleSource).toContain('.monitor-status-operational')
-    expect(styleSource).toContain('--monitor-status-color: #10a37f;')
-    expect(styleSource).toContain('.monitor-channel-card .monitor-provider-badge')
-    expect(styleSource).toContain('.monitor-channel-card .monitor-status-badge')
+  it('removes old page-level paint-lock stacks and AI-slop patterns', () => {
+    for (const needle of forbiddenOldLockNeedles) {
+      expect(styleSource).not.toContain(needle)
+      expect(targetedRepairSource).not.toContain(needle)
+    }
+    for (const color of forbiddenAiDefaults) {
+      expect(styleSource).not.toContain(color)
+      expect(targetedRepairSource).not.toContain(color)
+    }
+    expect(styleSource).not.toContain('border-l-4 border-primary')
+    expect(styleSource).not.toContain('bg-gradient-to-r from-primary')
+    expect(styleSource).not.toContain('0 12px 42px rgba(201, 100, 66')
   })
 
-  it('keeps dashboard and ops filter bars black and removes non-sidebar butter hover highlights', () => {
-    expect(styleSource).toContain('--atelier-ui-hover-surface:')
-    expect(styleSource).toContain('--atelier-filter-action-surface: var(--atelier-ink);')
-    expect(styleSource).toContain('#app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls')
-    expect(styleSource).toContain('--select-menu-plain-text: var(--atelier-slab-text);')
-    expect(styleSource).toContain('--select-menu-active-text: var(--atelier-ink);')
-    expect(styleSource).toContain('--select-menu-selected-text: var(--atelier-ink);')
-    expect(styleSource).toContain('body.dashboard-filter-menu-open :where(')
-    expect(styleSource).toContain('.select-dropdown-portal .select-option-focused')
-    expect(styleSource).toContain('--date-picker-muted-text: var(--atelier-slab-text);')
-    expect(styleSource).toContain('--date-picker-hover-text: var(--atelier-ink);')
-    expect(styleSource).toContain('--date-picker-active-text: var(--atelier-ink);')
-    expect(styleSource).not.toContain('.select-dropdown-portal .select-option-selected,\n.select-dropdown-portal .select-option-focused')
-    expect(styleSource).toContain('.select-dropdown-portal .select-option-selected.select-option-focused')
-    expect(cssBlock(styleSource, '.select-dropdown-portal .select-option-selected,\n.select-dropdown-portal .select-option-selected.select-option-focused,\n.select-dropdown-portal .select-option-selected:hover')).toContain('background: var(--select-option-selected-surface, var(--atelier-ui-hover-surface)) !important;')
-    expect(cssBlock(styleSource, 'body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset')).toContain('color: var(--date-picker-muted-text) !important;')
-    expect(cssBlock(styleSource, 'body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset:hover')).toContain('color: var(--date-picker-hover-text) !important;')
-    expect(styleSource).toContain('body.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset-active,\nbody.dashboard-filter-menu-open .date-picker-dropdown-portal .date-picker-preset-active:hover {\n  background: var(--date-picker-active-surface) !important;\n  color: var(--date-picker-active-text) !important;')
-    expect(styleSource).toContain('.select-dropdown-portal .select-option-selected .select-option-label')
-    expect(styleSource).toContain('.select-dropdown-portal.ops-toolbar-select-menu :where(.select-option-selected) :where(.select-option-label, svg)')
-    expect(styleSource).toContain('body:has(.table-page-layout) :where(')
-    expect(styleSource).toContain('.select-dropdown-portal .select-option:hover .select-option-label')
-
-    const nonSidebarHoverBlocks = Array.from(
-      styleSource.matchAll(/(^|\n)(?![^\n]*sidebar)[^{\n]*:hover[^{]*\{[^}]*\}/g)
-    ).map((match) => match[0])
-    expect(nonSidebarHoverBlocks.join('\n')).not.toContain('var(--atelier-butter)')
-    expect(nonSidebarHoverBlocks.join('\n')).not.toContain('--atelier-material-2: var(--atelier-butter)')
+  it('keeps high-risk AI theme colors and primary effects out of runtime UI chrome', () => {
+    for (const entry of runtimeUiSources) {
+      for (const color of forbiddenRuntimeColors) {
+        expect(entry.source, `${entry.path} should not contain ${color}`).not.toContain(color)
+      }
+      for (const pattern of runtimeAntiPatterns) {
+        pattern.lastIndex = 0
+        expect(entry.source, `${entry.path} should not match ${pattern}`).not.toMatch(pattern)
+      }
+    }
   })
 
-  it('keeps shared external subscription toggles visible when switched off', () => {
-    expect(toggleSource).toContain('toggle-switch')
-    expect(toggleSource).toContain('toggle-switch__thumb')
-    expect(toggleSource).toContain(':aria-checked="modelValue"')
-    expect(styleSource).toContain('#app .app-layout-content .toggle-switch')
-    expect(styleSource).toContain('#app .app-layout-content .toggle-switch.bg-gray-200')
-    expect(styleSource).toContain('border-color: color-mix(in srgb, var(--atelier-ink) 24%, transparent) !important;')
-    expect(styleSource).toContain('box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-ink) 14%, transparent) !important;')
-    expect(styleSource).toContain('#app .app-layout-content .toggle-switch__thumb')
-    expect(styleSource).toContain('#app .app-layout-content .toggle-switch.bg-primary-600')
-    expect(styleSource).toContain('background: var(--atelier-butter) !important;')
+  it('allows provider SVG brand colors only inside the model icon asset map', () => {
+    const modelIconSource = runtimeSources.find((entry) => entry.path === 'components/common/ModelIcon.vue')?.source
+    expect(modelIconSource).toBeTruthy()
+    expect(modelIconSource).toContain("color: '#10A37F'")
+    for (const entry of runtimeUiSources) {
+      expect(entry.source, `${entry.path} should not use OpenAI green as interface chrome`).not.toMatch(/#10A37F|#10a37f/)
+    }
   })
 
-  it('keeps global theme switching in settings and removes the sidebar footer switcher', () => {
-    expect(mainSource).toContain("import { initAppearanceTheme } from '@/composables/useAppearanceTheme'")
-    expect(mainSource).toContain('initAppearanceTheme()')
-    expect(mainSource).not.toContain("localStorage.setItem('theme', 'light')")
-    expect(appHeaderSource).not.toContain("import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'")
-    expect(appHeaderSource).not.toContain('<ThemeSwitcher')
-    expect(appSidebarSource).not.toContain("import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'")
-    expect(appSidebarSource).not.toContain('<ThemeSwitcher')
-    expect(themeSwitcherSource).toContain('aria-label="Appearance theme"')
-    expect(themeSwitcherSource).toContain('panel-class="theme-switcher-menu w-52 overflow-hidden"')
-    expect(themeSwitcherSource).not.toContain('dark:bg-dark-800')
-    expect(appearanceThemeSource).toContain("export type AppearanceThemeId = 'cloudflare' | 'anthropic'")
-    expect(appearanceThemeSource).not.toContain('newspaper')
-    expect(appearanceThemeSource).toContain("{ id: 'cloudflare', label: 'Cloudflare' }")
-    expect(appearanceThemeSource).toContain("{ id: 'anthropic', label: 'Anthropic' }")
-    expect(appearanceThemeSource).not.toContain("localStorage.setItem(STORAGE_KEY, theme)")
-    expect(appearanceThemeSource).toContain("document.documentElement.dataset.theme = theme")
-    expect(appearanceThemeSource).toContain("document.documentElement.classList.remove('dark')")
-    expect(styleSource).toContain('.sidebar .sidebar-label-collapsed')
-    expect(styleSource).toContain('Base appearance tokens')
-    expect(styleSource).not.toContain(':root[data-theme="newspaper"]')
-    expect(styleSource).not.toContain('.theme-newspaper')
-    expect(styleSource).toContain('.theme-switcher-menu')
-    expect(styleSource).toContain('.theme-switcher-option-active')
-
-    expect(baseThemeBlock).toContain('--atelier-paper:')
-    expect(baseThemeBlock).toContain('--atelier-font-sans:')
-    expect(baseThemeBlock).toContain('--atelier-ui-hover-surface:')
-    expect(baseThemeBlock).not.toContain('grid-template-columns')
-    expect(baseThemeBlock).not.toContain('display: grid')
-    expect(baseThemeBlock).not.toContain('display: flex')
-    expect(baseThemeBlock).not.toContain('position:')
-    expect(baseThemeBlock).not.toContain('width:')
-    expect(baseThemeBlock).not.toContain('height:')
-    expect(baseThemeBlock).not.toContain('padding:')
-    expect(baseThemeBlock).not.toContain('margin:')
+  it('keeps project implementation docs from teaching the retired blue SaaS theme', () => {
+    for (const entry of guardedDocs) {
+      expect(entry.source, `${entry.path} should not mention retired Klein guidance`).not.toMatch(/Klein|#002FA7|#001A6B/i)
+      expect(entry.source, `${entry.path} should not teach indigo defaults`).not.toMatch(/\bindigo-\d{2,3}\b|indigo primary/i)
+      expect(entry.source, `${entry.path} should not teach white shadow cards`).not.toMatch(/\bbg-white\b|\bshadow-(?:xl|2xl|lg)?\b/)
+      expect(entry.source, `${entry.path} should reference Anthropic contract`).toMatch(/Anthropic|anthropic|#141413|#faf9f5/)
+    }
   })
 })

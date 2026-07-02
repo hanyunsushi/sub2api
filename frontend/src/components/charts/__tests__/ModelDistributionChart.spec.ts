@@ -151,7 +151,7 @@ describe('ModelDistributionChart', () => {
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     const colors = chartData.datasets[0].backgroundColor
 
-    expect(colors.slice(0, 5)).toEqual(['#4290F0', '#F5B647', '#E8649D', '#8D58EE', '#50C3B6'])
+    expect(colors.slice(0, 5)).toEqual(['#6a9bcc', '#d1a24a', '#c46686', '#cbcadb', '#788c5d'])
     expect(new Set(colors.slice(0, 5)).size).toBe(5)
   })
 
@@ -185,6 +185,44 @@ describe('ModelDistributionChart', () => {
     expect(label).toBe('model-b: $1.40 (87.5%)')
   })
 
+  it('uses route-tabs for source and metric switches', async () => {
+    const wrapper = mount(ModelDistributionChart, {
+      props: {
+        modelStats,
+        showSourceToggle: true,
+        showMetricToggle: true,
+      },
+      global: {
+        stubs: {
+          LoadingSpinner: true,
+        },
+      },
+    })
+
+    const tabLists = wrapper.findAll('[role="tablist"]')
+    expect(tabLists).toHaveLength(2)
+    expect(tabLists[0].classes()).toContain('route-tabs')
+    expect(tabLists[0].attributes('data-route-tabs')).toBe('model-distribution-source')
+    expect(tabLists[1].attributes('data-route-tabs')).toBe('model-distribution-metric')
+
+    const tabs = wrapper.findAll('[role="tab"]')
+    expect(tabs.map((tab) => tab.attributes('data-route-id'))).toEqual([
+      'requested',
+      'upstream',
+      'mapping',
+      'tokens',
+      'actual_cost',
+    ])
+    expect(tabs[0].attributes('aria-selected')).toBe('true')
+    expect(tabs[3].attributes('aria-selected')).toBe('true')
+
+    await tabs[1].trigger('click')
+    await tabs[4].trigger('click')
+
+    expect(wrapper.emitted('update:source')?.[0]).toEqual(['upstream'])
+    expect(wrapper.emitted('update:metric')?.[0]).toEqual(['actual_cost'])
+  })
+
   it('renders Others in the spending ranking table and uses a dedicated chart color', async () => {
     const wrapper = mount(ModelDistributionChart, {
       props: {
@@ -209,6 +247,10 @@ describe('ModelDistributionChart', () => {
     expect(rankingButton).toBeTruthy()
     await rankingButton!.trigger('click')
 
+    expect(wrapper.find('h3').text()).toBe('User Spending Ranking')
+    expect(rankingButton!.classes()).toContain('model-distribution-toggle-active')
+    expect(rankingButton!.attributes('aria-selected')).toBe('true')
+
     const chartData = JSON.parse(wrapper.find('.chart-data').text())
     expect(chartData.labels).toEqual([
       '#1 alpha@example.com',
@@ -216,8 +258,8 @@ describe('ModelDistributionChart', () => {
       'Others',
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 10])
-    expect(chartData.datasets[0].backgroundColor[0]).toBe('#4290F0')
-    expect(chartData.datasets[0].backgroundColor[2]).toBe('#B9D6FF')
+    expect(chartData.datasets[0].backgroundColor[0]).toBe('#6a9bcc')
+    expect(chartData.datasets[0].backgroundColor[2]).toBe('#e8e6dc')
     expect(chartData.datasets[0].backgroundColor[2]).not.toBe(chartData.datasets[0].backgroundColor[0])
 
     const rows = wrapper.findAll('tbody tr')

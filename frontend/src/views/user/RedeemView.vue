@@ -5,12 +5,12 @@
       <div class="card overflow-hidden">
         <div class="redeem-balance-hero px-6 py-8 text-center">
           <div
-            class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20"
+            class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-lg bg-[var(--anthropic-section)]"
           >
-            <Icon name="creditCard" size="xl" class="text-white" />
+            <Icon name="creditCard" size="xl" class="text-[var(--anthropic-muted)]" />
           </div>
           <p class="redeem-balance-hero-muted text-sm font-medium">{{ t('redeem.currentBalance') }}</p>
-          <p class="mt-2 text-4xl font-bold text-white">
+          <p class="mt-2 text-4xl font-bold text-[var(--anthropic-fg)]">
             ${{ user?.balance?.toFixed(2) || '0.00' }}
           </p>
           <p class="redeem-balance-hero-muted mt-2 text-sm">
@@ -29,7 +29,7 @@
               </label>
               <div class="relative mt-1">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                  <Icon name="gift" size="md" class="text-gray-400 dark:text-dark-500" />
+                  <Icon name="gift" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
                 </div>
                 <input
                   id="code"
@@ -166,21 +166,21 @@
 
       <!-- Information Card -->
       <div
-        class="card border-primary-200 bg-primary-50 dark:border-primary-800/50 dark:bg-primary-900/20"
+        class="card border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
       >
         <div class="p-6">
           <div class="flex items-start gap-4">
             <div
-              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/30"
+              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]"
             >
-              <Icon name="infoCircle" size="md" class="text-primary-600 dark:text-primary-400" />
+              <Icon name="infoCircle" size="md" class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" />
             </div>
             <div class="flex-1">
-              <h3 class="text-sm font-semibold text-primary-800 dark:text-primary-300">
+              <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ t('redeem.aboutCodes') }}
               </h3>
               <ul
-                class="mt-2 list-inside list-disc space-y-1 text-sm text-primary-700 dark:text-primary-400"
+                class="mt-2 list-inside list-disc space-y-1 text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
               >
                 <li>{{ t('redeem.codeRule1') }}</li>
                 <li>{{ t('redeem.codeRule2') }}</li>
@@ -188,7 +188,7 @@
                   {{ t('redeem.codeRule3') }}
                   <span
                     v-if="contactInfo"
-                    class="ml-1.5 inline-flex items-center rounded-md bg-primary-200/50 px-2 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-800/40 dark:text-primary-200"
+                    class="ml-1.5 inline-flex items-center rounded-md bg-[var(--anthropic-section)] px-2 py-0.5 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
                   >
                     {{ contactInfo }}
                   </span>
@@ -202,15 +202,15 @@
 
       <!-- Recent Activity -->
       <div class="card">
-        <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]">
+          <h2 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
             {{ t('redeem.recentActivity') }}
           </h2>
         </div>
         <div class="p-6">
           <!-- Loading State -->
           <div v-if="loadingHistory" class="flex items-center justify-center py-8">
-            <svg class="h-6 w-6 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
+            <svg class="h-6 w-6 animate-spin text-[var(--anthropic-fg)]" fill="none" viewBox="0 0 24 24">
               <circle
                 class="opacity-25"
                 cx="12"
@@ -232,58 +232,39 @@
             <div
               v-for="item in history"
               :key="item.id"
-              class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-dark-800"
+              class="flex items-center justify-between rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]"
             >
               <div class="flex items-center gap-4">
                 <div
-                  :class="[
-                    'flex h-10 w-10 items-center justify-center rounded-xl',
-                    isBalanceType(item.type)
-                      ? item.value >= 0
-                        ? 'bg-emerald-100 dark:bg-emerald-900/30'
-                        : 'bg-red-100 dark:bg-red-900/30'
-                      : isSubscriptionType(item.type)
-                        ? 'bg-purple-100 dark:bg-purple-900/30'
-                        : item.value >= 0
-                          ? 'bg-blue-100 dark:bg-blue-900/30'
-                          : 'bg-orange-100 dark:bg-orange-900/30'
-                  ]"
+                  :class="['redeem-history-icon', getHistoryIconTone(item)]"
                 >
                   <!-- 余额类型图标 -->
                   <Icon
                     v-if="isBalanceType(item.type)"
                     name="dollar"
                     size="md"
-                    :class="
-                      item.value >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-600 dark:text-red-400'
-                    "
+                    :class="item.value >= 0 ? 'redeem-history-value--success' : 'redeem-history-value--danger'"
                   />
                   <!-- 订阅类型图标 -->
                   <Icon
                     v-else-if="isSubscriptionType(item.type)"
                     name="badge"
                     size="md"
-                    class="text-purple-600 dark:text-purple-400"
+                    class="redeem-history-value--muted"
                   />
                   <!-- 并发类型图标 -->
                   <Icon
                     v-else
                     name="bolt"
                     size="md"
-                    :class="
-                      item.value >= 0
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : 'text-orange-600 dark:text-orange-400'
-                    "
+                    :class="item.value >= 0 ? 'redeem-history-value--info' : 'redeem-history-value--warning'"
                   />
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                     {{ getHistoryItemTitle(item) }}
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-dark-400">
+                  <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
                     {{ formatDateTime(item.used_at) }}
                   </p>
                 </div>
@@ -292,32 +273,24 @@
                 <p
                   :class="[
                     'text-sm font-semibold',
-                    isBalanceType(item.type)
-                      ? item.value >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-600 dark:text-red-400'
-                      : isSubscriptionType(item.type)
-                        ? 'text-purple-600 dark:text-purple-400'
-                        : item.value >= 0
-                          ? 'text-blue-600 dark:text-blue-400'
-                          : 'text-orange-600 dark:text-orange-400'
+                    getHistoryValueTone(item)
                   ]"
                 >
                   {{ formatHistoryValue(item) }}
                 </p>
                 <p
                   v-if="!isAdminAdjustment(item.type)"
-                  class="font-mono text-xs text-gray-400 dark:text-dark-500"
+                  class="font-mono text-xs text-[var(--anthropic-muted)] dark:text-dark-500"
                 >
                   {{ item.code.slice(0, 8) }}...
                 </p>
-                <p v-else class="text-xs text-gray-400 dark:text-dark-500">
+                <p v-else class="text-xs text-[var(--anthropic-muted)] dark:text-dark-500">
                   {{ t('redeem.adminAdjustment') }}
                 </p>
                 <!-- Display notes for admin adjustments -->
                 <p
                   v-if="item.notes"
-                  class="mt-1 text-xs text-gray-500 dark:text-dark-400 italic max-w-[200px] truncate"
+                  class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-dark-400 italic max-w-[200px] truncate"
                   :title="item.notes"
                 >
                   {{ item.notes }}
@@ -329,11 +302,11 @@
           <!-- Empty State -->
           <div v-else class="empty-state py-8">
             <div
-              class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-dark-800"
+              class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"
             >
-              <Icon name="clock" size="xl" class="text-gray-400 dark:text-dark-500" />
+              <Icon name="clock" size="xl" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
             </div>
-            <p class="text-sm text-gray-500 dark:text-dark-400">
+            <p class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ t('redeem.historyWillAppear') }}
             </p>
           </div>
@@ -390,6 +363,30 @@ const isSubscriptionType = (type: string) => {
 
 const isAdminAdjustment = (type: string) => {
   return type === 'admin_balance' || type === 'admin_concurrency'
+}
+
+const getHistoryIconTone = (item: RedeemHistoryItem) => {
+  if (isBalanceType(item.type)) {
+    return item.value >= 0 ? 'redeem-history-icon--success' : 'redeem-history-icon--danger'
+  }
+
+  if (isSubscriptionType(item.type)) {
+    return 'redeem-history-icon--muted'
+  }
+
+  return item.value >= 0 ? 'redeem-history-icon--info' : 'redeem-history-icon--warning'
+}
+
+const getHistoryValueTone = (item: RedeemHistoryItem) => {
+  if (isBalanceType(item.type)) {
+    return item.value >= 0 ? 'redeem-history-value--success' : 'redeem-history-value--danger'
+  }
+
+  if (isSubscriptionType(item.type)) {
+    return 'redeem-history-value--muted'
+  }
+
+  return item.value >= 0 ? 'redeem-history-value--info' : 'redeem-history-value--warning'
 }
 
 const getHistoryItemTitle = (item: RedeemHistoryItem) => {
@@ -491,52 +488,62 @@ onMounted(async () => {
 
 <style scoped>
 .redeem-balance-hero {
-  background:
-    linear-gradient(135deg, var(--atelier-terracotta-action), var(--atelier-terracotta-action-hover));
+  border: 1px solid var(--anthropic-cookbook-border);
+  background: var(--anthropic-page);
+  color: var(--atelier-ink);
 }
 
 .redeem-balance-hero-muted {
-  color: color-mix(in srgb, var(--atelier-paper-2) 82%, white);
+  color: var(--anthropic-muted);
 }
 
-.redeem-history-list :where(.bg-emerald-100, .dark\:bg-emerald-900\/30) {
-  background: #dcfce7 !important;
+.redeem-history-icon {
+  align-items: center;
+  border-radius: 0.75rem;
+  display: flex;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
 }
 
-.redeem-history-list :where(.text-emerald-600, .dark\:text-emerald-400) {
-  color: #059669 !important;
+.redeem-history-icon--success {
+  background: color-mix(in srgb, var(--atelier-status-success) 16%, var(--atelier-paper));
 }
 
-.redeem-history-list :where(.bg-red-100, .dark\:bg-red-900\/30) {
-  background: #fee2e2 !important;
+.redeem-history-icon--danger {
+  background: color-mix(in srgb, var(--atelier-status-danger) 16%, var(--atelier-paper));
 }
 
-.redeem-history-list :where(.text-red-600, .dark\:text-red-400) {
-  color: #dc2626 !important;
+.redeem-history-icon--info {
+  background: color-mix(in srgb, var(--atelier-status-info) 16%, var(--atelier-paper));
 }
 
-.redeem-history-list :where(.bg-blue-100, .dark\:bg-blue-900\/30) {
-  background: #dbeafe !important;
+.redeem-history-icon--warning {
+  background: color-mix(in srgb, var(--atelier-status-critical) 16%, var(--atelier-paper));
 }
 
-.redeem-history-list :where(.text-blue-600, .dark\:text-blue-400) {
-  color: #2563eb !important;
+.redeem-history-icon--muted {
+  background: color-mix(in srgb, var(--atelier-surface-muted) 80%, var(--atelier-paper));
 }
 
-.redeem-history-list :where(.bg-purple-100, .dark\:bg-purple-900\/30) {
-  background: #f3e8ff !important;
+.redeem-history-value--success {
+  color: var(--atelier-status-success);
 }
 
-.redeem-history-list :where(.text-purple-600, .dark\:text-purple-400) {
-  color: #9333ea !important;
+.redeem-history-value--danger {
+  color: var(--atelier-status-danger);
 }
 
-.redeem-history-list :where(.bg-orange-100, .dark\:bg-orange-900\/30) {
-  background: #ffedd5 !important;
+.redeem-history-value--info {
+  color: var(--atelier-status-info);
 }
 
-.redeem-history-list :where(.text-orange-600, .dark\:text-orange-400) {
-  color: #ea580c !important;
+.redeem-history-value--warning {
+  color: var(--atelier-status-critical);
+}
+
+.redeem-history-value--muted {
+  color: var(--atelier-muted);
 }
 </style>
 

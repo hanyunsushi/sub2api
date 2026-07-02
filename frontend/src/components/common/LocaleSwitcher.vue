@@ -1,41 +1,49 @@
 <template>
-  <div class="relative" ref="dropdownRef">
+  <div
+    class="relative locale-switcher"
+    ref="dropdownRef"
+    @mouseleave="scheduleClose"
+    @pointerleave="scheduleClose"
+  >
     <button data-testid="common-locale-switcher-button-toggle-dropdown"
       ref="triggerRef"
       @click="toggleDropdown"
+      @mouseenter="openDropdown"
+      @pointerenter="openDropdown"
+      @focus="openDropdown"
       :disabled="switching"
-      class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors"
+      class="language-bar-trigger"
       :class="triggerClass"
       :title="currentLocale?.name"
+      aria-haspopup="menu"
+      :aria-expanded="isOpen ? 'true' : 'false'"
     >
-      <span class="hidden sm:inline">{{ currentLocale?.code.toUpperCase() }}</span>
-      <Icon
-        name="chevronDown"
-        size="xs"
-        class="transition-transform duration-200"
-        :class="[chevronClass, { 'rotate-180': isOpen }]"
-      />
+      <span class="hidden sm:inline">{{ currentLocale?.name }}</span>
+      <span class="topbar-menu-caret" :class="{ 'topbar-menu-caret-open': isOpen }" aria-hidden="true"></span>
     </button>
 
     <FloatingDropdown
       :show="isOpen"
       :trigger-el="triggerRef"
       placement="bottom-end"
-      panel-class="w-32 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+      panel-class="language-bar-menu w-36"
+      @mouseenter="cancelClose"
+      @mouseleave="scheduleClose"
+      @close="closeDropdown"
     >
         <button data-testid="common-locale-switcher-button-select-locale-locale-code"
           v-for="locale in availableLocales"
           :key="locale.code"
           :disabled="switching"
           @click="selectLocale(locale.code)"
-          class="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+          class="language-bar-option flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)] transition-colors"
           :class="{
-            'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400':
+            'language-bar-option-active text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]':
               locale.code === currentLocaleCode
           }"
         >
           <span>{{ locale.name }}</span>
-          <Icon v-if="locale.code === currentLocaleCode" name="check" size="sm" class="ml-auto text-primary-500" />
+          <Icon v-if="locale.code === currentLocaleCode" name="check" size="sm" class="ml-auto text-[var(--anthropic-fg)]" />
         </button>
     </FloatingDropdown>
   </div>
@@ -60,31 +68,54 @@ const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
 const switching = ref(false)
+let closeTimer: ReturnType<typeof setTimeout> | null = null
 
 const currentLocaleCode = computed(() => locale.value)
 const currentLocale = computed(() => availableLocales.find((l) => l.code === locale.value))
 const triggerClass = computed(() =>
   props.tone === 'on-deep'
-    ? 'text-white/85 hover:bg-white/10 hover:text-white disabled:text-white/50'
-    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'
-)
-const chevronClass = computed(() =>
-  props.tone === 'on-deep' ? 'text-white/65' : 'text-gray-400'
+    ? 'language-bar-trigger-on-deep'
+    : 'language-bar-trigger-default'
 )
 
 function toggleDropdown() {
+  cancelClose()
   isOpen.value = !isOpen.value
+}
+
+function openDropdown() {
+  cancelClose()
+  isOpen.value = true
+}
+
+function closeDropdown() {
+  cancelClose()
+  isOpen.value = false
+}
+
+function cancelClose() {
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+    closeTimer = null
+  }
+}
+
+function scheduleClose() {
+  cancelClose()
+  closeTimer = setTimeout(() => {
+    closeDropdown()
+  }, 120)
 }
 
 async function selectLocale(code: string) {
   if (switching.value || code === currentLocaleCode.value) {
-    isOpen.value = false
+    closeDropdown()
     return
   }
   switching.value = true
   try {
     await setLocale(code)
-    isOpen.value = false
+    closeDropdown()
   } finally {
     switching.value = false
   }
@@ -92,7 +123,7 @@ async function selectLocale(code: string) {
 
 function handleClickOutside(event: MouseEvent) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    isOpen.value = false
+    closeDropdown()
   }
 }
 
@@ -102,6 +133,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  cancelClose()
 })
 </script>
 

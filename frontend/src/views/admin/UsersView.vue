@@ -3,15 +3,15 @@
     <TablePageLayout>
       <!-- Single Row: Search, Filters, and Actions -->
       <template #filters>
-        <div class="users-filter-shell flex flex-wrap items-center gap-3">
+        <div class="table-filter-shell users-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <!-- Left: Search + Active Filters -->
-          <div class="users-filter-left flex flex-1 flex-wrap items-center gap-3">
+          <div class="table-filter-left users-filter-left flex flex-1 flex-wrap items-center gap-3">
             <!-- Search Box -->
             <div class="relative w-full md:w-64">
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]"
               />
               <input data-testid="admin-users-input-search-query"
                 v-model="searchQuery"
@@ -25,6 +25,7 @@
             <!-- Role Filter (visible when enabled) -->
             <div v-if="visibleFilters.has('role')" class="w-full sm:w-32">
               <Select
+                variant="text-control"
                 v-model="filters.role"
                 :options="[
                   { value: '', label: t('admin.users.allRoles') },
@@ -38,6 +39,7 @@
             <!-- Status Filter (visible when enabled) -->
             <div v-if="visibleFilters.has('status')" class="w-full sm:w-32">
               <Select
+                variant="text-control"
                 v-model="filters.status"
                 :options="[
                   { value: '', label: t('admin.users.allStatus') },
@@ -51,6 +53,7 @@
             <!-- Group Filter (visible when enabled) -->
             <div v-if="visibleFilters.has('group')" class="w-full sm:w-44">
               <Select
+                variant="text-control"
                 v-model="filters.group"
                 :options="groupFilterOptions"
                 searchable
@@ -64,6 +67,7 @@
             <!-- API Key Group Filter (visible when enabled) -->
             <div v-if="visibleFilters.has('apiKeyGroup')" class="w-full sm:w-44">
               <Select
+                variant="text-control"
                 v-model="filters.apiKeyGroup"
                 :options="apiKeyGroupFilterOptions"
                 searchable
@@ -101,6 +105,7 @@
                 <template v-else-if="['select', 'multi_select'].includes(getAttributeDefinition(Number(attrId))?.type || '')">
                   <div class="w-full">
                     <Select
+                      variant="text-control"
                       :model-value="value"
                       :options="[
                         { value: '', label: getAttributeDefinitionName(Number(attrId)) },
@@ -124,94 +129,112 @@
           </div>
 
           <!-- Right: Actions and Settings -->
-          <div class="users-filter-actions flex flex-wrap items-center justify-end gap-2">
+          <div class="table-filter-actions users-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <!-- Mobile: Secondary buttons (icon only) -->
-            <div class="users-filter-tools flex items-center gap-2 md:contents">
+            <div class="users-filter-tools flex items-center gap-3 md:contents">
               <!-- Refresh Button -->
               <button data-testid="admin-users-button-load-users"
                 @click="loadUsers"
                 :disabled="loading"
-                class="btn btn-secondary px-2 md:px-3"
+                class="btn btn-primary anthropic-refresh-action-button users-refresh-button"
                 :title="t('common.refresh')"
               >
-                <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+                {{ t('common.refresh') }}
               </button>
               <!-- Filter Settings Dropdown -->
-              <div class="relative" ref="filterDropdownRef">
+              <div
+                class="relative"
+                ref="filterDropdownRef"
+                @pointerenter="openFilterDropdown"
+                @mouseenter="openFilterDropdown"
+                @mouseleave="scheduleFilterDropdownClose"
+              >
                 <button data-testid="admin-users-button-show-filter-dropdown-show-filter-dropdown"
                   ref="filterDropdownButtonRef"
-                  @click="showFilterDropdown = !showFilterDropdown"
-                  class="btn btn-secondary px-2 md:px-3"
+                  @click="openFilterDropdown"
+                  class="filter-menu-button filter-menu-button-with-caret"
+                  :class="{ 'filter-menu-button-open': showFilterDropdown }"
                   :title="t('admin.users.filterSettings')"
                 >
-                  <Icon name="filter" size="sm" class="md:mr-1.5" />
-                  <span class="hidden md:inline">{{ t('admin.users.filterSettings') }}</span>
+                  <span>{{ t('admin.users.filterSettings') }}</span>
+                  <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <!-- Dropdown menu -->
                 <FloatingDropdown
                   :show="showFilterDropdown"
                   :trigger-el="filterDropdownButtonRef"
                   placement="bottom-end"
-                  panel-class="w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                  panel-class="dropdown-highlight-menu w-52"
+                  @mouseenter="cancelFilterDropdownClose"
+                  @mouseleave="scheduleFilterDropdownClose"
+                  @close="showFilterDropdown = false"
                 >
                   <!-- Built-in filters -->
                   <button data-testid="admin-users-button-toggle-built-in-filter-filter-key"
                     v-for="filter in builtInFilters"
                     :key="filter.key"
                     @click="toggleBuiltInFilter(filter.key)"
-                    class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                    class="dropdown-highlight-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                   >
                     <span>{{ filter.name }}</span>
                     <Icon
                       v-if="visibleFilters.has(filter.key)"
                       name="check"
                       size="sm"
-                      class="text-primary-500"
+                      class="text-[var(--anthropic-fg)]"
                       :stroke-width="2"
                     />
                   </button>
                   <!-- Divider if custom attributes exist -->
                   <div
                     v-if="filterableAttributes.length > 0"
-                    class="my-1 border-t border-gray-100 dark:border-dark-700"
+                    class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
                   ></div>
                   <!-- Custom attribute filters -->
                   <button data-testid="admin-users-button-toggle-attribute-filter-attr"
                     v-for="attr in filterableAttributes"
                     :key="attr.id"
                     @click="toggleAttributeFilter(attr)"
-                    class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                    class="dropdown-highlight-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                   >
                     <span>{{ attr.name }}</span>
                     <Icon
                       v-if="visibleFilters.has(`attr_${attr.id}`)"
                       name="check"
                       size="sm"
-                      class="text-primary-500"
+                      class="text-[var(--anthropic-fg)]"
                       :stroke-width="2"
                     />
                   </button>
                 </FloatingDropdown>
               </div>
               <!-- Column Settings Dropdown -->
-              <div class="relative" ref="columnDropdownRef">
+              <div
+                class="relative"
+                ref="columnDropdownRef"
+                @pointerenter="openColumnDropdown"
+                @mouseenter="openColumnDropdown"
+                @mouseleave="scheduleColumnDropdownClose"
+              >
                 <button data-testid="admin-users-button-show-column-dropdown-show-column-dropdown"
                   ref="columnDropdownButtonRef"
-                  @click="showColumnDropdown = !showColumnDropdown"
-                  class="btn btn-secondary px-2 md:px-3"
+                  @click="openColumnDropdown"
+                  class="filter-menu-button filter-menu-button-with-caret"
+                  :class="{ 'filter-menu-button-open': showColumnDropdown }"
                   :title="t('admin.users.columnSettings')"
                 >
-                  <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
-                  </svg>
-                  <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
+                  <span>{{ t('admin.users.columnSettings') }}</span>
+                  <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <!-- Dropdown menu -->
                 <FloatingDropdown
                   :show="showColumnDropdown"
                   :trigger-el="columnDropdownButtonRef"
                   placement="bottom-end"
-                  panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                  panel-class="dropdown-highlight-menu max-h-80 w-52 overflow-y-auto"
+                  @mouseenter="cancelColumnDropdownClose"
+                  @mouseleave="scheduleColumnDropdownClose"
+                  @close="showColumnDropdown = false"
                 >
                   <button data-testid="admin-users-button-toggle-column-col-key"
                     v-for="col in toggleableColumns"
@@ -219,10 +242,10 @@
                     :disabled="isForcedVisibleColumn(col.key)"
                     @click="toggleColumn(col.key)"
                     :class="[
-                      'flex w-full items-center justify-between px-4 py-2 text-left text-sm',
+                      'dropdown-highlight-item flex w-full items-center justify-between text-left text-sm',
                       isForcedVisibleColumn(col.key)
-                        ? 'cursor-not-allowed text-gray-400 dark:text-gray-500'
-                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'
+                        ? 'cursor-not-allowed text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+                        : 'text-[var(--anthropic-muted)]'
                     ]"
                     :title="isForcedVisibleColumn(col.key) ? t('admin.users.columnAlwaysVisible') : ''"
                   >
@@ -231,7 +254,7 @@
                       v-if="isColumnVisible(col.key)"
                       name="check"
                       size="sm"
-                      :class="isForcedVisibleColumn(col.key) ? 'text-gray-400 dark:text-gray-500' : 'text-primary-500'"
+                      :class="isForcedVisibleColumn(col.key) ? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]' : 'text-[var(--anthropic-fg)]'"
                       :stroke-width="2"
                     />
                   </button>
@@ -240,17 +263,15 @@
               <!-- Attributes Config Button -->
               <button data-testid="admin-users-button-show-attributes-modal-on"
                 @click="showAttributesModal = true"
-                class="btn btn-secondary px-2 md:px-3"
+                class="filter-menu-button"
                 :title="t('admin.users.attributes.configButton')"
               >
-                <Icon name="cog" size="sm" class="md:mr-1.5" />
-                <span class="hidden md:inline">{{ t('admin.users.attributes.configButton') }}</span>
+                <span>{{ t('admin.users.attributes.configButton') }}</span>
               </button>
             </div>
 
             <!-- Create User Button (full width on mobile, auto width on desktop) -->
-            <button data-testid="admin-users-button-show-create-modal-on" @click="showCreateModal = true" class="users-filter-create btn btn-primary flex-1 md:flex-initial">
-              <Icon name="plus" size="md" class="mr-2" />
+            <button data-testid="admin-users-button-show-create-modal-on" @click="showCreateModal = true" class="btn btn-primary users-filter-create flex-1 md:flex-initial">
               {{ t('admin.users.createUser') }}
             </button>
           </div>
@@ -273,18 +294,18 @@
           <template #cell-email="{ value }">
             <div class="flex items-center gap-2">
               <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30"
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]"
               >
-                <span class="text-sm font-medium text-primary-700 dark:text-primary-300">
+                <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                   {{ value.charAt(0).toUpperCase() }}
                 </span>
               </div>
-              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
             </div>
           </template>
 
           <template #cell-username="{ value }">
-            <span class="text-sm text-gray-700 dark:text-gray-300">{{ value || '-' }}</span>
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ value || '-' }}</span>
           </template>
 
           <template #cell-notes="{ value }">
@@ -292,11 +313,11 @@
               <span
                 v-if="value"
                 :title="value.length > 30 ? value : undefined"
-                class="block truncate text-sm text-gray-600 dark:text-gray-400"
+                class="block truncate text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
               >
                 {{ value.length > 30 ? value.substring(0, 25) + '...' : value }}
               </span>
-              <span v-else class="text-sm text-gray-400">-</span>
+              <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
             </div>
           </template>
 
@@ -308,7 +329,7 @@
           >
             <div class="max-w-xs">
               <span
-                class="block truncate text-sm text-gray-700 dark:text-gray-300"
+                class="block truncate text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
                 :title="getAttributeValue(row.id, def.id)"
               >
                 {{ getAttributeValue(row.id, def.id) }}
@@ -331,13 +352,13 @@
                 class="group/ex relative inline-flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs"
                 @click.stop="toggleExpandedGroup(row.id)"
               >
-                <Icon name="shield" size="xs" class="h-3.5 w-3.5 text-purple-500 dark:text-purple-400" />
-                <span class="font-medium text-purple-600 dark:text-purple-400">{{ getUserGroups(row).exclusive.length }}</span>
-                <span class="text-gray-500 dark:text-dark-400">{{ t('admin.users.exclusiveLabel') }}</span>
+                <Icon name="shield" size="xs" class="h-3.5 w-3.5 text-accent-600 dark:text-accent-500" />
+                <span class="font-medium text-accent-600 dark:text-accent-500">{{ getUserGroups(row).exclusive.length }}</span>
+                <span class="text-[var(--anthropic-muted)] dark:text-dark-400">{{ t('admin.users.exclusiveLabel') }}</span>
                 <!-- Hover tooltip（操作菜单未打开时显示） -->
                 <div
                   v-if="expandedGroupUserId !== row.id"
-                  class="pointer-events-none absolute left-0 top-full z-50 mt-1.5 rounded bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-lg transition-opacity duration-75 group-hover/ex:opacity-100 dark:bg-dark-600"
+                  class="pointer-events-none absolute left-0 top-full z-50 mt-1.5 rounded bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-none transition-opacity duration-75 group-hover/ex:opacity-100 dark:bg-[var(--anthropic-section)]"
                 >
                   <div class="absolute left-4 bottom-full border-4 border-transparent border-b-gray-900 dark:border-b-dark-600"></div>
                   <div class="flex flex-col gap-0.5 whitespace-nowrap">
@@ -349,15 +370,16 @@
                   :show="expandedGroupUserId === row.id"
                   :trigger-el="getExpandedGroupTriggerRef(row.id)"
                   :offset="6"
-                  panel-class="min-w-[160px] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 text-xs shadow-xl dark:border-dark-600 dark:bg-dark-700"
+                  panel-class="dropdown-highlight-menu min-w-[176px] text-xs"
+                  @close="expandedGroupUserId = null"
                 >
-                  <div class="border-b border-gray-100 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:border-dark-600 dark:text-dark-400">
+                  <div class="mb-2 border-b border-[var(--anthropic-border)] px-3 pb-2 pt-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-dark-400">
                     {{ t('admin.users.clickToReplace') }}
                   </div>
                   <div data-testid="admin-users-div-open-group-replace-row-g"
                     v-for="g in getUserGroups(row).exclusive"
                     :key="g.id"
-                    class="flex cursor-pointer items-center gap-2 px-3 py-2 text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-600 dark:text-dark-200 dark:hover:bg-primary-900/30 dark:hover:text-primary-400"
+                    class="dropdown-highlight-item flex cursor-pointer items-center gap-2 text-[var(--anthropic-muted)]"
                     @click.stop="openGroupReplace(row, g)"
                   >
                     <Icon name="swap" size="xs" class="h-3.5 w-3.5 flex-shrink-0 opacity-50" />
@@ -370,11 +392,11 @@
                 v-if="getUserGroups(row).publicGroups.length > 0"
                 class="group/pub relative inline-flex cursor-default items-center gap-1 whitespace-nowrap text-xs"
               >
-                <Icon name="globe" size="xs" class="h-3.5 w-3.5 text-gray-400 dark:text-dark-500" />
-                <span class="font-medium text-gray-600 dark:text-dark-300">{{ getUserGroups(row).publicGroups.length }}</span>
-                <span class="text-gray-400 dark:text-dark-500">{{ t('admin.users.publicLabel') }}</span>
+                <Icon name="globe" size="xs" class="h-3.5 w-3.5 text-[var(--anthropic-muted)] dark:text-dark-500" />
+                <span class="font-medium text-[var(--anthropic-muted)] dark:text-dark-300">{{ getUserGroups(row).publicGroups.length }}</span>
+                <span class="text-[var(--anthropic-muted)] dark:text-dark-500">{{ t('admin.users.publicLabel') }}</span>
                 <!-- Tooltip: 向下弹出 -->
-                <div class="pointer-events-none absolute left-0 top-full z-50 mt-1.5 rounded bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-lg transition-opacity duration-75 group-hover/pub:opacity-100 dark:bg-dark-600">
+                <div class="pointer-events-none absolute left-0 top-full z-50 mt-1.5 rounded bg-gray-900 px-2.5 py-1.5 text-xs text-white opacity-0 shadow-none transition-opacity duration-75 group-hover/pub:opacity-100 dark:bg-[var(--anthropic-section)]">
                   <div class="absolute left-4 bottom-full border-4 border-transparent border-b-gray-900 dark:border-b-dark-600"></div>
                   <div class="flex flex-col gap-0.5 whitespace-nowrap">
                     <span v-for="g in getUserGroups(row).publicGroups" :key="g.id">{{ g.name }}</span>
@@ -384,10 +406,10 @@
               <!-- 都没有 -->
               <span
                 v-if="getUserGroups(row).exclusive.length === 0 && getUserGroups(row).publicGroups.length === 0"
-                class="text-xs text-gray-400 dark:text-dark-500"
+                class="text-xs text-[var(--anthropic-muted)] dark:text-dark-500"
               >-</span>
             </div>
-            <span v-else class="text-xs text-gray-400 dark:text-dark-500">-</span>
+            <span v-else class="text-xs text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
           </template>
 
           <template #cell-subscriptions="{ row }">
@@ -408,7 +430,7 @@
             </div>
             <span
               v-else
-              class="inline-flex items-center gap-1.5 rounded-md bg-gray-50 px-2 py-1 text-xs text-gray-400 dark:bg-dark-700/50 dark:text-dark-500"
+              class="inline-flex items-center gap-1.5 rounded-md bg-[var(--anthropic-section)] px-2 py-1 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-dark-500"
             >
               <Icon name="ban" size="xs" class="h-3.5 w-3.5" />
               <span>{{ t('admin.users.noSubscription') }}</span>
@@ -419,13 +441,13 @@
             <div class="flex items-center gap-2">
               <div class="group relative">
                 <button data-testid="admin-users-button-handle-balance-history-row"
-                  class="font-medium text-gray-900 underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:text-primary-600 dark:text-white dark:decoration-dark-500 dark:hover:text-primary-400"
+                  class="font-medium text-[var(--anthropic-fg)] underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:decoration-dark-500 dark:hover:text-[var(--anthropic-fg)]"
                   @click="handleBalanceHistory(row)"
                 >
                   ${{ value.toFixed(2) }}
                 </button>
                 <!-- Instant tooltip -->
-                <div class="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-75 group-hover:opacity-100 dark:bg-dark-600">
+                <div class="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-none transition-opacity duration-75 group-hover:opacity-100 dark:bg-[var(--anthropic-section)]">
                   {{ t('admin.users.balanceHistoryTip') }}
                   <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-dark-600"></div>
                 </div>
@@ -465,10 +487,10 @@
                 <button data-testid="admin-users-button-toggle-usage-sort-menu-usage-key"
                   :ref="el => setUsageSortButtonRef(usageKey, el)"
                   type="button"
-                  class="flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-gray-200 dark:hover:bg-dark-700"
+                  class="flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
                   :class="usageSort && usageSort.key === usageKey
-                    ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-gray-400 dark:text-dark-500'"
+                    ? 'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                    : 'text-[var(--anthropic-muted)] dark:text-dark-500'"
                   :title="t('admin.users.sortBy')"
                   @click.stop="toggleUsageSortMenu(usageKey)"
                 >
@@ -498,16 +520,17 @@
                   :show="openUsageSortMenu === usageKey"
                   :trigger-el="getUsageSortButtonRef(usageKey)"
                   placement="bottom-end"
-                  panel-class="min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                  panel-class="dropdown-highlight-menu min-w-[136px]"
+                  @close="openUsageSortMenu = null"
                 >
                   <button data-testid="admin-users-button-toggle-usage-sort-usage-key-metric"
                     v-for="metric in (['today', 'total'] as const)"
                     :key="metric"
                     type="button"
-                    class="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-left text-xs normal-case tracking-normal hover:bg-gray-100 dark:hover:bg-dark-700"
+                    class="dropdown-highlight-item flex w-full items-center justify-between gap-3 text-left text-xs normal-case tracking-normal"
                     :class="isUsageSortActive(usageKey, metric)
-                      ? 'font-medium text-primary-600 dark:text-primary-400'
-                      : 'text-gray-700 dark:text-gray-300'"
+                      ? 'font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                      : 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'"
                     @click.stop="toggleUsageSort(usageKey, metric)"
                   >
                     <span>{{ metric === 'today' ? t('admin.users.today') : t('admin.users.total') }}</span>
@@ -525,7 +548,7 @@
                       />
                     </svg>
                   </button>
-                  <div class="mt-1 border-t border-gray-100 px-3 py-1 text-[10px] normal-case tracking-normal text-gray-400 dark:border-dark-700 dark:text-dark-500">
+                  <div class="mt-2 border-t border-[var(--anthropic-border)] px-3 pt-2 text-[10px] normal-case tracking-normal text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-dark-500">
                     {{ t('admin.users.sortCurrentPageOnly') }}
                   </div>
                 </FloatingDropdown>
@@ -573,17 +596,17 @@
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
           </template>
 
           <template #cell-last_used_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ value ? formatDateTime(value) : '-' }}
             </span>
           </template>
 
           <template #cell-last_active_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
               {{ value ? formatDateTime(value) : '-' }}
             </span>
           </template>
@@ -593,7 +616,7 @@
               <!-- Edit Button -->
               <button data-testid="admin-users-button-handle-edit-row"
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t('common.edit') }}</span>
@@ -604,7 +627,7 @@
                 v-if="row.role !== 'admin'"
                 @click="handleToggleStatus(row)"
                 :class="[
-                  'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors',
+                  'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors',
                   row.status === 'active'
                     ? 'hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400'
                     : 'hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400'
@@ -618,8 +641,8 @@
               <!-- More Actions Menu Trigger -->
               <button data-testid="admin-users-button-open-action-menu-row-event"
                 @click="openActionMenu(row, $event)"
-                class="action-menu-trigger flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white"
-                :class="{ 'bg-gray-100 text-gray-900 dark:bg-dark-700 dark:text-white': activeMenuId === row.id }"
+                class="action-menu-trigger flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-white"
+                :class="{ 'bg-[var(--anthropic-raised)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]': activeMenuId === row.id }"
               >
                 <Icon name="more" size="sm" />
                 <span class="text-xs">{{ t('common.more') }}</span>
@@ -655,36 +678,36 @@
     <Teleport to="body">
       <div
         v-if="activeMenuId !== null && menuPosition"
-        class="action-menu-content fixed z-[9999] w-48 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
+        class="action-menu-content dropdown-highlight-menu fixed z-[9999] w-52"
         :style="{ top: menuPosition.top + 'px', left: menuPosition.left + 'px' }"
       >
-        <div class="py-1">
+        <div class="grid gap-0.5">
           <template v-for="user in users" :key="user.id">
             <template v-if="user.id === activeMenuId">
               <!-- View API Keys -->
               <button data-testid="admin-users-button-handle-view-api-keys-user"
                 @click="handleViewApiKeys(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
-                <Icon name="key" size="sm" class="text-gray-400" :stroke-width="2" />
+                <Icon name="key" size="sm" class="text-[var(--anthropic-muted)]" :stroke-width="2" />
                 {{ t('admin.users.apiKeys') }}
               </button>
 
               <!-- Allowed Groups -->
               <button data-testid="admin-users-button-handle-allowed-groups-user"
                 @click="handleAllowedGroups(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
-                <Icon name="users" size="sm" class="text-gray-400" :stroke-width="2" />
+                <Icon name="users" size="sm" class="text-[var(--anthropic-muted)]" :stroke-width="2" />
                 {{ t('admin.users.groups') }}
               </button>
 
-              <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
+              <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
 
               <!-- Deposit -->
               <button data-testid="admin-users-button-handle-deposit-user"
                 @click="handleDeposit(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
                 <Icon name="plus" size="sm" class="text-emerald-500" :stroke-width="2" />
                 {{ t('admin.users.deposit') }}
@@ -693,7 +716,7 @@
               <!-- Withdraw -->
               <button data-testid="admin-users-button-handle-withdraw-user"
                 @click="handleWithdraw(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
                 <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
@@ -704,28 +727,28 @@
               <!-- Platform Quotas -->
               <button data-testid="admin-users-button-handle-platform-quota-user"
                 @click="handlePlatformQuota(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
-                <Icon name="chartBar" size="sm" class="text-gray-400" :stroke-width="2" />
+                <Icon name="chartBar" size="sm" class="text-[var(--anthropic-muted)]" :stroke-width="2" />
                 {{ t('admin.users.platformQuota.menuItem') }}
               </button>
 
               <!-- Balance History -->
               <button data-testid="admin-users-button-handle-balance-history-user"
                 @click="handleBalanceHistory(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-muted)]"
               >
-                <Icon name="dollar" size="sm" class="text-gray-400" :stroke-width="2" />
+                <Icon name="dollar" size="sm" class="text-[var(--anthropic-muted)]" :stroke-width="2" />
                 {{ t('admin.users.balanceHistory') }}
               </button>
 
-              <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
+              <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
 
               <!-- Delete (not for admin) -->
               <button data-testid="admin-users-button-handle-delete-user"
                 v-if="user.role !== 'admin'"
                 @click="handleDelete(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-error)]"
               >
                 <Icon name="trash" size="sm" :stroke-width="2" />
                 {{ t('common.delete') }}
@@ -844,14 +867,12 @@ const getAttributeValue = (userId: number, attrId: number): string => {
 
 const userRoleBadgeClass = (role: string) => [
   'badge',
-  'semantic-badge',
-  role === 'admin' ? 'semantic-badge--info' : 'semantic-badge--neutral'
+  role === 'admin' ? 'badge-primary' : 'badge-gray'
 ]
 
 const userStatusBadgeClass = (status: string) => [
   'badge',
-  'semantic-badge',
-  status === 'active' ? 'semantic-badge--success' : 'semantic-badge--danger'
+  status === 'active' ? 'badge-success' : 'badge-danger'
 ]
 
 // All possible columns (for column settings)
@@ -1122,6 +1143,50 @@ const filterDropdownRef = ref<HTMLElement | null>(null)
 const columnDropdownRef = ref<HTMLElement | null>(null)
 const filterDropdownButtonRef = ref<HTMLElement | null>(null)
 const columnDropdownButtonRef = ref<HTMLElement | null>(null)
+let filterDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
+let columnDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
+
+const cancelFilterDropdownClose = () => {
+  if (filterDropdownCloseTimer) {
+    clearTimeout(filterDropdownCloseTimer)
+    filterDropdownCloseTimer = null
+  }
+}
+
+const openFilterDropdown = () => {
+  cancelFilterDropdownClose()
+  showFilterDropdown.value = true
+  showColumnDropdown.value = false
+}
+
+const scheduleFilterDropdownClose = () => {
+  cancelFilterDropdownClose()
+  filterDropdownCloseTimer = setTimeout(() => {
+    showFilterDropdown.value = false
+    filterDropdownCloseTimer = null
+  }, 160)
+}
+
+const cancelColumnDropdownClose = () => {
+  if (columnDropdownCloseTimer) {
+    clearTimeout(columnDropdownCloseTimer)
+    columnDropdownCloseTimer = null
+  }
+}
+
+const openColumnDropdown = () => {
+  cancelColumnDropdownClose()
+  showColumnDropdown.value = true
+  showFilterDropdown.value = false
+}
+
+const scheduleColumnDropdownClose = () => {
+  cancelColumnDropdownClose()
+  columnDropdownCloseTimer = setTimeout(() => {
+    showColumnDropdown.value = false
+    columnDropdownCloseTimer = null
+  }, 160)
+}
 
 // localStorage keys
 const FILTER_VALUES_KEY = 'user-filter-values'
