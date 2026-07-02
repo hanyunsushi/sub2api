@@ -3,12 +3,12 @@
     <div class="space-y-6">
       <!-- Title -->
       <div class="text-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 class="text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
           {{ t('auth.verifyYourEmail') }}
         </h2>
-        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
           {{ t('auth.sendCodeDesc') }}
-          <span class="font-medium text-gray-700 dark:text-gray-300">{{ email }}</span>
+          <span class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ email }}</span>
         </p>
       </div>
 
@@ -36,6 +36,7 @@
             {{ t('auth.verificationCode') }}
           </label>
           <input
+            data-testid="auth-email-verify-input-verify-code"
             id="code"
             v-model="verifyCode"
             type="text"
@@ -78,7 +79,7 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" :disabled="isLoading || !verifyCode" class="btn btn-primary w-full">
+        <button data-testid="auth-email-verify-button-submit" type="submit" :disabled="isLoading || !verifyCode" class="btn btn-primary w-full">
           <svg
             v-if="isLoading"
             class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
@@ -106,21 +107,23 @@
         <!-- Resend Code -->
         <div class="text-center">
           <button
+            data-testid="auth-email-verify-button-button"
             v-if="countdown > 0"
             type="button"
             disabled
-            class="cursor-not-allowed text-sm text-gray-400 dark:text-dark-500"
+            class="cursor-not-allowed text-sm text-[var(--anthropic-muted)] dark:text-dark-500"
           >
             {{ t('auth.resendCountdown', { countdown }) }}
           </button>
           <button
+            data-testid="auth-email-verify-button-handle-resend-code"
             v-else
             type="button"
             @click="handleResendCode"
             :disabled="
               isSendingCode || (turnstileEnabled && showResendTurnstile && !resendTurnstileToken)
             "
-            class="text-sm text-primary-600 transition-colors hover:text-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:text-primary-400 dark:hover:text-primary-300"
+            class="text-sm text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
           >
             <span v-if="isSendingCode">{{ t('auth.sendingCode') }}</span>
             <span v-else-if="turnstileEnabled && !showResendTurnstile">
@@ -135,8 +138,9 @@
     <!-- Footer -->
     <template #footer>
       <button
+        data-testid="auth-email-verify-button-handle-back"
         @click="handleBack"
-        class="flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-gray-300"
+        class="flex items-center gap-2 text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:text-dark-400 dark:hover:text-gray-300"
       >
         <Icon name="arrowLeft" size="sm" />
         {{ t('auth.backToRegistration') }}
