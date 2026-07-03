@@ -87,6 +87,20 @@ describe('DateRangePicker', () => {
     expect(componentSource).toContain('text-decoration-line: underline !important;')
   })
 
+  it('uses design-system text date inputs instead of native date pickers', () => {
+    expect(componentSource).toContain('type="text"')
+    expect(componentSource).toContain('inputmode="numeric"')
+    expect(componentSource).toContain('placeholder="YYYY-MM-DD"')
+    expect(componentSource).toContain('pattern="\\d{4}-\\d{2}-\\d{2}"')
+    expect(componentSource).toContain("const normalizeDateInput = (field: 'start' | 'end')")
+    expect(componentSource).toContain("normalizeDateInput('start')")
+    expect(componentSource).toContain("normalizeDateInput('end')")
+    expect(componentSource).not.toContain('type="date"')
+    expect(componentSource).not.toContain('type="datetime-local"')
+    expect(componentSource).toContain('.date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator')
+    expect(componentSource).toContain('display: none !important;')
+  })
+
   it('closes a hover-opened dropdown after the pointer leaves', async () => {
     vi.useFakeTimers()
     const today = formatLocalDate(new Date())

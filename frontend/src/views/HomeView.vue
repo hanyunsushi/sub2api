@@ -875,13 +875,14 @@ onBeforeUnmount(() => {
 
 .home-feature-section {
   max-width: none;
-  background: var(--home-surface-dust);
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .home-provider-section {
   max-width: none;
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .home-hero {
@@ -1324,8 +1325,8 @@ onBeforeUnmount(() => {
 .home-capability-kicker {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--atelier-ink);
-  border-left: 1px solid var(--atelier-ink);
+  border-top: 1px solid var(--atelier-line-strong);
+  border-left: 1px solid var(--atelier-line-strong);
 }
 
 .home-ascii-shell .home-capability-kicker-item {
@@ -1335,9 +1336,9 @@ onBeforeUnmount(() => {
   gap: 12px;
   min-height: 82px;
   padding: 18px 20px;
-  border-right: 1px solid var(--atelier-ink);
-  border-bottom: 1px solid var(--atelier-ink);
-  background: var(--home-surface-paper-2);
+  border-right: 1px solid var(--atelier-line-strong);
+  border-bottom: 1px solid var(--atelier-line-strong);
+  background: var(--atelier-paper);
   color: var(--atelier-ink);
   font-family: var(--atelier-font-mono);
   font-size: 12px;
@@ -1348,12 +1349,12 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(2) {
-  background: var(--home-surface-paper);
+  background: var(--atelier-paper-2);
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(3) {
-  background: var(--home-surface-ink);
-  color: var(--atelier-white);
+  background: var(--atelier-surface-dust);
+  color: var(--atelier-ink);
 }
 
 .home-capability-kicker-item b {
@@ -1363,28 +1364,28 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-capability-kicker-item:hover {
   transform: translate3d(0, -2px, 0);
-  background: color-mix(in srgb, var(--atelier-blue) 9%, var(--home-surface-paper));
+  background: var(--atelier-surface-dust);
 }
 
 .home-capability-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--atelier-ink);
-  border-left: 1px solid var(--atelier-ink);
+  border-top: 1px solid var(--atelier-line-strong);
+  border-left: 1px solid var(--atelier-line-strong);
 }
 
 .home-ascii-shell .home-cap-card {
-  --home-card-accent: var(--atelier-blue);
-  --home-card-surface: var(--home-surface-paper);
+  --home-card-accent: var(--atelier-butter);
+  --home-card-surface: var(--atelier-paper);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   align-content: start;
   gap: 18px;
   min-height: 380px;
   padding: clamp(20px, 2.5vw, 34px);
-  border-right: 1px solid var(--atelier-ink);
-  border-bottom: 1px solid var(--atelier-ink);
-  border-top: 1px solid var(--atelier-ink);
+  border-right: 1px solid var(--atelier-line-strong);
+  border-bottom: 1px solid var(--atelier-line-strong);
+  border-top: 1px solid var(--atelier-line-strong);
   background: var(--home-card-surface);
   color: var(--atelier-ink);
   transition:
@@ -1395,28 +1396,30 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-cap-card:hover {
   transform: translate3d(0, -4px, 0);
+  background: var(--atelier-surface-dust);
   box-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
 }
 
 .home-ascii-shell .home-cap-card-featured {
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
+  background: var(--atelier-paper);
+  color: var(--atelier-ink);
+  box-shadow: inset 0 4px 0 var(--atelier-butter);
 }
 
 .home-ascii-shell .home-cap-card-dust {
   --home-card-accent: var(--atelier-dust);
-  background: var(--home-surface-dust);
+  background: var(--atelier-surface-dust);
 }
 
 .home-ascii-shell .home-cap-card-ink {
-  --home-card-accent: var(--atelier-blue-dark);
-  --home-card-surface: var(--home-surface-ink);
-  color: var(--atelier-white);
+  --home-card-accent: var(--atelier-butter-dark);
+  --home-card-surface: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 .home-ascii-shell .home-cap-card-paper {
   --home-card-accent: var(--atelier-dust);
-  background: var(--home-surface-paper-2);
+  background: var(--atelier-paper);
 }
 
 .home-card-index {
@@ -1471,12 +1474,12 @@ onBeforeUnmount(() => {
   align-items: end;
   gap: clamp(18px, 3vw, 46px);
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 250, 240, 0.42);
+  border-top: 1px solid var(--atelier-line-strong);
 }
 
 .home-section-title {
   margin: 0;
-  color: var(--atelier-white);
+  color: var(--atelier-ink);
   font-size: clamp(44px, 5.8vw, 76px);
   font-weight: 760;
   line-height: 0.88;
@@ -1493,7 +1496,7 @@ onBeforeUnmount(() => {
 .home-section-copy {
   margin: 0;
   max-width: 48ch;
-  color: rgba(255, 250, 240, 0.74);
+  color: var(--atelier-muted);
   font-size: 15px;
   line-height: 1.5;
 }
@@ -1506,12 +1509,12 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-provider-specimen {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: rgba(7, 16, 30, 0.13);
-  --home-chip-text: rgba(255, 250, 240, 0.9);
-  --home-provider-card-border: rgba(255, 250, 240, 0.14);
-  --home-provider-card-hover-border: rgba(255, 250, 240, 0.34);
-  --home-provider-card-hover-bg: rgba(7, 16, 30, 0.2);
-  --home-provider-card-muted-bg: rgba(7, 16, 30, 0.08);
+  --home-chip-surface: var(--atelier-paper);
+  --home-chip-text: var(--atelier-ink);
+  --home-provider-card-border: rgba(20, 19, 19, 0.12);
+  --home-provider-card-hover-border: rgba(20, 19, 19, 0.18);
+  --home-provider-card-hover-bg: var(--atelier-paper);
+  --home-provider-card-muted-bg: var(--atelier-surface-dust);
   display: grid;
   grid-column: auto;
   grid-template-rows: minmax(132px, 0.58fr) 1fr;
@@ -1524,10 +1527,8 @@ onBeforeUnmount(() => {
   border-radius: 0;
   background: var(--home-chip-surface);
   color: var(--home-chip-text);
-  backdrop-filter: blur(12px) saturate(1.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 250, 240, 0.08),
-    0 18px 50px -44px rgba(0, 0, 0, 0.68);
+  backdrop-filter: none;
+  box-shadow: none;
   transition:
     border-color 280ms var(--atelier-ease),
     background-color 280ms var(--atelier-ease),
@@ -1537,38 +1538,36 @@ onBeforeUnmount(() => {
 .home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:hover) .home-provider-specimen:not(:hover),
 .home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:focus-within) .home-provider-specimen:not(:focus-within) {
   background: var(--home-provider-card-muted-bg);
-  border-color: rgba(255, 250, 240, 0.1);
+  border-color: rgba(20, 19, 19, 0.12);
 }
 
 .home-ascii-shell .home-provider-specimen:hover,
 .home-ascii-shell .home-provider-specimen:focus-within {
   border-color: var(--home-provider-card-hover-border);
   background: var(--home-provider-card-hover-bg);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 250, 240, 0.12),
-    0 24px 58px -44px rgba(0, 0, 0, 0.72);
+  box-shadow: 0 8px 28px rgba(20, 19, 19, 0.08);
 }
 
 .home-ascii-shell .home-provider-specimen-featured {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: rgba(7, 16, 30, 0.13);
-  --home-chip-text: rgba(255, 250, 240, 0.9);
+  --home-chip-surface: var(--atelier-paper);
+  --home-chip-text: var(--atelier-ink);
 }
 
 .home-ascii-shell .home-provider-specimen-ink {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: rgba(7, 16, 30, 0.13);
-  --home-chip-text: rgba(255, 250, 240, 0.9);
+  --home-chip-surface: var(--atelier-paper);
+  --home-chip-text: var(--atelier-ink);
 }
 
 .home-ascii-shell .home-provider-specimen-dust {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: rgba(7, 16, 30, 0.13);
+  --home-chip-surface: var(--atelier-paper);
 }
 
 .home-ascii-shell .home-provider-specimen-muted {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: rgba(7, 16, 30, 0.13);
+  --home-chip-surface: var(--atelier-paper);
 }
 
 .home-provider-swatch {
@@ -1576,16 +1575,12 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   min-height: 132px;
-  border-bottom: 1px solid rgba(255, 250, 240, 0.14);
-  background:
-    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--home-chip-accent) 28%, transparent), transparent 30%),
-    rgba(255, 250, 240, 0.08);
+  border-bottom: 1px solid rgba(20, 19, 19, 0.1);
+  background: var(--atelier-paper-2);
 }
 
 .home-provider-specimen-featured .home-provider-swatch {
-  background:
-    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--home-chip-accent) 28%, transparent), transparent 30%),
-    rgba(255, 250, 240, 0.08);
+  background: var(--atelier-paper-2);
 }
 
 .home-provider-swatch::before {
@@ -1615,14 +1610,14 @@ onBeforeUnmount(() => {
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 0;
-  color: var(--atelier-white);
+  color: var(--atelier-ink);
   background: transparent;
   font-family: var(--atelier-font-serif);
-  font-size: 52px;
+  font-size: 32px;
   font-style: italic;
 }
 
@@ -1651,7 +1646,7 @@ onBeforeUnmount(() => {
 }
 
 .home-provider-specimen-claude .home-provider-logo-mark :deep(.provider-brand-icon) {
-  color: var(--atelier-white) !important;
+  color: #c05621 !important;
 }
 
 .home-provider-meta {
@@ -1662,12 +1657,12 @@ onBeforeUnmount(() => {
 }
 
 .home-provider-section .home-section-label {
-  color: rgba(255, 250, 240, 0.72);
+  color: var(--atelier-muted);
 }
 
 .home-provider-section .home-section-label::before,
 .home-provider-section .home-section-label::after {
-  background: repeating-linear-gradient(to right, rgba(255, 250, 240, 0.42), rgba(255, 250, 240, 0.42) 2px, transparent 2px, transparent 8px);
+  background: repeating-linear-gradient(to right, var(--atelier-line-strong), var(--atelier-line-strong) 2px, transparent 2px, transparent 8px);
 }
 
 .home-provider-index {
@@ -1957,8 +1952,8 @@ onBeforeUnmount(() => {
   }
 
   .home-provider-mark {
-    width: 56px;
-    height: 56px;
+    width: 38px;
+    height: 38px;
   }
 
   .home-footer {
@@ -2004,21 +1999,23 @@ onBeforeUnmount(() => {
 
 :global(.dark .home-ascii-shell .home-nav-icon),
 :global(.dark .home-ascii-shell .home-nav-action),
-:global(.dark .home-ascii-shell .home-cap-card),
-:global(.dark .home-ascii-shell .home-provider-specimen),
 :global(.dark .home-ascii-shell .home-ring) {
   border-color: rgba(255, 250, 240, 0.28);
 }
 
-:global(.dark .home-ascii-shell .home-section-title),
 :global(.dark .home-ascii-shell .home-brand-name) {
   color: #fffaf0;
 }
 
 :global(.dark .home-ascii-shell .home-hero-subtitle),
-:global(.dark .home-ascii-shell .home-section-copy),
 :global(.dark .home-ascii-shell .home-body-copy) {
   color: rgba(243, 239, 229, 0.72);
+}
+
+:global(.dark .home-ascii-shell .home-feature-section),
+:global(.dark .home-ascii-shell .home-provider-section) {
+  background: var(--atelier-paper-2);
+  color: var(--atelier-ink);
 }
 
 :global(.dark .home-ascii-shell .home-footer .home-footer-text),

@@ -937,19 +937,22 @@ onUnmounted(() => {
 }
 
 /* Skeleton loading */
-@keyframes shimmer-kv {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
 .skeleton {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-  background-size: 200% 100%;
-  animation: shimmer-kv 1.8s ease-in-out infinite;
+  background: var(--anthropic-loading-gradient, linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section)));
+  background-size: 220% 100%;
+  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
   border-radius: 8px;
 }
 :global(.dark) .skeleton {
-  background: linear-gradient(90deg, #334155 25%, #1e293b 50%, #334155 75%);
-  background-size: 200% 100%;
+  background: var(--anthropic-loading-gradient, linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section)));
+  background-size: 220% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    background: var(--anthropic-section);
+    animation: none;
+  }
 }
 
 /* Fade up animation */

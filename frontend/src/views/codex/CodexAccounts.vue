@@ -7,16 +7,6 @@
             <h1 class="codex-title">{{ t('admin.codex.accounts.title') }}</h1>
             <p class="codex-subtitle">{{ t('admin.codex.accounts.description') }}</p>
           </div>
-          <button
-            type="button"
-            class="codex-button codex-button--primary"
-            :disabled="codexStore.loading || !managementKeyDraft.trim()"
-            data-testid="codex-accounts-refresh-quota"
-            @click="refreshAccounts"
-          >
-            <Icon name="refresh" size="sm" :class="{ 'animate-spin': codexStore.loading }" />
-            {{ t('admin.codex.accounts.refreshQuotaStatus') }}
-          </button>
         </header>
 
         <div class="codex-grid">

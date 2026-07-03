@@ -136,10 +136,10 @@
         </tr>
 
         <!-- Empty state -->
-        <tr v-else-if="!data || data.length === 0">
+        <tr v-else-if="!data || data.length === 0" class="data-table-empty-row">
           <td
             :colspan="columns.length"
-            :class="['py-12 text-center text-[var(--anthropic-muted)] dark:text-dark-400', getAdaptivePaddingClass()]"
+            :class="['data-table-empty-cell py-12 text-center text-[var(--anthropic-muted)] dark:text-dark-400', getAdaptivePaddingClass()]"
           >
             <slot name="empty">
               <div class="flex flex-col items-center">
@@ -928,14 +928,23 @@ tbody .sticky-col {
 }
 
 /* hover 状态保持：普通单元格和 sticky 列必须同步，否则整行高亮会断开 */
-.table-body > tr:hover > td,
-tbody tr:hover .sticky-col {
+.table-body > tr:not(.data-table-empty-row):hover > td,
+tbody tr:not(.data-table-empty-row):hover .sticky-col {
   background-color: var(--table-hover-surface);
 }
 
-.dark .table-body > tr:hover > td,
-.dark tbody tr:hover .sticky-col {
+.dark .table-body > tr:not(.data-table-empty-row):hover > td,
+.dark tbody tr:not(.data-table-empty-row):hover .sticky-col {
   background-color: var(--table-hover-surface);
+}
+
+.table-body > tr.data-table-empty-row,
+.table-body > tr.data-table-empty-row:hover,
+.table-body > tr.data-table-empty-row > td,
+.table-body > tr.data-table-empty-row:hover > td {
+  background-color: var(--table-surface);
+  box-shadow: none;
+  transform: none;
 }
 
 /* 阴影只在可滚动时显示 */

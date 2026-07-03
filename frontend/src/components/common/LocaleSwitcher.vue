@@ -26,7 +26,7 @@
       :show="isOpen"
       :trigger-el="triggerRef"
       placement="bottom-end"
-      panel-class="language-bar-menu w-36"
+      panel-class="dropdown dropdown-highlight-menu language-bar-menu w-36"
       @mouseenter="cancelClose"
       @mouseleave="scheduleClose"
       @close="closeDropdown"

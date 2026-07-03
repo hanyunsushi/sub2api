@@ -12,12 +12,16 @@
       <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
         <!-- Tab Navigation -->
         <div class="settings-tabs-shell">
-          <nav
-            class="settings-tabs-scroll"
-            role="tablist"
-            :aria-label="t('admin.settings.title')"
-          >
-            <div class="settings-tabs">
+          <nav class="settings-tabs-scroll">
+            <div
+              ref="settingsTabsRef"
+              class="settings-tabs route-tabs settings-route-tabs"
+              data-route-tabs="admin-settings"
+              role="tablist"
+              :aria-label="t('admin.settings.title')"
+              @mouseleave="moveSettingsTabIndicatorToSelected"
+              @focusout="handleSettingsTabsFocusout"
+            >
               <button
                 v-for="tab in settingsTabs"
                 :key="tab.key"
@@ -30,12 +34,12 @@
                   'settings-tab',
                   activeTab === tab.key && 'settings-tab-active',
                 ]"
+                :data-route-id="tab.key"
+                @mouseenter="moveSettingsTabIndicatorFromEvent"
+                @focus="moveSettingsTabIndicatorFromEvent"
                 @click="selectSettingsTab(tab.key)"
                 @keydown="handleSettingsTabKeydown($event, tab.key)"
               >
-                <span class="settings-tab-icon">
-                  <Icon :name="tab.icon" size="sm" />
-                </span>
                 <span class="settings-tab-label">{{
                   t(`admin.settings.tabs.${tab.key}`)
                 }}</span>
@@ -7211,7 +7215,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  watch,
+} from "vue";
 import { useI18n } from "vue-i18n";
 import { adminAPI } from "@/api";
 import {
@@ -7308,16 +7320,17 @@ type SettingsTab =
   | "email"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
+const settingsTabsRef = ref<HTMLElement | null>(null);
 const settingsTabs = [
-  { key: "general" as SettingsTab, icon: "home" as const },
-  { key: "agreement" as SettingsTab, icon: "document" as const },
-  { key: "features" as SettingsTab, icon: "bolt" as const },
-  { key: "security" as SettingsTab, icon: "shield" as const },
-  { key: "users" as SettingsTab, icon: "user" as const },
-  { key: "gateway" as SettingsTab, icon: "server" as const },
-  { key: "payment" as SettingsTab, icon: "creditCard" as const },
-  { key: "email" as SettingsTab, icon: "mail" as const },
-  { key: "backup" as SettingsTab, icon: "database" as const },
+  { key: "general" as SettingsTab },
+  { key: "agreement" as SettingsTab },
+  { key: "features" as SettingsTab },
+  { key: "security" as SettingsTab },
+  { key: "users" as SettingsTab },
+  { key: "gateway" as SettingsTab },
+  { key: "payment" as SettingsTab },
+  { key: "email" as SettingsTab },
+  { key: "backup" as SettingsTab },
 ];
 
 const settingsTabKeyboardActions = {
@@ -7331,6 +7344,7 @@ const settingsTabKeyboardActions = {
 
 function selectSettingsTab(tab: SettingsTab): void {
   activeTab.value = tab;
+  void nextTick(moveSettingsTabIndicatorToSelected);
 }
 
 function focusSettingsTab(tab: SettingsTab): void {
@@ -7368,6 +7382,45 @@ function handleSettingsTabKeydown(event: KeyboardEvent, tab: SettingsTab): void 
 
   selectSettingsTab(nextTab);
   focusSettingsTab(nextTab);
+}
+
+function moveSettingsTabIndicator(button: HTMLElement | null): void {
+  const tabs = settingsTabsRef.value;
+  if (!tabs || !button) return;
+
+  const tabsRect = tabs.getBoundingClientRect();
+  const buttonRect = button.getBoundingClientRect();
+  tabs.style.setProperty(
+    "--route-indicator-x",
+    `${buttonRect.left - tabsRect.left}px`,
+  );
+  tabs.style.setProperty("--route-indicator-w", `${buttonRect.width}px`);
+}
+
+function selectedSettingsTabButton(): HTMLElement | null {
+  return (
+    settingsTabsRef.value?.querySelector<HTMLElement>(
+      `button[data-route-id="${activeTab.value}"]`,
+    ) ?? null
+  );
+}
+
+function moveSettingsTabIndicatorToSelected(): void {
+  moveSettingsTabIndicator(selectedSettingsTabButton());
+}
+
+function moveSettingsTabIndicatorFromEvent(event: Event): void {
+  moveSettingsTabIndicator(event.currentTarget as HTMLElement | null);
+}
+
+function handleSettingsTabsFocusout(event: FocusEvent): void {
+  const nextTarget = event.relatedTarget;
+  if (
+    !(nextTarget instanceof Node) ||
+    !settingsTabsRef.value?.contains(nextTarget)
+  ) {
+    moveSettingsTabIndicatorToSelected();
+  }
 }
 
 const { copyToClipboard } = useClipboard();
@@ -10311,6 +10364,18 @@ onMounted(() => {
   loadRectifierSettings();
   loadBetaPolicySettings();
   loadProviders();
+  void nextTick(moveSettingsTabIndicatorToSelected);
+  window.addEventListener("resize", moveSettingsTabIndicatorToSelected);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", moveSettingsTabIndicatorToSelected);
+});
+
+watch([activeTab, loading], () => {
+  if (!loading.value) {
+    void nextTick(moveSettingsTabIndicatorToSelected);
+  }
 });
 
 // =========================
@@ -10693,15 +10758,18 @@ watch(
 
 /* ============ 系统设置 Tab 导航 ============ */
 .settings-tabs-shell {
-  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
+  @apply sticky z-20 -mx-1;
   top: 4.75rem;
-  box-shadow:
-    0 12px 28px rgb(15 23 42 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.9) inset;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .settings-tabs-scroll {
-  @apply overflow-x-auto;
+  @apply flex w-full items-center justify-center overflow-x-auto;
+  padding: 0.25rem 0;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -10711,75 +10779,81 @@ watch(
 }
 
 .settings-tabs {
-  @apply flex min-w-max items-center gap-1;
+  --route-indicator-x: 0.25rem;
+  --route-indicator-w: 0px;
+  @apply flex min-w-max items-center justify-center;
+  position: relative;
+  isolation: isolate;
+  width: fit-content;
+  gap: 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 16px;
+  background: var(--anthropic-raised);
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.settings-tabs::before {
+  position: absolute;
+  z-index: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0;
+  width: var(--route-indicator-w);
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+  transform: translateX(var(--route-indicator-x));
+  transition:
+    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
+  @apply relative flex min-h-10 min-w-[5.75rem] shrink-0 items-center justify-center whitespace-nowrap border-0 bg-transparent px-3.5 py-2 text-center text-sm font-medium outline-none transition-colors duration-200 ease-out;
+  z-index: 1;
+  border-radius: 12px;
+  color: var(--anthropic-muted);
+  box-shadow: none;
+  text-decoration-line: none;
+  text-decoration-color: transparent;
 }
 
 @media (min-width: 768px) {
   .settings-tabs {
-    @apply min-w-full;
+    @apply min-w-0;
   }
 
   .settings-tab {
-    @apply min-w-0 flex-1 basis-0 overflow-hidden px-2 text-[13px];
-  }
-
-  .settings-tab-icon {
-    @apply h-6 w-6;
+    @apply overflow-hidden px-3 text-[13px];
   }
 }
 
-.settings-tab::before {
-  @apply absolute inset-0 -z-10 rounded-xl opacity-0 transition-opacity duration-200;
-  content: "";
-  background: linear-gradient(135deg, rgb(248 250 252 / 0.95), rgb(241 245 249 / 0.8));
-}
-
-.settings-tab:hover::before,
-.settings-tab:focus-visible::before {
-  opacity: 1;
+.settings-tab:hover,
+.settings-tab:focus-visible {
+  color: var(--anthropic-fg);
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-tab:focus-visible {
-  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+  outline-offset: 3px;
 }
 
 .settings-tab-active {
-  @apply border-primary-200/80 bg-white text-[var(--anthropic-fg)] shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
-  box-shadow:
-    0 8px 18px rgb(15 23 42 / 0.08),
-    0 1px 0 rgb(255 255 255 / 0.92) inset;
-}
-
-.settings-tab-active::before {
-  opacity: 0;
+  color: var(--anthropic-fg);
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-tab-active::after {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.25rem;
-  left: 0.75rem;
-  height: 2px;
-  border-radius: 9999px;
-  content: "";
-  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
-}
-
-.settings-tab-icon {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
-}
-
-.settings-tab:hover .settings-tab-icon,
-.settings-tab:focus-visible .settings-tab-icon {
-  @apply text-gray-700 dark:text-gray-200;
-}
-
-.settings-tab-active .settings-tab-icon {
-  @apply bg-primary-50 text-[var(--anthropic-fg)] dark:bg-primary-400/10 dark:text-primary-300;
+  display: none;
+  content: none;
 }
 
 .settings-tab-label {
@@ -10792,20 +10866,16 @@ watch(
    because Vue's scoped-CSS compiler was dropping the `:global(.dark) ...`
    rules in the production build, leaving inactive tabs unreadable on dark. */
 .dark .settings-tabs-shell {
-  border-color: rgb(51 65 85 / 0.65);
-  background: rgb(15 23 42 / 0.86);
-  box-shadow:
-    0 16px 36px rgb(0 0 0 / 0.28),
-    0 1px 0 rgb(255 255 255 / 0.06) inset;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
-.dark .settings-tab::before {
-  background: linear-gradient(135deg, rgb(30 41 59 / 0.9), rgb(51 65 85 / 0.62));
+.dark .settings-tabs::before {
+  background: var(--anthropic-page);
 }
 
 .dark .settings-tab-active {
-  box-shadow:
-    0 12px 26px rgb(0 0 0 / 0.22),
-    0 1px 0 rgb(255 255 255 / 0.08) inset;
+  box-shadow: none;
 }
 </style>

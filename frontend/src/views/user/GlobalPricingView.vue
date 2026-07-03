@@ -143,10 +143,12 @@
                   </div>
                 </td>
                 <td :data-card-label="t('globalPricing.columns.provider')">
-                  <span class="meta-pill">{{ item.provider || '-' }}</span>
+                  <span :class="['meta-pill', 'meta-pill-provider', providerPillClass(item.provider)]">
+                    {{ item.provider || '-' }}
+                  </span>
                 </td>
                 <td :data-card-label="t('globalPricing.columns.mode')">
-                  <span class="meta-pill uppercase">{{ item.mode || '-' }}</span>
+                  <span class="meta-pill meta-pill-mode uppercase">{{ item.mode || '-' }}</span>
                 </td>
                 <td class="price-cell" :data-card-label="t('globalPricing.columns.input')">{{ formatTokenPrice(item.input_price) }}</td>
                 <td class="price-cell" :data-card-label="t('globalPricing.columns.cacheWrite')">
@@ -289,6 +291,18 @@ function hasCapabilities(item: GlobalPricingItem): boolean {
   return item.supports_prompt_caching || item.supports_service_tier || hasLongContextMultiplier(item)
 }
 
+function providerPillClass(provider?: string): string {
+  const normalized = (provider || '').toLowerCase()
+  if (normalized.includes('anthropic') || normalized.includes('claude')) return 'meta-pill-provider-anthropic'
+  if (normalized.includes('openai') || normalized.includes('gpt')) return 'meta-pill-provider-openai'
+  if (normalized.includes('gemini') || normalized.includes('google')) return 'meta-pill-provider-gemini'
+  if (normalized.includes('xai') || normalized.includes('grok')) return 'meta-pill-provider-xai'
+  if (normalized.includes('cloudflare') || normalized.includes('azure') || normalized.includes('openrouter')) {
+    return 'meta-pill-provider-infra'
+  }
+  return 'meta-pill-provider-default'
+}
+
 async function loadPricing() {
   loading.value = true
   try {
@@ -306,6 +320,11 @@ onMounted(loadPricing)
 </script>
 
 <style scoped>
+.global-pricing-filter-stack {
+  display: grid;
+  gap: 1rem;
+}
+
 .summary-tile {
   --material-card-surface: var(--atelier-paper-2);
   --material-card-edge: var(--atelier-material-edge);
@@ -388,6 +407,44 @@ onMounted(loadPricing)
   color: var(--atelier-dust);
 }
 
+.meta-pill-provider {
+  border-color: var(--provider-pill-border);
+  background: var(--provider-pill-bg);
+  color: var(--provider-pill-fg);
+}
+
+.meta-pill-provider-anthropic {
+  --provider-pill-border: var(--anthropic-warning-border);
+  --provider-pill-bg: var(--anthropic-warning-bg);
+  --provider-pill-fg: var(--anthropic-warning);
+}
+
+.meta-pill-provider-openai {
+  --provider-pill-border: var(--anthropic-success-border);
+  --provider-pill-bg: var(--anthropic-success-bg);
+  --provider-pill-fg: var(--anthropic-success);
+}
+
+.meta-pill-provider-gemini,
+.meta-pill-provider-infra {
+  --provider-pill-border: var(--anthropic-info-border);
+  --provider-pill-bg: var(--anthropic-info-bg);
+  --provider-pill-fg: var(--anthropic-info);
+}
+
+.meta-pill-provider-xai {
+  --provider-pill-border: var(--anthropic-error-border);
+  --provider-pill-bg: var(--anthropic-error-bg);
+  --provider-pill-fg: var(--anthropic-error);
+}
+
+.meta-pill-provider-default,
+.meta-pill-mode {
+  --provider-pill-border: var(--anthropic-cookbook-border);
+  --provider-pill-bg: var(--anthropic-section);
+  --provider-pill-fg: var(--anthropic-muted);
+}
+
 .capability-pill {
   @apply dark:border-primary-800/60 dark:bg-primary-900/20 dark:text-primary-300;
   border-color: color-mix(in srgb, var(--atelier-blue) 22%, var(--atelier-line));
@@ -463,10 +520,24 @@ thead .model-sticky-col {
 }
 
 .skeleton-line {
-  @apply h-4 animate-pulse rounded bg-gray-200 dark:bg-dark-700;
+  @apply h-4 rounded;
+  background: var(--anthropic-loading-gradient, linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section)));
+  background-size: 220% 100%;
+  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
 }
 
 .skeleton-icon {
-  @apply mx-auto h-7 w-7 animate-pulse rounded-md bg-gray-200 dark:bg-dark-700;
+  @apply mx-auto h-7 w-7 rounded-md;
+  background: var(--anthropic-loading-gradient, linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section)));
+  background-size: 220% 100%;
+  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line,
+  .skeleton-icon {
+    background: var(--anthropic-section);
+    animation: none;
+  }
 }
 </style>

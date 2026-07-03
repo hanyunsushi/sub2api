@@ -1192,23 +1192,35 @@
   }
 
   .sidebar-brand .relative > button {
-    border: 0 !important;
-    background: transparent !important;
+    border: 1px solid var(--sidebar-line) !important;
+    background: var(--anthropic-page) !important;
+    background-color: var(--anthropic-page) !important;
+    color: var(--sidebar-muted) !important;
+    -webkit-text-fill-color: var(--sidebar-muted) !important;
     box-shadow: none !important;
   }
 
   .sidebar-brand .relative > button:where([class~="text-amber-700"], [class~="dark:text-amber-400"]) {
-    background: #fff9ef !important;
-    background-color: #fff9ef !important;
-    color: #eda100 !important;
-    -webkit-text-fill-color: #eda100 !important;
+    background: var(--anthropic-page) !important;
+    background-color: var(--anthropic-page) !important;
+    color: var(--sidebar-muted) !important;
+    -webkit-text-fill-color: var(--sidebar-muted) !important;
   }
 
   .sidebar-brand .relative > button:where([class~="text-gray-600"], [class~="dark:text-dark-400"]) {
-    background: #e8e6dc !important;
-    background-color: #e8e6dc !important;
-    color: #5e5d59 !important;
-    -webkit-text-fill-color: #5e5d59 !important;
+    background: var(--anthropic-page) !important;
+    background-color: var(--anthropic-page) !important;
+    color: var(--sidebar-muted) !important;
+    -webkit-text-fill-color: var(--sidebar-muted) !important;
+  }
+
+  .sidebar-brand .relative > button:hover,
+  .sidebar-brand .relative > button:focus-visible {
+    border-color: var(--sidebar-line-strong) !important;
+    background: var(--anthropic-page) !important;
+    background-color: var(--anthropic-page) !important;
+    color: var(--sidebar-text) !important;
+    -webkit-text-fill-color: var(--sidebar-text) !important;
   }
 
   .sidebar-brand .relative > button > span:first-child {
@@ -1359,13 +1371,10 @@
   }
 
   .skeleton {
-    @apply animate-pulse rounded dark:bg-dark-700;
-    background: linear-gradient(
-      90deg,
-      var(--atelier-surface-muted),
-      var(--atelier-surface-strong),
-      var(--atelier-surface-muted)
-    );
+    @apply rounded;
+    background: var(--anthropic-loading-gradient, linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section)));
+    background-size: 220% 100%;
+    animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
   }
 
   /* ============ 分隔线 ============ */
@@ -2047,6 +2056,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
   --anthropic-border-subtle: rgba(20, 19, 19, 0.08);
   --anthropic-border-hover: rgba(20, 19, 19, 0.16);
+  --anthropic-loading-gradient: linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section));
   --anthropic-accent: #d97757;
   --anthropic-accent-hover: #c6613f;
   --anthropic-clay-interactive: #c96442;
@@ -2202,7 +2212,7 @@ body,
   letter-spacing: 0;
 }
 
-.app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger) {
+.app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger) {
   color: var(--anthropic-muted);
   background: transparent;
   box-shadow: none;
@@ -2211,7 +2221,7 @@ body,
   text-underline-offset: 0.22em;
 }
 
-.app-header-atelier :where(a:hover, a:focus-visible, button:hover, button:focus-visible):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger) {
+.app-header-atelier :where(a:hover, a:focus-visible, button:hover, button:focus-visible):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger) {
   background: transparent;
   color: var(--anthropic-fg);
   text-decoration-color: currentColor;
@@ -2268,19 +2278,21 @@ body,
 }
 
 .topbar-underline-menu :where(.dropdown-item, .balance-row) {
-  min-height: 2.5rem;
+  min-height: var(--anthropic-control-height, 2rem);
   border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--anthropic-muted);
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+  box-shadow: none !important;
   text-decoration-line: underline;
   text-decoration-color: transparent;
   text-underline-offset: 0.22em;
 }
 
 .topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible) {
-  background: transparent;
-  color: var(--anthropic-fg);
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
   text-decoration-color: currentColor;
 }
 
@@ -2338,6 +2350,9 @@ body,
   background: transparent;
   color: var(--anthropic-muted);
   text-decoration-line: none;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  box-shadow: none;
 }
 
 .language-bar-option:hover,
@@ -2346,6 +2361,8 @@ body,
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
+  text-decoration-color: transparent;
+  box-shadow: none;
 }
 
 .sidebar {
@@ -2412,9 +2429,11 @@ body,
 #app .app-layout-content .settings-tabs-shell {
   border: 0 !important;
   border-radius: 0 !important;
+  padding: 0 !important;
   background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
   box-shadow: none !important;
+  overflow: visible !important;
 }
 
 #app .app-layout-content .settings-tabs-scroll {
@@ -2422,27 +2441,100 @@ body,
   width: 100%;
   justify-content: center;
   align-items: center;
+  overflow-x: auto;
+  padding: 0.25rem 0;
 }
 
 #app .app-layout-content .settings-tabs {
+  --route-indicator-x: 0.25rem;
+  --route-indicator-w: 0px;
+  position: relative;
+  isolation: isolate;
+  display: flex !important;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  width: fit-content;
+  min-width: max-content;
+  gap: 0 !important;
+  padding: 0.25rem !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: var(--anthropic-raised) !important;
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft) !important;
+}
+
+#app .app-layout-content .settings-tabs::before {
+  position: absolute;
+  z-index: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0;
+  width: var(--route-indicator-w);
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+  transform: translateX(var(--route-indicator-x));
+  transition:
+    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 #app .app-layout-content .settings-tab {
+  position: relative;
+  z-index: 1;
+  min-height: 2.5rem !important;
+  border: 0 !important;
+  border-radius: 12px !important;
   justify-content: center;
   text-align: center;
+  color: var(--anthropic-muted) !important;
   background: transparent !important;
+  box-shadow: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content .settings-tab:is(:hover, :focus-visible) {
+  color: var(--anthropic-fg) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content .settings-tab:focus-visible {
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline-offset: 2px !important;
+}
+
+#app .app-layout-content .settings-tab[aria-selected="true"],
+#app .app-layout-content .settings-tab.settings-tab-active {
+  color: var(--anthropic-fg) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration-line: none !important;
+}
+
+#app .app-layout-content .settings-tab.settings-tab-active::after {
+  display: none !important;
+  content: none !important;
 }
 
 #app .app-layout-content .settings-tab svg,
 #app .app-layout-content .settings-tab .settings-tab-icon {
   display: none !important;
+}
+
+@media (min-width: 768px) {
+  #app .app-layout-content .settings-tab {
+    overflow: hidden !important;
+    padding-inline: 0.75rem !important;
+    font-size: 13px !important;
+  }
 }
 
 .app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .codex-account-card, .external-subscription-card):where(:hover, :focus-visible) {
@@ -3018,7 +3110,8 @@ body,
 }
 
 .dropdown-highlight-menu,
-.select-dropdown-portal {
+.select-dropdown-portal--highlight,
+.date-picker-dropdown-portal--highlight {
   display: grid;
   gap: 2px;
   padding: 12px;
@@ -3027,7 +3120,8 @@ body,
 }
 
 .dropdown-highlight-item,
-.select-dropdown-portal .select-option,
+.select-dropdown-portal--highlight .select-option,
+.date-picker-dropdown-portal--highlight .date-picker-preset,
 .theme-switcher-option {
   min-height: 2.5rem;
   border-radius: 8px;
@@ -3043,13 +3137,24 @@ body,
 .dropdown-highlight-item:hover,
 .dropdown-highlight-item:focus-visible,
 .dropdown-highlight-item-active,
-:where(.dropdown-item:hover, .action-menu-content button:hover, .action-menu-content a:hover) {
+.dropdown-highlight-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible),
+.action-menu-content :where(button:hover, button:focus-visible, a:hover, a:focus-visible) {
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
 }
 
-:where(.select-option:hover, .select-option-focused, .date-picker-preset:hover, .theme-switcher-option:hover) {
+.dropdown-highlight-menu :where(.dropdown-highlight-item:hover, .dropdown-highlight-item:focus-visible),
+.account-card-action-menu :where(.dropdown-highlight-item:hover, .dropdown-highlight-item:focus-visible) {
+  background: var(--anthropic-section) !important;
+  color: var(--anthropic-fg) !important;
+  text-decoration-line: none !important;
+  box-shadow: none !important;
+}
+
+.select-dropdown-portal--highlight :where(.select-option:hover, .select-option-focused),
+.date-picker-dropdown-portal--highlight :where(.date-picker-preset:hover),
+.theme-switcher-option:hover {
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
@@ -3062,21 +3167,68 @@ body,
   box-shadow: inset 0 0 0 1px var(--anthropic-cookbook-border);
 }
 
-.topbar-underline-menu :where(.dropdown-item, .balance-row) {
+.filter-underline-menu :where(.select-option-selected, .select-option-selected:hover, .select-option-focused, .date-picker-preset-active, .date-picker-preset-active:hover) {
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: currentColor;
+}
+
+.date-picker-dropdown-portal--underline :where(.date-picker-presets, .date-picker-custom, .date-picker-actions) {
+  background: var(--anthropic-page) !important;
+  box-shadow: none !important;
+}
+
+.date-picker-dropdown-portal--underline .date-picker-actions {
+  border-top: 1px solid var(--anthropic-border-subtle) !important;
+}
+
+.date-picker-dropdown-portal--underline :where(.date-picker-preset, .date-picker-preset-active, .date-picker-preset:hover, .date-picker-preset-active:hover) {
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.topbar-underline-menu,
+.filter-underline-menu {
+  padding: 0.75rem;
+}
+
+.topbar-underline-menu :where(.dropdown-item, .balance-row),
+.filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset) {
+  min-height: var(--anthropic-control-height, 2rem);
   border: 0;
-  background: transparent;
-  color: var(--anthropic-muted);
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
   text-decoration-line: underline;
   text-decoration-color: transparent;
   text-underline-offset: 0.22em;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
-.topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible) {
-  background: transparent;
-  color: var(--anthropic-fg);
+.topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible),
+.filter-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .account-tools-menu-item:hover, .account-tools-menu-item:focus-visible, .select-option:hover, .select-option-focused, .date-picker-preset:hover) {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
   text-decoration-color: currentColor;
-  box-shadow: none;
+  box-shadow: none !important;
+}
+
+.topbar-underline-menu :where(.dropdown-item svg, .balance-row svg),
+.filter-underline-menu :where(.dropdown-item svg, .account-tools-menu-item svg, .select-option svg),
+.filter-underline-menu :where(.account-tools-menu-icon) {
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: currentColor !important;
+  box-shadow: none !important;
 }
 
 :where(.caret, .select-icon, .date-picker-chevron, .filter-menu-button::after) {
@@ -3212,11 +3364,17 @@ body,
   background: var(--anthropic-error-bg);
 }
 
-.app-layout-content :where(.loading-line, .skeleton-line, .skeleton, .animate-pulse) {
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section));
+.app-layout-content :where(.loading-line, .skeleton-line, .skeleton, .skeleton-icon),
+.app-layout-content :where(.animate-pulse[class*="bg-[var(--anthropic-raised)]"], .animate-pulse[class*="bg-[var(--anthropic-section)]"], .animate-pulse[class*="bg-gray-200"], .animate-pulse[class*="bg-dark-700"]),
+.app-layout-content :where(.animate-pulse):has(> :where([class*="bg-[var(--anthropic-raised)]"], [class*="bg-[var(--anthropic-section)]"], [class*="bg-gray-200"], [class*="bg-dark-700"])) > :where([class*="bg-[var(--anthropic-raised)]"], [class*="bg-[var(--anthropic-section)]"], [class*="bg-gray-200"], [class*="bg-dark-700"]) {
+  background: var(--anthropic-loading-gradient);
   background-size: 220% 100%;
-  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
+  animation: anthropic-loading-sweep 1.2s ease-in-out infinite !important;
+}
+
+.app-layout-content :where(.loading-line, .skeleton-line) {
+  display: block;
+  border-radius: 999px;
 }
 
 @keyframes anthropic-loading-sweep {
@@ -3224,12 +3382,21 @@ body,
   to { background-position: -100% 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .app-layout-content :where(.loading-line, .skeleton-line, .skeleton, .skeleton-icon),
+  .app-layout-content :where(.animate-pulse[class*="bg-[var(--anthropic-raised)]"], .animate-pulse[class*="bg-[var(--anthropic-section)]"], .animate-pulse[class*="bg-gray-200"], .animate-pulse[class*="bg-dark-700"]),
+  .app-layout-content :where(.animate-pulse):has(> :where([class*="bg-[var(--anthropic-raised)]"], [class*="bg-[var(--anthropic-section)]"], [class*="bg-gray-200"], [class*="bg-dark-700"])) > :where([class*="bg-[var(--anthropic-raised)]"], [class*="bg-[var(--anthropic-section)]"], [class*="bg-gray-200"], [class*="bg-dark-700"]) {
+    background: var(--anthropic-section) !important;
+    animation: none !important;
+  }
+}
+
 .app-layout-content :where(.batch-switch input:checked + .batch-switch__track, .switch-checked .switch-track, .toggle-switch.bg-primary-500, .toggle-switch.bg-primary-600, [role="switch"][aria-checked="true"]) {
   border-color: transparent;
   background: var(--anthropic-focus);
 }
 
-.app-layout-content :where(.table-page-filter-section, .table-page-actions-section, .table-filter-shell, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap, .usage-filter-card, .usage-filter-shell, .global-pricing-filter-card, .order-filter-card, .payment-dashboard-filter-bar, .payment-plans-filter-bar, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .codex-toolbar, .codex-list-actions__filters, .accounts-filter-shell, .users-filter-shell, .keys-filter-shell, .keys-page-actions) {
+.app-layout-content :where(.table-page-filter-section, .table-page-actions-section, .table-filter-shell, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap, .usage-filter-card, .usage-filter-shell, .global-pricing-filter-card, .order-filter-card, .payment-dashboard-filter-bar, .payment-plans-filter-bar, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .codex-toolbar, .codex-list-actions__filters, .accounts-filter-shell, .users-filter-shell, .proxies-filter-shell, .keys-filter-shell, .keys-page-actions) {
   border: 1px solid var(--anthropic-border-hover);
   border-radius: 8px;
   background: var(--anthropic-section);
@@ -3245,7 +3412,7 @@ body,
   letter-spacing: 0;
 }
 
-.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) {
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) {
   align-items: center;
   row-gap: var(--anthropic-control-group-gap);
   column-gap: var(--anthropic-control-gap);
@@ -3258,7 +3425,7 @@ body,
   letter-spacing: 0;
 }
 
-.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label, .filter-label, a, button, [role="button"], .btn, .select-trigger, .date-picker-trigger, .input, .codex-button, .codex-input, .codex-select, select, input[type="search"], input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"]) {
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label, .filter-label, a, button, [role="button"], .btn, .select-trigger, .date-picker-trigger, .input, .codex-button, .codex-input, .codex-select, select, input[type="search"], input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"]) {
   min-height: var(--anthropic-control-height);
   align-items: center;
   font-family: var(--atelier-font-sans);

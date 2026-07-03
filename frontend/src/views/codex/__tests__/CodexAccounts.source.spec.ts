@@ -23,6 +23,20 @@ const getLastCssBlock = (selector: string) => {
 }
 
 describe('CodexAccounts source contracts', () => {
+  it('removes the redundant topbar quota refresh while keeping the list action', () => {
+    const topbarStart = componentSource.indexOf('<header class="codex-topbar">')
+    const topbarEnd = componentSource.indexOf('</header>', topbarStart)
+    const topbarSource = componentSource.slice(topbarStart, topbarEnd)
+
+    expect(topbarSource).toContain('admin.codex.accounts.title')
+    expect(topbarSource).toContain('admin.codex.accounts.description')
+    expect(topbarSource).not.toContain('data-testid="codex-accounts-refresh-quota"')
+    expect(topbarSource).not.toContain('refreshQuotaStatus')
+    expect(componentSource).toContain('data-testid="codex-accounts-refresh-quota-list"')
+    expect(componentSource).toContain('@click="refreshAccounts"')
+    expect(componentSource).toContain('async function refreshAccounts()')
+  })
+
   it('teleports the delete confirmation dialog to body so fixed centering uses the viewport', () => {
     expect(componentSource).toContain('<Teleport to="body">')
     expect(componentSource).toContain('class="codex-modal-backdrop"')

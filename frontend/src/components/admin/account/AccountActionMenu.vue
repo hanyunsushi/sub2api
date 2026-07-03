@@ -4,44 +4,46 @@
       <!-- Backdrop: click anywhere outside to close -->
       <div data-testid="admin-account-account-action-menu-div-emit-close" class="fixed inset-0 z-[9998]" @click="emit('close')"></div>
       <div data-testid="admin-account-account-action-menu-div-div"
-        class="action-menu-content fixed z-[9999] w-52 overflow-hidden rounded-xl bg-[var(--anthropic-page)] shadow-none ring-1 ring-[var(--anthropic-border-subtle)] dark:bg-[var(--anthropic-section)]"
+        class="action-menu-content dropdown-highlight-menu account-card-action-menu fixed z-[9999] w-52"
         :style="{ top: position.top + 'px', left: position.left + 'px' }"
+        @mouseenter="emit('menu-enter')"
+        @mouseleave="emit('menu-leave')"
         @click.stop
       >
         <div class="py-1">
           <template v-if="account">
-            <button data-testid="admin-account-account-action-menu-button-emit-test-account" @click="$emit('test', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-test-account" @click="$emit('test', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm">
               <Icon name="play" size="sm" class="text-green-500" :stroke-width="2" />
               {{ t('admin.accounts.testConnection') }}
             </button>
-            <button data-testid="admin-account-account-action-menu-button-emit-stats-account" @click="$emit('stats', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-stats-account" @click="$emit('stats', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm">
               <Icon name="chart" size="sm" class="text-accent-500" />
               {{ t('admin.accounts.viewStats') }}
             </button>
-            <button data-testid="admin-account-account-action-menu-button-emit-schedule-account" @click="$emit('schedule', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-schedule-account" @click="$emit('schedule', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm">
               <Icon name="clock" size="sm" class="text-orange-500" />
               {{ t('admin.scheduledTests.schedule') }}
             </button>
             <template v-if="account.type === 'oauth' || account.type === 'setup-token'">
-              <button data-testid="admin-account-account-action-menu-button-emit-reauth-account" @click="$emit('reauth', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-[var(--anthropic-info)] hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+              <button data-testid="admin-account-account-action-menu-button-emit-reauth-account" @click="$emit('reauth', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-info)]">
                 <Icon name="link" size="sm" />
                 {{ t('admin.accounts.reAuthorize') }}
               </button>
-              <button data-testid="admin-account-account-action-menu-button-emit-refresh-token-account" @click="$emit('refresh-token', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-accent-600 hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+              <button data-testid="admin-account-account-action-menu-button-emit-refresh-token-account" @click="$emit('refresh-token', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-accent-600">
                 <Icon name="refresh" size="sm" />
                 {{ t('admin.accounts.refreshToken') }}
               </button>
             </template>
-            <button data-testid="admin-account-account-action-menu-button-emit-set-privacy-account" v-if="supportsPrivacy" @click="$emit('set-privacy', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-set-privacy-account" v-if="supportsPrivacy" @click="$emit('set-privacy', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-emerald-600">
               <Icon name="shield" size="sm" />
               {{ t('admin.accounts.setPrivacy') }}
             </button>
             <div v-if="hasRecoverableState" class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
-            <button data-testid="admin-account-account-action-menu-button-emit-recover-state-account" v-if="hasRecoverableState" @click="$emit('recover-state', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-recover-state-account" v-if="hasRecoverableState" @click="$emit('recover-state', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-emerald-600">
               <Icon name="sync" size="sm" />
               {{ t('admin.accounts.recoverState') }}
             </button>
-            <button data-testid="admin-account-account-action-menu-button-emit-reset-quota-account" v-if="hasQuotaLimit" @click="$emit('reset-quota', account); $emit('close')" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-teal-600 hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]">
+            <button data-testid="admin-account-account-action-menu-button-emit-reset-quota-account" v-if="hasQuotaLimit" @click="$emit('reset-quota', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-teal-600">
               <Icon name="refresh" size="sm" />
               {{ t('admin.accounts.resetQuota') }}
             </button>
@@ -59,7 +61,7 @@ import { Icon } from '@/components/icons'
 import type { Account } from '@/types'
 
 const props = defineProps<{ show: boolean; account: Account | null; position: { top: number; left: number } | null }>()
-const emit = defineEmits(['close', 'test', 'stats', 'schedule', 'reauth', 'refresh-token', 'recover-state', 'reset-quota', 'set-privacy'])
+const emit = defineEmits(['close', 'menu-enter', 'menu-leave', 'test', 'stats', 'schedule', 'reauth', 'refresh-token', 'recover-state', 'reset-quota', 'set-privacy'])
 const { t } = useI18n()
 const isRateLimited = computed(() => {
   if (props.account?.rate_limit_reset_at && new Date(props.account.rate_limit_reset_at) > new Date()) {

@@ -194,7 +194,7 @@
             @focus="openDropdown"
             @mouseenter="openDropdown"
             @pointerenter="openDropdown"
-            class="user-menu-trigger flex items-center gap-2 p-1.5 underline decoration-transparent underline-offset-[0.22em] transition-colors hover:decoration-current"
+            class="user-menu-trigger flex items-center gap-2 p-1.5 transition-colors"
             aria-label="User Menu"
             aria-haspopup="menu"
             :aria-expanded="dropdownOpen ? 'true' : 'false'"
@@ -319,7 +319,7 @@
               <div class="border-t border-[var(--anthropic-border)] py-1 dark:border-[var(--anthropic-border)]">
                 <button data-testid="layout-app-header-button-handle-logout"
                   @click="handleLogout"
-                  class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                  class="dropdown-item w-full text-red-600 dark:text-red-400"
                 >
                   <svg
                     class="h-4 w-4"
