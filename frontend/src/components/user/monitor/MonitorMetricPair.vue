@@ -1,7 +1,7 @@
 <template>
   <div class="monitor-metric-pair mt-5 grid grid-cols-2 gap-2">
     <div
-      class="min-w-0 rounded-xl p-3 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
+      class="monitor-metric-tile min-w-0 rounded-xl p-3 bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-page)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
     >
       <div
         class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--anthropic-muted)]"
@@ -14,7 +14,7 @@
       </div>
     </div>
     <div
-      class="min-w-0 rounded-xl p-3 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
+      class="monitor-metric-tile min-w-0 rounded-xl p-3 bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-page)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"
     >
       <div
         class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--anthropic-muted)]"

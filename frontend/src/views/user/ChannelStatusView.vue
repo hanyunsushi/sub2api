@@ -10,20 +10,22 @@
       @refresh="manualReload"
     />
 
-    <MonitorCapacityOverview
-      :items="items"
-      :statuses="externalSubscriptionStatuses"
-      :loading="externalSubscriptionsLoading"
-    />
+    <div class="monitor-page-linked-hover-group">
+      <MonitorCapacityOverview
+        :items="items"
+        :statuses="externalSubscriptionStatuses"
+        :loading="externalSubscriptionsLoading"
+      />
 
-    <MonitorCardGrid
-      :items="items"
-      :window="currentWindow"
-      :countdown-seconds="countdown"
-      :loading="loading"
-      :detail-cache="detailCache"
-      @card-click="openDetail"
-    />
+      <MonitorCardGrid
+        :items="items"
+        :window="currentWindow"
+        :countdown-seconds="countdown"
+        :loading="loading"
+        :detail-cache="detailCache"
+        @card-click="openDetail"
+      />
+    </div>
 
     <MonitorDetailDialog
       :show="showDetail"

@@ -136,7 +136,7 @@
               <button data-testid="user-usage-button-reset-filters" @click="resetFilters" class="filter-menu-button user-usage-reset-button">
                 {{ t('common.reset') }}
               </button>
-              <button data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-primary user-usage-export-button">
+              <button data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-secondary user-usage-export-button">
                 {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
               </button>
             </div>
@@ -145,13 +145,44 @@
 
       <template #table>
         <!-- Tab 切换栏 -->
-        <div v-if="errorViewEnabled" class="mb-0 flex gap-2 border-b border-[var(--anthropic-border)] px-4 pt-3 dark:border-[var(--anthropic-border)]">
-          <button data-testid="user-usage-button-active-tab-usage" class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
-            {{ t('usage.tabs.usage') }}
-          </button>
-          <button data-testid="user-usage-button-switch-to-errors" class="tab" :class="{ 'tab-active': activeTab === 'errors' }" @click="switchToErrors">
-            {{ t('usage.tabs.errors') }}
-          </button>
+        <div v-if="errorViewEnabled" class="user-usage-table-tabs mb-0 px-4 pt-3">
+          <div
+            ref="usageTabsRef"
+            class="route-tabs user-usage-route-tabs inline-flex"
+            data-route-tabs="user-usage"
+            role="tablist"
+            @mouseleave="moveUsageTabIndicatorToSelected"
+            @focusout="handleUsageTabsFocusout"
+          >
+            <button
+              data-testid="user-usage-button-active-tab-usage"
+              type="button"
+              class="user-usage-route-toggle"
+              role="tab"
+              data-route-id="usage"
+              :aria-selected="activeTab === 'usage'"
+              :class="activeTab === 'usage' ? 'user-usage-route-toggle-active' : 'user-usage-route-toggle-idle'"
+              @mouseenter="moveUsageTabIndicatorFromEvent"
+              @focus="moveUsageTabIndicatorFromEvent"
+              @click="switchToUsage"
+            >
+              {{ t('usage.tabs.usage') }}
+            </button>
+            <button
+              data-testid="user-usage-button-switch-to-errors"
+              type="button"
+              class="user-usage-route-toggle"
+              role="tab"
+              data-route-id="errors"
+              :aria-selected="activeTab === 'errors'"
+              :class="activeTab === 'errors' ? 'user-usage-route-toggle-active' : 'user-usage-route-toggle-idle'"
+              @mouseenter="moveUsageTabIndicatorFromEvent"
+              @focus="moveUsageTabIndicatorFromEvent"
+              @click="switchToErrors"
+            >
+              {{ t('usage.tabs.errors') }}
+            </button>
+          </div>
         </div>
 
         <!-- 用量明细表 -->
@@ -588,7 +619,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { usageAPI, keysAPI } from '@/api'
@@ -1053,6 +1084,7 @@ const hideTokenTooltip = () => {
 
 // ── Error Requests Tab ──────────────────────────────────────────────────────
 const activeTab = ref<'usage' | 'errors'>('usage')
+const usageTabsRef = ref<HTMLElement | null>(null)
 const errorViewEnabled = computed(() => appStore.cachedPublicSettings?.allow_user_view_error_requests ?? false)
 
 const errorRows = ref<UserErrorRequest[]>([])
@@ -1092,14 +1124,61 @@ const onErrorFilter = (f: { model: string; category: string; api_key_id: number 
 const onErrorPage = (p: number) => { errorPage.value = p; loadErrors() }
 const onErrorPageSize = (s: number) => { errorPageSize.value = s; errorPage.value = 1; loadErrors() }
 
+function moveUsageTabIndicator(button: HTMLElement | null) {
+  const tabs = usageTabsRef.value
+  if (!tabs || !button) return
+
+  const tabsRect = tabs.getBoundingClientRect()
+  const buttonRect = button.getBoundingClientRect()
+  tabs.style.setProperty('--route-indicator-x', `${buttonRect.left - tabsRect.left}px`)
+  tabs.style.setProperty('--route-indicator-w', `${buttonRect.width}px`)
+}
+
+function selectedUsageTabButton() {
+  return usageTabsRef.value?.querySelector<HTMLElement>(
+    `button[data-route-id="${activeTab.value}"]`
+  ) ?? null
+}
+
+function moveUsageTabIndicatorToSelected() {
+  moveUsageTabIndicator(selectedUsageTabButton())
+}
+
+function moveUsageTabIndicatorFromEvent(event: Event) {
+  moveUsageTabIndicator(event.currentTarget as HTMLElement | null)
+}
+
+function handleUsageTabsFocusout(event: FocusEvent) {
+  const nextTarget = event.relatedTarget
+  if (!(nextTarget instanceof Node) || !usageTabsRef.value?.contains(nextTarget)) {
+    moveUsageTabIndicatorToSelected()
+  }
+}
+
+const switchToUsage = () => {
+  activeTab.value = 'usage'
+  void nextTick(moveUsageTabIndicatorToSelected)
+}
+
 const switchToErrors = () => {
   activeTab.value = 'errors'
   if (errorRows.value.length === 0) loadErrors()
+  void nextTick(moveUsageTabIndicatorToSelected)
 }
 
 onMounted(() => {
   loadApiKeys()
   loadUsageLogs()
   loadUsageStats()
+  void nextTick(moveUsageTabIndicatorToSelected)
+  window.addEventListener('resize', moveUsageTabIndicatorToSelected)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', moveUsageTabIndicatorToSelected)
+})
+
+watch(errorViewEnabled, () => {
+  void nextTick(moveUsageTabIndicatorToSelected)
 })
 </script>

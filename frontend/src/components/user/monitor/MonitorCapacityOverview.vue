@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="cards.length > 0"
-    class="monitor-capacity-overview monitor-card-linked-hover-group mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+    class="monitor-capacity-overview mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4"
     aria-label="Platform shared capacity"
   >
     <article
@@ -46,13 +46,13 @@
       </div>
 
       <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-        <div class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+        <div class="monitor-capacity-metric-tile rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-page)]">
           <div class="text-[var(--anthropic-muted)]">{{ localText('余额来源', 'Sources') }}</div>
           <div class="mt-1 font-mono font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ card.balanceSourceCount }}
           </div>
         </div>
-        <div class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+        <div class="monitor-capacity-metric-tile rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-page)]">
           <div class="text-[var(--anthropic-muted)]">{{ localText('监控渠道', 'Channels') }}</div>
           <div class="mt-1 font-mono font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
             {{ card.monitorCount }}
@@ -478,23 +478,20 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-card:hover {
-  border-color: var(--atelier-material-edge-strong);
-  background: var(--atelier-surface-muted);
+  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
+  background: var(--anthropic-page, #faf9f5);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   outline: 0;
   text-decoration: none;
 }
 
 .monitor-capacity-card:focus-visible {
-  border-color: var(--atelier-material-edge-strong);
-  background: var(--atelier-surface-muted);
+  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
+  background: var(--anthropic-page, #faf9f5);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   outline: 2px solid var(--atelier-focus);
   outline-offset: 2px;
   text-decoration: none;
-}
-
-.monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
-.monitor-card-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
-  background: var(--anthropic-raised, #e8e6dc);
 }
 
 .monitor-capacity-card > * {

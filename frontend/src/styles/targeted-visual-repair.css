@@ -2164,7 +2164,7 @@ body,
 }
 
 /* User monitor cards: Anthropic tutorial-card linked hover contract. */
-#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card) {
+#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card) {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
@@ -2174,7 +2174,7 @@ body,
   transition: background-color 350ms ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
-#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card:hover, .monitor-card-linked-hover-group .monitor-linked-card:focus-visible) {
+#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card:hover, .monitor-page-linked-hover-group .monitor-linked-card:focus-visible) {
   border-color: var(--anthropic-cookbook-border-hover) !important;
   background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
@@ -2184,14 +2184,91 @@ body,
   text-decoration: none !important;
 }
 
-#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
-#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
+#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
+#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-raised) !important;
   color: var(--anthropic-fg) !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
   transform: none !important;
   opacity: 1 !important;
+}
+
+#app .app-layout-content .monitor-page-linked-hover-group :where(.monitor-capacity-metric-tile, .monitor-metric-tile) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .monitor-status-badge.monitor-status-operational {
+  border-color: color-mix(in srgb, var(--anthropic-success) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-success) !important;
+}
+
+#app .app-layout-content .monitor-status-badge.monitor-status-degraded {
+  border-color: color-mix(in srgb, var(--anthropic-warning) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content :where(.monitor-status-badge.monitor-status-failed, .monitor-status-badge.monitor-status-error) {
+  border-color: color-mix(in srgb, var(--anthropic-error) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content .monitor-status-badge.monitor-status-unknown {
+  border-color: var(--anthropic-border) !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+}
+
+#app .app-layout-content .monitor-provider-badge.monitor-provider-openai {
+  border-color: color-mix(in srgb, var(--anthropic-success) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-success) !important;
+}
+
+#app .app-layout-content .monitor-provider-badge.monitor-provider-anthropic {
+  border-color: color-mix(in srgb, var(--anthropic-warning) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content .monitor-provider-badge.monitor-provider-gemini {
+  border-color: color-mix(in srgb, var(--anthropic-info) 36%, transparent) !important;
+  background: transparent !important;
+  color: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content .monitor-provider-badge.monitor-provider-default {
+  border-color: var(--anthropic-border) !important;
+  background: transparent !important;
+  color: var(--anthropic-muted) !important;
+}
+
+#app .app-layout-content .monitor-group-badge {
+  border: 1px solid currentColor !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .monitor-group-badge.monitor-group-gpt {
+  color: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content .monitor-group-badge.monitor-group-claude {
+  color: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content .monitor-group-badge.monitor-group-gemini {
+  color: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content .monitor-group-badge.monitor-group-default {
+  color: var(--anthropic-muted) !important;
 }
 
 #app .app-layout-content .user-keys-atelier > .table-page-actions-section {
@@ -2219,6 +2296,32 @@ body,
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-shell {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: var(--anthropic-control-group-gap) var(--anthropic-control-gap) !important;
+  width: 100% !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-left {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+#app .app-layout-content .user-keys-atelier .keys-filter-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex: 0 1 auto !important;
+  margin-left: auto !important;
+  min-width: 0 !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-list {
+  justify-content: flex-end !important;
 }
 
 #app .app-layout-content .user-keys-atelier .keys-page-actions :where(.keys-refresh-button, .keys-create-button) {
@@ -2262,11 +2365,24 @@ body,
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-item {
+  --endpoint-popover-item-bg: var(--anthropic-page);
+  --endpoint-popover-item-border: var(--anthropic-cookbook-border);
+  --endpoint-popover-item-border-hover: var(--anthropic-cookbook-border-hover);
   min-height: 2.25rem !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.375rem !important;
   padding-block: 0.375rem !important;
+  border-color: var(--endpoint-popover-item-border) !important;
+  background: var(--endpoint-popover-item-bg) !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+}
+
+#app .app-layout-content .user-keys-atelier .endpoint-popover-item:where(:hover, :focus-within) {
+  border-color: var(--endpoint-popover-item-border-hover) !important;
+  background: var(--endpoint-popover-item-bg) !important;
+  box-shadow: 0 0 0 1px var(--endpoint-popover-item-bg), 0 0 0 2px var(--endpoint-popover-item-border-hover) !important;
 }
 
 #app .app-layout-content .user-keys-atelier .endpoint-popover-endpoint {
@@ -2301,6 +2417,18 @@ body,
   stroke: currentColor !important;
 }
 
+@media (max-width: 640px) {
+  #app .app-layout-content .user-keys-atelier .keys-filter-actions {
+    justify-content: flex-start !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  #app .app-layout-content .user-keys-atelier .endpoint-popover-list {
+    justify-content: flex-start !important;
+  }
+}
+
 #app .app-layout-content .user-usage-atelier > .table-page-actions-section {
   width: 100% !important;
   padding: 0 !important;
@@ -2317,6 +2445,250 @@ body,
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-table-tabs {
+  display: flex !important;
+  align-items: center !important;
+  border-bottom: 1px solid var(--anthropic-border-soft) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-route-tabs {
+  --route-indicator-x: 0.25rem;
+  --route-indicator-w: 0px;
+  position: relative !important;
+  isolation: isolate !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  min-height: 3rem !important;
+  gap: 0 !important;
+  padding: 0.25rem !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: var(--anthropic-raised) !important;
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft) !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-route-tabs::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0;
+  width: var(--route-indicator-w);
+  border-radius: 12px;
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+  transform: translateX(var(--route-indicator-x));
+  transition:
+    transform 160ms ease,
+    width 160ms ease;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-route-toggle {
+  position: relative !important;
+  z-index: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 2.5rem !important;
+  padding: 0.5rem 1rem !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  color: var(--anthropic-quiet) !important;
+  box-shadow: none !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  line-height: 1.25rem !important;
+  text-decoration-line: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-route-toggle-active {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-route-toggle-idle:where(:hover, :focus-visible) {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-export-button:not(:disabled) {
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-fg);
+  --button-border: var(--anthropic-fg);
+  --button-bg-hover: var(--anthropic-fg);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-fg);
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 2.5rem !important;
+  min-height: 2.5rem !important;
+  padding: 0 1rem !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 1px var(--button-border) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  line-height: 1.25rem !important;
+  text-decoration-line: none !important;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease !important;
+}
+
+#app .app-layout-content .user-usage-atelier .user-usage-export-button:where(:hover, :focus-visible):not(:disabled) {
+  border: 0 !important;
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 1px var(--button-border-hover) !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-linked-hover-group .global-pricing-linked-card {
+  --global-pricing-summary-bg: var(--anthropic-page);
+  --global-pricing-summary-resting-bg: var(--anthropic-raised);
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--global-pricing-summary-bg) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition:
+    background-color 350ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-linked-hover-group .global-pricing-linked-card:where(:hover, :focus-within) {
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--global-pricing-summary-bg) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-linked-hover-group:has(.global-pricing-linked-card:hover) .global-pricing-linked-card:not(:hover),
+#app .app-layout-content .global-pricing-atelier .global-pricing-linked-hover-group:has(.global-pricing-linked-card:focus-within) .global-pricing-linked-card:not(:focus-within) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--global-pricing-summary-resting-bg) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  transform: none !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-filter-card {
+  padding: 0.75rem 1rem !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-filter-shell {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 0.75rem 1rem !important;
+  width: 100% !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-filter-left {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 0.75rem 1rem !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-filter-actions {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+  width: auto !important;
+  margin-left: auto !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-search-control {
+  width: min(22rem, 34vw) !important;
+  min-width: 18rem !important;
+  max-width: 24rem !important;
+  flex: 0 1 22rem !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-search-control .input {
+  width: 100% !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-filter-left :where(.select-root--field, .select-root--text-control) {
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: 7.5rem !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: max-content !important;
+  min-height: var(--anthropic-control-height) !important;
+  padding: 0 !important;
+  color: var(--anthropic-fg) !important;
+  white-space: nowrap !important;
+  line-height: var(--anthropic-control-line-height) !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter input[type="checkbox"] {
+  width: 1rem !important;
+  height: 1rem !important;
+  min-width: 1rem !important;
+  min-height: 1rem !important;
+  flex: 0 0 1rem !important;
+  accent-color: var(--anthropic-fg) !important;
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  box-shadow: none !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter input[type="checkbox"]:checked {
+  accent-color: var(--anthropic-fg) !important;
+}
+
+#app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter span {
+  display: inline !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+@media (max-width: 900px) {
+  #app .app-layout-content .global-pricing-atelier .global-pricing-filter-shell,
+  #app .app-layout-content .global-pricing-atelier .global-pricing-filter-left,
+  #app .app-layout-content .global-pricing-atelier .global-pricing-filter-actions {
+    flex-wrap: wrap !important;
+  }
+
+  #app .app-layout-content .global-pricing-atelier .global-pricing-search-control {
+    width: min(100%, 22rem) !important;
+    min-width: min(100%, 18rem) !important;
+  }
+
+  #app .app-layout-content .global-pricing-atelier .global-pricing-filter-actions {
+    width: 100% !important;
+    margin-left: 0 !important;
+    justify-content: flex-start !important;
+  }
 }
 
 /* Final form focus contract: mouse focus keeps warm hairline only; keyboard focus

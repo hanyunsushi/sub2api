@@ -3,20 +3,20 @@
     <TablePageLayout class="global-pricing-atelier" scroll-mode="page">
       <template #filters>
         <div class="global-pricing-filter-stack">
-          <div class="global-pricing-summary-row grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="summary-tile admin-material-surface">
+          <div class="global-pricing-summary-row global-pricing-linked-hover-group grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="summary-tile global-pricing-linked-card admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.totalModels') }}</span>
               <strong class="summary-value">{{ pricing?.model_count ?? items.length }}</strong>
             </div>
-            <div class="summary-tile admin-material-surface">
+            <div class="summary-tile global-pricing-linked-card admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.visibleModels') }}</span>
               <strong class="summary-value">{{ filteredItems.length }}</strong>
             </div>
-            <div class="summary-tile admin-material-surface">
+            <div class="summary-tile global-pricing-linked-card admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.providers') }}</span>
               <strong class="summary-value">{{ providerOptions.length }}</strong>
             </div>
-            <div class="summary-tile admin-material-surface">
+            <div class="summary-tile global-pricing-linked-card admin-material-surface">
               <span class="summary-label">{{ t('globalPricing.summary.updated') }}</span>
               <strong class="summary-value summary-value-small">{{ formattedLastUpdated }}</strong>
             </div>
@@ -25,7 +25,7 @@
           <div class="global-pricing-filter-card table-page-filter-section">
             <div class="global-pricing-filter-shell table-filter-shell">
               <div class="global-pricing-filter-left table-filter-left flex flex-1 flex-wrap items-center gap-3">
-                <div class="relative w-full sm:w-80">
+                <div class="global-pricing-search-control relative w-full sm:w-96">
                   <Icon
                     name="search"
                     size="md"
