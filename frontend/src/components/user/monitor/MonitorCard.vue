@@ -23,12 +23,13 @@
           >
             {{ providerLabel(item.provider) }}
           </span>
-          <span class="font-mono text-xs truncate text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <span class="monitor-model-token font-mono text-xs truncate text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ item.primary_model }}
           </span>
           <span
             v-if="item.group_name"
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] flex-shrink-0"
+            class="monitor-group-badge inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-transparent text-[var(--anthropic-muted)] dark:bg-transparent dark:text-[var(--anthropic-muted)] flex-shrink-0"
+            :class="monitorGroupClass(item.group_name)"
           >
             {{ item.group_name }}
           </span>
@@ -142,6 +143,20 @@ function monitorStatusClass(status: MonitorStatus | ''): string {
     default:
       return 'monitor-status-unknown'
   }
+}
+
+function monitorGroupClass(groupName?: string | null): string {
+  const normalized = (groupName || '').trim().toLowerCase()
+  if (normalized.includes('gpt') || normalized.includes('openai')) {
+    return 'monitor-group-gpt'
+  }
+  if (normalized.includes('claude') || normalized.includes('anthropic')) {
+    return 'monitor-group-claude'
+  }
+  if (normalized.includes('gemini')) {
+    return 'monitor-group-gemini'
+  }
+  return 'monitor-group-default'
 }
 
 const availabilityLabel = computed(() => {

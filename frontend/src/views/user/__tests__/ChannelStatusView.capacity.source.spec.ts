@@ -34,6 +34,13 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(viewSource).toContain("<MonitorCapacityOverview")
     expect(viewSource).toContain(":items=\"items\"")
     expect(viewSource).toContain(":statuses=\"externalSubscriptionStatuses\"")
+    expect(viewSource).toContain('class="monitor-page-linked-hover-group"')
+    expect(viewSource.indexOf('class="monitor-page-linked-hover-group"')).toBeLessThan(
+      viewSource.indexOf('<MonitorCapacityOverview')
+    )
+    expect(viewSource.indexOf('class="monitor-page-linked-hover-group"')).toBeLessThan(
+      viewSource.indexOf('<MonitorCardGrid')
+    )
   })
 
   it('aggregates channel monitor groups dynamically by total external balance instead of availability windows', () => {
@@ -94,13 +101,15 @@ describe('ChannelStatusView shared capacity overview source', () => {
   it('uses the Anthropic tutorial-card linked hover contract for shared capacity cards', () => {
     const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
     const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
-    const capacitySiblingBlock = cssBlock(
-      componentSource,
-      '.monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
+    const pageSiblingBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
     )
 
-    expect(componentSource).toContain('monitor-capacity-overview monitor-card-linked-hover-group')
+    expect(componentSource).toContain('monitor-capacity-overview mb-5')
+    expect(componentSource).not.toContain('monitor-capacity-overview monitor-card-linked-hover-group')
     expect(componentSource).toContain('monitor-capacity-card monitor-linked-card')
+    expect(componentSource).toContain('monitor-capacity-metric-tile')
     expect(capacityBaseBlock).not.toContain('--creepee-home-card-hover-shadow')
     expect(capacityBaseBlock).not.toContain('--creepee-home-card-hover-transform')
     expect(capacityBaseBlock).toContain('border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));')
@@ -116,26 +125,27 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(capacityHoverBlock).toContain('text-decoration: none;')
     expect(capacityHoverBlock).not.toContain('translate')
     expect(capacityHoverBlock).not.toContain('--creepee-home-card-hover')
-    expect(capacitySiblingBlock).toContain('background: var(--anthropic-raised, #e8e6dc);')
-    expect(capacitySiblingBlock).not.toContain('opacity')
-    expect(capacitySiblingBlock).not.toContain('translate')
+    expect(pageSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(pageSiblingBlock).not.toContain('opacity: 0.')
+    expect(pageSiblingBlock).not.toContain('translate')
   })
 
   it('applies the same linked hover treatment to channel monitor cards', () => {
     const linkedBaseBlock = cssBlock(
       targetedRepairSource,
-      '#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card)'
+      '#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card)'
     )
     const linkedHoverBlock = cssBlock(
       targetedRepairSource,
-      '#app .app-layout-content :where(.monitor-card-linked-hover-group .monitor-linked-card:hover'
+      '#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card:hover'
     )
     const linkedSiblingBlock = cssBlock(
       targetedRepairSource,
-      '#app .app-layout-content .monitor-card-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
+      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
     )
 
-    expect(monitorGridSource).toContain('monitor-channel-card-grid monitor-card-linked-hover-group')
+    expect(monitorGridSource).toContain('monitor-channel-card-grid grid gap-5')
+    expect(monitorGridSource).not.toContain('monitor-channel-card-grid monitor-card-linked-hover-group')
     expect(monitorCardSource).toContain('monitor-channel-card monitor-linked-card')
     expect(monitorCardSource).not.toContain('shadow-card')
     expect(monitorCardSource).not.toContain('shadow-card-hover')
@@ -160,5 +170,36 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(linkedSiblingBlock).toContain('opacity: 1 !important;')
     expect(linkedSiblingBlock).not.toContain('opacity: 0.')
     expect(linkedSiblingBlock).not.toContain('translate')
+  })
+
+  it('keeps monitor metric tiles paper-colored while preserving semantic status and provider colors', () => {
+    const metricTileBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-page-linked-hover-group :where(.monitor-capacity-metric-tile, .monitor-metric-tile)'
+    )
+    const statusErrorBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content :where(.monitor-status-badge.monitor-status-failed, .monitor-status-badge.monitor-status-error)'
+    )
+    const providerOpenAIBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-provider-badge.monitor-provider-openai'
+    )
+    const groupGPTBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-group-badge.monitor-group-gpt'
+    )
+
+    expect(componentSource).toContain('class="monitor-capacity-metric-tile')
+    expect(monitorCardSource).toContain('monitor-model-token')
+    expect(monitorCardSource).toContain('monitor-group-badge')
+    expect(monitorCardSource).toContain('function monitorGroupClass')
+    expect(monitorCardSource).toContain("return 'monitor-group-gpt'")
+    expect(metricTileBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(metricTileBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(statusErrorBlock).toContain('color: var(--anthropic-error) !important;')
+    expect(statusErrorBlock).toContain('background: transparent !important;')
+    expect(providerOpenAIBlock).toContain('color: var(--anthropic-success) !important;')
+    expect(groupGPTBlock).toContain('color: var(--anthropic-info) !important;')
   })
 })

@@ -33,7 +33,7 @@
 
     <div
       v-else
-      class="monitor-channel-card-grid monitor-card-linked-hover-group grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+      class="monitor-channel-card-grid grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
     >
       <MonitorCard
         v-for="item in items"
