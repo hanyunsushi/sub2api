@@ -10,9 +10,335 @@
     <meta name="apple-mobile-web-app-title" content="Sub2API" />
     <meta name="theme-color" content="#faf9f5" />
     <title>Sub2API - AI API Gateway</title>
+    <style>
+      :root {
+        --boot-page: #faf9f5;
+        --boot-section: #f0eee6;
+        --boot-raised: #e8e6dc;
+        --boot-fg: #141413;
+        --boot-muted: #5e5d59;
+        --boot-border: rgba(20, 19, 19, 0.08);
+        --boot-border-hover: rgba(20, 19, 19, 0.16);
+        --boot-font: "Anthropic Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+        --boot-ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+      }
+
+      html,
+      body,
+      #app {
+        min-height: 100%;
+        margin: 0;
+        background: var(--boot-page);
+        color: var(--boot-fg);
+        font-family: var(--boot-font);
+      }
+
+      .app-boot-placeholder {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 16rem minmax(0, 1fr);
+        background: var(--boot-page);
+      }
+
+      .app-boot-sidebar {
+        min-width: 0;
+        padding: 1rem;
+        border-right: 1px solid var(--boot-border);
+        background: var(--boot-page);
+      }
+
+      .app-boot-brand,
+      .app-boot-nav-item,
+      .app-boot-topbar {
+        display: flex;
+        align-items: center;
+      }
+
+      .app-boot-brand {
+        gap: 0.75rem;
+        min-height: 3rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--boot-border);
+      }
+
+      .app-boot-mark {
+        width: 2rem;
+        height: 2rem;
+        flex: 0 0 auto;
+        border: 1px solid var(--boot-border);
+        border-radius: 0.5rem;
+        background: var(--boot-section);
+      }
+
+      .app-boot-nav {
+        display: grid;
+        gap: 0.5rem;
+        padding-top: 1rem;
+      }
+
+      .app-boot-nav-item {
+        min-height: 2.25rem;
+        gap: 0.625rem;
+        border-radius: 0.5rem;
+      }
+
+      .app-boot-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: var(--boot-raised);
+      }
+
+      .app-boot-main {
+        min-width: 0;
+        background: var(--boot-page);
+      }
+
+      .app-boot-topbar {
+        min-height: 4rem;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid var(--boot-border);
+      }
+
+      .app-boot-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .app-boot-content {
+        display: grid;
+        gap: 1rem;
+        padding: 1.5rem;
+      }
+
+      .app-boot-filter,
+      .app-boot-card,
+      .app-boot-table {
+        border: 1px solid var(--boot-border);
+        border-radius: 0.5rem;
+        background: var(--boot-page);
+      }
+
+      .app-boot-filter {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-height: 4rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .app-boot-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .app-boot-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .app-boot-card {
+        display: grid;
+        align-content: start;
+        gap: 0.875rem;
+        min-height: 9rem;
+        padding: 1.25rem;
+      }
+
+      .app-boot-table {
+        overflow: hidden;
+      }
+
+      .app-boot-row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 0.8fr 0.6fr;
+        align-items: center;
+        gap: 1rem;
+        min-height: 3.5rem;
+        padding: 0 1rem;
+        border-top: 1px solid var(--boot-border);
+      }
+
+      .app-boot-row:first-child {
+        border-top: 0;
+        background: var(--boot-section);
+      }
+
+      .app-boot-line {
+        display: block;
+        height: 0.625rem;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--boot-section), var(--boot-raised), var(--boot-section));
+        background-size: 220% 100%;
+        animation: app-boot-sweep 1.2s var(--boot-ease) infinite;
+      }
+
+      .app-boot-line.is-tall {
+        height: 1rem;
+      }
+
+      .app-boot-line.is-button {
+        width: 5rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+      }
+
+      @keyframes app-boot-sweep {
+        from {
+          background-position: 100% 0;
+        }
+        to {
+          background-position: -100% 0;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app-boot-placeholder {
+          display: block;
+        }
+
+        .app-boot-sidebar {
+          display: none;
+        }
+
+        .app-boot-topbar {
+          min-height: 3.5rem;
+          padding-inline: 1rem;
+        }
+
+        .app-boot-actions {
+          gap: 0.5rem;
+        }
+
+        .app-boot-content {
+          padding: 1rem;
+        }
+
+        .app-boot-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .app-boot-row {
+          grid-template-columns: 1fr 0.7fr;
+        }
+
+        .app-boot-row span:nth-child(n + 3) {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .app-boot-line {
+          animation: none;
+          background: var(--boot-section);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="app-boot-placeholder" role="status" aria-busy="true" aria-label="Loading">
+        <aside class="app-boot-sidebar" aria-hidden="true">
+          <div class="app-boot-brand">
+            <span class="app-boot-mark"></span>
+            <span class="app-boot-line is-tall" style="width: 7.5rem"></span>
+          </div>
+          <div class="app-boot-nav">
+            <div class="app-boot-nav-item">
+              <span class="app-boot-dot"></span>
+              <span class="app-boot-line" style="width: 68%"></span>
+            </div>
+            <div class="app-boot-nav-item">
+              <span class="app-boot-dot"></span>
+              <span class="app-boot-line" style="width: 56%"></span>
+            </div>
+            <div class="app-boot-nav-item">
+              <span class="app-boot-dot"></span>
+              <span class="app-boot-line" style="width: 72%"></span>
+            </div>
+            <div class="app-boot-nav-item">
+              <span class="app-boot-dot"></span>
+              <span class="app-boot-line" style="width: 48%"></span>
+            </div>
+            <div class="app-boot-nav-item">
+              <span class="app-boot-dot"></span>
+              <span class="app-boot-line" style="width: 62%"></span>
+            </div>
+          </div>
+        </aside>
+        <main class="app-boot-main" aria-hidden="true">
+          <header class="app-boot-topbar">
+            <span class="app-boot-line is-tall" style="width: min(16rem, 44vw)"></span>
+            <div class="app-boot-actions">
+              <span class="app-boot-line is-button"></span>
+              <span class="app-boot-line is-button" style="width: 3rem"></span>
+            </div>
+          </header>
+          <section class="app-boot-content">
+            <div class="app-boot-filter">
+              <div class="app-boot-filter-group">
+                <span class="app-boot-line is-button" style="width: 7rem"></span>
+                <span class="app-boot-line is-button" style="width: 6rem"></span>
+                <span class="app-boot-line is-button" style="width: 6.5rem"></span>
+              </div>
+              <span class="app-boot-line is-button" style="width: 5.5rem"></span>
+            </div>
+            <div class="app-boot-grid">
+              <article class="app-boot-card">
+                <span class="app-boot-line" style="width: 42%"></span>
+                <span class="app-boot-line is-tall" style="width: 62%"></span>
+                <span class="app-boot-line" style="width: 86%"></span>
+              </article>
+              <article class="app-boot-card">
+                <span class="app-boot-line" style="width: 48%"></span>
+                <span class="app-boot-line is-tall" style="width: 56%"></span>
+                <span class="app-boot-line" style="width: 78%"></span>
+              </article>
+              <article class="app-boot-card">
+                <span class="app-boot-line" style="width: 38%"></span>
+                <span class="app-boot-line is-tall" style="width: 68%"></span>
+                <span class="app-boot-line" style="width: 72%"></span>
+              </article>
+            </div>
+            <div class="app-boot-table">
+              <div class="app-boot-row">
+                <span class="app-boot-line" style="width: 52%"></span>
+                <span class="app-boot-line" style="width: 64%"></span>
+                <span class="app-boot-line" style="width: 48%"></span>
+                <span class="app-boot-line" style="width: 72%"></span>
+              </div>
+              <div class="app-boot-row">
+                <span class="app-boot-line" style="width: 82%"></span>
+                <span class="app-boot-line" style="width: 58%"></span>
+                <span class="app-boot-line" style="width: 42%"></span>
+                <span class="app-boot-line" style="width: 64%"></span>
+              </div>
+              <div class="app-boot-row">
+                <span class="app-boot-line" style="width: 72%"></span>
+                <span class="app-boot-line" style="width: 68%"></span>
+                <span class="app-boot-line" style="width: 54%"></span>
+                <span class="app-boot-line" style="width: 46%"></span>
+              </div>
+              <div class="app-boot-row">
+                <span class="app-boot-line" style="width: 88%"></span>
+                <span class="app-boot-line" style="width: 52%"></span>
+                <span class="app-boot-line" style="width: 60%"></span>
+                <span class="app-boot-line" style="width: 58%"></span>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

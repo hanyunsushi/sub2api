@@ -5,7 +5,7 @@
       <!-- Left: filters (allowed to wrap to multiple rows) -->
       <div class="usage-filter-left table-filter-left flex flex-1 flex-wrap items-end gap-3">
         <!-- User Search -->
-        <div ref="userSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
+        <div ref="userSearchRef" class="usage-filter-dropdown usage-filter-user-field relative w-full sm:w-auto">
           <label class="input-label">{{ t('admin.usage.userFilter') }}</label>
           <input data-testid="admin-usage-usage-filters-input-user-keyword"
             ref="userInputRef"
@@ -46,7 +46,7 @@
         </div>
 
         <!-- API Key Search -->
-        <div ref="apiKeySearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
+        <div ref="apiKeySearchRef" class="usage-filter-dropdown usage-filter-api-key-field relative w-full sm:w-auto">
           <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
           <input data-testid="admin-usage-usage-filters-input-api-key-keyword"
             ref="apiKeyInputRef"
@@ -87,13 +87,13 @@
         </div>
 
         <!-- Model Filter -->
-        <div class="w-full sm:w-auto sm:min-w-[220px]">
+        <div class="usage-filter-model-field w-full sm:w-auto">
           <label class="input-label">{{ t('usage.model') }}</label>
           <Select variant="text-control" v-model="filters.model" :options="modelOptions" searchable @change="emitChange" />
         </div>
 
         <!-- Account Filter -->
-        <div ref="accountSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[220px]">
+        <div ref="accountSearchRef" class="usage-filter-dropdown usage-filter-account-field relative w-full sm:w-auto">
           <label class="input-label">{{ t('admin.usage.account') }}</label>
           <input data-testid="admin-usage-usage-filters-input-account-keyword"
             ref="accountInputRef"

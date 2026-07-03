@@ -3,12 +3,12 @@
     <TablePageLayout>
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
-        <div class="table-filter-shell subscriptions-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+        <div class="table-filter-shell subscriptions-filter-shell flex flex-wrap items-center gap-2">
           <!-- Left: Fuzzy user search + filters (wrap to multiple lines) -->
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+          <div class="table-filter-left subscriptions-filter-left flex min-w-0 flex-1 flex-wrap items-center gap-2">
             <!-- User Search -->
             <div
-              class="relative w-full sm:w-64"
+              class="relative w-full sm:w-48 subscriptions-filter-search"
               data-filter-user-search
             >
               <Icon
@@ -69,7 +69,7 @@
             </div>
 
             <!-- Filters -->
-            <div class="w-full sm:w-40">
+            <div class="w-full sm:w-32 subscriptions-filter-status">
               <Select
                 variant="text-control"
                 v-model="filters.status"
@@ -78,7 +78,7 @@
                 @change="applyFilters"
               />
             </div>
-            <div class="w-full sm:w-48">
+            <div class="w-full sm:w-36 subscriptions-filter-group">
               <Select
                 variant="text-control"
                 v-model="filters.group_id"
@@ -87,7 +87,7 @@
                 @change="applyFilters"
               />
             </div>
-            <div class="w-full sm:w-40">
+            <div class="w-full sm:w-32 subscriptions-filter-platform">
               <Select
                 variant="text-control"
                 v-model="filters.platform"
@@ -99,7 +99,7 @@
           </div>
 
           <!-- Right: Actions -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+          <div class="table-filter-actions subscriptions-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
             <button data-testid="admin-subscriptions-button-load-subscriptions"
               @click="loadSubscriptions"
               :disabled="loading"

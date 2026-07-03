@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
     <div
       v-for="(item, index) in allEndpoints"
       :key="index"
-      class="endpoint-popover-item flex items-center gap-1.5 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2.5 py-1.5 text-xs transition-colors hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:hover:border-[var(--anthropic-fg)]"
+      class="endpoint-popover-item flex items-center gap-1.5 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2.5 py-1.5 text-xs transition-colors dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
     >
       <span class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ item.name }}</span>
       <span

@@ -24,14 +24,14 @@
     </div>
     <div class="flex gap-2">
       <template v-if="selectedIds.length > 0">
-        <button @click="$emit('delete')" class="btn btn-danger btn-sm" data-testid="account-bulk-delete">{{ t('admin.accounts.bulkActions.delete') }}</button>
-        <button @click="$emit('reset-status')" class="btn btn-secondary btn-sm" data-testid="account-bulk-reset-status">{{ t('admin.accounts.bulkActions.resetStatus') }}</button>
-        <button @click="$emit('refresh-token')" class="btn btn-secondary btn-sm" data-testid="account-bulk-refresh-token">{{ t('admin.accounts.bulkActions.refreshToken') }}</button>
-        <button @click="$emit('toggle-schedulable', true)" class="btn btn-success btn-sm" data-testid="account-bulk-enable-scheduling">{{ t('admin.accounts.bulkActions.enableScheduling') }}</button>
-        <button @click="$emit('toggle-schedulable', false)" class="btn btn-warning btn-sm" data-testid="account-bulk-disable-scheduling">{{ t('admin.accounts.bulkActions.disableScheduling') }}</button>
-        <button @click="$emit('edit-selected')" class="btn btn-primary btn-sm" data-testid="account-bulk-edit-selected">{{ t('admin.accounts.bulkActions.edit') }}</button>
+        <button @click="$emit('delete')" class="btn btn-secondary btn-sm account-bulk-action account-bulk-action-danger" data-testid="account-bulk-delete">{{ t('admin.accounts.bulkActions.delete') }}</button>
+        <button @click="$emit('reset-status')" class="btn btn-secondary btn-sm account-bulk-action" data-testid="account-bulk-reset-status">{{ t('admin.accounts.bulkActions.resetStatus') }}</button>
+        <button @click="$emit('refresh-token')" class="btn btn-secondary btn-sm account-bulk-action" data-testid="account-bulk-refresh-token">{{ t('admin.accounts.bulkActions.refreshToken') }}</button>
+        <button @click="$emit('toggle-schedulable', true)" class="btn btn-secondary btn-sm account-bulk-action" data-testid="account-bulk-enable-scheduling">{{ t('admin.accounts.bulkActions.enableScheduling') }}</button>
+        <button @click="$emit('toggle-schedulable', false)" class="btn btn-secondary btn-sm account-bulk-action" data-testid="account-bulk-disable-scheduling">{{ t('admin.accounts.bulkActions.disableScheduling') }}</button>
+        <button @click="$emit('edit-selected')" class="btn btn-primary btn-sm account-bulk-primary-action" data-testid="account-bulk-edit-selected">{{ t('admin.accounts.bulkActions.edit') }}</button>
       </template>
-      <button @click="$emit('edit-filtered')" class="btn btn-primary btn-sm" data-testid="account-bulk-edit-filtered">
+      <button @click="$emit('edit-filtered')" class="btn btn-primary btn-sm account-bulk-primary-action" data-testid="account-bulk-edit-filtered">
         {{ t('admin.accounts.bulkEdit.submit') }}
       </button>
     </div>

@@ -24,7 +24,7 @@
         v-if="isOpen"
         ref="dropdownRef"
         class="date-picker-dropdown-portal"
-        :class="instanceId"
+        :class="[datePickerDropdownVariantClass, instanceId]"
         :style="dropdownStyle"
         @mouseenter="cancelHoverClose"
         @mouseleave="scheduleHoverClose"
@@ -50,11 +50,16 @@
             <div class="date-picker-field">
               <label class="date-picker-label">{{ t('dates.startDate') }}</label>
               <input data-testid="common-date-range-picker-input-local-start-date"
-                type="date"
+                type="text"
                 v-model="localStartDate"
-                :max="localEndDate || tomorrow"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="YYYY-MM-DD"
+                pattern="\d{4}-\d{2}-\d{2}"
                 class="date-picker-input"
-                @change="onDateChange"
+                @input="onDateChange"
+                @change="normalizeDateInput('start')"
+                @focus="cancelHoverClose"
               />
             </div>
             <div class="date-picker-separator">
@@ -63,12 +68,16 @@
             <div class="date-picker-field">
               <label class="date-picker-label">{{ t('dates.endDate') }}</label>
               <input data-testid="common-date-range-picker-input-local-end-date"
-                type="date"
+                type="text"
                 v-model="localEndDate"
-                :min="localStartDate"
-                :max="tomorrow"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="YYYY-MM-DD"
+                pattern="\d{4}-\d{2}-\d{2}"
                 class="date-picker-input"
-                @change="onDateChange"
+                @input="onDateChange"
+                @change="normalizeDateInput('end')"
+                @focus="cancelHoverClose"
               />
             </div>
           </div>
@@ -264,6 +273,41 @@ const datePickerTriggerVariantClass = computed(() =>
   props.variant === 'text-control' ? 'date-picker-trigger--text-control' : 'date-picker-trigger--field'
 )
 
+const levelOneDropdownContextSelector = [
+  '.app-header-atelier',
+  '.table-page-filter-section',
+  '.table-filter-shell',
+  '.table-filter-left',
+  '.table-filter-actions',
+  '.dashboard-filter-card',
+  '.dashboard-filter-shell',
+  '.usage-time-filter-card',
+  '.usage-time-filter-shell',
+  '.usage-filter-card',
+  '.usage-filter-shell',
+  '.keys-filter-shell',
+  '.global-pricing-filter-card',
+  '.global-pricing-filter-shell',
+  '.monitor-filter-shell',
+  '.ops-monitor-toolbar-controls',
+  '.ops-card-filter-bar',
+  '.ops-card-filter-grid',
+  '.codex-toolbar',
+  '.codex-list-actions__filters',
+  '.risk-control-toolbar-actions',
+  '.risk-control-record-filters',
+  '.payment-dashboard-filter-bar',
+  '.payment-plans-filter-bar',
+  '.order-filter-card'
+].join(',')
+
+const datePickerDropdownVariantClass = computed(() =>
+  props.variant === 'text-control' ||
+  Boolean(containerRef.value?.closest(levelOneDropdownContextSelector))
+    ? 'filter-underline-menu date-picker-dropdown-portal--underline'
+    : 'dropdown-highlight-menu date-picker-dropdown-portal--highlight'
+)
+
 const dropdownStyle = computed(() => {
   if (!triggerRect.value) return {}
 
@@ -301,9 +345,35 @@ const selectPreset = (preset: DatePreset) => {
   activePreset.value = preset.value
 }
 
+const DATE_INPUT_RE = /^\d{4}-\d{2}-\d{2}$/
+
+const isValidDateString = (value: string): boolean => {
+  if (!DATE_INPUT_RE.test(value)) return false
+  const [year, month, day] = value.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+}
+
+const clampDateInput = (value: string, min?: string, max?: string): string => {
+  if (!isValidDateString(value)) return value
+  if (min && isValidDateString(min) && value < min) return min
+  if (max && isValidDateString(max) && value > max) return max
+  return value
+}
+
+const normalizeDateInput = (field: 'start' | 'end') => {
+  if (field === 'start') {
+    localStartDate.value = clampDateInput(localStartDate.value, undefined, localEndDate.value || tomorrow.value)
+  } else {
+    localEndDate.value = clampDateInput(localEndDate.value, localStartDate.value, tomorrow.value)
+  }
+  onDateChange()
+}
+
 const onDateChange = () => {
   // Check if current dates match any preset
   activePreset.value = null
+  if (!isValidDateString(localStartDate.value) || !isValidDateString(localEndDate.value)) return
   for (const preset of presets) {
     const range = preset.getRange()
     if (range.start === localStartDate.value && range.end === localEndDate.value) {
@@ -369,6 +439,9 @@ const calculateDropdownPosition = () => {
 }
 
 const apply = () => {
+  normalizeDateInput('start')
+  normalizeDateInput('end')
+  if (!isValidDateString(localStartDate.value) || !isValidDateString(localEndDate.value)) return
   emit('update:startDate', localStartDate.value)
   emit('update:endDate', localEndDate.value)
   emit('change', {
@@ -833,12 +906,11 @@ onUnmounted(() => {
 }
 
 .date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator {
-  @apply cursor-pointer opacity-60 hover:opacity-100;
-  filter: invert(0.5);
+  display: none !important;
 }
 
 .dark .date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator {
-  filter: invert(0.7);
+  display: none !important;
 }
 
 .date-picker-dropdown-portal .date-picker-separator {
@@ -855,7 +927,8 @@ onUnmounted(() => {
 
 .date-picker-dropdown-portal .date-picker-actions {
   @apply flex justify-end p-2 pt-0;
-  background: var(--atelier-material-2);
+  border-top: 1px solid var(--anthropic-border-subtle, var(--atelier-material-edge));
+  background: var(--anthropic-page, var(--atelier-paper));
 }
 
 .date-picker-dropdown-portal .date-picker-apply {
@@ -910,6 +983,6 @@ onUnmounted(() => {
 
 .dark .date-picker-dropdown-portal .date-picker-presets,
 .dark .date-picker-dropdown-portal .date-picker-actions {
-  background: var(--atelier-paper-2);
+  background: var(--anthropic-page, var(--atelier-paper-2));
 }
 </style>

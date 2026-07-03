@@ -15,7 +15,7 @@
         </div>
       </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold">
+        <span class="sidebar-brand-title">
           {{ siteName }}
         </span>
         <!-- Version Badge -->
@@ -1075,6 +1075,11 @@ onBeforeUnmount(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--sidebar-text, var(--atelier-ink));
+  font-family: var(--font-display, var(--atelier-font-serif));
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: 0;
 }
 
 .sidebar-link-collapsed {

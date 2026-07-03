@@ -164,7 +164,7 @@
                   :show="showFilterDropdown"
                   :trigger-el="filterDropdownButtonRef"
                   placement="bottom-end"
-                  panel-class="dropdown-highlight-menu w-52"
+                  panel-class="filter-underline-menu w-52"
                   @mouseenter="cancelFilterDropdownClose"
                   @mouseleave="scheduleFilterDropdownClose"
                   @close="showFilterDropdown = false"
@@ -174,7 +174,7 @@
                     v-for="filter in builtInFilters"
                     :key="filter.key"
                     @click="toggleBuiltInFilter(filter.key)"
-                    class="dropdown-highlight-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                    class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                   >
                     <span>{{ filter.name }}</span>
                     <Icon
@@ -195,7 +195,7 @@
                     v-for="attr in filterableAttributes"
                     :key="attr.id"
                     @click="toggleAttributeFilter(attr)"
-                    class="dropdown-highlight-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                    class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                   >
                     <span>{{ attr.name }}</span>
                     <Icon
@@ -231,7 +231,7 @@
                   :show="showColumnDropdown"
                   :trigger-el="columnDropdownButtonRef"
                   placement="bottom-end"
-                  panel-class="dropdown-highlight-menu max-h-80 w-52 overflow-y-auto"
+                  panel-class="filter-underline-menu max-h-80 w-52 overflow-y-auto"
                   @mouseenter="cancelColumnDropdownClose"
                   @mouseleave="scheduleColumnDropdownClose"
                   @close="showColumnDropdown = false"
@@ -242,7 +242,7 @@
                     :disabled="isForcedVisibleColumn(col.key)"
                     @click="toggleColumn(col.key)"
                     :class="[
-                      'dropdown-highlight-item flex w-full items-center justify-between text-left text-sm',
+                      'dropdown-item flex w-full items-center justify-between text-left text-sm',
                       isForcedVisibleColumn(col.key)
                         ? 'cursor-not-allowed text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
                         : 'text-[var(--anthropic-muted)]'

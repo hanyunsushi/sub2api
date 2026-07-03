@@ -7,7 +7,9 @@ const source = readFileSync(sourcePath, 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
 const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 const bulkActionsSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountBulkActionsBar.vue'), 'utf8')
+const accountActionMenuSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountActionMenu.vue'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
+const iconSource = readFileSync(resolve(__dirname, '../../../components/icons/Icon.vue'), 'utf8')
 const monitorCapacitySource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
 const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../../components/admin/account/ExternalQuotaProgressSettingsModal.vue'), 'utf8')
@@ -122,11 +124,19 @@ describe('AccountsView external quota card metadata', () => {
   })
 
   it('renders a per-account schedule lock next to the scheduling control without changing schedulable directly', () => {
+    const lockPath = iconSource.match(/lock: '([^']+)'/)?.[1]
+    const unlockPath = iconSource.match(/unlock: '([^']+)'/)?.[1]
+
     expect(source).toContain('data-testid="account-schedule-lock-action"')
     expect(source).toContain('row.schedule_locked')
     expect(source).toContain('account-schedule-lock-action-locked')
     expect(source).toContain('border-transparent bg-transparent text-[var(--anthropic-fg)]')
     expect(source).not.toContain('border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]')
+    expect(lockPath).toBeDefined()
+    expect(unlockPath).toBeDefined()
+    expect(unlockPath).not.toBe(lockPath)
+    expect(unlockPath).toContain('M13.5 10.5V6.75a4.5 4.5 0 119 0v1.5')
+    expect(unlockPath).toContain('M6.75 10.5h10.5')
     expect(source).toContain('handleToggleScheduleLock(row)')
     expect(source).toContain('togglingScheduleLock')
     expect(source).toContain('adminAPI.accounts.setScheduleLocked')
@@ -227,6 +237,40 @@ describe('AccountsView external quota card metadata', () => {
     expect(targetedRepairSource).toContain('display: none !important;')
     expect(targetedRepairSource).toContain('text-decoration-color: transparent !important;')
     expect(targetedRepairSource).toContain('text-decoration-color: currentColor !important;')
+  })
+
+  it('treats account-card More as a second-level highlighted dropdown with a caret', () => {
+    const actionsTemplate = source.slice(
+      source.indexOf('<template #cell-actions="{ row }">'),
+      source.indexOf('</template>', source.indexOf('<template #cell-actions="{ row }">')),
+    )
+
+    expect(actionsTemplate).toContain('account-card-more-trigger')
+    expect(actionsTemplate).toContain('aria-haspopup="menu"')
+    expect(actionsTemplate).toContain('@mouseenter="openMenu(row, $event)"')
+    expect(actionsTemplate).toContain('@pointerenter="openMenu(row, $event)"')
+    expect(actionsTemplate).toContain('@mouseleave="scheduleMenuClose"')
+    expect(actionsTemplate).toContain('@pointerleave="scheduleMenuClose"')
+    expect(actionsTemplate).toContain('@focus="openMenu(row, $event)"')
+    expect(actionsTemplate).toContain('@blur="scheduleMenuClose"')
+    expect(actionsTemplate).toContain(':aria-expanded="menu.show && menu.acc?.id === row.id ?')
+    expect(actionsTemplate).toContain('account-card-more-trigger-open')
+    expect(actionsTemplate).toContain('account-card-text-caret')
+    expect(source).toContain('const cancelMenuClose = () =>')
+    expect(source).toContain('const scheduleMenuClose = () =>')
+    expect(source).toContain('@menu-enter="cancelMenuClose"')
+    expect(source).toContain('@menu-leave="scheduleMenuClose"')
+    expect(accountActionMenuSource).toContain('action-menu-content dropdown-highlight-menu account-card-action-menu')
+    expect(accountActionMenuSource).toContain("@mouseenter=\"emit('menu-enter')\"")
+    expect(accountActionMenuSource).toContain("@mouseleave=\"emit('menu-leave')\"")
+    expect(accountActionMenuSource).toContain('class="dropdown-highlight-item flex w-full items-center gap-2 text-sm"')
+    expect(accountActionMenuSource).not.toContain('hover:bg-[var(--anthropic-raised)]')
+    expect(targetedRepairSource).toContain('#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] .account-card-more-trigger')
+    expect(targetedRepairSource).toContain('display: inline-flex !important;')
+    expect(targetedRepairSource).toContain('height: 1rem !important;')
+    expect(targetedRepairSource).toContain('.account-card-text-caret::before')
+    expect(targetedRepairSource).toContain('.account-card-more-trigger-open .account-card-text-caret')
+    expect(targetedRepairSource).toContain('[data-testid="admin-accounts-button-open-menu-row-event"]:focus-visible .account-card-text-caret')
   })
 
   it('keeps account-card usage stats and platform chips transparent while restoring progress width', () => {
@@ -345,15 +389,19 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards on local paper-depth hover without lift or shadow', () => {
+  it('keeps shared capacity cards on the linked Anthropic hover contract without lift', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
-    expect(capacityHoverBlock).toContain('border-color: var(--atelier-material-edge-strong);')
-    expect(capacityHoverBlock).toContain('background: var(--atelier-surface-muted);')
+    expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
+    expect(capacityHoverBlock).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
+    expect(capacityHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);')
     expect(capacityHoverBlock).not.toContain('transform:')
-    expect(capacityHoverBlock).not.toContain('box-shadow:')
     expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
+    expect(monitorCapacitySource).toContain('.monitor-capacity-card:hover .monitor-capacity-metric-tile')
+    expect(monitorCapacitySource).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
+    expect(monitorCapacitySource).toContain('.monitor-capacity-overview:has(.monitor-capacity-card:hover) .monitor-capacity-card:not(:hover) .monitor-capacity-metric-tile')
+    expect(monitorCapacitySource).toContain('background: var(--anthropic-raised, #e8e6dc);')
   })
 
   it('keeps a single filtered bulk update entry and selected-row bulk edit entry', () => {
@@ -361,7 +409,11 @@ describe('AccountsView external quota card metadata', () => {
     expect((bulkActionsSource.match(/data-testid="account-bulk-edit-filtered"/g) || [])).toHaveLength(1)
     expect(bulkActionsSource).toContain('data-testid="account-bulk-edit-selected"')
     expect(bulkActionsSource).toContain("@click=\"$emit('edit-filtered')\"")
-    expect(bulkActionsSource).toContain('class="btn btn-primary btn-sm"')
+    expect(bulkActionsSource).toContain('class="btn btn-primary btn-sm account-bulk-primary-action"')
+    expect(bulkActionsSource).toContain('class="btn btn-secondary btn-sm account-bulk-action"')
+    expect(bulkActionsSource).not.toContain('btn btn-danger btn-sm')
+    expect(bulkActionsSource).not.toContain('btn btn-success btn-sm')
+    expect(bulkActionsSource).not.toContain('btn btn-warning btn-sm')
     expect(styleSource).toContain('.app-layout-content :where(.btn-primary')
     expect(targetedRepairSource).toContain('.app-layout-content :where(.btn-primary')
   })

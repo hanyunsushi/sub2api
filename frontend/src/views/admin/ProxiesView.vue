@@ -4,7 +4,7 @@
       <template #filters>
         <div class="table-filter-shell proxies-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+          <div class="table-filter-left proxies-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search relative w-full sm:w-64">
               <Icon
                 name="search"
@@ -20,16 +20,18 @@
               />
             </div>
 
-            <div class="w-full sm:w-40">
+            <div class="proxies-filter-protocol w-full sm:w-40">
               <Select
+                variant="text-control"
                 v-model="filters.protocol"
                 :options="protocolOptions"
                 :placeholder="t('admin.proxies.allProtocols')"
                 @change="loadProxies"
               />
             </div>
-            <div class="w-full sm:w-36">
+            <div class="proxies-filter-status w-full sm:w-36">
               <Select
+                variant="text-control"
                 v-model="filters.status"
                 :options="statusOptions"
                 :placeholder="t('admin.proxies.allStatus')"
@@ -39,7 +41,7 @@
           </div>
 
           <!-- Right: All action buttons -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+          <div class="table-filter-actions proxies-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button data-testid="admin-proxies-button-load-proxies"
               @click="loadProxies"
               :disabled="loading"

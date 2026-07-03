@@ -6,6 +6,7 @@ import UsageView from '../UsageView.vue'
 const {
   query,
   getStats,
+  getStatsByDateRange,
   getDashboardModels,
   getDashboardSnapshotV2,
   list,
@@ -17,6 +18,7 @@ const {
 } = vi.hoisted(() => ({
   query: vi.fn(),
   getStats: vi.fn(),
+  getStatsByDateRange: vi.fn(),
   getDashboardModels: vi.fn(),
   getDashboardSnapshotV2: vi.fn(),
   list: vi.fn(),
@@ -68,6 +70,7 @@ vi.mock('@/api', () => ({
   usageAPI: {
     query,
     getStats,
+    getStatsByDateRange,
     getDashboardModels,
     getDashboardSnapshotV2,
   },
@@ -151,6 +154,7 @@ describe('user UsageView', () => {
   beforeEach(() => {
     query.mockReset()
     getStats.mockReset()
+    getStatsByDateRange.mockReset()
     getDashboardModels.mockReset()
     getDashboardSnapshotV2.mockReset()
     list.mockReset()
@@ -162,6 +166,19 @@ describe('user UsageView', () => {
 
     query.mockResolvedValue({ items: [usageLog], total: 1, pages: 1 })
     getStats.mockResolvedValue({
+      total_requests: 1,
+      total_input_tokens: 10,
+      total_output_tokens: 20,
+      total_cache_tokens: 0,
+      total_tokens: 30,
+      total_cost: 0.1,
+      total_actual_cost: 0.08,
+      average_duration_ms: 12,
+      endpoints: [],
+      upstream_endpoints: [],
+      endpoint_paths: [],
+    })
+    getStatsByDateRange.mockResolvedValue({
       total_requests: 1,
       total_input_tokens: 10,
       total_output_tokens: 20,
@@ -196,15 +213,11 @@ describe('user UsageView', () => {
     await flushPromises()
 
     expect(query).toHaveBeenCalled()
-    expect(getStats).toHaveBeenCalled()
-    expect(getDashboardModels).toHaveBeenCalled()
-    expect(getDashboardSnapshotV2).toHaveBeenCalledWith(expect.objectContaining({
-      include_trend: true,
-      include_model_stats: false,
-      include_group_stats: true,
-    }))
+    expect(getStatsByDateRange).toHaveBeenCalled()
+    expect(getDashboardModels).not.toHaveBeenCalled()
+    expect(getDashboardSnapshotV2).not.toHaveBeenCalled()
     expect(list).toHaveBeenCalledWith(1, 100)
-    expect(getAvailable).toHaveBeenCalled()
+    expect(getAvailable).not.toHaveBeenCalled()
   })
 
   it('exports csv with current filters and without admin-only fields', async () => {
@@ -237,10 +250,10 @@ describe('user UsageView', () => {
     }))
     expect(clickSpy).toHaveBeenCalled()
     expect(showSuccess).toHaveBeenCalled()
-    expect(csvContent).toContain('IP Address')
-    expect(csvContent).toContain('203.0.113.10')
     expect(csvContent).toContain('Billed Cost')
     expect(csvContent).toContain('Original Cost')
+    expect(csvContent).not.toContain('IP Address')
+    expect(csvContent).not.toContain('203.0.113.10')
     expect(csvContent).not.toContain('Upstream Endpoint')
     expect(csvContent).not.toContain('account_cost')
     expect(csvContent).not.toContain('account_rate_multiplier')

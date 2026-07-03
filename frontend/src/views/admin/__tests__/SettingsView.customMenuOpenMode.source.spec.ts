@@ -11,6 +11,22 @@ const styleSource = readFileSync(resolve(frontendRoot, 'style.css'), 'utf8')
 const zhLocaleSource = readFileSync(resolve(frontendRoot, 'i18n/locales/zh.ts'), 'utf8')
 const enLocaleSource = readFileSync(resolve(frontendRoot, 'i18n/locales/en.ts'), 'utf8')
 
+const cssBlock = (source: string, selector: string, fromIndex = 0) => {
+  const selectorIndex = source.indexOf(selector, fromIndex)
+  expect(selectorIndex, `selector not found: ${selector}`).toBeGreaterThan(-1)
+  const openBraceIndex = source.indexOf('{', selectorIndex)
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(openBraceIndex + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
+}
+
 describe('SettingsView custom menu open mode contract', () => {
   it('exposes an iframe-or-redirect selector for every custom menu item', () => {
     expect(settingsSource).toContain('v-model="item.open_mode"')
@@ -70,48 +86,44 @@ describe('SettingsView custom menu ordering and SVG icon presets', () => {
   })
 })
 
-describe('SettingsView text-only settings tabs', () => {
-  it('removes the tab SVG icons from the settings tabs template and config', () => {
+describe('SettingsView route-tabs settings tabs', () => {
+  it('uses text-only route tab buttons with a shared moving indicator', () => {
     const tabsTemplate = settingsSource.slice(
-      settingsSource.indexOf('<div class="settings-tabs">'),
-      settingsSource.indexOf('</nav>', settingsSource.indexOf('<div class="settings-tabs">')),
+      settingsSource.indexOf('ref="settingsTabsRef"'),
+      settingsSource.indexOf('</nav>', settingsSource.indexOf('ref="settingsTabsRef"')),
     )
     const tabsConfig = settingsSource.slice(
       settingsSource.indexOf('const settingsTabs = ['),
       settingsSource.indexOf('];', settingsSource.indexOf('const settingsTabs = [')),
     )
 
+    expect(tabsTemplate).toContain('class="settings-tabs route-tabs settings-route-tabs"')
+    expect(tabsTemplate).toContain('data-route-tabs="admin-settings"')
+    expect(tabsTemplate).toContain('role="tablist"')
+    expect(tabsTemplate).toContain(':data-route-id="tab.key"')
+    expect(tabsTemplate).toContain('@mouseenter="moveSettingsTabIndicatorFromEvent"')
+    expect(tabsTemplate).toContain('@focus="moveSettingsTabIndicatorFromEvent"')
+    expect(tabsTemplate).toContain('@mouseleave="moveSettingsTabIndicatorToSelected"')
     expect(tabsTemplate).toContain('class="settings-tab-label"')
     expect(tabsTemplate).not.toContain('settings-tab-icon')
     expect(tabsTemplate).not.toContain('<Icon')
     expect(tabsConfig).not.toContain('icon:')
+    expect(settingsSource).toContain('tabs.style.setProperty(')
+    expect(settingsSource).toContain('"--route-indicator-x"')
+    expect(settingsSource).toContain('"--route-indicator-w"')
   })
 
-  it('keeps the parent settings menu as system settings while making settings tabs page-background and centered', () => {
+  it('keeps the parent settings menu as system settings while styling tabs as Anthropic route-tabs', () => {
     const genericSurfaceBlock = styleSource.slice(
       styleSource.indexOf('.app-layout-content :where(.card, .paper-card'),
       styleSource.indexOf('#app .app-layout-content .settings-tabs-shell'),
     )
-    const tabsShellBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tabs-shell {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll', styleSource.indexOf('#app .app-layout-content .settings-tabs-shell {')),
-    )
-    const tabsScrollBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tabs {', styleSource.indexOf('#app .app-layout-content .settings-tabs-scroll {')),
-    )
-    const tabsInnerBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tabs {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab {', styleSource.indexOf('#app .app-layout-content .settings-tabs {')),
-    )
-    const settingsTabBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tab {'),
-      styleSource.indexOf('#app .app-layout-content .settings-tab svg', styleSource.indexOf('#app .app-layout-content .settings-tab {')),
-    )
-    const hiddenIconBlock = styleSource.slice(
-      styleSource.indexOf('#app .app-layout-content .settings-tab svg,'),
-      styleSource.indexOf('.app-layout-content :where(.card-hover', styleSource.indexOf('#app .app-layout-content .settings-tab svg,')),
-    )
+    const tabsShellBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tabs-shell {')
+    const tabsScrollBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tabs-scroll {')
+    const tabsInnerBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tabs {')
+    const tabsIndicatorBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tabs::before')
+    const settingsTabBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tab {')
+    const hiddenIconBlock = cssBlock(styleSource, '#app .app-layout-content .settings-tab svg,')
 
     expect(zhLocaleSource).toContain("settings: '系统设置'")
     expect(zhLocaleSource).toContain("settingsGeneral: '常规设置'")
@@ -128,13 +140,21 @@ describe('SettingsView text-only settings tabs', () => {
     expect(tabsScrollBlock).toContain('width: 100%;')
     expect(tabsScrollBlock).toContain('justify-content: center;')
     expect(tabsScrollBlock).toContain('align-items: center;')
-    expect(tabsInnerBlock).toContain('width: 100%;')
-    expect(tabsInnerBlock).toContain('padding: 0 !important;')
-    expect(tabsInnerBlock).toContain('background: transparent !important;')
-    expect(tabsInnerBlock).toContain('box-shadow: none !important;')
+    expect(tabsInnerBlock).toContain('--route-indicator-x: 0.25rem;')
+    expect(tabsInnerBlock).toContain('--route-indicator-w: 0px;')
+    expect(tabsInnerBlock).toContain('width: fit-content;')
+    expect(tabsInnerBlock).toContain('padding: 0.25rem !important;')
+    expect(tabsInnerBlock).toContain('border-radius: 16px !important;')
+    expect(tabsInnerBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(tabsInnerBlock).toContain('box-shadow: inset 0 0 0 1px var(--anthropic-border-soft) !important;')
+    expect(tabsIndicatorBlock).toContain('width: var(--route-indicator-w);')
+    expect(tabsIndicatorBlock).toContain('background: var(--anthropic-page);')
+    expect(tabsIndicatorBlock).toContain('transform: translateX(var(--route-indicator-x));')
+    expect(settingsTabBlock).toContain('border-radius: 12px !important;')
     expect(settingsTabBlock).toContain('justify-content: center;')
     expect(settingsTabBlock).toContain('text-align: center;')
     expect(settingsTabBlock).toContain('background: transparent !important;')
+    expect(settingsTabBlock).toContain('text-decoration-line: none !important;')
     expect(hiddenIconBlock).toContain('display: none !important;')
   })
 })

@@ -101,9 +101,25 @@ describe('ChannelStatusView shared capacity overview source', () => {
   it('uses the Anthropic tutorial-card linked hover contract for shared capacity cards', () => {
     const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
     const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
+    const capacityMetricHoverBlock = cssBlock(
+      componentSource,
+      '.monitor-capacity-card:hover .monitor-capacity-metric-tile'
+    )
+    const capacityMetricSiblingBlock = cssBlock(
+      componentSource,
+      '.monitor-capacity-overview:has(.monitor-capacity-card:hover) .monitor-capacity-card:not(:hover) .monitor-capacity-metric-tile'
+    )
     const pageSiblingBlock = cssBlock(
       targetedRepairSource,
       '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
+    )
+    const pageMetricHoverBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-page-linked-hover-group .monitor-linked-card:where(:hover, :focus-visible, :focus-within) :where(.monitor-capacity-metric-tile, .monitor-metric-tile)'
+    )
+    const pageMetricSiblingBlock = cssBlock(
+      targetedRepairSource,
+      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover) :where(.monitor-capacity-metric-tile, .monitor-metric-tile)'
     )
 
     expect(componentSource).toContain('monitor-capacity-overview mb-5')
@@ -120,12 +136,19 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(capacityBaseBlock).toContain('box-shadow 0.25s ease')
     expect(capacityBaseBlock).not.toContain('transform')
     expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
-    expect(capacityHoverBlock).toContain('background: var(--anthropic-page, #faf9f5);')
+    expect(capacityHoverBlock).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
     expect(capacityHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);')
     expect(capacityHoverBlock).toContain('text-decoration: none;')
     expect(capacityHoverBlock).not.toContain('translate')
     expect(capacityHoverBlock).not.toContain('--creepee-home-card-hover')
+    expect(capacityMetricHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
+    expect(capacityMetricHoverBlock).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
+    expect(capacityMetricSiblingBlock).toContain('background: var(--anthropic-raised, #e8e6dc);')
     expect(pageSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(pageMetricHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
+    expect(pageMetricHoverBlock).toContain('background: var(--anthropic-cookbook-hover) !important;')
+    expect(pageMetricHoverBlock).toContain('box-shadow: none !important;')
+    expect(pageMetricSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
     expect(pageSiblingBlock).not.toContain('opacity: 0.')
     expect(pageSiblingBlock).not.toContain('translate')
   })
@@ -160,7 +183,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(linkedBaseBlock).not.toContain('--creepee-home-card-hover')
     expect(linkedBaseBlock).not.toContain('translate3d')
     expect(linkedHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
-    expect(linkedHoverBlock).toContain('background: var(--anthropic-page) !important;')
+    expect(linkedHoverBlock).toContain('background: var(--anthropic-cookbook-hover) !important;')
     expect(linkedHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
     expect(linkedHoverBlock).toContain('transform: none !important;')
     expect(linkedHoverBlock).toContain('text-decoration: none !important;')

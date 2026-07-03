@@ -89,6 +89,38 @@ describe('AppSidebar header styles', () => {
     expect(sidebarHeaderBlockMatch?.[0]).not.toContain('@apply overflow-hidden;')
     expect(sidebarBrandBlockMatch?.[0]).not.toContain('overflow: hidden;')
   })
+
+  it('keeps the version badge button on the same sidebar paper surface', () => {
+    const versionButtonBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button\s*\{[\s\S]*?\n {2}\}/)
+    const versionAmberBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button:where\(\[class~="text-amber-700"\][\s\S]*?\n {2}\}/)
+    const versionNeutralBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button:where\(\[class~="text-gray-600"\][\s\S]*?\n {2}\}/)
+
+    expect(versionButtonBlock).not.toBeNull()
+    expect(versionAmberBlock).not.toBeNull()
+    expect(versionNeutralBlock).not.toBeNull()
+    expect(versionButtonBlock?.[0]).toContain('background: var(--anthropic-page) !important;')
+    expect(versionButtonBlock?.[0]).toContain('border: 1px solid var(--sidebar-line) !important;')
+    expect(versionButtonBlock?.[0]).toContain('color: var(--sidebar-muted) !important;')
+    expect(versionAmberBlock?.[0]).toContain('background: var(--anthropic-page) !important;')
+    expect(versionAmberBlock?.[0]).not.toContain('#fff9ef')
+    expect(versionAmberBlock?.[0]).not.toContain('#eda100')
+    expect(versionNeutralBlock?.[0]).toContain('background: var(--anthropic-page) !important;')
+    expect(versionNeutralBlock?.[0]).not.toContain('#e8e6dc')
+  })
+
+  it('uses the design-system display typeface for the brand title', () => {
+    const sidebarBrandTitleTemplateMatch = componentSource.match(/<span class="sidebar-brand-title"[\s\S]*?<\/span>/)
+    const sidebarBrandTitleBlockMatch = componentSource.match(/\.sidebar-brand-title\s*\{[\s\S]*?\n\}/)
+
+    expect(sidebarBrandTitleTemplateMatch).not.toBeNull()
+    expect(sidebarBrandTitleTemplateMatch?.[0]).not.toContain('font-bold')
+    expect(sidebarBrandTitleTemplateMatch?.[0]).not.toContain('text-lg')
+    expect(sidebarBrandTitleBlockMatch).not.toBeNull()
+    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('font-family: var(--font-display, var(--atelier-font-serif));')
+    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('font-weight: 500;')
+    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('letter-spacing: 0;')
+    expect(sidebarBrandTitleBlockMatch?.[0]).not.toContain('font-weight: 700')
+  })
 })
 
 describe('AppSidebar atelier palette', () => {

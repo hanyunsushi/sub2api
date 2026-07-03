@@ -28,7 +28,7 @@
                 <button data-testid="admin-accounts-button-button"
                   ref="autoRefreshButtonRef"
                   @click="openAutoRefreshDropdown"
-                  class="filter-menu-button"
+                  class="filter-menu-button filter-menu-button-with-caret"
                   :class="{ 'filter-menu-button-open': showAutoRefreshDropdown }"
                   :title="t('admin.accounts.autoRefresh')"
                 >
@@ -36,16 +36,17 @@
                     {{
                       autoRefreshEnabled
                         ? t('admin.accounts.autoRefreshCountdown', { seconds: autoRefreshCountdown })
-                        : t('admin.accounts.autoRefresh')
+                      : t('admin.accounts.autoRefresh')
                     }}
                   </span>
+                  <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <FloatingDropdown
                   :show="showAutoRefreshDropdown"
                   :trigger-el="autoRefreshButtonRef"
                   placement="bottom-end"
                   :offset="8"
-                  panel-class="w-56 origin-top-right rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  panel-class="filter-underline-menu w-56 origin-top-right"
                   @mouseenter="cancelAutoRefreshDropdownClose"
                   @mouseleave="scheduleAutoRefreshDropdownClose"
                   @close="showAutoRefreshDropdown = false"
@@ -53,7 +54,7 @@
                   <div class="p-2">
                     <button data-testid="admin-accounts-button-set-auto-refresh-enabled-auto-refresh-enabled"
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                     >
                       <span>{{ t('admin.accounts.enableAutoRefresh') }}</span>
                       <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
@@ -63,7 +64,7 @@
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
                       @click="setAutoRefreshInterval(sec)"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                     >
                       <span>{{ autoRefreshIntervalLabel(sec) }}</span>
                       <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
@@ -83,18 +84,19 @@
                 <button data-testid="admin-accounts-button-button-2"
                   ref="accountToolsButtonRef"
                   @click="openAccountToolsDropdown"
-                  class="filter-menu-button"
+                  class="filter-menu-button filter-menu-button-with-caret"
                   :class="{ 'filter-menu-button-open': showAccountToolsDropdown }"
                   :title="t('admin.accounts.moreActions')"
                 >
                   <span>{{ t('admin.accounts.moreActions') }}</span>
+                  <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <FloatingDropdown
                   :show="showAccountToolsDropdown"
                   :trigger-el="accountToolsButtonRef"
                   placement="bottom-end"
                   :offset="8"
-                  panel-class="w-[min(20rem,calc(100vw-2rem))] origin-top-right overflow-hidden rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  panel-class="filter-underline-menu w-[min(20rem,calc(100vw-2rem))] origin-top-right"
                   @mouseenter="cancelAccountToolsDropdownClose"
                   @mouseleave="scheduleAccountToolsDropdownClose"
                   @close="showAccountToolsDropdown = false"
@@ -165,7 +167,7 @@
                         v-for="col in toggleableColumns"
                         :key="col.key"
                         @click="toggleColumn(col.key)"
-                        class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                       >
                         <span class="truncate">{{ col.label }}</span>
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
@@ -480,8 +482,22 @@
               <button data-testid="admin-accounts-button-handle-delete-row" @click="handleDelete(row)" class="account-card-text-action account-card-text-action-danger">
                 <span>{{ t('common.delete') }}</span>
               </button>
-              <button data-testid="admin-accounts-button-open-menu-row-event" @click="openMenu(row, $event)" class="account-card-text-action">
+              <button
+                data-testid="admin-accounts-button-open-menu-row-event"
+                @click="openMenu(row, $event)"
+                @mouseenter="openMenu(row, $event)"
+                @pointerenter="openMenu(row, $event)"
+                @mouseleave="scheduleMenuClose"
+                @pointerleave="scheduleMenuClose"
+                @focus="openMenu(row, $event)"
+                @blur="scheduleMenuClose"
+                class="account-card-text-action account-card-more-trigger"
+                :class="{ 'account-card-more-trigger-open': menu.show && menu.acc?.id === row.id }"
+                aria-haspopup="menu"
+                :aria-expanded="menu.show && menu.acc?.id === row.id ? 'true' : 'false'"
+              >
                 <span>{{ t('common.more') }}</span>
+                <span class="account-card-text-caret" aria-hidden="true"></span>
               </button>
               <button
                 data-testid="account-external-quota-progress-action"
@@ -505,7 +521,22 @@
     <AccountTestModal :show="showTest" :account="testingAcc" @close="closeTestModal" />
     <AccountStatsModal :show="showStats" :account="statsAcc" @close="closeStatsModal" />
     <ScheduledTestsPanel :show="showSchedulePanel" :account-id="scheduleAcc?.id ?? null" :model-options="scheduleModelOptions" @close="closeSchedulePanel" />
-    <AccountActionMenu :show="menu.show" :account="menu.acc" :position="menu.pos" @close="menu.show = false" @test="handleTest" @stats="handleViewStats" @schedule="handleSchedule" @reauth="handleReAuth" @refresh-token="handleRefresh" @recover-state="handleRecoverState" @reset-quota="handleResetQuota" @set-privacy="handleSetPrivacy" />
+    <AccountActionMenu
+      :show="menu.show"
+      :account="menu.acc"
+      :position="menu.pos"
+      @close="closeMenu"
+      @menu-enter="cancelMenuClose"
+      @menu-leave="scheduleMenuClose"
+      @test="handleTest"
+      @stats="handleViewStats"
+      @schedule="handleSchedule"
+      @reauth="handleReAuth"
+      @refresh-token="handleRefresh"
+      @recover-state="handleRecoverState"
+      @reset-quota="handleResetQuota"
+      @set-privacy="handleSetPrivacy"
+    />
     <ExternalQuotaProgressSettingsModal
       :show="externalQuotaProgressSettings.show"
       :account="externalQuotaProgressSettings.account"
@@ -715,6 +746,7 @@ const togglingSchedulable = ref<number | null>(null)
 const togglingScheduleLock = ref<number | null>(null)
 const priorityUpdatingIds = reactive<Set<number>>(new Set())
 const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null}>({ show: false, acc: null, pos: null })
+let menuCloseTimer: ReturnType<typeof setTimeout> | null = null
 const rateMultiplierMenu = reactive<{
   show: boolean
   account: Account | null
@@ -1710,14 +1742,37 @@ const cols = computed(() =>
 )
 
 const handleEdit = (a: Account) => { edAcc.value = a; showEdit.value = true }
-const openMenu = (a: Account, e: MouseEvent) => {
+const cancelMenuClose = () => {
+  if (menuCloseTimer) {
+    clearTimeout(menuCloseTimer)
+    menuCloseTimer = null
+  }
+}
+
+const closeMenu = () => {
+  cancelMenuClose()
+  menu.show = false
+}
+
+const scheduleMenuClose = () => {
+  cancelMenuClose()
+  menuCloseTimer = setTimeout(() => {
+    menu.show = false
+    menuCloseTimer = null
+  }, 180)
+}
+
+const openMenu = (a: Account, e: Event) => {
+  cancelMenuClose()
   menu.acc = a
   closeRateMultiplierMenu()
+  showAccountToolsDropdown.value = false
+  showAutoRefreshDropdown.value = false
 
   const target = e.currentTarget as HTMLElement
   if (target) {
     const rect = target.getBoundingClientRect()
-    const menuWidth = 200
+    const menuWidth = 208
     const menuHeight = 240
     const padding = 8
     const viewportWidth = window.innerWidth
@@ -1727,37 +1782,29 @@ const openMenu = (a: Account, e: MouseEvent) => {
     let top: number
 
     if (viewportWidth < 768) {
-      // 居中显示,水平位置
       left = Math.max(padding, Math.min(
         rect.left + rect.width / 2 - menuWidth / 2,
         viewportWidth - menuWidth - padding
       ))
-
-      // 优先显示在按钮下方
       top = rect.bottom + 4
-
-      // 如果下方空间不够,显示在上方
-      if (top + menuHeight > viewportHeight - padding) {
-        top = rect.top - menuHeight - 4
-        // 如果上方也不够,就贴在视口顶部
-        if (top < padding) {
-          top = padding
-        }
-      }
     } else {
       left = Math.max(padding, Math.min(
-        e.clientX - menuWidth,
+        rect.right - menuWidth,
         viewportWidth - menuWidth - padding
       ))
-      top = e.clientY
-      if (top + menuHeight > viewportHeight - padding) {
-        top = viewportHeight - menuHeight - padding
-      }
+      top = rect.bottom + 6
+    }
+
+    if (top + menuHeight > viewportHeight - padding) {
+      top = rect.top - menuHeight - 6
+    }
+    if (top < padding) {
+      top = padding
     }
 
     menu.pos = { top, left }
   } else {
-    menu.pos = { top: e.clientY, left: e.clientX - 200 }
+    menu.pos = { top: 8, left: 8 }
   }
 
   menu.show = true
@@ -2363,6 +2410,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  cancelMenuClose()
   window.removeEventListener('scroll', handleScroll, true)
   document.removeEventListener('click', handleClickOutside)
   stopAccountCallingGraceTicker()
@@ -2376,26 +2424,29 @@ onUnmounted(() => {
   width: 100%;
   align-items: center;
   gap: 0.75rem;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  border: 0;
+  border-radius: 0;
   padding: 0.625rem 0.75rem;
+  background: transparent;
   color: var(--anthropic-muted);
   font-size: 0.875rem;
   line-height: 1.25rem;
-  text-decoration-line: none;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.22em;
+  box-shadow: none;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 
 .account-tools-menu-item:hover,
 .account-tools-menu-item:focus-visible {
-  border-color: var(--anthropic-border-soft);
-  background: var(--anthropic-section);
+  border-color: transparent;
+  background: transparent;
   color: var(--anthropic-fg);
-  text-decoration-line: underline;
-  text-underline-offset: 0.22em;
+  text-decoration-color: currentColor;
+  box-shadow: none;
 }
 
 .account-tools-menu-icon {

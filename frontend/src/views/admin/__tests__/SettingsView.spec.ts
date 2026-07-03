@@ -874,10 +874,10 @@ describe("admin SettingsView dark tab styles", () => {
     expect(source).toMatch(/<style>\s*(?:\/\*[\s\S]*?\*\/\s*)?\.dark \.settings-tabs-shell/);
     expect(source).toMatch(/\.dark \.settings-tabs-shell\s*\{[\s\S]*border-color: transparent;/);
     expect(source).toMatch(/\.dark \.settings-tabs-shell\s*\{[\s\S]*box-shadow: none;/);
-    expect(source).toContain(".dark .settings-tab::before");
+    expect(source).toContain(".dark .settings-tabs::before");
     expect(source).toContain(".dark .settings-tab-active");
     expect(source).not.toContain(":global(.dark) .settings-tabs-shell");
-    expect(source).not.toContain(":global(.dark) .settings-tab::before");
+    expect(source).not.toContain(":global(.dark) .settings-tabs::before");
     expect(source).not.toContain(":global(.dark) .settings-tab-active");
   });
 });

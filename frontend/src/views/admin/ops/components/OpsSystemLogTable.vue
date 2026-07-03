@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { opsAPI, type OpsRuntimeLogConfig, type OpsSystemLog, type OpsSystemLogSinkHealth } from '@/api/admin/ops'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
 import { useAppStore } from '@/stores'
@@ -158,6 +159,29 @@ const toRFC3339 = (value: string) => {
   if (Number.isNaN(d.getTime())) return undefined
   return d.toISOString()
 }
+
+const datePartFromLocalValue = (value: string) => {
+  if (!value) return ''
+  return value.slice(0, 10)
+}
+
+const setDateRangeStart = (value: string) => {
+  filters.start_time = value ? `${value}T00:00` : ''
+}
+
+const setDateRangeEnd = (value: string) => {
+  filters.end_time = value ? `${value}T23:59` : ''
+}
+
+const logStartDate = computed({
+  get: () => datePartFromLocalValue(filters.start_time),
+  set: setDateRangeStart
+})
+
+const logEndDate = computed({
+  get: () => datePartFromLocalValue(filters.end_time),
+  set: setDateRangeEnd
+})
 
 const buildQuery = () => {
   const query: Record<string, any> = {
@@ -428,14 +452,14 @@ onMounted(async () => {
         时间范围
         <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />
       </label>
-      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-        开始时间（可选）
-        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-start-time" v-model="filters.start_time" type="datetime-local" class="input mt-1" />
-      </label>
-      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-        结束时间（可选）
-        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-end-time" v-model="filters.end_time" type="datetime-local" class="input mt-1" />
-      </label>
+      <div class="ops-log-date-range-field text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] md:col-span-2">
+        <span class="ops-log-date-range-label">日期范围（可选）</span>
+        <DateRangePicker
+          v-model:start-date="logStartDate"
+          v-model:end-date="logEndDate"
+          variant="field"
+        />
+      </div>
       <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         级别
         <Select v-model="filters.level" class="mt-1" :options="filterLevelOptions" />
@@ -475,7 +499,7 @@ onMounted(async () => {
     </div>
 
     <div class="ops-card-filter-bar mb-3 flex flex-wrap gap-2">
-      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-primary ops-log-query-button" @click="applyFilters">查询</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-secondary ops-log-query-button" @click="applyFilters">查询</button>
       <button data-testid="admin-ops-components-ops-system-log-table-button-reset-filters" type="button" class="filter-menu-button ops-log-reset-button" @click="resetFilters">重置</button>
       <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button" @click="cleanupCurrentFilter">按当前筛选清理</button>
       <button data-testid="admin-ops-components-ops-system-log-table-button-fetch-health" type="button" class="btn btn-primary anthropic-refresh-action-button ops-log-health-refresh-button" @click="fetchHealth">刷新健康指标</button>

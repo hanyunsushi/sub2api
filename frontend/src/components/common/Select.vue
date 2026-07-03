@@ -49,8 +49,8 @@
       <div data-testid="common-select-div-div"
         v-if="isOpen"
         ref="dropdownRef"
-        class="select-dropdown-portal dropdown-highlight-menu"
-        :class="[instanceId, portalClass]"
+        class="select-dropdown-portal"
+        :class="[selectDropdownVariantClass, instanceId, portalClass]"
         :style="dropdownStyle"
         role="listbox"
         @mouseenter="cancelHoverClose"
@@ -156,6 +156,7 @@ interface Props {
   creatable?: boolean
   creatablePrefix?: string
   portalClass?: string
+  menuVariant?: 'auto' | 'underline' | 'highlight'
   clearable?: boolean
 }
 
@@ -173,6 +174,7 @@ const props = withDefaults(defineProps<Props>(), {
   creatable: false,
   creatablePrefix: '',
   portalClass: '',
+  menuVariant: 'auto',
   clearable: false,
   valueKey: 'value',
   labelKey: 'label'
@@ -210,6 +212,54 @@ const selectRootVariantClass = computed(() =>
 const selectTriggerVariantClass = computed(() =>
   props.variant === 'text-control' ? 'select-trigger--text-control' : 'select-trigger--field'
 )
+
+const levelOneDropdownContextSelector = [
+  '.app-header-atelier',
+  '.table-page-filter-section',
+  '.table-filter-shell',
+  '.table-filter-left',
+  '.table-filter-actions',
+  '.dashboard-filter-card',
+  '.dashboard-filter-shell',
+  '.usage-time-filter-card',
+  '.usage-time-filter-shell',
+  '.usage-filter-card',
+  '.usage-filter-shell',
+  '.keys-filter-shell',
+  '.global-pricing-filter-card',
+  '.global-pricing-filter-shell',
+  '.monitor-filter-shell',
+  '.ops-monitor-toolbar-controls',
+  '.ops-card-filter-bar',
+  '.ops-card-filter-grid',
+  '.codex-toolbar',
+  '.codex-list-actions__filters',
+  '.risk-control-toolbar-actions',
+  '.risk-control-record-filters',
+  '.payment-dashboard-filter-bar',
+  '.payment-plans-filter-bar',
+  '.order-filter-card'
+].join(',')
+
+const isLevelOneDropdown = computed(() => {
+  if (props.menuVariant === 'underline') return true
+  if (props.menuVariant === 'highlight') return false
+  return (
+    props.variant === 'text-control' ||
+    Boolean(containerRef.value?.closest(levelOneDropdownContextSelector))
+  )
+})
+
+const hasExplicitPortalVariant = computed(() =>
+  /\b(?:filter-underline-menu|topbar-underline-menu|dropdown-highlight-menu|account-card-action-menu)\b/.test(props.portalClass)
+)
+
+const selectDropdownVariantClass = computed(() => {
+  if (hasExplicitPortalVariant.value) return ''
+  return isLevelOneDropdown.value
+    ? 'filter-underline-menu select-dropdown-portal--underline'
+    : 'dropdown-highlight-menu select-dropdown-portal--highlight'
+})
 
 // Computed style for teleported dropdown
 const dropdownStyle = computed(() => {
@@ -772,6 +822,20 @@ onUnmounted(() => {
   text-decoration-color: currentColor;
 }
 
+.select-trigger--text-control:focus:not(:focus-visible),
+.select-trigger--text-control.select-trigger-open:focus:not(:focus-visible) {
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  border: 0 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  text-decoration-color: currentColor;
+}
+
 .select-trigger--text-control:focus-visible {
   border: 0 !important;
   background: transparent !important;
@@ -952,6 +1016,40 @@ onUnmounted(() => {
 .select-dropdown-portal .select-option-focused :where(.select-option-label, svg),
 .select-dropdown-portal .select-option:hover :where(.select-option-label, svg) {
   color: var(--anthropic-fg, var(--atelier-ink));
+}
+
+.select-dropdown-portal--underline .select-option,
+.select-dropdown-portal--underline .select-option-selected,
+.select-dropdown-portal--underline .select-option-selected.select-option-focused,
+.select-dropdown-portal--underline .select-option-selected:hover,
+.select-dropdown-portal--underline .select-option-focused,
+.select-dropdown-portal--underline .select-option:hover {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--anthropic-fg, var(--atelier-ink)) !important;
+  text-decoration-line: underline !important;
+  text-underline-offset: 0.22em !important;
+}
+
+.select-dropdown-portal--underline .select-option {
+  text-decoration-color: transparent !important;
+}
+
+.select-dropdown-portal--underline .select-option-selected,
+.select-dropdown-portal--underline .select-option-selected.select-option-focused,
+.select-dropdown-portal--underline .select-option-selected:hover,
+.select-dropdown-portal--underline .select-option-focused,
+.select-dropdown-portal--underline .select-option:hover {
+  text-decoration-color: currentColor !important;
+}
+
+.select-dropdown-portal--underline .select-option-selected :where(.select-option-label, svg),
+.select-dropdown-portal--underline .select-option-selected.select-option-focused :where(.select-option-label, svg),
+.select-dropdown-portal--underline .select-option-selected:hover :where(.select-option-label, svg),
+.select-dropdown-portal--underline .select-option-focused :where(.select-option-label, svg),
+.select-dropdown-portal--underline .select-option:hover :where(.select-option-label, svg) {
+  color: var(--anthropic-fg, var(--atelier-ink)) !important;
 }
 
 .select-dropdown-portal .select-option-disabled {
