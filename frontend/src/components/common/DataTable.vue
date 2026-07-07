@@ -37,8 +37,10 @@
         :key="resolveRowKey(row, index)"
         :class="[
           'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]',
-          resolveRowClass(row, index)
+          resolveRowClass(row, index),
+          { 'cursor-pointer': clickableRows }
         ]"
+        @click="clickableRows && emit('rowClick', row)"
       >
         <slot name="row-overlay" :row="row" :index="index"></slot>
         <div class="space-y-3">
@@ -213,8 +215,10 @@
             :ref="measureElement"
             :class="[
               'hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]',
-              resolveRowClass(sortedData[virtualRow.index], virtualRow.index)
+              resolveRowClass(sortedData[virtualRow.index], virtualRow.index),
+              { 'cursor-pointer': clickableRows }
             ]"
+            @click="clickableRows && emit('rowClick', sortedData[virtualRow.index])"
           >
             <td
               v-if="$slots['row-overlay']"
@@ -273,6 +277,7 @@ const isDesktopViewport = ref(
 
 const emit = defineEmits<{
   sort: [key: string, order: 'asc' | 'desc']
+  rowClick: [row: any]
 }>()
 
 // 表格容器引用
@@ -452,6 +457,8 @@ interface Props {
    * table scrolling but avoids a nested vertical scroll container.
    */
   verticalScrollMode?: 'internal' | 'page'
+  /** Emit 'rowClick' on row/card click and show pointer cursor (interactive cells should @click.stop) */
+  clickableRows?: boolean
   /** Estimated row height in px for the virtualizer (default 56) */
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */

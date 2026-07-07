@@ -104,8 +104,34 @@
       <template #filters>
         <div class="usage-filter-shell table-filter-shell flex flex-wrap items-end gap-3">
           <div class="usage-filter-left table-filter-left flex flex-1 flex-wrap items-end gap-3">
-            <!-- API Key Filter -->
-            <div class="min-w-[180px]">
+            <template v-if="activeTab === 'errors'">
+              <div class="min-w-[180px]">
+                <label class="input-label">{{ t('usage.errors.keyName') }}</label>
+                <Select variant="text-control" v-model="errorFilter.api_key_id" :options="errorKeyOptions" @change="applyErrorFilters" />
+              </div>
+              <div class="min-w-[180px]">
+                <label class="input-label">{{ t('usage.errors.model') }}</label>
+                <Select
+                  variant="text-control"
+                  v-model="errorFilter.model"
+                  :options="errorModelOptions"
+                  searchable
+                  creatable
+                  clearable
+                  :placeholder="t('usage.errors.modelPlaceholder')"
+                  @change="applyErrorFilters"
+                />
+              </div>
+              <div class="min-w-[160px]">
+                <label class="input-label">{{ t('usage.errors.category') }}</label>
+                <Select variant="text-control" v-model="errorFilter.category" :options="errorCategoryOptions" @change="applyErrorFilters" />
+              </div>
+              <div class="min-w-[140px]">
+                <label class="input-label">{{ t('usage.errors.status') }}</label>
+                <Select variant="text-control" v-model="errorFilter.status_code" :options="errorStatusOptions" @change="applyErrorFilters" />
+              </div>
+            </template>
+            <div v-else class="min-w-[180px]">
               <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
               <Select
                 variant="text-control"
@@ -116,7 +142,6 @@
               />
             </div>
 
-            <!-- Date Range Filter -->
             <div>
               <label class="input-label">{{ t('usage.timeRange') }}</label>
               <DateRangePicker
@@ -126,21 +151,47 @@
                 @change="onDateRangeChange"
               />
             </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="usage-filter-actions table-filter-actions ml-auto flex items-center gap-3">
-              <button data-testid="user-usage-button-apply-filters" @click="applyFilters" :disabled="loading" class="btn btn-primary anthropic-refresh-action-button user-usage-refresh-button">
-                {{ t("common.refresh") }}
-              </button>
-              <button data-testid="user-usage-button-reset-filters" @click="resetFilters" class="filter-menu-button user-usage-reset-button">
-                {{ t('common.reset') }}
-              </button>
-              <button data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-secondary user-usage-export-button">
-                {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
-              </button>
-            </div>
           </div>
+
+          <div class="usage-filter-actions table-filter-actions ml-auto flex items-center gap-3">
+            <button data-testid="user-usage-button-apply-filters" @click="refreshData" :disabled="activeTab === 'errors' ? errorLoading : loading" class="btn btn-primary anthropic-refresh-action-button user-usage-refresh-button">
+              {{ t("common.refresh") }}
+            </button>
+            <button data-testid="user-usage-button-reset-filters" @click="resetFilters" class="filter-menu-button user-usage-reset-button">
+              {{ t('common.reset') }}
+            </button>
+            <div class="relative" ref="columnDropdownRef">
+              <button
+                data-testid="user-usage-button-column-settings"
+                type="button"
+                @click="showColumnDropdown = !showColumnDropdown"
+                class="filter-menu-button"
+                :class="{ 'filter-menu-button-open': showColumnDropdown }"
+                :title="t('admin.users.columnSettings')"
+              >
+                {{ t('admin.users.columnSettings') }}
+              </button>
+              <div
+                v-if="showColumnDropdown"
+                class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              >
+                <button
+                  v-for="col in currentToggleableColumns"
+                  :key="col.key"
+                  type="button"
+                  @click="toggleCurrentColumn(col.key)"
+                  class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)]"
+                >
+                  <span>{{ col.label }}</span>
+                  <Icon v-if="isCurrentColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
+                </button>
+              </div>
+            </div>
+            <button v-if="activeTab !== 'errors'" data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-secondary user-usage-export-button">
+              {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
+            </button>
+          </div>
+        </div>
       </template>
 
       <template #table>
@@ -190,7 +241,7 @@
              虚拟化器测高 race 导致的概率空白,已在 DataTable 内用「就绪门控 + initialRect 兜底」根治。 -->
         <div v-show="activeTab === 'usage'" class="flex min-h-0 flex-1 flex-col">
           <DataTable
-          :columns="columns"
+          :columns="visibleColumns"
           :data="usageLogs"
           :loading="loading"
           :server-side-sort="true"
@@ -200,6 +251,7 @@
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @ipGeoBatchFailed="handleIpGeoBatchFailed"
         >
           <template #cell-api_key="{ row }">
             <span class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
@@ -377,6 +429,10 @@
             <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">-</span>
           </template>
 
+          <template #cell-ip_address="{ row }">
+            <span class="font-mono text-sm text-[var(--anthropic-muted)]">{{ row.ip_address || '-' }}</span>
+          </template>
+
           <template #empty>
             <EmptyState :message="t('usage.noRecords')" />
           </template>
@@ -391,10 +447,11 @@
             :loading="errorLoading"
             :page="errorPage"
             :page-size="errorPageSize"
-            :api-keys="apiKeys"
-            @filter="onErrorFilter"
+            :visible-column-keys="errVisibleColumnKeys"
+            @sort="onErrorSort"
             @update:page="onErrorPage"
             @update:pageSize="onErrorPageSize"
+            @ipGeoBatchFailed="handleIpGeoBatchFailed"
           />
         </div>
       </template>
@@ -628,12 +685,13 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
-import Select from '@/components/common/Select.vue'
+import Select, { type SelectOption } from '@/components/common/Select.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Icon from '@/components/icons/Icon.vue'
 import UserErrorRequestsTable from '@/components/user/UserErrorRequestsTable.vue'
 import type { UsageLog, ApiKey, UsageQueryParams, UsageStatsResponse, UserErrorRequest } from '@/types'
 import type { Column } from '@/components/common/types'
+import { COMMON_ERROR_STATUS_CODES } from '@/utils/errorBadges'
 import { formatDateTime, formatReasoningEffort } from '@/utils/format'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { formatCacheTokens, formatMultiplier } from '@/utils/formatters'
@@ -691,11 +749,12 @@ const cacheStats = computed(() => {
   return { cacheRead, totalInput, ratePercent }
 })
 
-const columns = computed<Column[]>(() => [
+const allColumns = computed<Column[]>(() => [
   { key: 'api_key', label: t('usage.apiKeyFilter'), sortable: false },
   { key: 'model', label: t('usage.model'), sortable: true },
   { key: 'reasoning_effort', label: t('usage.reasoningEffort'), sortable: false },
   { key: 'endpoint', label: t('usage.endpoint'), sortable: false },
+  { key: 'ip_address', label: 'IP', sortable: false },
   { key: 'stream', label: t('usage.type'), sortable: false },
   { key: 'billing_mode', label: t('admin.usage.billingMode'), sortable: false },
   { key: 'tokens', label: t('usage.tokens'), sortable: false },
@@ -705,6 +764,36 @@ const columns = computed<Column[]>(() => [
   { key: 'created_at', label: t('usage.time'), sortable: true },
   { key: 'user_agent', label: t('usage.userAgent'), sortable: false }
 ])
+
+const ALWAYS_VISIBLE = ['created_at']
+const DEFAULT_HIDDEN_COLUMNS = ['user_agent']
+const HIDDEN_COLUMNS_KEY = 'user-usage-hidden-columns'
+
+const hiddenColumns = reactive<Set<string>>(new Set())
+const toggleableColumns = computed(() =>
+  allColumns.value.filter((col) => !ALWAYS_VISIBLE.includes(col.key))
+)
+const visibleColumns = computed(() =>
+  allColumns.value.filter((col) => ALWAYS_VISIBLE.includes(col.key) || !hiddenColumns.has(col.key))
+)
+const isColumnVisible = (key: string) => !hiddenColumns.has(key)
+const toggleColumn = (key: string) => {
+  if (hiddenColumns.has(key)) {
+    hiddenColumns.delete(key)
+  } else {
+    hiddenColumns.add(key)
+  }
+  localStorage.setItem(HIDDEN_COLUMNS_KEY, JSON.stringify([...hiddenColumns]))
+}
+const loadSavedColumns = () => {
+  try {
+    const saved = localStorage.getItem(HIDDEN_COLUMNS_KEY)
+    const values = saved ? (JSON.parse(saved) as string[]) : DEFAULT_HIDDEN_COLUMNS
+    values.forEach((key) => hiddenColumns.add(key))
+  } catch {
+    DEFAULT_HIDDEN_COLUMNS.forEach((key) => hiddenColumns.add(key))
+  }
+}
 
 const usageLogs = ref<UsageLog[]>([])
 const apiKeys = ref<ApiKey[]>([])
@@ -720,6 +809,35 @@ const apiKeyOptions = computed(() => {
     }))
   ]
 })
+
+const errorKeyOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('usage.errors.allKeys') },
+  ...apiKeys.value.map((key) => ({ value: key.id, label: key.name }))
+])
+
+const errorModelOptions = computed<SelectOption[]>(() => {
+  const seen = new Set<string>()
+  const options: SelectOption[] = []
+  for (const row of errorRows.value) {
+    if (row.model && !seen.has(row.model)) {
+      seen.add(row.model)
+      options.push({ value: row.model, label: row.model })
+    }
+  }
+  return options
+})
+
+const errorCategoryCodes = ['auth', 'rate_limit', 'quota', 'invalid_request', 'service_unavailable', 'upstream', 'internal', 'cyber']
+
+const errorCategoryOptions = computed<SelectOption[]>(() => [
+  { value: '', label: t('usage.errors.allCategories') },
+  ...errorCategoryCodes.map((code) => ({ value: code, label: t(`usage.errors.categories.${code}`) }))
+])
+
+const errorStatusOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('usage.errors.allStatuses') },
+  ...COMMON_ERROR_STATUS_CODES.map((code) => ({ value: code, label: String(code) }))
+])
 
 // Helper function to format date in local timezone
 const formatLocalDate = (date: Date): string => {
@@ -903,6 +1021,16 @@ const applyFilters = () => {
   pagination.page = 1
   loadUsageLogs()
   loadUsageStats()
+  resetErrorRows()
+}
+
+const refreshData = () => {
+  if (activeTab.value === 'errors') {
+    loadErrors()
+    return
+  }
+  loadUsageLogs()
+  loadUsageStats()
 }
 
 const resetFilters = () => {
@@ -920,6 +1048,11 @@ const resetFilters = () => {
   filters.value.start_date = startDate.value
   filters.value.end_date = endDate.value
   pagination.page = 1
+  if (activeTab.value === 'errors') {
+    errorFilter.value = { model: '', category: '', api_key_id: null, status_code: null }
+    applyErrorFilters()
+    return
+  }
   loadUsageLogs()
   loadUsageStats()
 }
@@ -940,6 +1073,10 @@ const handleSort = (key: string, order: 'asc' | 'desc') => {
   sortState.sort_order = order
   pagination.page = 1
   loadUsageLogs()
+}
+
+const handleIpGeoBatchFailed = () => {
+  appStore.showError(t('usage.ipGeo.batchFailed'))
 }
 
 /**
@@ -994,6 +1131,7 @@ const exportToCSV = async () => {
       'Model',
       'Reasoning Effort',
       'Inbound Endpoint',
+      'IP Address',
       'Type',
       'Billing Mode',
       'Input Tokens',
@@ -1013,6 +1151,7 @@ const exportToCSV = async () => {
         log.model,
         formatReasoningEffort(log.reasoning_effort),
         log.inbound_endpoint || '',
+        log.ip_address || '',
         getRequestTypeExportText(log),
         getBillingModeLabel(getDisplayBillingMode(log), t),
         log.input_tokens,
@@ -1032,7 +1171,7 @@ const exportToCSV = async () => {
       ...rows.map((row) => row.join(','))
     ].join('\n')
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -1091,8 +1230,98 @@ const errorRows = ref<UserErrorRequest[]>([])
 const errorLoading = ref(false)
 const errorPage = ref(1)
 const errorPageSize = ref(20)
+const errorSortBy = ref('created_at')
+const errorSortOrder = ref<'asc' | 'desc'>('desc')
 const errorTotal = ref(0)
-const errorFilter = ref<{ model: string; category: string; api_key_id: number | null }>({ model: '', category: '', api_key_id: null })
+const errorFilter = ref<{
+  model: string | null
+  category: string
+  api_key_id: number | null
+  status_code: number | null
+}>({ model: '', category: '', api_key_id: null, status_code: null })
+
+const ERR_ALWAYS_VISIBLE = ['status', 'created_at']
+const ERR_DEFAULT_HIDDEN_COLUMNS = ['user_agent']
+const ERR_HIDDEN_COLUMNS_KEY = 'user-usage-error-hidden-columns'
+
+const errAllColumns = computed<Column[]>(() => [
+  { key: 'key_name', label: t('usage.errors.keyName') },
+  { key: 'model', label: t('usage.errors.model') },
+  { key: 'endpoint', label: t('usage.errors.endpoint') },
+  { key: 'client_ip', label: 'IP' },
+  { key: 'group', label: t('admin.usage.group') },
+  { key: 'type', label: t('usage.type') },
+  { key: 'platform', label: t('usage.errors.platform') },
+  { key: 'category', label: t('usage.errors.category') },
+  { key: 'status', label: t('usage.errors.status') },
+  { key: 'message', label: t('usage.errors.message') },
+  { key: 'created_at', label: t('usage.errors.time') },
+  { key: 'user_agent', label: t('usage.userAgent') }
+])
+
+const errHiddenColumns = reactive<Set<string>>(new Set())
+const errToggleableColumns = computed(() =>
+  errAllColumns.value.filter((col) => !ERR_ALWAYS_VISIBLE.includes(col.key))
+)
+const errVisibleColumnKeys = computed(() =>
+  errAllColumns.value
+    .filter((col) => ERR_ALWAYS_VISIBLE.includes(col.key) || !errHiddenColumns.has(col.key))
+    .map((col) => col.key)
+)
+const isErrColumnVisible = (key: string) => !errHiddenColumns.has(key)
+const toggleErrColumn = (key: string) => {
+  if (errHiddenColumns.has(key)) {
+    errHiddenColumns.delete(key)
+  } else {
+    errHiddenColumns.add(key)
+  }
+  localStorage.setItem(ERR_HIDDEN_COLUMNS_KEY, JSON.stringify([...errHiddenColumns]))
+}
+const loadSavedErrColumns = () => {
+  try {
+    const saved = localStorage.getItem(ERR_HIDDEN_COLUMNS_KEY)
+    const values = saved ? (JSON.parse(saved) as string[]) : ERR_DEFAULT_HIDDEN_COLUMNS
+    values.forEach((key) => errHiddenColumns.add(key))
+  } catch {
+    ERR_DEFAULT_HIDDEN_COLUMNS.forEach((key) => errHiddenColumns.add(key))
+  }
+}
+
+const currentToggleableColumns = computed(() =>
+  activeTab.value === 'errors' ? errToggleableColumns.value : toggleableColumns.value
+)
+const isCurrentColumnVisible = (key: string) =>
+  activeTab.value === 'errors' ? isErrColumnVisible(key) : isColumnVisible(key)
+const toggleCurrentColumn = (key: string) => {
+  if (activeTab.value === 'errors') {
+    toggleErrColumn(key)
+  } else {
+    toggleColumn(key)
+  }
+}
+
+const showColumnDropdown = ref(false)
+const columnDropdownRef = ref<HTMLElement | null>(null)
+const handleColumnClickOutside = (event: MouseEvent) => {
+  if (columnDropdownRef.value && !columnDropdownRef.value.contains(event.target as HTMLElement)) {
+    showColumnDropdown.value = false
+  }
+}
+
+const applyErrorFilters = () => {
+  errorPage.value = 1
+  loadErrors()
+}
+
+const resetErrorRows = () => {
+  errorPage.value = 1
+  if (activeTab.value === 'errors') {
+    loadErrors()
+  } else {
+    errorRows.value = []
+    errorTotal.value = 0
+  }
+}
 
 const loadErrors = async () => {
   errorLoading.value = true
@@ -1102,9 +1331,12 @@ const loadErrors = async () => {
       page_size: errorPageSize.value,
       start_date: startDate.value,
       end_date: endDate.value,
-      model: errorFilter.value.model || undefined,
+      model: (errorFilter.value.model ?? '').trim() || undefined,
       category: errorFilter.value.category || undefined,
       api_key_id: errorFilter.value.api_key_id ?? undefined,
+      status_code: errorFilter.value.status_code ?? undefined,
+      sort_by: errorSortBy.value,
+      sort_order: errorSortOrder.value,
     })
     errorRows.value = resp.items
     errorTotal.value = resp.total
@@ -1116,8 +1348,9 @@ const loadErrors = async () => {
   }
 }
 
-const onErrorFilter = (f: { model: string; category: string; api_key_id: number | null }) => {
-  errorFilter.value = f
+const onErrorSort = (sortBy: string, sortOrder: 'asc' | 'desc') => {
+  errorSortBy.value = sortBy
+  errorSortOrder.value = sortOrder
   errorPage.value = 1
   loadErrors()
 }
@@ -1167,6 +1400,9 @@ const switchToErrors = () => {
 }
 
 onMounted(() => {
+  loadSavedColumns()
+  loadSavedErrColumns()
+  document.addEventListener('click', handleColumnClickOutside)
   loadApiKeys()
   loadUsageLogs()
   loadUsageStats()
@@ -1175,6 +1411,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  abortController?.abort()
+  document.removeEventListener('click', handleColumnClickOutside)
   window.removeEventListener('resize', moveUsageTabIndicatorToSelected)
 })
 
