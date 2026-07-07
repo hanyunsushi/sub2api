@@ -461,11 +461,9 @@
                 v-for="score in getSchedulerScoreRows(row)"
                 :key="String(score.group_id)"
                 class="flex items-center gap-1 whitespace-nowrap text-gray-700 dark:text-gray-300"
-                :title="`${formatSchedulerScoreGroup(score)} / ${formatSchedulerScore(score.base_score)} / ${formatStickySchedulerScore(score)}`"
+                :title="`${formatSchedulerScoreGroup(score)} / ${formatStickySchedulerScore(score)}`"
               >
                 <span class="max-w-[4.75rem] truncate text-gray-500 dark:text-dark-400">{{ formatSchedulerScoreGroup(score) }}</span>
-                <span class="text-gray-300 dark:text-gray-600">/</span>
-                <span>{{ formatSchedulerScore(score.base_score) }}</span>
                 <span class="text-gray-300 dark:text-gray-600">/</span>
                 <span class="text-primary-700 dark:text-primary-300">{{ formatStickySchedulerScore(score) }}</span>
               </div>
@@ -640,7 +638,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted, toRaw, watch } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted, onUnmounted, toRaw, watch } from 'vue'
 import { useIntervalFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
@@ -768,7 +766,7 @@ const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
 const togglingScheduleLock = ref<number | null>(null)
 const priorityUpdatingIds = reactive<Set<number>>(new Set())
-const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null}>({ show: false, acc: null, pos: null })
+const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null, triggerRect: DOMRect | null}>({ show: false, acc: null, pos: null, triggerRect: null })
 let menuCloseTimer: ReturnType<typeof setTimeout> | null = null
 const rateMultiplierMenu = reactive<{
   show: boolean
@@ -999,7 +997,7 @@ const autoRefreshIntervalLabel = (sec: number) => {
 const formatSchedulerScore = (value: unknown): string => {
   const num = Number(value)
   if (!Number.isFinite(num)) return '-'
-  return num.toFixed(6).replace(/\.?0+$/, '')
+  return num.toFixed(2)
 }
 
 const formatStickySchedulerScore = (score: AccountSchedulerGroupScore): string => {
@@ -1806,6 +1804,7 @@ const cancelMenuClose = () => {
 const closeMenu = () => {
   cancelMenuClose()
   menu.show = false
+  menu.triggerRect = null
 }
 
 const scheduleMenuClose = () => {
@@ -1816,7 +1815,31 @@ const scheduleMenuClose = () => {
   }, 180)
 }
 
-const openMenu = (a: Account, e: Event) => {
+const positionMenuFromTrigger = (triggerRect: DOMRect, panelHeight = 240) => {
+  const menuWidth = 208
+  const padding = 8
+  const offset = 6
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  const left = Math.max(padding, Math.min(
+    viewportWidth < 768
+      ? triggerRect.left + triggerRect.width / 2 - menuWidth / 2
+      : triggerRect.right - menuWidth,
+    viewportWidth - menuWidth - padding
+  ))
+
+  const spaceBelow = viewportHeight - triggerRect.bottom - padding
+  const spaceAbove = triggerRect.top - padding
+  const opensUpward = panelHeight + offset > spaceBelow && spaceAbove > spaceBelow
+  const top = opensUpward
+    ? Math.max(padding, triggerRect.top - panelHeight - offset)
+    : Math.min(triggerRect.bottom + offset, viewportHeight - panelHeight - padding)
+
+  menu.pos = { top, left }
+}
+
+const openMenu = async (a: Account, e: Event) => {
   cancelMenuClose()
   menu.acc = a
   closeRateMultiplierMenu()
@@ -1825,43 +1848,19 @@ const openMenu = (a: Account, e: Event) => {
 
   const target = e.currentTarget as HTMLElement
   if (target) {
-    const rect = target.getBoundingClientRect()
-    const menuWidth = 208
-    const menuHeight = 240
-    const padding = 8
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    let left: number
-    let top: number
-
-    if (viewportWidth < 768) {
-      left = Math.max(padding, Math.min(
-        rect.left + rect.width / 2 - menuWidth / 2,
-        viewportWidth - menuWidth - padding
-      ))
-      top = rect.bottom + 4
-    } else {
-      left = Math.max(padding, Math.min(
-        rect.right - menuWidth,
-        viewportWidth - menuWidth - padding
-      ))
-      top = rect.bottom + 6
-    }
-
-    if (top + menuHeight > viewportHeight - padding) {
-      top = rect.top - menuHeight - 6
-    }
-    if (top < padding) {
-      top = padding
-    }
-
-    menu.pos = { top, left }
+    menu.triggerRect = target.getBoundingClientRect()
+    positionMenuFromTrigger(menu.triggerRect)
   } else {
+    menu.triggerRect = null
     menu.pos = { top: 8, left: 8 }
   }
 
   menu.show = true
+  await nextTick()
+  const panel = document.querySelector<HTMLElement>('[data-testid="admin-account-account-action-menu-div-div"]')
+  if (panel && menu.triggerRect) {
+    positionMenuFromTrigger(menu.triggerRect, panel.offsetHeight)
+  }
 }
 
 const formatAccountRateMultiplier = (value?: number | null) => {

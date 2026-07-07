@@ -148,6 +148,7 @@ describe('admin AccountsView scheduler score column', () => {
           scheduler_score: {
             base_score: 1.234567,
             sticky_score: 0,
+            sticky_score_infinity: true,
             sticky_weighted_enabled: false
           }
         },
@@ -192,13 +193,14 @@ describe('admin AccountsView scheduler score column', () => {
     getAllGroups.mockResolvedValue([])
   })
 
-  it('falls back to the base score for ungrouped accounts instead of showing a dash', async () => {
+  it('falls back to the scheduler score for ungrouped accounts instead of showing a dash', async () => {
     const wrapper = mountView()
     await flushPromises()
 
     const ungroupedCell = wrapper.find('[data-test="scheduler-score-1"]')
     expect(ungroupedCell.exists()).toBe(true)
-    expect(ungroupedCell.text()).toContain('1.234567')
+    expect(ungroupedCell.text()).toContain('+∞')
+    expect(ungroupedCell.text()).not.toContain('1.234567')
     expect(ungroupedCell.text()).toContain('admin.accounts.schedulerScore.ungrouped')
     expect(ungroupedCell.text()).not.toBe('-')
   })
@@ -210,7 +212,8 @@ describe('admin AccountsView scheduler score column', () => {
     const groupedCell = wrapper.find('[data-test="scheduler-score-2"]')
     expect(groupedCell.exists()).toBe(true)
     expect(groupedCell.text()).toContain('group-five')
-    expect(groupedCell.text()).toContain('2')
+    expect(groupedCell.text()).toContain('3.00')
+    expect(groupedCell.text()).not.toContain('2.00')
   })
 
   it('still shows a dash when no scheduler score is available', async () => {

@@ -124,15 +124,15 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
-  it('uses the design-system sidebar rail width instead of the wider default Tailwind rail', () => {
+  it('uses the compact app sidebar rail width instead of the wider default Tailwind rail', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
       styleSource.indexOf('.dark .sidebar {'),
     )
 
-    expect(componentSource).toContain("sidebarCollapsed ? 'w-[72px]' : 'w-[248px]'")
+    expect(componentSource).toContain("sidebarCollapsed ? 'w-[72px]' : 'w-[232px]'")
     expect(componentSource).not.toContain("sidebarCollapsed ? 'w-[72px]' : 'w-64'")
-    expect(sidebarBlock).toContain('width: 248px;')
+    expect(sidebarBlock).toContain('width: 232px;')
     expect(sidebarBlock).not.toContain('@apply w-64;')
   })
 
