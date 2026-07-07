@@ -244,7 +244,10 @@
                   {{ t('common.balance') }}
                 </div>
                 <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                  ${{ user.balance?.toFixed(2) || '0.00' }}
+                  {{ formatHeaderMoney(availableBalance) }}
+                </div>
+                <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
+                  {{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}
                 </div>
               </div>
 
@@ -382,6 +385,9 @@ let userDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
 const docUrl = computed(() => appStore.docUrl)
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
+const availableBalance = computed(() => Number(user.value?.balance || 0))
+const frozenBalance = computed(() => Number(user.value?.frozen_balance || 0))
+const balanceFrozenText = computed(() => t('common.frozenBalance') === 'common.frozenBalance' ? '冻结金额' : t('common.frozenBalance'))
 
 // 只在标准模式的管理员下显示新手引导按钮
 const showOnboardingButton = computed(() => {
@@ -693,6 +699,11 @@ async function handleLogout() {
 function handleReplayGuide() {
   closeDropdown()
   onboardingStore.replay()
+}
+
+function formatHeaderMoney(value: number) {
+  if (!Number.isFinite(value)) return '$0.00'
+  return `$${value.toFixed(2)}`
 }
 
 function handleClickOutside(event: MouseEvent) {

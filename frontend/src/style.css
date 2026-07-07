@@ -236,7 +236,7 @@
 
 /* Shared primary-button / accent shadow glows: orange, not blue. */
 :root.theme-cloudflare .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"]),
-:root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-stripe, .date-picker-apply, .codex-button--primary) {
+:root.theme-cloudflare :where(.btn-primary, .btn-success, .btn-stripe, .codex-button--primary) {
   box-shadow: 0 10px 24px -18px rgba(246, 130, 31, 0.5) !important;
 }
 /* Cloudflare appearance theme end */
@@ -357,7 +357,7 @@
 }
 
 :root.theme-anthropic .app-layout-content :where([class~="bg-primary-500"], [class~="bg-primary-600"]),
-:root.theme-anthropic :where(.btn-primary, .btn-stripe, .date-picker-apply, .codex-button--primary) {
+:root.theme-anthropic :where(.btn-primary, .btn-stripe, .codex-button--primary) {
   box-shadow: 0 0 0 var(--button-spacer, 0) var(--atelier-blue), 0 0 0 var(--button-border-width, 1px) var(--atelier-muted);
 }
 /* Anthropic appearance theme end */
@@ -1081,45 +1081,45 @@
   /* ============ 侧边栏 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
-    @apply w-64;
+    width: 248px;
     @apply flex flex-col;
     @apply transition-transform duration-300;
-    --sidebar-bg: var(--atelier-paper-2);
-    --sidebar-bg-strong: var(--atelier-paper-2);
-    --sidebar-text: var(--atelier-ink);
-    --sidebar-muted: var(--atelier-muted);
-    --sidebar-line: rgba(23, 21, 18, 0.18);
-    --sidebar-line-strong: rgba(23, 21, 18, 0.36);
-    --sidebar-hover: var(--atelier-paper-2);
-    --sidebar-active-bg: var(--atelier-paper-2);
-    --sidebar-active-text: var(--atelier-ink);
-    --sidebar-active-border: var(--atelier-line);
+    --sidebar-bg: var(--anthropic-page);
+    --sidebar-bg-strong: var(--anthropic-page);
+    --sidebar-text: var(--anthropic-muted);
+    --sidebar-muted: var(--anthropic-quiet);
+    --sidebar-line: var(--anthropic-border-faint);
+    --sidebar-line-strong: var(--anthropic-border-soft);
+    --sidebar-hover: var(--anthropic-section);
+    --sidebar-active-bg: var(--anthropic-section);
+    --sidebar-active-text: var(--anthropic-fg);
+    --sidebar-active-border: transparent;
     background: var(--sidebar-bg);
-    border-right: 1px dotted var(--sidebar-line-strong);
+    border-right: 1px solid var(--sidebar-line);
     color: var(--sidebar-text);
     box-shadow: none;
     transition-property: width, transform;
   }
 
   .dark .sidebar {
-    --sidebar-bg: var(--atelier-paper-2);
-    --sidebar-bg-strong: var(--atelier-paper-2);
-    --sidebar-text: var(--atelier-ink);
-    --sidebar-muted: var(--atelier-muted);
-    --sidebar-line: rgba(23, 21, 18, 0.18);
-    --sidebar-line-strong: rgba(23, 21, 18, 0.36);
-    --sidebar-hover: var(--atelier-paper-2);
-    --sidebar-active-bg: var(--atelier-paper-2);
-    --sidebar-active-text: var(--atelier-ink);
+    --sidebar-bg: var(--anthropic-page);
+    --sidebar-bg-strong: var(--anthropic-page);
+    --sidebar-text: var(--anthropic-muted);
+    --sidebar-muted: var(--anthropic-quiet);
+    --sidebar-line: var(--anthropic-border-faint);
+    --sidebar-line-strong: var(--anthropic-border-soft);
+    --sidebar-hover: var(--anthropic-section);
+    --sidebar-active-bg: var(--anthropic-section);
+    --sidebar-active-text: var(--anthropic-fg);
     background: var(--sidebar-bg);
-    border-right-color: var(--sidebar-line-strong);
+    border-right-color: var(--sidebar-line);
     box-shadow: none;
   }
 
   .sidebar-header {
-    @apply h-16 px-6;
+    @apply h-16 px-3;
     @apply flex items-center gap-3;
-    border-bottom: 1px dotted var(--sidebar-line-strong);
+    border-bottom: 1px solid var(--sidebar-line);
     background: var(--sidebar-bg-strong);
     transition:
       padding 0.2s ease,
@@ -1127,7 +1127,7 @@
   }
 
   .sidebar-nav {
-    @apply flex-1 overflow-y-auto px-6 py-4;
+    @apply flex-1 overflow-y-auto px-3 py-[18px];
     scroll-behavior: auto;
     overscroll-behavior: contain;
     contain: layout paint;
@@ -1136,27 +1136,29 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 py-2.5;
+    @apply flex items-center;
     @apply overflow-hidden;
-    @apply text-sm font-medium;
+    @apply font-medium;
+    gap: 1rem;
     color: var(--sidebar-text);
     @apply transition-all duration-200;
     position: relative;
-    min-height: 2.625rem;
+    min-height: 2rem;
     border: 1px solid transparent;
-    border-radius: 0.625rem;
-    padding-left: 0.625rem;
-    padding-right: 0.625rem;
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.5rem;
     font-family: var(--atelier-font-sans);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
     letter-spacing: 0;
   }
 
   .sidebar .sidebar-link:hover {
     background: var(--sidebar-hover);
-    border-color: var(--sidebar-line);
+    border-color: transparent;
     color: var(--atelier-ink);
-    padding-left: 0.625rem;
+    padding-left: 0.5rem;
     text-decoration-line: none;
     text-decoration-color: transparent;
   }
@@ -1164,11 +1166,11 @@
   .sidebar .sidebar-link-active {
     background: var(--sidebar-active-bg);
     border-color: var(--sidebar-active-border);
-    border-radius: 0.625rem;
+    border-radius: 0.5rem;
     color: var(--sidebar-active-text);
     box-shadow: none;
-    padding-left: 0.625rem;
-    padding-right: 0.625rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .sidebar .sidebar-link-active :where(span, .sidebar-label, .sidebar-label-flex, .sidebar-initial) {
@@ -1183,7 +1185,7 @@
   .sidebar .sidebar-link-active:hover {
     background: var(--sidebar-active-bg);
     color: var(--sidebar-active-text);
-    padding-left: 0.625rem;
+    padding-left: 0.5rem;
   }
 
   .sidebar .sidebar-link-active:hover :where(.sidebar-initial, .sidebar-label, span) {
@@ -1239,8 +1241,8 @@
 
   .sidebar.w-\[72px\] .sidebar-link {
     justify-content: center;
-    padding-left: 0.625rem;
-    padding-right: 0.625rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .sidebar.w-\[72px\] .sidebar-link-active::after {
@@ -1275,19 +1277,19 @@
   }
 
   .sidebar-children {
-    border-left: 1px dotted color-mix(in srgb, var(--sidebar-active-border) 44%, var(--sidebar-line));
+    border-left: 1px solid var(--sidebar-line);
     background: transparent;
   }
 
   .sidebar .sidebar-channel-child-link {
-    font-size: 0.75rem;
-    min-height: 2.125rem;
+    font-size: 0.8125rem;
+    min-height: 2rem;
     letter-spacing: 0;
   }
 
   .sidebar .sidebar-system-child-link {
-    font-size: 0.75rem;
-    min-height: 2.125rem;
+    font-size: 0.8125rem;
+    min-height: 2rem;
     letter-spacing: 0;
   }
 
@@ -1302,7 +1304,7 @@
   }
 
   .sidebar-footer {
-    border-top: 1px dotted var(--sidebar-line-strong);
+    border-top: 1px solid var(--sidebar-line);
     background: var(--sidebar-bg-strong);
   }
 
@@ -1311,23 +1313,27 @@
   }
 
   .sidebar-section {
-    @apply mb-6;
+    @apply mb-[18px];
   }
 
   .sidebar .sidebar-section-title {
-    @apply mb-2 px-0;
-    @apply text-xs font-semibold uppercase tracking-wider;
+    @apply px-0;
     color: var(--sidebar-muted);
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
     align-items: center;
-    gap: 8px;
+    margin: 0 0 0.375rem;
+    min-height: 1rem;
+    font-family: var(--atelier-font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .sidebar .sidebar-section-title::after {
-    content: "";
-    height: 1px;
-    background: repeating-linear-gradient(to right, var(--sidebar-line-strong), var(--sidebar-line-strong) 2px, transparent 2px, transparent 8px);
+    display: none;
+    content: none;
   }
 
   /* ============ 页面头部 ============ */
@@ -2051,6 +2057,7 @@ body:has(.home-ascii-shell)::-webkit-scrollbar {
   --anthropic-quiet: #87867f;
   --anthropic-disabled: #b0aea5;
   --anthropic-border: #d1cfc5;
+  --anthropic-border-faint: rgba(20, 19, 19, 0.04);
   --anthropic-border-soft: #f0eee6;
   --anthropic-cookbook-border: rgba(20, 19, 19, 0.08);
   --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
@@ -2371,7 +2378,22 @@ body,
   --sidebar-hover: var(--anthropic-section);
   --sidebar-active-bg: var(--anthropic-section);
   --sidebar-active-text: var(--anthropic-fg);
-  --sidebar-active-border: var(--anthropic-border-soft);
+  --sidebar-active-border: transparent;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: var(--sidebar-line, var(--anthropic-border-faint));
+}
+
+.sidebar-header {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--sidebar-line, var(--anthropic-border-faint));
+}
+
+.sidebar-footer {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: var(--sidebar-line, var(--anthropic-border-faint));
 }
 
 .sidebar-link {
@@ -2387,7 +2409,7 @@ body,
 
 .sidebar .sidebar-link:hover,
 .sidebar .sidebar-link:focus-visible {
-  border-color: var(--anthropic-border-soft);
+  border-color: transparent;
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
@@ -2398,7 +2420,7 @@ body,
 .sidebar .sidebar-link-active,
 .sidebar .sidebar-link-active:hover,
 .sidebar .sidebar-link-active:focus-visible {
-  border-color: var(--anthropic-border-soft);
+  border-color: transparent;
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
@@ -2415,7 +2437,9 @@ body,
   color: var(--anthropic-quiet);
   font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  line-height: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .app-layout-content :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .layout-section-fixed, .table-container, .table-wrapper, .table-scroll-container, .codex-panel, .codex-account-card, .ops-metric-card, .ops-system-card, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .external-subscription-card, .global-pricing-card-frame, .pricing-row) {
@@ -2825,17 +2849,85 @@ body,
   color: var(--anthropic-page);
 }
 
-.app-layout-content :where(.anthropic-radio, .anthropic-checkbox) {
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox) {
+  position: relative;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex: 0 0 1.25rem;
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--anthropic-cookbook-border-hover, var(--anthropic-border));
+  border-radius: 4px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  accent-color: var(--anthropic-fg);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox)::before {
+  content: "";
+  width: 63%;
+  height: 63%;
+  opacity: 0;
+  background: var(--anthropic-page);
+  transition: opacity 0.16s ease;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:hover) {
+  border-color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked) {
+  border-color: currentColor;
+  background: currentColor;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked)::before {
+  opacity: 1;
+}
+
+.app-layout-content :where(.anthropic-radio) {
   border-color: var(--anthropic-border);
   color: var(--anthropic-fg);
   accent-color: var(--anthropic-fg);
   box-shadow: none;
 }
 
-.app-layout-content :where(.anthropic-radio:focus, .anthropic-radio:focus-visible, .anthropic-checkbox:focus, .anthropic-checkbox:focus-visible) {
+.app-layout-content :where(.anthropic-radio:focus, .anthropic-radio:focus-visible, input[type="checkbox"]:not(.sr-only):not(.peer):focus-visible, .anthropic-checkbox:focus-visible) {
   outline: 2px solid var(--anthropic-focus);
   outline-offset: 2px;
   box-shadow: none;
+}
+
+.app-layout-content :where(.batch-switch input[type="checkbox"], input[type="checkbox"].sr-only, input[type="checkbox"].peer) {
+  position: absolute;
+  inset: 0;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  flex: initial;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  opacity: 0;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.batch-switch input[type="checkbox"], input[type="checkbox"].sr-only, input[type="checkbox"].peer)::before {
+  content: none;
 }
 
 .app-layout-content :where(.anthropic-switch) {
@@ -2968,7 +3060,7 @@ body,
   transform: translate3d(0, 1px, 0);
 }
 
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh) {
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh) {
   --button-bg: var(--anthropic-fg);
   --button-fg: var(--anthropic-page);
   --button-border: var(--anthropic-muted);
@@ -2987,8 +3079,8 @@ body,
   text-decoration-line: none;
 }
 
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):hover:not(:disabled),
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):focus-visible {
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):hover:not(:disabled),
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):focus-visible {
   background: var(--button-bg-hover);
   color: var(--button-fg-hover);
   box-shadow: var(--anthropic-button-ring-hover);
@@ -3220,9 +3312,10 @@ body,
 .topbar-underline-menu :where(.dropdown-item svg, .balance-row svg),
 .filter-underline-menu :where(.dropdown-item svg, .account-tools-menu-item svg, .select-option svg),
 .filter-underline-menu :where(.account-tools-menu-icon) {
-  width: auto !important;
-  min-width: 0 !important;
-  height: auto !important;
+  width: 1rem !important;
+  min-width: 1rem !important;
+  height: 1rem !important;
+  flex: 0 0 1rem !important;
   padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;

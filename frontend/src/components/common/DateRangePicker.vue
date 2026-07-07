@@ -84,7 +84,7 @@
 
           <!-- Apply button -->
           <div class="date-picker-actions">
-            <button data-testid="common-date-range-picker-button-apply" @click="apply" class="date-picker-apply">
+            <button data-testid="common-date-range-picker-button-apply" @click="apply" class="btn btn-secondary date-picker-apply">
               {{ t('dates.apply') }}
             </button>
           </div>
@@ -872,6 +872,7 @@ onUnmounted(() => {
 
 .date-picker-dropdown-portal .date-picker-custom {
   @apply flex items-end gap-2 p-3;
+  --date-picker-input-height: 2.125rem;
 }
 
 .date-picker-dropdown-portal .date-picker-field {
@@ -887,6 +888,7 @@ onUnmounted(() => {
   @apply w-full rounded-md px-2 py-1.5 text-sm;
   @apply border;
   @apply focus:outline-none;
+  min-height: var(--date-picker-input-height);
   border-color: var(--anthropic-border, var(--atelier-material-edge));
   background: var(--anthropic-page, var(--atelier-material-1));
   color: var(--atelier-ink);
@@ -914,7 +916,13 @@ onUnmounted(() => {
 }
 
 .date-picker-dropdown-portal .date-picker-separator {
-  @apply flex items-center justify-center pb-1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  min-width: 1rem;
+  height: var(--date-picker-input-height);
+  padding-bottom: 0;
 }
 
 .date-picker-dropdown-portal .date-picker-separator-mark {
@@ -926,21 +934,50 @@ onUnmounted(() => {
 }
 
 .date-picker-dropdown-portal .date-picker-actions {
-  @apply flex justify-end p-2 pt-0;
+  @apply flex items-center justify-end;
+  gap: 0.75rem;
+  padding: 1rem;
   border-top: 1px solid var(--anthropic-border-subtle, var(--atelier-material-edge));
   background: var(--anthropic-page, var(--atelier-paper));
 }
 
 .date-picker-dropdown-portal .date-picker-apply {
-  @apply rounded-lg px-4 py-1.5 text-sm font-medium;
-  @apply transition-colors duration-150;
-  background: var(--anthropic-fg, var(--atelier-ink));
-  color: var(--anthropic-page, var(--atelier-paper));
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-fg, var(--atelier-ink));
+  --button-border: var(--anthropic-fg, var(--atelier-ink));
+  --button-bg-hover: var(--anthropic-fg, var(--atelier-ink));
+  --button-fg-hover: var(--anthropic-page, var(--atelier-paper));
+  --button-border-hover: var(--anthropic-fg, var(--atelier-ink));
+  --button-spacer: 0;
+  --button-spacer-hover: 0;
+  --button-border-width: 1px;
+  --button-border-width-hover: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 4.75rem;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  box-shadow: 0 0 0 var(--button-border-width, 1px) var(--button-border);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out;
 }
 
 .date-picker-dropdown-portal .date-picker-apply:hover,
 .date-picker-dropdown-portal .date-picker-apply:focus-visible {
-  background: var(--anthropic-fg-hover, var(--atelier-dark));
+  background: var(--button-bg-hover);
+  color: var(--button-fg-hover);
+  box-shadow: 0 0 0 var(--button-border-width-hover, 1px) var(--button-border-hover);
+  text-decoration: none;
 }
 
 /* Dropdown animation */

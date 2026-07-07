@@ -362,11 +362,11 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
         <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertEvents.description') }}</p>
       </div>
 
-      <div class="ops-card-filter-bar flex items-center gap-2">
-        <Select :model-value="timeRange" :options="timeRangeOptions" class="w-[120px]" @change="timeRange = String($event || '24h')" />
-        <Select :model-value="severity" :options="severityOptions" class="w-[88px]" @change="severity = String($event || '')" />
-        <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
-        <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
+      <div class="ops-card-filter-bar ops-alert-events-filter-bar flex items-center gap-2">
+        <Select :model-value="timeRange" :options="timeRangeOptions" class="ops-alert-events-filter-select" @change="timeRange = String($event || '24h')" />
+        <Select :model-value="severity" :options="severityOptions" class="ops-alert-events-filter-select" @change="severity = String($event || '')" />
+        <Select :model-value="status" :options="statusOptions" class="ops-alert-events-filter-select" @change="status = String($event || '')" />
+        <Select :model-value="emailSent" :options="emailSentOptions" class="ops-alert-events-filter-select" @change="emailSent = String($event || '')" />
         <button data-testid="admin-ops-components-ops-alert-events-card-button-load-first-page"
           class="btn btn-primary anthropic-refresh-action-button ops-alert-events-refresh-button"
           :disabled="loading"

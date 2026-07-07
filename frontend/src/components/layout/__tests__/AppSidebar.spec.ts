@@ -69,7 +69,7 @@ describe('AppSidebar system settings group', () => {
 
 describe('AppSidebar header styles', () => {
   it('links only the top-left logo to the public welcome page', () => {
-    const homeLinkMatch = componentSource.match(/<router-link[^>]*to="\/home"[^>]*>[\s\S]*?<\/router-link>/)
+    const homeLinkMatch = componentSource.match(/<router-link[^>]*:to="homePath"[^>]*class="sidebar-home-link sidebar-logo-link"[\s\S]*?<\/router-link>/)
 
     expect(homeLinkMatch).not.toBeNull()
     expect(homeLinkMatch?.[0]).toContain('sidebar-home-link')
@@ -109,7 +109,7 @@ describe('AppSidebar header styles', () => {
   })
 
   it('uses the design-system display typeface for the brand title', () => {
-    const sidebarBrandTitleTemplateMatch = componentSource.match(/<span class="sidebar-brand-title"[\s\S]*?<\/span>/)
+    const sidebarBrandTitleTemplateMatch = componentSource.match(/<router-link[^>]*class="sidebar-brand-title"[\s\S]*?<\/router-link>/)
     const sidebarBrandTitleBlockMatch = componentSource.match(/\.sidebar-brand-title\s*\{[\s\S]*?\n\}/)
 
     expect(sidebarBrandTitleTemplateMatch).not.toBeNull()
@@ -124,6 +124,18 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
+  it('uses the design-system sidebar rail width instead of the wider default Tailwind rail', () => {
+    const sidebarBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar {'),
+      styleSource.indexOf('.dark .sidebar {'),
+    )
+
+    expect(componentSource).toContain("sidebarCollapsed ? 'w-[72px]' : 'w-[248px]'")
+    expect(componentSource).not.toContain("sidebarCollapsed ? 'w-[72px]' : 'w-64'")
+    expect(sidebarBlock).toContain('width: 248px;')
+    expect(sidebarBlock).not.toContain('@apply w-64;')
+  })
+
   it('labels the admin and personal sidebar sections with the same title treatment', () => {
     const adminSectionTitleIndex = navTemplateSource.indexOf("{{ t('nav.adminInterface') }}")
     const firstAdminItemIndex = navTemplateSource.indexOf('v-for="item in adminNavItems"')
@@ -150,16 +162,17 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).not.toContain('border-l border-accent-200 pl-2')
     expect(componentSource).not.toContain('mt-auto border-t border-gray-100 p-3')
     expect(componentSource).not.toContain('text-gray-900 dark:text-white')
-    expect(sidebarBlock).toContain('--sidebar-bg: var(--atelier-paper-2);')
-    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--atelier-paper-2);')
-    expect(sidebarBlock).toContain('--sidebar-text: var(--atelier-ink);')
-    expect(sidebarBlock).toContain('--sidebar-line-strong: rgba(23, 21, 18, 0.36);')
-    expect(sidebarBlock).toContain('--sidebar-hover: var(--atelier-paper-2);')
-    expect(sidebarBlock).toContain('--sidebar-active-bg: var(--atelier-paper-2);')
-    expect(sidebarBlock).toContain('--sidebar-active-text: var(--atelier-ink);')
-    expect(sidebarBlock).toContain('--sidebar-active-border: var(--atelier-line);')
+    expect(sidebarBlock).toContain('--sidebar-bg: var(--anthropic-page);')
+    expect(sidebarBlock).toContain('--sidebar-bg-strong: var(--anthropic-page);')
+    expect(sidebarBlock).toContain('--sidebar-text: var(--anthropic-muted);')
+    expect(sidebarBlock).toContain('--sidebar-line: var(--anthropic-border-faint);')
+    expect(sidebarBlock).toContain('--sidebar-hover: var(--anthropic-section);')
+    expect(sidebarBlock).toContain('--sidebar-active-bg: var(--anthropic-section);')
+    expect(sidebarBlock).toContain('--sidebar-active-text: var(--anthropic-fg);')
+    expect(sidebarBlock).toContain('--sidebar-active-border: transparent;')
     expect(sidebarBlock).toContain('background: var(--sidebar-bg);')
-    expect(sidebarBlock).toContain('border-right: 1px dotted var(--sidebar-line-strong);')
+    expect(sidebarBlock).toContain('border-right: 1px solid var(--sidebar-line);')
+    expect(styleSource).toContain('--anthropic-border-faint: rgba(20, 19, 19, 0.04);')
     expect(sidebarBlock).not.toContain('--sidebar-bg: var(--atelier-ink);')
     expect(sidebarBlock).not.toContain('--sidebar-bg-strong: #050505;')
     expect(sidebarBlock).not.toContain('--sidebar-hover: var(--atelier-butter);')
@@ -172,9 +185,12 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar .sidebar-link-active::after')
     expect(styleSource).toContain('display: none;')
     expect(styleSource).toContain('content: none;')
-    expect(styleSource).toContain('padding-left: 0.625rem;')
+    expect(styleSource).toContain('padding-left: 0.5rem;')
     expect(styleSource).not.toContain('background: var(--sidebar-active-text);')
     expect(styleSource).not.toContain('margin-left: 0.625rem;')
+    expect(styleSource).not.toContain('border-right: 1px dotted var(--sidebar-line-strong);')
+    expect(styleSource).not.toContain('border-top: 1px dotted var(--sidebar-line-strong);')
+    expect(styleSource).not.toContain('border-bottom: 1px dotted var(--sidebar-line-strong);')
     expect(styleSource).not.toContain('inset 3px 0 0 var(--sidebar-active-border)')
     expect(styleSource).not.toContain('color-mix(in srgb, var(--atelier-butter) 58%, transparent)')
     expect(componentSource).not.toContain('color-mix(in srgb, var(--atelier-butter)')
@@ -190,7 +206,7 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).toContain("{ path: '/admin/channels/pricing', label: t('nav.channelPricing')")
     expect(componentSource).toContain("{ path: '/admin/channels/monitor', label: t('nav.channelMonitor')")
     expect(styleSource).toContain('.sidebar .sidebar-channel-child-link')
-    expect(styleSource).toContain('font-size: 0.75rem;')
+    expect(styleSource).toContain('font-size: 0.8125rem;')
     expect(styleSource).toContain('.sidebar .sidebar-channel-child-link .sidebar-child-initial')
   })
 
@@ -199,7 +215,7 @@ describe('AppSidebar atelier palette', () => {
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link')
-    expect(styleSource).toContain('font-size: 0.75rem;')
+    expect(styleSource).toContain('font-size: 0.8125rem;')
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link .sidebar-child-initial')
   })
 
@@ -224,21 +240,68 @@ describe('AppSidebar atelier palette', () => {
       styleSource.indexOf('.sidebar .sidebar-link-active {'),
       styleSource.indexOf('.sidebar .sidebar-link-active :where'),
     )
-    expect(sidebarLinkBlock).toContain('border-radius: 0.625rem;')
-    expect(sidebarLinkBlock).toContain('padding-left: 0.625rem;')
-    expect(sidebarLinkBlock).toContain('padding-right: 0.625rem;')
+    expect(sidebarLinkBlock).toContain('min-height: 2rem;')
+    expect(sidebarLinkBlock).toContain('border-radius: 0.5rem;')
+    expect(sidebarLinkBlock).toContain('padding: 0.375rem 0.5rem;')
+    expect(sidebarLinkBlock).toContain('font-size: 0.875rem;')
+    expect(sidebarLinkBlock).toContain('line-height: 1.25rem;')
     expect(sidebarHoverBlock).toContain('border-color:')
     expect(sidebarHoverBlock).toContain('background: var(--sidebar-hover);')
     expect(sidebarHoverBlock).toContain('text-decoration-line: none;')
     expect(sidebarHoverBlock).toContain('text-decoration-color: transparent;')
-    expect(sidebarHoverBlock).toContain('padding-left: 0.625rem;')
-    expect(sidebarActiveBlock).toContain('border-radius: 0.625rem;')
+    expect(sidebarHoverBlock).toContain('padding-left: 0.5rem;')
+    expect(sidebarActiveBlock).toContain('border-radius: 0.5rem;')
     expect(sidebarActiveBlock).toContain('background: var(--sidebar-active-bg);')
     expect(sidebarActiveBlock).toContain('border-color: var(--sidebar-active-border);')
-    expect(sidebarActiveBlock).toContain('padding-left: 0.625rem;')
-    expect(sidebarActiveBlock).toContain('padding-right: 0.625rem;')
+    expect(sidebarActiveBlock).toContain('padding-left: 0.5rem;')
+    expect(sidebarActiveBlock).toContain('padding-right: 0.5rem;')
     expect(styleSource).not.toContain(':root.theme-cloudflare .sidebar .sidebar-link:hover')
-    expect(styleSource).not.toContain('border-bottom-color')
+    expect(sidebarHoverBlock).not.toContain('border-bottom-color')
+    expect(sidebarActiveBlock).not.toContain('border-bottom-color')
+  })
+
+  it('matches the design-system sidebar spacing and typography scale', () => {
+    const sidebarHeaderBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-header {'),
+      styleSource.indexOf('.sidebar-nav {'),
+    )
+    const sidebarNavBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-nav {'),
+      styleSource.indexOf('.sidebar-link {'),
+    )
+    const sectionBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-section {'),
+      styleSource.indexOf('.sidebar .sidebar-section-title {'),
+    )
+    const sectionTitleBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar .sidebar-section-title {'),
+      styleSource.indexOf('.sidebar .sidebar-section-title::after {'),
+    )
+    const sectionRuleBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar .sidebar-section-title::after {'),
+      styleSource.indexOf('/* ============ 页面头部 ============ */'),
+    )
+
+    expect(sidebarHeaderBlock).toContain('@apply h-16 px-3;')
+    expect(sidebarHeaderBlock).toContain('border-bottom: 1px solid var(--sidebar-line);')
+    expect(sidebarNavBlock).toContain('@apply flex-1 overflow-y-auto px-3 py-[18px];')
+    expect(sectionBlock).toContain('@apply mb-[18px];')
+    expect(sectionTitleBlock).toContain('font-size: 0.75rem;')
+    expect(sectionTitleBlock).toContain('font-weight: 500;')
+    expect(sectionTitleBlock).toContain('line-height: 1rem;')
+    expect(sectionTitleBlock).toContain('letter-spacing: 0;')
+    expect(sectionTitleBlock).toContain('text-transform: none;')
+    expect(sectionRuleBlock).toContain('display: none;')
+    expect(sectionRuleBlock).not.toContain('repeating-linear-gradient')
+    expect(styleSource).toContain('border-right-width: 1px;')
+    expect(styleSource).toContain('border-right-style: solid;')
+    expect(styleSource).toContain('border-right-color: var(--sidebar-line, var(--anthropic-border-faint));')
+    expect(styleSource).toContain('border-bottom-width: 1px;')
+    expect(styleSource).toContain('border-bottom-style: solid;')
+    expect(styleSource).toContain('border-bottom-color: var(--sidebar-line, var(--anthropic-border-faint));')
+    expect(styleSource).toContain('border-top-width: 1px;')
+    expect(styleSource).toContain('border-top-style: solid;')
+    expect(styleSource).toContain('border-top-color: var(--sidebar-line, var(--anthropic-border-faint));')
   })
 })
 

@@ -85,9 +85,14 @@ describe('OpsDashboardHeader title icon', () => {
     expect(popoverMatch?.[0]).toContain('pointer-events-none')
   })
 
-  it('keeps realtime decorative lines on semantic ops colors', () => {
-    expect(componentSource).toContain(':stroke="getOpsChartColors().throughput"')
-    expect(componentSource).not.toContain(':stroke="getOpsChartColors().brand"')
+  it('does not render the realtime decorative pulse line under the metrics', () => {
+    const realtimePanelMatch = componentSource.match(/<!-- 2\) Realtime Traffic -->[\s\S]*?<!-- Right: 6 cards/)
+
+    expect(realtimePanelMatch).not.toBeNull()
+    expect(realtimePanelMatch?.[0]).not.toContain('Animated Pulse Line')
+    expect(realtimePanelMatch?.[0]).not.toContain('viewBox="0 0 280 32"')
+    expect(realtimePanelMatch?.[0]).not.toContain(':stroke="getOpsChartColors().throughput"')
+    expect(realtimePanelMatch?.[0]).not.toContain('<animate')
   })
 
   it('keeps the ops toolbar and refresh controls on the Anthropic action contract', () => {

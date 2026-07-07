@@ -511,12 +511,6 @@ function formatBalance(value: number) {
   background: var(--anthropic-cookbook-hover, #f5f4ed);
 }
 
-.monitor-capacity-overview:has(.monitor-capacity-card:hover) .monitor-capacity-card:not(:hover) .monitor-capacity-metric-tile,
-.monitor-capacity-overview:has(.monitor-capacity-card:focus-visible) .monitor-capacity-card:not(:focus-visible) .monitor-capacity-metric-tile {
-  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
-  background: var(--anthropic-raised, #e8e6dc);
-}
-
 .monitor-capacity-logo {
   align-items: center;
   background: var(--atelier-paper);

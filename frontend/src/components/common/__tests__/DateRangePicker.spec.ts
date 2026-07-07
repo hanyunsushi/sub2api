@@ -29,6 +29,22 @@ const messages: Record<string, string> = {
   'dates.selectDateRange': 'Select date range'
 }
 
+const cssBlock = (source: string, selector: string) => {
+  const selectorIndex = source.indexOf(selector)
+  expect(selectorIndex, `selector not found: ${selector}`).toBeGreaterThan(-1)
+  const openBraceIndex = source.indexOf('{', selectorIndex)
+  let depth = 0
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') {
+      depth -= 1
+      if (depth === 0) return source.slice(openBraceIndex + 1, index)
+    }
+  }
+  throw new Error(`CSS block not closed for ${selector}`)
+}
+
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => messages[key] ?? key,
@@ -99,6 +115,22 @@ describe('DateRangePicker', () => {
     expect(componentSource).not.toContain('type="datetime-local"')
     expect(componentSource).toContain('.date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator')
     expect(componentSource).toContain('display: none !important;')
+  })
+
+  it('keeps the custom date range separator vertically centered with the inputs', () => {
+    const customBlock = cssBlock(componentSource, '.date-picker-dropdown-portal .date-picker-custom')
+    expect(customBlock).toContain('--date-picker-input-height: 2.125rem;')
+
+    const inputBlock = cssBlock(componentSource, '.date-picker-dropdown-portal .date-picker-input')
+    expect(inputBlock).toContain('min-height: var(--date-picker-input-height);')
+
+    const separatorBlock = cssBlock(componentSource, '.date-picker-dropdown-portal .date-picker-separator')
+    expect(separatorBlock).toContain('align-items: center;')
+    expect(separatorBlock).toContain('justify-content: center;')
+    expect(separatorBlock).toContain('align-self: flex-end;')
+    expect(separatorBlock).toContain('height: var(--date-picker-input-height);')
+    expect(separatorBlock).toContain('padding-bottom: 0;')
+    expect(separatorBlock).not.toContain('pb-1')
   })
 
   it('closes a hover-opened dropdown after the pointer leaves', async () => {
@@ -255,6 +287,8 @@ describe('DateRangePicker', () => {
     await nextTick()
     const applyButton = document.body.querySelector('.date-picker-apply') as HTMLButtonElement | null
     expect(applyButton).not.toBeNull()
+    expect(applyButton!.classList.contains('btn')).toBe(true)
+    expect(applyButton!.classList.contains('btn-secondary')).toBe(true)
 
     applyButton!.click()
     await nextTick()
@@ -326,6 +360,16 @@ describe('DateRangePicker', () => {
     expect(componentSource).toContain('.date-picker-dropdown-portal .date-picker-input:focus-visible {')
     expect(componentSource).toContain('border-color: var(--anthropic-border, var(--atelier-material-edge));')
     expect(componentSource).toContain('outline: 2px solid var(--anthropic-focus')
+    expect(componentSource).toContain('class="btn btn-secondary date-picker-apply"')
+    expect(componentSource).toContain('padding: 1rem;')
+    expect(componentSource).toContain('background: transparent;')
+    expect(componentSource).toContain('color: var(--anthropic-fg, var(--atelier-ink));')
+    expect(componentSource).toContain('--button-bg-hover: var(--anthropic-fg, var(--atelier-ink));')
+    expect(componentSource).toContain('background: var(--button-bg-hover);')
+    expect(componentSource).toContain('min-width: 4.75rem;')
+    expect(componentSource).toContain('box-shadow: 0 0 0 var(--button-border-width, 1px) var(--button-border);')
+    expect(componentSource).toContain('box-shadow: 0 0 0 var(--button-border-width-hover, 1px) var(--button-border-hover);')
+    expect(componentSource).not.toContain('0 0 0 var(--button-spacer-hover, 1px) var(--anthropic-page')
     expect(componentSource).not.toContain('.date-picker-trigger:is(:hover, :focus, :focus-visible, .date-picker-trigger-open)')
     expect(componentSource).not.toContain('.admin-dashboard-atelier .date-picker-dropdown-portal')
     expect(componentSource).not.toContain('transition: all 0.2s ease')

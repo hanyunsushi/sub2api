@@ -37,8 +37,10 @@
         :key="resolveRowKey(row, index)"
         :class="[
           'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]',
-          resolveRowClass(row, index)
+          resolveRowClass(row, index),
+          { 'cursor-pointer': clickableRows }
         ]"
+        @click="clickableRows && emit('rowClick', row)"
       >
         <slot name="row-overlay" :row="row" :index="index"></slot>
         <div class="space-y-3">
@@ -98,7 +100,7 @@
               :sort-key="sortKey"
               :sort-order="sortOrder"
             >
-              <div class="flex items-center space-x-1">
+              <div :class="['flex items-center space-x-1', getHeaderContentAlignmentClass(column)]">
                 <span>{{ column.label }}</span>
                 <span v-if="column.sortable" class="text-[var(--anthropic-muted)] dark:text-dark-500">
                   <svg
@@ -213,8 +215,10 @@
             :ref="measureElement"
             :class="[
               'hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]',
-              resolveRowClass(sortedData[virtualRow.index], virtualRow.index)
+              resolveRowClass(sortedData[virtualRow.index], virtualRow.index),
+              { 'cursor-pointer': clickableRows }
             ]"
+            @click="clickableRows && emit('rowClick', sortedData[virtualRow.index])"
           >
             <td
               v-if="$slots['row-overlay']"
@@ -273,6 +277,7 @@ const isDesktopViewport = ref(
 
 const emit = defineEmits<{
   sort: [key: string, order: 'asc' | 'desc']
+  rowClick: [row: any]
 }>()
 
 // 表格容器引用
@@ -310,6 +315,11 @@ const checkScrollable = () => {
 
 // 检查操作列是否需要展开
 const checkActionsColumnWidth = () => {
+  if (!props.expandableActions) {
+    actionsColumnNeedsExpanding.value = false
+    actionsExpanded.value = false
+    return
+  }
   if (!tableWrapperRef.value) return
 
   // 查找第一行的操作列单元格
@@ -452,6 +462,8 @@ interface Props {
    * table scrolling but avoids a nested vertical scroll container.
    */
   verticalScrollMode?: 'internal' | 'page'
+  /** Emit 'rowClick' on row/card click and show pointer cursor (interactive cells should @click.stop) */
+  clickableRows?: boolean
   /** Estimated row height in px for the virtualizer (default 56) */
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */
@@ -544,6 +556,13 @@ const applySortState = (state: PersistedSortState | null) => {
   if (!state) return
   sortKey.value = state.key
   sortOrder.value = state.order
+}
+
+const getHeaderContentAlignmentClass = (column: Column) => {
+  const className = column.class || ''
+  if (className.includes('text-center')) return 'justify-center'
+  if (className.includes('text-right')) return 'justify-end'
+  return 'justify-start'
 }
 
 const isNullishOrEmpty = (value: any) => value === null || value === undefined || value === ''
