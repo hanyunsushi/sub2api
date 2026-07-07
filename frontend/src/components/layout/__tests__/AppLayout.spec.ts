@@ -7,8 +7,17 @@ import { describe, expect, it } from 'vitest'
 const componentPath = resolve(dirname(fileURLToPath(import.meta.url)), '../AppLayout.vue')
 const componentSource = readFileSync(componentPath, 'utf8')
 const styleSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../../style.css'), 'utf8')
+const targetedStyleSource = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../../../styles/targeted-visual-repair.css'),
+  'utf8',
+)
 
 describe('AppLayout route transition', () => {
+  it('offsets desktop content by the design-system sidebar rail width', () => {
+    expect(componentSource).toContain("sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[248px]'")
+    expect(componentSource).not.toContain("'lg:ml-64'")
+  })
+
   it('does not animate AI sidecar margin squeeze across the whole page', () => {
     expect(componentSource).toContain('transition-[margin-left]')
     expect(componentSource).not.toContain('transition-[margin-left,margin-right]')
@@ -20,9 +29,9 @@ describe('AppLayout route transition', () => {
   it('skips offscreen account-card layout work during sidecar squeeze', () => {
     const accountCardBlockStart =
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr {'
-    const accountCardBlock = styleSource.slice(
-      styleSource.indexOf(accountCardBlockStart),
-      styleSource.indexOf(
+    const accountCardBlock = targetedStyleSource.slice(
+      targetedStyleSource.indexOf(accountCardBlockStart),
+      targetedStyleSource.indexOf(
         '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
       )
     )
@@ -49,22 +58,12 @@ describe('AppLayout route transition', () => {
 
   it('ships the visible route reveal from global CSS so production assets include it', () => {
     expect(styleSource).toContain('transform-origin: top center')
-    expect(styleSource).toContain('--route-enter-duration: 1.08s;')
-    expect(styleSource).toContain('will-change: opacity, transform')
+    expect(styleSource).toContain('--route-enter-duration: 0.28s;')
     expect(styleSource).toContain('animation: app-route-page-enter var(--route-enter-duration) var(--route-enter-easing) both')
-    expect(styleSource).toContain('.app-route-page-entering > *')
-    expect(styleSource).toContain('--atelier-module-enter-duration: 0.9s;')
-    expect(styleSource).toContain('animation: app-route-page-child-enter var(--atelier-module-enter-duration) var(--route-enter-easing) both')
-    expect(styleSource).toContain('animation-delay: var(--delay, 0ms)')
-    expect(styleSource).toContain('.app-route-page-entering :where(')
-    expect(styleSource).toContain('.dashboard-filter-card')
-    expect(styleSource).toContain('.layout-section-fixed')
-    expect(styleSource).toContain('.layout-section-scrollable')
-    expect(styleSource).toContain('.codex-topbar')
-    expect(styleSource).toContain('animation-delay: 190ms;')
     expect(styleSource).toContain('@keyframes app-route-page-enter')
-    expect(styleSource).toContain('@keyframes app-route-page-child-enter')
-    expect(styleSource).toContain('translate3d(0, 26px, 0)')
+    expect(styleSource).toContain('translate3d(0, 10px, 0)')
     expect(styleSource).toContain('@media (prefers-reduced-motion: reduce)')
+    expect(styleSource).not.toContain('@keyframes app-route-page-child-enter')
+    expect(styleSource).not.toContain('.app-route-page-entering > *')
   })
 })

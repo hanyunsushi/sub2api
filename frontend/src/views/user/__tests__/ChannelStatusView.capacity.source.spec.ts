@@ -98,28 +98,16 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(componentSource).toContain("localText('停用', 'Disabled')")
   })
 
-  it('uses the Anthropic tutorial-card linked hover contract for shared capacity cards', () => {
+  it('uses the Anthropic tutorial-card single-card hover contract for shared capacity cards', () => {
     const capacityBaseBlock = cssBlock(componentSource, '.monitor-capacity-card')
     const capacityHoverBlock = cssBlock(componentSource, '.monitor-capacity-card:hover')
     const capacityMetricHoverBlock = cssBlock(
       componentSource,
       '.monitor-capacity-card:hover .monitor-capacity-metric-tile'
     )
-    const capacityMetricSiblingBlock = cssBlock(
-      componentSource,
-      '.monitor-capacity-overview:has(.monitor-capacity-card:hover) .monitor-capacity-card:not(:hover) .monitor-capacity-metric-tile'
-    )
-    const pageSiblingBlock = cssBlock(
-      targetedRepairSource,
-      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
-    )
     const pageMetricHoverBlock = cssBlock(
       targetedRepairSource,
       '#app .app-layout-content .monitor-page-linked-hover-group .monitor-linked-card:where(:hover, :focus-visible, :focus-within) :where(.monitor-capacity-metric-tile, .monitor-metric-tile)'
-    )
-    const pageMetricSiblingBlock = cssBlock(
-      targetedRepairSource,
-      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover) :where(.monitor-capacity-metric-tile, .monitor-metric-tile)'
     )
 
     expect(componentSource).toContain('monitor-capacity-overview mb-5')
@@ -143,17 +131,14 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(capacityHoverBlock).not.toContain('--creepee-home-card-hover')
     expect(capacityMetricHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
     expect(capacityMetricHoverBlock).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
-    expect(capacityMetricSiblingBlock).toContain('background: var(--anthropic-raised, #e8e6dc);')
-    expect(pageSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
+    expect(componentSource).not.toContain('.monitor-capacity-overview:has(.monitor-capacity-card:hover)')
+    expect(targetedRepairSource).not.toContain('.monitor-page-linked-hover-group:has(.monitor-linked-card:hover)')
     expect(pageMetricHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
     expect(pageMetricHoverBlock).toContain('background: var(--anthropic-cookbook-hover) !important;')
     expect(pageMetricHoverBlock).toContain('box-shadow: none !important;')
-    expect(pageMetricSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
-    expect(pageSiblingBlock).not.toContain('opacity: 0.')
-    expect(pageSiblingBlock).not.toContain('translate')
   })
 
-  it('applies the same linked hover treatment to channel monitor cards', () => {
+  it('applies the same single-card hover treatment to channel monitor cards', () => {
     const linkedBaseBlock = cssBlock(
       targetedRepairSource,
       '#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card)'
@@ -161,10 +146,6 @@ describe('ChannelStatusView shared capacity overview source', () => {
     const linkedHoverBlock = cssBlock(
       targetedRepairSource,
       '#app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card:hover'
-    )
-    const linkedSiblingBlock = cssBlock(
-      targetedRepairSource,
-      '#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)'
     )
 
     expect(monitorGridSource).toContain('monitor-channel-card-grid grid gap-5')
@@ -189,10 +170,7 @@ describe('ChannelStatusView shared capacity overview source', () => {
     expect(linkedHoverBlock).toContain('text-decoration: none !important;')
     expect(linkedHoverBlock).not.toContain('--creepee-home-card-hover')
     expect(linkedHoverBlock).not.toContain('translate')
-    expect(linkedSiblingBlock).toContain('background: var(--anthropic-raised) !important;')
-    expect(linkedSiblingBlock).toContain('opacity: 1 !important;')
-    expect(linkedSiblingBlock).not.toContain('opacity: 0.')
-    expect(linkedSiblingBlock).not.toContain('translate')
+    expect(targetedRepairSource).not.toContain('.monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover)')
   })
 
   it('keeps monitor metric tiles paper-colored while preserving semantic status and provider colors', () => {

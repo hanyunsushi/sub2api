@@ -15,6 +15,7 @@
   --anthropic-quiet: #87867f;
   --anthropic-disabled: #b0aea5;
   --anthropic-border: #d1cfc5;
+  --anthropic-border-faint: rgba(20, 19, 19, 0.04);
   --anthropic-border-soft: #f0eee6;
   --anthropic-cookbook-border: rgba(20, 19, 19, 0.08);
   --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
@@ -282,9 +283,10 @@ body,
 .topbar-underline-menu :where(.dropdown-item svg, .balance-row svg),
 .filter-underline-menu :where(.dropdown-item svg, .account-tools-menu-item svg, .select-option svg),
 .filter-underline-menu :where(.account-tools-menu-icon) {
-  width: auto !important;
-  min-width: 0 !important;
-  height: auto !important;
+  width: 1rem !important;
+  min-width: 1rem !important;
+  height: 1rem !important;
+  flex: 0 0 1rem !important;
   padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -362,9 +364,27 @@ body,
   box-shadow: none;
 }
 
+.sidebar {
+  border-right-width: 1px !important;
+  border-right-style: solid !important;
+  border-right-color: var(--sidebar-line, var(--anthropic-border-faint)) !important;
+}
+
+.sidebar-header {
+  border-bottom-width: 1px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: var(--sidebar-line, var(--anthropic-border-faint)) !important;
+}
+
+.sidebar-footer {
+  border-top-width: 1px !important;
+  border-top-style: solid !important;
+  border-top-color: var(--sidebar-line, var(--anthropic-border-faint)) !important;
+}
+
 .sidebar .sidebar-link:hover,
 .sidebar .sidebar-link:focus-visible {
-  border-color: var(--anthropic-border-soft);
+  border-color: transparent;
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
@@ -374,7 +394,7 @@ body,
 .sidebar .sidebar-link-active,
 .sidebar .sidebar-link-active:hover,
 .sidebar .sidebar-link-active:focus-visible {
-  border-color: var(--anthropic-border-soft);
+  border-color: transparent;
   background: var(--anthropic-section);
   color: var(--anthropic-fg);
   text-decoration-line: none;
@@ -678,17 +698,85 @@ body,
   color: var(--anthropic-page);
 }
 
-.app-layout-content :where(.anthropic-radio, .anthropic-checkbox) {
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox) {
+  position: relative;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex: 0 0 1.25rem;
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--anthropic-cookbook-border-hover, var(--anthropic-border));
+  border-radius: 4px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  accent-color: var(--anthropic-fg);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox)::before {
+  content: "";
+  width: 63%;
+  height: 63%;
+  opacity: 0;
+  background: var(--anthropic-page);
+  transition: opacity 0.16s ease;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:hover) {
+  border-color: var(--anthropic-fg);
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked) {
+  border-color: currentColor;
+  background: currentColor;
+}
+
+.app-layout-content :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked)::before {
+  opacity: 1;
+}
+
+.app-layout-content :where(.anthropic-radio) {
   border-color: var(--anthropic-border);
   color: var(--anthropic-fg);
   accent-color: var(--anthropic-fg);
   box-shadow: none;
 }
 
-.app-layout-content :where(.anthropic-radio:focus, .anthropic-radio:focus-visible, .anthropic-checkbox:focus, .anthropic-checkbox:focus-visible) {
+.app-layout-content :where(.anthropic-radio:focus, .anthropic-radio:focus-visible, input[type="checkbox"]:not(.sr-only):not(.peer):focus-visible, .anthropic-checkbox:focus-visible) {
   outline: 2px solid var(--anthropic-focus);
   outline-offset: 2px;
   box-shadow: none;
+}
+
+.app-layout-content :where(.batch-switch input[type="checkbox"], input[type="checkbox"].sr-only, input[type="checkbox"].peer) {
+  position: absolute;
+  inset: 0;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  flex: initial;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  opacity: 0;
+  box-shadow: none;
+}
+
+.app-layout-content :where(.batch-switch input[type="checkbox"], input[type="checkbox"].sr-only, input[type="checkbox"].peer)::before {
+  content: none;
 }
 
 .app-layout-content :where(.anthropic-switch) {
@@ -796,7 +884,7 @@ body,
   color: var(--anthropic-fg);
 }
 
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh) {
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh) {
   --button-bg: var(--anthropic-fg);
   --button-fg: var(--anthropic-page);
   --button-border: var(--anthropic-muted);
@@ -815,8 +903,8 @@ body,
   text-decoration-line: none;
 }
 
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):hover:not(:disabled),
-.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):focus-visible {
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):hover:not(:disabled),
+.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):focus-visible {
   background: var(--button-bg-hover);
   color: var(--button-fg-hover);
   box-shadow: var(--anthropic-button-ring-hover);
@@ -1352,7 +1440,7 @@ body,
   padding-block: 0.375rem !important;
 }
 
-#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):not(:disabled) {
+#app .app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):not(:disabled) {
   --button-bg: var(--anthropic-fg);
   --button-fg: var(--anthropic-page);
   --button-border: var(--anthropic-muted);
@@ -1372,7 +1460,7 @@ body,
   transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
 }
 
-#app .app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):where(:hover, :focus-visible):not(:disabled) {
+#app .app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe, button.bg-primary-500, button.bg-primary-600, a.bg-primary-500, a.bg-primary-600, [role="button"].bg-primary-500, [role="button"].bg-primary-600):not(.anthropic-refresh-action-button):not(.dashboard-filter-refresh):where(:hover, :focus-visible):not(:disabled) {
   border: 0 !important;
   background: var(--button-bg-hover) !important;
   color: var(--button-fg-hover) !important;
@@ -1801,12 +1889,13 @@ body,
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody.table-body > tr + tr {
-  border-top-color: var(--atelier-material-edge) !important;
+  border-top: 1px solid var(--anthropic-cookbook-border) !important;
+  border-top-color: var(--anthropic-cookbook-border) !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
   --account-card-bg: var(--anthropic-page);
-  --account-card-hover-bg: var(--color-oat, #e3dacc);
+  --account-card-hover-bg: var(--anthropic-cookbook-hover, #f5f4ed);
   --home-card-accent: var(--anthropic-info);
   --creepee-card-hover-surface: var(--account-card-hover-bg);
   display: grid;
@@ -1816,8 +1905,8 @@ body,
   position: relative;
   min-width: 0;
   overflow: clip;
-  border-radius: 7px;
-  border: 1px solid var(--anthropic-border-subtle) !important;
+  border-radius: 8px;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
   background: var(--account-card-bg) !important;
   box-shadow: none !important;
   padding: 0.56rem;
@@ -2023,6 +2112,24 @@ body,
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="notes"] :where(span, div) {
   line-height: 1.1rem !important;
+}
+
+#app .app-layout-content .groups-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] > div {
+  gap: 0.18rem !important;
+}
+
+#app .app-layout-content .groups-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] :where(span, div) {
+  line-height: 1.1rem !important;
+}
+
+#app .app-layout-content .groups-table-page .group-capacity-badge-active {
+  border-color: var(--anthropic-info) !important;
+  background: var(--anthropic-info) !important;
+  color: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .groups-table-page .group-capacity-badge-active :where(span, svg) {
+  color: currentColor !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td::before {
@@ -2402,9 +2509,16 @@ body,
   border-color: transparent !important;
 }
 
-#app .app-layout-content .accounts-table-page tr.codex-account-card-calling [data-column-key="capacity"] :where(.badge, [class*="border-"][class*="text-"]) {
-  border-color: color-mix(in srgb, var(--anthropic-info) 34%, transparent) !important;
-  color: var(--anthropic-info) !important;
+#app .app-layout-content .accounts-table-page .codex-account-card-calling [data-column-key="capacity"] .account-capacity-badge-concurrency,
+#app .app-layout-content .accounts-table-page .codex-account-card-calling .account-capacity-badge-concurrency {
+  border-color: var(--anthropic-info) !important;
+  background: var(--anthropic-info) !important;
+  color: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .accounts-table-page .codex-account-card-calling [data-column-key="capacity"] .account-capacity-badge-concurrency :where(span, svg),
+#app .app-layout-content .accounts-table-page .codex-account-card-calling .account-capacity-badge-concurrency :where(span, svg) {
+  color: currentColor !important;
 }
 
 #app .app-layout-content .accounts-table-page .pagination-shell nav {
@@ -2428,14 +2542,14 @@ body,
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--anthropic-page) !important;
+  background: var(--account-card-hover-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
 
 :root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--anthropic-page) !important;
+  background: var(--account-card-hover-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
@@ -2516,6 +2630,50 @@ body,
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
   transform: translateY(1px) rotate(180deg) !important;
+}
+
+body :where(.date-picker-dropdown-portal) .date-picker-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: var(--anthropic-control-gap, 0.75rem) !important;
+  padding: 1rem !important;
+  border-top: 1px solid var(--anthropic-border-subtle, var(--atelier-material-edge)) !important;
+  background: var(--anthropic-page, var(--atelier-paper)) !important;
+}
+
+body :where(.date-picker-dropdown-portal) .date-picker-apply {
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-fg);
+  --button-border: var(--anthropic-fg);
+  --button-bg-hover: var(--anthropic-fg);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-fg);
+  --button-spacer: 0;
+  --button-spacer-hover: 0;
+  --button-border-width: 1px;
+  --button-border-width-hover: 1px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  min-width: 4.75rem !important;
+  min-height: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0.5rem 1rem !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+}
+
+body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focus-visible):not(:disabled) {
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-border-width-hover, 1px) var(--button-border-hover) !important;
 }
 
 /* Settings tabs use the Anthropic route-tabs switching control. */
@@ -2630,7 +2788,7 @@ body,
   }
 }
 
-/* User monitor cards: Anthropic tutorial-card linked hover contract. */
+/* User monitor cards: Anthropic tutorial-card single-card hover contract. */
 #app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card) {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
@@ -2651,16 +2809,6 @@ body,
   text-decoration: none !important;
 }
 
-#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover),
-#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) {
-  border-color: var(--anthropic-cookbook-border) !important;
-  background: var(--anthropic-raised) !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
-  transform: none !important;
-  opacity: 1 !important;
-}
-
 #app .app-layout-content .monitor-page-linked-hover-group :where(.monitor-capacity-metric-tile, .monitor-metric-tile) {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
@@ -2671,14 +2819,6 @@ body,
 #app .app-layout-content .monitor-page-linked-hover-group .monitor-linked-card:where(:hover, :focus-visible, :focus-within) :where(.monitor-capacity-metric-tile, .monitor-metric-tile) {
   border-color: var(--anthropic-cookbook-border-hover) !important;
   background: var(--anthropic-cookbook-hover) !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: none !important;
-}
-
-#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:hover) .monitor-linked-card:not(:hover) :where(.monitor-capacity-metric-tile, .monitor-metric-tile),
-#app .app-layout-content .monitor-page-linked-hover-group:has(.monitor-linked-card:focus-visible) .monitor-linked-card:not(:focus-visible) :where(.monitor-capacity-metric-tile, .monitor-metric-tile) {
-  border-color: var(--anthropic-cookbook-border) !important;
-  background: var(--anthropic-raised) !important;
   color: var(--anthropic-fg) !important;
   box-shadow: none !important;
 }
@@ -3139,18 +3279,21 @@ body,
 }
 
 #app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter input[type="checkbox"] {
-  width: 1rem !important;
-  height: 1rem !important;
-  min-width: 1rem !important;
-  min-height: 1rem !important;
-  flex: 0 0 1rem !important;
-  accent-color: var(--anthropic-fg) !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex: 0 0 1.25rem !important;
+  appearance: none !important;
   border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
   box-shadow: none !important;
 }
 
 #app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter input[type="checkbox"]:checked {
-  accent-color: var(--anthropic-fg) !important;
+  border-color: currentColor !important;
+  background: currentColor !important;
 }
 
 #app .app-layout-content .global-pricing-atelier .global-pricing-checkbox-filter span {
@@ -3256,6 +3399,8 @@ body,
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr {
   background: var(--account-card-bg) !important;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
   box-shadow: none !important;
 }
 
@@ -3301,7 +3446,8 @@ body,
   margin-left: auto !important;
   justify-content: flex-end !important;
   align-items: center !important;
-  gap: 0.5rem !important;
+  column-gap: var(--anthropic-control-gap, 0.75rem) !important;
+  row-gap: 0.5rem !important;
   padding: 0 !important;
   border: 0 !important;
   background: transparent !important;
@@ -3310,6 +3456,15 @@ body,
 
 #app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar > * {
   flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-alert-events-filter-bar > .ops-alert-events-filter-select {
+  width: max-content !important;
+  min-width: 0 !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-alert-events-filter-bar .select-trigger {
+  width: max-content !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-alert-card > .mb-4 > .ops-card-filter-bar > button {
@@ -3365,16 +3520,51 @@ body,
   box-shadow: none !important;
 }
 
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl .select-root--field .select-trigger--field {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  padding: 0.5rem 0.75rem !important;
+  border: 1px solid var(--anthropic-cookbook-border) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl .select-root--field .select-trigger--field:where(:hover, .select-trigger-open):not(:focus-visible) {
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  text-decoration: none !important;
+}
+
 #app .app-layout-content .ops-dashboard-atelier .ops-log-card > .mb-4.rounded-xl :where(label, .text-xs) {
   color: var(--anthropic-muted) !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-log-card input[type="checkbox"] {
-  width: 0.875rem !important;
-  height: 0.875rem !important;
-  accent-color: var(--anthropic-fg) !important;
-  border-color: var(--anthropic-border) !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex: 0 0 1.25rem !important;
+  appearance: none !important;
+  border-color: var(--anthropic-cookbook-border-hover) !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
   box-shadow: none !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-log-card input[type="checkbox"]:checked {
+  border-color: currentColor !important;
+  background: currentColor !important;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-log-card .ops-card-filter-bar {
@@ -4214,6 +4404,14 @@ body,
 #app .app-layout-content .ops-dashboard-atelier .ops-chart-card {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content .ops-dashboard-atelier .ops-chart-card .empty-state {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .model-distribution-card:where(:hover, :focus-within),

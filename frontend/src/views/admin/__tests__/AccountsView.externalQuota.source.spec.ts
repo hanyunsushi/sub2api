@@ -8,6 +8,7 @@ const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8
 const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 const bulkActionsSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountBulkActionsBar.vue'), 'utf8')
 const accountActionMenuSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountActionMenu.vue'), 'utf8')
+const accountCapacityCellSource = readFileSync(resolve(__dirname, '../../../components/account/AccountCapacityCell.vue'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
 const iconSource = readFileSync(resolve(__dirname, '../../../components/icons/Icon.vue'), 'utf8')
 const monitorCapacitySource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
@@ -282,8 +283,12 @@ describe('AccountsView external quota card metadata', () => {
     expect(targetedRepairSource).toContain('.platform-type-badge__platform')
     expect(targetedRepairSource).toContain('.group-token-label')
     expect(targetedRepairSource).toContain('margin-left: 0 !important;')
-    expect(targetedRepairSource).toContain('tr.codex-account-card-calling [data-column-key="capacity"]')
-    expect(targetedRepairSource).toContain('color: var(--anthropic-info) !important;')
+    expect(accountCapacityCellSource).toContain('class="account-capacity-badge-concurrency"')
+    expect(targetedRepairSource).toContain('.codex-account-card-calling [data-column-key="capacity"] .account-capacity-badge-concurrency')
+    expect(targetedRepairSource).toContain('.codex-account-card-calling .account-capacity-badge-concurrency')
+    expect(targetedRepairSource).toContain('border-color: var(--anthropic-info) !important;')
+    expect(targetedRepairSource).toContain('background: var(--anthropic-info) !important;')
+    expect(targetedRepairSource).toContain('color: var(--anthropic-page) !important;')
   })
 
   it('keeps schedule-lock buttons transparent so only the lock glyph turns black', () => {
@@ -389,7 +394,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards on the linked Anthropic hover contract without lift', () => {
+  it('keeps shared capacity cards on the single-card Anthropic hover contract without lift', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
 
     expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
@@ -400,8 +405,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
     expect(monitorCapacitySource).toContain('.monitor-capacity-card:hover .monitor-capacity-metric-tile')
     expect(monitorCapacitySource).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
-    expect(monitorCapacitySource).toContain('.monitor-capacity-overview:has(.monitor-capacity-card:hover) .monitor-capacity-card:not(:hover) .monitor-capacity-metric-tile')
-    expect(monitorCapacitySource).toContain('background: var(--anthropic-raised, #e8e6dc);')
+    expect(monitorCapacitySource).not.toContain('.monitor-capacity-overview:has(.monitor-capacity-card:hover)')
   })
 
   it('keeps a single filtered bulk update entry and selected-row bulk edit entry', () => {

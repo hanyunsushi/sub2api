@@ -2,7 +2,7 @@
   <aside
     class="sidebar"
     :class="[
-      sidebarCollapsed ? 'w-[72px]' : 'w-64',
+      sidebarCollapsed ? 'w-[72px]' : 'w-[248px]',
       { '-translate-x-full lg:translate-x-0': !mobileOpen }
     ]"
   >
@@ -1067,7 +1067,7 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-home-link:focus-visible {
-  outline: 2px solid rgb(0 47 167 / 0.68);
+  outline: 2px solid var(--anthropic-focus, rgb(44 132 219));
   outline-offset: 3px;
 }
 
@@ -1135,20 +1135,13 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-section-title::after {
-  content: '';
-  position: absolute;
-  left: 0.75rem;
-  right: 0.75rem;
-  top: 50%;
-  height: 1px;
-  background: var(--sidebar-line, rgba(17, 24, 39, 0.18));
-  opacity: 0;
-  transform: translateY(-50%);
-  transition: opacity 0.18s ease;
+  display: none;
+  content: none;
 }
 
 .dark .sidebar-section-title::after {
-  background: var(--sidebar-line, rgba(248, 251, 255, 0.14));
+  display: none;
+  content: none;
 }
 
 .sidebar-section-title-text-collapsed {
@@ -1157,8 +1150,8 @@ onBeforeUnmount(() => {
 }
 
 .sidebar-section-title-collapsed::after {
-  opacity: 1;
-  transition-delay: 0.08s;
+  display: none;
+  content: none;
 }
 
 .sidebar-label {

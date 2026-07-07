@@ -244,7 +244,7 @@ describe('Cloudflare appearance theme', () => {
     expect(styleSource).toContain('Anthropic theme — editorial component pass')
     expect(styleSource).toContain(':root.theme-anthropic #app .app-layout-content :where(.page-title, .modal-title, .dialog-header h2')
     expect(styleSource).toContain('font-family: var(--atelier-font-serif) !important;')
-    expect(styleSource).toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .date-picker-apply, .codex-button--primary)')
+    expect(styleSource).toContain(':root.theme-anthropic :where(.btn-primary, .btn-stripe, .codex-button--primary)')
     expect(styleSource).not.toContain(':root.theme-anthropic :where(.btn-primary, .btn-success, .btn-warning, .date-picker-apply, .codex-button--primary)')
     expect(styleSource).toContain(':root.theme-anthropic :where(.btn-warning)')
     expect(styleSource).toContain('background: var(--atelier-status-warning) !important;')
@@ -337,7 +337,7 @@ describe('Cloudflare appearance theme', () => {
 
     const genericPrimaryBlock = cssBlockFrom(
       styleSource,
-      '.app-layout-content :where(.btn-primary, .date-picker-apply, .codex-button--primary, .users-filter-create, .btn-stripe',
+      '.app-layout-content :where(.btn-primary, .codex-button--primary, .users-filter-create, .btn-stripe',
     )
     expect(genericPrimaryBlock).toContain('--button-bg: var(--anthropic-fg);')
     expect(genericPrimaryBlock).not.toContain('.dashboard-filter-refresh')

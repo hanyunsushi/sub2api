@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout class="groups-table-page">
       <template #filters>
         <div
           class="table-filter-shell groups-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start"

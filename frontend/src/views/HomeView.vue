@@ -170,31 +170,30 @@
               >
                 <div class="terminal-container">
                   <div class="terminal-window">
-                    <div class="terminal-header">
-                      <div class="terminal-buttons">
-                        <span class="btn-close"></span>
-                        <span class="btn-minimize"></span>
-                        <span class="btn-maximize"></span>
-                      </div>
-                      <span class="terminal-title">terminal</span>
+                    <div class="terminal-toolbar">
+                      <span class="terminal-controls" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </span>
+                      <span class="terminal-title">
+                        <span class="terminal-path">terminal</span>
+                      </span>
                     </div>
-                    <div class="terminal-body">
-                      <div class="code-line line-1">
-                        <span class="code-prompt">$</span>
-                        <span class="code-cmd">curl</span>
-                        <span class="code-flag">-X POST</span>
-                        <span class="code-url">/v1/messages</span>
-                      </div>
-                      <div class="code-line line-2">
-                        <span class="code-comment"># Routing to upstream...</span>
-                      </div>
-                      <div class="code-line line-3">
-                        <span class="code-success">200 OK</span>
-                        <span class="code-response">{ "content": "Hello" }</span>
-                      </div>
-                      <div class="code-line line-4">
-                        <span class="code-prompt">$</span>
-                        <span class="cursor"></span>
+                    <div class="terminal-screen">
+                      <div class="terminal-stream">
+                        <div class="terminal-block">
+                          <div class="terminal-row">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-input">curl <span class="terminal-flag">-X POST</span> /v1/messages</span>
+                          </div>
+                          <span class="terminal-output-block"># Routing to upstream...</span>
+                          <span class="terminal-output-block success">200 OK <span class="terminal-response">{ "content": "Hello" }</span></span>
+                          <div class="terminal-row">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-input"><span class="terminal-cursor"></span></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -741,7 +740,7 @@ onBeforeUnmount(() => {
   right: 0;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 22px;
   padding: 22px var(--home-gutter);
@@ -749,6 +748,10 @@ onBeforeUnmount(() => {
   background: rgba(7, 16, 30, 0.14);
   backdrop-filter: blur(12px) saturate(1.08);
   box-shadow: inset 0 -1px 0 rgba(255, 250, 240, 0.05);
+}
+
+.home-masthead > a {
+  min-width: 0;
 }
 
 .home-logo {
@@ -791,7 +794,9 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  min-width: 0;
   gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .home-nav-icon,
@@ -875,12 +880,16 @@ onBeforeUnmount(() => {
 
 .home-feature-section {
   max-width: none;
+  width: 100%;
+  box-sizing: border-box;
   background: var(--atelier-paper-2);
   color: var(--atelier-ink);
 }
 
 .home-provider-section {
   max-width: none;
+  width: 100%;
+  box-sizing: border-box;
   background: var(--atelier-paper-2);
   color: var(--atelier-ink);
 }
@@ -1094,147 +1103,163 @@ onBeforeUnmount(() => {
 }
 
 .terminal-window {
+  --terminal-bg: #0b0c0e;
+  --terminal-ink: #f2f0e8;
+  --terminal-panel: #151515;
+  --terminal-chrome: #252523;
+  --terminal-border: rgba(250, 249, 245, 0.16);
+  --terminal-fg: #faf9f5;
+  --terminal-muted: #b0aea5;
+  --terminal-prompt: #d97757;
+  --terminal-ok: #bcd1ca;
   overflow: hidden;
   width: 100%;
-  border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
-  border-radius: 8px;
-  background: var(--anthropic-page, #faf9f5);
-  backdrop-filter: none;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  border: 1px solid color-mix(in srgb, var(--terminal-border) 82%, black);
+  border-radius: 14px;
+  background: var(--terminal-chrome);
+  color: var(--terminal-fg);
+  box-shadow: 0 24px 64px rgba(20, 20, 19, 0.22);
   transition:
-    transform 300ms var(--atelier-ease),
+    border-color 300ms var(--atelier-ease),
     box-shadow 300ms var(--atelier-ease);
 }
 
 .terminal-window:hover {
-  transform: none;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  border-color: rgba(250, 249, 245, 0.22);
+  box-shadow: 0 28px 72px rgba(20, 20, 19, 0.26);
 }
 
-.terminal-header {
+.terminal-toolbar {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
-  background: var(--anthropic-section, #f0eee6);
+  justify-content: flex-start;
+  min-height: 44px;
+  gap: 14px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--terminal-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0)),
+    var(--terminal-chrome);
+  color: var(--terminal-muted);
+  font-family: var(--atelier-font-mono);
+  font-size: 12px;
+  line-height: 1;
 }
 
-.terminal-buttons {
-  display: flex;
-  gap: 8px;
+.terminal-controls {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
 }
 
-.terminal-buttons span {
-  width: 11px;
-  height: 11px;
-  border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
-  border-radius: 50%;
+.terminal-controls span {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(20, 20, 19, 0.36);
+  border-radius: 999px;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
-.btn-close {
-  background: var(--anthropic-error, #b53333);
+.terminal-controls span:nth-child(2) {
+  background: #ffbd2e;
 }
 
-.btn-minimize {
-  background: var(--anthropic-warning, #eda100);
-}
-
-.btn-maximize {
-  background: var(--anthropic-success, #6ea100);
+.terminal-controls span:nth-child(3) {
+  background: #28c840;
 }
 
 .terminal-title {
-  flex: 1;
-  margin-right: 52px;
-  color: var(--anthropic-muted, #5e5d59);
-  font-family: var(--atelier-font-mono);
-  font-size: 12px;
-  text-align: center;
-}
-
-.terminal-body {
-  padding: 20px 24px;
-  font-family: var(--atelier-font-mono);
-  font-size: 14px;
-  line-height: 2;
-}
-
-.code-line {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-flex;
   align-items: center;
+  min-width: 0;
+  flex: 1 1 auto;
   gap: 8px;
-  opacity: 0;
-  animation: line-appear 0.5s ease forwards;
 }
 
-.line-1 {
-  animation-delay: 0.3s;
+.terminal-path {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--terminal-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.line-2 {
-  animation-delay: 1s;
+.terminal-screen {
+  position: relative;
+  min-height: 218px;
+  overflow: auto;
+  padding: 0;
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  font-family: var(--atelier-font-mono);
+  font-size: 13px;
+  line-height: 1.58;
+  tab-size: 2;
 }
 
-.line-3 {
-  animation-delay: 1.8s;
+.terminal-stream {
+  max-width: 100%;
+  padding: 18px 18px 20px;
 }
 
-.line-4 {
-  animation-delay: 2.5s;
+.terminal-block {
+  padding: 10px 0 12px;
+  border-bottom: 1px solid rgba(250, 249, 245, 0.07);
 }
 
-@keyframes line-appear {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.terminal-block:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
-.code-prompt {
-  color: var(--anthropic-info, #6396d6);
-  font-weight: 700;
+.terminal-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
 }
 
-.code-cmd {
-  color: var(--anthropic-fg, #141413);
+.terminal-prompt {
+  color: var(--terminal-prompt);
+  font-weight: 500;
+  user-select: none;
 }
 
-.code-flag {
-  color: var(--anthropic-info, #6396d6);
+.terminal-input {
+  color: var(--terminal-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-.code-url {
-  color: var(--anthropic-fg, #141413);
+.terminal-flag {
+  color: var(--terminal-prompt);
 }
 
-.code-comment {
-  color: var(--anthropic-muted, #5e5d59);
-  font-style: italic;
+.terminal-output-block {
+  display: block;
+  margin: 5px 0 0 20px;
+  color: var(--terminal-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-.code-success {
-  padding: 2px 8px;
-  border-radius: 0;
-  color: var(--anthropic-info, #6396d6);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--anthropic-info, #6396d6) 32%, transparent);
-  font-weight: 600;
+.terminal-output-block.success {
+  color: var(--terminal-ok);
 }
 
-.code-response {
-  color: var(--anthropic-muted, #5e5d59);
+.terminal-response {
+  color: var(--terminal-fg);
 }
 
-.cursor {
+.terminal-cursor {
   display: inline-block;
-  width: 8px;
-  height: 16px;
-  background: var(--anthropic-info, #6396d6);
+  width: 0.58em;
+  height: 1.1em;
+  margin-top: 0.16em;
+  vertical-align: top;
+  background: var(--terminal-prompt);
   animation: blink 1s step-end infinite;
 }
 
@@ -1343,28 +1368,20 @@ onBeforeUnmount(() => {
   font-family: var(--atelier-font-mono);
   font-size: 12px;
   letter-spacing: 0;
-  transition:
-    transform 260ms var(--atelier-ease),
-    background-color 260ms var(--atelier-ease);
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(2) {
-  background: var(--atelier-paper-2);
+  background: var(--atelier-paper);
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(3) {
-  background: var(--atelier-surface-dust);
+  background: var(--atelier-paper);
   color: var(--atelier-ink);
 }
 
 .home-capability-kicker-item b {
   color: currentColor;
   font-weight: 500;
-}
-
-.home-ascii-shell .home-capability-kicker-item:hover {
-  transform: translate3d(0, -2px, 0);
-  background: var(--atelier-surface-dust);
 }
 
 .home-capability-grid {
@@ -1377,6 +1394,8 @@ onBeforeUnmount(() => {
 .home-ascii-shell .home-cap-card {
   --home-card-accent: var(--atelier-butter);
   --home-card-surface: var(--atelier-paper);
+  --home-card-hover-surface: var(--atelier-paper);
+  --home-card-muted-surface: var(--atelier-surface-dust);
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   align-content: start;
@@ -1389,37 +1408,38 @@ onBeforeUnmount(() => {
   background: var(--home-card-surface);
   color: var(--atelier-ink);
   transition:
-    transform 280ms var(--atelier-ease),
+    border-color 280ms var(--atelier-ease),
     background-color 280ms var(--atelier-ease),
     box-shadow 280ms var(--atelier-ease);
 }
 
-.home-ascii-shell .home-cap-card:hover {
-  transform: translate3d(0, -4px, 0);
-  background: var(--atelier-surface-dust);
-  box-shadow: 0 26px 44px -34px rgba(20, 20, 19, 0.18);
+.home-ascii-shell .home-capability-grid:has(.home-cap-card:hover) .home-cap-card:not(:hover),
+.home-ascii-shell .home-capability-grid:has(.home-cap-card:focus-within) .home-cap-card:not(:focus-within) {
+  background: var(--home-card-muted-surface);
+  border-color: var(--atelier-line-strong);
+}
+
+.home-ascii-shell .home-cap-card:hover,
+.home-ascii-shell .home-cap-card:focus-within {
+  border-color: var(--atelier-line-strong);
+  background: var(--home-card-hover-surface);
+  box-shadow: 0 8px 28px rgba(20, 19, 19, 0.08);
 }
 
 .home-ascii-shell .home-cap-card-featured {
-  background: var(--atelier-paper);
-  color: var(--atelier-ink);
-  box-shadow: inset 0 4px 0 var(--atelier-butter);
+  --home-card-accent: var(--atelier-butter);
 }
 
 .home-ascii-shell .home-cap-card-dust {
   --home-card-accent: var(--atelier-dust);
-  background: var(--atelier-surface-dust);
 }
 
 .home-ascii-shell .home-cap-card-ink {
   --home-card-accent: var(--atelier-butter-dark);
-  --home-card-surface: var(--atelier-paper-2);
-  color: var(--atelier-ink);
 }
 
 .home-ascii-shell .home-cap-card-paper {
   --home-card-accent: var(--atelier-dust);
-  background: var(--atelier-paper);
 }
 
 .home-card-index {
@@ -1431,7 +1451,7 @@ onBeforeUnmount(() => {
 
 .home-ascii-shell .home-cap-card svg,
 .home-card-glyph {
-  color: currentColor;
+  color: var(--home-card-accent);
 }
 
 .home-card-glyph {
@@ -1610,14 +1630,14 @@ onBeforeUnmount(() => {
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: 0;
   color: var(--atelier-ink);
   background: transparent;
   font-family: var(--atelier-font-serif);
-  font-size: 32px;
+  font-size: 26px;
   font-style: italic;
 }
 
@@ -1771,7 +1791,9 @@ onBeforeUnmount(() => {
 
 @media (max-width: 1080px) {
   .home-masthead {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 16px var(--home-gutter);
   }
 
   .home-masthead-meta {
@@ -1779,8 +1801,9 @@ onBeforeUnmount(() => {
   }
 
   .home-nav-actions {
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 8px;
   }
 
   .home-hero-grid,
@@ -1866,6 +1889,10 @@ onBeforeUnmount(() => {
   .home-feature-section,
   .home-provider-section {
     min-height: auto;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 
   .home-hero-grid,
@@ -1952,8 +1979,9 @@ onBeforeUnmount(() => {
   }
 
   .home-provider-mark {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
+    font-size: 23px;
   }
 
   .home-footer {
@@ -1967,6 +1995,49 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 720px) {
+  .home-masthead {
+    gap: 8px;
+    padding: 12px var(--home-gutter);
+  }
+
+  .home-logo {
+    width: 34px;
+    height: 34px;
+    margin-right: 9px;
+  }
+
+  .home-brand-name {
+    max-width: clamp(110px, 34vw, 150px);
+    overflow: hidden;
+    font-size: clamp(18px, 5vw, 22px);
+    text-overflow: ellipsis;
+  }
+
+  .home-nav-actions {
+    gap: 6px;
+  }
+
+  .home-nav-icon,
+  .home-nav-action {
+    min-height: 34px;
+  }
+
+  .home-nav-icon {
+    width: 34px;
+  }
+
+  .home-nav-action {
+    gap: 7px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .home-nav-dot {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+
   .home-section {
     padding-top: 80px;
   }
