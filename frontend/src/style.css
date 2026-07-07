@@ -1081,7 +1081,7 @@
   /* ============ 侧边栏 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
-    width: 248px;
+    width: 232px;
     @apply flex flex-col;
     @apply transition-transform duration-300;
     --sidebar-bg: var(--anthropic-page);
