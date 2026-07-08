@@ -60,7 +60,7 @@ const brand = computed(() => {
 const title = computed(() => props.provider || props.model || 'Provider')
 const shouldRenderModelIcon = computed(() => props.preferModelIcon && brand.value.iconModel)
 const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
-const transparentSystemLogoIds = ['openai', 'claude', 'anthropic']
+const transparentSystemLogoIds = ['openai']
 const shouldUseTransparentShell = computed(() => {
   const usesTransparentSystemLogo = imageMode.value === 'system' || Boolean(brand.value.iconModel)
   if (!usesTransparentSystemLogo) return false

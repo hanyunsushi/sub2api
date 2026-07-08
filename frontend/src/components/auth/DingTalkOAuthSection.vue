@@ -1,26 +1,7 @@
 <template>
   <div class="space-y-4">
     <button data-testid="auth-ding-talk-o-auth-section-button-start-login" type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
-      <svg
-        class="icon mr-2"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        aria-hidden="true"
-        style="flex-shrink: 0"
-      >
-        <circle cx="12" cy="12" r="12" fill="#1677FF" />
-        <text
-          x="12"
-          y="17"
-          font-family="sans-serif"
-          font-size="13"
-          font-weight="bold"
-          fill="white"
-          text-anchor="middle"
-        >D</text>
-      </svg>
+      <ProviderLogoMark provider="dingtalk" class="auth-provider-logo-mark mr-2" />
       {{ t('auth.dingtalk.signIn') }}
     </button>
 
@@ -37,6 +18,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ProviderLogoMark from '@/components/auth/ProviderLogoMark.vue'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 
 const props = withDefaults(defineProps<{

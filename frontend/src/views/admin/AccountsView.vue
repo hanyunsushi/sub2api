@@ -368,7 +368,7 @@
           </template>
           <template #cell-schedulable="{ row }">
             <div class="inline-flex items-center gap-1.5">
-              <button data-testid="admin-accounts-button-handle-toggle-schedulable-row" @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-[var(--anthropic-focus)] hover:bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] hover:bg-gray-300 dark:bg-[var(--anthropic-section)] dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
+              <button data-testid="admin-accounts-button-handle-toggle-schedulable-row" @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="account-toggle-switch relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'account-toggle-switch-active bg-[var(--anthropic-focus)] hover:bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] hover:bg-gray-300 dark:bg-[var(--anthropic-section)] dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
                 <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
               </button>
               <button
@@ -471,10 +471,10 @@
             <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
           <template #cell-last_used_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatRelativeTime(value) }}</span>
+            <span class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatRelativeTime(value) }}</span>
           </template>
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
+            <span class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
           </template>
           <template #cell-expires_at="{ row, value }">
             <div class="flex flex-col items-start gap-1">

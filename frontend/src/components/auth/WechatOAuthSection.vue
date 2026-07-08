@@ -1,11 +1,7 @@
 <template>
   <div class="space-y-4">
     <button data-testid="auth-wechat-o-auth-section-button-start-login" type="button" :disabled="buttonDisabled" class="btn btn-secondary w-full" @click="startLogin">
-      <span
-        class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300"
-      >
-        W
-      </span>
+      <ProviderLogoMark provider="wechat" class="auth-provider-logo-mark mr-2" />
       {{ t('auth.oidc.signIn', { providerName }) }}
     </button>
 
@@ -32,6 +28,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { resolveWeChatOAuthStart } from '@/api/auth'
+import ProviderLogoMark from '@/components/auth/ProviderLogoMark.vue'
 import { useAppStore } from '@/stores'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 

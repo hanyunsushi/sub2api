@@ -9,13 +9,13 @@
     <!-- Logo/Brand -->
     <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
       <!-- Custom Logo or Default Logo -->
-      <router-link :to="homePath" class="sidebar-home-link sidebar-logo-link" aria-label="Home" @click="handleMenuItemClick(homePath)">
+      <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click" :to="homePath" class="sidebar-home-link sidebar-logo-link" aria-label="Home" @click="handleMenuItemClick(homePath)">
         <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg">
           <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
       </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <router-link :to="homePath" class="sidebar-brand-title" @click="handleMenuItemClick(homePath)">
+        <router-link data-testid="layout-app-sidebar-router-link-brand-title" :to="homePath" class="sidebar-brand-title" @click="handleMenuItemClick(homePath)">
           {{ siteName }}
         </router-link>
         <!-- Version Badge -->

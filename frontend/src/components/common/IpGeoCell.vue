@@ -1,6 +1,6 @@
 <template>
   <div v-if="entry.status === 'idle'" class="mt-0.5 text-xs">
-    <button
+    <button data-testid="common-ip-geo-cell-button-handle-fetch"
       type="button"
       class="text-primary-600 underline decoration-dashed underline-offset-2 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
       @click="handleFetch"
@@ -25,7 +25,7 @@
   </div>
 
   <div v-else-if="entry.status === 'success'" class="mt-0.5 flex items-center gap-1 text-xs">
-    <button
+    <button data-testid="common-ip-geo-cell-button-handle-open-detail"
       type="button"
       class="truncate text-gray-500 underline decoration-dotted underline-offset-2 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
       :title="tooltipText"
@@ -33,7 +33,7 @@
     >
       {{ entry.label }}
     </button>
-    <button
+    <button data-testid="common-ip-geo-cell-button-handle-refresh"
       type="button"
       class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
       :title="t('usage.ipGeo.refreshTitle')"
@@ -44,7 +44,7 @@
   </div>
 
   <div v-else-if="entry.status === 'error'" class="mt-0.5 text-xs">
-    <button
+    <button data-testid="common-ip-geo-cell-button-handle-fetch-2"
       type="button"
       class="text-red-600 underline decoration-dashed underline-offset-2 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
       @click="handleFetch"

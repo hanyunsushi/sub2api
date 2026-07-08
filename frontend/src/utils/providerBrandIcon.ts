@@ -242,7 +242,13 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['anthropic', 'claude'],
-    { iconModel: 'claude', label: 'CL', background: '#FFF4E8', color: '#C05621', border: '#FBD38D' },
+    {
+      iconModel: 'claude',
+      label: 'CL',
+      background: 'color-mix(in srgb, var(--anthropic-accent) 10%, var(--anthropic-page))',
+      color: 'var(--anthropic-clay-interactive)',
+      border: 'color-mix(in srgb, var(--anthropic-accent) 32%, transparent)',
+    },
   ],
   [
     ['gemini', 'google-ai-studio'],

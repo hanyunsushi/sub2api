@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"net"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -528,6 +529,31 @@ func (r *notificationEmailMemorySettingRepo) Delete(_ context.Context, key strin
 func TestNotificationEmailMemorySettingRepoSatisfiesInterface(t *testing.T) {
 	var _ SettingRepository = (*notificationEmailMemorySettingRepo)(nil)
 	require.False(t, strings.Contains(notificationEmailPreferenceKey(NotificationEmailEventBalanceLow, "User@Example.com"), "User@Example.com"))
+}
+
+func TestEmailServiceSMTPUseTLSOnSubmissionPortRequiresSTARTTLS(t *testing.T) {
+	smtpServer := startNotificationEmailTestSMTPServer(t)
+	host, port, _ := net.SplitHostPort(smtpServer.listener.Addr().String())
+	emailSvc := NewEmailService(nil, nil)
+
+	err := emailSvc.TestSMTPConnectionWithConfig(&SMTPConfig{
+		Host:     host,
+		Port:     mustAtoiForTest(t, port),
+		Username: "user",
+		Password: "password",
+		UseTLS:   true,
+	})
+
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "server does not advertise STARTTLS")
+	require.NotContains(t, err.Error(), "tls connection failed")
+}
+
+func mustAtoiForTest(t *testing.T, raw string) int {
+	t.Helper()
+	value, err := strconv.Atoi(raw)
+	require.NoError(t, err)
+	return value
 }
 
 type notificationEmailTestSMTPServer struct {

@@ -145,6 +145,8 @@
             :wechat-enabled="wechatEnabled"
             :wechat-open-enabled="wechatOpenEnabled"
             :wechat-mp-enabled="wechatMpEnabled"
+            :github-enabled="githubEnabled"
+            :google-enabled="googleEnabled"
             embedded
             compact
           />
@@ -197,6 +199,8 @@ const props = withDefaults(defineProps<{
   wechatEnabled?: boolean
   wechatOpenEnabled?: boolean
   wechatMpEnabled?: boolean
+  githubEnabled?: boolean
+  googleEnabled?: boolean
 }>(), {
   linuxdoEnabled: false,
   dingtalkEnabled: false,
@@ -205,6 +209,8 @@ const props = withDefaults(defineProps<{
   wechatEnabled: false,
   wechatOpenEnabled: undefined,
   wechatMpEnabled: undefined,
+  githubEnabled: false,
+  googleEnabled: false,
 })
 
 const { t } = useI18n()

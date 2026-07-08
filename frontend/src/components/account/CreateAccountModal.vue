@@ -47,7 +47,7 @@
     >
       <div>
         <label class="input-label">{{ t('admin.accounts.accountName') }}</label>
-        <input
+        <input data-testid="account-create-account-input-form-name"
           v-model="form.name"
           type="text"
           required
@@ -58,7 +58,7 @@
       </div>
       <div>
         <label class="input-label">{{ t('admin.accounts.notes') }}</label>
-        <textarea
+        <textarea data-testid="account-create-account-textarea-form-notes"
           v-model="form.notes"
           rows="3"
           class="input"
@@ -71,20 +71,20 @@
       <div>
         <label class="input-label">{{ t('admin.accounts.platform') }}</label>
         <div class="mt-2 flex flex-wrap rounded-lg bg-gray-100 p-1 dark:bg-dark-700" data-tour="account-form-platform">
-          <button
+          <button data-testid="account-create-account-button-platform-anthropic"
             type="button"
             @click="form.platform = 'anthropic'"
             :class="[
               'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
               form.platform === 'anthropic'
-                ? 'bg-white text-orange-600 shadow-sm dark:bg-dark-600 dark:text-orange-400'
+                ? 'bg-white text-[var(--anthropic-accent)] shadow-sm dark:bg-dark-600 dark:text-[var(--anthropic-accent)]'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             ]"
           >
             <Icon name="sparkles" size="sm" />
             Anthropic
           </button>
-          <button
+          <button data-testid="account-create-account-button-platform-openai"
             type="button"
             @click="form.platform = 'openai'"
             :class="[
@@ -109,7 +109,7 @@
             </svg>
             OpenAI
           </button>
-          <button
+          <button data-testid="account-create-account-button-platform-gemini"
             type="button"
             @click="form.platform = 'gemini'"
             :class="[
@@ -134,7 +134,7 @@
             </svg>
             Gemini
           </button>
-          <button
+          <button data-testid="account-create-account-button-platform-antigravity"
             type="button"
             @click="form.platform = 'antigravity'"
             :class="[
@@ -147,7 +147,7 @@
             <Icon name="cloud" size="sm" />
             Antigravity
           </button>
-          <button
+          <button data-testid="account-create-account-button-platform-grok"
             type="button"
             @click="form.platform = 'grok'"
             :class="[
@@ -167,21 +167,21 @@
       <div v-if="form.platform === 'anthropic'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4" data-tour="account-form-type">
-          <button
+          <button data-testid="account-create-account-button-account-category-anthropic-oauth"
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
-                : 'border-gray-200 hover:border-orange-300 dark:border-dark-600 dark:hover:border-orange-700'
+                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
+                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -197,21 +197,21 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-account-category-anthropic-apikey"
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'apikey'
-                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                : 'border-gray-200 hover:border-purple-300 dark:border-dark-600 dark:hover:border-purple-700'
+                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
+                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'apikey'
-                  ? 'bg-purple-500 text-white'
+                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -227,21 +227,21 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-account-category-anthropic-bedrock"
             type="button"
             @click="accountCategory = 'bedrock'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'bedrock'
-                ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
-                : 'border-gray-200 hover:border-amber-300 dark:border-dark-600 dark:hover:border-amber-700'
+                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
+                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'bedrock'
-                  ? 'bg-amber-500 text-white'
+                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -257,21 +257,21 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-account-category-anthropic-service-account"
             type="button"
             @click="accountCategory = 'service_account'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'service_account'
-                ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20'
-                : 'border-gray-200 hover:border-sky-300 dark:border-dark-600 dark:hover:border-sky-700'
+                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
+                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'service_account'
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -287,7 +287,7 @@
 
         <div
           v-if="accountCategory === 'service_account'"
-          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-200"
+          class="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_10%,var(--anthropic-page))] px-3 py-2 text-xs text-[var(--anthropic-accent)] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_16%,var(--anthropic-section))]"
         >
           <p>{{ t('admin.accounts.vertexAnthropicHint') }}</p>
         </div>
@@ -297,7 +297,7 @@
       <div v-if="form.platform === 'openai'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3" data-tour="account-form-type">
-          <button
+          <button data-testid="account-create-account-button-account-category-openai-oauth"
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
@@ -323,7 +323,7 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-account-category-openai-apikey"
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
@@ -356,7 +356,7 @@
       <div v-if="form.platform === 'grok'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2" data-tour="account-form-type">
-          <button
+          <button data-testid="account-create-account-button-account-category-grok-oauth"
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
@@ -391,10 +391,10 @@
       <div v-if="form.platform === 'gemini'">
         <div class="flex items-center justify-between">
           <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
-          <button
+          <button data-testid="account-create-account-button-show-gemini-help-dialog"
             type="button"
             @click="showGeminiHelpDialog = true"
-            class="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+            class="flex items-center gap-1 rounded px-2 py-1 text-xs text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-section)]"
           >
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -403,21 +403,21 @@
           </button>
         </div>
         <div class="mt-2 grid grid-cols-3 gap-3" data-tour="account-form-type">
-          <button
+          <button data-testid="account-create-account-button-account-category-gemini-oauth"
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 hover:border-blue-300 dark:border-dark-600 dark:hover:border-blue-700'
+                ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]'
+                : 'border-gray-200 hover:border-[var(--anthropic-border-hover)] dark:border-dark-600 dark:hover:border-[var(--anthropic-border-hover)]'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -433,7 +433,7 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-account-category-gemini-apikey"
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
@@ -475,7 +475,7 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-handle-select-gemini-o-auth-type-google-one"
             type="button"
             @click="accountCategory = 'service_account'"
             :class="[
@@ -512,7 +512,7 @@
         >
           <p>{{ t('admin.accounts.gemini.accountType.apiKeyNote') }}</p>
           <div class="mt-2 flex flex-wrap gap-2">
-            <a
+            <a data-testid="account-create-account-a-gemini-help-links-api-key"
               :href="geminiHelpLinks.apiKey"
               class="font-medium text-blue-600 hover:underline dark:text-blue-400"
               target="_blank"
@@ -535,7 +535,7 @@
           <label class="input-label">{{ t('admin.accounts.oauth.gemini.oauthTypeLabel') }}</label>
           <div class="mt-2 grid grid-cols-2 gap-3">
             <!-- Google One OAuth -->
-            <button
+            <button data-testid="account-create-account-button-handle-select-gemini-oauth-type"
               type="button"
               @click="handleSelectGeminiOAuthType('google_one')"
               :class="[
@@ -578,21 +578,21 @@
             </button>
 
             <!-- GCP Code Assist OAuth -->
-            <button
+            <button data-testid="account-create-account-button-show-advanced-o-auth-show-advanced-o-auth"
               type="button"
               @click="handleSelectGeminiOAuthType('code_assist')"
               :class="[
                 'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
                 geminiOAuthType === 'code_assist'
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 hover:border-blue-300 dark:border-dark-600 dark:hover:border-blue-700'
+                  ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]'
+                  : 'border-gray-200 hover:border-[var(--anthropic-border-hover)] dark:border-dark-600 dark:hover:border-[var(--anthropic-border-hover)]'
               ]"
             >
               <div
                 :class="[
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                   geminiOAuthType === 'code_assist'
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]'
                     : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
                 ]"
               >
@@ -607,7 +607,7 @@
                 </span>
                 <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.accounts.gemini.oauthType.codeAssistRequirement') }}
-                  <a
+                  <a data-testid="account-create-account-a-gemini-help-links-gcp-project"
                     :href="geminiHelpLinks.gcpProject"
                     class="ml-1 text-blue-600 hover:underline dark:text-blue-400"
                     target="_blank"
@@ -634,7 +634,7 @@
 
           <!-- Advanced Options Toggle -->
           <div class="mt-3">
-            <button
+            <button data-testid="account-create-account-button-show-advanced-oauth-show-advanced-oauth"
               type="button"
               @click="showAdvancedOAuth = !showAdvancedOAuth"
               class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
@@ -660,7 +660,7 @@
 
           <!-- Custom OAuth Client (Advanced) -->
           <div v-if="showAdvancedOAuth" class="mt-3 group relative">
-            <button
+            <button data-testid="account-create-account-button-handle-select-gemini-oauth-type-2"
               type="button"
               :disabled="!geminiAIStudioOAuthEnabled"
               @click="handleSelectGeminiOAuthType('ai_studio')"
@@ -738,7 +738,7 @@
         <div v-if="accountCategory !== 'service_account'" class="mt-4">
           <label class="input-label">{{ t('admin.accounts.gemini.tier.label') }}</label>
           <div class="mt-2">
-            <select
+            <select data-testid="account-create-account-select-gemini-tier-ai-studio"
               v-if="geminiOAuthType === 'google_one'"
               v-model="geminiTierGoogleOne"
               class="input"
@@ -748,7 +748,7 @@
               <option value="google_ai_ultra">{{ t('admin.accounts.gemini.tier.googleOne.ultra') }}</option>
             </select>
 
-            <select
+            <select data-testid="account-create-account-select-gemini-tier-gcp"
               v-else-if="geminiOAuthType === 'code_assist'"
               v-model="geminiTierGcp"
               class="input"
@@ -757,7 +757,7 @@
               <option value="gcp_enterprise">{{ t('admin.accounts.gemini.tier.gcp.enterprise') }}</option>
             </select>
 
-            <select
+            <select data-testid="account-create-account-select-gemini-tier-aistudio"
               v-else
               v-model="geminiTierAIStudio"
               class="input"
@@ -774,7 +774,7 @@
       <div v-if="form.platform === 'antigravity'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3">
-          <button
+          <button data-testid="account-create-account-button-antigravity-account-type-oauth"
             type="button"
             @click="antigravityAccountType = 'oauth'"
             :class="[
@@ -800,7 +800,7 @@
             </div>
           </button>
 
-          <button
+          <button data-testid="account-create-account-button-antigravity-account-type-upstream"
             type="button"
             @click="antigravityAccountType = 'upstream'"
             :class="[
@@ -844,7 +844,7 @@
       <div v-if="form.platform === 'antigravity' && antigravityAccountType === 'upstream'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.baseUrl') }}</label>
-          <input
+          <input data-testid="account-create-account-input-upstream-base-url"
             v-model="upstreamBaseUrl"
             type="text"
             required
@@ -855,7 +855,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.apiKey') }}</label>
-          <input
+          <input data-testid="account-create-account-input-upstream-api-key"
             v-model="upstreamApiKey"
             type="password"
             required
@@ -870,7 +870,7 @@
       <div v-if="(form.platform === 'gemini' || form.platform === 'anthropic') && accountCategory === 'service_account'" class="space-y-4">
         <div>
           <label class="input-label">Service Account JSON</label>
-          <input
+          <input data-testid="account-create-account-input-file"
             ref="vertexServiceAccountFileInput"
             type="file"
             accept="application/json,.json"
@@ -899,7 +899,7 @@
                   {{ vertexClientEmail ? t('admin.accounts.vertexSaJsonKeyHidden') : t('admin.accounts.vertexSaJsonDropHint') }}
                 </p>
               </div>
-              <button
+              <button data-testid="account-create-account-button-vertex-service-account-file-input-click"
                 type="button"
                 class="btn btn-secondary shrink-0"
                 @click="vertexServiceAccountFileInput?.click()"
@@ -922,7 +922,7 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="input-label">Project ID</label>
-            <input
+            <input data-testid="account-create-account-input-vertex-project-id"
               v-model="vertexProjectId"
               type="text"
               class="input font-mono"
@@ -932,7 +932,7 @@
           </div>
           <div>
             <label class="input-label">Location</label>
-            <select
+            <select data-testid="account-create-account-select-vertex-location"
               v-model="vertexLocation"
               required
               class="input font-mono"
@@ -976,7 +976,7 @@
               class="space-y-1"
             >
               <div class="flex items-center gap-2">
-                <input
+                <input data-testid="account-create-account-input-antigravity-mapping-from"
                   v-model="mapping.from"
                   type="text"
                   :class="[
@@ -988,7 +988,7 @@
                 <svg class="h-4 w-4 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
-                <input
+                <input data-testid="account-create-account-input-antigravity-mapping-to"
                   v-model="mapping.to"
                   type="text"
                   :class="[
@@ -997,7 +997,7 @@
                   ]"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-create-account-button-remove-antigravity-model-mapping"
                   type="button"
                   @click="removeAntigravityModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1022,7 +1022,7 @@
             </div>
           </div>
 
-          <button
+          <button data-testid="account-create-account-button-add-antigravity-model-mapping"
             type="button"
             @click="addAntigravityModelMapping"
             class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1034,7 +1034,7 @@
           </button>
 
           <div class="flex flex-wrap gap-2">
-            <button
+            <button data-testid="account-create-account-button-add-antigravity-preset-mapping"
               v-for="preset in antigravityPresetMappings"
               :key="preset.label"
               type="button"
@@ -1052,7 +1052,7 @@
         <label class="input-label">{{ t('admin.accounts.addMethod') }}</label>
         <div class="mt-2 flex gap-4">
           <label class="flex cursor-pointer items-center">
-            <input
+            <input data-testid="account-create-account-input-add-method-oauth"
               v-model="addMethod"
               type="radio"
               value="oauth"
@@ -1061,7 +1061,7 @@
             <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.types.oauth') }}</span>
           </label>
           <label class="flex cursor-pointer items-center">
-            <input
+            <input data-testid="account-create-account-input-add-method"
               v-model="addMethod"
               type="radio"
               value="setup-token"
@@ -1078,7 +1078,7 @@
       <div v-if="form.type === 'apikey' && form.platform !== 'antigravity'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.baseUrl') }}</label>
-          <input
+          <input data-testid="account-create-account-input-api-key-base-url"
             v-model="apiKeyBaseUrl"
             type="text"
             class="input"
@@ -1094,7 +1094,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.apiKeyRequired') }}</label>
-          <input
+          <input data-testid="account-create-account-input-api-key-value"
             v-model="apiKeyValue"
             type="password"
             required
@@ -1113,7 +1113,7 @@
         <!-- Gemini API Key tier selection -->
         <div v-if="form.platform === 'gemini'">
           <label class="input-label">{{ t('admin.accounts.gemini.tier.label') }}</label>
-          <select v-model="geminiTierAIStudio" class="input">
+          <select data-testid="account-create-account-select-gemini-tier-aistudio-2" v-model="geminiTierAIStudio" class="input">
             <option value="aistudio_free">{{ t('admin.accounts.gemini.tier.aiStudio.free') }}</option>
             <option value="aistudio_paid">{{ t('admin.accounts.gemini.tier.aiStudio.paid') }}</option>
           </select>
@@ -1136,7 +1136,7 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button
+              <button data-testid="account-create-account-button-model-restriction-mode-whitelist-apikey"
                 type="button"
                 @click="modelRestrictionMode = 'whitelist'"
                 :class="[
@@ -1161,7 +1161,7 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button
+              <button data-testid="account-create-account-button-model-restriction-mode-mapping-apikey"
                 type="button"
                 @click="modelRestrictionMode = 'mapping'"
                 :class="[
@@ -1227,7 +1227,7 @@
                 :key="getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-create-account-input-apikey-mapping-from"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -1246,13 +1246,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-create-account-input-apikey-mapping-to"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-create-account-button-remove-apikey-model-mapping"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1269,7 +1269,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-create-account-button-add-apikey-model-mapping"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1292,7 +1292,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button
+                <button data-testid="account-create-account-button-add-apikey-preset-mapping"
                   v-for="preset in presetMappings"
                   :key="preset.label"
                   type="button"
@@ -1484,7 +1484,7 @@
               type="button"
               @click="headerOverrideEnabled = !headerOverrideEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                 headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
@@ -1605,7 +1605,7 @@
         <template v-if="bedrockAuthMode === 'sigv4'">
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockAccessKeyId') }}</label>
-            <input
+            <input data-testid="account-create-account-input-bedrock-access-key-id"
               v-model="bedrockAccessKeyId"
               type="text"
               required
@@ -1615,7 +1615,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSecretAccessKey') }}</label>
-            <input
+            <input data-testid="account-create-account-input-bedrock-secret-access-key"
               v-model="bedrockSecretAccessKey"
               type="password"
               required
@@ -1624,7 +1624,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSessionToken') }}</label>
-            <input
+            <input data-testid="account-create-account-input-mapping-from-4"
               v-model="bedrockSessionToken"
               type="password"
               class="input font-mono"
@@ -1955,7 +1955,7 @@
         <template v-else>
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button
+            <button data-testid="account-create-account-button-model-restriction-mode-whitelist-oauth"
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
@@ -1967,7 +1967,7 @@
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-            <button
+              <button data-testid="account-create-account-button-model-restriction-mode-mapping-oauth"
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -2006,7 +2006,7 @@
                 :key="'oauth-' + getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-create-account-input-oauth-mapping-from"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -2025,13 +2025,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-create-account-input-oauth-mapping-to"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-create-account-button-remove-oauth-model-mapping"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -2048,7 +2048,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-create-account-button-add-oauth-model-mapping"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -2058,7 +2058,7 @@
 
             <!-- Quick Add Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-create-account-button-add-oauth-preset-mapping"
                 v-for="preset in presetMappings"
                 :key="'oauth-' + preset.label"
                 type="button"
@@ -3073,10 +3073,10 @@
 
     <template #footer>
       <div v-if="step === 1" class="flex justify-end gap-3">
-        <button @click="handleClose" type="button" class="btn btn-secondary">
+        <button data-testid="account-create-account-button-cancel" @click="handleClose" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="account-create-account-button-submit"
           type="submit"
           form="create-account-form"
           :disabled="submitting"
@@ -3113,10 +3113,10 @@
         </button>
       </div>
       <div v-else class="flex justify-between gap-3">
-        <button type="button" class="btn btn-secondary" @click="goBackToBasicInfo">
+        <button data-testid="account-create-account-button-go-back-to-basic-info" type="button" class="btn btn-secondary" @click="goBackToBasicInfo">
           {{ t('common.back') }}
         </button>
-        <button
+        <button data-testid="account-create-account-button-exchange-code"
           v-if="isManualInputMethod"
           type="button"
           :disabled="!canExchangeCode"
@@ -3363,7 +3363,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button @click="showGeminiHelpDialog = false" type="button" class="btn btn-primary">
+        <button data-testid="account-create-account-button-show-gemini-help-dialog-false" @click="showGeminiHelpDialog = false" type="button" class="btn btn-primary">
           {{ t('common.close') }}
         </button>
       </div>

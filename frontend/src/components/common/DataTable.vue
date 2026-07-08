@@ -32,7 +32,7 @@
     </template>
 
     <template v-else>
-      <div
+      <div data-testid="common-data-table-div-clickable-rows-emit"
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
         :class="[
@@ -207,7 +207,7 @@
                 :style="{ height: virtualPaddingTop + 'px', padding: 0, border: 'none' }">
             </td>
           </tr>
-          <tr
+          <tr data-testid="common-data-table-tr-clickable-rows-emit"
             v-for="virtualRow in virtualItems"
             :key="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"
             :data-row-id="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"

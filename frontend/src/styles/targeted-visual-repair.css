@@ -450,7 +450,7 @@ body,
   display: none !important;
 }
 
-.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .codex-account-card, .external-subscription-card):where(:hover, :focus-visible) {
+.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .external-subscription-card):where(:hover, :focus-visible) {
   border-color: var(--anthropic-cookbook-border-hover);
   background: var(--anthropic-cookbook-hover);
   color: var(--anthropic-fg);
@@ -782,9 +782,11 @@ body,
 .app-layout-content :where(.anthropic-switch) {
   position: relative;
   display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
-  width: 2.75rem;
-  height: 1.5rem;
+  width: 3.5rem;
+  height: 2.125rem;
+  padding: 0.25rem;
   border: 1px solid var(--anthropic-border);
   border-radius: 999px;
   background: var(--anthropic-raised);
@@ -799,8 +801,8 @@ body,
 
 .app-layout-content :where(.anthropic-switch-thumb) {
   pointer-events: none;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 50%;
+  aspect-ratio: 1;
   transform: translateX(0);
   border: 1px solid var(--anthropic-border);
   border-radius: 999px;
@@ -810,8 +812,57 @@ body,
 }
 
 .app-layout-content :where(.anthropic-switch-active .anthropic-switch-thumb) {
-  transform: translateX(1.25rem);
+  transform: translateX(100%);
   border-color: transparent;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"],
+:where(.modal-content, .dialog-container) button.toggle-switch {
+  width: 3.5rem !important;
+  height: 2.125rem !important;
+  padding: 0.25rem !important;
+  align-items: center !important;
+  border: 1px solid var(--anthropic-border) !important;
+  border-radius: 999px !important;
+  background: var(--anthropic-raised) !important;
+  box-shadow: none !important;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"]:where(:focus):not(:focus-visible),
+:where(.modal-content, .dialog-container) button.toggle-switch:where(:focus):not(:focus-visible) {
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"]:where(:focus-visible),
+:where(.modal-content, .dialog-container) button.toggle-switch:where(:focus-visible) {
+  outline: 2px solid var(--anthropic-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"]:where([class*="bg-[var(--anthropic-fg)]"], [class*="bg-primary-"], [class*="bg-[var(--anthropic-focus)]"]),
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"][aria-checked="true"],
+:where(.modal-content, .dialog-container) button.toggle-switch[aria-checked="true"] {
+  border-color: transparent !important;
+  background: var(--anthropic-focus) !important;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"] > span[class*="pointer-events-none"],
+:where(.modal-content, .dialog-container) button.toggle-switch > .toggle-switch__thumb {
+  width: 50% !important;
+  height: auto !important;
+  aspect-ratio: 1 !important;
+  border: 1px solid var(--anthropic-border) !important;
+  background: var(--anthropic-page) !important;
+  box-shadow: var(--anthropic-dropdown-shadow) !important;
+  transition: transform 0.4s cubic-bezier(0.35, 1.5, 0.6, 1), border-color 0.2s ease !important;
+}
+
+:where(.modal-content, .dialog-container) button[class*="relative inline-flex h-6 w-11"] > span[class*="translate-x-5"],
+:where(.modal-content, .dialog-container) button.toggle-switch[aria-checked="true"] > .toggle-switch__thumb {
+  transform: translateX(100%) !important;
+  border-color: transparent !important;
 }
 
 .app-layout-content :where(.anthropic-action-icon) {
@@ -991,7 +1042,7 @@ body,
 
 .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
-  outline: 2px solid var(--anthropic-focus);
+  outline: 2px solid var(--anthropic-border-hover);
   outline-offset: 3px;
   box-shadow: none;
 }
@@ -1332,18 +1383,19 @@ body,
 }
 
 #app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell {
-  row-gap: 0.375rem !important;
-  column-gap: 0.5rem !important;
+  row-gap: 0.5rem !important;
+  column-gap: 0.75rem !important;
   align-items: center !important;
+  justify-content: space-between !important;
 }
 
 #app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell :where(.subscriptions-filter-left, .subscriptions-filter-actions) {
-  row-gap: 0.375rem !important;
+  row-gap: 0.5rem !important;
   column-gap: 0.5rem !important;
 }
 
 #app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell .subscriptions-filter-left {
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   width: auto !important;
   min-width: 0 !important;
   max-width: 100% !important;
@@ -1351,25 +1403,29 @@ body,
 }
 
 #app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell .subscriptions-filter-actions {
-  flex: 0 1 auto !important;
+  flex: 0 0 auto !important;
   width: auto !important;
   margin-left: auto !important;
   justify-content: flex-end !important;
 }
 
-#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell .subscriptions-filter-search {
-  width: 11rem !important;
-  flex: 0 0 11rem !important;
+#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell .subscriptions-filter-left.table-filter-left > .subscriptions-filter-search.relative.w-full {
+  width: 10.5rem !important;
+  flex: 0 0 10.5rem !important;
 }
 
-#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell :where(.subscriptions-filter-status, .subscriptions-filter-platform) {
-  width: 6.75rem !important;
-  flex: 0 0 6.75rem !important;
+#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell :where(.subscriptions-filter-status, .subscriptions-filter-group, .subscriptions-filter-platform) {
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: max-content !important;
+  flex: 0 0 auto !important;
 }
 
-#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell .subscriptions-filter-group {
-  width: 7.75rem !important;
-  flex: 0 0 7.75rem !important;
+#app .app-layout-content .table-page-filter-section > .subscriptions-filter-shell :where(.subscriptions-filter-status, .subscriptions-filter-group, .subscriptions-filter-platform) :where(.select-root--text-control, .select-trigger--text-control) {
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: max-content !important;
+  flex: 0 0 auto !important;
 }
 
 #app .app-layout-content .table-page-filter-section > .proxies-filter-shell {
@@ -1701,6 +1757,154 @@ body,
   -webkit-text-fill-color: var(--anthropic-fg);
 }
 
+.auth-ascii-shell :where(.paper-card) {
+  border: 1px solid var(--anthropic-border-subtle) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-section) !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(.auth-logo) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.auth-ascii-shell :where(.auth-logo img) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(.btn-primary) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+  text-decoration: none !important;
+}
+
+.auth-ascii-shell :where(.btn-primary):where(:hover, :focus-visible):not(:disabled) {
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+.auth-ascii-shell :where(.btn-secondary, .btn-ghost, .btn-tertiary) {
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-muted);
+  --button-border: var(--anthropic-border-subtle);
+  --button-bg-hover: transparent;
+  --button-fg-hover: var(--anthropic-fg);
+  --button-border-hover: var(--anthropic-border-hover);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: var(--anthropic-button-ring) !important;
+  text-decoration: none !important;
+}
+
+.auth-ascii-shell :where(.btn-secondary, .btn-ghost, .btn-tertiary):where(:hover, :focus-visible):not(:disabled) {
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: var(--anthropic-button-ring-hover) !important;
+}
+
+.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select) {
+  border-color: var(--anthropic-border-subtle) !important;
+  border-radius: 8px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:focus):not(:focus-visible) {
+  border-color: var(--anthropic-border-subtle) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:focus-visible) {
+  border-color: var(--anthropic-border-subtle) !important;
+  outline: 2px solid var(--anthropic-border-hover) !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox) {
+  position: relative;
+  display: inline-grid;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  min-width: 1.25rem !important;
+  min-height: 1.25rem !important;
+  flex: 0 0 1.25rem;
+  place-items: center;
+  appearance: none;
+  border: 1px solid var(--anthropic-border-hover) !important;
+  border-radius: 4px !important;
+  background: var(--anthropic-page) !important;
+  color: var(--anthropic-fg) !important;
+  accent-color: var(--anthropic-fg);
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox)::before {
+  content: "";
+  width: 63%;
+  height: 63%;
+  opacity: 0;
+  background: var(--anthropic-page);
+  transition: opacity 0.16s ease;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 8' fill='none'%3E%3Cpath d='M1 4L4 7L10 1' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:hover) {
+  border-color: var(--anthropic-fg) !important;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked) {
+  border-color: currentColor !important;
+  background: currentColor !important;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:checked)::before {
+  opacity: 1;
+}
+
+.auth-ascii-shell :where(input[type="checkbox"]:not(.sr-only):not(.peer), .anthropic-checkbox):where(:focus-visible) {
+  outline: 2px solid var(--anthropic-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+.auth-ascii-shell :where(.input-label) {
+  color: var(--anthropic-fg) !important;
+}
+
+.auth-ascii-shell :where(.input-hint, .auth-subtitle, .auth-footer-link, .auth-copyright) {
+  color: var(--anthropic-muted) !important;
+}
+
 .tour-info-box,
 .tour-success-box,
 .tour-warning-box,
@@ -1815,13 +2019,16 @@ body,
   --button-spacer-hover: 1px;
   --button-border-width: 1px;
   --button-border-width-hover: 2px;
-  min-height: 2.5rem !important;
-  height: 2.5rem !important;
-  padding: 0.5rem 1rem !important;
+  min-height: var(--anthropic-control-height) !important;
+  height: var(--anthropic-control-height) !important;
+  padding: 0.375rem 1rem !important;
   border: 0 !important;
   border-radius: 8px !important;
   background: var(--button-bg) !important;
   color: var(--button-fg) !important;
+  font-size: var(--anthropic-control-font-size) !important;
+  font-weight: var(--anthropic-control-font-weight) !important;
+  line-height: var(--anthropic-control-line-height) !important;
   box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
   text-decoration: none !important;
   transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
@@ -1919,8 +2126,8 @@ body,
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--account-card-hover-bg) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
@@ -2107,11 +2314,22 @@ body,
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="status"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="groups"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="scheduler_score"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="created_at"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="expires_at"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="proxy"] :where(span, div),
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="notes"] :where(span, div) {
   line-height: 1.1rem !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="scheduler_score"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"] :where(span, div),
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="created_at"] :where(span, div) {
+  font-family: var(--atelier-font-mono) !important;
+  font-size: 11px !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 0 !important;
 }
 
 #app .app-layout-content .groups-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] > div {
@@ -2317,6 +2535,19 @@ body,
   justify-self: end;
   min-width: 0;
   text-align: right;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-link {
+  text-decoration-line: underline !important;
+  text-decoration-color: transparent !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 0.24em !important;
+}
+
+#app .app-layout-content .accounts-table-page .account-external-quota-link:where(:hover, :focus-visible) {
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
+  text-decoration-color: currentColor !important;
 }
 
 #app .app-layout-content .accounts-table-page > .space-y-3 > .codex-account-card-calling {
@@ -2541,15 +2772,15 @@ body,
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--account-card-hover-bg) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
 
 :root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--account-card-hover-bg) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
@@ -2793,15 +3024,15 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: none !important;
   transform: none !important;
   opacity: 1 !important;
-  transition: background-color 350ms ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+  transition: box-shadow 0.25s ease !important;
 }
 
 #app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card:hover, .monitor-page-linked-hover-group .monitor-linked-card:focus-visible) {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--anthropic-cookbook-hover) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
@@ -2817,8 +3048,8 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .monitor-page-linked-hover-group .monitor-linked-card:where(:hover, :focus-visible, :focus-within) :where(.monitor-capacity-metric-tile, .monitor-metric-tile) {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--anthropic-cookbook-hover) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--anthropic-page) !important;
   color: var(--anthropic-fg) !important;
   box-shadow: none !important;
 }
@@ -2854,9 +3085,9 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .monitor-provider-badge.monitor-provider-anthropic {
-  border-color: color-mix(in srgb, var(--anthropic-warning) 36%, transparent) !important;
+  border-color: color-mix(in srgb, var(--anthropic-accent) 36%, transparent) !important;
   background: transparent !important;
-  color: var(--anthropic-warning) !important;
+  color: var(--anthropic-accent) !important;
 }
 
 #app .app-layout-content .monitor-provider-badge.monitor-provider-gemini {
@@ -2882,7 +3113,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .monitor-group-badge.monitor-group-claude {
-  color: var(--anthropic-warning) !important;
+  color: var(--anthropic-accent) !important;
 }
 
 #app .app-layout-content .monitor-group-badge.monitor-group-gemini {
@@ -3141,22 +3372,26 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content .user-usage-atelier .user-usage-export-button:not(:disabled) {
   --button-bg: transparent;
-  --button-fg: var(--anthropic-fg);
-  --button-border: var(--anthropic-fg);
-  --button-bg-hover: var(--anthropic-fg);
-  --button-fg-hover: var(--anthropic-page);
-  --button-border-hover: var(--anthropic-fg);
+  --button-fg: var(--anthropic-muted);
+  --button-border: var(--anthropic-border-subtle);
+  --button-bg-hover: transparent;
+  --button-fg-hover: var(--anthropic-fg);
+  --button-border-hover: var(--anthropic-border-hover);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 2.5rem !important;
-  min-height: 2.5rem !important;
-  padding: 0 1rem !important;
+  height: var(--anthropic-control-height) !important;
+  min-height: var(--anthropic-control-height) !important;
+  padding: 0.375rem 1rem !important;
   border: 0 !important;
   border-radius: 8px !important;
   background: var(--button-bg) !important;
   color: var(--button-fg) !important;
-  box-shadow: 0 0 0 1px var(--button-border) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   line-height: 1.25rem !important;
@@ -3172,7 +3407,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   border: 0 !important;
   background: var(--button-bg-hover) !important;
   color: var(--button-fg-hover) !important;
-  box-shadow: 0 0 0 1px var(--button-border-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
 }
 
 #app .app-layout-content .global-pricing-atelier .global-pricing-linked-hover-group .global-pricing-linked-card {
@@ -3309,9 +3544,9 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .global-pricing-atelier .meta-pill-provider-anthropic {
-  --provider-pill-border: var(--anthropic-warning-border);
-  --provider-pill-bg: var(--anthropic-warning-bg);
-  --provider-pill-fg: var(--anthropic-warning);
+  --provider-pill-border: color-mix(in srgb, var(--anthropic-accent) 32%, transparent);
+  --provider-pill-bg: transparent;
+  --provider-pill-fg: var(--anthropic-accent);
 }
 
 #app .app-layout-content .global-pricing-atelier .meta-pill-provider-openai {
@@ -3380,7 +3615,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 #app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
-  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline: 2px solid var(--anthropic-border-hover) !important;
   outline-offset: 3px !important;
   box-shadow: none !important;
 }
@@ -3405,15 +3640,15 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--account-card-hover-bg) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
 
 :root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
-  background: var(--account-card-hover-bg) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
+  background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;
 }
@@ -3980,17 +4215,20 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button.anthropic-refresh-action-button,
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled) {
-  --button-bg: var(--anthropic-clay-interactive);
-  --button-border: var(--anthropic-clay-interactive);
-  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-muted);
+  --button-border: var(--anthropic-border-subtle);
+  --button-bg-hover: transparent;
+  --button-fg-hover: var(--anthropic-fg);
+  --button-border-hover: var(--anthropic-border-hover);
   --button-spacer: 0;
   --button-spacer-hover: 1px;
   --button-border-width: 1px;
   --button-border-width-hover: 2px;
   border: 0 !important;
   border-radius: 8px !important;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
   box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
   transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
   text-decoration: none !important;
@@ -4000,14 +4238,14 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .ops-toolbar-primary-button.anthropic-refresh-action-button:focus-visible,
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled):hover,
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control.anthropic-refresh-action-button:not(:disabled):focus-visible {
-  --button-bg: var(--anthropic-clay-interactive);
-  --button-border: var(--anthropic-clay-interactive);
-  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-bg: transparent;
+  --button-border: var(--anthropic-border-subtle);
+  --button-border-hover: var(--anthropic-border-hover);
   --button-spacer-hover: 1px;
   --button-border-width-hover: 2px;
   border: 0 !important;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
   box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
   text-decoration: none !important;
 }
@@ -4168,17 +4406,20 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   height: var(--anthropic-control-height) !important;
   align-items: center !important;
   justify-content: center !important;
-  --button-bg: var(--anthropic-clay-interactive);
-  --button-border: var(--anthropic-clay-interactive);
-  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-muted);
+  --button-border: var(--anthropic-border-subtle);
+  --button-bg-hover: transparent;
+  --button-fg-hover: var(--anthropic-fg);
+  --button-border-hover: var(--anthropic-border-hover);
   --button-spacer: 0;
   --button-spacer-hover: 1px;
   --button-border-width: 1px;
   --button-border-width-hover: 2px;
   border: 0 !important;
   border-radius: 8px !important;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
   box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
   padding: 0.375rem 1rem !important;
   font-size: var(--anthropic-control-font-size) !important;
@@ -4198,14 +4439,14 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   button[title="刷新"],
   button[title="Refresh"]
 ):where(:hover, :focus-visible) {
-  --button-bg: var(--anthropic-clay-interactive);
-  --button-border: var(--anthropic-clay-interactive);
-  --button-border-hover: var(--anthropic-clay-interactive);
+  --button-bg: transparent;
+  --button-border: var(--anthropic-border-subtle);
+  --button-border-hover: var(--anthropic-border-hover);
   --button-spacer-hover: 1px;
   --button-border-width-hover: 2px;
   border: 0 !important;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: transparent !important;
+  color: var(--anthropic-fg) !important;
   box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
   text-decoration: none !important;
 }
@@ -4512,7 +4753,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   background-color: transparent !important;
   background-image: none !important;
   box-shadow: none !important;
-  outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
+  outline: 2px solid var(--anthropic-border-hover) !important;
   outline-offset: 3px !important;
 }
 

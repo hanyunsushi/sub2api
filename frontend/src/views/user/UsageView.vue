@@ -154,7 +154,7 @@
           </div>
 
           <div class="usage-filter-actions table-filter-actions ml-auto flex items-center gap-3">
-            <button data-testid="user-usage-button-apply-filters" @click="refreshData" :disabled="activeTab === 'errors' ? errorLoading : loading" class="btn btn-primary anthropic-refresh-action-button user-usage-refresh-button">
+            <button data-testid="user-usage-button-apply-filters" @click="refreshData" :disabled="activeTab === 'errors' ? errorLoading : loading" class="btn btn-tertiary anthropic-refresh-action-button user-usage-refresh-button">
               {{ t("common.refresh") }}
             </button>
             <button data-testid="user-usage-button-reset-filters" @click="resetFilters" class="filter-menu-button user-usage-reset-button">
@@ -187,7 +187,7 @@
                 </button>
               </div>
             </div>
-            <button v-if="activeTab !== 'errors'" data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-secondary user-usage-export-button">
+            <button v-if="activeTab !== 'errors'" data-testid="user-usage-button-export-to-csv" @click="exportToCSV" :disabled="exporting" class="btn btn-tertiary anthropic-refresh-action-button user-usage-export-button">
               {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
             </button>
           </div>

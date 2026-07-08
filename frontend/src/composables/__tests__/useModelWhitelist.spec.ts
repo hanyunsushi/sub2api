@@ -4,7 +4,12 @@ vi.mock('@/api/admin/accounts', () => ({
   getAntigravityDefaultModelMapping: vi.fn()
 }))
 
-import { buildModelMappingObject, getModelsByPlatform, splitModelMappingObject } from '../useModelWhitelist'
+import {
+  buildModelMappingObject,
+  getModelsByPlatform,
+  getPresetMappingsByPlatform,
+  splitModelMappingObject,
+} from '../useModelWhitelist'
 
 describe('useModelWhitelist', () => {
   it('openai 模型列表包含 GPT-5.4 官方快照', () => {
@@ -40,6 +45,28 @@ describe('useModelWhitelist', () => {
     expect(getModelsByPlatform('antigravity')).toContain('claude-fable-5')
     expect(getModelsByPlatform('claude')).toContain('claude-opus-4-8')
     expect(getModelsByPlatform('antigravity')).toContain('claude-opus-4-8')
+  })
+
+  it('Claude / Anthropic 预设映射统一使用赤陶芯片色', () => {
+    const terracottaChipNeedle = 'var(--anthropic-accent)'
+    const claudePresetGroups = [
+      getPresetMappingsByPlatform('claude'),
+      getPresetMappingsByPlatform('bedrock'),
+      getPresetMappingsByPlatform('antigravity').filter((item) => (
+        item.from.includes('claude') ||
+        item.to.includes('claude') ||
+        item.to.includes('anthropic.')
+      )),
+      getPresetMappingsByPlatform('openai').filter((item) => item.from.includes('claude')),
+    ]
+
+    for (const group of claudePresetGroups) {
+      expect(group.length).toBeGreaterThan(0)
+      for (const item of group) {
+        expect(item.color).toContain(terracottaChipNeedle)
+        expect(item.color).not.toMatch(/\b(?:blue|indigo|purple|pink|rose|yellow|amber|green|emerald|cyan|sky)-/)
+      }
+    }
   })
 
   it('gemini 模型列表包含原生生图模型', () => {

@@ -1055,7 +1055,9 @@ describe("admin SettingsView wechat connect controls", () => {
     await flushPromises();
     await openSecurityTab(wrapper);
 
-    const link = wrapper.get('[data-testid="github-oauth-apps-guide-link"]');
+    const link = wrapper.find('[data-testid="github-oauth-apps-guide-link-en"]').exists()
+      ? wrapper.get('[data-testid="github-oauth-apps-guide-link-en"]')
+      : wrapper.get('[data-testid="github-oauth-apps-guide-link-zh"]');
     expect(link.text()).toContain("OAuth Apps");
     expect(link.attributes("href")).toBe("https://github.com/settings/developers");
     expect(link.attributes("target")).toBe("_blank");

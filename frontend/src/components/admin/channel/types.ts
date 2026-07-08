@@ -192,7 +192,7 @@ function checkIntervalOverlap(sorted: IntervalFormEntry[]): string | null {
 /** 平台对应的模型 tag 样式（背景+文字） */
 export function getPlatformTagClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'bg-transparent text-[var(--anthropic-warning)] border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)]'
+    case 'anthropic': return 'bg-transparent text-[var(--anthropic-accent)] border border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)]'
     case 'openai': return 'bg-transparent text-[var(--anthropic-success)] border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)]'
     case 'gemini': return 'bg-transparent text-[var(--anthropic-info)] border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]'
     case 'antigravity': return 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]'
@@ -203,7 +203,7 @@ export function getPlatformTagClass(platform: string): string {
 /** 平台对应的模型文字色（仅 text-*，用于 input/text 场景）— 与 getPlatformTagClass 同色系 */
 export function getPlatformTextClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'text-[var(--anthropic-warning)]'
+    case 'anthropic': return 'text-[var(--anthropic-accent)]'
     case 'openai': return 'text-[var(--anthropic-success)]'
     case 'gemini': return 'text-[var(--anthropic-info)]'
     case 'antigravity': return 'text-[var(--anthropic-muted)]'

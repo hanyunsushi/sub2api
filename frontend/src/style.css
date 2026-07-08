@@ -643,7 +643,7 @@
 
   .input:focus-visible,
   .input-error:focus-visible {
-    outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+    outline: 2px solid var(--anthropic-border-hover, var(--atelier-line-strong));
     outline-offset: 3px;
     background: var(--atelier-paper);
     box-shadow: none;
@@ -2561,7 +2561,7 @@ body,
   }
 }
 
-.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .codex-account-card, .external-subscription-card):where(:hover, :focus-visible) {
+.app-layout-content :where(.card-hover, .pricing-row, .table-row, .docs-card, .article-row, .external-subscription-card):where(:hover, :focus-visible) {
   border-color: var(--anthropic-cookbook-border-hover);
   background: var(--anthropic-cookbook-hover);
   color: var(--anthropic-fg);
@@ -2693,10 +2693,12 @@ body,
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled) {
-  --button-bg: var(--anthropic-clay-interactive);
-  --button-border: var(--anthropic-clay-interactive);
-  --button-bg-hover: var(--button-bg);
-  --button-border-hover: var(--button-border);
+  --button-bg: transparent;
+  --button-fg: var(--anthropic-muted);
+  --button-border: var(--anthropic-border-subtle);
+  --button-bg-hover: transparent;
+  --button-fg-hover: var(--anthropic-fg);
+  --button-border-hover: var(--anthropic-border-hover);
   --button-spacer: 0;
   --button-spacer-hover: 1px;
   --button-border-width: 1px;
@@ -2705,8 +2707,8 @@ body,
   padding: 0.375rem 1rem;
   border: 0 !important;
   border-radius: 8px;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
   box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
   transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
   font-size: var(--anthropic-control-font-size);
@@ -2715,9 +2717,12 @@ body,
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled):hover {
+  --button-bg: transparent;
+  --button-border: var(--anthropic-border-subtle);
+  --button-border-hover: var(--anthropic-border-hover);
   border: 0 !important;
-  background: var(--anthropic-clay-interactive) !important;
-  color: var(--anthropic-page) !important;
+  background: transparent !important;
+  color: var(--button-fg-hover) !important;
   box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
 }
 
@@ -2933,9 +2938,11 @@ body,
 .app-layout-content :where(.anthropic-switch) {
   position: relative;
   display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
-  width: 2.75rem;
-  height: 1.5rem;
+  width: 3.5rem;
+  height: 2.125rem;
+  padding: 0.25rem;
   border: 1px solid var(--anthropic-border);
   border-radius: 999px;
   background: var(--anthropic-raised);
@@ -2950,8 +2957,8 @@ body,
 
 .app-layout-content :where(.anthropic-switch-thumb) {
   pointer-events: none;
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 50%;
+  aspect-ratio: 1;
   transform: translateX(0);
   border: 1px solid var(--anthropic-border);
   border-radius: 999px;
@@ -2961,7 +2968,7 @@ body,
 }
 
 .app-layout-content :where(.anthropic-switch-active .anthropic-switch-thumb) {
-  transform: translateX(1.25rem);
+  transform: translateX(100%);
   border-color: transparent;
 }
 
@@ -3179,7 +3186,7 @@ body,
 
 .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .select-trigger, .date-picker-trigger, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
-  outline: 2px solid var(--anthropic-focus);
+  outline: 2px solid var(--anthropic-border-hover);
   outline-offset: 3px;
   box-shadow: none;
 }

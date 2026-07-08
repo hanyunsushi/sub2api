@@ -16,7 +16,6 @@
           class="app-header-context hidden min-w-0 max-w-[44vw] flex-col sm:flex lg:max-w-[520px]"
         >
           <div class="flex min-w-0 items-center gap-2">
-            <span class="app-header-context-dot" aria-hidden="true"></span>
             <h1 class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] md:text-base">
               {{ pageTitle || 'Console' }}
             </h1>
@@ -774,15 +773,6 @@ watch(
 
 .app-header-context {
   color: var(--atelier-ink);
-}
-
-.app-header-context-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  flex: 0 0 0.5rem;
-  border-radius: 999px;
-  background: var(--atelier-butter);
-  box-shadow: none;
 }
 
 .app-header-role-chip {

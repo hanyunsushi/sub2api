@@ -360,8 +360,8 @@ describe('AccountsView external quota card metadata', () => {
       '#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
 
-    expect(accountRowHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
-    expect(accountRowHoverBlock).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(accountRowHoverBlock).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(accountRowHoverBlock).toContain('background: var(--account-card-bg) !important;')
     expect(accountRowHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
     expect(accountRowHoverBlock).toContain('transform: none')
     expect(targetedRepairSource).not.toContain('--account-card-resting-bg')
@@ -374,7 +374,7 @@ describe('AccountsView external quota card metadata', () => {
     expect(accountRowHoverBlock).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
     expect(themedGlobalHoverBlock.block).toContain('transform: none !important;')
     expect(themedGlobalHoverBlock.block).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
-    expect(themedGlobalHoverBlock.block).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(themedGlobalHoverBlock.block).toContain('background: var(--account-card-bg) !important;')
     expect(themedGlobalHoverBlock.block).not.toContain('var(--atelier-material-shadow')
     expect(themedGlobalHoverBlock.block).not.toContain('rgba(20, 20, 19, 0.024)')
     expect(themedGlobalHoverBlock.block).not.toContain('translate')
@@ -382,8 +382,8 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.start).toBeGreaterThan(
       targetedRepairSource.indexOf('#app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover')
     )
-    expect(finalAccountRowHover.block).toContain('border-color: var(--anthropic-cookbook-border-hover) !important;')
-    expect(finalAccountRowHover.block).toContain('background: var(--account-card-hover-bg) !important;')
+    expect(finalAccountRowHover.block).toContain('border-color: var(--anthropic-cookbook-border) !important;')
+    expect(finalAccountRowHover.block).toContain('background: var(--account-card-bg) !important;')
     expect(finalAccountRowHover.block).toContain('transform: none !important;')
     expect(finalAccountRowHover.block).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;')
     expect(finalAccountRowHover.block).not.toContain('translate3d')
@@ -394,17 +394,23 @@ describe('AccountsView external quota card metadata', () => {
     expect(finalAccountRowHover.block).not.toMatch(/(?:^|\n)\s*(?:color|-webkit-text-fill-color)\s*:/)
   })
 
-  it('keeps shared capacity cards on the single-card Anthropic hover contract without lift', () => {
+  it('keeps shared capacity cards shadow-only on hover without lift or color drift', () => {
     const capacityHoverBlock = cssBlock(monitorCapacitySource, '.monitor-capacity-card:hover')
+    const capacityMetricHoverBlock = cssBlock(
+      monitorCapacitySource,
+      '.monitor-capacity-card:hover .monitor-capacity-metric-tile,\n.monitor-capacity-card:focus-visible .monitor-capacity-metric-tile,\n.monitor-capacity-card:focus-within .monitor-capacity-metric-tile'
+    )
 
-    expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));')
-    expect(capacityHoverBlock).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
+    expect(capacityHoverBlock).toContain('border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));')
+    expect(capacityHoverBlock).toContain('background: var(--anthropic-page, #faf9f5);')
     expect(capacityHoverBlock).toContain('box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);')
     expect(capacityHoverBlock).not.toContain('transform:')
+    expect(capacityHoverBlock).not.toContain('var(--anthropic-cookbook-hover')
     expect(capacityHoverBlock).not.toContain('var(--atelier-ui-hover-surface)')
     expect(capacityHoverBlock).not.toContain('color-mix(in srgb, var(--atelier-ink) 24%')
     expect(monitorCapacitySource).toContain('.monitor-capacity-card:hover .monitor-capacity-metric-tile')
-    expect(monitorCapacitySource).toContain('background: var(--anthropic-cookbook-hover, #f5f4ed);')
+    expect(capacityMetricHoverBlock).toContain('border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));')
+    expect(capacityMetricHoverBlock).toContain('background: var(--anthropic-page, #faf9f5);')
     expect(monitorCapacitySource).not.toContain('.monitor-capacity-overview:has(.monitor-capacity-card:hover)')
   })
 
@@ -413,7 +419,7 @@ describe('AccountsView external quota card metadata', () => {
     expect((bulkActionsSource.match(/data-testid="account-bulk-edit-filtered"/g) || [])).toHaveLength(1)
     expect(bulkActionsSource).toContain('data-testid="account-bulk-edit-selected"')
     expect(bulkActionsSource).toContain("@click=\"$emit('edit-filtered')\"")
-    expect(bulkActionsSource).toContain('class="btn btn-primary btn-sm account-bulk-primary-action"')
+    expect(bulkActionsSource).toContain('class="btn btn-primary account-bulk-primary-action"')
     expect(bulkActionsSource).toContain('class="btn btn-secondary btn-sm account-bulk-action"')
     expect(bulkActionsSource).not.toContain('btn btn-danger btn-sm')
     expect(bulkActionsSource).not.toContain('btn btn-success btn-sm')

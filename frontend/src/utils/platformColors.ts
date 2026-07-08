@@ -9,7 +9,7 @@ export type Platform = 'anthropic' | 'openai' | 'antigravity' | 'gemini' | 'grok
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
 const BADGE: Record<Platform, string> = {
-  anthropic: 'bg-transparent text-[var(--anthropic-warning)] border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)]',
+  anthropic: 'bg-transparent text-[var(--anthropic-accent)] border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)]',
   openai: 'bg-transparent text-[var(--anthropic-success)] border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)]',
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
@@ -19,7 +19,7 @@ const BADGE_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border-[var(
 
 // ── Light badge (transparent surface + semantic hairline) ───────────
 const BADGE_LIGHT: Record<Platform, string> = {
-  anthropic: 'bg-transparent text-[var(--anthropic-warning)] border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)]',
+  anthropic: 'bg-transparent text-[var(--anthropic-accent)] border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)]',
   openai: 'bg-transparent text-[var(--anthropic-success)] border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)]',
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
@@ -38,7 +38,7 @@ const BORDER_DEFAULT = 'border-[var(--atelier-line)] dark:border-[var(--anthropi
 
 // ── Accent bar (gradient) ───────────────────────────────────────────
 const ACCENT_BAR: Record<Platform, string> = {
-  anthropic: 'bg-[var(--anthropic-warning)]',
+  anthropic: 'bg-[var(--anthropic-accent)]',
   openai: 'bg-[var(--anthropic-success)]',
   antigravity: 'bg-[var(--anthropic-raised)]',
   gemini: 'bg-[var(--anthropic-info)]',
@@ -48,7 +48,7 @@ const ACCENT_BAR_DEFAULT = 'bg-[var(--anthropic-raised)]'
 
 // ── Text (price, icon) ─────────────────────────────────────────────
 const TEXT: Record<Platform, string> = {
-  anthropic: 'text-[var(--anthropic-warning)]',
+  anthropic: 'text-[var(--anthropic-accent)]',
   openai: 'text-[var(--anthropic-success)]',
   antigravity: 'text-[var(--anthropic-muted)]',
   gemini: 'text-[var(--anthropic-info)]',
@@ -58,7 +58,7 @@ const TEXT_DEFAULT = 'text-[var(--anthropic-fg)]'
 
 // ── Icon (check mark etc.) ──────────────────────────────────────────
 const ICON: Record<Platform, string> = {
-  anthropic: 'text-[var(--anthropic-warning)]',
+  anthropic: 'text-[var(--anthropic-accent)]',
   openai: 'text-[var(--anthropic-success)]',
   antigravity: 'text-[var(--anthropic-muted)]',
   gemini: 'text-[var(--anthropic-info)]',
@@ -68,7 +68,7 @@ const ICON_DEFAULT = 'text-[var(--anthropic-fg)]'
 
 // ── Button (solid bg) ───────────────────────────────────────────────
 const BUTTON: Record<Platform, string> = {
-  anthropic: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
+  anthropic: 'bg-[var(--anthropic-clay-interactive)] text-[var(--anthropic-page)] hover:bg-[var(--anthropic-accent-hover)] active:bg-[var(--anthropic-accent-hover)]',
   openai: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
   antigravity: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
   gemini: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
@@ -78,7 +78,7 @@ const BUTTON_DEFAULT = 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hove
 
 // ── Discount badge ──────────────────────────────────────────────────
 const DISCOUNT: Record<Platform, string> = {
-  anthropic: 'bg-transparent text-[var(--anthropic-warning)] border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)]',
+  anthropic: 'bg-transparent text-[var(--anthropic-accent)] border border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)]',
   openai: 'bg-transparent text-[var(--anthropic-success)] border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)]',
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
@@ -88,7 +88,7 @@ const DISCOUNT_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border bo
 
 // ── Header gradient (subscription confirm) ─────────────────────────
 const GRADIENT: Record<Platform, string> = {
-  anthropic: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
+  anthropic: 'from-[var(--anthropic-clay-interactive)] to-[var(--anthropic-accent-hover)]',
   openai: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
   antigravity: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
   gemini: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',

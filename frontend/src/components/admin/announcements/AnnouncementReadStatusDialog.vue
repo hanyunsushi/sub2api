@@ -16,7 +16,7 @@
             @input="handleSearch"
           />
         </div>
-        <button data-testid="admin-announcements-announcement-read-status-button-load" @click="load" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
+        <button data-testid="admin-announcements-announcement-read-status-button-load" @click="load" :disabled="loading" class="btn btn-secondary anthropic-refresh-action-button" :title="t('common.refresh')">
           <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
         </button>
       </div>

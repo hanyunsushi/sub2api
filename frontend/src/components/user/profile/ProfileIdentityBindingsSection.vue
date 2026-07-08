@@ -29,18 +29,10 @@
       >
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="flex min-w-0 flex-1 items-start gap-4">
-            <div
-              :class="providerIconClass(item.provider)"
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-sm font-semibold"
-            >
-              <Icon
-                v-if="item.provider === 'email'"
-                name="mail"
-                size="sm"
-                class="text-current"
-              />
-              <span v-else>{{ providerInitial(item.provider) }}</span>
-            </div>
+            <ProviderBindingLogo
+              :provider="item.provider"
+              :label="item.label"
+            />
 
             <div class="min-w-0 flex-1 space-y-3">
               <div class="flex flex-wrap items-center gap-2">
@@ -166,7 +158,7 @@
               v-if="item.canBind"
               :data-testid="`profile-binding-${item.provider}-action`"
               type="button"
-              class="btn btn-primary btn-sm"
+              class="btn btn-secondary btn-sm"
               @click="startBinding(item.provider)"
             >
               {{ t('profile.authBindings.bindAction', { providerName: item.label }) }}
@@ -207,7 +199,7 @@ import {
   startOAuthBinding,
   unbindAuthIdentity,
 } from '@/api/user'
-import Icon from '@/components/icons/Icon.vue'
+import ProviderBindingLogo from '@/components/user/profile/ProviderBindingLogo.vue'
 import { useAppStore, useAuthStore } from '@/stores'
 import type { User, UserAuthBindingStatus, UserAuthProvider } from '@/types'
 
@@ -223,6 +215,8 @@ const props = withDefaults(
     wechatEnabled?: boolean
     wechatOpenEnabled?: boolean
     wechatMpEnabled?: boolean
+    githubEnabled?: boolean
+    googleEnabled?: boolean
     embedded?: boolean
     compact?: boolean
   }>(),
@@ -234,6 +228,8 @@ const props = withDefaults(
     wechatEnabled: false,
     wechatOpenEnabled: undefined,
     wechatMpEnabled: undefined,
+    githubEnabled: false,
+    googleEnabled: false,
     embedded: false,
     compact: false,
   }
@@ -414,6 +410,12 @@ function isProviderEnabledForBinding(provider: BindableProvider): boolean {
   if (provider === 'oidc') {
     return props.oidcEnabled
   }
+  if (provider === 'github') {
+    return props.githubEnabled
+  }
+  if (provider === 'google') {
+    return props.googleEnabled
+  }
   return resolvedWeChatBinding.value.mode !== null
 }
 
@@ -470,39 +472,29 @@ const providerItems = computed(() => [
     canUnbind: Boolean(getBindingStatus('wechat') && getBindingDetails('wechat')?.can_unbind),
     details: getBindingDetails('wechat'),
   },
+  {
+    provider: 'github' as const,
+    label: t('profile.authBindings.providers.github'),
+    bound: getBindingStatus('github'),
+    canBind:
+      !getBindingStatus('github') &&
+      isProviderEnabledForBinding('github') &&
+      (getBindingDetails('github')?.can_bind ?? true),
+    canUnbind: Boolean(getBindingStatus('github') && getBindingDetails('github')?.can_unbind),
+    details: getBindingDetails('github'),
+  },
+  {
+    provider: 'google' as const,
+    label: t('profile.authBindings.providers.google'),
+    bound: getBindingStatus('google'),
+    canBind:
+      !getBindingStatus('google') &&
+      isProviderEnabledForBinding('google') &&
+      (getBindingDetails('google')?.can_bind ?? true),
+    canUnbind: Boolean(getBindingStatus('google') && getBindingDetails('google')?.can_unbind),
+    details: getBindingDetails('google'),
+  },
 ])
-
-function providerInitial(provider: UserAuthProvider): string {
-  if (provider === 'linuxdo') {
-    return 'L'
-  }
-  if (provider === 'dingtalk') {
-    return 'D'
-  }
-  if (provider === 'wechat') {
-    return 'W'
-  }
-  if (provider === 'oidc') {
-    return 'O'
-  }
-  return 'E'
-}
-
-function providerIconClass(provider: UserAuthProvider): string {
-  if (provider === 'linuxdo') {
-    return 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-300'
-  }
-  if (provider === 'dingtalk') {
-    return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
-  }
-  if (provider === 'wechat') {
-    return 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-300'
-  }
-  if (provider === 'oidc') {
-    return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-sky-900/20 dark:text-[var(--anthropic-info)]'
-  }
-  return 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-}
 
 function providerSummary(provider: UserAuthProvider): string {
   if (provider === 'email') {

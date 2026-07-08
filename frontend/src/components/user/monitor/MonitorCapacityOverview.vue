@@ -470,24 +470,21 @@ function formatBalance(value: number) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
   background: var(--anthropic-page, #faf9f5);
   color: var(--atelier-ink);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-  transition:
-    background-color 350ms ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+  box-shadow: none;
+  transition: box-shadow 0.25s ease;
 }
 
 .monitor-capacity-card:hover {
-  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
-  background: var(--anthropic-cookbook-hover, #f5f4ed);
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-page, #faf9f5);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   outline: 0;
   text-decoration: none;
 }
 
 .monitor-capacity-card:focus-visible {
-  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
-  background: var(--anthropic-cookbook-hover, #f5f4ed);
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-page, #faf9f5);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   outline: 2px solid var(--atelier-focus);
   outline-offset: 2px;
@@ -499,16 +496,14 @@ function formatBalance(value: number) {
 }
 
 .monitor-capacity-metric-tile {
-  transition:
-    background-color 350ms ease,
-    border-color 0.25s ease;
+  transition: none;
 }
 
 .monitor-capacity-card:hover .monitor-capacity-metric-tile,
 .monitor-capacity-card:focus-visible .monitor-capacity-metric-tile,
 .monitor-capacity-card:focus-within .monitor-capacity-metric-tile {
-  border-color: var(--anthropic-cookbook-border-hover, rgba(20, 19, 19, 0.16));
-  background: var(--anthropic-cookbook-hover, #f5f4ed);
+  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-page, #faf9f5);
 }
 
 .monitor-capacity-logo {

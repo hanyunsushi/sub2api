@@ -414,9 +414,9 @@ onMounted(loadPricing)
 }
 
 .meta-pill-provider-anthropic {
-  --provider-pill-border: var(--anthropic-warning-border);
-  --provider-pill-bg: var(--anthropic-warning-bg);
-  --provider-pill-fg: var(--anthropic-warning);
+  --provider-pill-border: color-mix(in srgb, var(--anthropic-accent) 32%, transparent);
+  --provider-pill-bg: transparent;
+  --provider-pill-fg: var(--anthropic-accent);
 }
 
 .meta-pill-provider-openai {

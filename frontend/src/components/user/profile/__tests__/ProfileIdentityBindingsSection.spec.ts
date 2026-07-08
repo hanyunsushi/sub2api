@@ -47,8 +47,11 @@ vi.mock('vue-i18n', async (importOriginal) => {
         if (key === 'profile.authBindings.status.notBound') return 'Not bound'
         if (key === 'profile.authBindings.providers.email') return 'Email'
         if (key === 'profile.authBindings.providers.linuxdo') return 'LinuxDo'
+        if (key === 'profile.authBindings.providers.dingtalk') return 'DingTalk'
         if (key === 'profile.authBindings.providers.wechat') return 'WeChat'
         if (key === 'profile.authBindings.providers.oidc') return params?.providerName || 'OIDC'
+        if (key === 'profile.authBindings.providers.github') return 'GitHub'
+        if (key === 'profile.authBindings.providers.google') return 'Google'
         if (key === 'profile.authBindings.bindAction') return `Bind ${params?.providerName || ''}`.trim()
         if (key === 'profile.authBindings.emailPlaceholder') return 'Email address'
         if (key === 'profile.authBindings.codePlaceholder') return 'Verification code'
@@ -150,7 +153,55 @@ describe('ProfileIdentityBindingsSection', () => {
     expect(wrapper.get('[data-testid="profile-binding-oidc-action"]').text()).toBe(
       'Bind ExampleID'
     )
+    expect(wrapper.get('[data-testid="profile-binding-oidc-action"]').classes()).toContain('btn-secondary')
+    expect(wrapper.get('[data-testid="profile-binding-oidc-action"]').classes()).not.toContain('btn-primary')
     expect(wrapper.get('[data-testid="profile-binding-wechat-action"]').text()).toBe('Bind WeChat')
+    expect(wrapper.get('[data-testid="profile-binding-wechat-action"]').classes()).toContain('btn-secondary')
+    expect(wrapper.get('[data-testid="profile-binding-wechat-action"]').classes()).not.toContain('btn-primary')
+  })
+
+  it('renders platform logo marks instead of letter placeholders', () => {
+    const wrapper = mount(ProfileIdentityBindingsSection, {
+      global: {
+        plugins: [pinia],
+      },
+      props: {
+        user: createUser({
+          auth_bindings: {
+            email: { bound: true },
+            linuxdo: { bound: false },
+            dingtalk: { bound: false },
+            oidc: { bound: false },
+            wechat: { bound: false },
+            github: { bound: false },
+            google: { bound: false },
+          },
+        }),
+        linuxdoEnabled: true,
+        dingtalkEnabled: true,
+        oidcEnabled: true,
+        oidcProviderName: 'ExampleID',
+        wechatEnabled: true,
+        githubEnabled: true,
+        googleEnabled: true,
+      },
+    })
+
+    for (const provider of ['linuxdo', 'dingtalk', 'oidc', 'wechat', 'github', 'google']) {
+      const logo = wrapper.get(`[data-testid="profile-binding-${provider}-logo"]`)
+      expect(logo.find('svg, img').exists()).toBe(true)
+      expect(logo.text()).not.toMatch(/^[A-Z]{1,3}$/)
+    }
+
+    const wechatLogo = wrapper.get('[data-testid="profile-binding-wechat-logo"]')
+    expect(wechatLogo.find('img').exists()).toBe(false)
+    expect(wechatLogo.find('svg path[fill="#07C160"]').exists()).toBe(true)
+    expect(wechatLogo.find('svg rect[fill="#07C160"]').exists()).toBe(false)
+    expect(wechatLogo.find('svg circle[fill="#fff"]').exists()).toBe(true)
+
+    const googleLogo = wrapper.get('[data-testid="profile-binding-google-logo"]')
+    expect(googleLogo.find('svg linearGradient#google-g-a').exists()).toBe(true)
+    expect(googleLogo.html()).not.toContain('M22.56 12.25c0-.78')
   })
 
   it('starts the WeChat bind flow for the current profile page', async () => {
@@ -257,11 +308,14 @@ describe('ProfileIdentityBindingsSection', () => {
       custom_menu_items: [],
       custom_endpoints: [],
       linuxdo_oauth_enabled: false,
+      dingtalk_oauth_enabled: false,
       wechat_oauth_enabled: true,
       wechat_oauth_open_enabled: true,
       wechat_oauth_mp_enabled: false,
       oidc_oauth_enabled: false,
       oidc_oauth_provider_name: 'OIDC',
+      github_oauth_enabled: false,
+      google_oauth_enabled: false,
       backend_mode_enabled: false,
       version: 'test',
       balance_low_notify_enabled: false,

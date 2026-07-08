@@ -1,11 +1,7 @@
 <template>
   <div class="space-y-4">
     <button data-testid="auth-oidc-o-auth-section-button-start-login" type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
-      <span
-        class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--anthropic-section)] text-xs font-semibold text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
-      >
-        {{ providerInitial }}
-      </span>
+      <ProviderLogoMark provider="oidc" class="auth-provider-logo-mark mr-2" />
       {{ t('auth.oidc.signIn', { providerName: normalizedProviderName }) }}
     </button>
 
@@ -23,6 +19,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import ProviderLogoMark from '@/components/auth/ProviderLogoMark.vue'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 
 const props = withDefaults(defineProps<{
@@ -42,8 +39,6 @@ const normalizedProviderName = computed(() => {
   const name = props.providerName?.trim()
   return name || 'OIDC'
 })
-
-const providerInitial = computed(() => normalizedProviderName.value.charAt(0).toUpperCase() || 'O')
 
 function startLogin(): void {
   const redirectTo = (route.query.redirect as string) || '/dashboard'
