@@ -148,7 +148,7 @@ const badgeClass = computed(() => {
 }
 
 .group-token--anthropic {
-  --group-token-color: var(--anthropic-warning);
+  --group-token-color: var(--anthropic-accent);
 }
 
 .group-token--openai {
@@ -189,7 +189,7 @@ const badgeClass = computed(() => {
 }
 
 .group-token-label--anthropic {
-  --group-token-label-color: var(--anthropic-warning);
+  --group-token-label-color: var(--anthropic-accent);
 }
 
 .group-token-label--openai {

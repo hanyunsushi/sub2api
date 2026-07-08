@@ -1461,6 +1461,8 @@ export default {
         dingtalk: '钉钉',
         oidc: '{providerName}',
         wechat: '微信',
+        github: 'GitHub',
+        google: 'Google',
       },
       notes: {
         emailManagedFromProfile: '主邮箱在资料表单中管理',
@@ -3480,6 +3482,8 @@ export default {
       notes: '备注',
       notesPlaceholder: '请输入备注',
       notesHint: '备注可选',
+      accountLogo: '账号头像',
+      accountLogoHint: '显示在账号卡片上。可选择预设 AI 图标或粘贴图片 URL；清空后使用自动识别的平台图标。',
       sortBy: '排序',
       sortOptions: {
         name: '名称',

@@ -46,9 +46,9 @@
           {{ t('admin.accounts.openaiQuotaReset.expiresAt', { time: formatResetCreditExpiry(primaryResetCreditExpiry, 'short') }) }}
         </span>
         <button
+          data-testid="reset-credit-expiry-toggle"
           v-if="hiddenResetCreditCount > 0"
           type="button"
-          data-testid="reset-credit-expiry-toggle"
           class="inline-flex items-center rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium leading-4 text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           :aria-expanded="showResetCreditDetails"
           :aria-label="resetCreditDetailsToggleLabel"

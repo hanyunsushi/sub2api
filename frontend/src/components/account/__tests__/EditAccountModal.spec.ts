@@ -140,6 +140,40 @@ const GroupSelectorStub = defineComponent({
   `
 })
 
+const LogoPickerStub = defineComponent({
+  name: 'LogoPicker',
+  props: {
+    modelValue: {
+      type: String,
+      default: ''
+    },
+    inputTestId: {
+      type: String,
+      default: undefined
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    hint: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['update:modelValue'],
+  template: `
+    <label>
+      <span data-testid="logo-picker-label">{{ label }}</span>
+      <input
+        :data-testid="inputTestId"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+      />
+      <span data-testid="logo-picker-hint">{{ hint }}</span>
+    </label>
+  `
+})
+
 function buildAccount() {
   return {
     id: 1,
@@ -291,6 +325,7 @@ function mountModal(account = buildAccount()) {
         BaseDialog: BaseDialogStub,
         Select: SelectStub,
         Icon: true,
+        LogoPicker: LogoPickerStub,
         ProxySelector: true,
         GroupSelector: GroupSelectorStub,
         ModelWhitelistSelector: ModelWhitelistSelectorStub
@@ -329,6 +364,59 @@ describe('EditAccountModal', () => {
     expect(updateAccountMock.mock.calls[0]?.[1]?.credentials?.model_mapping).toEqual({
       'gpt-5.2': 'gpt-5.2'
     })
+  })
+
+  it('loads and submits the account card avatar URL without dropping other extra fields', async () => {
+    const account = buildAccount()
+    account.extra = {
+      custom_logo_url: 'https://cdn.example.com/old.png',
+      openai_responses_supported: true
+    }
+    updateAccountMock.mockReset()
+    checkMixedChannelRiskMock.mockReset()
+    checkMixedChannelRiskMock.mockResolvedValue({ has_risk: false })
+    updateAccountMock.mockResolvedValue(account)
+
+    const wrapper = mountModal(account)
+    const logoInput = wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]')
+
+    expect(wrapper.text()).toContain('admin.accounts.accountLogo')
+    expect(logoInput.element.value).toBe('https://cdn.example.com/old.png')
+
+    await logoInput.setValue('  https://cdn.example.com/new.png  ')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+
+    expect(updateAccountMock).toHaveBeenCalledTimes(1)
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).toMatchObject({
+      custom_logo_url: 'https://cdn.example.com/new.png',
+      openai_responses_supported: true
+    })
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('logo_url')
+  })
+
+  it('clears both current and legacy account avatar URL fields', async () => {
+    const account = buildAccount()
+    account.extra = {
+      logo_url: 'https://cdn.example.com/legacy.png',
+      openai_responses_supported: true
+    }
+    updateAccountMock.mockReset()
+    checkMixedChannelRiskMock.mockReset()
+    checkMixedChannelRiskMock.mockResolvedValue({ has_risk: false })
+    updateAccountMock.mockResolvedValue(account)
+
+    const wrapper = mountModal(account)
+    const logoInput = wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]')
+
+    expect(logoInput.element.value).toBe('https://cdn.example.com/legacy.png')
+
+    await logoInput.setValue('')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+
+    expect(updateAccountMock).toHaveBeenCalledTimes(1)
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra?.openai_responses_supported).toBe(true)
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('custom_logo_url')
+    expect(updateAccountMock.mock.calls[0]?.[1]?.extra).not.toHaveProperty('logo_url')
   })
 
   it('preserves model mappings when editing the whitelist', async () => {

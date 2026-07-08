@@ -3,7 +3,7 @@
     <div class="card p-4 order-filter-card table-page-filter-section">
       <div class="table-filter-shell order-table-filter-shell flex flex-wrap items-center gap-3">
         <div class="table-filter-left flex flex-1 sm:max-w-64">
-          <input
+          <input data-testid="admin-payment-admin-order-table-input-search-query"
             v-model="searchQuery"
             type="text"
             :placeholder="t('payment.admin.searchOrders')"
@@ -30,7 +30,7 @@
           @change="emitFiltersChanged"
         />
         <div class="table-filter-actions flex flex-1 flex-wrap items-center justify-end gap-2">
-          <button
+          <button data-testid="admin-payment-admin-order-table-button-emit-refresh"
             @click="emit('refresh')"
             :disabled="loading"
             class="btn btn-primary anthropic-refresh-action-button order-table-refresh-button"
@@ -86,14 +86,14 @@
 
       <template #cell-actions="{ row }">
         <div class="flex items-center gap-2">
-          <button
+          <button data-testid="admin-payment-admin-order-table-button-emit-detail-row"
             @click="emit('detail', row)"
             class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
           >
             <Icon name="eye" size="sm" />
             <span class="text-xs">{{ t('common.view') }}</span>
           </button>
-          <button
+          <button data-testid="admin-payment-admin-order-table-button-emit-cancel-row"
             v-if="row.status === 'PENDING'"
             @click="emit('cancel', row)"
             class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-yellow-50 hover:text-yellow-600 dark:hover:bg-yellow-900/20 dark:hover:text-yellow-400"
@@ -101,7 +101,7 @@
             <Icon name="x" size="sm" />
             <span class="text-xs">{{ t('payment.orders.cancel') }}</span>
           </button>
-          <button
+          <button data-testid="admin-payment-admin-order-table-button-emit-retry-row"
             v-if="row.status === 'FAILED'"
             @click="emit('retry', row)"
             class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
@@ -109,7 +109,7 @@
             <Icon name="refresh" size="sm" />
             <span class="text-xs">{{ t('payment.admin.retry') }}</span>
           </button>
-          <button
+          <button data-testid="admin-payment-admin-order-table-button-emit-refund-row"
             v-if="canRefundRow(row)"
             @click="emit('refund', row)"
             class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"

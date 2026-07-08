@@ -5,7 +5,7 @@
       data-testid="admin-account-account-table-actions-button-emit-refresh"
       @click="$emit('refresh')"
       :disabled="loading"
-      class="btn btn-primary anthropic-refresh-action-button accounts-refresh-button"
+      class="btn btn-tertiary anthropic-refresh-action-button accounts-refresh-button"
     >
       {{ t("common.refresh") }}
     </button>

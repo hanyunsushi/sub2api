@@ -1457,6 +1457,8 @@ export default {
         dingtalk: 'DingTalk',
         oidc: '{providerName}',
         wechat: 'WeChat',
+        github: 'GitHub',
+        google: 'Google',
       },
       notes: {
         emailManagedFromProfile: 'Primary email is managed in the profile form',
@@ -3404,6 +3406,8 @@ export default {
       notes: 'Notes',
       notesPlaceholder: 'Enter notes',
       notesHint: 'Notes are optional',
+      accountLogo: 'Account avatar',
+      accountLogoHint: 'Shown on account cards. Pick a preset AI logo or paste an image URL; clear it to use the automatic provider logo.',
       sortBy: 'Sort',
       sortOptions: {
         name: 'Name',

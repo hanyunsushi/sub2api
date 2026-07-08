@@ -66,7 +66,7 @@
 
         <template #cell-user="{ row }">
           <div v-if="row.user_id" class="text-sm">
-            <button
+            <button data-testid="components-ops-error-log-table-button-emit"
               v-if="userClickable && row.user_email"
               class="font-medium text-[var(--anthropic-fg)] underline decoration-dashed underline-offset-2 transition-colors hover:text-[var(--anthropic-muted)]"
               :title="t('admin.usage.clickToViewBalance')"
@@ -78,7 +78,7 @@
             <span class="ml-1 text-[var(--anthropic-muted)]">#{{ row.user_id }}</span>
           </div>
           <div v-else-if="row.deleted_key_owner_user_id" class="text-sm">
-            <button
+            <button data-testid="components-ops-error-log-table-button-emit-2"
               v-if="userClickable && row.deleted_key_owner_email"
               class="font-medium text-[var(--anthropic-fg)] underline decoration-dashed underline-offset-2 transition-colors hover:text-[var(--anthropic-muted)]"
               :title="t('admin.usage.clickToViewBalance')"
@@ -154,7 +154,7 @@
         </template>
 
         <template #cell-client_ip="{ row }">
-          <div @click.stop>
+          <div data-testid="components-ops-error-log-table-div-3" @click.stop>
             <div v-if="row.client_ip">
               <span class="font-mono text-sm text-[var(--anthropic-muted)]">{{ row.client_ip }}</span>
               <IpGeoCell :ip="row.client_ip" />
@@ -164,7 +164,7 @@
         </template>
 
         <template #cell-actions="{ row }">
-          <button
+          <button data-testid="components-ops-error-log-table-button-emit-3"
             type="button"
             class="text-xs font-bold text-[var(--anthropic-fg)] underline underline-offset-2 hover:text-[var(--anthropic-muted)]"
             :title="t('admin.ops.errorLog.details')"

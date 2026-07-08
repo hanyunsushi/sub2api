@@ -224,7 +224,7 @@
             </h2>
           </div>
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <button
+            <button data-testid="admin-dashboard-button-open-batch-image"
               v-if="canUseBatchImage"
               type="button"
               class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-sky-50 dark:bg-dark-800/50 dark:hover:bg-sky-900/20"
@@ -243,7 +243,7 @@
               </span>
               <Icon name="chevronRight" size="sm" class="text-gray-400 group-hover:text-sky-500" />
             </button>
-            <button
+            <button data-testid="admin-dashboard-view-button-router-push"
               type="button"
               class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-emerald-50 dark:bg-dark-800/50 dark:hover:bg-emerald-900/20"
               @click="router.push('/admin/groups')"

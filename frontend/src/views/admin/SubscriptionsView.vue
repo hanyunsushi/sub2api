@@ -3,9 +3,9 @@
     <TablePageLayout>
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
-        <div class="table-filter-shell subscriptions-filter-shell flex flex-wrap items-center gap-2">
+        <div class="table-filter-shell subscriptions-filter-shell flex flex-wrap items-center justify-between gap-3">
           <!-- Left: Fuzzy user search + filters (wrap to multiple lines) -->
-          <div class="table-filter-left subscriptions-filter-left flex min-w-0 flex-1 flex-wrap items-center gap-2">
+          <div class="table-filter-left subscriptions-filter-left flex min-w-0 flex-wrap items-center gap-2">
             <!-- User Search -->
             <div
               class="relative w-full sm:w-48 subscriptions-filter-search"
@@ -99,11 +99,11 @@
           </div>
 
           <!-- Right: Actions -->
-          <div class="table-filter-actions subscriptions-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
+          <div class="table-filter-actions subscriptions-filter-actions ml-auto flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto">
             <button data-testid="admin-subscriptions-button-load-subscriptions"
               @click="loadSubscriptions"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button subscriptions-refresh-button"
+              class="btn btn-tertiary anthropic-refresh-action-button subscriptions-refresh-button"
               :title="t('common.refresh')"
             >
               {{ t("common.refresh") }}
@@ -421,7 +421,7 @@
                 <Icon name="ban" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.revoke') }}</span>
               </button>
-              <button
+              <button data-testid="admin-subscriptions-button-restore-row"
                 v-if="row.status === 'revoked'"
                 @click="handleRestore(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"

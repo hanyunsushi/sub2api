@@ -80,7 +80,7 @@
               {{ t('admin.settings.payment.easypayCustomMethodsHint') }}
             </p>
           </div>
-          <button type="button" class="btn btn-secondary btn-sm" @click="addEasyPayCustomMethod">
+          <button data-testid="payment-payment-provider-button-add-easypay-custom-method" type="button" class="btn btn-secondary btn-sm" @click="addEasyPayCustomMethod">
             {{ t('admin.settings.payment.addCustomMethod') }}
           </button>
         </div>
@@ -92,17 +92,17 @@
           >
             <div>
               <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.settings.payment.customMethodType') }}</label>
-              <input v-model="method.type" type="text" class="input mt-0.5" placeholder="credit_card" />
+              <input data-testid="payment-payment-provider-dialog-input-method-type" v-model="method.type" type="text" class="input mt-0.5" placeholder="credit_card" />
             </div>
             <div>
               <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.settings.payment.customMethodUpstreamType') }}</label>
-              <input v-model="method.upstreamType" type="text" class="input mt-0.5" placeholder="credit_card" />
+              <input data-testid="payment-payment-provider-dialog-input-method-upstream-type" v-model="method.upstreamType" type="text" class="input mt-0.5" placeholder="credit_card" />
             </div>
             <div>
               <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.settings.payment.customMethodDisplayName') }}</label>
-              <input v-model="method.displayName" type="text" class="input mt-0.5" placeholder="信用卡" />
+              <input data-testid="payment-payment-provider-dialog-input-method-display-name" v-model="method.displayName" type="text" class="input mt-0.5" placeholder="信用卡" />
             </div>
-            <button
+            <button data-testid="payment-payment-provider-dialog-button-remove-easy-pay-custom-method"
               type="button"
               class="rounded-lg border border-red-200 px-2.5 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-800/60 dark:text-red-300 dark:hover:bg-red-900/20"
               @click="removeEasyPayCustomMethod(index)"
@@ -122,7 +122,7 @@
           </h4>
           <HelpTooltip v-if="paymentGuide" trigger="click" width-class="w-80">
             <template #trigger>
-              <button data-testid="payment-payment-provider-button-button"
+              <button data-testid="payment-payment-provider-button-guide-trigger"
                 type="button"
                 class="anthropic-action-icon inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold transition-colors"
                 :aria-label="t('admin.settings.payment.paymentGuideTrigger')"

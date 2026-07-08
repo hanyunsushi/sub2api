@@ -311,29 +311,33 @@ describe('Cloudflare appearance theme', () => {
     expect(globalPaintResetBlock).toContain('box-shadow: none !important;')
   })
 
-  it('makes dashboard refresh use the Clay highest-instruction button under Anthropic', () => {
+  it('makes dashboard refresh use the neutral tertiary Later button under Anthropic', () => {
     expect(styleSource).toContain('--anthropic-clay-interactive: #c96442;')
 
     const dashboardRefreshBlock = cssBlockFrom(
       styleSource,
       '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled)',
     )
-    expect(dashboardRefreshBlock).toContain('--button-bg: var(--anthropic-clay-interactive);')
-    expect(dashboardRefreshBlock).toContain('--button-border: var(--anthropic-clay-interactive);')
+    expect(dashboardRefreshBlock).toContain('--button-bg: transparent;')
+    expect(dashboardRefreshBlock).toContain('--button-fg: var(--anthropic-muted);')
+    expect(dashboardRefreshBlock).toContain('--button-border: var(--anthropic-border-subtle);')
+    expect(dashboardRefreshBlock).toContain('--button-border-hover: var(--anthropic-border-hover);')
     expect(dashboardRefreshBlock).toContain('border: 0 !important;')
-    expect(dashboardRefreshBlock).toContain('background: var(--anthropic-clay-interactive) !important;')
-    expect(dashboardRefreshBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(dashboardRefreshBlock).toContain('background: var(--button-bg) !important;')
+    expect(dashboardRefreshBlock).toContain('color: var(--button-fg) !important;')
     expect(dashboardRefreshBlock).toContain('box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;')
     expect(dashboardRefreshBlock).toContain('transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;')
     expect(dashboardRefreshBlock).toContain('min-height: var(--anthropic-control-height);')
     expect(dashboardRefreshBlock).not.toContain('var(--atelier-terracotta-action)')
+    expect(dashboardRefreshBlock).not.toContain('var(--anthropic-clay-interactive)')
     const dashboardRefreshHoverBlock = cssBlockFrom(
       styleSource,
       '#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:not(:disabled):hover',
     )
-    expect(dashboardRefreshHoverBlock).toContain('background: var(--anthropic-clay-interactive) !important;')
-    expect(dashboardRefreshHoverBlock).toContain('color: var(--anthropic-page) !important;')
+    expect(dashboardRefreshHoverBlock).toContain('background: transparent !important;')
+    expect(dashboardRefreshHoverBlock).toContain('color: var(--button-fg-hover) !important;')
     expect(dashboardRefreshHoverBlock).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
+    expect(dashboardRefreshHoverBlock).not.toContain('var(--anthropic-clay-interactive)')
 
     const genericPrimaryBlock = cssBlockFrom(
       styleSource,
@@ -407,7 +411,7 @@ describe('Cloudflare appearance theme', () => {
     expect(opsPrimaryCleanupRule).toContain(':where(svg, path)')
     expect(opsPrimaryCleanupRule).toContain('color: inherit !important;')
     expect(opsPrimaryCleanupRule).toContain('/* Header and onboarding accents stay neutral under Anthropic. */')
-    expect(opsPrimaryCleanupRule).toContain('#app .app-header-context-dot')
+    expect(styleSource).not.toContain('.app-header-context-dot')
     expect(styleSource.indexOf(opsPrimaryCleanupMarker)).toBeGreaterThan(
       styleSource.indexOf('/* Ops status colors use shared semantic colors, not Anthropic terracotta accents. */'),
     )

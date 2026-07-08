@@ -22,7 +22,7 @@
               @mouseleave="moveSettingsTabIndicatorToSelected"
               @focusout="handleSettingsTabsFocusout"
             >
-              <button
+              <button data-testid="admin-settings-button-select-settings-tab-tab-key"
                 v-for="tab in settingsTabs"
                 :key="tab.key"
                 :id="`settings-tab-${tab.key}`"
@@ -98,7 +98,7 @@
                 <span class="text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.adminApiKey.notConfigured") }}
                 </span>
-                <button
+                <button data-testid="admin-settings-button-create-admin-api-key"
                   type="button"
                   @click="createAdminApiKey"
                   :disabled="adminApiKeyOperating"
@@ -148,7 +148,7 @@
                     </code>
                   </div>
                   <div class="flex gap-2">
-                    <button
+                    <button data-testid="admin-settings-button-regenerate-admin-api-key"
                       type="button"
                       @click="regenerateAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -160,7 +160,7 @@
                           : t("admin.settings.adminApiKey.regenerate")
                       }}
                     </button>
-                    <button
+                    <button data-testid="admin-settings-button-delete-admin-api-key"
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -187,7 +187,7 @@
                     >
                       {{ newAdminApiKey }}
                     </code>
-                    <button
+                    <button data-testid="admin-settings-button-copy-new-key"
                       type="button"
                       @click="copyNewKey"
                       class="btn btn-primary btn-sm flex-shrink-0"
@@ -253,7 +253,7 @@
                     >
                       {{ t("admin.settings.overloadCooldown.cooldownMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-overload-cooldown-form-cooldown-minutes"
                       v-model.number="overloadCooldownForm.cooldown_minutes"
                       type="number"
                       min="1"
@@ -271,7 +271,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-overload-cooldown-settings"
                     type="button"
                     @click="saveOverloadCooldownSettings"
                     :disabled="overloadCooldownSaving"
@@ -358,7 +358,7 @@
                         )
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rate-limit429-cooldown-form-cooldown-seconds"
                       v-model.number="rateLimit429CooldownForm.cooldown_seconds"
                       type="number"
                       min="1"
@@ -378,7 +378,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rate-limit429-cooldown-settings"
                     type="button"
                     @click="saveRateLimit429CooldownSettings"
                     :disabled="rateLimit429CooldownSaving"
@@ -465,7 +465,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.action") }}
                     </label>
-                    <select
+                    <select data-testid="admin-settings-select-stream-timeout-form-action"
                       v-model="streamTimeoutForm.action"
                       class="input w-64"
                     >
@@ -493,7 +493,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.tempUnschedMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-temp-unsched-minutes"
                       v-model.number="streamTimeoutForm.temp_unsched_minutes"
                       type="number"
                       min="1"
@@ -514,7 +514,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.thresholdCount") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-count"
                       v-model.number="streamTimeoutForm.threshold_count"
                       type="number"
                       min="1"
@@ -535,7 +535,7 @@
                         t("admin.settings.streamTimeout.thresholdWindowMinutes")
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-window-minutes"
                       v-model.number="
                         streamTimeoutForm.threshold_window_minutes
                       "
@@ -558,7 +558,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-stream-timeout-settings"
                     type="button"
                     @click="saveStreamTimeoutSettings"
                     :disabled="streamTimeoutSaving"
@@ -713,7 +713,7 @@
                       :key="index"
                       class="flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rectifier-form-apikey-signature-patterns-index"
                         v-model="rectifierForm.apikey_signature_patterns[index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -721,7 +721,7 @@
                           t('admin.settings.rectifier.apikeyPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-remove-rectifier-pattern"
                         type="button"
                         @click="
                           rectifierForm.apikey_signature_patterns.splice(
@@ -746,7 +746,7 @@
                         </svg>
                       </button>
                     </div>
-                    <button
+                    <button data-testid="admin-settings-button-add-rectifier-pattern"
                       type="button"
                       @click="rectifierForm.apikey_signature_patterns.push('')"
                       class="btn btn-ghost btn-xs text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
@@ -760,7 +760,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rectifier-settings"
                     type="button"
                     @click="saveRectifierSettings"
                     :disabled="rectifierSaving"
@@ -875,7 +875,7 @@
                     >
                       {{ t("admin.settings.betaPolicy.errorMessage") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rule-error-message"
                       v-model="rule.error_message"
                       type="text"
                       class="input"
@@ -896,7 +896,7 @@
                       {{ t("admin.settings.betaPolicy.quickPresets") }}
                     </label>
                     <div class="flex flex-wrap gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-apply-beta-preset-rule-preset"
                         v-for="preset in betaPresets[rule.beta_token]"
                         :key="preset.label"
                         type="button"
@@ -925,7 +925,7 @@
                       :key="index"
                       class="mb-1.5 flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rule-model-whitelist-index"
                         v-model="rule.model_whitelist![index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -933,7 +933,7 @@
                           t('admin.settings.betaPolicy.modelPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-remove-beta-model-pattern"
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
                         class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -954,7 +954,7 @@
                       </button>
                     </div>
                     <!-- Add pattern button -->
-                    <button
+                    <button data-testid="admin-settings-button-add-beta-model-pattern"
                       type="button"
                       @click="
                         if (!rule.model_whitelist) rule.model_whitelist = [];
@@ -984,7 +984,7 @@
                           t("admin.settings.betaPolicy.commonPatterns")
                         }}:</span
                       >
-                      <button
+                      <button data-testid="admin-settings-button-add-quick-pattern-rule-pattern"
                         v-for="pattern in commonModelPatterns"
                         :key="pattern"
                         type="button"
@@ -1018,7 +1018,7 @@
                     </p>
                     <!-- Fallback Error Message (only when fallback_action=block) -->
                     <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                      <input
+                      <input data-testid="admin-settings-input-rule-fallback-error-message"
                         v-model="rule.fallback_error_message"
                         type="text"
                         class="input"
@@ -1039,7 +1039,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-beta-policy-settings"
                     type="button"
                     @click="saveBetaPolicySettings"
                     :disabled="betaPolicySaving"
@@ -1833,7 +1833,7 @@
                       <template v-if="isZhLocale">
                         开通引导：GitHub Settings → Developer settings →
                         <a
-                          data-testid="github-oauth-apps-guide-link"
+                          data-testid="github-oauth-apps-guide-link-zh"
                           href="https://github.com/settings/developers"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -1844,7 +1844,7 @@
                       <template v-else>
                         Setup guide: GitHub Settings → Developer settings →
                         <a
-                          data-testid="github-oauth-apps-guide-link"
+                          data-testid="github-oauth-apps-guide-link-en"
                           href="https://github.com/settings/developers"
                           target="_blank"
                           rel="noopener noreferrer"
@@ -5371,6 +5371,81 @@
               </p>
             </div>
             <div class="space-y-4 p-6">
+              <div
+                v-if="form.custom_menu_items.length"
+                class="custom-menu-order-list rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              >
+                <div class="mb-3">
+                  <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    {{ t("admin.settings.customMenu.orderTitle") }}
+                  </h3>
+                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    {{ t("admin.settings.customMenu.orderDescription") }}
+                  </p>
+                </div>
+                <div class="grid gap-2">
+                  <div
+                    v-for="(item, index) in form.custom_menu_items"
+                    :key="`order-${item.id || index}`"
+                    class="flex min-h-11 items-center gap-3 rounded-md border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  >
+                    <span class="w-8 flex-shrink-0 text-xs font-semibold tabular-nums text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      {{ index + 1 }}
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
+                      {{
+                        item.label ||
+                        t("admin.settings.customMenu.itemLabel", { n: index + 1 })
+                      }}
+                    </span>
+                    <div class="flex flex-shrink-0 items-center gap-1">
+                      <button data-testid="admin-settings-button-custom-menu-order-move-up"
+                        type="button"
+                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
+                        :disabled="index === 0"
+                        :title="t('admin.settings.customMenu.moveUp')"
+                        @click="moveMenuItem(index, -1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 15l7-7 7 7"
+                          />
+                        </svg>
+                      </button>
+                      <button data-testid="admin-settings-button-custom-menu-order-move-down"
+                        type="button"
+                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
+                        :disabled="index === form.custom_menu_items.length - 1"
+                        :title="t('admin.settings.customMenu.moveDown')"
+                        @click="moveMenuItem(index, 1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Existing menu items -->
               <div
                 v-for="(item, index) in form.custom_menu_items"
@@ -5489,6 +5564,26 @@
                     </select>
                   </div>
 
+                  <!-- Open mode -->
+                  <div>
+                    <label
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      {{ t("admin.settings.customMenu.openMode") }}
+                    </label>
+                    <select data-testid="admin-settings-select-item-open-mode" v-model="item.open_mode" class="input text-sm">
+                      <option value="iframe">
+                        {{ t("admin.settings.customMenu.openModeIframe") }}
+                      </option>
+                      <option value="redirect">
+                        {{ t("admin.settings.customMenu.openModeRedirect") }}
+                      </option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.customMenu.openModeHint") }}
+                    </p>
+                  </div>
+
                   <!-- URL (full width) -->
                   <div class="sm:col-span-2">
                     <label
@@ -5513,13 +5608,16 @@
                     >
                       {{ t("admin.settings.customMenu.iconSvg") }}
                     </label>
-                    <ImageUpload
+                    <CustomMenuIconPicker
                       :model-value="item.icon_svg"
-                      mode="svg"
-                      size="sm"
                       :upload-label="t('admin.settings.customMenu.uploadSvg')"
                       :remove-label="t('admin.settings.customMenu.removeSvg')"
+                      :url-label="t('admin.settings.customMenu.svgUrl')"
+                      :url-placeholder="t('admin.settings.customMenu.svgUrlPlaceholder')"
+                      :url-hint="t('admin.settings.customMenu.svgUrlHint')"
+                      :presets-label="t('admin.settings.customMenu.savedSvgIcons')"
                       @update:model-value="(v: string) => (item.icon_svg = v)"
+                      @presets-updated="handleCustomMenuIconPresetsUpdated"
                     />
                   </div>
                 </div>
@@ -6161,7 +6259,7 @@
                 </div>
                 <!-- Search input + result dropdown — hidden once a selection is made -->
                 <template v-else>
-                  <input
+                  <input data-testid="admin-settings-input-affiliate-modal-user-query"
                     v-model="affiliateModal.userQuery"
                     type="text"
                     class="input"
@@ -6172,7 +6270,7 @@
                     v-if="affiliateModal.userResults.length > 0"
                     class="mt-1 max-h-40 overflow-y-auto rounded border border-gray-200 dark:border-dark-700"
                   >
-                    <button
+                    <button data-testid="admin-settings-button-select-affiliate-user-u"
                       v-for="u in affiliateModal.userResults"
                       :key="u.id"
                       type="button"
@@ -6355,7 +6453,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-prefix"
                       v-model="form.payment_product_name_prefix"
                       type="text"
                       class="input"
@@ -6366,7 +6464,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNameSuffix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-suffix"
                       v-model="form.payment_product_name_suffix"
                       type="text"
                       class="input"
@@ -6394,7 +6492,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number"
                       :value="form.payment_min_amount || ''"
                       @input="
                         form.payment_min_amount =
@@ -6413,7 +6511,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-2"
                       :value="form.payment_max_amount || ''"
                       @input="
                         form.payment_max_amount =
@@ -6432,7 +6530,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.dailyLimit")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-3"
                       :value="form.payment_daily_limit || ''"
                       @input="
                         form.payment_daily_limit =
@@ -6451,7 +6549,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.balanceRechargeMultiplier")
                     }}</label>
-                    <input
+                    <input data-testid="admin-settings-input-number-4"
                       :value="form.payment_balance_recharge_multiplier || ''"
                       @input="
                         form.payment_balance_recharge_multiplier =
@@ -6488,7 +6586,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.subscriptionUsdToCnyRate")
                     }}</label>
-                    <input
+                    <input data-testid="admin-settings-input-number-5"
                       :value="form.payment_subscription_usd_to_cny_rate || ''"
                       @input="
                         form.payment_subscription_usd_to_cny_rate =
@@ -6517,7 +6615,7 @@
                       t("admin.settings.payment.rechargeFeeRate")
                     }}</label>
                     <div class="relative">
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-order-timeout-minutes"
                         :value="form.payment_recharge_fee_rate ?? ''"
                         @input="
                           form.payment_recharge_fee_rate = Math.min(
@@ -6564,7 +6662,7 @@
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
                       <span class="text-red-500">*</span></label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-max-pending-orders"
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
                       min="1"
@@ -6582,7 +6680,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-view-input-form-payment-max-pending-orders"
                       v-model.number="form.payment_max_pending_orders"
                       type="number"
                       min="1"
@@ -6604,7 +6702,7 @@
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-view-button-form-payment-cancel-rate-limit-enabled-form-payment-cancel-rate-limit-enabled"
                         type="button"
                         :class="[
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
@@ -6643,7 +6741,7 @@
                           t("admin.settings.payment.cancelRateLimitEvery")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-max"
                         v-model.number="form.payment_cancel_rate_limit_window"
                         type="number"
                         min="1"
@@ -6668,7 +6766,7 @@
                           t("admin.settings.payment.cancelRateLimitAllowMax")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-view-input-form-payment-cancel-rate-limit-max"
                         v-model.number="form.payment_cancel_rate_limit_max"
                         type="number"
                         min="1"
@@ -6694,7 +6792,7 @@
                       t("admin.settings.payment.alipayForceQRCode")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-toggle-payment-type-pt-value"
                         type="button"
                         :class="[
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
@@ -6728,7 +6826,7 @@
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
                   <div class="mt-1.5 flex flex-wrap gap-2">
-                    <button
+                    <button data-testid="admin-settings-view-button-toggle-payment-type"
                       v-for="pt in allPaymentTypes"
                       :key="pt.value"
                       type="button"
@@ -6745,7 +6843,7 @@
                   </div>
                   <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                     {{ t("admin.settings.payment.enabledPaymentTypesHint") }}
-                    <a
+                    <a data-testid="admin-settings-view-a-payment-methods-href"
                       :href="paymentMethodsHref"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -6787,7 +6885,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.helpText")
                     }}</label>
-                    <textarea
+                    <textarea data-testid="admin-settings-view-textarea-form-payment-help-text"
                       v-model="form.payment_help_text"
                       rows="3"
                       class="input"
@@ -7354,6 +7452,7 @@ import type {
 } from "@/api/admin/settings";
 import type {
   AdminGroup,
+  CustomMenuItem,
   LoginAgreementDocument,
   NotifyEmailEntry,
   Proxy,
@@ -7370,6 +7469,7 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
+import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue'
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import { useClipboard } from "@/composables/useClipboard";
@@ -7390,6 +7490,10 @@ import {
   defaultFingerprintSignalRows,
   type FingerprintSignalRow,
 } from "./codexFingerprintSignals";
+import {
+  normalizeCustomMenuSVGIconPresetURLs,
+  setCustomMenuIconRuntimeConfig,
+} from "@/utils/customMenuIconPresets";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -8132,16 +8236,18 @@ const form = reactive<SettingsForm>({
   payment_cancel_rate_limit_unit: "day",
   payment_cancel_rate_limit_window_mode: "rolling",
   payment_alipay_force_qrcode: false,
-  table_default_page_size: tablePageSizeDefault,
-  table_page_size_options: [10, 20, 50, 100],
-  custom_menu_items: [] as Array<{
-    id: string;
-    label: string;
-    icon_svg: string;
-    url: string;
-    visibility: "user" | "admin";
-    sort_order: number;
-  }>,
+	  table_default_page_size: tablePageSizeDefault,
+	  table_page_size_options: [10, 20, 50, 100],
+  custom_menu_svg_icon_presets: [],
+	  custom_menu_items: [] as Array<{
+	    id: string;
+	    label: string;
+	    icon_svg: string;
+	    url: string;
+	    visibility: "user" | "admin";
+	    sort_order: number;
+    open_mode: "iframe" | "redirect";
+	  }>,
   custom_endpoints: [] as Array<{
     name: string;
     endpoint: string;
@@ -8880,9 +8986,10 @@ function addMenuItem() {
     icon_svg: "",
     url: "",
     visibility: "user",
-    sort_order: form.custom_menu_items.length,
-  });
-}
+	    sort_order: form.custom_menu_items.length,
+    open_mode: "iframe",
+	  });
+	}
 
 function removeMenuItem(index: number) {
   form.custom_menu_items.splice(index, 1);
@@ -8900,8 +9007,15 @@ function moveMenuItem(index: number, direction: -1 | 1) {
   items[index] = items[targetIndex];
   items[targetIndex] = temp;
   // Re-index sort_order
-  items.forEach((item, i) => {
-    item.sort_order = i;
+	  items.forEach((item, i) => {
+	    item.sort_order = i;
+	  });
+	}
+
+function handleCustomMenuIconPresetsUpdated(urls: string[]) {
+  form.custom_menu_svg_icon_presets = normalizeCustomMenuSVGIconPresetURLs(urls);
+  setCustomMenuIconRuntimeConfig({
+    custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
   });
 }
 
@@ -9071,6 +9185,18 @@ async function loadSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
+    form.custom_menu_items = Array.isArray(settings.custom_menu_items)
+      ? settings.custom_menu_items.map((item) => ({
+          ...item,
+          open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
+        }))
+      : [];
+    form.custom_menu_svg_icon_presets = Array.isArray(settings.custom_menu_svg_icon_presets)
+      ? settings.custom_menu_svg_icon_presets
+      : [];
+    setCustomMenuIconRuntimeConfig({
+      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
+    });
     if (!form.claude_oauth_system_prompt_blocks?.trim()) {
       form.claude_oauth_system_prompt_blocks =
         defaultClaudeOAuthSystemPromptBlocks;
@@ -9424,6 +9550,10 @@ async function saveSettings() {
       );
     form.claude_oauth_system_prompt_blocks =
       claudeOAuthSystemPromptBlocksJSON;
+    const normalizedCustomMenuItems = form.custom_menu_items.map((item): CustomMenuItem => ({
+      ...item,
+      open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
+    }));
 
     const payload: UpdateSettingsRequest = {
       registration_enabled: form.registration_enabled,
@@ -9461,9 +9591,10 @@ async function saveSettings() {
       home_content: form.home_content,
       backend_mode_enabled: form.backend_mode_enabled,
       hide_ccs_import_button: form.hide_ccs_import_button,
+      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
-      custom_menu_items: form.custom_menu_items,
+      custom_menu_items: normalizedCustomMenuItems,
       custom_endpoints: form.custom_endpoints,
       frontend_url: form.frontend_url,
       smtp_host: form.smtp_host,

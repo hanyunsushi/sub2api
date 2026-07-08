@@ -79,7 +79,7 @@
         </template>
 
         <template #cell-client_ip="{ row }">
-          <div @click.stop>
+          <div data-testid="user-user-error-requests-table-div-1" @click.stop>
             <div v-if="row.client_ip">
               <span class="font-mono text-sm text-[var(--anthropic-muted)]">{{ row.client_ip }}</span>
               <IpGeoCell :ip="row.client_ip" />

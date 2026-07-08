@@ -7,7 +7,7 @@
         <!-- Custom Logo or Default Logo -->
         <template v-if="settingsLoaded">
           <div
-            class="auth-logo mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-[var(--anthropic-page)] shadow-none ring-1 ring-[var(--atelier-line)] dark:bg-[var(--anthropic-section)] dark:ring-[var(--atelier-line)]"
+            class="auth-logo mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-transparent shadow-none ring-0 dark:bg-transparent"
           >
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
@@ -63,8 +63,8 @@ onMounted(() => {
 }
 
 .auth-logo {
-  border: 1px solid var(--atelier-ink);
-  background: var(--atelier-paper-2);
+  border: 0;
+  background: transparent;
   box-shadow: none;
 }
 
@@ -91,8 +91,8 @@ onMounted(() => {
 }
 
 :global(.dark) .auth-logo {
-  border-color: rgba(248, 251, 255, 0.18);
-  background: #111827;
+  border-color: transparent;
+  background: transparent;
 }
 
 :global(.dark) .auth-subtitle,

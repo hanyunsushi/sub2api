@@ -6,7 +6,7 @@
     <span v-if="pendingCount > 0" class="text-xs text-gray-500 dark:text-gray-400">
       {{ t('usage.ipGeo.pending', { count: pendingCount }) }}
     </span>
-    <button
+    <button data-testid="common-ip-geo-batch-toolbar-button-run"
       type="button"
       class="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-primary-400 dark:hover:bg-primary-900/30"
       :disabled="loading || pendingCount === 0"

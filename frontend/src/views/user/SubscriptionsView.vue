@@ -263,7 +263,7 @@ import { getRemainingDurationParts, isOneTimeDailyQuota, type RemainingDurationP
 
 function platformAccentDotClass(p: string): string {
   switch (p) {
-    case 'anthropic': return 'bg-[var(--anthropic-warning)]'
+    case 'anthropic': return 'bg-[var(--anthropic-accent)]'
     case 'openai': return 'bg-[var(--anthropic-success)]'
     case 'antigravity': return 'bg-[var(--anthropic-raised)]'
     case 'gemini': return 'bg-[var(--anthropic-info)]'

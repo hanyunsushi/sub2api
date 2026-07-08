@@ -18,17 +18,17 @@
               <Select v-model="filters.downloaded" :options="downloadFilterOptions" class="w-full" @change="applyFilters" />
             </div>
             <div class="flex flex-wrap items-center justify-start gap-2 sm:justify-end 2xl:flex-shrink-0">
-              <button type="button" class="btn btn-secondary" :disabled="loadingJobs" @click="resetFilters">
+              <button data-testid="user-batch-image-guide-view-button-reset-filters" type="button" class="btn btn-secondary" :disabled="loadingJobs" @click="resetFilters">
                 重置
               </button>
-              <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="'刷新'" @click="refreshPage">
+              <button data-testid="user-batch-image-guide-view-button-refresh-page" type="button" class="btn btn-secondary anthropic-refresh-action-button" :disabled="loadingKeys || loadingJobs" :title="'刷新'" @click="refreshPage">
                 <Icon name="refresh" size="md" :class="loadingKeys || loadingJobs ? 'animate-spin' : ''" />
               </button>
-              <button type="button" class="btn btn-secondary" @click="showGuideModal = true">
+              <button data-testid="user-batch-image-guide-view-button-show-guide-modal-true" type="button" class="btn btn-secondary" @click="showGuideModal = true">
                 <Icon name="book" size="md" class="mr-2" />
                 使用说明
               </button>
-              <button type="button" class="btn btn-primary" @click="openCreateModal">
+              <button data-testid="user-batch-image-guide-view-button-open-create-modal" type="button" class="btn btn-primary" @click="openCreateModal">
                 <Icon name="plus" size="md" class="mr-2" />
                 创建批量任务
               </button>
@@ -43,7 +43,7 @@
               已选择 <span class="font-medium text-gray-900 dark:text-white">{{ selectedJobIds.size }}</span> 个任务
             </span>
             <div class="flex flex-wrap items-center gap-2">
-              <button
+              <button data-testid="user-batch-image-guide-view-button-download-selected-jobs"
                 type="button"
                 class="btn btn-secondary btn-sm"
                 :disabled="bulkDownloading || selectedDownloadableRows.length === 0"
@@ -52,7 +52,7 @@
                 <Icon :name="bulkDownloading ? 'refresh' : 'download'" size="sm" class="mr-1.5" :class="bulkDownloading ? 'animate-spin' : ''" />
                 下载选中
               </button>
-              <button
+              <button data-testid="user-batch-image-guide-view-button-delete-selected-jobs"
                 type="button"
                 class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
                 :disabled="bulkDeleting"
@@ -75,9 +75,9 @@
           row-key="id"
         >
           <template #header-select>
-            <input
+            <input data-testid="user-batch-image-guide-view-input-checkbox"
               type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
               :checked="allVisibleSelected"
               :indeterminate="someVisibleSelected"
               @change="toggleAllVisible(($event.target as HTMLInputElement).checked)"
@@ -85,9 +85,9 @@
           </template>
 
           <template #cell-select="{ row }">
-            <input
+            <input data-testid="user-batch-image-guide-view-input-checkbox-2"
               type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
               :checked="selectedJobIds.has(row.id)"
               @change="toggleJobSelection(row.id, ($event.target as HTMLInputElement).checked)"
               @click.stop
@@ -96,7 +96,7 @@
 
           <template #cell-id="{ row }">
 	            <div class="flex w-[220px] items-start gap-1" :class="row.is_child ? 'pl-6' : ''">
-	              <button
+	              <button data-testid="user-batch-image-guide-view-button-9"
 	                v-if="row.child_count > 0 && !row.is_child"
 	                type="button"
 	                class="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-white"
@@ -106,7 +106,7 @@
 	                <Icon :name="expandedParentIds.has(row.id) ? 'chevronDown' : 'chevronRight'" size="xs" />
 	              </button>
 	              <span v-else class="w-6 flex-shrink-0" />
-	              <button type="button" class="min-w-0 flex-1 rounded-lg py-1 text-left transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:hover:bg-dark-700" @click="selectJob(row.id)">
+	              <button data-testid="user-batch-image-guide-view-button-select-job" type="button" class="min-w-0 flex-1 rounded-lg py-1 text-left transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:hover:bg-dark-700" @click="selectJob(row.id)">
 	                <span
 	                  class="flex min-w-0 items-center gap-2 text-sm font-medium"
 	                  :class="row.task_name ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'"
@@ -169,7 +169,7 @@
 
 	          <template #cell-actions="{ row }">
 	            <div class="flex items-center justify-center gap-1">
-              <button
+              <button data-testid="user-batch-image-guide-view-button-select-job-2"
                 type="button"
                 class="batch-row-action flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:hover:bg-dark-700 dark:hover:text-primary-400"
                 title="查看详情"
@@ -178,7 +178,7 @@
                 <Icon name="eye" size="sm" />
                 <span class="text-xs">查看</span>
               </button>
-              <button
+              <button data-testid="user-batch-image-guide-view-button-download-job"
                 type="button"
                 class="batch-row-action flex flex-col items-center gap-0.5 rounded-lg p-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30"
                 :class="canDownload(row) ? 'text-gray-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400' : 'text-gray-300 dark:text-dark-500'"
@@ -194,7 +194,7 @@
                 <span class="text-xs">下载</span>
 	              </button>
               <div v-if="canRetry(row) || canDeleteRecord(row)">
-                <button
+                <button data-testid="user-batch-image-guide-view-button-toggle-more-menu"
                   type="button"
                   class="batch-row-action flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 dark:hover:bg-dark-700 dark:hover:text-white"
                   :class="{ 'bg-gray-100 text-gray-900 dark:bg-dark-700 dark:text-white': openMoreJobId === row.id }"
@@ -243,7 +243,7 @@
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <button
+            <button data-testid="user-batch-image-guide-view-button-handle-page-change"
               type="button"
               class="btn btn-secondary btn-sm"
               :disabled="pagination.page <= 1 || loadingJobs"
@@ -252,7 +252,7 @@
               <Icon name="chevronLeft" size="sm" class="mr-1" />
               上一页
             </button>
-            <button
+            <button data-testid="user-batch-image-guide-view-button-handle-page-change-2"
               type="button"
               class="btn btn-secondary btn-sm"
               :disabled="!pagination.has_more || loadingJobs"
@@ -269,13 +269,13 @@
     <Teleport to="body">
       <div
         v-if="openMoreJobId"
-        class="fixed z-[9999] w-44 overflow-hidden rounded-xl bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 dark:bg-dark-800 dark:ring-white/10"
+        class="fixed z-[9999] w-44 overflow-hidden rounded-xl bg-[var(--anthropic-page)] py-1 text-sm shadow-none ring-1 ring-[var(--anthropic-border-subtle)] dark:bg-[var(--anthropic-section)] dark:ring-[var(--anthropic-border-subtle)]"
         :style="moreMenuStyle"
         @click.stop
       >
         <template v-for="job in batchJobs" :key="job.id">
           <template v-if="job.id === openMoreJobId">
-            <button
+            <button data-testid="user-batch-image-guide-view-button-retry-failed-job"
               v-if="canRetry(job)"
               type="button"
               class="flex w-full items-center gap-2 px-3 py-2 text-left text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 disabled:opacity-60 dark:text-gray-200 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
@@ -285,7 +285,7 @@
               <Icon name="refresh" size="sm" :class="retryingBatchId === job.id ? 'animate-spin' : ''" />
               重试失败项
             </button>
-            <button
+            <button data-testid="user-batch-image-guide-view-button-delete-job"
               v-if="canDeleteRecord(job)"
               type="button"
               class="flex w-full items-center gap-2 px-3 py-2 text-left text-red-600 transition-colors hover:bg-red-50 disabled:opacity-60 dark:text-red-400 dark:hover:bg-red-900/20"
@@ -303,7 +303,7 @@
     <Teleport to="body">
       <div
         v-if="promptPopover.visible"
-        class="batch-prompt-popover fixed z-[9999] rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-xl ring-1 ring-black/5 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-100 dark:ring-white/10"
+        class="batch-prompt-popover fixed z-[9999] rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-3 text-sm text-[var(--anthropic-fg)] shadow-none ring-1 ring-[var(--anthropic-border-subtle)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:ring-[var(--anthropic-border-subtle)]"
         :style="promptPopover.style"
         @mouseenter="cancelPromptPopoverClose"
         @mouseleave="schedulePromptPopoverClose"
@@ -359,7 +359,7 @@
 
         <div class="flex flex-wrap items-center justify-between gap-3">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white">明细</h3>
-          <button type="button" class="btn btn-secondary btn-sm" :disabled="refreshing || loadingItems" @click="refreshDetail">
+          <button type="button" class="btn btn-secondary btn-sm anthropic-refresh-action-button" :disabled="refreshing || loadingItems" @click="refreshDetail">
             <Icon name="refresh" size="sm" class="mr-1.5" :class="refreshing || loadingItems ? 'animate-spin' : ''" />
             刷新
           </button>
@@ -477,11 +477,11 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-	          <button type="button" class="btn btn-secondary" :disabled="!currentJob || !canCancel(currentJob) || cancelling" @click="cancelSelected">
+	          <button data-testid="user-batch-image-guide-view-button-cancel-selected" type="button" class="btn btn-secondary" :disabled="!currentJob || !canCancel(currentJob) || cancelling" @click="cancelSelected">
 	            <Icon v-if="cancelling" name="refresh" size="sm" class="mr-2 animate-spin" />
 	            取消任务
 	          </button>
-	          <button
+	          <button data-testid="user-batch-image-guide-view-button-retry-selected"
 	            v-if="currentJob && currentDisplayJob && canRetry(currentDisplayJob)"
 	            type="button"
 	            class="btn btn-secondary inline-flex min-w-[116px] items-center justify-center"
@@ -491,7 +491,7 @@
 	            <Icon name="refresh" size="sm" class="mr-2" :class="currentJob && retryingBatchId === currentJob.id ? 'animate-spin' : ''" />
 	            重试失败项
 	          </button>
-	          <button
+	          <button data-testid="user-batch-image-guide-view-button-download-selected"
             type="button"
             class="btn btn-primary inline-flex min-w-[112px] items-center justify-center"
             :disabled="!currentJob || !canDownload(currentJob) || downloading"
@@ -603,7 +603,7 @@
             <textarea
               v-model="promptDraft"
               rows="3"
-              class="h-[76px] w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-100 dark:focus:border-primary-500 dark:focus:ring-primary-900/40"
+              class="h-[76px] w-full resize-y rounded-md border border-gray-300 px-3 py-2 text-sm leading-5 outline-none focus:border-[var(--anthropic-focus)] focus:ring-2 focus:ring-[var(--anthropic-focus)]/20 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-100 dark:focus:border-[var(--anthropic-focus)] dark:focus:ring-[var(--anthropic-focus)]/30"
               placeholder="粘贴 prompt，添加后进入下方列表"
             />
             <div class="mt-2 grid gap-2 md:grid-cols-[minmax(0,1fr)_112px_132px_112px] md:items-center">
@@ -694,8 +694,8 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button type="button" class="btn btn-secondary" :disabled="submitting" @click="closeCreateModal">取消</button>
-	          <button type="button" class="btn btn-primary inline-flex min-w-[120px] justify-center" :disabled="submitting || loadingModels || (parsedItems.length === 0 && !promptDraft.trim()) || !selectedApiKey || !form.model" @click="submitJob">
+          <button data-testid="user-batch-image-guide-view-button-close-create-modal" type="button" class="btn btn-secondary" :disabled="submitting" @click="closeCreateModal">取消</button>
+	          <button data-testid="user-batch-image-guide-view-button-submit-job" type="button" class="btn btn-primary inline-flex min-w-[120px] justify-center" :disabled="submitting || loadingModels || (parsedItems.length === 0 && !promptDraft.trim()) || !selectedApiKey || !form.model" @click="submitJob">
             <Icon v-if="submitting" name="refresh" size="sm" class="mr-2 animate-spin" />
             {{ submitting ? '提交中...' : '提交任务' }}
           </button>
@@ -722,14 +722,14 @@
 	        <textarea
 	          :value="agentInstruction"
 	          readonly
-	          class="min-h-[420px] w-full resize-y rounded-md border border-gray-200 bg-gray-50 p-4 font-mono text-sm leading-6 text-gray-800 outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-100 dark:focus:border-primary-500 dark:focus:ring-primary-900/40"
+	          class="min-h-[420px] w-full resize-y rounded-md border border-gray-200 bg-gray-50 p-4 font-mono text-sm leading-6 text-gray-800 outline-none focus:border-[var(--anthropic-focus)] focus:ring-2 focus:ring-[var(--anthropic-focus)]/20 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-100 dark:focus:border-[var(--anthropic-focus)] dark:focus:ring-[var(--anthropic-focus)]/30"
 	        />
 	        </section>
 	      </div>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button type="button" class="btn btn-secondary" @click="showGuideModal = false">关闭</button>
-          <button type="button" class="btn btn-primary" @click="copyInstruction">
+          <button data-testid="user-batch-image-guide-view-button-show-guide-modal-false" type="button" class="btn btn-secondary" @click="showGuideModal = false">关闭</button>
+          <button data-testid="user-batch-image-guide-view-button-copy-instruction" type="button" class="btn btn-primary" @click="copyInstruction">
             <Icon name="copy" size="sm" class="mr-2" />
             复制说明
           </button>

@@ -4,13 +4,31 @@
     class="px-0.5"
   >
     <div class="flex items-start gap-2">
-      <input
-        id="login-agreement-consent"
-        type="checkbox"
-        :checked="accepted"
-        class="mt-[2px] h-4 w-4 flex-shrink-0 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-900"
-        @change="handleCheckboxChange"
-      />
+      <span class="auth-agreement-checkbox filter-checkbox">
+        <input
+          id="login-agreement-consent"
+          data-testid="auth-login-agreement-prompt-input-login-agreement-consent"
+          type="checkbox"
+          :checked="accepted"
+          class="auth-agreement-checkbox__input"
+          @change="handleCheckboxChange"
+        />
+        <span
+          class="filter-checkbox__box auth-agreement-checkbox__box"
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 11 8" fill="none">
+            <path
+              d="M1 4L4 7L10 1"
+              stroke="currentColor"
+              vector-effect="non-scaling-stroke"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </span>
       <div class="min-w-0 flex-1">
         <p class="text-[13px] leading-5 text-gray-600 dark:text-dark-300">
           <label
@@ -235,5 +253,63 @@ function documentIcon(index: number, title: string): 'document' | 'shield' | 'gl
 .agreement-fade-leave-to > div {
   opacity: 0;
   transform: translateY(8px) scale(0.98);
+}
+
+.auth-agreement-checkbox {
+  position: relative;
+  display: inline-flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
+  margin-top: 0.125rem;
+  color: var(--anthropic-fg);
+}
+
+.auth-agreement-checkbox__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.auth-agreement-checkbox__box {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 1px solid var(--anthropic-border-hover);
+  border-radius: 4px;
+  background: var(--anthropic-page);
+  color: var(--anthropic-fg);
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.auth-agreement-checkbox__box svg {
+  width: 63%;
+  color: var(--anthropic-page);
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.auth-agreement-checkbox:hover .auth-agreement-checkbox__box {
+  border-color: var(--anthropic-fg);
+}
+
+.auth-agreement-checkbox__input:checked + .auth-agreement-checkbox__box {
+  border-color: currentColor;
+  background: currentColor;
+}
+
+.auth-agreement-checkbox__input:checked + .auth-agreement-checkbox__box svg {
+  opacity: 1;
+}
+
+.auth-agreement-checkbox__input:focus-visible + .auth-agreement-checkbox__box {
+  outline: 2px solid var(--anthropic-focus);
+  outline-offset: 2px;
 }
 </style>

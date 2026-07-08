@@ -498,14 +498,14 @@
             id="bulk-edit-header-override-enabled"
             type="checkbox"
             aria-controls="bulk-edit-header-override-body"
-            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
           />
         </div>
         <div v-if="enableHeaderOverride" id="bulk-edit-header-override-body" class="mt-3 space-y-3">
           <button
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
               headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="headerOverrideEnabled = !headerOverrideEnabled"
@@ -853,39 +853,39 @@
         </div>
       </div>
 
-      <!-- OpenAI OAuth: 额外放行 Claude Code 的 Codex 插件 -->
+      <!-- OpenAI OAuth: 额外放行 Codex app-server 客户端 -->
       <div v-if="allOpenAIOAuth" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
         <div class="mb-3 flex items-center justify-between">
           <label
-            id="bulk-edit-openai-codex-allow-claude-code-label"
+            id="bulk-edit-openai-codex-app-server-label"
             class="input-label mb-0"
-            for="bulk-edit-openai-codex-allow-claude-code-enabled"
+            for="bulk-edit-openai-codex-app-server-enabled"
           >
-            {{ t('admin.accounts.openai.codexCLIOnlyAllowClaudeCode') }}
+            {{ t('admin.accounts.openai.codexCLIOnlyAppServer') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only-allow-claude-code"
-            v-model="enableCodexCLIOnlyAllowClaudeCode"
-            id="bulk-edit-openai-codex-allow-claude-code-enabled"
+          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only-app-server"
+            v-model="enableCodexCLIOnlyAppServer"
+            id="bulk-edit-openai-codex-app-server-enabled"
             type="checkbox"
-            aria-controls="bulk-edit-openai-codex-allow-claude-code"
+            aria-controls="bulk-edit-openai-codex-app-server"
             class="anthropic-checkbox rounded"
           />
         </div>
         <div
-          id="bulk-edit-openai-codex-allow-claude-code"
-          :class="!enableCodexCLIOnlyAllowClaudeCode && 'pointer-events-none opacity-50'"
+          id="bulk-edit-openai-codex-app-server"
+          :class="!enableCodexCLIOnlyAppServer && 'pointer-events-none opacity-50'"
         >
           <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-            {{ t('admin.accounts.openai.codexCLIOnlyAllowClaudeCodeDesc') }}
+            {{ t('admin.accounts.openai.codexCLIOnlyAppServerDesc') }}
           </p>
-          <button data-testid="account-bulk-edit-account-button-codex-cli-only-allow-claude-code-enabled-codex-cli-only-allow-claude-code-enabled"
-            id="bulk-edit-openai-codex-allow-claude-code-toggle"
+          <button data-testid="account-bulk-edit-account-button-codex-cli-only-app-server-enabled-codex-cli-only-app-server-enabled"
+            id="bulk-edit-openai-codex-app-server-toggle"
             type="button"
             :class="[
               'anthropic-switch cursor-pointer focus:outline-none',
-              codexCLIOnlyAllowClaudeCodeEnabled ? 'anthropic-switch-active' : ''
+              codexCLIOnlyAppServerEnabled ? 'anthropic-switch-active' : ''
             ]"
-            @click="codexCLIOnlyAllowClaudeCodeEnabled = !codexCLIOnlyAllowClaudeCodeEnabled"
+            @click="codexCLIOnlyAppServerEnabled = !codexCLIOnlyAppServerEnabled"
           >
             <span class="anthropic-switch-thumb"
             />
@@ -1264,6 +1264,7 @@ import {
 import { createStableObjectKeyResolver } from '@/utils/stableObjectKey'
 import {
   OPENAI_WS_MODE_CTX_POOL,
+  OPENAI_WS_MODE_HTTP_BRIDGE,
   OPENAI_WS_MODE_OFF,
   OPENAI_WS_MODE_PASSTHROUGH,
   isOpenAIWSModeEnabled,
@@ -1387,7 +1388,7 @@ const enableOpenAIPassthrough = ref(false)
 const enableOpenAIWSMode = ref(false)
 const enableOpenAIAPIKeyWSMode = ref(false)
 const enableCodexCLIOnly = ref(false)
-const enableCodexCLIOnlyAllowClaudeCode = ref(false)
+const enableCodexCLIOnlyAppServer = ref(false)
 const enableOpenAICompactMode = ref(false)
 const enableOpenAICompactModelMapping = ref(false)
 const enableRpmLimit = ref(false)
@@ -1448,7 +1449,7 @@ const openaiPassthroughEnabled = ref(false)
 const openaiOAuthResponsesWebSocketV2Mode = ref<OpenAIWSMode>(OPENAI_WS_MODE_OFF)
 const openaiAPIKeyResponsesWebSocketV2Mode = ref<OpenAIWSMode>(OPENAI_WS_MODE_OFF)
 const codexCLIOnlyEnabled = ref(false)
-const codexCLIOnlyAllowClaudeCodeEnabled = ref(false)
+const codexCLIOnlyAppServerEnabled = ref(false)
 const openAICompactMode = ref<OpenAICompactMode>('auto')
 const openAICompactModelMappings = ref<ModelMapping[]>([])
 const rpmLimitEnabled = ref(false)
@@ -1487,7 +1488,8 @@ const isOpenAIModelRestrictionDisabled = computed(
 const openAIWSModeOptions = computed(() => [
   { value: OPENAI_WS_MODE_OFF, label: t('admin.accounts.openai.wsModeOff') },
   { value: OPENAI_WS_MODE_CTX_POOL, label: t('admin.accounts.openai.wsModeCtxPool') },
-  { value: OPENAI_WS_MODE_PASSTHROUGH, label: t('admin.accounts.openai.wsModePassthrough') }
+  { value: OPENAI_WS_MODE_PASSTHROUGH, label: t('admin.accounts.openai.wsModePassthrough') },
+  { value: OPENAI_WS_MODE_HTTP_BRIDGE, label: t('admin.accounts.openai.wsModeHttpBridge') }
 ])
 const openAICompactModeOptions = computed(() => [
   { value: 'auto', label: t('admin.accounts.openai.compactModeAuto') },
@@ -1708,9 +1710,11 @@ const buildUpdatePayload = (): Record<string, unknown> | null => {
     extra.codex_cli_only = codexCLIOnlyEnabled.value
   }
 
-  if (enableCodexCLIOnlyAllowClaudeCode.value) {
+  if (enableCodexCLIOnly.value && enableCodexCLIOnlyAppServer.value) {
     const extra = ensureExtra()
-    extra.codex_cli_only_allowed_clients = codexCLIOnlyAllowClaudeCodeEnabled.value ? ['claude_code'] : []
+    delete extra.codex_cli_only_allowed_clients
+    extra.codex_cli_only_allow_app_server =
+      codexCLIOnlyEnabled.value && codexCLIOnlyAppServerEnabled.value
   }
 
   if (enableOpenAICompactMode.value) {
@@ -1820,7 +1824,7 @@ const handleSubmit = async () => {
     enableOpenAIWSMode.value ||
     enableOpenAIAPIKeyWSMode.value ||
     enableCodexCLIOnly.value ||
-    enableCodexCLIOnlyAllowClaudeCode.value ||
+    (enableCodexCLIOnly.value && enableCodexCLIOnlyAppServer.value) ||
     enableOpenAICompactMode.value ||
     enableOpenAICompactModelMapping.value ||
     enableRpmLimit.value ||
@@ -1938,7 +1942,7 @@ watch(
       enableOpenAIWSMode.value = false
       enableOpenAIAPIKeyWSMode.value = false
       enableCodexCLIOnly.value = false
-      enableCodexCLIOnlyAllowClaudeCode.value = false
+      enableCodexCLIOnlyAppServer.value = false
       enableOpenAICompactMode.value = false
       enableOpenAICompactModelMapping.value = false
       enableRpmLimit.value = false
@@ -1964,7 +1968,7 @@ watch(
       openaiOAuthResponsesWebSocketV2Mode.value = OPENAI_WS_MODE_OFF
       openaiAPIKeyResponsesWebSocketV2Mode.value = OPENAI_WS_MODE_OFF
       codexCLIOnlyEnabled.value = false
-      codexCLIOnlyAllowClaudeCodeEnabled.value = false
+      codexCLIOnlyAppServerEnabled.value = false
       openAICompactMode.value = 'auto'
       openAICompactModelMappings.value = []
       rpmLimitEnabled.value = false

@@ -13,11 +13,11 @@
     >
       <div>
         <label class="input-label">{{ t('common.name') }}</label>
-        <input v-model="form.name" type="text" required class="input" data-tour="edit-account-form-name" />
+        <input data-testid="account-edit-account-input-form-name" v-model="form.name" type="text" required class="input" data-tour="edit-account-form-name" />
       </div>
       <div>
         <label class="input-label">{{ t('admin.accounts.notes') }}</label>
-        <textarea
+        <textarea data-testid="account-edit-account-textarea-form-notes"
           v-model="form.notes"
           rows="3"
           class="input"
@@ -25,12 +25,18 @@
         ></textarea>
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
+      <LogoPicker
+        v-model="accountLogoUrl"
+        :label="t('admin.accounts.accountLogo')"
+        :hint="t('admin.accounts.accountLogoHint')"
+        input-test-id="edit-account-logo-url"
+      />
 
       <!-- API Key fields (only for apikey type) -->
       <div v-if="account.type === 'apikey'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.baseUrl') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-base-url"
             v-model="editBaseUrl"
             type="text"
             class="input"
@@ -48,7 +54,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.apiKey') }}</label>
-          <input
+          <input data-testid="account-edit-account-input-edit-api-key"
             v-model="editApiKey"
             type="password"
             class="input font-mono"
@@ -85,7 +91,7 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button
+              <button data-testid="account-edit-account-button-model-restriction-mode-whitelist"
                 type="button"
                 @click="modelRestrictionMode = 'whitelist'"
                 :class="[
@@ -110,7 +116,7 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button
+              <button data-testid="account-edit-account-button-model-restriction-mode-mapping"
                 type="button"
                 @click="modelRestrictionMode = 'mapping'"
                 :class="[
@@ -176,7 +182,7 @@
                 :key="getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-edit-account-input-mapping-from"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -195,13 +201,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-model-mapping-index"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -218,7 +224,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-edit-account-button-add-model-mapping"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -241,7 +247,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button
+                <button data-testid="account-edit-account-button-add-preset-mapping-preset-from-preset-to"
                   v-for="preset in presetMappings"
                   :key="preset.label"
                   type="button"
@@ -433,7 +439,7 @@
               type="button"
               @click="headerOverrideEnabled = !headerOverrideEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                 headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
@@ -542,7 +548,7 @@
         <template v-else>
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-whitelist-2"
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
@@ -554,7 +560,7 @@
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-            <button
+            <button data-testid="account-edit-account-button-model-restriction-mode-mapping-2"
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -593,7 +599,7 @@
                 :key="'oauth-' + getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input
+                <input data-testid="account-edit-account-input-mapping-from-2"
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -612,13 +618,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input
+                <input data-testid="account-edit-account-input-mapping-to-2"
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button
+                <button data-testid="account-edit-account-button-remove-model-mapping-index-2"
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -635,7 +641,7 @@
               </div>
             </div>
 
-            <button
+            <button data-testid="account-edit-account-button-add-model-mapping-2"
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -645,7 +651,7 @@
 
             <!-- Quick Add Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button
+              <button data-testid="account-edit-account-button-add-preset-mapping-preset-from-preset-to-2"
                 v-for="preset in presetMappings"
                 :key="'oauth-' + preset.label"
                 type="button"
@@ -904,7 +910,7 @@
         <template v-if="!isBedrockAPIKeyMode">
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockAccessKeyId') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-access-key-id"
               v-model="editBedrockAccessKeyId"
               type="text"
               class="input font-mono"
@@ -913,7 +919,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSecretAccessKey') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-secret-access-key"
               v-model="editBedrockSecretAccessKey"
               type="password"
               class="input font-mono"
@@ -923,7 +929,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSessionToken') }}</label>
-            <input
+            <input data-testid="account-edit-account-input-edit-bedrock-session-token"
               v-model="editBedrockSessionToken"
               type="password"
               class="input font-mono"
@@ -2461,10 +2467,10 @@
 
     <template #footer>
       <div v-if="account" class="flex justify-end gap-3">
-        <button @click="handleClose" type="button" class="btn btn-secondary">
+        <button data-testid="account-edit-account-button-handle-close" @click="handleClose" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button
+        <button data-testid="account-edit-account-button-submit"
           type="submit"
           form="edit-account-form"
           :disabled="submitting"
@@ -2529,6 +2535,7 @@ import type {
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import Select from '@/components/common/Select.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ProxySelector from '@/components/common/ProxySelector.vue'
 import ProxyAdBanner from '@/components/common/ProxyAdBanner.vue'
@@ -2615,6 +2622,8 @@ interface TempUnschedRuleForm {
 
 // State
 const submitting = ref(false)
+const accountLogoUrl = ref('')
+const originalAccountLogoUrl = ref('')
 const editBaseUrl = ref('https://api.anthropic.com')
 const editApiKey = ref('')
 // Bedrock credentials
@@ -3134,6 +3143,38 @@ const applyOpenAIModelMappingCredentials = (credentials: Record<string, unknown>
   }
 }
 
+const readAccountLogoUrl = (extra: Record<string, unknown> | undefined) => {
+  const customLogoUrl = typeof extra?.custom_logo_url === 'string' ? extra.custom_logo_url.trim() : ''
+  if (customLogoUrl) return customLogoUrl
+  return typeof extra?.logo_url === 'string' ? extra.logo_url.trim() : ''
+}
+
+const isPlainRecord = (value: unknown): value is Record<string, unknown> =>
+  value !== null && typeof value === 'object' && !Array.isArray(value)
+
+const applyAccountLogoToPayload = (payload: Record<string, unknown>) => {
+  const hasExtraPayload = isPlainRecord(payload.extra)
+  const normalizedLogoUrl = accountLogoUrl.value.trim()
+  const originalLogoUrl = originalAccountLogoUrl.value.trim()
+  if (!hasExtraPayload && normalizedLogoUrl === originalLogoUrl) {
+    return
+  }
+
+  const baseExtra = hasExtraPayload
+    ? { ...(payload.extra as Record<string, unknown>) }
+    : { ...((props.account?.extra as Record<string, unknown> | undefined) ?? {}) }
+
+  if (normalizedLogoUrl) {
+    baseExtra.custom_logo_url = normalizedLogoUrl
+    delete baseExtra.logo_url
+  } else {
+    delete baseExtra.custom_logo_url
+    delete baseExtra.logo_url
+  }
+
+  payload.extra = baseExtra
+}
+
 const syncFormFromAccount = (newAccount: Account | null) => {
   if (!newAccount) {
     return
@@ -3174,6 +3215,8 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   mixedScheduling.value = false
   allowOverages.value = false
 	const extra = newAccount.extra as Record<string, unknown> | undefined
+  accountLogoUrl.value = readAccountLogoUrl(extra)
+  originalAccountLogoUrl.value = accountLogoUrl.value
 	mixedScheduling.value = extra?.mixed_scheduling === true
 	allowOverages.value = extra?.allow_overages === true
 	autoPause5hThreshold.value = typeof extra?.auto_pause_5h_threshold === 'number' ? extra.auto_pause_5h_threshold * 100 : null
@@ -4474,6 +4517,8 @@ const handleSubmit = async () => {
       writeQuotaNotifyToExtra(newExtra, 'update')
       updatePayload.extra = newExtra
     }
+
+    applyAccountLogoToPayload(updatePayload)
 
     const canContinue = await ensureAntigravityMixedChannelConfirmed(async () => {
       await submitUpdateAccount(accountID, updatePayload)

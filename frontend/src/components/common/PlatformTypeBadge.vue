@@ -185,7 +185,7 @@ const privacyBadge = computed(() => {
 }
 
 .platform-type-badge--anthropic {
-  --platform-type-color: var(--anthropic-warning);
+  --platform-type-color: var(--anthropic-accent);
 }
 
 .platform-type-badge--openai {
