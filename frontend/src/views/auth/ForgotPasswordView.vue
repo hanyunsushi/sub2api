@@ -76,7 +76,7 @@
 
         <button data-testid="auth-forgot-password-button-submit"
           type="submit"
-          :disabled="isLoading || (turnstileEnabled && !turnstileToken)"
+          :disabled="isLoading || turnstileChallengeRequired"
           class="btn btn-primary auth-recovery-submit w-full"
         >
           <svg
@@ -159,6 +159,10 @@ const errors = reactive({
 
 const validationToastMessage = computed(() => errors.email || errors.turnstile || '')
 
+const turnstileChallengeRequired = computed(
+  () => turnstileEnabled.value && Boolean(turnstileSiteKey.value) && !turnstileToken.value
+)
+
 watch(validationToastMessage, (value, previousValue) => {
   if (value && value !== previousValue) {
     appStore.showError(value)
@@ -212,7 +216,7 @@ function validateForm(): boolean {
   }
 
   // Turnstile validation
-  if (turnstileEnabled.value && !turnstileToken.value) {
+  if (turnstileChallengeRequired.value) {
     errors.turnstile = t('auth.completeVerification')
     isValid = false
   }
@@ -234,7 +238,7 @@ async function handleSubmit(): Promise<void> {
   try {
     await forgotPassword({
       email: formData.email,
-      turnstile_token: turnstileEnabled.value ? turnstileToken.value : undefined
+      turnstile_token: turnstileEnabled.value && turnstileSiteKey.value ? turnstileToken.value : undefined
     })
 
     isSubmitted.value = true

@@ -31,6 +31,7 @@ func TestLegacyAuthEmailFallbacksUseAnthropicEmailShell(t *testing.T) {
 			expected: []string{
 				"密码重置",
 				"class=\"button\"",
+				"style=\"text-decoration:none!important;color:#faf9f5!important;display:inline-block;",
 				"https://example.com/reset?token=abc",
 			},
 		},
@@ -50,6 +51,10 @@ func TestLegacyAuthEmailFallbacksUseAnthropicEmailShell(t *testing.T) {
 			require.Contains(t, check.body, "background: #faf9f5")
 			require.Contains(t, check.body, "background: #f0eee6")
 			require.Contains(t, check.body, "#c96442")
+			require.Contains(t, check.body, "a.button:link")
+			require.Contains(t, check.body, "a.button:hover")
+			require.Contains(t, check.body, "text-decoration: none !important")
+			require.Contains(t, check.body, "text-decoration:none!important;color:#faf9f5!important;display:inline-block")
 			require.NotContains(t, check.body, "linear-gradient")
 			require.NotContains(t, check.body, "#667eea")
 			require.NotContains(t, check.body, "#764ba2")

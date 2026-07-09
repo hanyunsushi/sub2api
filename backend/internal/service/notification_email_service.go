@@ -1093,7 +1093,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 			HTML: notificationEmailCard("Password reset", `
 <p>Hello {{recipient_name}},</p>
 <p>We received a request to reset your password. Click the button below to set a new password.</p>
-<p><a class="button" href="{{reset_url}}">Reset password</a></p>
+<p><a class="button" href="{{reset_url}}" style="text-decoration:none!important;color:#faf9f5!important;display:inline-block;margin:12px 0 18px;padding:12px 20px;background:#141413;border:1px solid #141413;border-radius:8px;font-weight:500;line-height:1.2;text-underline-offset:0;">Reset password</a></p>
 <p>This link expires in <strong>{{expires_in_minutes}}</strong> minutes.</p>
 <p class="muted">If the button does not work, copy this link into your browser:<br>{{reset_url}}</p>
 <p>If you did not request this, you can safely ignore this email.</p>`),
@@ -1103,7 +1103,7 @@ var notificationEmailOfficialTemplates = map[string]map[string]notificationEmail
 			HTML: notificationEmailCard("密码重置", `
 <p>{{recipient_name}}，您好：</p>
 <p>我们收到了您的密码重置请求，请点击下方按钮设置新密码。</p>
-<p><a class="button" href="{{reset_url}}">重置密码</a></p>
+<p><a class="button" href="{{reset_url}}" style="text-decoration:none!important;color:#faf9f5!important;display:inline-block;margin:12px 0 18px;padding:12px 20px;background:#141413;border:1px solid #141413;border-radius:8px;font-weight:500;line-height:1.2;text-underline-offset:0;">重置密码</a></p>
 <p>此链接将在 <strong>{{expires_in_minutes}}</strong> 分钟后失效。</p>
 <p class="muted">如果按钮无法点击，请复制以下链接到浏览器中打开：<br>{{reset_url}}</p>
 <p>如果不是您本人操作，请忽略此邮件。</p>`),

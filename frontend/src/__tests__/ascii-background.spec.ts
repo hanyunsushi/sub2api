@@ -51,7 +51,7 @@ describe('Klein blue ASCII background', () => {
     const source = readFile('src/components/common/GuizangAsciiBackground.vue')
 
     expect(css).toContain('.guizang-site-background')
-    expect(css).toContain('background: #002fa7')
+    expect(css).toContain('background: var(--atelier-ink)')
     expect(css).not.toContain('background: #001f66')
     expect(css).toContain('.guizang-site-background--light')
     expect(css).toContain('.dark .guizang-site-background--light')

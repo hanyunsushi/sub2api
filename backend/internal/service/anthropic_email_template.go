@@ -36,7 +36,8 @@ func buildAnthropicEmailBodyRaw(siteName, title, content string) string {
     .email-body { padding: 34px; color: #141413; font-size: 15px; line-height: 1.7; }
     .email-block { margin: 22px 0; padding: 20px; background: #f0eee6; border: 1px solid rgba(20, 19, 19, 0.08); border-radius: 12px; }
     .email-code { display: block; width: max-content; max-width: 100%; margin: 22px auto; padding: 18px 26px; background: #f0eee6; border: 1px solid #d1cfc5; border-radius: 12px; color: #141413; font-family: "Anthropic Mono", "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: 36px; font-weight: 500; line-height: 1; letter-spacing: 8px; text-align: center; }
-    .button { display: inline-block; margin: 12px 0 18px; padding: 12px 20px; background: #141413; border: 1px solid #141413; border-radius: 8px; color: #faf9f5 !important; font-weight: 500; line-height: 1.2; text-decoration: none; }
+    .button, a.button, a.button:link, a.button:visited, a.button:hover, a.button:active { display: inline-block; margin: 12px 0 18px; padding: 12px 20px; background: #141413; border: 1px solid #141413; border-radius: 8px; color: #faf9f5 !important; font-weight: 500; line-height: 1.2; text-decoration: none !important; text-underline-offset: 0; }
+    a.button:hover { background: #3d3d3a; color: #faf9f5 !important; text-decoration: none !important; }
     .button-secondary { background: transparent; color: #141413 !important; border-color: #141413; }
     .muted { color: #5e5d59; font-size: 13px; line-height: 1.6; }
     .email-warning { background: #fff9ef; border-color: #ffedcc; }
