@@ -71,6 +71,8 @@ describe('AppSidebar header styles', () => {
   it('links only the top-left logo to the public welcome page', () => {
     const homeLinkMatch = componentSource.match(/<router-link[^>]*:to="homePath"[^>]*class="sidebar-home-link sidebar-logo-link"[\s\S]*?<\/router-link>/)
 
+    expect(componentSource).toContain("const homePath = computed(() => '/home')")
+    expect(componentSource).not.toContain("isAdmin.value ? '/admin/dashboard' : '/dashboard'")
     expect(homeLinkMatch).not.toBeNull()
     expect(homeLinkMatch?.[0]).toContain('sidebar-home-link')
     expect(homeLinkMatch?.[0]).toContain('sidebar-logo-link')
