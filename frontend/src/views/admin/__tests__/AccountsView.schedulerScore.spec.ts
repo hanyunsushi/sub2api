@@ -1,7 +1,16 @@
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 
 import AccountsView from '../AccountsView.vue'
+
+const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../AccountsView.vue'), 'utf8')
+const targetedRepairSource = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '../../../styles/targeted-visual-repair.css'),
+  'utf8',
+)
 
 const {
   listAccounts,
@@ -223,5 +232,19 @@ describe('admin AccountsView scheduler score column', () => {
     const emptyCell = wrapper.find('[data-test="scheduler-score-3"]')
     expect(emptyCell.exists()).toBe(true)
     expect(emptyCell.text()).toBe('-')
+  })
+
+  it('keeps scheduler metadata text natural while aligning account-card rows vertically in source', () => {
+    expect(source).toContain('class="flex min-w-[7rem] flex-col gap-0.5 font-mono text-[11px] leading-4"')
+    expect(source).toContain('class="flex items-center gap-1 whitespace-nowrap text-gray-700 dark:text-gray-300"')
+    expect(source).toContain('class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400"')
+    expect(source).not.toContain('items-end gap-0.5 text-right')
+    expect(source).not.toContain('justify-end font-mono text-[11px]')
+    expect(targetedRepairSource).toContain('td[data-column-key="scheduler_score"],')
+    expect(targetedRepairSource).toContain('td[data-column-key="last_used_at"],')
+    expect(targetedRepairSource).toContain('td[data-column-key="created_at"] {')
+    expect(targetedRepairSource).toContain('flex-direction: column;')
+    expect(targetedRepairSource).toContain('td[data-column-key="scheduler_score"]::before')
+    expect(targetedRepairSource).toContain('line-height: 1rem;')
   })
 })

@@ -630,8 +630,7 @@
     box-shadow: none;
   }
 
-  .input:hover,
-  .input:focus:not(:focus-visible) {
+  .input:hover {
     border-color: var(--atelier-line-strong);
     background: var(--atelier-paper);
     box-shadow: none;
@@ -641,12 +640,14 @@
     border-color: var(--anthropic-error, var(--atelier-red));
   }
 
+  .input:focus:not(:focus-visible),
+  .input-error:focus:not(:focus-visible),
   .input:focus-visible,
   .input-error:focus-visible {
-    outline: 2px solid var(--anthropic-border-hover, var(--atelier-line-strong));
-    outline-offset: 3px;
+    border-color: var(--anthropic-focus, var(--atelier-focus));
+    outline: 0;
     background: var(--atelier-paper);
-    box-shadow: none;
+    box-shadow: 0 0 0 3px rgba(44, 132, 219, 0.18);
   }
 
   .input-label {
@@ -1081,7 +1082,7 @@
   /* ============ 侧边栏 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
-    width: 232px;
+    width: 220px;
     @apply flex flex-col;
     @apply transition-transform duration-300;
     --sidebar-bg: var(--anthropic-page);
@@ -1281,24 +1282,45 @@
     background: transparent;
   }
 
+  .sidebar .sidebar-subsection-title {
+    margin-top: 0.625rem;
+  }
+
+  .sidebar .sidebar-subsection-link,
   .sidebar .sidebar-channel-child-link {
     font-size: 0.8125rem;
     min-height: 2rem;
     letter-spacing: 0;
   }
 
+  .sidebar .sidebar-subsection-link,
   .sidebar .sidebar-system-child-link {
     font-size: 0.8125rem;
     min-height: 2rem;
     letter-spacing: 0;
   }
 
+  .sidebar .sidebar-subsection-link,
+  .sidebar .sidebar-other-child-link {
+    font-size: 0.8125rem;
+    min-height: 2rem;
+    letter-spacing: 0;
+  }
+
+  .sidebar .sidebar-subsection-link .sidebar-child-initial,
   .sidebar .sidebar-channel-child-link .sidebar-child-initial {
     height: 0.875rem;
     width: 0.875rem;
   }
 
+  .sidebar .sidebar-subsection-link .sidebar-child-initial,
   .sidebar .sidebar-system-child-link .sidebar-child-initial {
+    height: 0.875rem;
+    width: 0.875rem;
+  }
+
+  .sidebar .sidebar-subsection-link .sidebar-child-initial,
+  .sidebar .sidebar-other-child-link .sidebar-child-initial {
     height: 0.875rem;
     width: 0.875rem;
   }

@@ -340,20 +340,12 @@ onMounted(async () => {
   }
 
   try {
-    const settings = await getPublicSettings()
-    turnstileEnabled.value = settings.turnstile_enabled
-    turnstileSiteKey.value = settings.turnstile_site_key || ''
-    linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
-    dingtalkOAuthEnabled.value = settings.dingtalk_oauth_enabled ?? false
-    wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
-    backendModeEnabled.value = settings.backend_mode_enabled
-    oidcOAuthEnabled.value = settings.oidc_oauth_enabled
-    oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
-    githubOAuthEnabled.value = settings.github_oauth_enabled
-    googleOAuthEnabled.value = settings.google_oauth_enabled
-    backendModeEnabled.value = settings.backend_mode_enabled
-    passwordResetEnabled.value = settings.password_reset_enabled
-    applyLoginAgreementSettings(settings)
+    const settings =
+      appStore.cachedPublicSettings ||
+      (await appStore.fetchPublicSettings()) ||
+      (await getPublicSettings())
+
+    applyPublicSettings(settings)
   } catch (error) {
     console.error('Failed to load public settings:', error)
     loginAgreementEnabled.value = false
@@ -362,6 +354,11 @@ onMounted(async () => {
     publicSettingsLoaded.value = true
   }
 })
+
+if (appStore.cachedPublicSettings) {
+  applyPublicSettings(appStore.cachedPublicSettings)
+  publicSettingsLoaded.value = true
+}
 
 // ==================== Login Agreement ====================
 
@@ -386,6 +383,21 @@ function applyLoginAgreementSettings(settings: {
   agreementAccepted.value = !loginAgreementEnabled.value || hasAcceptedLoginAgreement(loginAgreementRevision.value)
   showAgreementModal.value =
     loginAgreementEnabled.value && !agreementAccepted.value && loginAgreementMode.value !== 'checkbox'
+}
+
+function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettings>>): void {
+  turnstileEnabled.value = settings.turnstile_enabled
+  turnstileSiteKey.value = settings.turnstile_site_key || ''
+  linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
+  dingtalkOAuthEnabled.value = settings.dingtalk_oauth_enabled ?? false
+  wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
+  backendModeEnabled.value = settings.backend_mode_enabled
+  oidcOAuthEnabled.value = settings.oidc_oauth_enabled
+  oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
+  githubOAuthEnabled.value = settings.github_oauth_enabled
+  googleOAuthEnabled.value = settings.google_oauth_enabled
+  passwordResetEnabled.value = settings.password_reset_enabled
+  applyLoginAgreementSettings(settings)
 }
 
 function hasAcceptedLoginAgreement(revision: string): boolean {

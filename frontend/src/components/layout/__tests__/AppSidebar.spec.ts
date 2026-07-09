@@ -56,14 +56,16 @@ describe('AppSidebar custom menu open mode', () => {
 })
 
 describe('AppSidebar system settings group', () => {
-  it('renders system settings as an expandable parent with the external subscriptions child route', () => {
+  it('keeps system settings children in a dedicated small-title subsection', () => {
     expect(componentSource).toContain('function systemSettingsNavItem')
     expect(componentSource).toContain('expandOnly: true')
     expect(componentSource).toContain("label: t('nav.settings')")
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
-    expect(componentSource).toContain('systemSettingsNavItem()')
-    expect(componentSource).toContain("'sidebar-system-child-link': item.path === '/admin/settings'")
+    expect(componentSource).toContain('const adminSystemSectionItems = computed(() => {')
+    expect(navTemplateSource).toContain("v-if=\"adminSystemSectionItems.length\"")
+    expect(navTemplateSource).toContain('sidebar-subsection-title')
+    expect(navTemplateSource).toContain('sidebar-system-child-link')
   })
 })
 
@@ -132,17 +134,17 @@ describe('AppSidebar atelier palette', () => {
       styleSource.indexOf('.dark .sidebar {'),
     )
 
-    expect(componentSource).toContain("sidebarCollapsed ? 'w-[72px]' : 'w-[232px]'")
+    expect(componentSource).toContain("sidebarCollapsed ? 'w-[72px]' : 'w-[220px]'")
     expect(componentSource).not.toContain("sidebarCollapsed ? 'w-[72px]' : 'w-64'")
-    expect(sidebarBlock).toContain('width: 232px;')
+    expect(sidebarBlock).toContain('width: 220px;')
     expect(sidebarBlock).not.toContain('@apply w-64;')
   })
 
   it('labels the admin and personal sidebar sections with the same title treatment', () => {
     const adminSectionTitleIndex = navTemplateSource.indexOf("{{ t('nav.adminInterface') }}")
-    const firstAdminItemIndex = navTemplateSource.indexOf('v-for="item in adminNavItems"')
+    const firstAdminItemIndex = navTemplateSource.indexOf('v-for="item in adminPrimaryNavItems"')
     const personalSectionTitleIndex = navTemplateSource.indexOf("{{ t('nav.myAccount') }}")
-    const firstPersonalItemIndex = navTemplateSource.indexOf('v-for="item in personalNavItems"')
+    const firstPersonalItemIndex = navTemplateSource.indexOf('v-for="item in personalPrimaryNavItems"')
 
     expect(adminSectionTitleIndex).toBeGreaterThan(-1)
     expect(personalSectionTitleIndex).toBeGreaterThan(-1)
@@ -203,22 +205,42 @@ describe('AppSidebar atelier palette', () => {
     expect(styleSource).toContain('.sidebar .sidebar-section-title')
   })
 
-  it('uses a smaller dedicated font size for the two channel-management children', () => {
-    expect(componentSource).toContain("'sidebar-channel-child-link': item.path === '/admin/channels'")
+  it('renders the two channel-management entries directly without a parent or third channel-list item', () => {
     expect(componentSource).toContain("{ path: '/admin/channels/pricing', label: t('nav.channelPricing')")
     expect(componentSource).toContain("{ path: '/admin/channels/monitor', label: t('nav.channelMonitor')")
-    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link')
-    expect(styleSource).toContain('font-size: 0.8125rem;')
-    expect(styleSource).toContain('.sidebar .sidebar-channel-child-link .sidebar-child-initial')
+    expect(componentSource).toContain('const adminPrimaryNavItems = computed(() =>')
+    expect(componentSource).not.toContain('function channelManagementNavItem()')
+    expect(componentSource).not.toContain("path: '/admin/channels', label: t('nav.channelList')")
+    expect(componentSource).not.toContain("t('nav.channelList')")
+    expect(componentSource).not.toContain('const adminChannelSectionItems')
+    expect(navTemplateSource).toContain('v-for="item in adminPrimaryNavItems"')
+    expect(navTemplateSource).not.toContain('v-if="adminChannelSectionItems.length"')
+    expect(navTemplateSource).not.toContain("{{ t('nav.channelManagement') }}")
+    expect(zhLocaleSource).not.toContain("channelList: '渠道列表'")
+    expect(enLocaleSource).not.toContain("channelList: 'Channel List'")
   })
 
   it('uses a smaller dedicated font size for the system-settings children', () => {
-    expect(componentSource).toContain("'sidebar-system-child-link': item.path === '/admin/settings'")
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link')
     expect(styleSource).toContain('font-size: 0.8125rem;')
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link .sidebar-child-initial')
+  })
+
+  it('groups custom external pages under a dedicated 其他 small-title section for admin and personal areas', () => {
+    expect(componentSource).toContain('const customUserNavItems = computed(() =>')
+    expect(componentSource).toContain('const customAdminNavItems = computed(() =>')
+    expect(componentSource).toContain('const userOtherNavItems = computed(() =>')
+    expect(componentSource).toContain('const personalOtherNavItems = computed(() =>')
+    expect(componentSource).toContain('const adminOtherNavItems = computed(() =>')
+    expect(navTemplateSource).toContain("v-if=\"adminOtherNavItems.length\"")
+    expect(navTemplateSource).toContain("v-if=\"personalOtherNavItems.length\"")
+    expect(navTemplateSource).toContain("v-if=\"userOtherNavItems.length\"")
+    expect(navTemplateSource).toContain("{{ t('nav.other') }}")
+    expect(styleSource).toContain('.sidebar .sidebar-other-child-link')
+    expect(zhLocaleSource).toContain("other: '其他'")
+    expect(enLocaleSource).toContain("other: 'Other'")
   })
 
   it('keeps active sidebar descendants readable when the selected item is hovered', () => {
