@@ -1,12 +1,13 @@
 <template>
   <AuthLayout>
-    <div class="space-y-6">
+    <div class="auth-form-stack">
       <!-- Title -->
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <div class="auth-view-header">
+        <span class="auth-kicker">{{ siteName }}</span>
+        <h2 class="auth-title">
           {{ t('auth.createAccount') }}
         </h2>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="auth-sub">
           {{ t('auth.signUpToStart', { siteName }) }}
         </p>
       </div>
@@ -27,7 +28,7 @@
       </div>
 
       <!-- Registration Form -->
-      <form v-else @submit.prevent="handleRegister" class="space-y-5">
+      <form v-else @submit.prevent="handleRegister" class="auth-fields">
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
@@ -88,7 +89,7 @@
               type="button"
               :disabled="registrationActionDisabled"
               @click="showPassword = !showPassword"
-              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:hover:text-dark-300"
+              class="auth-password-toggle"
             >
               <Icon v-if="showPassword" name="eyeOff" size="md" />
               <Icon v-else name="eye" size="md" />
@@ -232,8 +233,8 @@
         <!-- Submit Button -->
         <button data-testid="auth-register-button-submit"
           type="submit"
-          :disabled="registrationActionDisabled || (turnstileEnabled && !turnstileToken)"
-          class="btn btn-primary w-full"
+          :disabled="registrationActionDisabled || turnstileChallengeRequired"
+          class="btn btn-primary auth-submit-button w-full"
         >
           <svg
             v-if="isLoading"
@@ -268,9 +269,9 @@
       </form>
 
       <div v-if="showOAuthLogin" class="space-y-3 pt-1">
-        <div class="flex items-center gap-3">
+        <div class="auth-divider">
           <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-          <span class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+          <span>
             {{ t('auth.oauthOrContinue') }}
           </span>
           <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
@@ -464,6 +465,10 @@ const agreementInputHint = computed(
 
 const registrationActionDisabled = computed(
   () => isLoading.value || !settingsLoaded.value || agreementGateActive.value
+)
+
+const turnstileChallengeRequired = computed(
+  () => turnstileEnabled.value && Boolean(turnstileSiteKey.value) && !turnstileToken.value
 )
 
 watch(validationToastMessage, (value, previousValue) => {
@@ -828,7 +833,7 @@ function validateForm(): boolean {
   }
 
   // Turnstile validation
-  if (turnstileEnabled.value && !turnstileToken.value) {
+  if (turnstileChallengeRequired.value) {
     errors.turnstile = t('auth.completeVerification')
     isValid = false
   }
@@ -901,7 +906,7 @@ async function handleRegister(): Promise<void> {
         JSON.stringify({
           email: formData.email,
           password: formData.password,
-          turnstile_token: turnstileToken.value,
+          turnstile_token: turnstileEnabled.value && turnstileSiteKey.value ? turnstileToken.value : undefined,
           promo_code: formData.promo_code || undefined,
           invitation_code: formData.invitation_code || undefined,
           ...(affCode ? { aff_code: affCode } : {})
@@ -917,7 +922,7 @@ async function handleRegister(): Promise<void> {
     await authStore.register({
       email: formData.email,
       password: formData.password,
-      turnstile_token: turnstileEnabled.value ? turnstileToken.value : undefined,
+      turnstile_token: turnstileEnabled.value && turnstileSiteKey.value ? turnstileToken.value : undefined,
       promo_code: formData.promo_code || undefined,
       invitation_code: formData.invitation_code || undefined,
       ...(affCode ? { aff_code: affCode } : {})

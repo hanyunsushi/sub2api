@@ -121,6 +121,7 @@ func TestNotificationEmailAuthTemplatesAreListedAndPreviewable(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, resetPreview.Subject, "Password reset")
 	require.Contains(t, resetPreview.HTML, "https://example.com/reset?token=abc")
+	require.Contains(t, resetPreview.HTML, `style="text-decoration:none!important;color:#faf9f5!important;display:inline-block;`)
 }
 
 func TestNotificationEmailAuthTemplatesUseAnthropicEmailShell(t *testing.T) {
@@ -144,7 +145,7 @@ func TestNotificationEmailAuthTemplatesUseAnthropicEmailShell(t *testing.T) {
 			name:     "password reset",
 			event:    NotificationEmailEventAuthPasswordReset,
 			locale:   "en",
-			mustHave: []string{"background: #faf9f5", "background: #141413", "Reset password", "class=\"button\""},
+			mustHave: []string{"background: #faf9f5", "background: #141413", "Reset password", "class=\"button\"", "a.button:link", "text-decoration: none !important", "text-decoration:none!important;color:#faf9f5!important;display:inline-block"},
 		},
 		{
 			name:     "notification email verify",

@@ -631,7 +631,7 @@ func (s *EmailService) buildPasswordResetEmailBody(resetURL, siteName string) st
 	escapedURL := html.EscapeString(resetURL)
 	content := fmt.Sprintf(`
 <p>我们收到了您的密码重置请求，请点击下方按钮设置新密码。</p>
-<p><a class="button" href="%s">重置密码</a></p>
+<p><a class="button" href="%s" style="text-decoration:none!important;color:#faf9f5!important;display:inline-block;margin:12px 0 18px;padding:12px 20px;background:#141413;border:1px solid #141413;border-radius:8px;font-weight:500;line-height:1.2;text-underline-offset:0;">重置密码</a></p>
 <div class="email-block">
   <p>此链接将在 <strong>%d 分钟</strong>后失效。</p>
   <p>If you did not request this, you can safely ignore this email.</p>

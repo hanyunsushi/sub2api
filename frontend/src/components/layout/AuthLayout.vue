@@ -1,56 +1,75 @@
 <template>
-  <div class="auth-ascii-shell relative flex min-h-screen items-center justify-center overflow-hidden p-4">
-    <!-- Content Container -->
-    <div class="relative z-10 w-full max-w-md">
-      <!-- Logo/Brand -->
-      <div class="mb-8 text-center">
-        <!-- Custom Logo or Default Logo -->
-        <template v-if="settingsLoaded">
+  <main class="auth-ascii-shell auth-split-shell">
+    <section class="auth-aside" aria-hidden="true">
+      <div class="auth-aside-inner">
+        <span class="auth-kicker">{{ t('auth.layout.kicker') }}</span>
+        <h1 class="auth-quote">
+          {{ t('auth.layout.quoteLineOne') }}<br />{{ t('auth.layout.quoteLineTwo') }}
+        </h1>
+        <p>
+          {{ siteSubtitle }}
+        </p>
+        <div class="auth-points">
           <div
-            class="auth-logo mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-transparent shadow-none ring-0 dark:bg-transparent"
+            v-for="point in authPoints"
+            :key="point.numeric"
+            class="auth-point"
           >
-            <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+            <span class="numeric">{{ point.numeric }}</span>
+            <span>{{ point.text }}</span>
           </div>
-          <h1 class="text-gradient mb-2 text-3xl font-bold">
-            {{ siteName }}
-          </h1>
-          <p class="auth-subtitle text-sm">
-            {{ siteSubtitle }}
-          </p>
-        </template>
+        </div>
       </div>
+    </section>
 
-      <!-- Card Container -->
-      <div class="paper-card rounded-lg p-8 shadow-none">
+    <section class="auth-main">
+      <div class="auth-main-inner">
+        <router-link to="/home" class="auth-page-brand" :aria-label="t('auth.layout.backToHome')">
+          <span class="auth-logo">
+            <img :src="siteLogo || '/logo.png'" alt="" />
+          </span>
+          <span class="auth-page-brand-copy">
+            <span class="auth-brand-title">{{ siteName }}</span>
+            <span class="auth-brand-subtitle">{{ siteSubtitle }}</span>
+          </span>
+        </router-link>
+
+        <div class="auth-card">
         <slot />
-      </div>
+        </div>
 
-      <!-- Footer Links -->
-      <div class="auth-footer-link mt-6 text-center text-sm">
-        <slot name="footer" />
-      </div>
+        <div class="auth-footer-link">
+          <slot name="footer" />
+        </div>
 
-      <!-- Copyright -->
-      <div class="auth-copyright mt-8 text-center text-xs">
-        &copy; {{ currentYear }} {{ siteName }}. All rights reserved.
+        <div class="auth-copyright">
+          {{ t('auth.layout.copyright', { year: currentYear, siteName }) }}
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import { sanitizeUrl } from '@/utils/url'
 
+const { t } = useI18n()
 const appStore = useAppStore()
 
 const siteName = computed(() => appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'Subscription to API Conversion Platform')
-const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
-
+const siteSubtitle = computed(() =>
+  appStore.cachedPublicSettings?.site_subtitle || t('auth.layout.defaultSubtitle')
+)
 const currentYear = computed(() => new Date().getFullYear())
+const authPoints = computed(() => [
+  { numeric: '01', text: t('auth.layout.points.accounts') },
+  { numeric: '02', text: t('auth.layout.points.usage') },
+  { numeric: '03', text: t('auth.layout.points.console') }
+])
 
 onMounted(() => {
   appStore.fetchPublicSettings()
@@ -58,54 +77,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.text-gradient {
-  @apply bg-none bg-clip-text text-transparent;
-}
-
-.auth-logo {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.auth-subtitle,
-.auth-footer-link,
+.auth-footer-link :deep(.auth-footer-copy),
 .auth-copyright {
-  color: var(--atelier-muted);
-}
-
-.auth-footer-link :deep(a) {
-  color: var(--atelier-blue);
-}
-
-.auth-footer-link :deep(.auth-footer-copy) {
-  color: var(--atelier-muted);
+  color: var(--anthropic-muted, var(--atelier-muted));
 }
 
 .auth-footer-link :deep(.auth-footer-link-strong) {
-  color: var(--atelier-blue);
+  color: var(--anthropic-fg, var(--atelier-ink));
+  text-decoration-color: transparent;
 }
 
 .auth-footer-link :deep(.auth-footer-link-strong:hover) {
-  color: var(--atelier-blue-dark);
-}
-
-:global(.dark) .auth-logo {
-  border-color: transparent;
-  background: transparent;
-}
-
-:global(.dark) .auth-subtitle,
-:global(.dark) .auth-footer-link,
-:global(.dark) .auth-copyright {
-  color: rgba(248, 251, 255, 0.72);
-}
-
-:global(.dark) .auth-footer-link :deep(.auth-footer-copy) {
-  color: rgba(248, 251, 255, 0.72);
-}
-
-:global(.dark) .auth-footer-link :deep(.auth-footer-link-strong) {
-  color: #f8fbff;
+  color: var(--anthropic-fg, var(--atelier-ink));
+  text-decoration-color: currentColor;
 }
 </style>

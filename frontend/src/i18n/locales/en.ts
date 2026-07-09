@@ -464,6 +464,19 @@ export default {
     rememberMe: 'Remember me',
     dontHaveAccount: "Don't have an account?",
     alreadyHaveAccount: 'Already have an account?',
+    layout: {
+      kicker: 'Account workbench',
+      quoteLineOne: 'Manage access',
+      quoteLineTwo: 'with clarity.',
+      defaultSubtitle: 'Subscription to API Conversion Platform',
+      backToHome: 'Back to home',
+      copyright: '© {year} {siteName}. All rights reserved.',
+      points: {
+        accounts: 'Keep accounts, subscriptions, and channel status in one place.',
+        usage: 'Track usage, balance, and routing weight without guesswork.',
+        console: 'Start from sign-in and land in a calm control console.'
+      }
+    },
     registrationDisabled: 'Registration is currently disabled. Please contact the administrator.',
     emailLabel: 'Email',
     emailPlaceholder: 'Enter your email',

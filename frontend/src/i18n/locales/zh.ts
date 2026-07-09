@@ -464,6 +464,19 @@ export default {
     rememberMe: '记住我',
     dontHaveAccount: '还没有账户？',
     alreadyHaveAccount: '已有账户？',
+    layout: {
+      kicker: '账户工作台',
+      quoteLineOne: '把账户与额度',
+      quoteLineTwo: '管得更清楚。',
+      defaultSubtitle: '订阅转 API 的服务平台',
+      backToHome: '返回主页',
+      copyright: '© {year} {siteName}。保留所有权利。',
+      points: {
+        accounts: '把账户、订阅和渠道状态统一收拢。',
+        usage: '让用量、余额和调度权值一眼可查。',
+        console: '从登录开始，进入一个安静的控制台。'
+      }
+    },
     registrationDisabled: '注册功能暂时关闭，请联系管理员。',
     emailLabel: '邮箱',
     emailPlaceholder: '请输入邮箱',

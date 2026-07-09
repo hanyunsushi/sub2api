@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 const loginSource = readFileSync(resolve(__dirname, '../LoginView.vue'), 'utf8')
 const registerSource = readFileSync(resolve(__dirname, '../RegisterView.vue'), 'utf8')
 const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const targetedStyleSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 
 describe('login agreement input gate', () => {
   it('keeps login inputs locked while exposing a hoverable agreement hint wrapper', () => {
@@ -33,11 +34,11 @@ describe('login agreement input gate', () => {
   })
 
   it('renders the hint from the field wrapper because disabled inputs cannot reliably emit hover or focus feedback', () => {
-    expect(styleSource).toContain('.auth-agreement-locked-field::after')
-    expect(styleSource).toContain('content: attr(data-agreement-hint);')
-    expect(styleSource).toContain('.auth-agreement-locked-field:hover::after')
-    expect(styleSource).toContain('.auth-agreement-locked-field:focus-visible::after')
-    expect(styleSource).toContain('pointer-events: none;')
+    expect(targetedStyleSource).toContain('.auth-ascii-shell :where(.auth-agreement-locked-field)::after')
+    expect(targetedStyleSource).toContain('content: attr(data-agreement-hint);')
+    expect(targetedStyleSource).toContain('.auth-ascii-shell :where(.auth-agreement-locked-field):where(:hover, :focus-visible)::after')
+    expect(targetedStyleSource).toContain('pointer-events: none;')
     expect(styleSource).not.toContain('input.auth-agreement-locked-field')
+    expect(targetedStyleSource).not.toContain('input.auth-agreement-locked-field')
   })
 })

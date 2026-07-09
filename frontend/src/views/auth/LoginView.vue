@@ -1,17 +1,18 @@
 <template>
   <AuthLayout>
-    <div class="space-y-6">
+    <div class="auth-form-stack">
       <!-- Title -->
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-          {{ t('auth.welcomeBack') }}
+      <div class="auth-view-header">
+        <span class="auth-kicker">{{ t('auth.welcomeBack') }}</span>
+        <h2 class="auth-title">
+          {{ t('auth.signIn') }}
         </h2>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="auth-sub">
           {{ t('auth.signInToAccount') }}
         </p>
       </div>
       <!-- Login Form -->
-      <form @submit.prevent="handleLogin" class="space-y-5">
+      <form @submit.prevent="handleLogin" class="auth-fields">
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
@@ -72,7 +73,7 @@
               type="button"
               @click="showPassword = !showPassword"
               :disabled="authActionDisabled"
-              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:hover:text-dark-300"
+              class="auth-password-toggle"
             >
               <Icon v-if="showPassword" name="eyeOff" size="md" />
               <Icon v-else name="eye" size="md" />
@@ -83,7 +84,7 @@
             <router-link
               v-if="passwordResetEnabled && !backendModeEnabled"
               to="/forgot-password"
-              class="text-sm font-medium text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+              class="auth-inline-link"
             >
               {{ t('auth.forgotPassword') }}
             </router-link>
@@ -104,8 +105,8 @@
         <!-- Submit Button -->
         <button data-testid="auth-login-button-submit"
           type="submit"
-          :disabled="authActionDisabled || (turnstileEnabled && !turnstileToken)"
-          class="btn btn-primary w-full"
+          :disabled="authActionDisabled || turnstileChallengeRequired"
+          class="btn btn-primary auth-submit-button w-full"
         >
           <svg
             v-if="isLoading"
@@ -144,9 +145,9 @@
         />
 
         <div v-if="showOAuthLogin" class="space-y-3 pt-1">
-          <div class="flex items-center gap-3">
+          <div class="auth-divider">
             <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-            <span class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+            <span>
               {{ t('auth.oauthOrContinue') }}
             </span>
             <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
@@ -304,6 +305,10 @@ const agreementInputHint = computed(
 
 const authActionDisabled = computed(
   () => isLoading.value || !publicSettingsLoaded.value || agreementGateActive.value
+)
+
+const turnstileChallengeRequired = computed(
+  () => turnstileEnabled.value && Boolean(turnstileSiteKey.value) && !turnstileToken.value
 )
 
 const showOAuthLogin = computed(
@@ -474,7 +479,7 @@ function validateForm(): boolean {
   }
 
   // Turnstile validation
-  if (turnstileEnabled.value && !turnstileToken.value) {
+  if (turnstileChallengeRequired.value) {
     errors.turnstile = t('auth.completeVerification')
     isValid = false
   }
@@ -500,7 +505,7 @@ async function handleLogin(): Promise<void> {
     const response = await authStore.login({
       email: formData.email,
       password: formData.password,
-      turnstile_token: turnstileEnabled.value ? turnstileToken.value : undefined
+      turnstile_token: turnstileEnabled.value && turnstileSiteKey.value ? turnstileToken.value : undefined
     })
 
     // Check if 2FA is required
