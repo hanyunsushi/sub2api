@@ -384,6 +384,7 @@ import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import VersionBadge from '@/components/common/VersionBadge.vue'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
+import { sanitizeUrl } from '@/utils/url'
 import { useBatchImageAccess } from '@/composables/useBatchImageAccess'
 
 interface NavItem {
@@ -452,7 +453,7 @@ let latestSidebarScrollTop = appStore.sidebarNavScrollTop
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
-const siteLogo = computed(() => appStore.siteLogo)
+const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const siteVersion = computed(() => appStore.siteVersion)
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
 
@@ -1192,12 +1193,22 @@ onMounted(() => {
   if (isAdmin.value) {
     adminSettingsStore.fetch()
   }
+  if (appStore.sidebarScrollTop > 0 && sidebarNavRef.value) {
+    void nextTick(() => {
+      if (sidebarNavRef.value) {
+        sidebarNavRef.value.scrollTop = appStore.sidebarScrollTop
+      }
+    })
+  }
   if (appStore.sidebarNavScrollTop > 0) {
     restoreSidebarScroll(true)
   }
 })
 
 onBeforeUnmount(() => {
+  if (sidebarNavRef.value) {
+    appStore.sidebarScrollTop = sidebarNavRef.value.scrollTop
+  }
   captureSidebarScroll()
   cancelSidebarScrollRestoreSchedule()
 })

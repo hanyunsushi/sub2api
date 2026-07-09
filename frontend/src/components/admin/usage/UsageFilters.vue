@@ -1,5 +1,5 @@
 <template>
-  <div class="card p-6 usage-filter-card table-page-filter-section">
+  <div :class="props.flat ? 'p-4 sm:p-6' : 'card p-6 usage-filter-card table-page-filter-section'">
     <!-- Toolbar: left filters (multi-line) + right actions -->
     <div class="usage-filter-shell table-filter-shell flex flex-wrap items-end justify-between gap-3">
       <!-- Left: filters (allowed to wrap to multiple rows) -->
@@ -186,7 +186,7 @@
           {{ t('common.reset') }}
         </button>
         <slot name="after-reset" />
-        <template v-if="mode !== 'errors'">
+        <template v-if="mode === 'usage'">
           <button data-testid="admin-usage-usage-filters-button-emit-cleanup" type="button" @click="$emit('cleanup')" class="filter-menu-button filter-menu-button-danger">
             {{ t('admin.usage.cleanup.button') }}
           </button>
@@ -219,11 +219,13 @@ interface Props {
   modelOptions?: string[]
   /** errors 模式:隐藏用量专属字段/按钮,显示错误类型+状态码(错误请求 tab 用) */
   mode?: 'usage' | 'errors'
+  flat?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showActions: true,
-  mode: 'usage'
+  mode: 'usage',
+  flat: false
 })
 const emit = defineEmits([
   'update:modelValue',

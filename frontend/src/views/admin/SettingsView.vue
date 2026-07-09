@@ -1162,7 +1162,11 @@
                     <Select
                       :modelValue="rule.action"
                       @update:modelValue="
-                        rule.action = $event as 'pass' | 'filter' | 'block'
+                        rule.action = $event as
+                          | 'pass'
+                          | 'filter'
+                          | 'block'
+                          | 'force_priority'
                       "
                       :options="openaiFastPolicyActionOptions"
                     />
@@ -1301,6 +1305,7 @@
                         | 'pass'
                         | 'filter'
                         | 'block'
+                        | 'force_priority'
                     "
                     :options="openaiFastPolicyActionOptions"
                   />
@@ -5315,7 +5320,7 @@
                   :upload-label="t('admin.settings.site.uploadImage')"
                   :remove-label="t('admin.settings.site.remove')"
                   :hint="t('admin.settings.site.logoHint')"
-                  :max-size="300 * 1024"
+                  :max-size="null"
                 />
               </div>
 
@@ -10299,6 +10304,10 @@ const openaiFastPolicyTierOptions = computed(() => [
 const openaiFastPolicyActionOptions = computed(() => [
   { value: "pass", label: t("admin.settings.openaiFastPolicy.actionPass") },
   { value: "filter", label: t("admin.settings.openaiFastPolicy.actionFilter") },
+  {
+    value: "force_priority",
+    label: t("admin.settings.openaiFastPolicy.actionForcePriority"),
+  },
   { value: "block", label: t("admin.settings.openaiFastPolicy.actionBlock") },
 ]);
 
