@@ -2,7 +2,7 @@
   <aside
     class="sidebar"
     :class="[
-      sidebarCollapsed ? 'w-[72px]' : 'w-[232px]',
+      sidebarCollapsed ? 'w-[72px]' : 'w-[220px]',
       { '-translate-x-full lg:translate-x-0': !mobileOpen }
     ]"
   >
@@ -35,7 +35,7 @@
             </span>
           </div>
 
-          <template v-for="item in adminNavItems" :key="item.path">
+          <template v-for="item in adminPrimaryNavItems" :key="item.path">
             <!-- Collapsible group (has children) -->
             <template v-if="item.children?.length">
               <button data-testid="layout-app-sidebar-button-handle-group-click-item"
@@ -124,6 +124,68 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
+
+          <template v-if="adminSystemSectionItems.length">
+            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
+              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
+                {{ t('nav.settings') }}
+              </span>
+            </div>
+
+            <template v-for="item in adminSystemSectionItems" :key="item.path">
+              <router-link
+                :to="item.path"
+                class="sidebar-link sidebar-subsection-link sidebar-system-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </router-link>
+            </template>
+          </template>
+
+          <template v-if="adminOtherNavItems.length">
+            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
+              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
+                {{ t('nav.other') }}
+              </span>
+            </div>
+
+            <template v-for="item in adminOtherNavItems" :key="item.path">
+              <a
+                v-if="item.openMode === 'redirect'"
+                :href="item.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </a>
+              <router-link
+                v-else
+                :to="item.path"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </router-link>
+            </template>
+          </template>
         </div>
 
         <!-- Personal Section for Admin (hidden in simple mode) -->
@@ -134,7 +196,7 @@
             </span>
           </div>
 
-          <template v-for="item in personalNavItems" :key="item.path">
+          <template v-for="item in personalPrimaryNavItems" :key="item.path">
             <a data-testid="layout-app-sidebar-link-handle-menu-item-click-item-path-2"
               v-if="item.openMode === 'redirect'"
               :href="item.path"
@@ -166,13 +228,52 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
+
+          <template v-if="personalOtherNavItems.length">
+            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
+              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
+                {{ t('nav.other') }}
+              </span>
+            </div>
+
+            <template v-for="item in personalOtherNavItems" :key="item.path">
+              <a
+                v-if="item.openMode === 'redirect'"
+                :href="item.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </a>
+              <router-link
+                v-else
+                :to="item.path"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </router-link>
+            </template>
+          </template>
         </div>
       </template>
 
       <!-- Regular User View -->
       <template v-else-if="!appStore.backendModeEnabled">
         <div class="sidebar-section">
-          <template v-for="item in userNavItems" :key="item.path">
+          <template v-for="item in userPrimaryNavItems" :key="item.path">
             <a data-testid="layout-app-sidebar-link-handle-menu-item-click-item-path-3"
               v-if="item.openMode === 'redirect'"
               :href="item.path"
@@ -203,6 +304,47 @@
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
+          </template>
+
+          <template v-if="userOtherNavItems.length">
+            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
+              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
+                {{ t('nav.other') }}
+              </span>
+            </div>
+
+            <template v-for="item in userOtherNavItems" :key="item.path">
+              <a
+                v-if="item.openMode === 'redirect'"
+                :href="item.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </a>
+              <router-link
+                v-else
+                :to="item.path"
+                class="sidebar-link sidebar-subsection-link sidebar-other-child-link mb-0.5 py-1.5 text-sm"
+                :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
+                :title="sidebarCollapsed ? item.label : undefined"
+                :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
+                @click="handleMenuItemClick(item.path)"
+              >
+                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
+                  {{ getNavInitial(item.label) }}
+                </span>
+                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              </router-link>
+            </template>
           </template>
         </div>
       </template>
@@ -699,6 +841,22 @@ function customMenuNavItem(item: {
   }
 }
 
+const customMenuItemsForUser = computed(() => {
+  const items = appStore.cachedPublicSettings?.custom_menu_items ?? []
+  return items
+    .filter((item) => item.visibility === 'user')
+    .sort((a, b) => a.sort_order - b.sort_order)
+})
+
+const customMenuItemsForAdmin = computed(() => {
+  return adminSettingsStore.customMenuItems
+    .filter((item) => item.visibility === 'admin')
+    .sort((a, b) => a.sort_order - b.sort_order)
+})
+
+const customUserNavItems = computed(() => customMenuItemsForUser.value.map((item): NavItem => customMenuNavItem(item)))
+const customAdminNavItems = computed(() => customMenuItemsForAdmin.value.map((item): NavItem => customMenuNavItem(item)))
+
 // buildSelfNavItems 构造用户自己的导航项（用户端主菜单和管理员的"我的账户"子菜单共享这组声明）。
 // withDashboard=true 时包含仪表盘（用户端），false 时不含（管理员的个人区已经有独立仪表盘入口）。
 //
@@ -722,7 +880,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, hideInSimpleMode: true },
     { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate },
     { path: '/profile', label: t('nav.profile'), icon: UserIcon },
-    ...customMenuItemsForUser.value.map((item): NavItem => customMenuNavItem(item)),
+    ...customUserNavItems.value,
   )
   return items
 }
@@ -745,19 +903,21 @@ const userNavItems = computed((): NavItem[] => finalizeNav(buildSelfNavItems(tru
 // separate admin entry, since the page is purely a user-facing view.
 const personalNavItems = computed((): NavItem[] => finalizeNav(buildSelfNavItems(false)))
 
-// Custom menu items filtered by visibility
-const customMenuItemsForUser = computed(() => {
-  const items = appStore.cachedPublicSettings?.custom_menu_items ?? []
-  return items
-    .filter((item) => item.visibility === 'user')
-    .sort((a, b) => a.sort_order - b.sort_order)
-})
+const customUserNavPathSet = computed(() => new Set(customUserNavItems.value.map((item) => item.path)))
+const customAdminNavPathSet = computed(() => new Set(customAdminNavItems.value.map((item) => item.path)))
 
-const customMenuItemsForAdmin = computed(() => {
-  return adminSettingsStore.customMenuItems
-    .filter((item) => item.visibility === 'admin')
-    .sort((a, b) => a.sort_order - b.sort_order)
-})
+const userPrimaryNavItems = computed(() =>
+  userNavItems.value.filter((item) => !customUserNavPathSet.value.has(item.path))
+)
+const userOtherNavItems = computed(() =>
+  userNavItems.value.filter((item) => customUserNavPathSet.value.has(item.path))
+)
+const personalPrimaryNavItems = computed(() =>
+  personalNavItems.value.filter((item) => !customUserNavPathSet.value.has(item.path))
+)
+const personalOtherNavItems = computed(() =>
+  personalNavItems.value.filter((item) => customUserNavPathSet.value.has(item.path))
+)
 
 function systemSettingsNavItem(): NavItem {
   return {
@@ -779,17 +939,8 @@ const adminNavItems = computed((): NavItem[] => {
     { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, featureFlag: flagOpsMonitoring },
     { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, hideInSimpleMode: true },
     { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, hideInSimpleMode: true },
-    {
-      path: '/admin/channels',
-      label: t('nav.channelManagement'),
-      icon: ChannelIcon,
-      hideInSimpleMode: true,
-      expandOnly: true,
-      children: [
-        { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon },
-        { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, featureFlag: flagChannelMonitor },
-      ],
-    },
+    { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon, hideInSimpleMode: true },
+    { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, hideInSimpleMode: true, featureFlag: flagChannelMonitor },
     { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, hideInSimpleMode: true },
     { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon },
     { path: '/admin/codex/accounts', label: t('nav.codex'), icon: CodexIcon },
@@ -834,18 +985,34 @@ const adminNavItems = computed((): NavItem[] => {
     const filtered = visible.filter(item => !item.hideInSimpleMode)
     filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon })
     filtered.push(systemSettingsNavItem())
-    for (const cm of customMenuItemsForAdmin.value) {
-      filtered.push(customMenuNavItem(cm))
+    for (const item of customAdminNavItems.value) {
+      filtered.push(item)
     }
     return filtered
   }
 
   visible.push(systemSettingsNavItem())
-  for (const cm of customMenuItemsForAdmin.value) {
-    visible.push(customMenuNavItem(cm))
+  for (const item of customAdminNavItems.value) {
+    visible.push(item)
   }
   return visible
 })
+
+const adminPrimaryNavItems = computed(() =>
+  adminNavItems.value.filter((item) =>
+    item.path !== '/admin/settings' &&
+    !customAdminNavPathSet.value.has(item.path)
+  )
+)
+
+const adminSystemSectionItems = computed(() => {
+  const group = adminNavItems.value.find((item) => item.path === '/admin/settings')
+  return group?.children ?? []
+})
+
+const adminOtherNavItems = computed(() =>
+  adminNavItems.value.filter((item) => customAdminNavPathSet.value.has(item.path))
+)
 
 function toggleSidebar() {
   appStore.toggleSidebar()

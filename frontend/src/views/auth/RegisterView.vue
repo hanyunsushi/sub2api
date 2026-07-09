@@ -378,7 +378,6 @@ const promoCodeEnabled = ref<boolean>(true)
 const invitationCodeEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
-const siteName = ref<string>('Sub2API')
 const linuxdoOAuthEnabled = ref<boolean>(false)
 const wechatOAuthEnabled = ref<boolean>(false)
 const oidcOAuthEnabled = ref<boolean>(false)
@@ -442,6 +441,10 @@ const validationToastMessage = computed(() =>
   ''
 )
 
+const siteName = computed(
+  () => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API'
+)
+
 const showOAuthLogin = computed(
   () =>
     linuxdoOAuthEnabled.value ||
@@ -491,24 +494,12 @@ onMounted(async () => {
   syncAffiliateReferralCode()
 
   try {
-    const settings = await getPublicSettings()
-    registrationEnabled.value = settings.registration_enabled
-    emailVerifyEnabled.value = settings.email_verify_enabled
-    promoCodeEnabled.value = settings.promo_code_enabled
-    invitationCodeEnabled.value = settings.invitation_code_enabled
-    turnstileEnabled.value = settings.turnstile_enabled
-    turnstileSiteKey.value = settings.turnstile_site_key || ''
-    siteName.value = settings.site_name || 'Sub2API'
-    linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
-    wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
-    oidcOAuthEnabled.value = settings.oidc_oauth_enabled
-    oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
-    githubOAuthEnabled.value = settings.github_oauth_enabled
-    googleOAuthEnabled.value = settings.google_oauth_enabled
-    registrationEmailSuffixWhitelist.value = normalizeRegistrationEmailSuffixWhitelist(
-      settings.registration_email_suffix_whitelist || []
-    )
-    applyLoginAgreementSettings(settings)
+    const settings =
+      appStore.cachedPublicSettings ||
+      (await appStore.fetchPublicSettings()) ||
+      (await getPublicSettings())
+
+    applyPublicSettings(settings)
 
     // Read promo code from URL parameter only if promo code is enabled
     if (promoCodeEnabled.value) {
@@ -528,6 +519,11 @@ onMounted(async () => {
     settingsLoaded.value = true
   }
 })
+
+if (appStore.cachedPublicSettings) {
+  applyPublicSettings(appStore.cachedPublicSettings)
+  settingsLoaded.value = true
+}
 
 watch(
   () => [route.query.aff, route.query.aff_code],
@@ -568,6 +564,25 @@ function applyLoginAgreementSettings(settings: {
   agreementAccepted.value = !loginAgreementEnabled.value || hasAcceptedLoginAgreement(loginAgreementRevision.value)
   showAgreementModal.value =
     loginAgreementEnabled.value && !agreementAccepted.value && loginAgreementMode.value !== 'checkbox'
+}
+
+function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettings>>): void {
+  registrationEnabled.value = settings.registration_enabled
+  emailVerifyEnabled.value = settings.email_verify_enabled
+  promoCodeEnabled.value = settings.promo_code_enabled
+  invitationCodeEnabled.value = settings.invitation_code_enabled
+  turnstileEnabled.value = settings.turnstile_enabled
+  turnstileSiteKey.value = settings.turnstile_site_key || ''
+  linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
+  wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
+  oidcOAuthEnabled.value = settings.oidc_oauth_enabled
+  oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
+  githubOAuthEnabled.value = settings.github_oauth_enabled
+  googleOAuthEnabled.value = settings.google_oauth_enabled
+  registrationEmailSuffixWhitelist.value = normalizeRegistrationEmailSuffixWhitelist(
+    settings.registration_email_suffix_whitelist || []
+  )
+  applyLoginAgreementSettings(settings)
 }
 
 function hasAcceptedLoginAgreement(revision: string): boolean {

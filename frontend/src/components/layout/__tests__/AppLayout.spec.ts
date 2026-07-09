@@ -14,7 +14,7 @@ const targetedStyleSource = readFileSync(
 
 describe('AppLayout route transition', () => {
   it('offsets desktop content by the compact app sidebar rail width', () => {
-    expect(componentSource).toContain("sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[232px]'")
+    expect(componentSource).toContain("sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[220px]'")
     expect(componentSource).not.toContain("'lg:ml-64'")
   })
 

@@ -427,6 +427,7 @@ export default {
     settings: 'Settings',
     settingsGeneral: 'General Settings',
     externalSubscriptions: 'External Subscriptions',
+    other: 'Other',
     adminInterface: 'Admin Interface',
     myAccount: 'My Account',
     lightMode: 'Light Mode',

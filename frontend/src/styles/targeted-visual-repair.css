@@ -1829,9 +1829,16 @@ body,
   align-items: start;
   padding: 18px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--anthropic-page) 16%, transparent);
+  background: transparent;
   color: color-mix(in srgb, var(--anthropic-page) 84%, transparent);
   font-size: 15px;
   line-height: 1.45;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.auth-ascii-shell :where(.auth-point:hover, .auth-point:focus-within) {
+  background: color-mix(in srgb, var(--anthropic-page) 7%, transparent);
+  color: color-mix(in srgb, var(--anthropic-page) 94%, transparent);
 }
 
 .auth-ascii-shell :where(.auth-point .numeric) {
@@ -1840,6 +1847,11 @@ body,
   font-family: var(--atelier-font-mono);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  transition: color 0.18s ease;
+}
+
+.auth-ascii-shell :where(.auth-point:hover, .auth-point:focus-within) .numeric {
+  color: color-mix(in srgb, var(--anthropic-page) 72%, transparent);
 }
 
 .auth-ascii-shell :where(.auth-main) {
@@ -1939,17 +1951,31 @@ body,
 
 .auth-ascii-shell :where(.auth-view-header) {
   display: grid;
-  gap: 0;
+  gap: 6px;
+}
+
+.auth-ascii-shell :where(.auth-view-header .auth-kicker),
+.auth-ascii-shell :where(.auth-view-header .auth-sub) {
+  display: block;
+  margin: 0;
+  color: var(--anthropic-muted);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0;
+  min-height: calc(1em * 1.55);
+  text-transform: none;
 }
 
 .auth-ascii-shell :where(.auth-title) {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--anthropic-fg);
   font-family: var(--atelier-font-serif);
   font-size: clamp(32px, 4vw, 44px);
   font-weight: 500;
   line-height: 1.02;
   letter-spacing: 0;
+  transform: translateY(-1px);
 }
 
 .auth-ascii-shell :where(.auth-sub) {
@@ -1981,20 +2007,21 @@ body,
   border-radius: 8px !important;
   background: transparent !important;
   color: var(--anthropic-fg) !important;
+  caret-color: var(--anthropic-fg) !important;
   box-shadow: none !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
 }
 
-.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:hover, :focus):not(:focus-visible) {
+.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:hover) {
   border-color: var(--anthropic-border-subtle) !important;
   outline: 0 !important;
   box-shadow: none !important;
 }
 
-.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:focus-visible) {
-  border-color: var(--anthropic-border-subtle) !important;
-  outline: 2px solid var(--anthropic-focus) !important;
-  outline-offset: 3px !important;
-  box-shadow: none !important;
+.auth-ascii-shell :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="tel"], textarea, select):where(:focus, :focus-visible) {
+  border-color: var(--anthropic-focus) !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(44, 132, 219, 0.18) !important;
 }
 
 .auth-ascii-shell :where(.auth-agreement-locked-field) {
@@ -2614,6 +2641,27 @@ body,
   font-size: 11px !important;
   font-variant-numeric: tabular-nums !important;
   letter-spacing: 0 !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="scheduler_score"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"],
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="created_at"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-self: start;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="scheduler_score"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"]::before,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="created_at"]::before {
+  line-height: 1rem;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="scheduler_score"] > div,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="last_used_at"] > span,
+#app .app-layout-content .accounts-table-page .table-wrapper tbody tr > td[data-column-key="created_at"] > span {
+  min-height: 1.1rem;
 }
 
 #app .app-layout-content .groups-table-page .table-wrapper tbody tr > td[data-column-key="capacity"] > div {
@@ -3878,8 +3926,8 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   }
 }
 
-/* Final form focus contract: mouse focus keeps warm hairline only; keyboard focus
-   gets one accessible outline and never a second Tailwind/box-shadow ring. */
+/* Final form focus contract: text inputs use the design-system blue border and
+   soft halo, while Tailwind's extra rings stay suppressed. */
 #app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea) {
   --tw-ring-color: transparent !important;
@@ -3891,17 +3939,16 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible) {
-  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
+  border-color: var(--anthropic-focus) !important;
   outline: 0 !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 3px rgba(44, 132, 219, 0.18) !important;
 }
 
 #app .app-layout-content :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible),
 :where(.modal-content, .dialog-container, .floating-dropdown-portal, .select-dropdown-portal, .date-picker-dropdown-portal) :where(.input, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea, select, .codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
-  border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
-  outline: 2px solid var(--anthropic-border-hover) !important;
-  outline-offset: 3px !important;
-  box-shadow: none !important;
+  border-color: var(--anthropic-focus) !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px rgba(44, 132, 219, 0.18) !important;
 }
 
 /* Account cards: final Anthropic grouped-card contract. Keep this after later

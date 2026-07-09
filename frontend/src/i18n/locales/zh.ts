@@ -427,6 +427,7 @@ export default {
     settings: '系统设置',
     settingsGeneral: '常规设置',
     externalSubscriptions: '外部订阅',
+    other: '其他',
     adminInterface: '管理员界面',
     myAccount: '我的账户',
     lightMode: '浅色模式',
