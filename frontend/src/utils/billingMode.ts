@@ -3,11 +3,13 @@ import { semanticBadgeClass } from './semanticBadge'
 export const BILLING_MODE_TOKEN = 'token'
 export const BILLING_MODE_PER_REQUEST = 'per_request'
 export const BILLING_MODE_IMAGE = 'image'
+export const BILLING_MODE_VIDEO = 'video'
 
 export function getBillingModeLabel(mode: string | null | undefined, t: (key: string) => string): string {
   switch (mode) {
     case BILLING_MODE_PER_REQUEST: return t('admin.usage.billingModePerRequest')
     case BILLING_MODE_IMAGE: return t('admin.usage.billingModeImage')
+    case BILLING_MODE_VIDEO: return t('admin.usage.billingModeVideo')
     default: return t('admin.usage.billingModeToken')
   }
 }
@@ -16,6 +18,7 @@ export function getBillingModeBadgeClass(mode: string | null | undefined): strin
   switch (mode) {
     case BILLING_MODE_PER_REQUEST: return semanticBadgeClass('warning')
     case BILLING_MODE_IMAGE: return semanticBadgeClass('info')
+    case BILLING_MODE_VIDEO: return semanticBadgeClass('warning')
     default: return semanticBadgeClass('success')
   }
 }
@@ -27,7 +30,7 @@ interface ImageBillingRow {
 }
 
 export function isImageUsage(row: Pick<ImageBillingRow, 'image_count' | 'billing_mode'> | null | undefined): boolean {
-  return (row?.image_count ?? 0) > 0 && row?.billing_mode !== BILLING_MODE_TOKEN
+  return (row?.image_count ?? 0) > 0 && row?.billing_mode !== BILLING_MODE_TOKEN && row?.billing_mode !== BILLING_MODE_VIDEO
 }
 
 export function getDisplayBillingMode(row: Pick<ImageBillingRow, 'billing_mode' | 'image_count'> | null | undefined): string | null | undefined {

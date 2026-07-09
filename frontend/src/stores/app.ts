@@ -23,6 +23,12 @@ export const useAppStore = defineStore('app', () => {
   const sidebarCollapsed = ref<boolean>(false)
   const mobileOpen = ref<boolean>(false)
   const sidebarNavScrollTop = ref<number>(0)
+  const sidebarScrollTop = computed({
+    get: () => sidebarNavScrollTop.value,
+    set: (value: number) => {
+      sidebarNavScrollTop.value = Math.max(0, Math.round(value ?? 0))
+    }
+  })
   const aiSearchPanelOpen = ref<boolean>(false)
   const loading = ref<boolean>(false)
   const toasts = ref<Toast[]>([])
@@ -448,6 +454,7 @@ export const useAppStore = defineStore('app', () => {
     sidebarCollapsed,
     mobileOpen,
     sidebarNavScrollTop,
+    sidebarScrollTop,
     aiSearchPanelOpen,
     loading,
     toasts,

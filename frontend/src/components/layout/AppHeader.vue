@@ -360,6 +360,7 @@ import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import AISearchBox from '@/components/layout/AISearchBox.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { sanitizeUrl } from '@/utils/url'
 
 const router = useRouter()
 const route = useRoute()
@@ -382,7 +383,7 @@ let balanceCarouselTimer: ReturnType<typeof setInterval> | null = null
 let balanceDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 let userDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const contactInfo = computed(() => appStore.contactInfo)
-const docUrl = computed(() => appStore.docUrl)
+const docUrl = computed(() => sanitizeUrl(appStore.docUrl))
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
 const availableBalance = computed(() => Number(user.value?.balance || 0))
 const frozenBalance = computed(() => Number(user.value?.frozen_balance || 0))

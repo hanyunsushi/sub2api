@@ -116,7 +116,7 @@
               </div>
 
               <!-- Priority 1: Update error (must check before hasUpdate) -->
-              <div v-if="updateError" class="space-y-2">
+              <div v-if="updateError || rollbackError" class="space-y-2">
                 <div
                   class="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800/50 dark:bg-red-900/20"
                 >
@@ -132,17 +132,17 @@
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="text-sm font-medium text-red-700 dark:text-red-300">
-                      {{ t('version.updateFailed') }}
+                      {{ rollbackError ? t('version.rollbackFailed') : t('version.updateFailed') }}
                     </p>
                     <p class="truncate text-xs text-red-600/70 dark:text-red-400/70">
-                      {{ updateError }}
+                      {{ rollbackError || updateError }}
                     </p>
                   </div>
                 </div>
 
                 <!-- Retry button -->
                 <button data-testid="common-version-badge-button-handle-update"
-                  @click="handleUpdate"
+                  @click="rollbackError ? handleRollback() : handleUpdate()"
                   :disabled="updating"
                   class="flex w-full items-center justify-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -170,7 +170,7 @@
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="text-sm font-medium text-green-700 dark:text-green-300">
-                      {{ t('version.updateComplete') }}
+                      {{ successKind === 'rollback' ? t('version.rollbackComplete') : t('version.updateComplete') }}
                     </p>
                     <p class="text-xs text-green-600/70 dark:text-green-400/70">
                       {{ t('version.restartRequired') }}
@@ -352,23 +352,96 @@
                 </a>
               </div>
 
-              <!-- Priority 5: Up to date - show GitHub link -->
-              <a data-testid="common-version-badge-link-a-3"
-                v-else-if="releaseInfo?.html_url && releaseInfo.html_url !== '#'"
-                :href="releaseInfo.html_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center justify-center gap-2 py-2 text-sm text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:text-dark-400 dark:hover:text-dark-200"
-              >
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
-                  />
-                </svg>
-                {{ t('version.viewRelease') }}
-              </a>
+              <!-- Priority 5: Up to date - release link + rollback -->
+              <div v-else class="space-y-2">
+                <a data-testid="common-version-badge-link-a-3"
+                  v-if="releaseInfo?.html_url && releaseInfo.html_url !== '#'"
+                  :href="releaseInfo.html_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center justify-center gap-2 py-2 text-sm text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:text-dark-400 dark:hover:text-dark-200"
+                >
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+                    />
+                  </svg>
+                  {{ t('version.viewRelease') }}
+                </a>
+
+                <div class="border-t border-[var(--anthropic-border)] pt-2 dark:border-[var(--anthropic-border)]">
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-xs text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+                    @click="toggleRollbackPanel"
+                  >
+                    <span class="flex items-center gap-1.5">
+                      <Icon name="clock" size="xs" :stroke-width="2" />
+                      {{ t('version.rollback') }}
+                    </span>
+                    <Icon
+                      name="chevronDown"
+                      size="xs"
+                      :stroke-width="2"
+                      class="transition-transform duration-200"
+                      :class="{ 'rotate-180': rollbackPanelOpen }"
+                    />
+                  </button>
+
+                  <div v-if="rollbackPanelOpen" class="mt-2 space-y-2">
+                    <p v-if="!isReleaseBuild" class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                      {{ t('version.rollbackSourceHint') }}
+                    </p>
+                    <template v-else>
+                      <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                        {{ t('version.rollbackSelectVersion') }}
+                      </p>
+                      <div v-if="rollbackVersionsLoading" class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                        {{ t('common.loading') }}
+                      </div>
+                      <p v-else-if="rollbackVersionsError" class="text-xs text-red-600 dark:text-red-400">
+                        {{ rollbackVersionsError }}
+                      </p>
+                      <div v-else-if="rollbackVersions.length > 0" class="space-y-1">
+                        <button
+                          v-for="item in rollbackVersions"
+                          :key="item.version"
+                          type="button"
+                          class="flex w-full items-center justify-between rounded-lg border px-2 py-2 text-left text-xs transition-colors"
+                          :class="selectedRollbackVersion === item.version
+                            ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-500/60 dark:bg-amber-900/20 dark:text-amber-300'
+                            : 'border-[var(--anthropic-border)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:border-[var(--anthropic-border)] dark:text-dark-300 dark:hover:bg-[var(--anthropic-raised)]'"
+                          @click="selectRollbackVersion(item.version)"
+                        >
+                          <span class="font-medium">v{{ item.version }}</span>
+                          <span class="text-[11px] opacity-70">{{ formatPublishedAt(item.published_at) }}</span>
+                        </button>
+                        <p class="text-[11px] text-[var(--anthropic-muted)] dark:text-dark-400">
+                          {{ t('version.rollbackWarning') }}
+                        </p>
+                        <button
+                          type="button"
+                          class="version-update-action flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                          :disabled="rollingBack || !selectedRollbackVersion"
+                          @click="handleRollback"
+                        >
+                          <svg v-if="rollingBack" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <Icon v-else name="clock" size="sm" :stroke-width="2" />
+                          {{ t('version.rollbackConfirm', { version: selectedRollbackVersion ? `v${selectedRollbackVersion}` : '--' }) }}
+                        </button>
+                      </div>
+                      <p v-else class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                        {{ t('version.noRollbackVersions') }}
+                      </p>
+                    </template>
+                  </div>
+                </div>
+              </div>
             </template>
           </div>
       </FloatingDropdown>
@@ -385,7 +458,13 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
-import { performUpdate, restartService } from '@/api/admin/system'
+import {
+  getRollbackVersions,
+  performUpdate,
+  restartService,
+  rollback as rollbackAPI,
+  type RollbackVersionInfo,
+} from '@/api/admin/system'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 
@@ -418,6 +497,14 @@ const needRestart = ref(false)
 const updateError = ref('')
 const updateSuccess = ref(false)
 const restartCountdown = ref(0)
+const successKind = ref<'update' | 'rollback'>('update')
+const rollbackPanelOpen = ref(false)
+const rollbackVersions = ref<RollbackVersionInfo[]>([])
+const rollbackVersionsLoading = ref(false)
+const rollbackVersionsError = ref('')
+const selectedRollbackVersion = ref('')
+const rollingBack = ref(false)
+const rollbackError = ref('')
 
 // Only show update check for release builds (binary/docker deployment)
 const isReleaseBuild = computed(() => buildType.value === 'release')
@@ -437,6 +524,8 @@ async function refreshVersion(force = true) {
   updateError.value = ''
   updateSuccess.value = false
   needRestart.value = false
+  rollbackError.value = ''
+  rollbackVersionsError.value = ''
 
   await appStore.fetchVersion(force)
 }
@@ -450,6 +539,7 @@ async function handleUpdate() {
 
   try {
     const result = await performUpdate()
+    successKind.value = 'update'
     updateSuccess.value = true
     needRestart.value = result.need_restart
     // Clear version cache to reflect update completed
@@ -459,6 +549,58 @@ async function handleUpdate() {
     updateError.value = err.response?.data?.message || err.message || t('version.updateFailed')
   } finally {
     updating.value = false
+  }
+}
+
+async function toggleRollbackPanel() {
+  rollbackPanelOpen.value = !rollbackPanelOpen.value
+  if (!rollbackPanelOpen.value || !isReleaseBuild.value || rollbackVersions.value.length > 0 || rollbackVersionsLoading.value) {
+    return
+  }
+
+  rollbackVersionsLoading.value = true
+  rollbackVersionsError.value = ''
+  try {
+    const result = await getRollbackVersions()
+    rollbackVersions.value = result.versions || []
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } }; message?: string }
+    rollbackVersionsError.value = err.response?.data?.message || err.message || t('version.loadVersionsFailed')
+  } finally {
+    rollbackVersionsLoading.value = false
+  }
+}
+
+function selectRollbackVersion(version: string) {
+  if (rollingBack.value) return
+  selectedRollbackVersion.value = selectedRollbackVersion.value === version ? '' : version
+  rollbackError.value = ''
+}
+
+function formatPublishedAt(value: string): string {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleDateString()
+}
+
+async function handleRollback() {
+  if (rollingBack.value || !selectedRollbackVersion.value) return
+
+  rollingBack.value = true
+  rollbackError.value = ''
+  try {
+    const result = await rollbackAPI(selectedRollbackVersion.value)
+    successKind.value = 'rollback'
+    updateSuccess.value = true
+    needRestart.value = result.need_restart
+    rollbackPanelOpen.value = false
+    appStore.clearVersionCache()
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } }; message?: string }
+    rollbackError.value = err.response?.data?.message || err.message || t('version.rollbackFailed')
+  } finally {
+    rollingBack.value = false
   }
 }
 
