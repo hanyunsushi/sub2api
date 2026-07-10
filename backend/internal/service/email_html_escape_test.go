@@ -28,7 +28,8 @@ func TestBuildVerifyCodeEmailBody_EscapesSiteName(t *testing.T) {
 	t.Run("normal_site_name_unchanged", func(t *testing.T) {
 		body := svc.buildVerifyCodeEmailBody("654321", "My Site")
 
-		assert.Contains(t, body, "<h1>My Site</h1>")
+		assert.Contains(t, body, `<span class="email-dot"></span>My Site</span>`)
+		assert.Contains(t, body, "<h1>Email verification code</h1>")
 		assert.Contains(t, body, "654321")
 	})
 }
@@ -53,7 +54,8 @@ func TestBuildPasswordResetEmailBody_EscapesSiteName(t *testing.T) {
 		resetURL := "https://example.com/reset?token=xyz"
 		body := svc.buildPasswordResetEmailBody(resetURL, "Sub2API")
 
-		assert.Contains(t, body, "<h1>Sub2API</h1>")
+		assert.Contains(t, body, `<span class="email-dot"></span>Sub2API</span>`)
+		assert.Contains(t, body, "<h1>密码重置</h1>")
 		assert.Contains(t, body, resetURL)
 	})
 

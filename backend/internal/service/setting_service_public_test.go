@@ -295,6 +295,29 @@ func TestSettingService_GetPublicSettings_DoesNotExposeMobileOnlyWeChatAsWebOAut
 	require.True(t, settings.WeChatOAuthMobileEnabled)
 }
 
+func TestSettingService_GetWebAppIconSettings_ReturnsBrandingFields(t *testing.T) {
+	svc := NewSettingService(&settingPublicRepoStub{
+		values: map[string]string{
+			SettingKeySiteName: "Example Gateway",
+			SettingKeySiteLogo: "https://img.example.com/logo.png",
+		},
+	}, &config.Config{})
+
+	siteName, siteLogo, err := svc.GetWebAppIconSettings(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "Example Gateway", siteName)
+	require.Equal(t, "https://img.example.com/logo.png", siteLogo)
+}
+
+func TestSettingService_GetWebAppIconSettings_FallsBackToDefaultName(t *testing.T) {
+	svc := NewSettingService(&settingPublicRepoStub{values: map[string]string{}}, &config.Config{})
+
+	siteName, siteLogo, err := svc.GetWebAppIconSettings(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "Sub2API", siteName)
+	require.Empty(t, siteLogo)
+}
+
 func TestSettingService_GetPublicSettings_FallsBackToConfigForWeChatOAuthCapabilities(t *testing.T) {
 	svc := NewSettingService(&settingPublicRepoStub{values: map[string]string{}}, &config.Config{
 		WeChat: config.WeChatConnectConfig{
