@@ -574,22 +574,30 @@ func (s *ChannelMonitorService) runChecksConcurrentWithAccountResults(ctx contex
 }
 
 type channelMonitorAccountProbePlan struct {
-	accountID int64
-	provider  string
-	endpoint  string
-	apiKey    string
-	opts      *CheckOptions
+	accountID          int64
+	provider           string
+	endpoint           string
+	apiKey             string
+	opts               *CheckOptions
+	unavailableMessage string
 }
 
 func (s *ChannelMonitorService) runBoundAccountChecksConcurrent(ctx context.Context, m *ChannelMonitor) ([]*CheckResult, map[int64][]*CheckResult, bool) {
-	plans := s.channelMonitorAccountProbePlans(ctx, m)
-	if len(plans) == 0 {
+	plans, bound := s.channelMonitorAccountProbePlans(ctx, m)
+	if !bound {
 		return nil, nil, false
 	}
 	models := append([]string{m.PrimaryModel}, m.ExtraModels...)
 	results := make([]*CheckResult, len(models))
 	resultsByAccount := make(map[int64][]*CheckResult, len(plans))
-	pingMs := pingEndpointOrigin(ctx, plans[0].endpoint)
+	pingEndpoint := ""
+	for _, plan := range plans {
+		if plan.endpoint != "" {
+			pingEndpoint = plan.endpoint
+			break
+		}
+	}
+	pingMs := pingEndpointOrigin(ctx, pingEndpoint)
 
 	var eg errgroup.Group
 	var mu sync.Mutex
@@ -598,7 +606,17 @@ func (s *ChannelMonitorService) runBoundAccountChecksConcurrent(ctx context.Cont
 		eg.Go(func() error {
 			modelAccountResults := make([]*CheckResult, 0, len(plans))
 			for _, plan := range plans {
-				r := runCheckForModel(ctx, plan.provider, plan.endpoint, plan.apiKey, model, plan.opts)
+				var r *CheckResult
+				if plan.unavailableMessage != "" {
+					r = &CheckResult{
+						Model:     model,
+						Status:    MonitorStatusError,
+						Message:   plan.unavailableMessage,
+						CheckedAt: time.Now(),
+					}
+				} else {
+					r = runCheckForModel(ctx, plan.provider, plan.endpoint, plan.apiKey, model, plan.opts)
+				}
 				r.PingLatencyMs = pingMs
 				modelAccountResults = append(modelAccountResults, r)
 			}
@@ -619,22 +637,26 @@ func (s *ChannelMonitorService) runBoundAccountChecksConcurrent(ctx context.Cont
 	return results, resultsByAccount, true
 }
 
-func (s *ChannelMonitorService) channelMonitorAccountProbePlans(ctx context.Context, m *ChannelMonitor) []channelMonitorAccountProbePlan {
+func (s *ChannelMonitorService) channelMonitorAccountProbePlans(ctx context.Context, m *ChannelMonitor) ([]channelMonitorAccountProbePlan, bool) {
 	if s == nil || s.autoScheduleRepo == nil || m == nil {
-		return nil
+		return nil, false
 	}
 	accountIDs := s.resolveAutoScheduleAccountIDs(ctx, m)
 	if len(accountIDs) == 0 {
-		return nil
+		return nil, false
 	}
 	accounts, err := s.autoScheduleRepo.GetByIDs(ctx, accountIDs)
 	if err != nil {
 		slog.Warn("channel_monitor: skip bound account probe, account lookup failed",
 			"monitor_id", m.ID, "error", err)
-		return nil
-	}
-	if len(accounts) == 0 {
-		return nil
+		plans := make([]channelMonitorAccountProbePlan, 0, len(accountIDs))
+		for _, accountID := range accountIDs {
+			plans = append(plans, channelMonitorAccountProbePlan{
+				accountID:          accountID,
+				unavailableMessage: "bound account lookup failed",
+			})
+		}
+		return plans, true
 	}
 	accountByID := make(map[int64]*Account, len(accounts))
 	for _, account := range accounts {
@@ -644,11 +666,38 @@ func (s *ChannelMonitorService) channelMonitorAccountProbePlans(ctx context.Cont
 	}
 	plans := make([]channelMonitorAccountProbePlan, 0, len(accountIDs))
 	for _, accountID := range accountIDs {
-		if plan, ok := s.channelMonitorAccountProbePlan(m, accountByID[accountID]); ok {
+		account := accountByID[accountID]
+		if plan, ok := s.channelMonitorAccountProbePlan(m, account); ok {
 			plans = append(plans, plan)
+			continue
 		}
+		plans = append(plans, channelMonitorAccountProbePlan{
+			accountID:          accountID,
+			unavailableMessage: channelMonitorBoundAccountUnavailableMessage(m, account),
+		})
 	}
-	return plans
+	return plans, true
+}
+
+func channelMonitorBoundAccountUnavailableMessage(m *ChannelMonitor, account *Account) string {
+	message := "bound account unavailable"
+	switch {
+	case account == nil:
+		message += ": account not found"
+	case !account.IsActive():
+		if detail := strings.TrimSpace(account.ErrorMessage); detail != "" {
+			message += ": " + detail
+		} else {
+			message += ": status " + strings.TrimSpace(account.Status)
+		}
+	case m == nil || account.Platform != m.Provider:
+		message += ": provider mismatch"
+	case account.Type != AccountTypeAPIKey:
+		message += ": account type is not supported"
+	default:
+		message += ": credentials are incomplete"
+	}
+	return truncateMessage(sanitizeErrorMessage(message))
 }
 
 func (s *ChannelMonitorService) channelMonitorAccountProbePlan(m *ChannelMonitor, account *Account) (channelMonitorAccountProbePlan, bool) {

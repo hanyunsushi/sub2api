@@ -546,6 +546,75 @@ func TestChannelMonitorRunCheckUsesBoundAPIKeyAccountWhenSchedulableFalse(t *tes
 	}
 }
 
+func TestChannelMonitorRunCheckReportsBoundAccountErrorWithoutGatewayFallback(t *testing.T) {
+	swapMonitorClientsForAutoScheduleTest(t)
+
+	var localGatewayCalls atomic.Int32
+	localGateway := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		localGatewayCalls.Add(1)
+		w.WriteHeader(http.StatusServiceUnavailable)
+		_, _ = w.Write([]byte(`{"error":{"message":"Service temporarily unavailable","type":"api_error"}}`))
+	}))
+	t.Cleanup(localGateway.Close)
+
+	accountID := int64(12)
+	accountRepo := &autoScheduleAccountRepoStub{
+		accounts: []Account{
+			{
+				ID:           accountID,
+				Name:         "Mimo",
+				Platform:     PlatformOpenAI,
+				Type:         AccountTypeAPIKey,
+				Status:       StatusError,
+				ErrorMessage: "Authentication failed (401): Invalid API Key",
+				Credentials: map[string]any{
+					"api_key":  "invalid-upstream-key",
+					"base_url": "https://upstream.example.com",
+				},
+			},
+		},
+	}
+	monitor := &ChannelMonitor{
+		ID:              2,
+		Name:            "Mimo",
+		Provider:        MonitorProviderOpenAI,
+		Endpoint:        localGateway.URL,
+		APIKey:          "local-sub2api-key",
+		PrimaryModel:    "mimo-v2.5",
+		AccountIDs:      []int64{accountID},
+		APIMode:         MonitorAPIModeChatCompletions,
+		IntervalSeconds: 60,
+	}
+	monitorRepo := &channelMonitorRepoRunStub{monitor: monitor}
+	svc := NewChannelMonitorService(monitorRepo, passthroughEncryptor{})
+	svc.SetAccountScheduleAutomation(accountRepo, autoScheduleRuntimeStub{enabled: true, failureThreshold: 1})
+
+	results, err := svc.RunCheck(context.Background(), monitor.ID)
+	if err != nil {
+		t.Fatalf("run check: %v", err)
+	}
+
+	if len(results) != 1 {
+		t.Fatalf("expected one check result, got %d", len(results))
+	}
+	if results[0].Status != MonitorStatusError {
+		t.Fatalf("expected bound account error status, got %s", results[0].Status)
+	}
+	if !strings.Contains(results[0].Message, "401") || !strings.Contains(results[0].Message, "Invalid API Key") {
+		t.Fatalf("expected stored bound account error, got %q", results[0].Message)
+	}
+	if localGatewayCalls.Load() != 0 {
+		t.Fatalf("expected local gateway not to be called, got %d calls", localGatewayCalls.Load())
+	}
+	wantScheduleCalls := []autoScheduleCall{{accountID: accountID, schedulable: false}}
+	if !equalAutoScheduleCalls(accountRepo.calls, wantScheduleCalls) {
+		t.Fatalf("expected bound account to be unscheduled, got %+v", accountRepo.calls)
+	}
+	if len(monitorRepo.rows) != 1 || !strings.Contains(monitorRepo.rows[0].Message, "401") {
+		t.Fatalf("expected stored 401 in monitor history, got %+v", monitorRepo.rows)
+	}
+}
+
 func TestChannelMonitorBoundOpenAIAccountHonorsV1BaseURL(t *testing.T) {
 	swapMonitorClientsForAutoScheduleTest(t)
 
