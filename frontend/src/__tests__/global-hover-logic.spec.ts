@@ -1203,6 +1203,7 @@ describe('Anthropic hover and overlay taxonomy', () => {
     expect(bulkBarBlock).toContain('background: transparent !important;')
     expect(bulkBarBlock).toContain('color: var(--anthropic-fg) !important;')
     expect(bulkBarBlock).toContain('box-shadow: none !important;')
+    expect(bulkBarBlock).toContain('padding-inline: 1rem !important;')
     expect(bulkBarBlock).not.toContain('var(--atelier-paper-2)')
     expect(bulkBarBlock).not.toContain('var(--atelier-material-edge)')
     const bulkTextLinkBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-bulk-actions-bar :where([data-testid="account-bulk-select-page"], [data-testid="account-bulk-clear"])')

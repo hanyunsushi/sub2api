@@ -2239,6 +2239,7 @@ body,
 /* ==== Restored account card grid (from HEAD; WIP had flattened to strips) ==== */
 #app .app-layout-content .accounts-table-page .account-bulk-actions-bar {
   margin-bottom: 8px !important;
+  padding-inline: 1rem !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
