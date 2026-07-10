@@ -505,6 +505,8 @@ type PublicSettingsInjectionPayload struct {
 	// that hid the "可用渠道" menu on page refresh.
 	ChannelMonitorEnabled                bool `json:"channel_monitor_enabled"`
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
+	ChannelMonitorAccountAutoSchedule    bool `json:"channel_monitor_account_auto_schedule_enabled"`
+	ChannelMonitorAutoScheduleFailures   int  `json:"channel_monitor_account_auto_schedule_failure_threshold"`
 	AvailableChannelsEnabled             bool `json:"available_channels_enabled"`
 	AffiliateEnabled                     bool `json:"affiliate_enabled"`
 	RiskControlEnabled                   bool `json:"risk_control_enabled"`
@@ -574,11 +576,27 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 
 		ChannelMonitorEnabled:                settings.ChannelMonitorEnabled,
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
+		ChannelMonitorAccountAutoSchedule:    settings.ChannelMonitorAccountAutoSchedule,
+		ChannelMonitorAutoScheduleFailures:   settings.ChannelMonitorAutoScheduleFailures,
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
 		RiskControlEnabled:                   settings.RiskControlEnabled,
 		AllowUserViewErrorRequests:           settings.AllowUserViewErrorRequests,
 	}, nil
+}
+
+// GetWebAppIconSettings returns the minimal branding fields needed for
+// server-rendered manifest and web-app icon responses.
+func (s *SettingService) GetWebAppIconSettings(ctx context.Context) (siteName string, siteLogo string, err error) {
+	settings, err := s.settingRepo.GetMultiple(ctx, []string{
+		SettingKeySiteName,
+		SettingKeySiteLogo,
+	})
+	if err != nil {
+		return "", "", err
+	}
+
+	return s.getStringOrDefault(settings, SettingKeySiteName, "Sub2API"), settings[SettingKeySiteLogo], nil
 }
 
 // filterUserVisibleMenuItems filters out admin-only menu items from a raw JSON
