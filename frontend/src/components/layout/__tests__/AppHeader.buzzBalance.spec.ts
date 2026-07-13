@@ -11,6 +11,16 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from "@/api
 
 const appHeaderSource = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "../AppHeader.vue"), "utf8");
 
+describe("AppHeader chrome contract", () => {
+  it("uses one 68px warm-paper topbar without an inset divider", () => {
+    expect(appHeaderSource).toContain('class="flex h-[68px] items-center justify-between px-4 md:px-6"');
+    expect(appHeaderSource).toContain("height: 68px;");
+    expect(appHeaderSource).toContain("min-height: 68px;");
+    expect(appHeaderSource).toContain("background: var(--anthropic-page) !important;");
+    expect(appHeaderSource).not.toContain(".app-header-atelier::after");
+  });
+});
+
 const authState = vi.hoisted(() => ({
   nextUserId: 1,
   user: {

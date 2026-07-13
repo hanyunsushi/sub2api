@@ -67,6 +67,15 @@ describe('AppSidebar system settings group', () => {
     expect(navTemplateSource).toContain('sidebar-subsection-title')
     expect(navTemplateSource).toContain('sidebar-system-child-link')
   })
+
+  it('highlights exactly one system-settings child route', () => {
+    const systemSectionStart = navTemplateSource.indexOf('v-if="adminSystemSectionItems.length"')
+    const otherSectionStart = navTemplateSource.indexOf('v-if="adminOtherNavItems.length"', systemSectionStart)
+    const systemSectionSource = navTemplateSource.slice(systemSectionStart, otherSectionStart)
+
+    expect(systemSectionSource).toContain("'sidebar-link-active': route.path === item.path")
+    expect(systemSectionSource).not.toContain("'sidebar-link-active': isActive(item.path)")
+  })
 })
 
 describe('AppSidebar scroll position persistence', () => {
@@ -117,7 +126,7 @@ describe('AppSidebar header styles', () => {
     expect(sidebarBrandBlockMatch?.[0]).not.toContain('overflow: hidden;')
   })
 
-  it('keeps the version badge button on the same sidebar paper surface', () => {
+  it('keeps the version badge borderless on the same sidebar paper surface', () => {
     const versionButtonBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button\s*\{[\s\S]*?\n {2}\}/)
     const versionAmberBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button:where\(\[class~="text-amber-700"\][\s\S]*?\n {2}\}/)
     const versionNeutralBlock = styleSource.match(/\.sidebar-brand {1}\.relative > button:where\(\[class~="text-gray-600"\][\s\S]*?\n {2}\}/)
@@ -126,7 +135,8 @@ describe('AppSidebar header styles', () => {
     expect(versionAmberBlock).not.toBeNull()
     expect(versionNeutralBlock).not.toBeNull()
     expect(versionButtonBlock?.[0]).toContain('background: var(--anthropic-page) !important;')
-    expect(versionButtonBlock?.[0]).toContain('border: 1px solid var(--sidebar-line) !important;')
+    expect(versionButtonBlock?.[0]).toContain('border: 0 !important;')
+    expect(versionButtonBlock?.[0]).toContain('box-shadow: none !important;')
     expect(versionButtonBlock?.[0]).toContain('color: var(--sidebar-muted) !important;')
     expect(versionAmberBlock?.[0]).toContain('background: var(--anthropic-page) !important;')
     expect(versionAmberBlock?.[0]).not.toContain('#fff9ef')
@@ -243,11 +253,13 @@ describe('AppSidebar atelier palette', () => {
     expect(enLocaleSource).not.toContain("channelList: 'Channel List'")
   })
 
-  it('uses a smaller dedicated font size for the system-settings children', () => {
+  it('uses the same font size for system-settings children as the other sidebar entries', () => {
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link')
-    expect(styleSource).toContain('font-size: 0.8125rem;')
+    const systemChildBlock = styleSource.match(/\.sidebar \.sidebar-system-child-link\s*\{[\s\S]*?\n {2}\}/)
+    expect(systemChildBlock).not.toBeNull()
+    expect(systemChildBlock?.[0]).toContain('font-size: 0.875rem;')
     expect(styleSource).toContain('.sidebar .sidebar-system-child-link .sidebar-child-initial')
   })
 

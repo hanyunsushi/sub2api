@@ -1195,7 +1195,7 @@
   }
 
   .sidebar-brand .relative > button {
-    border: 1px solid var(--sidebar-line) !important;
+    border: 0 !important;
     background: var(--anthropic-page) !important;
     background-color: var(--anthropic-page) !important;
     color: var(--sidebar-muted) !important;
@@ -1219,7 +1219,7 @@
 
   .sidebar-brand .relative > button:hover,
   .sidebar-brand .relative > button:focus-visible {
-    border-color: var(--sidebar-line-strong) !important;
+    border-color: transparent !important;
     background: var(--anthropic-page) !important;
     background-color: var(--anthropic-page) !important;
     color: var(--sidebar-text) !important;
@@ -1295,7 +1295,7 @@
 
   .sidebar .sidebar-subsection-link,
   .sidebar .sidebar-system-child-link {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     min-height: 2rem;
     letter-spacing: 0;
   }

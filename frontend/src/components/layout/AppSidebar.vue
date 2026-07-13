@@ -136,7 +136,7 @@
               <router-link
                 :to="item.path"
                 class="sidebar-link sidebar-subsection-link sidebar-system-child-link mb-0.5 py-1.5 text-sm"
-                :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
+                :class="{ 'sidebar-link-active': route.path === item.path, 'sidebar-link-collapsed': sidebarCollapsed }"
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleMenuItemClick(item.path)"
               >

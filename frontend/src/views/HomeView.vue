@@ -276,17 +276,21 @@
             </div>
           </div>
 
-          <div class="home-capability-grid">
+          <div class="home-capability-grid home-linked-card-grid">
             <article
               class="home-cap-card home-cap-card-featured"
               data-home-reveal
               data-home-module="cap-card"
               style="--home-reveal-delay: 260ms"
             >
-              <span class="home-card-index">01</span>
-              <Icon name="server" size="lg" />
-              <h2 id="home-features-title">{{ t('home.features.unifiedGateway') }}</h2>
-              <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
+              <div class="home-cap-card__visual">
+                <span class="home-card-index">01</span>
+                <Icon name="server" size="lg" />
+              </div>
+              <div class="home-cap-card__body">
+                <h2 id="home-features-title">{{ t('home.features.unifiedGateway') }}</h2>
+                <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
+              </div>
             </article>
 
             <article
@@ -295,10 +299,14 @@
               data-home-module="cap-card"
               style="--home-reveal-delay: 340ms"
             >
-              <span class="home-card-index">02</span>
-              <span class="home-card-glyph">A</span>
-              <h3>{{ t('home.features.multiAccount') }}</h3>
-              <p>{{ t('home.features.multiAccountDesc') }}</p>
+              <div class="home-cap-card__visual">
+                <span class="home-card-index">02</span>
+                <span class="home-card-glyph">A</span>
+              </div>
+              <div class="home-cap-card__body">
+                <h3>{{ t('home.features.multiAccount') }}</h3>
+                <p>{{ t('home.features.multiAccountDesc') }}</p>
+              </div>
             </article>
 
             <article
@@ -307,10 +315,14 @@
               data-home-module="cap-card"
               style="--home-reveal-delay: 420ms"
             >
-              <span class="home-card-index">03</span>
-              <span class="home-card-glyph">Q</span>
-              <h3>{{ t('home.features.balanceQuota') }}</h3>
-              <p>{{ t('home.features.balanceQuotaDesc') }}</p>
+              <div class="home-cap-card__visual">
+                <span class="home-card-index">03</span>
+                <span class="home-card-glyph">Q</span>
+              </div>
+              <div class="home-cap-card__body">
+                <h3>{{ t('home.features.balanceQuota') }}</h3>
+                <p>{{ t('home.features.balanceQuotaDesc') }}</p>
+              </div>
             </article>
 
             <article
@@ -319,10 +331,14 @@
               data-home-module="cap-card"
               style="--home-reveal-delay: 500ms"
             >
-              <span class="home-card-index">04</span>
-              <span class="home-card-glyph">M</span>
-              <h3>{{ t('home.providers.title') }}</h3>
-              <p>{{ t('home.providers.description') }}</p>
+              <div class="home-cap-card__visual">
+                <span class="home-card-index">04</span>
+                <span class="home-card-glyph">M</span>
+              </div>
+              <div class="home-cap-card__body">
+                <h3>{{ t('home.providers.title') }}</h3>
+                <p>{{ t('home.providers.description') }}</p>
+              </div>
             </article>
           </div>
         </section>
@@ -351,7 +367,7 @@
             </p>
           </div>
 
-          <div class="home-provider-specimen-grid">
+          <div class="home-provider-specimen-grid home-linked-card-grid">
             <article
               class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"
               data-home-reveal
@@ -765,7 +781,7 @@ onBeforeUnmount(() => {
   margin-right: 12px;
   border: 1px solid rgba(255, 250, 240, 0.28);
   border-radius: 50%;
-  background: rgba(7, 16, 30, 0.28);
+  background: var(--anthropic-page, #faf9f5);
   box-shadow: inset 0 1px 0 rgba(255, 250, 240, 0.16);
 }
 
@@ -886,7 +902,11 @@ onBeforeUnmount(() => {
   max-width: none;
   width: 100%;
   box-sizing: border-box;
-  background: var(--atelier-paper-2);
+  align-content: start;
+  gap: 24px;
+  padding-top: clamp(48px, 6vh, 64px);
+  padding-bottom: clamp(48px, 6vh, 64px);
+  background: var(--anthropic-section, #f0eee6);
   color: var(--atelier-ink);
 }
 
@@ -894,7 +914,8 @@ onBeforeUnmount(() => {
   max-width: none;
   width: 100%;
   box-sizing: border-box;
-  background: var(--atelier-paper-2);
+  align-content: start;
+  background: var(--anthropic-section, #f0eee6);
   color: var(--atelier-ink);
 }
 
@@ -1282,6 +1303,7 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 112px));
   justify-content: end;
+  margin-top: 12px;
   gap: 12px;
 }
 
@@ -1312,16 +1334,6 @@ onBeforeUnmount(() => {
   background: rgba(79, 106, 140, 0.28);
 }
 
-.home-ring:nth-child(2) {
-  background: rgba(23, 21, 18, 0.11);
-}
-
-.home-ring:nth-child(3) {
-  border-width: 2px;
-  border-color: rgba(245, 191, 93, 0.38);
-  background: rgba(7, 16, 30, 0.12);
-}
-
 .home-ring strong {
   display: block;
   color: inherit;
@@ -1348,7 +1360,7 @@ onBeforeUnmount(() => {
 
 .home-feature-section {
   display: grid;
-  gap: clamp(30px, 4vw, 56px);
+  gap: 24px;
 }
 
 .home-capability-kicker {
@@ -1363,11 +1375,11 @@ onBeforeUnmount(() => {
   grid-template-columns: auto auto 1fr;
   align-items: center;
   gap: 12px;
-  min-height: 82px;
-  padding: 18px 20px;
+  min-height: 64px;
+  padding: 14px 16px;
   border-right: 1px solid var(--atelier-line-strong);
   border-bottom: 1px solid var(--atelier-line-strong);
-  background: var(--atelier-paper);
+  background: var(--anthropic-section, #f0eee6);
   color: var(--atelier-ink);
   font-family: var(--atelier-font-mono);
   font-size: 12px;
@@ -1375,11 +1387,11 @@ onBeforeUnmount(() => {
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(2) {
-  background: var(--atelier-paper);
+  background: var(--anthropic-section, #f0eee6);
 }
 
 .home-ascii-shell .home-capability-kicker-item:nth-child(3) {
-  background: var(--atelier-paper);
+  background: var(--anthropic-section, #f0eee6);
   color: var(--atelier-ink);
 }
 
@@ -1391,43 +1403,83 @@ onBeforeUnmount(() => {
 .home-capability-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid var(--atelier-line-strong);
-  border-left: 1px solid var(--atelier-line-strong);
+  margin-top: 72px;
+  gap: 16px;
 }
 
 .home-ascii-shell .home-cap-card {
   --home-card-accent: var(--atelier-butter);
-  --home-card-surface: var(--atelier-paper);
-  --home-card-hover-surface: var(--atelier-paper);
-  --home-card-muted-surface: var(--atelier-surface-dust);
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  align-content: start;
-  gap: 18px;
-  min-height: 380px;
-  padding: clamp(20px, 2.5vw, 34px);
-  border-right: 1px solid var(--atelier-line-strong);
-  border-bottom: 1px solid var(--atelier-line-strong);
-  border-top: 1px solid var(--atelier-line-strong);
-  background: var(--home-card-surface);
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
+  border-radius: 16px;
+  background: var(--anthropic-page, #faf9f5);
   color: var(--atelier-ink);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   transition:
-    border-color 280ms var(--atelier-ease),
-    background-color 280ms var(--atelier-ease),
-    box-shadow 280ms var(--atelier-ease);
+    background-color 350ms ease,
+    color 200ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
 }
 
-.home-ascii-shell .home-capability-grid:has(.home-cap-card:hover) .home-cap-card:not(:hover),
-.home-ascii-shell .home-capability-grid:has(.home-cap-card:focus-within) .home-cap-card:not(:focus-within) {
-  background: var(--home-card-muted-surface);
-  border-color: var(--atelier-line-strong);
+.home-cap-card__visual {
+  position: relative;
+  display: grid;
+  aspect-ratio: auto;
+  min-height: 104px;
+  align-items: end;
+  justify-items: end;
+  overflow: hidden;
+  padding: 1.25rem 0 0 1.25rem;
+  border-bottom: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-raised, #e8e6dc);
+  transition: background-color 350ms ease;
+}
+
+.home-cap-card__visual .home-card-index {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.home-cap-card__visual > :last-child {
+  margin: 0 18px 16px 0;
+  transform: scale(1);
+  transform-origin: right bottom;
+  transition: transform 450ms var(--atelier-ease);
+}
+
+.home-cap-card__body {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px;
+  background: var(--anthropic-page, #faf9f5);
+  transition: background-color 350ms ease;
+}
+
+.home-ascii-shell .home-capability-grid:has(.home-cap-card:hover) .home-cap-card:not(:hover) .home-cap-card__body,
+.home-ascii-shell .home-capability-grid:has(.home-cap-card:focus-within) .home-cap-card:not(:focus-within) .home-cap-card__body {
+  background: var(--anthropic-raised, #e8e6dc);
 }
 
 .home-ascii-shell .home-cap-card:hover,
 .home-ascii-shell .home-cap-card:focus-within {
-  border-color: var(--atelier-line-strong);
-  background: var(--home-card-hover-surface);
-  box-shadow: 0 8px 28px rgba(20, 19, 19, 0.08);
+  border-color: var(--anthropic-border-hover, rgba(20, 19, 19, 0.16));
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+.home-ascii-shell .home-cap-card:hover .home-cap-card__visual,
+.home-ascii-shell .home-cap-card:focus-within .home-cap-card__visual {
+  background: var(--anthropic-page, #faf9f5);
+}
+
+.home-ascii-shell .home-cap-card:hover .home-cap-card__visual > :last-child,
+.home-ascii-shell .home-cap-card:focus-within .home-cap-card__visual > :last-child {
+  transform: scale(1.045);
 }
 
 .home-ascii-shell .home-cap-card-featured {
@@ -1470,7 +1522,7 @@ onBeforeUnmount(() => {
   margin: 0;
   color: currentColor;
   font-family: var(--atelier-font-serif);
-  font-size: 34px;
+  font-size: clamp(24px, 2vw, 30px);
   font-style: italic;
   font-weight: 400;
   letter-spacing: 0;
@@ -1486,6 +1538,7 @@ onBeforeUnmount(() => {
 
 .home-provider-section {
   display: grid;
+  align-content: start;
   gap: clamp(12px, 2vh, 24px);
   padding-top: clamp(24px, 3.5vh, 44px);
   padding-bottom: clamp(20px, 3vh, 34px);
@@ -1528,48 +1581,53 @@ onBeforeUnmount(() => {
 .home-provider-specimen-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(12px, 1.4vw, 18px);
+  margin-top: 72px;
+  gap: 16px;
 }
 
 .home-ascii-shell .home-provider-specimen {
   --home-chip-accent: var(--atelier-butter);
-  --home-chip-surface: var(--atelier-paper);
   --home-chip-text: var(--atelier-ink);
-  --home-provider-card-border: rgba(20, 19, 19, 0.12);
-  --home-provider-card-hover-border: rgba(20, 19, 19, 0.18);
-  --home-provider-card-hover-bg: var(--atelier-paper);
-  --home-provider-card-muted-bg: var(--atelier-surface-dust);
   display: grid;
   grid-column: auto;
-  grid-template-rows: minmax(132px, 0.58fr) 1fr;
-  min-height: clamp(240px, 30vh, 292px);
+  grid-template-rows: auto 1fr;
+  min-height: 0;
   width: 100%;
   height: auto;
   aspect-ratio: auto;
   overflow: hidden;
-  border: 1px solid var(--home-provider-card-border);
-  border-radius: 0;
-  background: var(--home-chip-surface);
+  border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
+  border-radius: 16px;
+  background: var(--anthropic-page, #faf9f5);
   color: var(--home-chip-text);
   backdrop-filter: none;
-  box-shadow: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   transition:
-    border-color 280ms var(--atelier-ease),
-    background-color 280ms var(--atelier-ease),
-    box-shadow 280ms var(--atelier-ease);
+    background-color 350ms ease,
+    color 200ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
 }
 
-.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:hover) .home-provider-specimen:not(:hover),
-.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:focus-within) .home-provider-specimen:not(:focus-within) {
-  background: var(--home-provider-card-muted-bg);
-  border-color: rgba(20, 19, 19, 0.12);
+.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:hover) .home-provider-specimen:not(:hover) .home-provider-meta,
+.home-ascii-shell .home-provider-specimen-grid:has(.home-provider-specimen:focus-within) .home-provider-specimen:not(:focus-within) .home-provider-meta {
+  background: var(--anthropic-raised, #e8e6dc);
 }
 
 .home-ascii-shell .home-provider-specimen:hover,
 .home-ascii-shell .home-provider-specimen:focus-within {
-  border-color: var(--home-provider-card-hover-border);
-  background: var(--home-provider-card-hover-bg);
-  box-shadow: 0 8px 28px rgba(20, 19, 19, 0.08);
+  border-color: var(--anthropic-border-hover, rgba(20, 19, 19, 0.16));
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+.home-ascii-shell .home-provider-specimen:hover .home-provider-swatch,
+.home-ascii-shell .home-provider-specimen:focus-within .home-provider-swatch {
+  background: var(--anthropic-page, #faf9f5);
+}
+
+.home-ascii-shell .home-provider-specimen:hover .home-provider-mark,
+.home-ascii-shell .home-provider-specimen:focus-within .home-provider-mark {
+  transform: scale(1.045);
 }
 
 .home-ascii-shell .home-provider-specimen-featured {
@@ -1597,52 +1655,37 @@ onBeforeUnmount(() => {
 .home-provider-swatch {
   position: relative;
   display: grid;
-  place-items: center;
-  min-height: 132px;
-  border-bottom: 1px solid rgba(20, 19, 19, 0.1);
-  background: var(--atelier-paper-2);
+  aspect-ratio: auto;
+  align-items: end;
+  justify-items: end;
+  min-height: 96px;
+  overflow: hidden;
+  padding: 1.25rem 0 0 1.25rem;
+  border-bottom: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
+  background: var(--anthropic-raised, #e8e6dc);
+  transition: background-color 350ms ease;
 }
 
 .home-provider-specimen-featured .home-provider-swatch {
-  background: var(--atelier-paper-2);
-}
-
-.home-provider-swatch::before {
-  content: attr(data-id);
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  color: color-mix(in srgb, currentColor 72%, transparent);
-  font-family: var(--atelier-font-mono);
-  font-size: 10px;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.home-provider-swatch::after {
-  content: attr(data-hex);
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  color: currentColor;
-  opacity: 0.82;
-  font-family: var(--atelier-font-mono);
-  font-size: 11px;
-  letter-spacing: 0;
+  background: var(--anthropic-raised, #e8e6dc);
 }
 
 .home-provider-mark {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 22px;
+  height: 22px;
+  margin: 0 16px 14px 0;
   border: 0;
   border-radius: 0;
   color: var(--atelier-ink);
   background: transparent;
   font-family: var(--atelier-font-serif);
-  font-size: 26px;
+  font-size: 18px;
   font-style: italic;
+  transform: scale(1);
+  transform-origin: right bottom;
+  transition: transform 450ms var(--atelier-ease);
 }
 
 .home-provider-logo-mark {
@@ -1677,7 +1720,9 @@ onBeforeUnmount(() => {
   display: grid;
   align-content: start;
   gap: 7px;
-  padding: clamp(14px, 1.6vw, 18px);
+  padding: 14px;
+  background: var(--anthropic-page, #faf9f5);
+  transition: background-color 350ms ease;
 }
 
 .home-provider-section .home-section-label {
@@ -1854,7 +1899,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@media (max-width: 820px), (max-height: 679px) {
+@media (max-width: 820px) {
   .home-ascii-shell {
     height: auto;
     min-height: 100vh;
@@ -1893,10 +1938,9 @@ onBeforeUnmount(() => {
   .home-feature-section,
   .home-provider-section {
     min-height: auto;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
   }
 
   .home-hero-grid,
@@ -1916,6 +1960,11 @@ onBeforeUnmount(() => {
   .home-provider-specimen-grid,
   .home-rings {
     grid-template-columns: 1fr;
+  }
+
+  .home-capability-grid,
+  .home-provider-specimen-grid {
+    margin-top: 0;
   }
 
   .home-index-card {
@@ -1983,9 +2032,9 @@ onBeforeUnmount(() => {
   }
 
   .home-provider-mark {
-    width: 32px;
-    height: 32px;
-    font-size: 23px;
+    width: 22px;
+    height: 22px;
+    font-size: 18px;
   }
 
   .home-footer {
@@ -1995,6 +2044,22 @@ onBeforeUnmount(() => {
     margin-block: 0;
     scroll-snap-align: none;
     text-align: center;
+  }
+}
+
+@media (min-width: 821px) and (max-height: 679px) {
+  .home-ascii-shell {
+    scroll-snap-type: none;
+  }
+
+  .home-section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+
+  .home-hero {
+    height: auto;
+    min-height: 100vh;
   }
 }
 
@@ -2069,7 +2134,7 @@ onBeforeUnmount(() => {
 
 :global(.dark .home-ascii-shell .home-logo) {
   border-color: rgba(255, 250, 240, 0.32);
-  background: #171512;
+  background: var(--anthropic-page, #faf9f5);
 }
 
 :global(.dark .home-ascii-shell .home-nav-icon),
@@ -2089,8 +2154,15 @@ onBeforeUnmount(() => {
 
 :global(.dark .home-ascii-shell .home-feature-section),
 :global(.dark .home-ascii-shell .home-provider-section) {
-  background: var(--atelier-paper-2);
   color: var(--atelier-ink);
+}
+
+:global(.dark .home-ascii-shell .home-feature-section) {
+  background: var(--anthropic-section, #f0eee6);
+}
+
+:global(.dark .home-ascii-shell .home-provider-section) {
+  background: var(--anthropic-section, #f0eee6);
 }
 
 :global(.dark .home-ascii-shell .home-footer .home-footer-text),
