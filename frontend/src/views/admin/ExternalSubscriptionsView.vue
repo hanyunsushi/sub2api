@@ -1046,7 +1046,7 @@ onBeforeUnmount(() => {
 
 .external-subscription-card {
   --external-subscription-card-bg: var(--anthropic-page);
-  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
+  --external-subscription-card-hover-bg: var(--external-subscription-card-bg);
   position: relative;
   display: flex;
   min-height: 10.5rem;
@@ -1063,20 +1063,8 @@ onBeforeUnmount(() => {
     box-shadow 250ms var(--atelier-ease);
 }
 
-.external-subscription-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0.875rem;
-  left: 0.875rem;
-  height: 1px;
-  background: var(--atelier-console-rule);
-  opacity: 1;
-  pointer-events: none;
-}
-
 .external-subscription-card:hover {
-  border-color: var(--anthropic-cookbook-border-hover);
+  border-color: var(--anthropic-cookbook-border);
   background: var(--external-subscription-card-hover-bg);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   transform: none;
@@ -1257,7 +1245,7 @@ onBeforeUnmount(() => {
 
 .dark .external-subscription-card {
   --external-subscription-card-bg: var(--anthropic-page);
-  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
+  --external-subscription-card-hover-bg: var(--external-subscription-card-bg);
   background: var(--external-subscription-card-bg);
   box-shadow: none;
 }

@@ -3987,7 +3987,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content .external-subscriptions-page .external-subscription-card {
   --external-subscription-card-bg: var(--anthropic-page);
-  --external-subscription-card-hover-bg: var(--anthropic-cookbook-hover);
+  --external-subscription-card-hover-bg: var(--external-subscription-card-bg);
   border-color: var(--anthropic-border-subtle) !important;
   background: var(--external-subscription-card-bg) !important;
   box-shadow: none !important;
@@ -3996,7 +3996,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content .external-subscriptions-page .external-subscription-card:hover,
 #app .app-layout-content .external-subscriptions-page .external-subscription-card:focus-visible {
-  border-color: var(--anthropic-cookbook-border-hover) !important;
+  border-color: var(--anthropic-cookbook-border) !important;
   background: var(--external-subscription-card-hover-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   transform: none !important;

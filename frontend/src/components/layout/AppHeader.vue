@@ -1,6 +1,6 @@
 <template>
-  <header class="app-header-atelier paper-surface sticky top-0 z-30 border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-    <div class="flex h-16 items-center justify-between px-4 md:px-6">
+  <header class="app-header-atelier sticky top-0 z-30">
+    <div class="flex h-[68px] items-center justify-between px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex min-w-0 items-center gap-4">
         <button data-testid="layout-app-header-button-toggle-mobile-sidebar"
@@ -753,23 +753,12 @@ watch(
   --buzz-balance-yellow-dark: #8e6c1f;
   --buzz-balance-yellow-soft: #efe0bf;
   --buzz-balance-yellow-soft-dark: rgba(199, 154, 58, 0.18);
-  height: 4rem;
-  min-height: 4rem;
+  height: 68px;
+  min-height: 68px;
   border: 0 !important;
-  background: var(--atelier-paper) !important;
+  background: var(--anthropic-page) !important;
   box-shadow: none !important;
   font-family: var(--atelier-font-sans);
-}
-
-.app-header-atelier::after {
-  content: "";
-  position: absolute;
-  right: 1.5rem;
-  bottom: 0;
-  left: 1.5rem;
-  height: 1px;
-  background: var(--atelier-console-rule);
-  pointer-events: none;
 }
 
 .app-header-context {

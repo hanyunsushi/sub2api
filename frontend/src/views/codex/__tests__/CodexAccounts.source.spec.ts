@@ -15,13 +15,6 @@ const getCssBlock = (selector: string) => {
   return end === -1 ? codexThemeSource.slice(start) : codexThemeSource.slice(start, end + 2)
 }
 
-const getLastCssBlock = (selector: string) => {
-  const start = codexThemeSource.lastIndexOf(`${selector} {`)
-  if (start === -1) return ''
-  const end = codexThemeSource.indexOf('\n}', start)
-  return end === -1 ? codexThemeSource.slice(start) : codexThemeSource.slice(start, end + 2)
-}
-
 describe('CodexAccounts source contracts', () => {
   it('removes the redundant topbar quota refresh while keeping the list action', () => {
     const topbarStart = componentSource.indexOf('<header class="codex-topbar">')
@@ -48,6 +41,16 @@ describe('CodexAccounts source contracts', () => {
     expect(componentSource).toContain('toggleAccountSelection')
     expect(componentSource).toContain('requestDeleteSelectedAccounts')
     expect(componentSource).toContain('deleteSelectedAuthFiles')
+  })
+
+  it('keeps the account actions inside the original panel header', () => {
+    const titleStart = componentSource.indexOf('admin.codex.accounts.accountList')
+    const panelStart = componentSource.lastIndexOf('<section class="codex-panel">', titleStart)
+    const panelEnd = componentSource.indexOf('<div v-if="filteredAccounts.length > 0" class="codex-selection-bar">', panelStart)
+    const panelHeaderSource = componentSource.slice(panelStart, panelEnd)
+
+    expect(panelHeaderSource).toContain('<div class="codex-panel-header">')
+    expect(panelHeaderSource).toContain('<h2 class="codex-panel-title">{{ t(\'admin.codex.accounts.accountList\') }}</h2>\n                <div class="codex-list-actions">')
   })
 
   it('uses the shared material card tokens on maintained CPA panels and account cards', () => {
@@ -79,12 +82,12 @@ describe('CodexAccounts source contracts', () => {
   })
 
   it('keeps the final CPA management surfaces and form focus on the Anthropic contract', () => {
-    const finalTokenBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin')
-    const finalSurfaceBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar)')
-    const finalToolbarBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar')
-    const finalInputBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea)')
-    const finalMouseFocusBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible)')
-    const finalKeyboardFocusBlock = getLastCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
+    const finalTokenBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin')
+    const finalSurfaceBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar)')
+    const finalToolbarBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar')
+    const finalInputBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea)')
+    const finalMouseFocusBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible)')
+    const finalKeyboardFocusBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
 
     expect(finalTokenBlock).toContain('--codex-surface-strong: var(--anthropic-page, var(--atelier-paper));')
     expect(finalTokenBlock).toContain('--material-card-surface: var(--anthropic-page, var(--atelier-paper));')
@@ -101,6 +104,23 @@ describe('CodexAccounts source contracts', () => {
     expect(finalKeyboardFocusBlock).toContain('outline-offset: 3px !important;')
     expect(finalKeyboardFocusBlock).toContain('box-shadow: none !important;')
     expect(finalKeyboardFocusBlock).not.toContain('border-color: var(--atelier-focus)')
+  })
+
+  it('uses the canonical unframed Anthropic admin layout', () => {
+    expect(codexThemeSource).toContain('/* CPA canonical Anthropic admin layout */')
+    expect(codexThemeSource).toContain('--codex-control-height: 32px;')
+    expect(codexThemeSource).toContain('--codex-control-font-size: 13px;')
+    expect(codexThemeSource).toContain('font-family: var(--atelier-font-serif);')
+    expect(codexThemeSource).toContain('font-weight: 500;')
+    expect(codexThemeSource).toContain('border-radius: 0;')
+    expect(codexThemeSource).toContain('border: 0;')
+    expect(codexThemeSource).toContain('background: transparent;')
+    expect(codexThemeSource).toContain('grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);')
+    expect(codexThemeSource).toContain('background: var(--anthropic-section, #f0eee6) !important;')
+    expect(codexThemeSource).toContain('background: var(--anthropic-page, #faf9f5) !important;')
+    expect(codexThemeSource).toContain('background: var(--anthropic-fg, #141413);')
+    expect(codexThemeSource).toContain('color: var(--anthropic-page, #faf9f5);')
+    expect(codexThemeSource).not.toContain('border-bottom: 1px dotted var(--codex-border-strong);')
   })
 
   it('keeps CPA account cards on a local warm-paper hover treatment', () => {
