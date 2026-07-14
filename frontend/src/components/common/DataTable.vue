@@ -85,6 +85,7 @@
             scope="col"
             :data-column-key="column.key"
             :data-column-label="column.label"
+            :aria-sort="column.sortable ? getColumnAriaSort(column.key) : undefined"
             :class="[
               'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-dark-400',
               getAdaptivePaddingClass(),
@@ -102,24 +103,26 @@
             >
               <div :class="['flex items-center space-x-1', getHeaderContentAlignmentClass(column)]">
                 <span>{{ column.label }}</span>
-                <span v-if="column.sortable" class="text-[var(--anthropic-muted)] dark:text-dark-500">
+                <span
+                  v-if="column.sortable"
+                  class="inline-flex h-5 w-4 flex-col items-center justify-center"
+                  aria-hidden="true"
+                >
                   <svg
-                    v-if="sortKey === column.key"
-                    class="h-4 w-4"
-                    :class="{ 'rotate-180 transform': sortOrder === 'desc' }"
+                    class="h-2.5 w-2.5"
+                    :class="getSortIndicatorClass(column.key, 'asc')"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 10 10"
                   >
-                    <path
-                      fill-rule="evenodd"
-                      d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                      clip-rule="evenodd"
-                    />
+                    <path d="M5 2L1.5 6.5h7L5 2z" />
                   </svg>
-                  <svg v-else class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    />
+                  <svg
+                    class="-mt-0.5 h-2.5 w-2.5"
+                    :class="getSortIndicatorClass(column.key, 'desc')"
+                    fill="currentColor"
+                    viewBox="0 0 10 10"
+                  >
+                    <path d="M5 8L1.5 3.5h7L5 8z" />
                   </svg>
                 </span>
               </div>
@@ -200,7 +203,7 @@
           </tr>
         </template>
 
-        <!-- Data rows (virtual scroll) -->
+        <!-- Data rows: windowed when large, fully rendered when small (shared row/cell template) -->
         <template v-else>
           <tr v-if="virtualPaddingTop > 0" aria-hidden="true">
             <td :colspan="columns.length"
@@ -208,17 +211,17 @@
             </td>
           </tr>
           <tr data-testid="common-data-table-tr-clickable-rows-emit"
-            v-for="virtualRow in virtualItems"
-            :key="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"
-            :data-row-id="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"
-            :data-index="virtualRow.index"
-            :ref="measureElement"
+            v-for="item in renderRows"
+            :key="resolveRowKey(item.row, item.index)"
+            :data-row-id="resolveRowKey(item.row, item.index)"
+            :data-index="item.index"
+            :ref="item.measure ? measureElement : undefined"
             :class="[
               'hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]',
-              resolveRowClass(sortedData[virtualRow.index], virtualRow.index),
+              resolveRowClass(item.row, item.index),
               { 'cursor-pointer': clickableRows }
             ]"
-            @click="clickableRows && emit('rowClick', sortedData[virtualRow.index])"
+            @click="clickableRows && emit('rowClick', item.row)"
           >
             <td
               v-if="$slots['row-overlay']"
@@ -226,7 +229,7 @@
               class="data-table-row-overlay-cell"
               aria-hidden="true"
             >
-              <slot name="row-overlay" :row="sortedData[virtualRow.index]" :index="virtualRow.index"></slot>
+              <slot name="row-overlay" :row="item.row" :index="item.index"></slot>
             </td>
             <td
               v-for="(column, colIndex) in columns"
@@ -241,12 +244,12 @@
               ]"
             >
               <slot :name="`cell-${column.key}`"
-                    :row="sortedData[virtualRow.index]"
-                    :value="sortedData[virtualRow.index][column.key]"
+                    :row="item.row"
+                    :value="item.row[column.key]"
                     :expanded="actionsExpanded">
                 {{ column.formatter
-                   ? column.formatter(sortedData[virtualRow.index][column.key], sortedData[virtualRow.index])
-                   : sortedData[virtualRow.index][column.key] }}
+                   ? column.formatter(item.row[column.key], item.row)
+                   : item.row[column.key] }}
               </slot>
             </td>
           </tr>
@@ -468,6 +471,12 @@ interface Props {
   estimateRowHeight?: number
   /** Number of rows to render beyond the visible area (default 5) */
   overscan?: number
+  /**
+   * Only virtualize when the row count exceeds this threshold (default 100).
+   * Smaller lists render in full, avoiding the scroll-compensation jank caused by
+   * estimated-vs-actual row heights when rows have variable height.
+   */
+  virtualizeThreshold?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -556,6 +565,17 @@ const applySortState = (state: PersistedSortState | null) => {
   if (!state) return
   sortKey.value = state.key
   sortOrder.value = state.order
+}
+
+const getSortIndicatorClass = (key: string, order: 'asc' | 'desc') => {
+  return sortKey.value === key && sortOrder.value === order
+    ? 'text-primary-600 dark:text-primary-400'
+    : 'text-gray-300 transition-colors dark:text-dark-500'
+}
+
+const getColumnAriaSort = (key: string) => {
+  if (sortKey.value !== key) return 'none'
+  return sortOrder.value === 'asc' ? 'ascending' : 'descending'
 }
 
 const getHeaderContentAlignmentClass = (column: Column) => {
@@ -700,9 +720,23 @@ const sortedData = computed(() => {
 })
 
 // --- Virtual scrolling ---
+// 是否启用虚拟化:仅桌面端且行数超过阈值时开启。小列表全量渲染,彻底绕开虚拟器的
+// 估算/测量/滚动补偿链路,消除可变行高导致的滚动抖动。
+const shouldVirtualize = computed(() =>
+  verticalScrollMode.value === 'internal'
+    && isDesktopViewport.value
+    && (sortedData.value?.length ?? 0) > (props.virtualizeThreshold ?? 100)
+)
+
 const rowVirtualizer = useVirtualizer(computed(() => ({
-  count: isDesktopViewport.value && verticalScrollMode.value === 'internal' ? (sortedData.value?.length ?? 0) : 0,
+  count: shouldVirtualize.value ? (sortedData.value?.length ?? 0) : 0,
   getScrollElement: () => tableWrapperRef.value,
+  // 用行主键(与模板 :key 一致)而非默认的 index 作为 itemSizeCache 键,
+  // 这样排序/筛选/跨阈值来回都能复用正确的已测行高,而不是残留的按 index 缓存 → 消除高度校正抖动。
+  getItemKey: (index: number) => {
+    const row = sortedData.value?.[index]
+    return row != null ? resolveRowKey(row, index) : index
+  },
   estimateSize: () => props.estimateRowHeight ?? 56,
   overscan: props.overscan ?? 5,
   // 兜底高度:首个有效高度读数到来前,先按一屏渲染,避免空白帧
@@ -731,6 +765,16 @@ const measureElement = (el: any) => {
     rowVirtualizer.value.measureElement(el as Element)
   }
 }
+
+// 统一的渲染行列表:虚拟化开启时只取窗口内的行(需 measure 交给虚拟器测量),
+// 关闭时取全部行(无需测量)。模板据此渲染,两种模式共用同一套单元格结构。
+const renderRows = computed<Array<{ index: number; row: any; measure: boolean }>>(() => {
+  const data = sortedData.value ?? []
+  if (shouldVirtualize.value) {
+    return virtualItems.value.map(vr => ({ index: vr.index, row: data[vr.index], measure: true }))
+  }
+  return data.map((row, index) => ({ index, row, measure: false }))
+})
 
 const hasActionsColumn = computed(() => {
   return props.columns.some(column => column.key === 'actions')
@@ -842,6 +886,7 @@ watch(
 
 defineExpose({
   virtualizer: rowVirtualizer,
+  shouldVirtualize,
   sortedData,
   resolveRowKey,
   tableWrapperEl: tableWrapperRef,
