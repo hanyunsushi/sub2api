@@ -99,41 +99,20 @@ describe('channel monitor AI logo contract', () => {
   })
 
   it('aligns the monitor provider logo shell with the shared brand icon tile', () => {
-    expect(userMonitorCardSource).toContain('monitor-provider-logo-shell')
+    expect(userMonitorCardSource).toContain('monitor-provider-logo-shell w-9 h-9')
 
-    const shellBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell'
-    )
-    expect(shellBlock).toContain('width: 2.25rem !important;')
-    expect(shellBlock).toContain('height: 2.25rem !important;')
-    expect(shellBlock).toContain('padding: 0 !important;')
+    const brandIconBlock = cssBlock(providerBrandIconSource, '.provider-brand-icon')
+    expect(brandIconBlock).toContain('@apply inline-flex h-8 w-8')
 
-    const brandIconBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-icon'
-    )
-    expect(brandIconBlock).toContain('width: 100% !important;')
-    expect(brandIconBlock).toContain('height: 100% !important;')
-    expect(brandIconBlock).toContain('border: 0 !important;')
-    expect(brandIconBlock).toContain('border-radius: inherit !important;')
-    expect(brandIconBlock).toContain('box-shadow: none !important;')
+    const systemImageBlock = cssBlock(providerBrandIconSource, '.provider-brand-image-system')
+    expect(systemImageBlock).toContain('@apply object-contain;')
+    expect(systemImageBlock).toContain('width: 1.25rem;')
+    expect(systemImageBlock).toContain('height: 1.25rem;')
 
-    const systemImageBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-system'
-    )
-    expect(systemImageBlock).toContain('width: 1.25rem !important;')
-    expect(systemImageBlock).toContain('height: 1.25rem !important;')
-    expect(systemImageBlock).toContain('object-fit: contain !important;')
-
-    const customImageBlock = cssBlock(
-      styleSource,
-      '#app .app-layout-content .monitor-channel-card .monitor-provider-logo-shell .provider-brand-image-custom'
-    )
-    expect(customImageBlock).toContain('width: 100% !important;')
-    expect(customImageBlock).toContain('height: 100% !important;')
-    expect(customImageBlock).toContain('object-fit: cover !important;')
+    const customImageBlock = cssBlock(providerBrandIconSource, '.provider-brand-image-custom')
+    expect(customImageBlock).toContain('@apply object-cover;')
+    expect(customImageBlock).toContain('width: 100%;')
+    expect(customImageBlock).toContain('height: 100%;')
   })
 
   it('keeps monitor timeline status bars on Anthropic 81k health colors', () => {
@@ -144,18 +123,34 @@ describe('channel monitor AI logo contract', () => {
     expect(userMonitorTimelineSource).not.toContain("operational: 'bg-emerald-500'")
     expect(userMonitorTimelineSource).not.toContain("degraded: 'bg-amber-500'")
 
-    const final81kLayer = styleSource.slice(
-      styleSource.lastIndexOf('Final EOF Anthropic 81k authoritative status/platform palette lock')
+    expect(styleSource).toContain('--anthropic-success: #6ea100;')
+    expect(styleSource).toContain('--anthropic-warning: #eda100;')
+    expect(styleSource).toContain('--anthropic-error: #b53333;')
+    expect(styleSource).toContain('--anthropic-raised: #e8e6dc;')
+
+    const operationalBlock = cssBlock(
+      styleSource,
+      '.app-layout-content :where(.usage-progress-fill--safe, .monitor-timeline-bar--operational, .monitor-capacity-status-segment--available, .bg-green-500, .bg-green-600, .bg-emerald-500, .bg-emerald-600):not(button):not(.btn):not([role="button"])'
     )
-    expect(final81kLayer).toContain('.monitor-timeline-bar--operational')
-    expect(final81kLayer).toContain('background: #6ea100 !important;')
-    expect(final81kLayer).toContain('.monitor-timeline-bar--degraded')
-    expect(final81kLayer).toContain('background: #eda100 !important;')
-    expect(final81kLayer).toContain('.monitor-timeline-bar--failed')
-    expect(final81kLayer).toContain('.monitor-timeline-bar--error')
-    expect(final81kLayer).toContain('background: #b53333 !important;')
-    expect(final81kLayer).toContain('.monitor-timeline-bar--empty')
-    expect(final81kLayer).toContain('background: #e8e6dc !important;')
+    expect(operationalBlock).toContain('background: var(--anthropic-success);')
+
+    const degradedBlock = cssBlock(
+      styleSource,
+      '.app-layout-content :where(.usage-progress-fill--warning, .monitor-timeline-bar--degraded, .monitor-capacity-status-segment--limited, .bg-amber-500, .bg-amber-600, .bg-yellow-500, .bg-yellow-600, .bg-orange-500, .bg-orange-600):not(button):not(.btn):not([role="button"])'
+    )
+    expect(degradedBlock).toContain('background: var(--anthropic-warning);')
+
+    const failedBlock = cssBlock(
+      styleSource,
+      '.app-layout-content :where(.usage-progress-fill--danger, .monitor-timeline-bar--failed, .monitor-timeline-bar--error, .monitor-capacity-status-segment--error, .bg-red-500, .bg-red-600, .bg-rose-500):not(button):not(.btn):not([role="button"])'
+    )
+    expect(failedBlock).toContain('background: var(--anthropic-error);')
+
+    const emptyBlock = cssBlock(
+      styleSource,
+      '.app-layout-content :where(.monitor-timeline-bar--empty, .monitor-capacity-status-segment--empty, .usage-progress-track)'
+    )
+    expect(emptyBlock).toContain('background: var(--anthropic-raised);')
   })
 
   it('keeps the shared auto-refresh button on Anthropic surface tokens', () => {
