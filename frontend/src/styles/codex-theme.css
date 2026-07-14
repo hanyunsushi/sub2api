@@ -982,23 +982,10 @@
   }
 }
 
-/* Cloudflare appearance theme: the codex admin panel hardcodes legacy blue
-   accents that bypass the --atelier-* token axis. Re-map them to Cloudflare
-   orange so the CPA management module matches the rest of the theme. */
-:root.theme-cloudflare .codex-admin,
-:root[data-theme="cloudflare"] .codex-admin,
-:root.theme-cloudflare .dark .codex-admin,
-:root[data-theme="cloudflare"] .dark .codex-admin {
-  --codex-accent: #f6821f;
-  --codex-accent-strong: #d96f15;
-  --codex-accent-soft: color-mix(in srgb, var(--atelier-blue) 12%, var(--atelier-paper));
-  --codex-violet: #f6821f;
-}
-/* Cloudflare appearance theme end */
 
 /* CPA management final Anthropic surface/focus contract. Keep this last because
    CodexAccounts loads this route stylesheet after the global repair layer. */
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin {
+:root.theme-anthropic #app .app-layout-content .codex-admin {
   --codex-bg: var(--anthropic-page, var(--atelier-paper));
   --codex-surface: var(--anthropic-page, var(--atelier-paper));
   --codex-surface-strong: var(--anthropic-page, var(--atelier-paper));
@@ -1009,27 +996,27 @@
   --material-card-edge: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08));
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
   background: var(--anthropic-page, var(--atelier-paper)) !important;
   box-shadow: none !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-toolbar {
   border: 0 !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-panel-header, .codex-selection-bar, .codex-account-grid, .codex-error--compact, .codex-inline-action, .codex-notice, .codex-group-row) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-panel-header, .codex-selection-bar, .codex-account-grid, .codex-error--compact, .codex-inline-action, .codex-notice, .codex-group-row) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
   background: var(--anthropic-page, var(--atelier-paper)) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-metrics, .codex-metric) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-metrics, .codex-metric) {
   background: transparent !important;
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea) {
   --tw-ring-color: transparent !important;
   --tw-ring-shadow: 0 0 #0000 !important;
   --tw-ring-offset-shadow: 0 0 #0000 !important;
@@ -1040,13 +1027,13 @@
   box-shadow: none !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
   outline: 0 !important;
   box-shadow: none !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible) {
   border-color: var(--anthropic-cookbook-border, rgba(20, 19, 19, 0.08)) !important;
   outline: 2px solid var(--anthropic-focus, var(--atelier-focus)) !important;
   outline-offset: 3px !important;
@@ -1054,7 +1041,7 @@
 }
 
 /* CPA canonical Anthropic admin layout */
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin {
+:root.theme-anthropic #app .app-layout-content .codex-admin {
   --codex-control-height: 32px;
   --codex-control-font-size: 13px;
   --codex-radius: 8px;
@@ -1063,21 +1050,21 @@
   font-size: 13px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-shell {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-shell {
   border: 0;
   border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-topbar {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-topbar {
   display: block;
   padding: 4px 0 24px;
   border: 0;
   background: transparent !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-title {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-title {
   color: var(--anthropic-fg, #141413);
   font-family: var(--atelier-font-serif);
   font-size: 28px;
@@ -1086,7 +1073,7 @@
   line-height: 1.12;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-subtitle {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-subtitle {
   max-width: 72ch;
   margin-top: 8px;
   color: var(--anthropic-muted, #5e5d59);
@@ -1094,39 +1081,39 @@
   line-height: 1.5;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-grid {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
   gap: 28px;
   min-height: 0;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-main, .codex-side) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-main, .codex-side) {
   min-width: 0;
   padding: 0;
   border: 0;
   background: transparent !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-panel {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-panel {
   border: 0;
   border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-panel + .codex-panel {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-panel + .codex-panel {
   margin-top: 28px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-main > .codex-panel:first-child {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-main > .codex-panel:first-child {
   overflow: hidden;
   border-top: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   border-bottom: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   background: var(--anthropic-section, #f0eee6) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-toolbar {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(190px, auto) auto;
   align-items: end;
@@ -1136,29 +1123,29 @@
   background: var(--anthropic-section, #f0eee6) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-field {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-field {
   min-width: 0;
   gap: 5px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-label {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-label {
   color: var(--anthropic-muted, #5e5d59);
   font-size: 12px;
   font-weight: 500;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-remember {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-remember {
   min-height: var(--codex-control-height);
   max-width: 220px;
   font-size: 12px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-remember small {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-remember small {
   color: var(--anthropic-muted, #5e5d59);
   font-size: 10px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select) {
   min-height: var(--codex-control-height);
   height: var(--codex-control-height);
   padding: 0 10px;
@@ -1167,14 +1154,14 @@
   font-size: var(--codex-control-font-size);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-textarea {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-textarea {
   min-height: 82px;
   border-radius: 8px;
   background: var(--anthropic-page, #faf9f5) !important;
   font-size: var(--codex-control-font-size);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button {
   min-height: var(--codex-control-height);
   height: var(--codex-control-height);
   padding: 0 12px;
@@ -1188,7 +1175,7 @@
   transform: none;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button:hover:not(:disabled) {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button:hover:not(:disabled) {
   border-color: var(--anthropic-fg, #141413);
   background: var(--anthropic-fg, #141413);
   color: var(--anthropic-page, #faf9f5);
@@ -1196,31 +1183,31 @@
   transform: none;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button--primary {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button--primary {
   border-color: var(--anthropic-fg, #141413);
   background: var(--anthropic-fg, #141413);
   color: var(--anthropic-page, #faf9f5);
   box-shadow: none;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button--primary:hover:not(:disabled) {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button--primary:hover:not(:disabled) {
   border-color: var(--anthropic-fg-hover, #3d3d3a);
   background: var(--anthropic-fg-hover, #3d3d3a);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button--danger {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button--danger {
   border-color: var(--anthropic-error, #b53333);
   background: transparent;
   color: var(--anthropic-error, #b53333);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-button--danger:hover:not(:disabled) {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-button--danger:hover:not(:disabled) {
   border-color: var(--anthropic-error, #b53333);
   background: var(--anthropic-error-bg, #fff1f0);
   color: var(--anthropic-error, #b53333);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-panel-header {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-panel-header {
   align-items: flex-start;
   flex-direction: column;
   gap: 12px;
@@ -1230,7 +1217,7 @@
   background: transparent !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-panel-title {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-panel-title {
   color: var(--anthropic-fg, #141413);
   font-family: var(--atelier-font-serif);
   font-size: 18px;
@@ -1239,56 +1226,56 @@
   line-height: 1.2;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-list-actions {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-list-actions {
   width: 100%;
   justify-content: space-between;
   gap: 16px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-list-actions__primary, .codex-list-actions__filters) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-list-actions__primary, .codex-list-actions__filters) {
   gap: 12px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-list-actions__filters {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-list-actions__filters {
   margin-left: auto;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-filter-sort-button {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-filter-sort-button {
   min-height: var(--codex-control-height);
   height: var(--codex-control-height);
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metrics {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-metrics {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
   padding: 0 16px 16px;
   background: var(--anthropic-section, #f0eee6) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metric {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-metric {
   min-width: 0;
   padding: 12px 14px 0;
   border-top: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   border-left: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metric:first-child {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-metric:first-child {
   border-left: 0;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metric-value {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-metric-value {
   color: var(--anthropic-fg, #141413);
   font-size: 22px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metric-label {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-metric-label {
   color: var(--anthropic-muted, #5e5d59);
   font-size: 11px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-selection-bar {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-selection-bar {
   margin-top: 12px;
   padding: 8px 12px;
   border: 0;
@@ -1296,14 +1283,14 @@
   background: var(--anthropic-section, #f0eee6) !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-account-grid {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-account-grid {
   gap: 12px;
   padding: 16px 0 0;
   border: 0;
   background: transparent !important;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-account-card {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-account-card {
   border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   border-radius: 8px;
   background: var(--anthropic-page, #faf9f5);
@@ -1311,64 +1298,64 @@
   transition: background-color 200ms ease, border-color 200ms ease;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-account-card:hover {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-account-card:hover {
   border-color: var(--anthropic-border-hover, rgba(20, 19, 19, 0.16));
   background: var(--anthropic-raised, #e8e6dc);
   box-shadow: none;
   transform: none;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-icon-button, .codex-icon-button--tight) {
+:root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-icon-button, .codex-icon-button--tight) {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-side .codex-panel {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-side .codex-panel {
   padding-top: 0;
   border-top: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-side .codex-panel-header {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-side .codex-panel-header {
   padding: 14px 0 12px;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-detail-form {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-detail-form {
   gap: 12px;
   padding: 16px 0 0;
 }
 
-:root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-group-row {
+:root.theme-anthropic #app .app-layout-content .codex-admin .codex-group-row {
   padding: 12px 0;
   border-color: var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   background: transparent !important;
 }
 
 @media (max-width: 1180px) {
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-grid {
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-grid {
     grid-template-columns: 1fr;
   }
 
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar {
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-toolbar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 720px) {
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar,
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metrics {
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-toolbar,
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-metrics {
     grid-template-columns: 1fr;
   }
 
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-metric {
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-metric {
     border-left: 0;
   }
 
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-list-actions__primary, .codex-list-actions__filters) {
+  :root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-list-actions__primary, .codex-list-actions__filters) {
     width: 100%;
   }
 
-  :root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-list-actions__filters {
+  :root.theme-anthropic #app .app-layout-content .codex-admin .codex-list-actions__filters {
     margin-left: 0;
   }
 }

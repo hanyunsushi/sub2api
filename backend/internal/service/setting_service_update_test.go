@@ -186,6 +186,16 @@ func TestSettingService_UpdateAppearanceThemeDefault_AcceptsAnthropic(t *testing
 	require.Equal(t, "anthropic", repo.updates[SettingKeyAppearanceThemeDefault])
 }
 
+func TestSettingService_UpdateAppearanceThemeDefault_RejectsRemovedCloudflareTheme(t *testing.T) {
+	repo := &settingUpdateRepoStub{}
+	svc := NewSettingService(repo, &config.Config{})
+
+	_, err := svc.UpdateAppearanceThemeDefault(context.Background(), "cloudflare")
+	require.Error(t, err)
+	require.True(t, infraerrors.IsBadRequest(err))
+	require.Empty(t, repo.updates)
+}
+
 func TestSettingService_UpdateSettings_RejectsInvalidAppearanceThemeDefault(t *testing.T) {
 	repo := &settingUpdateRepoStub{}
 	svc := NewSettingService(repo, &config.Config{})

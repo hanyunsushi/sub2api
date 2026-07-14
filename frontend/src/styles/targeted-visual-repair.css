@@ -3111,7 +3111,7 @@ body,
   transform: none !important;
 }
 
-:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+:root:is(.theme-anthropic, [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
@@ -3194,6 +3194,32 @@ body,
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
   transform: translateY(1px) rotate(180deg) !important;
+}
+
+/* Edit-account footer is teleported outside .app-layout-content. */
+body .modal-overlay .account-edit-submit-button:not(:disabled) {
+  --button-bg: var(--anthropic-fg);
+  --button-fg: var(--anthropic-page);
+  --button-border: var(--anthropic-muted);
+  --button-bg-hover: var(--anthropic-fg-hover);
+  --button-fg-hover: var(--anthropic-page);
+  --button-border-hover: var(--anthropic-muted);
+  --button-spacer: 0;
+  --button-spacer-hover: 1px;
+  --button-border-width: 1px;
+  --button-border-width-hover: 2px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: var(--button-bg) !important;
+  color: var(--button-fg) !important;
+  box-shadow: 0 0 0 var(--button-spacer, 0) var(--button-bg), 0 0 0 var(--button-border-width, 1px) var(--button-border) !important;
+  transition: color .1s ease-in-out, background-color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out !important;
+}
+
+body .modal-overlay .account-edit-submit-button:where(:hover, :focus-visible):not(:disabled) {
+  background: var(--button-bg-hover) !important;
+  color: var(--button-fg-hover) !important;
+  box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;
 }
 
 body :where(.date-picker-dropdown-portal) .date-picker-actions {
@@ -3978,7 +4004,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   transform: none !important;
 }
 
-:root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
+:root:is(.theme-anthropic, [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--account-card-bg) !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;

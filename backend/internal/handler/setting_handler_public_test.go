@@ -92,7 +92,7 @@ func TestSettingHandler_GetPublicSettings_ExposesForceEmailOnThirdPartySignup(t 
 	require.True(t, resp.Data.ForceEmailOnThirdPartySignup)
 }
 
-func TestSettingHandler_GetPublicSettings_ExposesAppearanceThemeDefault(t *testing.T) {
+func TestSettingHandler_GetPublicSettings_NormalizesRemovedCloudflareTheme(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	repo := &settingHandlerPublicRepoStub{
@@ -118,7 +118,7 @@ func TestSettingHandler_GetPublicSettings_ExposesAppearanceThemeDefault(t *testi
 	}
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
 	require.Equal(t, 0, resp.Code)
-	require.Equal(t, "cloudflare", resp.Data.AppearanceThemeDefault)
+	require.Equal(t, "anthropic", resp.Data.AppearanceThemeDefault)
 }
 
 func TestSettingHandler_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {

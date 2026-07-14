@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { opsAPI, type OpsRuntimeLogConfig, type OpsSystemLog, type OpsSystemLogSinkHealth } from '@/api/admin/ops'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Pagination from '@/components/common/Pagination.vue'
@@ -7,6 +8,7 @@ import Select from '@/components/common/Select.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
   platformFilter?: string
@@ -47,11 +49,13 @@ const filters = reactive({
   time_range: '1h' as '5m' | '30m' | '1h' | '6h' | '24h' | '7d' | '30d',
   start_time: '',
   end_time: '',
+  host: '',
   level: '',
   component: '',
   request_id: '',
   client_request_id: '',
   user_id: '',
+  api_key_id: '',
   account_id: '',
   platform: '',
   model: '',
@@ -139,6 +143,7 @@ const formatSystemLogDetail = (row: OpsSystemLog) => {
   if (row.request_id) corrParts.push(`req=${row.request_id}`)
   if (row.client_request_id) corrParts.push(`client_req=${row.client_request_id}`)
   if (row.user_id != null) corrParts.push(`user=${row.user_id}`)
+  if (row.api_key_id != null) corrParts.push(`key=${row.api_key_id}`)
   if (row.account_id != null) corrParts.push(`acc=${row.account_id}`)
   if (row.platform) corrParts.push(`platform=${row.platform}`)
   if (row.model) corrParts.push(`model=${row.model}`)
@@ -195,6 +200,7 @@ const buildQuery = () => {
   }
   if (filters.start_time) query.start_time = toRFC3339(filters.start_time)
   if (filters.end_time) query.end_time = toRFC3339(filters.end_time)
+  if (filters.host.trim()) query.host = filters.host.trim()
   if (filters.level.trim()) query.level = filters.level.trim()
   if (filters.component.trim()) query.component = filters.component.trim()
   if (filters.request_id.trim()) query.request_id = filters.request_id.trim()
@@ -202,6 +208,10 @@ const buildQuery = () => {
   if (filters.user_id.trim()) {
     const v = Number.parseInt(filters.user_id.trim(), 10)
     if (Number.isFinite(v) && v > 0) query.user_id = v
+  }
+  if (filters.api_key_id.trim()) {
+    const v = Number.parseInt(filters.api_key_id.trim(), 10)
+    if (Number.isFinite(v) && v > 0) query.api_key_id = v
   }
   if (filters.account_id.trim()) {
     const v = Number.parseInt(filters.account_id.trim(), 10)
@@ -304,11 +314,13 @@ const cleanupCurrentFilter = async () => {
     const payload = {
       start_time: toRFC3339(filters.start_time),
       end_time: toRFC3339(filters.end_time),
+      host: filters.host.trim() || undefined,
       level: filters.level.trim() || undefined,
       component: filters.component.trim() || undefined,
       request_id: filters.request_id.trim() || undefined,
       client_request_id: filters.client_request_id.trim() || undefined,
       user_id: filters.user_id.trim() ? Number.parseInt(filters.user_id.trim(), 10) : undefined,
+      api_key_id: filters.api_key_id.trim() ? Number.parseInt(filters.api_key_id.trim(), 10) : undefined,
       account_id: filters.account_id.trim() ? Number.parseInt(filters.account_id.trim(), 10) : undefined,
       platform: filters.platform.trim() || undefined,
       model: filters.model.trim() || undefined,
@@ -328,11 +340,13 @@ const resetFilters = () => {
   filters.time_range = '1h'
   filters.start_time = ''
   filters.end_time = ''
+  filters.host = ''
   filters.level = ''
   filters.component = ''
   filters.request_id = ''
   filters.client_request_id = ''
   filters.user_id = ''
+  filters.api_key_id = ''
   filters.account_id = ''
   filters.platform = props.platformFilter || ''
   filters.model = ''
@@ -469,6 +483,14 @@ onMounted(async () => {
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-component" v-model="filters.component" type="text" class="input mt-1" placeholder="如 http.access" />
       </label>
       <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        {{ t('admin.ops.systemLogs.host') }}
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-host" v-model="filters.host" type="text" class="input mt-1" />
+      </label>
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        {{ t('admin.ops.systemLogs.keyId') }}
+        <input data-testid="admin-ops-components-ops-system-log-table-input-filters-api-key-id" v-model="filters.api_key_id" type="text" class="input mt-1" />
+      </label>
+      <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
         request_id
         <input data-testid="admin-ops-components-ops-system-log-table-input-filters-request-id" v-model="filters.request_id" type="text" class="input mt-1" />
       </label>
@@ -499,9 +521,9 @@ onMounted(async () => {
     </div>
 
     <div class="ops-card-filter-bar mb-3 flex flex-wrap gap-2">
-      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-secondary ops-log-query-button" @click="applyFilters">查询</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-apply-filters" type="button" class="btn btn-secondary ops-log-query-button" @click="applyFilters">{{ t('admin.ops.systemLogs.search') }}</button>
       <button data-testid="admin-ops-components-ops-system-log-table-button-reset-filters" type="button" class="filter-menu-button ops-log-reset-button" @click="resetFilters">重置</button>
-      <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button" @click="cleanupCurrentFilter">按当前筛选清理</button>
+      <button data-testid="admin-ops-components-ops-system-log-table-button-cleanup-current-filter" type="button" class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button" @click="cleanupCurrentFilter">{{ t('admin.ops.systemLogs.cleanCurrentFilters') }}</button>
       <button data-testid="admin-ops-components-ops-system-log-table-button-fetch-health" type="button" class="btn btn-primary anthropic-refresh-action-button ops-log-health-refresh-button" @click="fetchHealth">刷新健康指标</button>
     </div>
 
@@ -513,6 +535,7 @@ onMounted(async () => {
           <thead class="bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
             <tr>
               <th class="w-[170px] px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">时间</th>
+              <th class="w-[160px] px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">{{ t('admin.ops.systemLogs.host') }}</th>
               <th class="w-[80px] px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">级别</th>
               <th class="px-3 py-2 text-left text-[11px] font-semibold text-[var(--anthropic-muted)]">日志详细信息</th>
             </tr>
@@ -520,6 +543,9 @@ onMounted(async () => {
           <tbody class="divide-y divide-gray-100 dark:divide-dark-800">
             <tr v-for="row in logs" :key="row.id" class="align-top">
               <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatTime(row.created_at) }}</td>
+              <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <span class="block truncate" :title="row.host || '-'">{{ row.host || '-' }}</span>
+              </td>
               <td class="px-3 py-2 text-xs">
                 <span class="inline-flex rounded-full px-2 py-0.5 font-semibold" :class="levelBadgeClass(row.level)">
                   {{ row.level }}

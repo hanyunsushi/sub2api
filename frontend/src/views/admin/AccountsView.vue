@@ -222,6 +222,7 @@
           vertical-scroll-mode="page"
           :estimate-row-height="72"
           :overscan="5"
+          :virtualize-threshold="50"
         >
           <template #header-select>
             <input data-testid="admin-accounts-input-checkbox"

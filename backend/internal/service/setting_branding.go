@@ -13,10 +13,10 @@ import (
 
 func normalizeAppearanceThemeDefault(value string) string {
 	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "cloudflare", "anthropic":
-		return strings.ToLower(strings.TrimSpace(value))
+	case "anthropic":
+		return "anthropic"
 	default:
-		return "cloudflare"
+		return "anthropic"
 	}
 }
 
@@ -236,7 +236,7 @@ func (s *SettingService) DeleteCustomMenuSVGIconPreset(ctx context.Context, rawU
 func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
 	normalized := normalizeAppearanceThemeDefault(theme)
 	if normalized != strings.ToLower(strings.TrimSpace(theme)) {
-		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be cloudflare or anthropic")
+		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be anthropic")
 	}
 	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyAppearanceThemeDefault: normalized}); err != nil {
 		return "", err

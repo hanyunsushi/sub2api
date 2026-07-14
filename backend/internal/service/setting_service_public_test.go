@@ -57,6 +57,14 @@ func (s *settingPublicRepoStub) Delete(ctx context.Context, key string) error {
 	panic("unexpected Delete call")
 }
 
+func TestSettingService_InitializeDefaultSettings_UsesAnthropicTheme(t *testing.T) {
+	repo := &settingPublicRepoStub{values: map[string]string{}}
+	svc := NewSettingService(repo, &config.Config{})
+
+	require.NoError(t, svc.InitializeDefaultSettings(context.Background()))
+	require.Equal(t, "anthropic", repo.values[SettingKeyAppearanceThemeDefault])
+}
+
 func TestSettingService_GetPublicSettings_ExposesRegistrationEmailSuffixWhitelist(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
@@ -100,7 +108,7 @@ func TestSettingService_GetPublicSettings_ExposesForceEmailOnThirdPartySignup(t 
 	require.True(t, settings.ForceEmailOnThirdPartySignup)
 }
 
-func TestSettingService_GetPublicSettings_ExposesAppearanceThemeDefault(t *testing.T) {
+func TestSettingService_GetPublicSettings_NormalizesRemovedCloudflareTheme(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
 			SettingKeyAppearanceThemeDefault: "cloudflare",
@@ -110,7 +118,7 @@ func TestSettingService_GetPublicSettings_ExposesAppearanceThemeDefault(t *testi
 
 	settings, err := svc.GetPublicSettings(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, "cloudflare", settings.AppearanceThemeDefault)
+	require.Equal(t, "anthropic", settings.AppearanceThemeDefault)
 }
 
 func TestSettingService_GetPublicSettings_ExposesAllowUserViewErrorRequests(t *testing.T) {
@@ -250,7 +258,7 @@ func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefaul
 
 	settings, err := svc.GetPublicSettings(context.Background())
 	require.NoError(t, err)
-	require.Equal(t, "cloudflare", settings.AppearanceThemeDefault)
+	require.Equal(t, "anthropic", settings.AppearanceThemeDefault)
 }
 
 func TestSettingService_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {

@@ -262,7 +262,7 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	rawThemeDefault := strings.ToLower(strings.TrimSpace(settings.AppearanceThemeDefault))
 	themeDefault := normalizeAppearanceThemeDefault(rawThemeDefault)
 	if rawThemeDefault != "" && themeDefault != rawThemeDefault {
-		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be cloudflare or anthropic")
+		return nil, infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be anthropic")
 	}
 	settings.AppearanceThemeDefault = themeDefault
 	updates[SettingKeyAppearanceThemeDefault] = themeDefault

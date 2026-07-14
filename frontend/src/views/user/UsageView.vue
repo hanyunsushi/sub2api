@@ -196,7 +196,7 @@
 
       <template #table>
         <!-- Tab 切换栏 -->
-        <div v-if="errorViewEnabled" class="user-usage-table-tabs mb-0 px-4 pt-3">
+        <div v-if="errorViewEnabled" class="user-usage-table-tabs mb-0 bg-transparent">
           <div
             ref="usageTabsRef"
             class="route-tabs user-usage-route-tabs inline-flex"
