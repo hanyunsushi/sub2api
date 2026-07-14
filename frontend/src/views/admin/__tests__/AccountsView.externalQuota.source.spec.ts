@@ -353,7 +353,7 @@ describe('AccountsView external quota card metadata', () => {
     )
     const themedGlobalHoverBlock = lastCssBlock(
       targetedRepairSource,
-      ':root:is(.theme-cloudflare, .theme-anthropic, [data-theme="cloudflare"], [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
+      ':root:is(.theme-anthropic, [data-theme="anthropic"]) #app .app-layout-content .accounts-table-page .table-wrapper tbody tr:hover'
     )
     const finalAccountRowHover = lastCssBlock(
       targetedRepairSource,

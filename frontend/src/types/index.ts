@@ -211,7 +211,7 @@ export interface PublicSettings {
   doc_url: string
   home_content: string
   hide_ccs_import_button: boolean
-  appearance_theme_default?: 'cloudflare' | 'anthropic'
+  appearance_theme_default?: 'anthropic'
   ai_logo_cdn_base_url?: string
   custom_ai_logo_presets?: string[]
   custom_menu_svg_icon_presets?: string[]

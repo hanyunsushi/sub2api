@@ -158,42 +158,12 @@ describe('channel monitor AI logo contract', () => {
     expect(final81kLayer).toContain('background: #e8e6dc !important;')
   })
 
-  it('keeps the shared auto-refresh button readable in Cloudflare monitor toolbars', () => {
+  it('keeps the shared auto-refresh button on Anthropic surface tokens', () => {
     expect(autoRefreshButtonSource).toContain('auto-refresh-button')
     expect(autoRefreshButtonSource).toContain('auto-refresh-button-menu')
-    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .auto-refresh-button')
-    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .auto-refresh-button :where(svg, path, span)')
-    expect(styleSource).toContain(':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button')
-    expect(styleSource).toContain('.ops-monitor-toolbar-controls .auto-refresh-button :where(svg, path, span)')
-
-    const sharedButtonBlock = cssBlock(
-      styleSource,
-      ':root.theme-cloudflare #app .app-layout-content .auto-refresh-button'
-    )
-    expect(sharedButtonBlock).toContain('background: var(--atelier-paper) !important;')
-    expect(sharedButtonBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(sharedButtonBlock).toContain('border-color: var(--atelier-material-edge) !important;')
-
-    const sharedChildBlock = cssBlock(
-      styleSource,
-      ':root.theme-cloudflare #app .app-layout-content .auto-refresh-button :where(svg, path, span)'
-    )
-    expect(sharedChildBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(sharedChildBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
-
-    const buttonBlock = cssBlock(
-      styleSource,
-      ':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button'
-    )
-    expect(buttonBlock).toContain('background: var(--atelier-paper) !important;')
-    expect(buttonBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(buttonBlock).toContain('border-color: var(--atelier-material-edge) !important;')
-
-    const childBlock = cssBlock(
-      styleSource,
-      ':root.theme-cloudflare #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls .auto-refresh-button :where(svg, path, span)'
-    )
-    expect(childBlock).toContain('color: var(--atelier-ink) !important;')
-    expect(childBlock).toContain('-webkit-text-fill-color: var(--atelier-ink) !important;')
+    expect(autoRefreshButtonSource).toContain('bg-[var(--anthropic-page)]')
+    expect(autoRefreshButtonSource).toContain('border-[var(--anthropic-border)]')
+    expect(autoRefreshButtonSource).toContain('text-[var(--anthropic-muted)]')
+    expect(styleSource).not.toContain('theme-cloudflare')
   })
 })

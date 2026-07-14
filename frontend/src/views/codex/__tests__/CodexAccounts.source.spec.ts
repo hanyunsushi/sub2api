@@ -82,12 +82,12 @@ describe('CodexAccounts source contracts', () => {
   })
 
   it('keeps the final CPA management surfaces and form focus on the Anthropic contract', () => {
-    const finalTokenBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin')
-    const finalSurfaceBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar)')
-    const finalToolbarBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin .codex-toolbar')
-    const finalInputBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea)')
-    const finalMouseFocusBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible)')
-    const finalKeyboardFocusBlock = getCssBlock(':root:not(.theme-cloudflare):not([data-theme="cloudflare"]) #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
+    const finalTokenBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin')
+    const finalSurfaceBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-shell, .codex-topbar, .codex-main, .codex-side, .codex-panel, .codex-toolbar)')
+    const finalToolbarBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin .codex-toolbar')
+    const finalInputBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea)')
+    const finalMouseFocusBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus):not(:focus-visible)')
+    const finalKeyboardFocusBlock = getCssBlock(':root.theme-anthropic #app .app-layout-content .codex-admin :where(.codex-input, .codex-select, .codex-textarea):where(:focus-visible)')
 
     expect(finalTokenBlock).toContain('--codex-surface-strong: var(--anthropic-page, var(--atelier-paper));')
     expect(finalTokenBlock).toContain('--material-card-surface: var(--anthropic-page, var(--atelier-paper));')

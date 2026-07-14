@@ -2478,7 +2478,7 @@
           type="submit"
           form="edit-account-form"
           :disabled="submitting"
-          class="btn btn-primary"
+          class="btn btn-primary account-edit-submit-button"
           data-tour="account-form-submit"
         >
           <svg

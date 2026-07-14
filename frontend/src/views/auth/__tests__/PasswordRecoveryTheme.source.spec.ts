@@ -16,11 +16,11 @@ describe('password recovery auth theme source', () => {
     }
   })
 
-  it('styles recovery states with Atelier and Cloudflare theme tokens instead of fixed Tailwind color panels', () => {
+  it('styles recovery states with shared Anthropic tokens instead of fixed Tailwind color panels', () => {
     for (const source of [forgotSource, resetSource]) {
       expect(source).toContain('var(--atelier-paper')
       expect(source).toContain('var(--atelier-blue')
-      expect(source).toContain(':global(.theme-cloudflare .auth-recovery')
+      expect(source).not.toContain('theme-cloudflare')
       expect(source).not.toContain('bg-green-50')
       expect(source).not.toContain('bg-amber-50')
       expect(source).not.toContain('dark:bg-green-900/20')
@@ -28,13 +28,10 @@ describe('password recovery auth theme source', () => {
     }
   })
 
-  it('scopes theme recovery overrides to descendants instead of restyling the root theme class', () => {
+  it('keeps dark recovery overrides scoped to descendants', () => {
     for (const source of [forgotSource, resetSource]) {
-      expect(source).toContain(':global(.theme-cloudflare .auth-recovery-kicker)')
-      expect(source).toContain(':global(.theme-cloudflare .auth-recovery-status-icon)')
       expect(source).toContain(':global(.dark .auth-recovery-heading)')
       expect(source).toContain(':global(.dark .auth-recovery-status)')
-      expect(source).not.toContain(':global(.theme-cloudflare) .auth-recovery')
       expect(source).not.toContain(':global(.dark) .auth-recovery')
     }
   })

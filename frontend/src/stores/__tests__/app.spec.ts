@@ -424,7 +424,7 @@ describe('useAppStore', () => {
       expect(store.siteLogo).toBe('/logo.png')
       expect(store.siteVersion).toBe('1.0.0')
       expect(store.publicSettingsLoaded).toBe(true)
-      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
+      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
     })
 
     it('无注入配置时返回 false', () => {
@@ -475,7 +475,7 @@ describe('useAppStore', () => {
         custom_endpoints: [],
         linuxdo_oauth_enabled: false,
         backend_mode_enabled: false,
-        appearance_theme_default: 'cloudflare',
+        appearance_theme_default: 'anthropic',
         ai_logo_cdn_base_url: 'https://img.example.com/lobe/light',
         custom_ai_logo_presets: ['https://img.example.com/custom/a.png'],
         version: '1.0.0'
@@ -486,10 +486,10 @@ describe('useAppStore', () => {
 
       expect((window as any).__APP_CONFIG__.table_default_page_size).toBe(1000)
       expect((window as any).__APP_CONFIG__.table_page_size_options).toEqual([20, 100, 1000])
-      expect((window as any).__APP_CONFIG__.appearance_theme_default).toBe('cloudflare')
+      expect((window as any).__APP_CONFIG__.appearance_theme_default).toBe('anthropic')
       expect((window as any).__APP_CONFIG__.ai_logo_cdn_base_url).toBe('https://img.example.com/lobe/light')
       expect((window as any).__APP_CONFIG__.custom_ai_logo_presets).toEqual(['https://img.example.com/custom/a.png'])
-      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
+      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
       expect(localStorage.getItem('table-page-size')).toBeNull()
       expect(localStorage.getItem('table-page-size-source')).toBeNull()
     })
@@ -505,7 +505,7 @@ describe('useAppStore', () => {
       const store = useAppStore()
       store.initFromInjectedConfig()
 
-      expect(useAppearanceTheme().currentTheme.value).toBe('cloudflare')
+      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
       expect(localStorage.getItem('appearance_theme')).toBeNull()
     })
   })

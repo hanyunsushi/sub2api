@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-export type AppearanceThemeId = 'cloudflare' | 'anthropic'
+export type AppearanceThemeId = 'anthropic'
 
 export interface AppearanceThemeOption {
   id: AppearanceThemeId
@@ -11,20 +11,13 @@ const DEFAULT_THEME_STORAGE_KEY = 'appearance_theme_default'
 const LEGACY_LOCAL_THEME_STORAGE_KEY = 'appearance_theme'
 
 export const appearanceThemeOptions: AppearanceThemeOption[] = [
-  { id: 'cloudflare', label: 'Cloudflare' },
   { id: 'anthropic', label: 'Anthropic' },
 ]
 
-const activeTheme = ref<AppearanceThemeId>('cloudflare')
+const activeTheme = ref<AppearanceThemeId>('anthropic')
 
-function normalizeTheme(value: string | null | undefined): AppearanceThemeId {
-  return appearanceThemeOptions.some((theme) => theme.id === value)
-    ? value as AppearanceThemeId
-    : 'cloudflare'
-}
-
-function getInjectedAppearanceThemeDefault(): AppearanceThemeId {
-  return normalizeTheme(window.__APP_CONFIG__?.appearance_theme_default)
+function normalizeTheme(): AppearanceThemeId {
+  return 'anthropic'
 }
 
 function clearLegacyLocalThemeOverride() {
@@ -35,26 +28,25 @@ function clearLegacyLocalThemeOverride() {
   }
 }
 
-function applyTheme(theme: AppearanceThemeId) {
-  activeTheme.value = theme
-  document.documentElement.dataset.theme = theme
-  document.documentElement.classList.toggle('theme-cloudflare', theme === 'cloudflare')
-  document.documentElement.classList.toggle('theme-anthropic', theme === 'anthropic')
+function applyTheme() {
+  activeTheme.value = 'anthropic'
+  document.documentElement.dataset.theme = 'anthropic'
+  document.documentElement.classList.add('theme-anthropic')
   document.documentElement.classList.remove('dark')
 }
 
 export function initAppearanceTheme() {
   clearLegacyLocalThemeOverride()
-  applyTheme(getInjectedAppearanceThemeDefault())
+  applyTheme()
 }
 
-export function setAppearanceTheme(theme: AppearanceThemeId) {
+export function setAppearanceTheme(_theme: AppearanceThemeId) {
   clearLegacyLocalThemeOverride()
-  applyTheme(normalizeTheme(theme))
+  applyTheme()
 }
 
-export function updateAppearanceThemeDefault(theme: AppearanceThemeId) {
-  const normalized = normalizeTheme(theme)
+export function updateAppearanceThemeDefault(_theme: AppearanceThemeId) {
+  const normalized = normalizeTheme()
   try {
     localStorage.setItem(DEFAULT_THEME_STORAGE_KEY, normalized)
   } catch {
@@ -64,7 +56,7 @@ export function updateAppearanceThemeDefault(theme: AppearanceThemeId) {
     window.__APP_CONFIG__.appearance_theme_default = normalized
   }
   clearLegacyLocalThemeOverride()
-  applyTheme(normalized)
+  applyTheme()
 }
 
 export function useAppearanceTheme() {

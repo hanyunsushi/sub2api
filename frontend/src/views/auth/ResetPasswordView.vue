@@ -462,18 +462,6 @@ async function handleSubmit(): Promise<void> {
   color: var(--atelier-blue);
 }
 
-:global(.theme-cloudflare .auth-recovery-kicker),
-:global(.theme-cloudflare .auth-recovery-status-icon) {
-  background: color-mix(in srgb, var(--atelier-paper-2) 84%, #f6821f 16%);
-  border-color: color-mix(in srgb, #f6821f 30%, transparent);
-  color: #b85c00;
-}
-
-:global(.theme-cloudflare .auth-recovery-status) {
-  background: color-mix(in srgb, var(--atelier-paper) 90%, #f6821f 10%);
-  border-color: color-mix(in srgb, #f6821f 28%, var(--atelier-ink) 10%);
-}
-
 :global(.dark .auth-recovery-heading),
 :global(.dark .auth-recovery-status-body h3) {
   color: rgba(248, 251, 255, 0.94);

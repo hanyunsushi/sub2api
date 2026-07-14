@@ -152,23 +152,23 @@ export default {
       fontFamily: {
         sans: [
           'Anthropic Sans',
+          'Source Han Sans SC',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'PingFang SC',
           'Noto Sans CJK SC',
-          'Source Han Sans SC',
           'Microsoft YaHei',
           'system-ui',
           'sans-serif'
         ],
         serif: [
           'Anthropic Serif',
+          'Source Han Serif SC',
           'Georgia',
           'Times New Roman',
           'Songti SC',
           'Noto Serif CJK SC',
-          'Source Han Serif SC',
           'SimSun',
           'serif'
         ],

@@ -662,7 +662,7 @@ describe('Anthropic hover and overlay taxonomy', () => {
     expect(promoCodesViewSource).toContain('class="btn btn-primary promo-create-button"')
 
     expect(usageViewSource).toContain('class="card p-4 usage-time-filter-card table-page-filter-section"')
-    expect(usageFiltersSource).toContain('class="card p-6 usage-filter-card table-page-filter-section"')
+    expect(usageFiltersSource).toContain("props.flat ? 'p-4 sm:p-6' : 'card p-6 usage-filter-card table-page-filter-section'")
     expect(usageFiltersSource).toContain('class="usage-filter-shell table-filter-shell')
     expect(usageFiltersSource).toContain('usage-filter-user-field')
     expect(usageFiltersSource).toContain('usage-filter-api-key-field')
@@ -1902,14 +1902,11 @@ describe('Anthropic hover and overlay taxonomy', () => {
   })
 
   it('mirrors the design-system text selection token contract', () => {
-    expect(styleSource).toContain(':root.theme-anthropic ::selection')
-    expect(styleSource).toContain('--color-clay: #d97757;')
-    expect(styleSource).toContain('--color-slate-dark: #141413;')
     expect(styleSource).toContain('--selection-bg: color-mix(in srgb, var(--color-clay) 50%, transparent);')
     expect(styleSource).toContain('--selection-text: var(--color-slate-dark);')
+    expect(styleSource).toContain('::selection {')
     expect(styleSource).toContain('background: var(--selection-bg);')
-    expect(styleSource).toContain('background: var(--selection-bg, color-mix(in srgb, var(--anthropic-accent) 50%, transparent));')
-    expect(styleSource).toContain('color: var(--selection-text, var(--anthropic-fg));')
+    expect(styleSource).toContain('color: var(--selection-text);')
     expect(designSystemSource).toContain('全局文本选择背景使用 `color-mix(in srgb, clay 50%, transparent)`')
     expect(designSystemCssSource).toContain('--selection-bg: color-mix(in srgb, var(--color-clay) 50%, transparent);')
     expect(designSystemCssSource).toContain('background: var(--selection-bg);')
