@@ -56,6 +56,38 @@
             >
               {{ t("common.refresh") }}
             </button>
+            <div ref="columnDropdownRef" class="relative">
+              <button
+                data-testid="admin-groups-button-column-settings"
+                class="btn btn-secondary groups-column-settings-button"
+                :title="t('admin.groups.columnSettings')"
+                @click="showColumnDropdown = !showColumnDropdown"
+              >
+                <Icon name="grid" size="sm" />
+                <span>{{ t("admin.groups.columnSettings") }}</span>
+              </button>
+              <div
+                v-if="showColumnDropdown"
+                class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-raised)] py-1 shadow-lg"
+              >
+                <button
+                  v-for="col in toggleableColumns"
+                  :key="col.key"
+                  :data-testid="`admin-groups-column-toggle-${col.key}`"
+                  class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)]"
+                  @click="toggleColumn(col.key)"
+                >
+                  <span>{{ col.label }}</span>
+                  <Icon
+                    v-if="isColumnVisible(col.key)"
+                    name="check"
+                    size="sm"
+                    class="text-[var(--anthropic-success)]"
+                    :stroke-width="2"
+                  />
+                </button>
+              </div>
+            </div>
             <button data-testid="admin-groups-button-open-sort-modal"
               @click="openSortModal"
               class="btn btn-secondary groups-sort-button"
@@ -98,6 +130,12 @@
                 value
               }}</span>
             </span>
+          </template>
+
+          <template #cell-id="{ value }">
+            <span class="font-mono text-xs text-gray-500 dark:text-gray-400"
+              >#{{ value }}</span
+            >
           </template>
 
           <template #cell-platform="{ value }">
@@ -3274,8 +3312,20 @@ const { t } = useI18n();
 const appStore = useAppStore();
 const onboardingStore = useOnboardingStore();
 
-const columns = computed<Column[]>(() => [
+const ALWAYS_VISIBLE_COLUMNS = new Set(["name", "actions"]);
+// Default hidden columns (hidden on first load / after schema bumps).
+const DEFAULT_HIDDEN_COLUMNS = ["id"];
+const HIDDEN_COLUMNS_KEY = "group-hidden-columns";
+// Bump when adding new default-hidden columns so existing admins pick them up once.
+const COLUMN_SETTINGS_VERSION_KEY = "group-column-settings-version";
+const COLUMN_SETTINGS_VERSION = 2;
+const VERSION_NEW_HIDDEN_COLUMNS: Record<number, string[]> = {
+  2: ["id"],
+};
+
+const allColumns = computed<Column[]>(() => [
   { key: "name", label: t("admin.groups.columns.name"), sortable: true },
+  { key: "id", label: t("admin.groups.columns.id"), sortable: true },
   {
     key: "platform",
     label: t("admin.groups.columns.platform"),
@@ -3310,6 +3360,118 @@ const columns = computed<Column[]>(() => [
   { key: "status", label: t("admin.groups.columns.status"), sortable: true },
   { key: "actions", label: t("admin.groups.columns.actions"), sortable: false },
 ]);
+
+const toggleableColumns = computed(() =>
+  allColumns.value.filter((col) => !ALWAYS_VISIBLE_COLUMNS.has(col.key)),
+);
+const hiddenColumns = reactive<Set<string>>(new Set());
+const showColumnDropdown = ref(false);
+const columnDropdownRef = ref<HTMLElement | null>(null);
+
+const getValidHiddenColumnKeys = () =>
+  new Set(toggleableColumns.value.map((col) => col.key));
+
+const loadSavedColumns = () => {
+  hiddenColumns.clear();
+  try {
+    const saved = localStorage.getItem(HIDDEN_COLUMNS_KEY);
+    const validKeys = getValidHiddenColumnKeys();
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        parsed
+          .filter(
+            (key): key is string =>
+              typeof key === "string" && validKeys.has(key),
+          )
+          .forEach((key) => hiddenColumns.add(key));
+      }
+
+      // Existing admins: auto-hide columns newly added as default-hidden.
+      const storedVersion = Number(
+        localStorage.getItem(COLUMN_SETTINGS_VERSION_KEY) ?? "1",
+      );
+      if (storedVersion < COLUMN_SETTINGS_VERSION) {
+        let mutated = false;
+        for (let v = storedVersion + 1; v <= COLUMN_SETTINGS_VERSION; v++) {
+          for (const key of VERSION_NEW_HIDDEN_COLUMNS[v] ?? []) {
+            if (validKeys.has(key) && !hiddenColumns.has(key)) {
+              hiddenColumns.add(key);
+              mutated = true;
+            }
+          }
+        }
+        if (mutated) {
+          saveColumnsToStorage();
+        } else {
+          localStorage.setItem(
+            COLUMN_SETTINGS_VERSION_KEY,
+            String(COLUMN_SETTINGS_VERSION),
+          );
+        }
+      }
+    } else {
+      DEFAULT_HIDDEN_COLUMNS.forEach((key) => {
+        if (validKeys.has(key)) hiddenColumns.add(key);
+      });
+      saveColumnsToStorage();
+    }
+  } catch (error) {
+    console.error("Failed to load group column settings:", error);
+    DEFAULT_HIDDEN_COLUMNS.forEach((key) => hiddenColumns.add(key));
+  }
+};
+
+const saveColumnsToStorage = () => {
+  try {
+    const validKeys = getValidHiddenColumnKeys();
+    const keys = [...hiddenColumns].filter((key) => validKeys.has(key));
+    localStorage.setItem(HIDDEN_COLUMNS_KEY, JSON.stringify(keys));
+    localStorage.setItem(
+      COLUMN_SETTINGS_VERSION_KEY,
+      String(COLUMN_SETTINGS_VERSION),
+    );
+  } catch (error) {
+    console.error("Failed to save group column settings:", error);
+  }
+};
+
+const isColumnVisible = (key: string) => !hiddenColumns.has(key);
+const hasVisibleUsageSummaryConsumer = computed(
+  () => isColumnVisible("usage") || isColumnVisible("billing_type"),
+);
+const hasVisibleCapacityColumn = computed(() => isColumnVisible("capacity"));
+
+const toggleColumn = (key: string) => {
+  const validKeys = getValidHiddenColumnKeys();
+  if (!validKeys.has(key)) return;
+
+  const wasHidden = hiddenColumns.has(key);
+  if (wasHidden) {
+    hiddenColumns.delete(key);
+  } else {
+    hiddenColumns.add(key);
+  }
+  saveColumnsToStorage();
+
+  if (wasHidden && (key === "usage" || key === "billing_type")) {
+    loadUsageSummary();
+  }
+  if (wasHidden && key === "capacity") {
+    loadCapacitySummary();
+  }
+};
+
+const columns = computed<Column[]>(() =>
+  allColumns.value.filter(
+    (col) => ALWAYS_VISIBLE_COLUMNS.has(col.key) || !hiddenColumns.has(col.key),
+  ),
+);
+
+if (typeof window !== "undefined") {
+  loadSavedColumns();
+}
 
 // Filter options
 const statusOptions = computed(() => [
@@ -4074,8 +4236,14 @@ const loadGroups = async () => {
     groups.value = response.items;
     pagination.total = response.total;
     pagination.pages = response.pages;
-    loadUsageSummary();
-    loadCapacitySummary();
+    if (hasVisibleUsageSummaryConsumer.value) {
+      loadUsageSummary();
+    } else {
+      usageLoading.value = false;
+    }
+    if (hasVisibleCapacityColumn.value) {
+      loadCapacitySummary();
+    }
   } catch (error: any) {
     if (
       signal.aborted ||
@@ -4100,6 +4268,10 @@ const formatCost = (cost: number): string => {
 };
 
 const loadUsageSummary = async () => {
+  if (!hasVisibleUsageSummaryConsumer.value) {
+    usageLoading.value = false;
+    return;
+  }
   usageLoading.value = true;
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -4120,6 +4292,9 @@ const loadUsageSummary = async () => {
 };
 
 const loadCapacitySummary = async () => {
+  if (!hasVisibleCapacityColumn.value) {
+    return;
+  }
   try {
     const data = await adminAPI.groups.getCapacitySummary();
     const map = new Map<
@@ -4660,6 +4835,9 @@ const handleClickOutside = (event: MouseEvent) => {
     Object.keys(showAccountDropdown.value).forEach((key) => {
       showAccountDropdown.value[key] = false;
     });
+  }
+  if (columnDropdownRef.value && !columnDropdownRef.value.contains(target)) {
+    showColumnDropdown.value = false;
   }
 };
 

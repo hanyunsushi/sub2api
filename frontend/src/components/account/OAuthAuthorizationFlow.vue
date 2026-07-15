@@ -276,7 +276,7 @@
           </div>
         </div>
 
-        <!-- Codex OAuth/session JSON batch import -->
+        <!-- Codex auth.json / session credential batch import -->
         <div v-if="inputMethod === 'codex_session'" class="space-y-4">
           <div
             class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"

@@ -91,6 +91,7 @@ const PROVIDER_TINT: Record<string, string> = {
   openai: 'text-emerald-600 dark:text-emerald-300',
   anthropic: 'text-orange-600 dark:text-orange-300',
   gemini: 'text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]',
+  grok: 'text-[var(--anthropic-fg-muted)] dark:text-[var(--anthropic-fg-muted)]',
 }
 
 const props = defineProps<{
