@@ -268,6 +268,7 @@ function getTypeBadge(log: OpsErrorLog): { label: string; className: string } {
   if (isUpstreamRow(log)) return { label: t('admin.ops.errorLog.typeUpstream'), className: semanticBadgeClass('error') }
   if (phase === 'request' && owner === 'client') return { label: t('admin.ops.errorLog.typeRequest'), className: semanticBadgeClass('warning') }
   if (phase === 'auth' && owner === 'client') return { label: t('admin.ops.errorLog.typeAuth'), className: semanticBadgeClass('info') }
+  if (phase === 'account_auth') return { label: t('admin.ops.errorLog.typeAccountAuth'), className: semanticBadgeClass('warning') }
   if (phase === 'routing' && owner === 'platform') return { label: t('admin.ops.errorLog.typeRouting'), className: semanticBadgeClass('warning') }
   if (phase === 'internal' && owner === 'platform') return { label: t('admin.ops.errorLog.typeInternal'), className: semanticBadgeClass('neutral') }
 

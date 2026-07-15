@@ -39,7 +39,7 @@ func (ChannelMonitor) Fields() []ent.Field {
 			Default("").
 			SchemaType(map[string]string{dialect.Postgres: "text"}),
 		field.Enum("provider").
-			Values("openai", "anthropic", "gemini"),
+			Values("openai", "anthropic", "gemini", "grok"),
 		field.String("api_mode").
 			Default("chat_completions").
 			MaxLen(32).

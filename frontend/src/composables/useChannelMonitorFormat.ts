@@ -16,6 +16,7 @@ import {
   PROVIDER_OPENAI,
   PROVIDER_ANTHROPIC,
   PROVIDER_GEMINI,
+  PROVIDER_GROK,
   STATUS_OPERATIONAL,
   STATUS_DEGRADED,
   STATUS_FAILED,
@@ -57,7 +58,12 @@ export function useChannelMonitorFormat() {
   }
 
   function providerLabel(p: Provider | string): string {
-    if (p === PROVIDER_OPENAI || p === PROVIDER_ANTHROPIC || p === PROVIDER_GEMINI) {
+    if (
+      p === PROVIDER_OPENAI ||
+      p === PROVIDER_ANTHROPIC ||
+      p === PROVIDER_GEMINI ||
+      p === PROVIDER_GROK
+    ) {
       return t(`monitorCommon.providers.${p}`)
     }
     return p || '-'
@@ -71,6 +77,8 @@ export function useChannelMonitorFormat() {
         return WARNING_BADGE
       case PROVIDER_GEMINI:
         return INFO_BADGE
+      case PROVIDER_GROK:
+        return NEUTRAL_BADGE
       default:
         return NEUTRAL_BADGE
     }
@@ -94,6 +102,10 @@ export function useChannelMonitorFormat() {
         return active
           ? `${PICKER_BASE} border-[color-mix(in_srgb,var(--anthropic-info)_48%,transparent)] text-[var(--anthropic-info)]`
           : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] hover:text-[var(--anthropic-info)]`
+      case PROVIDER_GROK:
+        return active
+          ? `${PICKER_BASE} border-zinc-500 text-zinc-800 dark:border-zinc-400 dark:text-zinc-200`
+          : `${PICKER_BASE} border-[var(--anthropic-border-subtle)] text-[var(--anthropic-muted)] hover:border-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200`
       default:
         return active
           ? `${PICKER_BASE} border-[var(--anthropic-border-hover)]`
@@ -165,6 +177,8 @@ export function providerGradient(provider: string): string {
       return 'anthropic-stat-icon-warning'
     case PROVIDER_GEMINI:
       return 'anthropic-stat-icon-info'
+    case PROVIDER_GROK:
+      return 'anthropic-icon-tile'
     default:
       return 'anthropic-icon-tile'
   }

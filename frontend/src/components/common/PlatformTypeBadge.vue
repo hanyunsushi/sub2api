@@ -33,6 +33,17 @@
     <!-- Row 2: Plan type + Privacy mode (only if either exists) -->
     <div v-if="planLabel || privacyBadge" class="inline-flex flex-wrap items-center gap-1">
       <span v-if="planLabel" :class="['platform-type-badge__plan inline-flex items-center gap-1 px-1.5 py-1', platformToneClass, planBadgeClass]">
+        <GrokFreeIcon
+          v-if="isGrokFreePlan"
+          data-testid="grok-free-plan-icon"
+        />
+        <Icon
+          v-else-if="planIconName"
+          :name="planIconName"
+          size="xs"
+          data-testid="grok-plan-icon"
+          aria-hidden="true"
+        />
         <span>{{ planLabel }}</span>
       </span>
       <span
@@ -57,6 +68,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { AccountPlatform, AccountType } from '@/types'
+import GrokFreeIcon from './GrokFreeIcon.vue'
 import PlatformIcon from './PlatformIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 
@@ -65,6 +77,7 @@ const { t } = useI18n()
 interface Props {
   platform: AccountPlatform
   type: AccountType
+  authMode?: string
   planType?: string
   privacyMode?: string
   subscriptionExpiresAt?: string
@@ -82,8 +95,15 @@ const platformLabel = computed(() => {
 })
 
 const platformToneClass = computed(() => `platform-type-badge--${platformKey.value}`)
+const normalizedAuthMode = computed(() =>
+  (props.authMode || '').trim().toLowerCase().replace(/[\s_-]+/g, '')
+)
 
 const typeLabel = computed(() => {
+  if (props.platform === 'openai' && props.type === 'oauth') {
+    if (normalizedAuthMode.value === 'agentidentity') return 'Agent Identity'
+    if (normalizedAuthMode.value === 'personalaccesstoken') return 'PAT'
+  }
   switch (props.type) {
     case 'oauth':
       return 'OAuth'
@@ -100,10 +120,13 @@ const typeLabel = computed(() => {
   }
 })
 
+const normalizedPlanType = computed(() =>
+  (props.planType || '').trim().toLowerCase().replace(/[\s_-]+/g, '')
+)
+
 const planLabel = computed(() => {
-  if (!props.planType) return ''
-  const lower = props.planType.toLowerCase()
-  switch (lower) {
+  if (!normalizedPlanType.value) return ''
+  switch (normalizedPlanType.value) {
     case 'plus':
       return 'Plus'
     case 'team':
@@ -112,12 +135,33 @@ const planLabel = computed(() => {
     case 'pro':
       return 'Pro'
     case 'free':
-      return 'Free'
+    case 'basic':
+      return props.platform === 'grok' ? 'Grok Free' : 'Free'
+    case 'supergrok':
+      return 'SuperGrok'
+    case 'supergrokheavy':
+      return 'SuperGrok Heavy'
     case 'abnormal':
       return t('admin.accounts.subscriptionAbnormal')
     default:
       return props.planType
   }
+})
+
+const isGrokFreePlan = computed(() =>
+  props.platform === 'grok' &&
+  (normalizedPlanType.value === 'free' || normalizedPlanType.value === 'basic')
+)
+
+const planIconName = computed<'bolt' | null>(() => {
+  if (props.platform !== 'grok') return null
+  if (
+    normalizedPlanType.value === 'supergrok' ||
+    normalizedPlanType.value === 'supergrokheavy'
+  ) {
+    return 'bolt'
+  }
+  return null
 })
 
 const platformClass = computed(() => {
@@ -129,7 +173,7 @@ const typeClass = computed(() => {
 })
 
 const planBadgeClass = computed(() => {
-  if (props.planType && props.planType.toLowerCase() === 'abnormal') {
+  if (normalizedPlanType.value === 'abnormal') {
     return 'platform-type-badge__status--error'
   }
   return 'platform-type-badge__segment--plan'
@@ -138,7 +182,7 @@ const planBadgeClass = computed(() => {
 // Subscription expiration label (non-free only)
 const expiresLabel = computed(() => {
   if (!props.subscriptionExpiresAt || !props.planType) return ''
-  if (props.planType.toLowerCase() === 'free') return ''
+  if (normalizedPlanType.value === 'free' || normalizedPlanType.value === 'basic') return ''
   try {
     const d = new Date(props.subscriptionExpiresAt)
     if (isNaN(d.getTime())) return ''
