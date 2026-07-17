@@ -77,9 +77,24 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.auth-main-inner {
+  --auth-flow-gap: 20px;
+}
+
 .auth-footer-link :deep(.auth-footer-copy),
 .auth-copyright {
   color: var(--anthropic-muted, var(--atelier-muted));
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.auth-footer-link,
+.auth-copyright {
+  margin-top: var(--auth-flow-gap);
+}
+
+.auth-footer-link:empty {
+  display: none;
 }
 
 .auth-footer-link :deep(.auth-footer-link-strong) {

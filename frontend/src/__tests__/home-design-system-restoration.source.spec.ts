@@ -71,23 +71,52 @@ describe('home design-system restoration', () => {
     expect(home).toContain('.home-provider-specimen:hover .home-provider-mark')
   })
 
-  it('keeps the linked-card anatomy compact inside fixed one-screen viewports', () => {
-    expect(cssBlock('.home-feature-section')).toContain('align-content: start;')
+  it('uses a shared left-copy right-card layout with portrait cards on desktop', () => {
+    expect(home.match(/class="home-section-layout"/g)).toHaveLength(2)
+    expect(home).toContain('class="home-section-copy home-feature-copy"')
+    expect(home).toContain('class="home-section-copy home-provider-copy"')
+
+    expect(cssBlock('.home-section-layout')).toContain(
+      'grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.8fr);',
+    )
+    expect(cssBlock('.home-capability-grid')).toContain(
+      'grid-template-columns: repeat(4, minmax(0, 1fr));',
+    )
+    expect(cssBlock('.home-provider-specimen-grid')).toContain(
+      'grid-template-columns: repeat(5, minmax(0, 1fr));',
+    )
+    expect(cssBlock('.home-ascii-shell .home-cap-card')).toContain('aspect-ratio: 3 / 5;')
+    expect(cssBlock('.home-ascii-shell .home-provider-specimen')).toContain('aspect-ratio: 3 / 5;')
+
+    expect(home).toContain('.home-section-layout {\n    grid-template-columns: 1fr;')
+    expect(home).toContain('.home-ascii-shell .home-cap-card,\n  .home-ascii-shell .home-provider-specimen {\n    aspect-ratio: auto;')
+    expect(home).toContain('min-height: clamp(320px, 90vw, 360px);')
+    expect(home).not.toContain('.home-ascii-shell .home-cap-card {\n    min-height: 0;\n  }')
+    expect(home).not.toContain('.home-ascii-shell .home-provider-specimen {\n    min-height: 0;')
+  })
+
+  it('centers the portrait linked-card anatomy inside fixed one-screen viewports', () => {
+    expect(cssBlock('.home-feature-section')).toContain('align-content: center;')
     expect(cssBlock('.home-feature-section')).toContain('gap: 24px;')
     expect(cssBlock('.home-ascii-shell .home-capability-kicker-item')).toContain('min-height: 64px;')
     expect(cssBlock('.home-ascii-shell .home-cap-card')).toContain('min-height: 0;')
+    expect(cssBlock('.home-ascii-shell .home-cap-card')).toContain('aspect-ratio: 3 / 5;')
     expect(cssBlock('.home-cap-card__visual')).toContain('aspect-ratio: auto;')
-    expect(cssBlock('.home-cap-card__visual')).toContain('min-height: 104px;')
-    expect(cssBlock('.home-provider-section')).toContain('align-content: start;')
+    expect(cssBlock('.home-cap-card__visual')).toContain('min-height: 0;')
+    expect(cssBlock('.home-provider-section')).toContain('align-content: center;')
     expect(cssBlock('.home-ascii-shell .home-provider-specimen')).toContain('min-height: 0;')
-    expect(cssBlock('.home-provider-swatch')).toContain('aspect-ratio: auto;')
-    expect(cssBlock('.home-provider-swatch')).toContain('min-height: 96px;')
+    expect(cssBlock('.home-ascii-shell .home-provider-specimen')).toContain('aspect-ratio: 3 / 5;')
+    expect(cssBlock('.home-ascii-shell .home-provider-specimen')).toContain(
+      'grid-template-rows: minmax(0, 0.95fr) minmax(0, 1.05fr);',
+    )
+    expect(cssBlock('.home-provider-swatch')).toContain('min-height: 0;')
   })
 
-  it('moves both desktop card grids down without adding mobile spacing', () => {
-    expect(cssBlock('.home-capability-grid')).toContain('margin-top: 72px;')
-    expect(cssBlock('.home-provider-specimen-grid')).toContain('margin-top: 72px;')
-    expect(home).toContain('.home-capability-grid,\n  .home-provider-specimen-grid {\n    margin-top: 0;')
+  it('keeps both card grids aligned within the shared section layout', () => {
+    expect(cssBlock('.home-capability-grid')).toContain('align-self: center;')
+    expect(cssBlock('.home-provider-specimen-grid')).toContain('align-self: center;')
+    expect(cssBlock('.home-capability-grid')).not.toContain('margin-top: 72px;')
+    expect(cssBlock('.home-provider-specimen-grid')).not.toContain('margin-top: 72px;')
   })
 
   it('does not collapse low-height desktop windows into the mobile single-column layout', () => {
@@ -104,5 +133,17 @@ describe('home design-system restoration', () => {
     expect(home).not.toContain('max-width: 100vw;')
     expect(home).not.toContain('margin-left: calc(50% - 50vw);')
     expect(home).not.toContain('margin-right: calc(50% - 50vw);')
+  })
+
+  it('keeps mobile cards and hero rings in compact multi-column grids', () => {
+    expect(home).toContain(
+      '.home-capability-grid,\n  .home-provider-specimen-grid {\n    grid-template-columns: repeat(2, minmax(0, 1fr));',
+    )
+    expect(home).toContain(
+      '.home-capability-kicker,\n  .home-rings {\n    grid-template-columns: repeat(3, minmax(0, 1fr));',
+    )
+    expect(home).not.toContain(
+      '.home-provider-specimen-grid,\n  .home-rings {\n    grid-template-columns: 1fr;',
+    )
   })
 })
