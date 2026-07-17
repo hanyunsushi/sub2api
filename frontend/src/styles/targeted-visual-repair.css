@@ -1780,7 +1780,7 @@ body,
   display: grid;
   width: 100%;
   max-width: 440px;
-  margin-left: auto;
+  margin-inline: auto;
 }
 
 .auth-ascii-shell :where(.auth-kicker) {
@@ -1987,7 +1987,7 @@ body,
 
 .auth-ascii-shell :where(.auth-fields) {
   display: grid;
-  gap: 20px;
+  gap: var(--auth-flow-gap);
 }
 
 .auth-ascii-shell :where(.input-label) {
@@ -2139,7 +2139,7 @@ body,
 }
 
 .auth-ascii-shell :where(.auth-submit-button) {
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 .auth-ascii-shell :where(.auth-divider) {

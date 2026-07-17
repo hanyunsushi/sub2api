@@ -234,230 +234,227 @@
         </section>
 
         <section class="home-section home-feature-section" aria-labelledby="home-features-title">
-          <div
-            class="home-section-label"
-            data-home-reveal
-            data-home-module="feature-section-label"
-          >
-            <span>II</span>
-            <span>Capabilities</span>
-          </div>
-
-          <div class="home-capability-kicker" aria-label="Feature tags">
+          <div class="home-section-layout">
             <div
-              class="home-capability-kicker-item"
+              class="home-section-copy home-feature-copy"
               data-home-reveal
-              data-home-module="capability-kicker"
-              style="--home-reveal-delay: 80ms"
+              data-home-module="feature-copy"
             >
-              <Icon name="swap" size="sm" />
-              <b>01</b>
-              <span>{{ t('home.tags.subscriptionToApi') }}</span>
+              <div class="home-section-label" data-home-module="feature-section-label">
+                <span>II</span>
+                <span>Capabilities</span>
+              </div>
+
+              <div class="home-section-intro">
+                <h2 id="home-features-title" class="home-section-title">
+                  {{ t('home.solutions.title') }}
+                </h2>
+                <p class="home-section-copy-text">
+                  {{ t('home.solutions.subtitle') }}
+                </p>
+              </div>
+
+              <div class="home-capability-kicker" aria-label="Feature tags">
+                <div class="home-capability-kicker-item">
+                  <Icon name="swap" size="sm" />
+                  <b>01</b>
+                  <span>{{ t('home.tags.subscriptionToApi') }}</span>
+                </div>
+                <div class="home-capability-kicker-item">
+                  <Icon name="shield" size="sm" />
+                  <b>02</b>
+                  <span>{{ t('home.tags.stickySession') }}</span>
+                </div>
+                <div class="home-capability-kicker-item">
+                  <Icon name="chart" size="sm" />
+                  <b>03</b>
+                  <span>{{ t('home.tags.realtimeBilling') }}</span>
+                </div>
+              </div>
             </div>
-            <div
-              class="home-capability-kicker-item"
-              data-home-reveal
-              data-home-module="capability-kicker"
-              style="--home-reveal-delay: 140ms"
-            >
-              <Icon name="shield" size="sm" />
-              <b>02</b>
-              <span>{{ t('home.tags.stickySession') }}</span>
+
+            <div class="home-capability-grid home-linked-card-grid">
+              <article
+                class="home-cap-card home-cap-card-featured"
+                data-home-reveal
+                data-home-module="cap-card"
+                style="--home-reveal-delay: 160ms"
+              >
+                <div class="home-cap-card__visual">
+                  <span class="home-card-index">01</span>
+                  <Icon name="server" size="lg" />
+                </div>
+                <div class="home-cap-card__body">
+                  <h3>{{ t('home.features.unifiedGateway') }}</h3>
+                  <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
+                </div>
+              </article>
+
+              <article
+                class="home-cap-card home-cap-card-dust"
+                data-home-reveal
+                data-home-module="cap-card"
+                style="--home-reveal-delay: 240ms"
+              >
+                <div class="home-cap-card__visual">
+                  <span class="home-card-index">02</span>
+                  <span class="home-card-glyph">A</span>
+                </div>
+                <div class="home-cap-card__body">
+                  <h3>{{ t('home.features.multiAccount') }}</h3>
+                  <p>{{ t('home.features.multiAccountDesc') }}</p>
+                </div>
+              </article>
+
+              <article
+                class="home-cap-card home-cap-card-ink"
+                data-home-reveal
+                data-home-module="cap-card"
+                style="--home-reveal-delay: 320ms"
+              >
+                <div class="home-cap-card__visual">
+                  <span class="home-card-index">03</span>
+                  <span class="home-card-glyph">Q</span>
+                </div>
+                <div class="home-cap-card__body">
+                  <h3>{{ t('home.features.balanceQuota') }}</h3>
+                  <p>{{ t('home.features.balanceQuotaDesc') }}</p>
+                </div>
+              </article>
+
+              <article
+                class="home-cap-card home-cap-card-paper"
+                data-home-reveal
+                data-home-module="cap-card"
+                style="--home-reveal-delay: 400ms"
+              >
+                <div class="home-cap-card__visual">
+                  <span class="home-card-index">04</span>
+                  <span class="home-card-glyph">M</span>
+                </div>
+                <div class="home-cap-card__body">
+                  <h3>{{ t('home.providers.title') }}</h3>
+                  <p>{{ t('home.providers.description') }}</p>
+                </div>
+              </article>
             </div>
-            <div
-              class="home-capability-kicker-item"
-              data-home-reveal
-              data-home-module="capability-kicker"
-              style="--home-reveal-delay: 200ms"
-            >
-              <Icon name="chart" size="sm" />
-              <b>03</b>
-              <span>{{ t('home.tags.realtimeBilling') }}</span>
-            </div>
-          </div>
-
-          <div class="home-capability-grid home-linked-card-grid">
-            <article
-              class="home-cap-card home-cap-card-featured"
-              data-home-reveal
-              data-home-module="cap-card"
-              style="--home-reveal-delay: 260ms"
-            >
-              <div class="home-cap-card__visual">
-                <span class="home-card-index">01</span>
-                <Icon name="server" size="lg" />
-              </div>
-              <div class="home-cap-card__body">
-                <h2 id="home-features-title">{{ t('home.features.unifiedGateway') }}</h2>
-                <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
-              </div>
-            </article>
-
-            <article
-              class="home-cap-card home-cap-card-dust"
-              data-home-reveal
-              data-home-module="cap-card"
-              style="--home-reveal-delay: 340ms"
-            >
-              <div class="home-cap-card__visual">
-                <span class="home-card-index">02</span>
-                <span class="home-card-glyph">A</span>
-              </div>
-              <div class="home-cap-card__body">
-                <h3>{{ t('home.features.multiAccount') }}</h3>
-                <p>{{ t('home.features.multiAccountDesc') }}</p>
-              </div>
-            </article>
-
-            <article
-              class="home-cap-card home-cap-card-ink"
-              data-home-reveal
-              data-home-module="cap-card"
-              style="--home-reveal-delay: 420ms"
-            >
-              <div class="home-cap-card__visual">
-                <span class="home-card-index">03</span>
-                <span class="home-card-glyph">Q</span>
-              </div>
-              <div class="home-cap-card__body">
-                <h3>{{ t('home.features.balanceQuota') }}</h3>
-                <p>{{ t('home.features.balanceQuotaDesc') }}</p>
-              </div>
-            </article>
-
-            <article
-              class="home-cap-card home-cap-card-paper"
-              data-home-reveal
-              data-home-module="cap-card"
-              style="--home-reveal-delay: 500ms"
-            >
-              <div class="home-cap-card__visual">
-                <span class="home-card-index">04</span>
-                <span class="home-card-glyph">M</span>
-              </div>
-              <div class="home-cap-card__body">
-                <h3>{{ t('home.providers.title') }}</h3>
-                <p>{{ t('home.providers.description') }}</p>
-              </div>
-            </article>
           </div>
         </section>
 
         <section class="home-section home-provider-section" aria-labelledby="home-providers-title">
-          <div
-            class="home-section-label"
-            data-home-reveal
-            data-home-module="provider-section-label"
-          >
-            <span>III</span>
-            <span>Provider Matrix</span>
-          </div>
+          <div class="home-section-layout">
+            <div
+              class="home-section-copy home-provider-copy"
+              data-home-reveal
+              data-home-module="provider-copy"
+            >
+              <div class="home-section-label" data-home-module="provider-section-label">
+                <span>III</span>
+                <span>Provider Matrix</span>
+              </div>
 
-          <div
-            class="home-provider-intro"
-            data-home-reveal
-            data-home-module="provider-intro"
-            style="--home-reveal-delay: 80ms"
-          >
-            <h2 id="home-providers-title" class="home-section-title">
-              {{ t('home.providers.title') }}
-            </h2>
-            <p class="home-section-copy">
-              {{ t('home.providers.description') }}
-            </p>
-          </div>
+              <div class="home-section-intro home-provider-intro">
+                <h2 id="home-providers-title" class="home-section-title">
+                  {{ t('home.providers.title') }}
+                </h2>
+                <p class="home-section-copy-text">
+                  {{ t('home.providers.description') }}
+                </p>
+              </div>
+            </div>
 
-          <div class="home-provider-specimen-grid home-linked-card-grid">
-            <article
-              class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"
-              data-home-reveal
-              data-home-module="provider-specimen"
-              style="--home-reveal-delay: 160ms"
-            >
-              <div class="home-provider-swatch" data-id="Provider 01" data-hex="/v1">
-                <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="anthropic" model="claude" prefer-model-icon />
-                </span>
-              </div>
-              <div class="home-provider-meta">
-                <span class="home-provider-index">01</span>
-                <h3>{{ t('home.providers.claude') }}</h3>
-                <p>{{ t('home.providers.description') }}</p>
-                <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
-              </div>
-            </article>
-            <article
-              class="home-provider-specimen"
-              data-home-reveal
-              data-home-module="provider-specimen"
-              style="--home-reveal-delay: 220ms"
-            >
-              <div class="home-provider-swatch" data-id="Provider 02" data-hex="GPT">
-                <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="openai" model="gpt" />
-                </span>
-              </div>
-              <div class="home-provider-meta">
-                <span class="home-provider-index">02</span>
-                <h3>GPT</h3>
-                <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
-                <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
-              </div>
-            </article>
-            <article
-              class="home-provider-specimen home-provider-specimen-ink"
-              data-home-reveal
-              data-home-module="provider-specimen"
-              style="--home-reveal-delay: 280ms"
-            >
-              <div class="home-provider-swatch" data-id="Provider 03" data-hex="Gemini">
-                <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="gemini" model="gemini" />
-                </span>
-              </div>
-              <div class="home-provider-meta">
-                <span class="home-provider-index">03</span>
-                <h3>{{ t('home.providers.gemini') }}</h3>
-                <p>{{ t('home.features.multiAccountDesc') }}</p>
-                <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
-              </div>
-            </article>
-            <article
-              class="home-provider-specimen home-provider-specimen-dust"
-              data-home-reveal
-              data-home-module="provider-specimen"
-              style="--home-reveal-delay: 340ms"
-            >
-              <div class="home-provider-swatch" data-id="Provider 04" data-hex="AG">
-                <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="antigravity" model="antigravity" />
-                </span>
-              </div>
-              <div class="home-provider-meta">
-                <span class="home-provider-index">04</span>
-                <h3>{{ t('home.providers.antigravity') }}</h3>
-                <p>{{ t('home.features.balanceQuotaDesc') }}</p>
-                <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
-              </div>
-            </article>
-            <article
-              class="home-provider-specimen home-provider-specimen-muted"
-              data-home-reveal
-              data-home-module="provider-specimen"
-              style="--home-reveal-delay: 400ms"
-            >
-              <div class="home-provider-swatch" data-id="Provider 05" data-hex="+">
-                <span class="home-provider-mark home-provider-logo-mark">
-                  <ProviderBrandIcon provider="codex" model="codex" />
-                </span>
-              </div>
-              <div class="home-provider-meta">
-                <span class="home-provider-index">05</span>
-                <h3>{{ t('home.providers.more') }}</h3>
-                <p>{{ t('home.providers.description') }}</p>
-                <b class="home-provider-status">{{ t('home.providers.soon') }}</b>
-              </div>
-            </article>
+            <div class="home-provider-specimen-grid home-linked-card-grid">
+              <article
+                class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"
+                data-home-reveal
+                data-home-module="provider-specimen"
+                style="--home-reveal-delay: 160ms"
+              >
+                <div class="home-provider-swatch" data-id="Provider 01" data-hex="/v1">
+                  <span class="home-provider-mark home-provider-logo-mark">
+                    <ProviderBrandIcon provider="anthropic" model="claude" prefer-model-icon />
+                  </span>
+                </div>
+                <div class="home-provider-meta">
+                  <span class="home-provider-index">01</span>
+                  <h3>{{ t('home.providers.claude') }}</h3>
+                  <p>{{ t('home.providers.description') }}</p>
+                  <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
+                </div>
+              </article>
+              <article
+                class="home-provider-specimen"
+                data-home-reveal
+                data-home-module="provider-specimen"
+                style="--home-reveal-delay: 220ms"
+              >
+                <div class="home-provider-swatch" data-id="Provider 02" data-hex="GPT">
+                  <span class="home-provider-mark home-provider-logo-mark">
+                    <ProviderBrandIcon provider="openai" model="gpt" />
+                  </span>
+                </div>
+                <div class="home-provider-meta">
+                  <span class="home-provider-index">02</span>
+                  <h3>GPT</h3>
+                  <p>{{ t('home.features.unifiedGatewayDesc') }}</p>
+                  <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
+                </div>
+              </article>
+              <article
+                class="home-provider-specimen home-provider-specimen-ink"
+                data-home-reveal
+                data-home-module="provider-specimen"
+                style="--home-reveal-delay: 280ms"
+              >
+                <div class="home-provider-swatch" data-id="Provider 03" data-hex="Gemini">
+                  <span class="home-provider-mark home-provider-logo-mark">
+                    <ProviderBrandIcon provider="gemini" model="gemini" />
+                  </span>
+                </div>
+                <div class="home-provider-meta">
+                  <span class="home-provider-index">03</span>
+                  <h3>{{ t('home.providers.gemini') }}</h3>
+                  <p>{{ t('home.features.multiAccountDesc') }}</p>
+                  <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
+                </div>
+              </article>
+              <article
+                class="home-provider-specimen home-provider-specimen-dust"
+                data-home-reveal
+                data-home-module="provider-specimen"
+                style="--home-reveal-delay: 340ms"
+              >
+                <div class="home-provider-swatch" data-id="Provider 04" data-hex="AG">
+                  <span class="home-provider-mark home-provider-logo-mark">
+                    <ProviderBrandIcon provider="antigravity" model="antigravity" />
+                  </span>
+                </div>
+                <div class="home-provider-meta">
+                  <span class="home-provider-index">04</span>
+                  <h3>{{ t('home.providers.antigravity') }}</h3>
+                  <p>{{ t('home.features.balanceQuotaDesc') }}</p>
+                  <b class="home-provider-status">{{ t('home.providers.supported') }}</b>
+                </div>
+              </article>
+              <article
+                class="home-provider-specimen home-provider-specimen-muted"
+                data-home-reveal
+                data-home-module="provider-specimen"
+                style="--home-reveal-delay: 400ms"
+              >
+                <div class="home-provider-swatch" data-id="Provider 05" data-hex="+">
+                  <span class="home-provider-mark home-provider-logo-mark">
+                    <ProviderBrandIcon provider="codex" model="codex" />
+                  </span>
+                </div>
+                <div class="home-provider-meta">
+                  <span class="home-provider-index">05</span>
+                  <h3>{{ t('home.providers.more') }}</h3>
+                  <p>{{ t('home.providers.description') }}</p>
+                  <b class="home-provider-status">{{ t('home.providers.soon') }}</b>
+                </div>
+              </article>
+            </div>
           </div>
         </section>
       </main>
@@ -902,7 +899,7 @@ onBeforeUnmount(() => {
   max-width: none;
   width: 100%;
   box-sizing: border-box;
-  align-content: start;
+  align-content: center;
   gap: 24px;
   padding-top: clamp(48px, 6vh, 64px);
   padding-bottom: clamp(48px, 6vh, 64px);
@@ -914,7 +911,7 @@ onBeforeUnmount(() => {
   max-width: none;
   width: 100%;
   box-sizing: border-box;
-  align-content: start;
+  align-content: center;
   background: var(--anthropic-section, #f0eee6);
   color: var(--atelier-ink);
 }
@@ -1026,7 +1023,7 @@ onBeforeUnmount(() => {
 }
 
 .home-body-copy,
-.home-section-copy,
+.home-section-copy-text,
 .home-footer-text,
 .home-footer-link {
   color: var(--home-muted-solid);
@@ -1360,12 +1357,33 @@ onBeforeUnmount(() => {
 
 .home-feature-section {
   display: grid;
-  gap: 24px;
+  align-content: center;
+}
+
+.home-section-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.8fr);
+  align-items: center;
+  gap: clamp(36px, 5vw, 80px);
+  width: 100%;
+}
+
+.home-section-copy {
+  display: grid;
+  align-content: center;
+  gap: clamp(22px, 3vh, 34px);
+  min-width: 0;
+  max-width: 360px;
+}
+
+.home-section-intro {
+  display: grid;
+  gap: 18px;
 }
 
 .home-capability-kicker {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   border-top: 1px solid var(--atelier-line-strong);
   border-left: 1px solid var(--atelier-line-strong);
 }
@@ -1403,15 +1421,16 @@ onBeforeUnmount(() => {
 .home-capability-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: 72px;
+  align-self: center;
   gap: 16px;
 }
 
 .home-ascii-shell .home-cap-card {
   --home-card-accent: var(--atelier-butter);
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: minmax(0, 1.08fr) minmax(0, 0.92fr);
   min-height: 0;
+  aspect-ratio: 3 / 5;
   overflow: hidden;
   border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   border-radius: 16px;
@@ -1429,7 +1448,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: grid;
   aspect-ratio: auto;
-  min-height: 104px;
+  min-height: 0;
   align-items: end;
   justify-items: end;
   overflow: hidden;
@@ -1456,7 +1475,7 @@ onBeforeUnmount(() => {
   display: grid;
   align-content: start;
   gap: 10px;
-  padding: 18px;
+  padding: clamp(14px, 1.35vw, 20px);
   background: var(--anthropic-page, #faf9f5);
   transition: background-color 350ms ease;
 }
@@ -1538,20 +1557,17 @@ onBeforeUnmount(() => {
 
 .home-provider-section {
   display: grid;
-  align-content: start;
-  gap: clamp(12px, 2vh, 24px);
-  padding-top: clamp(24px, 3.5vh, 44px);
-  padding-bottom: clamp(20px, 3vh, 34px);
+  align-content: center;
+  padding-top: clamp(48px, 6vh, 64px);
+  padding-bottom: clamp(48px, 6vh, 64px);
   overflow: hidden;
 }
 
 .home-provider-intro {
   display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(280px, 0.55fr);
-  align-items: end;
-  gap: clamp(18px, 3vw, 46px);
-  padding-top: 10px;
-  border-top: 1px solid var(--atelier-line-strong);
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 18px;
 }
 
 .home-section-title {
@@ -1570,7 +1586,7 @@ onBeforeUnmount(() => {
   font-style: italic;
 }
 
-.home-section-copy {
+.home-section-copy-text {
   margin: 0;
   max-width: 48ch;
   color: var(--atelier-muted);
@@ -1581,7 +1597,7 @@ onBeforeUnmount(() => {
 .home-provider-specimen-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  margin-top: 72px;
+  align-self: center;
   gap: 16px;
 }
 
@@ -1590,11 +1606,11 @@ onBeforeUnmount(() => {
   --home-chip-text: var(--atelier-ink);
   display: grid;
   grid-column: auto;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: minmax(0, 0.95fr) minmax(0, 1.05fr);
   min-height: 0;
   width: 100%;
   height: auto;
-  aspect-ratio: auto;
+  aspect-ratio: 3 / 5;
   overflow: hidden;
   border: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
   border-radius: 16px;
@@ -1658,7 +1674,7 @@ onBeforeUnmount(() => {
   aspect-ratio: auto;
   align-items: end;
   justify-items: end;
-  min-height: 96px;
+  min-height: 0;
   overflow: hidden;
   padding: 1.25rem 0 0 1.25rem;
   border-bottom: 1px solid var(--anthropic-border-subtle, rgba(20, 19, 19, 0.08));
@@ -1720,7 +1736,7 @@ onBeforeUnmount(() => {
   display: grid;
   align-content: start;
   gap: 7px;
-  padding: 14px;
+  padding: clamp(12px, 1vw, 16px);
   background: var(--anthropic-page, #faf9f5);
   transition: background-color 350ms ease;
 }
@@ -1856,9 +1872,13 @@ onBeforeUnmount(() => {
   }
 
   .home-hero-grid,
-  .home-hero-lead,
-  .home-provider-intro {
+  .home-hero-lead {
     grid-template-columns: 1fr;
+  }
+
+  .home-section-layout {
+    grid-template-columns: minmax(200px, 0.62fr) minmax(0, 1.38fr);
+    gap: clamp(28px, 4vw, 48px);
   }
 
   .home-capability-grid,
@@ -1955,16 +1975,47 @@ onBeforeUnmount(() => {
     overflow: visible;
   }
 
-  .home-capability-grid,
-  .home-capability-kicker,
-  .home-provider-specimen-grid,
-  .home-rings {
+  .home-section-layout {
     grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .home-section-copy {
+    max-width: 100%;
+  }
+
+  .home-capability-grid,
+  .home-provider-specimen-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-capability-kicker,
+  .home-rings {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .home-capability-grid,
   .home-provider-specimen-grid {
     margin-top: 0;
+  }
+
+  .home-ascii-shell .home-cap-card,
+  .home-ascii-shell .home-provider-specimen {
+    aspect-ratio: auto;
+    min-height: clamp(320px, 90vw, 360px);
+  }
+
+  .home-ascii-shell .home-cap-card {
+    grid-template-rows: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  }
+
+  .home-ascii-shell .home-provider-specimen {
+    grid-template-rows: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  }
+
+  .home-cap-card__body,
+  .home-provider-meta {
+    padding: 12px;
   }
 
   .home-index-card {
@@ -1989,7 +2040,7 @@ onBeforeUnmount(() => {
   }
 
   .home-body-copy,
-  .home-section-copy {
+  .home-section-copy-text {
     font-size: 15px;
   }
 
@@ -1999,7 +2050,21 @@ onBeforeUnmount(() => {
 
   .home-ascii-shell .home-cap-card h2,
   .home-ascii-shell .home-cap-card h3 {
-    font-size: clamp(21px, 7vw, 27px);
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  .home-ascii-shell .home-cap-card p {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .home-provider-meta h3 {
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  .home-provider-meta p {
+    font-size: 12px;
+    line-height: 1.35;
   }
 
   .home-section-title {
@@ -2016,15 +2081,6 @@ onBeforeUnmount(() => {
     box-shadow:
       inset 0 1px 0 rgba(255, 250, 240, 0.1),
       0 16px 42px -34px rgba(0, 0, 0, 0.72);
-  }
-
-  .home-ascii-shell .home-cap-card {
-    min-height: 0;
-  }
-
-  .home-ascii-shell .home-provider-specimen {
-    min-height: 0;
-    grid-template-rows: minmax(92px, auto) auto;
   }
 
   .home-provider-swatch {
@@ -2105,6 +2161,39 @@ onBeforeUnmount(() => {
     width: 16px;
     height: 16px;
     font-size: 9px;
+  }
+
+  .home-rings {
+    gap: 8px;
+  }
+
+  .home-ring {
+    padding: 8px;
+  }
+
+  .home-ring strong {
+    font-size: 24px;
+  }
+
+  .home-ring span {
+    margin-top: 4px;
+    font-size: 8px;
+    line-height: 1.2;
+  }
+
+  .home-capability-kicker {
+    gap: 0;
+  }
+
+  .home-ascii-shell .home-capability-kicker-item {
+    grid-template-columns: 1fr;
+    align-content: start;
+    justify-items: start;
+    min-height: 104px;
+    gap: 7px;
+    padding: 12px 10px;
+    font-size: 10px;
+    line-height: 1.35;
   }
 
   .home-section {

@@ -102,6 +102,18 @@
           />
         </div>
 
+        <LoginAgreementPrompt
+          v-if="loginAgreementEnabled"
+          :accepted="agreementAccepted"
+          :documents="loginAgreementDocuments"
+          :mode="loginAgreementMode"
+          :updated-at="loginAgreementUpdatedAt"
+          :visible="showAgreementModal"
+          @accept="acceptLoginAgreement"
+          @reject="rejectLoginAgreement"
+          @open="showAgreementModal = true"
+        />
+
         <!-- Submit Button -->
         <button data-testid="auth-login-button-submit"
           type="submit"
@@ -131,18 +143,6 @@
           <Icon v-else name="login" size="md" class="mr-2" />
           {{ isLoading ? t('auth.signingIn') : t('auth.signIn') }}
         </button>
-
-        <LoginAgreementPrompt
-          v-if="loginAgreementEnabled"
-          :accepted="agreementAccepted"
-          :documents="loginAgreementDocuments"
-          :mode="loginAgreementMode"
-          :updated-at="loginAgreementUpdatedAt"
-          :visible="showAgreementModal"
-          @accept="acceptLoginAgreement"
-          @reject="rejectLoginAgreement"
-          @open="showAgreementModal = true"
-        />
 
         <div v-if="showOAuthLogin" class="space-y-3 pt-1">
           <div class="auth-divider">

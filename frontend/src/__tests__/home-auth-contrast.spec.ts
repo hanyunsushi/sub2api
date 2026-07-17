@@ -297,7 +297,7 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
     expect(cssBlock(home, '.home-ascii-shell .home-provider-specimen')).toContain('border-radius: 16px;')
     expect(cssBlock(home, '.home-ascii-shell .home-provider-specimen')).toContain('background: var(--anthropic-page, #faf9f5);')
     expect(cssBlock(home, '.home-ascii-shell .home-provider-specimen')).not.toContain('background: var(--atelier-blue);')
-    expect(home).toContain('<article\n              class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"')
+    expect(home).toContain('class="home-provider-specimen home-provider-specimen-featured home-provider-specimen-claude"')
     expect(home).toContain('</article>')
     expect(home).not.toContain('<PixelCard')
     expect(home).not.toContain('</PixelCard>')
@@ -366,7 +366,7 @@ describe('home and auth contrast on Atelier structured color surfaces', () => {
   it('keeps the restored home provider cards free of the failed pixel/glass wrappers', () => {
     const home = readFile('src/views/HomeView.vue')
 
-    expect(home).toContain('<article\n              class="home-provider-specimen')
+    expect(home).toContain('class="home-provider-specimen')
     expect(home).not.toContain('PixelCard')
     expect(home).not.toContain('pixel-card')
     expect(home).not.toContain('FluidGlassButton')
