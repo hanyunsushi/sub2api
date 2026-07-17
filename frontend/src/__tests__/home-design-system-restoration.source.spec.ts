@@ -71,6 +71,26 @@ describe('home design-system restoration', () => {
     expect(home).toContain('.home-provider-specimen:hover .home-provider-mark')
   })
 
+  it('uses four local official illustrations with the canonical linked-hover image placement', () => {
+    const illustrationPaths = [
+      '/home-illustrations/036c01a9e427ea0f4d1e6c7221e4f6dce2259bf7-1000x1000.svg',
+      '/home-illustrations/0df729ce74e4c9dd62c3342c9549ce6c7cef1202-1000x1000.svg',
+      '/home-illustrations/1576ae23eaf481f33bd36ab468171cc69d12361a-1000x1000.svg',
+      '/home-illustrations/1c3e87fd90491089b2971dc34f9f75bb8a80f713-1000x1000.svg',
+    ]
+
+    illustrationPaths.forEach((path) => expect(home).toContain(`src="${path}"`))
+    expect(home.match(/class="home-cap-card__image"/g)).toHaveLength(4)
+    expect(home).not.toContain('class="home-card-glyph"')
+    expect(home).not.toContain('<Icon name="server" size="lg" />')
+
+    expect(cssBlock('.home-cap-card__image')).toContain('object-fit: cover;')
+    expect(cssBlock('.home-cap-card__image')).toContain('transform-origin: right bottom;')
+    expect(home).toContain('.home-cap-card:hover .home-cap-card__image')
+    expect(home).toContain('.home-cap-card:focus-within .home-cap-card__image')
+    expect(home).toContain('transform: scale(1.045);')
+  })
+
   it('uses a shared left-copy right-card layout with portrait cards on desktop', () => {
     expect(home.match(/class="home-section-layout"/g)).toHaveLength(2)
     expect(home).toContain('class="home-section-copy home-feature-copy"')
