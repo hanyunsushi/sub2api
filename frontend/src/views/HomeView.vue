@@ -282,7 +282,13 @@
               >
                 <div class="home-cap-card__visual">
                   <span class="home-card-index">01</span>
-                  <Icon name="server" size="lg" />
+                  <img
+                    class="home-cap-card__image"
+                    src="/home-illustrations/036c01a9e427ea0f4d1e6c7221e4f6dce2259bf7-1000x1000.svg"
+                    alt="手托统一入口的有机线稿插图"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
                 <div class="home-cap-card__body">
                   <h3>{{ t('home.features.unifiedGateway') }}</h3>
@@ -298,7 +304,13 @@
               >
                 <div class="home-cap-card__visual">
                   <span class="home-card-index">02</span>
-                  <span class="home-card-glyph">A</span>
+                  <img
+                    class="home-cap-card__image"
+                    src="/home-illustrations/0df729ce74e4c9dd62c3342c9549ce6c7cef1202-1000x1000.svg"
+                    alt="双手协同调度的有机线稿插图"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
                 <div class="home-cap-card__body">
                   <h3>{{ t('home.features.multiAccount') }}</h3>
@@ -314,7 +326,13 @@
               >
                 <div class="home-cap-card__visual">
                   <span class="home-card-index">03</span>
-                  <span class="home-card-glyph">Q</span>
+                  <img
+                    class="home-cap-card__image"
+                    src="/home-illustrations/1576ae23eaf481f33bd36ab468171cc69d12361a-1000x1000.svg"
+                    alt="多方协同配额的有机线稿插图"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
                 <div class="home-cap-card__body">
                   <h3>{{ t('home.features.balanceQuota') }}</h3>
@@ -330,7 +348,13 @@
               >
                 <div class="home-cap-card__visual">
                   <span class="home-card-index">04</span>
-                  <span class="home-card-glyph">M</span>
+                  <img
+                    class="home-cap-card__image"
+                    src="/home-illustrations/1c3e87fd90491089b2971dc34f9f75bb8a80f713-1000x1000.svg"
+                    alt="放大镜检索模型的有机线稿插图"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
                 <div class="home-cap-card__body">
                   <h3>{{ t('home.providers.title') }}</h3>
@@ -1460,12 +1484,18 @@ onBeforeUnmount(() => {
 
 .home-cap-card__visual .home-card-index {
   position: absolute;
+  z-index: 1;
   top: 20px;
   left: 20px;
 }
 
-.home-cap-card__visual > :last-child {
-  margin: 0 18px 16px 0;
+.home-cap-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 10px 0 0 0;
+  object-fit: cover;
   transform: scale(1);
   transform-origin: right bottom;
   transition: transform 450ms var(--atelier-ease);
@@ -1496,8 +1526,8 @@ onBeforeUnmount(() => {
   background: var(--anthropic-page, #faf9f5);
 }
 
-.home-ascii-shell .home-cap-card:hover .home-cap-card__visual > :last-child,
-.home-ascii-shell .home-cap-card:focus-within .home-cap-card__visual > :last-child {
+.home-ascii-shell .home-cap-card:hover .home-cap-card__image,
+.home-ascii-shell .home-cap-card:focus-within .home-cap-card__image {
   transform: scale(1.045);
 }
 
@@ -1524,16 +1554,8 @@ onBeforeUnmount(() => {
   letter-spacing: 0;
 }
 
-.home-ascii-shell .home-cap-card svg,
-.home-card-glyph {
+.home-ascii-shell .home-cap-card svg {
   color: var(--home-card-accent);
-}
-
-.home-card-glyph {
-  font-family: var(--atelier-font-serif);
-  font-size: 42px;
-  font-style: italic;
-  line-height: 1;
 }
 
 .home-ascii-shell .home-cap-card h2,
