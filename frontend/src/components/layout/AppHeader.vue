@@ -633,6 +633,7 @@ function formatExternalSubscriptionBalance(
     return formatExternalSubscriptionMoney(remaining, subscription.currency)
   }
   if (typeof total === 'number') return '余额未知'
+  if (subscription.balance_strategy === 'openai_billing') return '额度待授权'
   return '余额未知'
 }
 
