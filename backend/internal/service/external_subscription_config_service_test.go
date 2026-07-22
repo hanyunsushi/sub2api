@@ -686,7 +686,7 @@ func TestExternalSubscriptionConfigServiceBalanceStrategyPersistsToPublicProvide
 	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, requireStoredExternalSubscriptionProvider(t, stored, "pixel-wallet").BalanceStrategy)
 }
 
-func TestExternalSubscriptionConfigServiceOpenAIBillingStrategySupportsUnlimitedAPIKeys(t *testing.T) {
+func TestExternalSubscriptionConfigServiceOpenAIBillingStrategyKeepsUsageWhenQuotaIsUnavailable(t *testing.T) {
 	var requestedPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
@@ -730,6 +730,8 @@ func TestExternalSubscriptionConfigServiceOpenAIBillingStrategySupportsUnlimited
 	require.Nil(t, a6.TotalLimitUSD)
 	require.Nil(t, a6.RemainingUSD)
 	require.InDelta(t, 6.304574, a6.UsedUSD, 0.000001)
+	require.Len(t, a6.Subscriptions, 1)
+	require.Equal(t, "usage_only", a6.Subscriptions[0].Window)
 	require.Equal(t, []string{"/v1/dashboard/billing/subscription", "/v1/dashboard/billing/usage"}, requestedPaths)
 }
 

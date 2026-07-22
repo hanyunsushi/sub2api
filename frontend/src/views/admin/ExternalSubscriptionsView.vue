@@ -145,6 +145,13 @@
                 </div>
               </div>
 
+              <div v-if="formatStatusUsage(card.status)" class="external-subscription-balance-row mt-2">
+                <div class="external-subscription-card-label">{{ localText('已用', 'Used') }}</div>
+                <div class="external-subscription-balance-value truncate font-mono">
+                  {{ formatStatusUsage(card.status) }}
+                </div>
+              </div>
+
               <div class="external-subscription-card-facts mt-3">
                 <div class="external-subscription-fact min-w-0">
                   <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
@@ -355,7 +362,7 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="input-label">
-              API Token
+              {{ apiTokenLabel }}
               <span v-if="editingProvider?.api_token_configured" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
                 leave blank to keep
               </span>
@@ -367,6 +374,9 @@
               autocomplete="new-password"
               :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
+            <p v-if="requiresConsoleToken" class="mt-1 text-xs text-[var(--anthropic-muted)]">
+              {{ localText('需使用服务商控制台访问 Token，模型 API Key 不能读取账户额度。', 'Use a console access token. A model API key cannot read account quota.') }}
+            </p>
           </div>
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
@@ -516,7 +526,7 @@ const balanceStrategyOptions = computed(() => [
 ])
 
 const requiresUserId = computed(() => (
-  (form.template === 'newapi_console' && form.balance_strategy !== 'openai_billing') ||
+  (form.template === 'newapi_console' && !['openai_billing', 'newapi_user_quota'].includes(form.balance_strategy)) ||
   form.template === 'cloudflare_ai_gateway_credits'
 ))
 
@@ -533,6 +543,7 @@ const userIdPlaceholder = computed(() => (
 ))
 
 const apiTokenPlaceholder = computed(() => {
+  if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
   if (form.template === 'buzz_balance') return 'Buzz API Token'
   if (form.template === 'openrouter_credits') return 'sk-or-...'
   if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
@@ -540,6 +551,14 @@ const apiTokenPlaceholder = computed(() => {
   if (form.template === 'mimo_token_plan') return 'tp-xxxxx'
   return 'sk-...'
 })
+
+const requiresConsoleToken = computed(() => (
+  form.template === 'newapi_console' && form.balance_strategy === 'newapi_user_quota'
+))
+
+const apiTokenLabel = computed(() => (
+  requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
+))
 
 const templateFilterOptions = computed(() => [
   { value: '', label: localText('全部模板', 'All Templates') },
@@ -964,16 +983,18 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
   if (!status) return '-'
   if (!status.enabled || !status.configured) return localText('未配置', 'Not configured')
   if (status.error_code) return isInvalidToken(status.error_code) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
-  if (status.subscriptions.some(subscription => subscription.window === 'unlimited')) {
-    return localText('无限额度', 'Unlimited')
-  }
   const remaining = formatMoney(status.remaining_usd, status.currency)
   const total = formatMoney(status.total_limit_usd, status.currency)
   if (remaining && total) return `${remaining} / ${total}`
   if (remaining) return remaining
+  if (status.balance_strategy === 'openai_billing') return localText('额度待授权', 'Quota authorization required')
   const unknown = localText('余额未知', 'Balance unknown')
   if (total) return `${unknown} / ${total}`
   return unknown
+}
+
+function formatStatusUsage(status?: ExternalSubscriptionStatus) {
+  return formatMoney(status?.used_usd, status?.currency)
 }
 
 function formatStatusExpiry(status?: ExternalSubscriptionStatus) {

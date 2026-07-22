@@ -59,7 +59,9 @@ func (s *ExternalSubscriptionService) getBuzzBalanceSubscriptionStatus(ctx conte
 		DaysRemaining: daysRemainingFromNow(expiry),
 	}
 	if total >= openAIBillingUnlimitedLimitUSD {
-		item.Window = "unlimited"
+		// This is an OpenAI-compatible billing sentinel, not the account's
+		// actual package quota. Keep usage available without claiming unlimited.
+		item.Window = "usage_only"
 	} else {
 		result.TotalLimitUSD = &total
 		result.RemainingUSD = &remaining

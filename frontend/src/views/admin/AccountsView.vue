@@ -324,6 +324,10 @@
                   <span class="account-external-quota-label">{{ localText('余额', 'Balance') }}</span>
                   <span class="account-external-quota-value font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
                 </div>
+                <div v-if="getAccountExternalQuota(row)?.formattedUsage" class="account-external-quota-row">
+                  <span class="account-external-quota-label">{{ localText('已用', 'Used') }}</span>
+                  <span class="account-external-quota-value font-mono">{{ getAccountExternalQuota(row)?.formattedUsage }}</span>
+                </div>
                 <div class="account-external-quota-row">
                   <span class="account-external-quota-label">{{ localText('期限', 'Expiry') }}</span>
                   <span class="account-external-quota-value font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
@@ -1190,9 +1194,15 @@ const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus
     url: subscription.site_url,
     formattedBalance: remaining && total
       ? `${remaining} / ${total}`
-      : remaining || (total ? `${localText('余额未知', 'Balance unknown')} / ${total}` : localText('余额未知', 'Balance unknown')),
+      : remaining || (total
+        ? `${localText('余额未知', 'Balance unknown')} / ${total}`
+        : subscription.balance_strategy === 'openai_billing'
+          ? localText('额度待授权', 'Quota authorization required')
+          : localText('余额未知', 'Balance unknown')),
     formattedExpiry: formatExternalDate(subscription.expires_at),
-    formattedUsage: progress && used && progressTotal ? `${used} / ${progressTotal}` : undefined,
+    formattedUsage: progress && used && progressTotal
+      ? `${used} / ${progressTotal}`
+      : formatExternalAmount(subscription.used_usd, subscription.currency) ?? undefined,
     progress
   }
 }
