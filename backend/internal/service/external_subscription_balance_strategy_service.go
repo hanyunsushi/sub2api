@@ -19,6 +19,8 @@ func (s *ExternalSubscriptionService) getStatusWithBalanceStrategy(ctx context.C
 	switch strategy {
 	case ExternalSubscriptionBalanceStrategyAuto, "":
 		return s.getStatusForTemplate(ctx, cfg, template)
+	case ExternalSubscriptionBalanceStrategyOpenAIBilling:
+		return s.getBuzzBalanceSubscriptionStatus(ctx, cfg)
 	case ExternalSubscriptionBalanceStrategyNewAPIUserQuota:
 		return s.getNewAPIConsoleUserQuotaStatus(ctx, cfg)
 	case ExternalSubscriptionBalanceStrategyNewAPISubscription:

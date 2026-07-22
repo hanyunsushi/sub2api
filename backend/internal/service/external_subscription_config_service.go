@@ -26,6 +26,7 @@ const (
 	ExternalSubscriptionTemplateMimoTokenPlan              = "mimo_token_plan"
 
 	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
+	ExternalSubscriptionBalanceStrategyOpenAIBilling           = "openai_billing"
 	ExternalSubscriptionBalanceStrategyNewAPIUserQuota         = "newapi_user_quota"
 	ExternalSubscriptionBalanceStrategyNewAPISubscription      = "newapi_subscription"
 	ExternalSubscriptionBalanceStrategyActiveSubscriptions     = "active_subscriptions"
@@ -921,6 +922,7 @@ func effectiveExternalSubscriptionBalanceStrategy(provider externalSubscriptionS
 func isExternalSubscriptionBalanceStrategy(strategy string) bool {
 	switch strings.TrimSpace(strategy) {
 	case ExternalSubscriptionBalanceStrategyAuto,
+		ExternalSubscriptionBalanceStrategyOpenAIBilling,
 		ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 		ExternalSubscriptionBalanceStrategyNewAPISubscription,
 		ExternalSubscriptionBalanceStrategyActiveSubscriptions,

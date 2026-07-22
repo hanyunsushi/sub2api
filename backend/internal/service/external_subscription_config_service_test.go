@@ -686,6 +686,53 @@ func TestExternalSubscriptionConfigServiceBalanceStrategyPersistsToPublicProvide
 	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, requireStoredExternalSubscriptionProvider(t, stored, "pixel-wallet").BalanceStrategy)
 }
 
+func TestExternalSubscriptionConfigServiceOpenAIBillingStrategySupportsUnlimitedAPIKeys(t *testing.T) {
+	var requestedPaths []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPaths = append(requestedPaths, r.URL.Path)
+		require.Equal(t, "Bearer a6-api-key", r.Header.Get("Authorization"))
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.URL.Path {
+		case "/v1/dashboard/billing/subscription":
+			_, _ = w.Write([]byte(`{"object":"billing_subscription","soft_limit_usd":100000000,"hard_limit_usd":100000000,"access_until":0}`))
+		case "/v1/dashboard/billing/usage":
+			_, _ = w.Write([]byte(`{"object":"list","total_usage":630.4574}`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
+		ID:              "a6api",
+		Name:            "A6API",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyOpenAIBilling,
+		APIBaseURL:      server.URL,
+		APIToken:        "a6-api-key",
+		MatchKeywords:   []string{"a6api"},
+		SortOrder:       65,
+	})
+	require.NoError(t, err)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyOpenAIBilling, created.BalanceStrategy)
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	a6 := requireExternalSubscriptionStatus(t, statuses, "a6api")
+	require.Equal(t, ExternalSubscriptionBalanceStrategyOpenAIBilling, a6.BalanceStrategy)
+	require.True(t, a6.Configured)
+	require.Equal(t, "USD", a6.Currency)
+	require.Nil(t, a6.TotalLimitUSD)
+	require.Nil(t, a6.RemainingUSD)
+	require.InDelta(t, 6.304574, a6.UsedUSD, 0.000001)
+	require.Equal(t, []string{"/v1/dashboard/billing/subscription", "/v1/dashboard/billing/usage"}, requestedPaths)
+}
+
 func TestExternalSubscriptionConfigServiceDoesNotMergeLegacyKeywordsIntoStoredProvider(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{
 		{

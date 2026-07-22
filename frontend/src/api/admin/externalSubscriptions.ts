@@ -10,6 +10,7 @@ export type ExternalSubscriptionTemplate =
 
 export type ExternalSubscriptionBalanceStrategy =
   | 'auto'
+  | 'openai_billing'
   | 'newapi_user_quota'
   | 'newapi_subscription'
   | 'active_subscriptions'
