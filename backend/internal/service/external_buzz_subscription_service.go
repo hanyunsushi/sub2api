@@ -10,6 +10,8 @@ import (
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
 
+const openAIBillingUnlimitedLimitUSD = 100_000_000
+
 func (s *ExternalSubscriptionService) getBuzzBalanceSubscriptionStatus(ctx context.Context, cfg externalSubscriptionProviderConfig) (*ExternalSubscriptionStatus, error) {
 	settings, err := s.settingService.getExternalSubscriptionSettings(ctx, cfg)
 	if err != nil {
@@ -42,24 +44,29 @@ func (s *ExternalSubscriptionService) getBuzzBalanceSubscriptionStatus(ctx conte
 	remaining := total - used
 	expiry := firstExternalTime(subscription.ExpiresAt, subscription.CurrentPeriodEnd, subscription.RenewsAt)
 
-	result.TotalLimitUSD = &total
 	result.UsedUSD = used
-	result.RemainingUSD = &remaining
 	result.ExpiresAt = expiry
 	result.DaysRemaining = daysRemainingFromNow(expiry)
 	result.ActiveCount = 1
-	result.Subscriptions = []ExternalSubscriptionItem{{
+	item := ExternalSubscriptionItem{
 		ID:            1,
 		GroupID:       0,
 		GroupName:     cfg.DisplayName,
 		Status:        "active",
 		Window:        "subscription",
-		LimitUSD:      &total,
 		UsedUSD:       used,
-		RemainingUSD:  &remaining,
 		ExpiresAt:     expiry,
 		DaysRemaining: daysRemainingFromNow(expiry),
-	}}
+	}
+	if total >= openAIBillingUnlimitedLimitUSD {
+		item.Window = "unlimited"
+	} else {
+		result.TotalLimitUSD = &total
+		result.RemainingUSD = &remaining
+		item.LimitUSD = &total
+		item.RemainingUSD = &remaining
+	}
+	result.Subscriptions = []ExternalSubscriptionItem{item}
 	result.RefreshedAt = time.Now().UTC()
 	return result, nil
 }

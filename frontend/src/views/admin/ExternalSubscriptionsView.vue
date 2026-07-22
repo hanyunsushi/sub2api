@@ -507,6 +507,7 @@ const templateOptions = computed(() => [
 
 const balanceStrategyOptions = computed(() => [
   { value: 'auto', label: localText('自动', 'Auto') },
+  { value: 'openai_billing', label: 'OpenAI Billing API' },
   { value: 'newapi_user_quota', label: 'NewAPI User Quota' },
   { value: 'newapi_subscription', label: 'NewAPI Subscription' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
@@ -515,7 +516,7 @@ const balanceStrategyOptions = computed(() => [
 ])
 
 const requiresUserId = computed(() => (
-  form.template === 'newapi_console' ||
+  (form.template === 'newapi_console' && form.balance_strategy !== 'openai_billing') ||
   form.template === 'cloudflare_ai_gateway_credits'
 ))
 
@@ -963,6 +964,9 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
   if (!status) return '-'
   if (!status.enabled || !status.configured) return localText('未配置', 'Not configured')
   if (status.error_code) return isInvalidToken(status.error_code) ? localText('Token 失效', 'Token invalid') : localText('读取失败', 'Read failed')
+  if (status.subscriptions.some(subscription => subscription.window === 'unlimited')) {
+    return localText('无限额度', 'Unlimited')
+  }
   const remaining = formatMoney(status.remaining_usd, status.currency)
   const total = formatMoney(status.total_limit_usd, status.currency)
   if (remaining && total) return `${remaining} / ${total}`

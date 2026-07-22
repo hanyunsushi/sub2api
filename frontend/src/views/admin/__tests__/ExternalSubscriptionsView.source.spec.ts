@@ -55,6 +55,7 @@ describe('ExternalSubscriptionsView source', () => {
     expect(source).toContain('balanceStrategyOptions')
     expect(source).toContain('v-model="form.balance_strategy"')
     expect(source).toContain("auth_me_balance")
+    expect(source).toContain("openai_billing")
     expect(source).toContain("newapi_user_quota")
     expect(source).toContain("newapi_subscription")
     expect(source).toContain("active_subscriptions")
