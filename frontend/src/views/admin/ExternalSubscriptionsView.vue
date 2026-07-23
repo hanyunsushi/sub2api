@@ -517,7 +517,6 @@ const templateOptions = computed(() => [
 
 const balanceStrategyOptions = computed(() => [
   { value: 'auto', label: localText('自动', 'Auto') },
-  { value: 'openai_billing', label: 'OpenAI Billing API' },
   { value: 'newapi_user_quota', label: 'NewAPI User Quota' },
   { value: 'newapi_subscription', label: 'NewAPI Subscription' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
