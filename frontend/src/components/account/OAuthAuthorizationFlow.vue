@@ -49,7 +49,7 @@
               }}</span>
             </label>
             <label v-if="showSsoOption" class="flex cursor-pointer items-center gap-2">
-              <input
+              <input data-testid="merge-oauth-authorization-flow-input-method-1"
                 v-model="inputMethod"
                 type="radio"
                 value="sso_cookie"
@@ -101,6 +101,17 @@
               />
               <span class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
                 t('admin.accounts.oauth.openai.codexSessionAuth')
+              }}</span>
+            </label>
+            <label v-if="showAgentIdentityOption" class="flex cursor-pointer items-center gap-2">
+              <input data-testid="merge-oauth-authorization-flow-input-method-2"
+                v-model="inputMethod"
+                type="radio"
+                value="agent_identity"
+                class="text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-sm text-blue-900 dark:text-blue-200">{{
+                t('admin.accounts.oauth.openai.agentIdentityAuth')
               }}</span>
             </label>
             <label v-if="showCodexPatOption" class="flex cursor-pointer items-center gap-2">
@@ -223,7 +234,7 @@
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedSSOCount }) }}
                 </span>
               </label>
-              <textarea
+              <textarea data-testid="merge-oauth-authorization-flow-sso-cookie-input-3"
                 v-model="ssoCookieInput"
                 rows="5"
                 class="input w-full resize-y font-mono text-sm"
@@ -244,7 +255,7 @@
               </p>
             </div>
 
-            <button
+            <button data-testid="merge-oauth-authorization-flow-handle-import-sso-4"
               type="button"
               class="btn btn-primary w-full"
               :disabled="loading || !ssoCookieInput.trim()"
@@ -277,7 +288,7 @@
         </div>
 
         <!-- Codex auth.json / session credential batch import -->
-        <div v-if="inputMethod === 'codex_session'" class="space-y-4">
+        <div v-if="inputMethod === 'codex_session' || inputMethod === 'agent_identity'" class="space-y-4">
           <div
             class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
           >
@@ -302,7 +313,7 @@
                 v-model="codexSessionInput"
                 rows="8"
                 class="input w-full resize-y font-mono text-sm"
-                :placeholder="t('admin.accounts.oauth.openai.codexSessionPlaceholder')"
+                :placeholder="t(isAgentIdentityInput ? 'admin.accounts.oauth.openai.agentIdentityPlaceholder' : 'admin.accounts.oauth.openai.codexSessionPlaceholder')"
                 spellcheck="false"
               ></textarea>
               <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
@@ -822,6 +833,7 @@ interface Props {
   showSessionTokenOption?: boolean
   showAccessTokenOption?: boolean
   showCodexSessionImportOption?: boolean
+  showAgentIdentityOption?: boolean
   showCodexPatOption?: boolean
   showSsoOption?: boolean
   showManualOption?: boolean
@@ -845,6 +857,7 @@ const props = withDefaults(defineProps<Props>(), {
   showSessionTokenOption: false,
   showAccessTokenOption: false,
   showCodexSessionImportOption: false,
+  showAgentIdentityOption: false,
   showCodexPatOption: false,
   showSsoOption: false,
   showManualOption: true,
@@ -901,6 +914,7 @@ const oauthImportantNotice = computed(() => {
 
 // Local state
 const inputMethod = ref<AuthInputMethod>(props.initialInputMethod)
+const isAgentIdentityInput = computed(() => inputMethod.value === 'agent_identity')
 const authCodeInput = ref('')
 const sessionKeyInput = ref('')
 const refreshTokenInput = ref('')
@@ -921,6 +935,7 @@ const methodOptionCount = computed(() => [
   props.showSessionTokenOption,
   props.showAccessTokenOption,
   props.showCodexSessionImportOption,
+  props.showAgentIdentityOption,
   props.showCodexPatOption,
   props.showSsoOption
 ].filter(Boolean).length)

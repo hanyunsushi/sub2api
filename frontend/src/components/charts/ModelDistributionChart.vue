@@ -154,7 +154,7 @@
     </div>
     <div
       v-else-if="activeView === 'model_distribution' && displayModelStats.length > 0 && chartData"
-      class="flex items-center gap-6"
+      class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
     >
       <div class="model-distribution-visual h-48 w-48">
         <Doughnut :data="chartData" :options="doughnutOptions" />

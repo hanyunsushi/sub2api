@@ -405,7 +405,7 @@
                         {{ rollbackVersionsError }}
                       </p>
                       <div v-else-if="rollbackVersions.length > 0" class="space-y-1">
-                        <button
+                        <button data-testid="merge-version-badge-select-rollback-version-item-version-1"
                           v-for="item in rollbackVersions"
                           :key="item.version"
                           type="button"
@@ -421,7 +421,7 @@
                         <p class="text-[11px] text-[var(--anthropic-muted)] dark:text-dark-400">
                           {{ t('version.rollbackWarning') }}
                         </p>
-                        <button
+                        <button data-testid="merge-version-badge-handle-rollback-2"
                           type="button"
                           class="version-update-action flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                           :disabled="rollingBack || !selectedRollbackVersion"

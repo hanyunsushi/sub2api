@@ -152,15 +152,10 @@ func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMess
 
 		case item.Type == "function_call_output":
 			// function_call_output → user message with tool_result block
-			outputContent := extractResponsesOutputText(item.Output)
-			if outputContent == "" {
-				outputContent = "(empty)"
-			}
-			contentJSON, _ := json.Marshal(outputContent)
 			block := AnthropicContentBlock{
 				Type:      "tool_result",
 				ToolUseID: fromResponsesCallIDToAnthropic(item.CallID),
-				Content:   contentJSON,
+				Content:   responsesFunctionOutputToAnthropicContent(item),
 			}
 			blockJSON, _ := json.Marshal([]AnthropicContentBlock{block})
 			messages = append(messages, AnthropicMessage{
@@ -233,6 +228,59 @@ func buildSystemJSON(parts []string) json.RawMessage {
 		return nil
 	}
 	return out
+}
+
+func responsesFunctionOutputToAnthropicContent(item ResponsesInputItem) json.RawMessage {
+	raw := json.RawMessage(strings.TrimSpace(string(item.Output)))
+	if len(raw) == 0 || string(raw) == "null" {
+		content, _ := json.Marshal("(empty)")
+		return content
+	}
+
+	var output string
+	if err := json.Unmarshal(raw, &output); err == nil {
+		if output == "" {
+			output = "(empty)"
+		}
+		content, _ := json.Marshal(output)
+		return content
+	}
+
+	var parts []ResponsesContentPart
+	if err := json.Unmarshal(raw, &parts); err == nil {
+		blocks := make([]AnthropicContentBlock, 0, len(parts))
+		textParts := make([]string, 0, len(parts))
+		hasImage := false
+		for _, part := range parts {
+			switch part.Type {
+			case "input_text", "output_text", "text":
+				if part.Text != "" {
+					textParts = append(textParts, part.Text)
+					blocks = append(blocks, AnthropicContentBlock{Type: "text", Text: part.Text})
+				}
+			case "input_image":
+				if source := dataURIToAnthropicImageSource(part.ImageURL); source != nil {
+					hasImage = true
+					blocks = append(blocks, AnthropicContentBlock{Type: "image", Source: source})
+				}
+			}
+		}
+		if !hasImage && len(textParts) > 0 {
+			content, _ := json.Marshal(strings.Join(textParts, "\n\n"))
+			return content
+		}
+		if len(blocks) > 0 {
+			content, _ := json.Marshal(blocks)
+			return content
+		}
+		if len(parts) == 0 {
+			content, _ := json.Marshal("(empty)")
+			return content
+		}
+	}
+
+	content, _ := json.Marshal(string(raw))
+	return content
 }
 
 // normalizeAnthropicToolPairing rebuilds the message sequence so it satisfies

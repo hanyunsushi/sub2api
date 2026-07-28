@@ -883,10 +883,10 @@
           <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-dark-700">
             <thead class="bg-[var(--anthropic-section)] text-xs uppercase text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-dark-400">
               <tr>
-                <th class="px-3 py-2 text-left">{{ t('admin.proxies.qualityTableTarget') }}</th>
-                <th class="px-3 py-2 text-left">{{ t('admin.proxies.qualityTableStatus') }}</th>
-                <th class="px-3 py-2 text-left">HTTP</th>
-                <th class="px-3 py-2 text-left">{{ t('admin.proxies.qualityTableLatency') }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableTarget') }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableStatus') }}</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left">HTTP</th>
+                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableLatency') }}</th>
                 <th class="px-3 py-2 text-left">{{ t('admin.proxies.qualityTableMessage') }}</th>
               </tr>
             </thead>
@@ -1782,6 +1782,8 @@ const qualityTargetLabel = (target: string) => {
       return 'Anthropic'
     case 'gemini':
       return 'Gemini'
+    case 'grok':
+      return 'Grok'
     default:
       return target
   }

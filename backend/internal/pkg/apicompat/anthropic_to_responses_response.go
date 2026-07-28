@@ -90,7 +90,7 @@ func AnthropicToResponsesResponse(resp *AnthropicResponse) *ResponsesResponse {
 	out.Output = outputs
 
 	// Map stop_reason → status
-	out.Status = anthropicStopReasonToResponsesStatus(resp.StopReason, resp.Content)
+	out.Status = anthropicStopReasonToResponsesStatus(AnthropicStopReasonString(resp.StopReason), resp.Content)
 	if out.Status == "incomplete" {
 		out.IncompleteDetails = &ResponsesIncompleteDetails{Reason: "max_output_tokens"}
 	}
@@ -158,6 +158,8 @@ type AnthropicEventToResponsesState struct {
 	// from OutputItemDone items, not from output_text.delta events, so the
 	// message item MUST include content:[{type:output_text,text:...}].
 	CurrentText string
+	// TextAccum accumulates the current text part for Responses done events.
+	TextAccum string
 
 	// For function_call: track per-output info
 	CurrentCallID string
@@ -167,6 +169,17 @@ type AnthropicEventToResponsesState struct {
 	// codex reads the tool call from the OutputItemDone item; without
 	// call_id/name/arguments it cannot execute the tool and stalls.
 	CurrentArguments string
+
+	// Content of the currently open item, folded into Outputs when it closes.
+	CurrentContent []ResponsesContentPart // message
+	CurrentArgs    string                 // function_call
+	CurrentSummary string                 // reasoning
+
+	// Outputs accumulates every closed output item so that response.completed
+	// can carry the full output list. The OpenAI SDK's get_final_response()
+	// parses the terminal event's response directly; without this, clients see
+	// an empty output_text.
+	Outputs []ResponsesOutput
 
 	// Usage from message_start / message_delta. InputTokens here follows
 	// Anthropic semantics (excludes cached tokens); they are added back when
@@ -222,8 +235,8 @@ func FinalizeAnthropicResponsesStream(state *AnthropicEventToResponsesState) []R
 	// Close any open item
 	events = append(events, closeCurrentResponsesItem(state)...)
 
-	// Emit response.completed
-	events = append(events, makeResponsesCompletedEvent(state, "completed", nil))
+	status, incompleteDetails := anthropicResponsesStreamTerminalState(state.StopReason)
+	events = append(events, makeResponsesCompletedEvent(state, status, incompleteDetails))
 	state.CompletedSent = true
 	return events
 }
@@ -293,6 +306,7 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 			state.CurrentItemType = "message"
 			state.ContentIndex = 0
 			state.CurrentText = ""
+			state.CurrentContent = nil
 
 			events = append(events, makeResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
 				OutputIndex: state.OutputIndex,
@@ -320,6 +334,22 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 			}))
 		}
 
+		// response.content_part.added must precede the output_text.delta events
+		// for that part. The message item is added with content: [], and the
+		// OpenAI SDK's accumulating stream helper (client.responses.stream) only
+		// appends a content part when it sees content_part.added. Without it the
+		// following output_text.delta indexes output.content[content_index] and
+		// raises IndexError. Raw event iteration
+		// (responses.create(stream=True)) does not accumulate, which is why this
+		// went unnoticed.
+		events = append(events, makeResponsesEvent(state, "response.content_part.added", &ResponsesStreamEvent{
+			OutputIndex:  state.OutputIndex,
+			ContentIndex: state.ContentIndex,
+			ItemID:       state.CurrentItemID,
+			Part:         &ResponsesContentPart{Type: "output_text", Text: ""},
+		}))
+		state.TextAccum = ""
+
 	case "tool_use":
 		// Close previous item if any
 		events = append(events, closeCurrentResponsesItem(state)...)
@@ -329,6 +359,7 @@ func anthToResHandleContentBlockStart(evt *AnthropicStreamEvent, state *Anthropi
 		state.CurrentCallID = toResponsesCallID(evt.ContentBlock.ID)
 		state.CurrentName = evt.ContentBlock.Name
 		state.CurrentArguments = ""
+		state.CurrentArgs = ""
 
 		events = append(events, makeResponsesEvent(state, "response.output_item.added", &ResponsesStreamEvent{
 			OutputIndex: state.OutputIndex,
@@ -356,6 +387,7 @@ func anthToResHandleContentBlockDelta(evt *AnthropicStreamEvent, state *Anthropi
 			return nil
 		}
 		state.CurrentText += evt.Delta.Text
+		state.TextAccum += evt.Delta.Text
 		return []ResponsesStreamEvent{makeResponsesEvent(state, "response.output_text.delta", &ResponsesStreamEvent{
 			OutputIndex:  state.OutputIndex,
 			ContentIndex: state.ContentIndex,
@@ -367,6 +399,7 @@ func anthToResHandleContentBlockDelta(evt *AnthropicStreamEvent, state *Anthropi
 		if evt.Delta.Thinking == "" {
 			return nil
 		}
+		state.CurrentSummary += evt.Delta.Thinking
 		return []ResponsesStreamEvent{makeResponsesEvent(state, "response.reasoning_summary_text.delta", &ResponsesStreamEvent{
 			OutputIndex:  state.OutputIndex,
 			SummaryIndex: 0,
@@ -379,6 +412,7 @@ func anthToResHandleContentBlockDelta(evt *AnthropicStreamEvent, state *Anthropi
 			return nil
 		}
 		state.CurrentArguments += evt.Delta.PartialJSON
+		state.CurrentArgs += evt.Delta.PartialJSON
 		return []ResponsesStreamEvent{makeResponsesEvent(state, "response.function_call_arguments.delta", &ResponsesStreamEvent{
 			OutputIndex: state.OutputIndex,
 			Delta:       evt.Delta.PartialJSON,
@@ -428,12 +462,15 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 		// The message item stays open for potential more blocks; it is closed
 		// later by closeCurrentResponsesItem. content_part.done mirrors the
 		// content_part.added emitted in anthToResHandleContentBlockStart.
+		text := state.TextAccum
+		state.TextAccum = ""
+		state.CurrentContent = append(state.CurrentContent, ResponsesContentPart{Type: "output_text", Text: text})
 		return []ResponsesStreamEvent{
 			makeResponsesEvent(state, "response.output_text.done", &ResponsesStreamEvent{
 				OutputIndex:  state.OutputIndex,
 				ContentIndex: state.ContentIndex,
 				ItemID:       state.CurrentItemID,
-				Text:         state.CurrentText,
+				Text:         text,
 			}),
 			makeResponsesEvent(state, "response.content_part.done", &ResponsesStreamEvent{
 				OutputIndex:  state.OutputIndex,
@@ -441,7 +478,7 @@ func anthToResHandleContentBlockStop(evt *AnthropicStreamEvent, state *Anthropic
 				ItemID:       state.CurrentItemID,
 				Part: &ResponsesContentPart{
 					Type: "output_text",
-					Text: state.CurrentText,
+					Text: text,
 				},
 			}),
 		}
@@ -478,19 +515,20 @@ func anthToResHandleMessageStop(state *AnthropicEventToResponsesState) []Respons
 	var events []ResponsesStreamEvent
 	events = append(events, closeCurrentResponsesItem(state)...)
 
-	status := "completed"
-	var incompleteDetails *ResponsesIncompleteDetails
-	if state.StopReason == "max_tokens" {
-		status = "incomplete"
-		incompleteDetails = &ResponsesIncompleteDetails{Reason: "max_output_tokens"}
-	}
-
+	status, incompleteDetails := anthropicResponsesStreamTerminalState(state.StopReason)
 	events = append(events, makeResponsesCompletedEvent(state, status, incompleteDetails))
 	state.CompletedSent = true
 	return events
 }
 
 // --- helper functions ---
+
+func anthropicResponsesStreamTerminalState(stopReason string) (string, *ResponsesIncompleteDetails) {
+	if stopReason == "max_tokens" {
+		return "incomplete", &ResponsesIncompleteDetails{Reason: "max_output_tokens"}
+	}
+	return "completed", nil
+}
 
 func closeCurrentResponsesItem(state *AnthropicEventToResponsesState) []ResponsesStreamEvent {
 	if state.CurrentItemType == "" {
@@ -525,15 +563,27 @@ func closeCurrentResponsesItem(state *AnthropicEventToResponsesState) []Response
 	switch itemType {
 	case "message":
 		doneItem.Role = "assistant"
-		doneItem.Content = []ResponsesContentPart{{
-			Type: "output_text",
-			Text: currentText,
-		}}
+		doneItem.Content = state.CurrentContent
+		if len(doneItem.Content) == 0 {
+			doneItem.Content = []ResponsesContentPart{{Type: "output_text", Text: currentText}}
+		}
 	case "function_call":
 		doneItem.CallID = currentCallID
 		doneItem.Name = currentName
+		if state.CurrentArgs != "" {
+			currentArgs = state.CurrentArgs
+		}
 		doneItem.Arguments = nonEmptyArguments(currentArgs)
+	case "reasoning":
+		if state.CurrentSummary != "" {
+			doneItem.Summary = []ResponsesSummary{{Type: "summary_text", Text: state.CurrentSummary}}
+		}
 	}
+	state.Outputs = append(state.Outputs, *doneItem)
+	state.CurrentContent = nil
+	state.CurrentArgs = ""
+	state.CurrentSummary = ""
+	state.TextAccum = ""
 
 	return []ResponsesStreamEvent{makeResponsesEvent(state, "response.output_item.done", &ResponsesStreamEvent{
 		OutputIndex: state.OutputIndex - 1, // Use the index before increment
@@ -594,6 +644,14 @@ func makeResponsesCompletedEvent(
 		eventType = "response.incomplete"
 	}
 
+	// Carry the output items accumulated over the stream. The SDK's
+	// get_final_response() reads them straight from the terminal event, so an
+	// empty list leaves clients with an empty result.
+	outputs := state.Outputs
+	if outputs == nil {
+		outputs = []ResponsesOutput{}
+	}
+
 	return ResponsesStreamEvent{
 		Type:           eventType,
 		SequenceNumber: seq,
@@ -602,7 +660,7 @@ func makeResponsesCompletedEvent(
 			Object:            "response",
 			Model:             state.Model,
 			Status:            status,
-			Output:            []ResponsesOutput{},
+			Output:            outputs,
 			Usage:             usage,
 			IncompleteDetails: incompleteDetails,
 		},

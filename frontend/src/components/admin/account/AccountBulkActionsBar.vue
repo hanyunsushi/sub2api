@@ -40,5 +40,19 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-defineProps(['selectedIds']); defineEmits(['delete', 'edit-selected', 'edit-filtered', 'clear', 'select-page', 'toggle-schedulable', 'reset-status', 'refresh-token']); const { t } = useI18n()
+
+defineProps<{ selectedIds: number[] }>()
+defineEmits([
+  'delete',
+  'edit-selected',
+  'edit-filtered',
+  'clear',
+  'select-page',
+  'toggle-schedulable',
+  'reset-status',
+  'refresh-token',
+  'probe-upstream-billing'
+])
+
+const { t } = useI18n()
 </script>

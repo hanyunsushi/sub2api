@@ -36,7 +36,7 @@
       <template #actions>
         <div class="keys-page-actions flex justify-end gap-3">
           <div class="relative">
-            <button
+            <button data-testid="merge-keys-view-show-column-settings-show-column-settings-1"
               type="button"
               class="filter-menu-button"
               :title="t('keys.columnSettings')"
@@ -48,7 +48,7 @@
               v-if="showColumnSettings"
               class="absolute right-0 top-full z-20 mt-2 min-w-48 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
             >
-              <button
+              <button data-testid="merge-keys-view-toggle-column-column-key-2"
                 v-for="column in toggleableColumns"
                 :key="column.key"
                 type="button"
@@ -96,6 +96,10 @@
           default-sort-order="desc"
           @sort="handleSort"
         >
+          <template #cell-id="{ value }">
+            <span class="font-mono text-xs text-gray-500 dark:text-gray-400">#{{ value }}</span>
+          </template>
+
           <template #cell-key="{ value, row }">
             <div class="flex items-center gap-2">
               <code class="code text-xs">
@@ -1173,6 +1177,7 @@ const { copyToClipboard: clipboardCopy } = useClipboard()
 
 const allColumns = computed<Column[]>(() => [
   { key: 'name', label: t('common.name'), sortable: true },
+  { key: 'id', label: t('keys.id'), sortable: true },
   { key: 'key', label: t('keys.apiKey'), sortable: false },
   { key: 'group', label: t('keys.group'), sortable: false },
   { key: 'current_concurrency', label: t('keys.currentConcurrency'), sortable: true },
@@ -1187,12 +1192,13 @@ const allColumns = computed<Column[]>(() => [
 ])
 
 const ALWAYS_VISIBLE_COLUMNS = new Set(['name', 'actions'])
-const DEFAULT_HIDDEN_COLUMNS = ['rate_limit', 'last_used_at', 'last_used_ip']
+const DEFAULT_HIDDEN_COLUMNS = ['id', 'rate_limit', 'last_used_at', 'last_used_ip']
 const HIDDEN_COLUMNS_KEY = 'api-key-hidden-columns'
 const COLUMN_SETTINGS_VERSION_KEY = 'api-key-column-settings-version'
-const COLUMN_SETTINGS_VERSION = 2
+const COLUMN_SETTINGS_VERSION = 3
 const VERSION_NEW_HIDDEN_COLUMNS: Record<number, string[]> = {
-  2: ['last_used_ip']
+  2: ['last_used_ip'],
+  3: ['id']
 }
 
 const hiddenColumns = reactive<Set<string>>(new Set())
@@ -1593,20 +1599,23 @@ const openGroupSelector = (key: ApiKey) => {
     if (buttonEl) {
       const rect = buttonEl.getBoundingClientRect()
       const dropdownEstHeight = 400 // estimated max dropdown height
+      const dropdownEstWidth = Math.min(380, window.innerWidth - 16)
       const spaceBelow = window.innerHeight - rect.bottom
       const spaceAbove = rect.top
+      // 夹取 left，避免窄屏下浮层超出视口右缘
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - dropdownEstWidth - 8))
 
       if (spaceBelow < dropdownEstHeight && spaceAbove > spaceBelow) {
         // Not enough space below, pop upward
         dropdownPosition.value = {
           bottom: window.innerHeight - rect.top + 4,
-          left: rect.left
+          left
         }
       } else {
         // Default: pop downward
         dropdownPosition.value = {
           top: rect.bottom + 4,
-          left: rect.left
+          left
         }
       }
     }

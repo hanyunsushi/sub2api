@@ -54,6 +54,9 @@ type CodexAccountMetadata func(*sql.Selector)
 // CodexGroup is the predicate function for codexgroup builders.
 type CodexGroup func(*sql.Selector)
 
+// CompositeModelRoute is the predicate function for compositemodelroute builders.
+type CompositeModelRoute func(*sql.Selector)
+
 // ErrorPassthroughRule is the predicate function for errorpassthroughrule builders.
 type ErrorPassthroughRule func(*sql.Selector)
 

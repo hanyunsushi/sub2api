@@ -108,6 +108,10 @@ func (r *channelMonitorRepoCreateStub) List(context.Context, ChannelMonitorListP
 	panic("unexpected List call")
 }
 
+func (r *channelMonitorRepoCreateStub) FindByDuplicateOperationID(context.Context, string) (*ChannelMonitor, error) {
+	return nil, nil
+}
+
 func (r *channelMonitorRepoCreateStub) ListEnabled(context.Context) ([]*ChannelMonitor, error) {
 	panic("unexpected ListEnabled call")
 }
@@ -189,6 +193,10 @@ func (r *channelMonitorRepoRunStub) Delete(context.Context, int64) error {
 
 func (r *channelMonitorRepoRunStub) List(context.Context, ChannelMonitorListParams) ([]*ChannelMonitor, int64, error) {
 	panic("unexpected List call")
+}
+
+func (r *channelMonitorRepoRunStub) FindByDuplicateOperationID(context.Context, string) (*ChannelMonitor, error) {
+	return nil, nil
 }
 
 func (r *channelMonitorRepoRunStub) ListEnabled(context.Context) ([]*ChannelMonitor, error) {

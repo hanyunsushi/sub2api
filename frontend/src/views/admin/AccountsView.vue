@@ -87,6 +87,7 @@
                   class="filter-menu-button filter-menu-button-with-caret"
                   :class="{ 'filter-menu-button-open': showAccountToolsDropdown }"
                   :title="t('admin.accounts.moreActions')"
+                  :aria-expanded="showAccountToolsDropdown"
                 >
                   <span>{{ t('admin.accounts.moreActions') }}</span>
                   <span class="filter-menu-caret" aria-hidden="true"></span>
@@ -172,6 +173,66 @@
                         <span class="truncate">{{ col.label }}</span>
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
                       </button>
+                      <button data-testid="merge-accounts-view-open-import-data-1" class="account-tools-menu-item" @click="openImportData">
+                        <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
+                          <Icon name="upload" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.accounts.dataImport') }}</span>
+                      </button>
+                      <button data-testid="merge-accounts-view-open-export-data-dialog-from-menu-2" class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
+                        <span class="account-tools-menu-icon bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300">
+                          <Icon name="download" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">
+                          {{ selIds.length ? t('admin.accounts.dataExportSelected') : t('admin.accounts.dataExport') }}
+                        </span>
+                        <span
+                          v-if="selIds.length"
+                          class="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        >
+                          {{ t('admin.accounts.selectedCount', { count: selIds.length }) }}
+                        </span>
+                      </button>
+
+                      <div class="my-2 border-t border-gray-100 dark:border-dark-700"></div>
+                      <div class="px-2 py-2">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                          {{ t('admin.accounts.toolActions') }}
+                        </div>
+                      </div>
+                      <button data-testid="merge-accounts-view-open-error-passthrough-3" class="account-tools-menu-item" @click="openErrorPassthrough">
+                        <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                          <Icon name="shield" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.errorPassthrough.title') }}</span>
+                      </button>
+                      <button data-testid="merge-accounts-view-open-tlsfingerprint-profiles-4" class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
+                        <span class="account-tools-menu-icon bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200">
+                          <Icon name="lock" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
+                      </button>
+
+                      <div class="my-2 border-t border-gray-100 dark:border-dark-700"></div>
+                      <div class="px-2 py-2">
+                        <div class="flex items-center justify-between gap-3">
+                          <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                            {{ t('admin.accounts.viewColumns') }}
+                          </span>
+                          <Icon name="grid" size="sm" class="text-gray-400" />
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-1 gap-1">
+                        <button data-testid="merge-accounts-view-toggle-column-col-key-5"
+                          v-for="col in toggleableColumns"
+                          :key="col.key"
+                          @click="toggleColumn(col.key)"
+                          class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                        >
+                          <span class="truncate">{{ col.label }}</span>
+                          <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </FloatingDropdown>
@@ -198,6 +259,7 @@
           @delete="handleBulkDelete"
           @reset-status="handleBulkResetStatus"
           @refresh-token="handleBulkRefreshToken"
+          @probe-upstream-billing="handleBulkProbeUpstreamBilling"
           @edit-selected="openBulkEditSelected"
           @edit-filtered="openBulkEditFiltered"
           @clear="clearSelection"
@@ -455,6 +517,23 @@
               {{ (row.rate_multiplier ?? 1).toFixed(2) }}x
             </span>
           </template>
+          <template #header-upstream_billing_rate="{ column }">
+            <div class="flex items-center gap-1">
+              <span>{{ column.label }}</span>
+              <span data-testid="merge-accounts-view-span-6-6" @click.stop>
+                <HelpTooltip :content="t('admin.accounts.upstreamBilling.trustWarning')" width-class="w-80" />
+              </span>
+            </div>
+          </template>
+          <template #cell-upstream_billing_rate="{ row }">
+            <UpstreamBillingRateCell
+              :account="row"
+              :global-probe-enabled="upstreamBillingProbeGloballyEnabled"
+              :now="upstreamBillingNow"
+              :probing="probingUpstreamBilling.has(row.id)"
+              @probe="handleProbeUpstreamBilling(row)"
+            />
+          </template>
           <template #cell-priority="{ value }">
             <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ value }}</span>
           </template>
@@ -561,6 +640,7 @@
       @test="handleTest"
       @stats="handleViewStats"
       @schedule="handleSchedule"
+      @duplicate="handleDuplicateAccount"
       @reauth="handleReAuth"
       @refresh-token="handleRefresh"
       @recover-state="handleRecoverState"
@@ -645,6 +725,7 @@
     </ConfirmDialog>
     <ErrorPassthroughRulesModal :show="showErrorPassthrough" @close="showErrorPassthrough = false" />
     <TLSFingerprintProfilesModal :show="showTLSFingerprintProfiles" @close="showTLSFingerprintProfiles = false" />
+    <TotpStepUpDialog :controller="accountExportStepUp" />
   </AppLayout>
 </template>
 
@@ -659,6 +740,7 @@ import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
+import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
 import { buildAccountExternalQuotaProgressPreferenceKey, useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'
 import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
 import {
@@ -699,7 +781,8 @@ import TLSFingerprintProfilesModal from '@/components/admin/TLSFingerprintProfil
 import { buildOpenAIUsageRefreshKey } from '@/utils/accountUsageRefresh'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import { proxyExpiryBadgeClass, proxyExpiryLabelKey } from '@/utils/proxyExpiry'
-import type { Account, AccountPlatform, AccountSchedulerGroupScore, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel } from '@/types'
+import { extractApiErrorMessage } from '@/utils/apiError'
+import type { Account, AccountPlatform, AccountSchedulerGroupScore, AccountType, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel, UpstreamBillingProbeSnapshot } from '@/types'
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
@@ -795,6 +878,11 @@ const rateMultiplierMenu = reactive<{
   saving: false
 })
 const exportingData = ref(false)
+const probingUpstreamBilling = reactive(new Set<number>())
+const upstreamBillingProbeGloballyEnabled = ref<boolean | undefined>(undefined)
+const upstreamBillingNow = ref(Date.now())
+let lastUpstreamBillingSortRefreshMinute = -1
+useIntervalFn(() => { upstreamBillingNow.value = Date.now() }, 60_000)
 
 // Account tools dropdown
 const showAccountToolsDropdown = ref(false)
@@ -822,6 +910,7 @@ const ACCOUNT_SORTABLE_KEYS = new Set([
   'schedulable',
   'priority',
   'rate_multiplier',
+  'upstream_billing_rate',
   'last_used_at',
   'created_at',
   'expires_at'
@@ -1426,8 +1515,15 @@ const resetAutoRefreshCache = () => {
 
 const isFirstLoad = ref(true)
 
+function markUpstreamBillingSortRefresh() {
+  if (sortState.sort_by === 'upstream_billing_rate') {
+    lastUpstreamBillingSortRefreshMinute = Math.floor(Date.now() / 60_000)
+  }
+}
+
 const load = async () => {
   const requestParams = params as any
+  markUpstreamBillingSortRefresh()
   syncAccountListDerivedParams()
   hasPendingListSync.value = false
   resetAutoRefreshCache()
@@ -1444,12 +1540,26 @@ const load = async () => {
 }
 
 const reload = async () => {
+  markUpstreamBillingSortRefresh()
   syncAccountListDerivedParams()
   hasPendingListSync.value = false
   resetAutoRefreshCache()
   pendingTodayStatsRefresh.value = false
   await baseReload()
   await refreshTodayStatsBatch()
+}
+
+const refreshUpstreamBillingSortedList = async (force = false) => {
+  if (sortState.sort_by !== 'upstream_billing_rate') return
+
+  const minute = Math.floor(upstreamBillingNow.value / 60_000)
+  if (!force && lastUpstreamBillingSortRefreshMinute === minute) return
+  lastUpstreamBillingSortRefreshMinute = minute
+  try {
+    await reload()
+  } catch (error) {
+    console.error('Failed to refresh upstream billing sort:', error)
+  }
 }
 
 const debouncedReload = () => {
@@ -1508,6 +1618,9 @@ const handleAccountFilterUpdate = (newFilters: Record<string, any>) => {
 }
 
 watch(loading, (isLoading, wasLoading) => {
+  if (wasLoading && !isLoading) {
+    upstreamBillingNow.value = Date.now()
+  }
   if (wasLoading && !isLoading && pendingTodayStatsRefresh.value) {
     pendingTodayStatsRefresh.value = false
     refreshTodayStatsBatch().catch((error) => {
@@ -1642,7 +1755,9 @@ const refreshAccountsIncrementally = async () => {
       pagination.pages = result.data.pages || 0
       mergeAccountsIncrementally(result.data.items || [])
       hasPendingListSync.value = false
+      markUpstreamBillingSortRefresh()
     }
+    upstreamBillingNow.value = Date.now()
 
     await refreshTodayStatsBatch()
   } catch (error) {
@@ -1653,9 +1768,18 @@ const refreshAccountsIncrementally = async () => {
 }
 
 const handleManualRefresh = async () => {
-  await Promise.all([load(), fetchExternalQuotaSummaries()])
+  await Promise.all([load(), fetchExternalQuotaSummaries(), loadUpstreamBillingProbeGlobalState()])
   // Force usage cells to refetch /usage on explicit user refresh.
   usageManualRefreshToken.value += 1
+}
+
+const loadUpstreamBillingProbeGlobalState = async () => {
+  try {
+    const settings = await adminAPI.accounts.getUpstreamBillingProbeSettings()
+    upstreamBillingProbeGloballyEnabled.value = settings.enabled
+  } catch (error) {
+    console.error('Failed to load upstream billing probe settings:', error)
+  }
 }
 
 const closeAccountToolsDropdown = () => {
@@ -1848,12 +1972,13 @@ const allColumns = computed(() => {
   if (!authStore.isSimpleMode) {
     c.push({ key: 'groups', label: t('admin.accounts.columns.groups'), sortable: false })
   }
+  c.push({ key: 'usage', label: t('admin.accounts.columns.usageWindows'), sortable: false })
   c.push(
-    { key: 'usage', label: t('admin.accounts.columns.usageWindows'), sortable: false },
     { key: 'proxy', label: t('admin.accounts.columns.proxy'), sortable: false },
     { key: 'priority', label: t('admin.accounts.columns.priority'), sortable: true },
     { key: 'scheduler_score', label: t('admin.accounts.columns.schedulerScore'), sortable: false },
     { key: 'rate_multiplier', label: t('admin.accounts.columns.billingRateMultiplier'), sortable: true },
+    { key: 'upstream_billing_rate', label: t('admin.accounts.columns.upstreamBillingRate'), sortable: true },
     { key: 'last_used_at', label: t('admin.accounts.columns.lastUsed'), sortable: true },
     { key: 'created_at', label: t('admin.accounts.columns.createdAt'), sortable: true },
     { key: 'expires_at', label: t('admin.accounts.columns.expiresAt'), sortable: true },
@@ -2069,6 +2194,40 @@ const handleBulkRefreshToken = async () => {
   } catch (error) {
     console.error('Failed to bulk refresh token:', error)
     appStore.showError(String(error))
+  }
+}
+const handleBulkProbeUpstreamBilling = async () => {
+  const accountIDs = [...selIds.value]
+  if (accountIDs.length === 0) {
+    appStore.showError(t('admin.accounts.upstreamBilling.noEligibleAccounts'))
+    return
+  }
+  if (accountIDs.length > 20) {
+    appStore.showError(t('admin.accounts.upstreamBilling.batchLimit'))
+    return
+  }
+  accountIDs.forEach(id => probingUpstreamBilling.add(id))
+  try {
+    const results = await adminAPI.accounts.probeUpstreamBillingBatch(accountIDs)
+    let patched = false
+    results.forEach(result => {
+      if (result.snapshot) {
+        patchUpstreamBillingSnapshot(result.account_id, result.snapshot)
+        patched = true
+      }
+    })
+    if (patched) await refreshUpstreamBillingSortedList(true)
+    const failed = results.filter(result => result.error).length
+    if (failed > 0) {
+      appStore.showError(t('admin.accounts.upstreamBilling.batchPartial', { success: results.length - failed, failed }))
+    } else {
+      appStore.showSuccess(t('admin.accounts.upstreamBilling.batchCompleted', { count: results.length }))
+    }
+  } catch (error) {
+    console.error('Failed to probe upstream billing in batch:', error)
+    appStore.showError(extractApiErrorMessage(error, t('admin.accounts.upstreamBilling.probeFailed')))
+  } finally {
+    accountIDs.forEach(id => probingUpstreamBilling.delete(id))
   }
 }
 const updateSchedulableInList = (accountIds: number[], schedulable: boolean) => {
@@ -2325,6 +2484,32 @@ const patchAccountInList = (updatedAccount: Account) => {
   accounts.value = nextAccounts
   syncAccountRefs(mergedAccount)
 }
+const patchUpstreamBillingSnapshot = (accountID: number, snapshot: UpstreamBillingProbeSnapshot) => {
+  const account = accounts.value.find(item => item.id === accountID)
+  if (!account) return
+  markUpstreamBillingSortRefresh()
+  upstreamBillingNow.value = Date.now()
+  patchAccountInList({
+    ...account,
+    extra: { ...account.extra, upstream_billing_probe: snapshot }
+  })
+}
+const handleProbeUpstreamBilling = async (account: Account) => {
+  if (probingUpstreamBilling.has(account.id)) return
+  probingUpstreamBilling.add(account.id)
+  try {
+    const result = await adminAPI.accounts.probeUpstreamBilling(account.id)
+    if (result.snapshot) {
+      patchUpstreamBillingSnapshot(account.id, result.snapshot)
+      await refreshUpstreamBillingSortedList(true)
+    }
+  } catch (error) {
+    console.error('Failed to probe upstream billing:', error)
+    appStore.showError(extractApiErrorMessage(error, t('admin.accounts.upstreamBilling.probeFailed')))
+  } finally {
+    probingUpstreamBilling.delete(account.id)
+  }
+}
 const handleAccountUpdated = (updatedAccount: Account) => {
   patchAccountInList(updatedAccount)
   enterAutoRefreshSilentWindow()
@@ -2342,14 +2527,14 @@ const handleExportData = async () => {
   if (exportingData.value) return
   exportingData.value = true
   try {
-    const dataPayload = await adminAPI.accounts.exportData(
+    const dataPayload = await accountExportStepUp.run(() => adminAPI.accounts.exportData(
       selIds.value.length > 0
         ? { ids: selIds.value, includeProxies: includeProxyOnExport.value }
         : {
             includeProxies: includeProxyOnExport.value,
             filters: buildAccountQueryFilters()
           }
-    )
+    ))
     const timestamp = formatExportTimestamp()
     const filename = `sub2api-account-${timestamp}.json`
     const blob = new Blob([JSON.stringify(dataPayload, null, 2)], { type: 'application/json' })
@@ -2361,12 +2546,23 @@ const handleExportData = async () => {
     URL.revokeObjectURL(url)
     appStore.showSuccess(t('admin.accounts.dataExported'))
   } catch (error: any) {
-    appStore.showError(error?.message || t('admin.accounts.dataExportFailed'))
+    if (isStepUpCancelled(error)) {
+      // 用户主动取消 step-up 验证，静默返回，不弹错误提示。
+    } else if (isStepUpBlocked(error)) {
+      appStore.showError(
+        stepUpBlockReason(error) === 'STEP_UP_ADMIN_API_KEY_FORBIDDEN'
+          ? t('stepUp.adminApiKeyForbidden')
+          : t('stepUp.notEnabled')
+      )
+    } else {
+      appStore.showError(error?.message || t('admin.accounts.dataExportFailed'))
+    }
   } finally {
     exportingData.value = false
     showExportDataDialog.value = false
   }
 }
+const accountExportStepUp = useStepUp()
 const closeTestModal = () => { showTest.value = false; testingAcc.value = null }
 const closeStatsModal = () => { showStats.value = false; statsAcc.value = null }
 const closeReAuthModal = () => { showReAuth.value = false; reAuthAcc.value = null }
@@ -2385,6 +2581,21 @@ const handleSchedule = async (a: Account) => {
 }
 const closeSchedulePanel = () => { showSchedulePanel.value = false; scheduleAcc.value = null; scheduleModelOptions.value = [] }
 const handleReAuth = (a: Account) => { reAuthAcc.value = a; showReAuth.value = true }
+const duplicatingAccountIDs = new Set<number>()
+const handleDuplicateAccount = async (a: Account) => {
+  if (duplicatingAccountIDs.has(a.id)) return
+  duplicatingAccountIDs.add(a.id)
+  try {
+    const duplicate = await adminAPI.accounts.duplicate(a.id)
+    appStore.showSuccess(t('admin.accounts.duplicateSuccess', { name: duplicate.name }))
+    reload()
+  } catch (error: any) {
+    console.error('Failed to duplicate account:', error)
+    appStore.showError(error?.message || t('admin.accounts.duplicateFailed'))
+  } finally {
+    duplicatingAccountIDs.delete(a.id)
+  }
+}
 const handleRefresh = async (a: Account) => {
   try {
     const updated = await adminAPI.accounts.refreshCredentials(a.id)
@@ -2517,7 +2728,7 @@ const proxyExpiryText = (p: AccountProxy): string => {
   return params ? t(key, params) : t(key)
 }
 
-// 滚动时关闭操作菜单（不关闭列设置下拉菜单）
+// 表格滚动时关闭行操作菜单，并让顶部工具菜单继续贴紧触发按钮。
 const handleScroll = () => {
   menu.show = false
   rateMultiplierMenu.show = false
@@ -2541,6 +2752,7 @@ onMounted(async () => {
   startAccountCallingGraceTicker()
   void loadAccountExternalQuotaProgressSettings()
   load()
+  loadUpstreamBillingProbeGlobalState()
   fetchExternalQuotaSummaries().catch((error) => {
     console.error('Failed to load external quota summaries:', error)
   })

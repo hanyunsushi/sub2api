@@ -35,6 +35,7 @@ type stubAdminService struct {
 	createSparkShadowErr                error
 	updateAccountErr                    error
 	bulkUpdateAccountErr                error
+	lastBulkUpdateAccountInput          *service.BulkUpdateAccountsInput
 	getAccountResult                    *service.Account
 	updateAccountCalls                  int
 	updateAccountExtraCalls             int
@@ -197,6 +198,10 @@ func (s *stubAdminService) BatchUpdateConcurrency(ctx context.Context, userIDs [
 	return len(userIDs), nil
 }
 
+func (s *stubAdminService) BatchUpdateLimits(ctx context.Context, userIDs []int64, concurrency, rpmLimit *int) (int, error) {
+	return len(userIDs), nil
+}
+
 func (s *stubAdminService) GetUserAPIKeys(ctx context.Context, userID int64, page, pageSize int, sortBy, sortOrder string) ([]service.APIKey, int64, error) {
 	return s.apiKeys, int64(len(s.apiKeys)), nil
 }
@@ -290,9 +295,76 @@ func (s *stubAdminService) GetGroupModelsListCandidates(ctx context.Context, id 
 	return []string{"claude-sonnet-4-6"}, nil
 }
 
+func (s *stubAdminService) ListCompositeRoutes(ctx context.Context, groupID int64) ([]service.CompositeModelRoute, error) {
+	return []service.CompositeModelRoute{
+		{
+			ID:             1,
+			GroupID:        groupID,
+			PublicModel:    "openrouter/gpt-5",
+			MatchType:      service.CompositeRouteMatchExact,
+			TargetPlatform: service.PlatformOpenAI,
+			UpstreamModel:  "gpt-5",
+			Endpoint:       service.CompositeRouteEndpointAny,
+			Priority:       100,
+			Enabled:        true,
+		},
+	}, nil
+}
+
+func (s *stubAdminService) CreateCompositeRoute(ctx context.Context, groupID int64, input service.CompositeRouteInput) (*service.CompositeModelRoute, error) {
+	return &service.CompositeModelRoute{
+		ID:             1,
+		GroupID:        groupID,
+		PublicModel:    input.PublicModel,
+		MatchType:      input.MatchType,
+		TargetPlatform: input.TargetPlatform,
+		UpstreamModel:  input.UpstreamModel,
+		Endpoint:       input.Endpoint,
+		Priority:       input.Priority,
+		Enabled:        input.Enabled,
+		Notes:          input.Notes,
+	}, nil
+}
+
+func (s *stubAdminService) UpdateCompositeRoute(ctx context.Context, groupID, routeID int64, input service.CompositeRouteInput) (*service.CompositeModelRoute, error) {
+	return &service.CompositeModelRoute{
+		ID:             routeID,
+		GroupID:        groupID,
+		PublicModel:    input.PublicModel,
+		MatchType:      input.MatchType,
+		TargetPlatform: input.TargetPlatform,
+		UpstreamModel:  input.UpstreamModel,
+		Endpoint:       input.Endpoint,
+		Priority:       input.Priority,
+		Enabled:        input.Enabled,
+		Notes:          input.Notes,
+	}, nil
+}
+
+func (s *stubAdminService) DeleteCompositeRoute(ctx context.Context, groupID, routeID int64) error {
+	return nil
+}
+
+func (s *stubAdminService) PreviewCompositeRoute(ctx context.Context, groupID int64, input service.CompositeRoutePreviewRequest) (*service.CompositeRouteDecision, error) {
+	decision, err := service.NewCompositeRouteResolver(nil).Resolve(ctx, groupID, input.Model, input.Endpoint)
+	if err != nil {
+		return nil, err
+	}
+	return &decision, nil
+}
+
 func (s *stubAdminService) CreateGroup(ctx context.Context, input *service.CreateGroupInput) (*service.Group, error) {
 	group := service.Group{ID: 200, Name: input.Name, Status: service.StatusActive}
 	return &group, nil
+}
+
+func (s *stubAdminService) DuplicateGroup(ctx context.Context, id int64, actorScope, operationKey string) (*service.Group, error) {
+	group := service.Group{ID: 201, Name: "group (Copy)", Status: "inactive"}
+	return &group, nil
+}
+
+func (s *stubAdminService) RecoverDuplicateGroup(ctx context.Context, id int64, actorScope, operationKey string) (*service.Group, error) {
+	return nil, nil
 }
 
 func (s *stubAdminService) UpdateGroup(ctx context.Context, id int64, input *service.UpdateGroupInput) (*service.Group, error) {
@@ -420,6 +492,15 @@ func (s *stubAdminService) CreateAccount(ctx context.Context, input *service.Cre
 	return &account, nil
 }
 
+func (s *stubAdminService) DuplicateAccount(ctx context.Context, id int64, actorScope, operationKey string) (*service.Account, error) {
+	account := service.Account{ID: 301, Name: "account (Copy)", Status: service.StatusActive, Schedulable: false}
+	return &account, nil
+}
+
+func (s *stubAdminService) RecoverDuplicateAccount(ctx context.Context, id int64, actorScope, operationKey string) (*service.Account, error) {
+	return nil, nil
+}
+
 func (s *stubAdminService) UpdateAccount(ctx context.Context, id int64, input *service.UpdateAccountInput) (*service.Account, error) {
 	s.mu.Lock()
 	s.updatedAccountIDs = append(s.updatedAccountIDs, id)
@@ -471,6 +552,7 @@ func (s *stubAdminService) SetAccountScheduleLocked(ctx context.Context, id int6
 }
 
 func (s *stubAdminService) BulkUpdateAccounts(ctx context.Context, input *service.BulkUpdateAccountsInput) (*service.BulkUpdateAccountsResult, error) {
+	s.lastBulkUpdateAccountInput = input
 	if s.bulkUpdateAccountErr != nil {
 		return nil, s.bulkUpdateAccountErr
 	}

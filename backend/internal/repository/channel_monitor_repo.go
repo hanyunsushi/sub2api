@@ -12,6 +12,9 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/lib/pq"
+
+	entsql "entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqljson"
 )
 
 // channelMonitorRepository 实现 service.ChannelMonitorRepository。
@@ -71,6 +74,30 @@ func (r *channelMonitorRepository) Create(ctx context.Context, m *service.Channe
 	return nil
 }
 
+func (r *channelMonitorRepository) FindByDuplicateOperationID(ctx context.Context, operationID string) (*service.ChannelMonitor, error) {
+	if strings.TrimSpace(operationID) == "" {
+		return nil, nil
+	}
+	client := clientFromContext(ctx, r.client)
+	row, err := client.ChannelMonitor.Query().
+		Where(func(selector *entsql.Selector) {
+			selector.Where(sqljson.ValueEQ(
+				channelmonitor.FieldExtraHeaders,
+				operationID,
+				sqljson.Path(service.ChannelMonitorDuplicateOperationIDMetadataKey),
+			))
+		}).
+		Order(dbent.Asc(channelmonitor.FieldID)).
+		First(ctx)
+	if dbent.IsNotFound(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("find channel monitor duplicate operation: %w", err)
+	}
+	return entToServiceMonitor(row), nil
+}
+
 func (r *channelMonitorRepository) GetByID(ctx context.Context, id int64) (*service.ChannelMonitor, error) {
 	row, err := r.client.ChannelMonitor.Query().
 		Where(channelmonitor.IDEQ(id)).
@@ -97,7 +124,7 @@ func (r *channelMonitorRepository) Update(ctx context.Context, m *service.Channe
 		SetIntervalSeconds(m.IntervalSeconds).
 		SetAccountIds(normalizeMonitorAccountIDsRepo(m.AccountIDs, m.AccountID)).
 		SetJitterSeconds(m.JitterSeconds).
-		SetExtraHeaders(emptyHeadersIfNilRepo(m.ExtraHeaders)).
+		SetExtraHeaders(channelMonitorHeadersForPersistence(m)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode))
 	if m.AccountID != nil {
 		updater = updater.SetAccountID(*m.AccountID)
@@ -716,9 +743,9 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 	if extras == nil {
 		extras = []string{}
 	}
-	headers := row.ExtraHeaders
-	if headers == nil {
-		headers = map[string]string{}
+	headers := make(map[string]string, len(row.ExtraHeaders))
+	for key, value := range row.ExtraHeaders {
+		headers[key] = value
 	}
 	accountIDs := normalizeAccountIDsRepo(row.AccountIds)
 	accountID := row.AccountID
@@ -757,6 +784,23 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 		out.TemplateID = &id
 	}
 	return out
+}
+
+func channelMonitorHeadersForPersistence(m *service.ChannelMonitor) map[string]string {
+	if m == nil {
+		return map[string]string{}
+	}
+	headers := make(map[string]string, len(m.ExtraHeaders)+1)
+	for key, value := range m.ExtraHeaders {
+		if key == service.ChannelMonitorDuplicateOperationIDMetadataKey {
+			continue
+		}
+		headers[key] = value
+	}
+	if operationID := strings.TrimSpace(m.DuplicateOperationID); operationID != "" {
+		headers[service.ChannelMonitorDuplicateOperationIDMetadataKey] = operationID
+	}
+	return headers
 }
 
 // emptyHeadersIfNilRepo 与 service.emptyHeadersIfNil 功能一致，

@@ -8,7 +8,7 @@
         </div>
         <div>
           <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.todayRevenue') }}</p>
-          <p class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ formatMoney(stats.today_amount) }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.today_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
           <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ stats.today_count }} {{ t('payment.admin.orders') }}
           </p>
@@ -24,7 +24,7 @@
         </div>
         <div>
           <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.totalRevenue') }}</p>
-          <p class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ formatMoney(stats.total_amount) }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.total_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
           <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
             {{ stats.total_count }} {{ t('payment.admin.orders') }}
           </p>
@@ -53,7 +53,7 @@
         </div>
         <div>
           <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.avgAmount') }}</p>
-          <p class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ formatMoney(stats.avg_amount) }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.avg_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
-import type { DashboardStats } from '@/types/payment'
+import type { CurrencyAmounts, DashboardStats } from '@/types/payment'
 
 const { t } = useI18n()
 
@@ -71,7 +71,11 @@ defineProps<{
   stats: DashboardStats
 }>()
 
-function formatMoney(value: number): string {
-  return value.toFixed(2)
+function sortedAmounts(amounts: CurrencyAmounts): [string, number][] {
+  return Object.entries(amounts).sort(([left], [right]) => left.localeCompare(right))
+}
+
+function formatMoney(currency: string, amount: number): string {
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)
 }
 </script>
