@@ -20,6 +20,7 @@ export { userChannelsAPI } from './channels'
 export { pricingAPI } from './pricing'
 export * as batchImageAPI from './batchImage'
 export { totpAPI } from './totp'
+export { passkeyAPI, type PasskeyCredentialSummary } from './passkey'
 export { default as announcementsAPI } from './announcements'
 export { channelMonitorUserAPI } from './channelMonitor'
 

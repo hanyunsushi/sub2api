@@ -23,7 +23,7 @@
             <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
               {{ t('admin.usage.tokenRanking.columns.user') }}
             </th>
-            <th
+            <th data-testid="merge-user-token-ranking-set-sort-col-key-1"
               v-for="col in sortableColumns"
               :key="col.key"
               class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-right text-xs font-medium uppercase tracking-wider transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
@@ -46,7 +46,7 @@
               {{ t('admin.dashboard.noDataAvailable') }}
             </td>
           </tr>
-          <tr
+          <tr data-testid="merge-user-token-ranking-emit-2"
             v-for="(item, index) in items"
             v-else
             :key="item.user_id"

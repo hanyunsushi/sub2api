@@ -24,6 +24,10 @@
               <Icon name="clock" size="sm" class="text-orange-500" />
               {{ t('admin.scheduledTests.schedule') }}
             </button>
+            <button v-if="canDuplicate" data-testid="admin-account-account-action-menu-button-duplicate" @click="$emit('duplicate', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm">
+              <Icon name="copy" size="sm" class="text-[var(--anthropic-info)]" />
+              {{ t('admin.accounts.duplicateAccount') }}
+            </button>
             <template v-if="(account.type === 'oauth' || account.type === 'setup-token') && !isShadow">
               <button data-testid="admin-account-account-action-menu-button-emit-reauth-account" @click="$emit('reauth', account); $emit('close')" class="dropdown-highlight-item flex w-full items-center gap-2 text-sm text-[var(--anthropic-info)]">
                 <Icon name="link" size="sm" />
@@ -70,8 +74,12 @@ import { Icon } from '@/components/icons'
 import type { Account } from '@/types'
 
 const props = defineProps<{ show: boolean; account: Account | null; position: { top: number; left: number } | null }>()
-const emit = defineEmits(['close', 'menu-enter', 'menu-leave', 'test', 'stats', 'schedule', 'reauth', 'refresh-token', 'recover-state', 'reset-quota', 'set-privacy', 'create-spark-shadow'])
+const emit = defineEmits(['close', 'menu-enter', 'menu-leave', 'test', 'stats', 'schedule', 'duplicate', 'reauth', 'refresh-token', 'recover-state', 'reset-quota', 'set-privacy', 'create-spark-shadow'])
 const { t } = useI18n()
+const canDuplicate = computed(() => {
+  if (!props.account || props.account.parent_account_id != null) return false
+  return ['apikey', 'upstream', 'bedrock', 'service_account'].includes(props.account.type)
+})
 const isRateLimited = computed(() => {
   if (props.account?.rate_limit_reset_at && new Date(props.account.rate_limit_reset_at) > new Date()) {
     return true

@@ -101,7 +101,7 @@
             {{ t('admin.channels.form.defaultPrices', '默认价格（未命中区间时使用）') }}
             <span class="ml-1 font-normal text-[var(--anthropic-muted)]">$/MTok</span>
           </label>
-          <div class="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-5">
+          <div class="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-6">
             <div>
               <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.inputPrice', '输入') }}</label>
               <input data-testid="admin-channel-pricing-entry-card-input-number" :value="entry.input_price" @input="emitField('input_price', ($event.target as HTMLInputElement).value)"
@@ -328,6 +328,7 @@ async function onModelsUpdate(newModels: string[]) {
         output_price: perTokenToMTok(result.output_price ?? null),
         cache_write_price: perTokenToMTok(result.cache_write_price ?? null),
         cache_read_price: perTokenToMTok(result.cache_read_price ?? null),
+        image_input_price: perTokenToMTok(result.image_input_price ?? null),
         image_output_price: perTokenToMTok(result.image_output_price ?? null),
       })
     }

@@ -245,7 +245,7 @@ function downloadChart() {
       </button>
     </div>
 
-    <div class="min-h-0 flex-1">
+    <div class="min-h-0 min-w-0 flex-1">
       <Line v-if="state === 'ready' && chartData" ref="throughputChartRef" :data="chartData" :options="options" />
       <div v-else class="flex h-full items-center justify-center">
         <div v-if="state === 'loading'" class="animate-pulse text-sm text-[var(--anthropic-muted)]">{{ t('common.loading') }}</div>

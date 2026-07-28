@@ -41,8 +41,8 @@
                   <span :class="['inline-block h-3 w-3 rounded-full', methodColor(method.type)]"></span>
                   <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.methods.' + method.type, method.type) }}</span>
                 </div>
-                <div class="text-right">
-                  <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">&yen;{{ method.amount.toFixed(2) }}</span>
+                <div class="space-y-1 text-right">
+                  <span v-for="[currency, amount] in sortedAmounts(method.amount)" :key="currency" class="block text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</span>
                   <span class="ml-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">({{ method.count }})</span>
                 </div>
               </div>
@@ -50,14 +50,17 @@
           </div>
           <div class="card p-4">
             <h3 class="mb-4 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('payment.admin.topUsers') }}</h3>
-            <div v-if="!stats.top_users?.length" class="flex h-32 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.noData') }}</div>
+            <div v-if="!hasTopUsers(stats.top_users)" class="flex h-32 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.noData') }}</div>
             <div v-else class="space-y-2">
-              <div v-for="(user, idx) in stats.top_users" :key="user.user_id" class="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]">
-                <div class="flex items-center gap-3">
-                  <span :class="['flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold', rankClass(idx)]">{{ idx + 1 }}</span>
-                  <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ user.email }}</span>
+              <div v-for="[currency, users] in sortedTopUsers(stats.top_users)" :key="currency" class="space-y-2">
+                <p class="text-xs font-semibold text-[var(--anthropic-muted)]">{{ currency }}</p>
+                <div v-for="(user, idx) in users" :key="user.user_id" class="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]">
+                  <div class="flex items-center gap-3">
+                    <span :class="['flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold', rankClass(idx)]">{{ idx + 1 }}</span>
+                    <span class="text-sm text-[var(--anthropic-muted)]">{{ user.email }}</span>
+                  </div>
+                  <span class="text-sm font-medium text-[var(--anthropic-fg)]">{{ formatMoney(currency, user.amount) }}</span>
                 </div>
-                <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">&yen;{{ user.amount.toFixed(2) }}</span>
               </div>
             </div>
           </div>
@@ -73,7 +76,7 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { adminPaymentAPI } from '@/api/admin/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
-import type { DashboardStats } from '@/types/payment'
+import type { CurrencyAmounts, DashboardStats, TopUserPaymentStats } from '@/types/payment'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import OrderStatsCards from '@/components/admin/payment/OrderStatsCards.vue'
@@ -101,6 +104,22 @@ function rankClass(idx: number): string {
   if (idx === 1) return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
   if (idx === 2) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
   return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+}
+
+function sortedAmounts(amounts: CurrencyAmounts): [string, number][] {
+  return Object.entries(amounts).sort(([left], [right]) => left.localeCompare(right))
+}
+
+function sortedTopUsers(usersByCurrency: Record<string, TopUserPaymentStats[]>): [string, TopUserPaymentStats[]][] {
+  return Object.entries(usersByCurrency).sort(([left], [right]) => left.localeCompare(right))
+}
+
+function hasTopUsers(usersByCurrency: Record<string, TopUserPaymentStats[]>): boolean {
+  return Object.values(usersByCurrency).some(users => users.length > 0)
+}
+
+function formatMoney(currency: string, amount: number): string {
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)
 }
 
 async function loadDashboard() {

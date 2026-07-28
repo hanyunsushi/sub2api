@@ -98,7 +98,7 @@
         >
           <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
           {{ t('admin.accounts.status.creditsExhausted') }}
-          <span class="text-[10px] opacity-70">{{ formatModelResetTime(item.reset_at) }}</span>
+          <span class="text-[10px] opacity-70">{{ formatCountdown(item.reset_at) }}</span>
         </span>
         <!-- 正在走积分（模型限流但积分可用）-->
         <span
@@ -107,7 +107,7 @@
         >
           <span>⚡</span>
           {{ formatScopeName(item.model) }}
-          <span class="text-[10px] opacity-70">{{ formatModelResetTime(item.reset_at) }}</span>
+          <span class="text-[10px] opacity-70">{{ formatCountdown(item.reset_at) }}</span>
         </span>
         <!-- 普通模型限流 -->
         <span
@@ -116,7 +116,7 @@
         >
           <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
           {{ formatScopeName(item.model) }}
-          <span class="text-[10px] opacity-70">{{ formatModelResetTime(item.reset_at) }}</span>
+          <span class="text-[10px] opacity-70">{{ formatCountdown(item.reset_at) }}</span>
         </span>
       </div>
     </div>
@@ -284,6 +284,7 @@ const formatScopeName = (scope: string): string => {
     'claude-opus-4-6-thinking': 'COpus46T',
     'claude-opus-4-7': 'COpus47',
     'claude-opus-4-8': 'COpus48',
+    'claude-opus-5': 'COpus5',
     'claude-sonnet-4-6': 'CSon46',
     'claude-sonnet-4-5': 'CSon45',
     'claude-sonnet-4-5-thinking': 'CSon45T',
@@ -315,20 +316,6 @@ const formatScopeName = (scope: string): string => {
     gemini_pro: 'GPro',
   }
   return aliases[scope] || scope
-}
-
-const formatModelResetTime = (resetAt: string): string => {
-  const date = new Date(resetAt)
-  const now = new Date()
-  const diffMs = date.getTime() - now.getTime()
-  if (diffMs <= 0) return ''
-  const totalSecs = Math.floor(diffMs / 1000)
-  const h = Math.floor(totalSecs / 3600)
-  const m = Math.floor((totalSecs % 3600) / 60)
-  const s = totalSecs % 60
-  if (h > 0) return `${h}h${m}m`
-  if (m > 0) return `${m}m${s}s`
-  return `${s}s`
 }
 
 const getModelStatusTooltip = (item: AccountModelStatusItem) => {

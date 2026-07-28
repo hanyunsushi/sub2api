@@ -5,7 +5,7 @@
  * instead of defining their own color mappings.
  */
 
-export type Platform = 'anthropic' | 'openai' | 'antigravity' | 'gemini' | 'grok'
+export type Platform = 'anthropic' | 'openai' | 'antigravity' | 'gemini' | 'grok' | 'composite'
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
 const BADGE: Record<Platform, string> = {
@@ -14,6 +14,7 @@ const BADGE: Record<Platform, string> = {
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
   grok: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
+  composite: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
 }
 const BADGE_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]'
 
@@ -24,6 +25,7 @@ const BADGE_LIGHT: Record<Platform, string> = {
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
   grok: 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]',
+  composite: 'bg-transparent text-[var(--anthropic-info)] border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
 }
 
 // ── Border ──────────────────────────────────────────────────────────
@@ -33,6 +35,7 @@ const BORDER: Record<Platform, string> = {
   antigravity: 'border-[var(--atelier-line)]',
   gemini: 'border-[var(--atelier-line)]',
   grok: 'border-[var(--atelier-line)]',
+  composite: 'border-[var(--atelier-line)]',
 }
 const BORDER_DEFAULT = 'border-[var(--atelier-line)] dark:border-[var(--anthropic-border)]'
 
@@ -43,6 +46,7 @@ const ACCENT_BAR: Record<Platform, string> = {
   antigravity: 'bg-[var(--anthropic-raised)]',
   gemini: 'bg-[var(--anthropic-info)]',
   grok: 'bg-[var(--anthropic-raised)]',
+  composite: 'bg-[var(--anthropic-info)]',
 }
 const ACCENT_BAR_DEFAULT = 'bg-[var(--anthropic-raised)]'
 
@@ -53,6 +57,7 @@ const TEXT: Record<Platform, string> = {
   antigravity: 'text-[var(--anthropic-muted)]',
   gemini: 'text-[var(--anthropic-info)]',
   grok: 'text-[var(--anthropic-muted)]',
+  composite: 'text-[var(--anthropic-info)]',
 }
 const TEXT_DEFAULT = 'text-[var(--anthropic-fg)]'
 
@@ -63,6 +68,7 @@ const ICON: Record<Platform, string> = {
   antigravity: 'text-[var(--anthropic-muted)]',
   gemini: 'text-[var(--anthropic-info)]',
   grok: 'text-[var(--anthropic-muted)]',
+  composite: 'text-[var(--anthropic-info)]',
 }
 const ICON_DEFAULT = 'text-[var(--anthropic-fg)]'
 
@@ -73,6 +79,7 @@ const BUTTON: Record<Platform, string> = {
   antigravity: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
   gemini: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
   grok: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
+  composite: 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)] active:bg-[var(--atelier-dark)]',
 }
 const BUTTON_DEFAULT = 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)]'
 
@@ -83,6 +90,7 @@ const DISCOUNT: Record<Platform, string> = {
   antigravity: 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]',
   gemini: 'bg-transparent text-[var(--anthropic-info)] border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
   grok: 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]',
+  composite: 'bg-transparent text-[var(--anthropic-info)] border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
 }
 const DISCOUNT_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]'
 
@@ -93,6 +101,7 @@ const GRADIENT: Record<Platform, string> = {
   antigravity: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
   gemini: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
   grok: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
+  composite: 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]',
 }
 const GRADIENT_DEFAULT = 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]'
 
@@ -103,6 +112,7 @@ const GRADIENT_TEXT: Record<Platform, string> = {
   antigravity: 'text-[var(--anthropic-page)]',
   gemini: 'text-[var(--anthropic-page)]',
   grok: 'text-[var(--anthropic-page)]',
+  composite: 'text-[var(--anthropic-page)]',
 }
 const GRADIENT_TEXT_DEFAULT = 'text-[var(--anthropic-page)]'
 
@@ -112,13 +122,14 @@ const GRADIENT_SUBTEXT: Record<Platform, string> = {
   antigravity: 'text-[var(--anthropic-raised)]',
   gemini: 'text-[var(--anthropic-raised)]',
   grok: 'text-[var(--anthropic-raised)]',
+  composite: 'text-[var(--anthropic-raised)]',
 }
 const GRADIENT_SUBTEXT_DEFAULT = 'text-[var(--anthropic-raised)]'
 
 // ── Public API ──────────────────────────────────────────────────────
 
 function isPlatform(p: string): p is Platform {
-  return p === 'anthropic' || p === 'openai' || p === 'antigravity' || p === 'gemini' || p === 'grok'
+  return p === 'anthropic' || p === 'openai' || p === 'antigravity' || p === 'gemini' || p === 'grok' || p === 'composite'
 }
 
 export function platformBadgeClass(p: string): string {
@@ -172,6 +183,7 @@ export function platformLabel(p: string): string {
     case 'antigravity': return 'Antigravity'
     case 'gemini': return 'Gemini'
     case 'grok': return 'Grok'
+    case 'composite': return 'Composite'
     default: return p || 'API'
   }
 }
