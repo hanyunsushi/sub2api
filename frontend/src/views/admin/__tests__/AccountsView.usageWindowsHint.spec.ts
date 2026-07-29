@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import AccountsView from '../AccountsView.vue'
+
+const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../AccountsView.vue'), 'utf8')
 
 const {
   listAccounts,
@@ -188,5 +193,18 @@ describe('admin AccountsView usage windows hint', () => {
     )).toBe(true)
     const columns = wrapper.getComponent(DataTableStub).props('columns') as Array<{ key: string; sortable: boolean }>
     expect(columns.find(column => column.key === 'upstream_billing_rate')?.sortable).toBe(true)
+  })
+
+  it('renders each account tools action and column selector only once', () => {
+    expect(source.match(/data-testid="admin-accounts-button-open-import-data"/g)).toHaveLength(1)
+    expect(source.match(/data-testid="admin-accounts-button-open-export-data-dialog-from-menu"/g)).toHaveLength(1)
+    expect(source.match(/data-testid="admin-accounts-button-open-error-passthrough"/g)).toHaveLength(1)
+    expect(source.match(/data-testid="admin-accounts-button-open-tls-fingerprint-profiles"/g)).toHaveLength(1)
+    expect(source.match(/data-testid="admin-accounts-button-toggle-column-col-key"/g)).toHaveLength(1)
+    expect(source).not.toContain('data-testid="merge-accounts-view-open-import-data-1"')
+    expect(source).not.toContain('data-testid="merge-accounts-view-open-export-data-dialog-from-menu-2"')
+    expect(source).not.toContain('data-testid="merge-accounts-view-open-error-passthrough-3"')
+    expect(source).not.toContain('data-testid="merge-accounts-view-open-tlsfingerprint-profiles-4"')
+    expect(source).not.toContain('data-testid="merge-accounts-view-toggle-column-col-key-5"')
   })
 })
