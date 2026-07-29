@@ -2,11 +2,16 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import en from '@/i18n/locales/en'
-import zh from '@/i18n/locales/zh'
+import legacyEn from '@/i18n/locales/en'
+import modularEn from '@/i18n/locales/en/index'
+import legacyZh from '@/i18n/locales/zh'
+import modularZh from '@/i18n/locales/zh/index'
+import { mergeLocaleMessages } from '@/i18n/mergeLocaleMessages'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const read = (path: string) => readFileSync(resolve(here, path), 'utf8')
+const en = mergeLocaleMessages(modularEn, legacyEn) as typeof modularEn
+const zh = mergeLocaleMessages(modularZh, legacyZh) as typeof modularZh
 
 describe('Prompt Audit integration surface', () => {
   it('registers an admin and risk-control guarded route', () => {
@@ -28,8 +33,14 @@ describe('Prompt Audit integration surface', () => {
 
   it('keeps Prompt Audit locale trees symmetric and all operational controls named', () => {
     expect(Object.keys(zh.admin.promptAudit)).toEqual(Object.keys(en.admin.promptAudit))
-    expect(zh.nav.securityAudit).toBeTruthy()
-    expect(en.nav.securityAudit).toBeTruthy()
+    expect(zh.nav.securityAudit).toBe('安全审计')
+    expect(zh.nav.contentModeration).toBe('内容审核')
+    expect(zh.nav.promptAudit).toBe('提示词审计')
+    expect(zh.nav.auditLogs).toBe('操作日志')
+    expect(en.nav.securityAudit).toBe('Security Audit')
+    expect(en.nav.contentModeration).toBe('Content Moderation')
+    expect(en.nav.promptAudit).toBe('Prompt Audit')
+    expect(en.nav.auditLogs).toBe('Audit Logs')
     const endpoint = read('../components/EndpointPool.vue')
     const events = read('../components/EventWorkspace.vue')
     expect(endpoint).toContain('aria-label')
