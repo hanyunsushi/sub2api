@@ -28,6 +28,7 @@
       alt=""
       loading="lazy"
       aria-hidden="true"
+      @error="handleImageError"
     >
     <span v-else class="provider-brand-tile" aria-hidden="true">
       {{ brand.label }}
@@ -36,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ModelIcon from '@/components/common/ModelIcon.vue'
 import { isSystemAILogoPresetURL, providerBrandInfo } from '@/utils/providerBrandIcon'
 
@@ -47,16 +48,31 @@ const props = defineProps<{
   preferModelIcon?: boolean
 }>()
 
+const legacyCustomLogoURLAliases = new Map([
+  ['https://a6api.com/brand/a6-logo-large-transparent-512.png', 'https://a6api.com/logo.png'],
+])
+const customLogoURL = computed(() => {
+  const logoURL = props.logoUrl?.trim() || ''
+  return legacyCustomLogoURLAliases.get(logoURL) || logoURL
+})
+const imageLoadFailed = ref(false)
+
+watch(customLogoURL, () => {
+  imageLoadFailed.value = false
+}, { immediate: true })
+
 const brand = computed(() => {
   const info = providerBrandInfo(props.provider, props.model)
-  const logoUrl = props.logoUrl?.trim()
-  if (!logoUrl) return info
+  if (!customLogoURL.value || imageLoadFailed.value) return info
   return {
     ...info,
     iconModel: null,
-    iconUrl: logoUrl,
+    iconUrl: customLogoURL.value,
   }
 })
+const handleImageError = () => {
+  imageLoadFailed.value = true
+}
 const title = computed(() => props.provider || props.model || 'Provider')
 const shouldRenderModelIcon = computed(() => props.preferModelIcon && brand.value.iconModel)
 const imageMode = computed(() => isSystemAILogoPresetURL(brand.value.iconUrl) ? 'system' : 'custom')
