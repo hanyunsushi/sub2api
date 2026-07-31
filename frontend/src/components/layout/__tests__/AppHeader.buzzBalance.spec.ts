@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 
@@ -306,6 +307,7 @@ describe("AppHeader BuzzAI balance", () => {
   });
 
   beforeEach(() => {
+    setActivePinia(createPinia());
     vi.useFakeTimers();
     vi.clearAllMocks();
     authState.user = {
