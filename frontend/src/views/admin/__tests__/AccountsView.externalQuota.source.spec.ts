@@ -206,6 +206,13 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain("import { aiLogoUrlForProvider } from '@/utils/providerBrandIcon'")
   })
 
+  it('imports the upstream billing rate cell used by the account table', () => {
+    expect(source).toContain('<UpstreamBillingRateCell')
+    expect(source).toContain(
+      "import UpstreamBillingRateCell from '@/components/account/UpstreamBillingRateCell.vue'"
+    )
+  })
+
   it('keeps rate and priority together on the account card and supports quick priority edits', () => {
     expect(source).toContain('data-testid="account-rate-quick-adjust"')
     expect(source).toContain('data-testid="account-priority-quick-adjust"')
