@@ -221,8 +221,8 @@
               <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
                 {{ displayName }}
               </div>
-              <div class="text-xs capitalize text-[var(--anthropic-muted)] dark:text-dark-400">
-                {{ user.role }}
+              <div class="text-xs text-gray-500 dark:text-dark-400">
+                {{ t('admin.users.roles.' + user.role) }}
               </div>
             </div>
             <span class="topbar-menu-caret hidden md:inline-grid" :class="{ 'topbar-menu-caret-open': dropdownOpen }" aria-hidden="true"></span>

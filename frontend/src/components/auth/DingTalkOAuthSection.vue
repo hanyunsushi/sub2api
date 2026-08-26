@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import ProviderLogoMark from '@/components/auth/ProviderLogoMark.vue'
+import type { OAuthLoginStart } from '@/api/auth'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 
 const props = withDefaults(defineProps<{
@@ -28,6 +28,9 @@ const props = withDefaults(defineProps<{
 }>(), {
   showDivider: true
 })
+const emit = defineEmits<{
+  start: [request: OAuthLoginStart]
+}>()
 
 const route = useRoute()
 const { t } = useI18n()
@@ -35,9 +38,6 @@ const { t } = useI18n()
 function startLogin(): void {
   const redirectTo = (route.query.redirect as string) || '/dashboard'
   storeOAuthAffiliateCode(resolveAffiliateReferralCode(props.affCode, route.query.aff, route.query.aff_code))
-  const apiBase = (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api/v1'
-  const normalized = apiBase.replace(/\/$/, '')
-  const startURL = `${normalized}/auth/oauth/dingtalk/start?redirect=${encodeURIComponent(redirectTo)}`
-  window.location.href = startURL
+  emit('start', { provider: 'dingtalk', params: { redirect: redirectTo } })
 }
 </script>

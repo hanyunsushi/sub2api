@@ -8,7 +8,7 @@
 # =============================================================================
 
 ARG NODE_IMAGE=node:24-alpine
-ARG GOLANG_IMAGE=golang:1.26.5-alpine
+ARG GOLANG_IMAGE=golang:1.27.0-alpine
 ARG ALPINE_IMAGE=alpine:3.21
 ARG POSTGRES_IMAGE=postgres:18-alpine
 ARG GOPROXY=https://goproxy.cn,direct
@@ -125,8 +125,6 @@ RUN apk add --no-cache \
     libedit \
     && rm -rf /var/cache/apk/*
 
-# Trust CPA self-signed certificate for HTTPS upstream connections.
-COPY certs/cliproxyapi.crt /usr/local/share/ca-certificates/cliproxyapi.crt
 RUN update-ca-certificates
 
 # Copy pg_dump and psql from the same postgres image used in docker-compose

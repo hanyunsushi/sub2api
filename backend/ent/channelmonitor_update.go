@@ -81,6 +81,40 @@ func (_u *ChannelMonitorUpdate) SetNillableProvider(v *channelmonitor.Provider) 
 	return _u
 }
 
+// SetCheckMode sets the "check_mode" field.
+func (_u *ChannelMonitorUpdate) SetCheckMode(v string) *ChannelMonitorUpdate {
+	_u.mutation.SetCheckMode(v)
+	return _u
+}
+
+// SetNillableCheckMode sets the "check_mode" field if the given value is not nil.
+func (_u *ChannelMonitorUpdate) SetNillableCheckMode(v *string) *ChannelMonitorUpdate {
+	if v != nil {
+		_u.SetCheckMode(*v)
+	}
+	return _u
+}
+
+// SetAccountID sets the "account_id" field.
+func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUpdate {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *ChannelMonitorUpdate) ClearAccountID() *ChannelMonitorUpdate {
+	_u.mutation.ClearAccountID()
+	return _u
+}
+
 // SetAPIMode sets the "api_mode" field.
 func (_u *ChannelMonitorUpdate) SetAPIMode(v string) *ChannelMonitorUpdate {
 	_u.mutation.SetAPIMode(v)
@@ -263,26 +297,6 @@ func (_u *ChannelMonitorUpdate) SetNillableCreatedBy(v *int64) *ChannelMonitorUp
 // AddCreatedBy adds value to the "created_by" field.
 func (_u *ChannelMonitorUpdate) AddCreatedBy(v int64) *ChannelMonitorUpdate {
 	_u.mutation.AddCreatedBy(v)
-	return _u
-}
-
-// SetAccountID sets the "account_id" field.
-func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
-	_u.mutation.SetAccountID(v)
-	return _u
-}
-
-// SetNillableAccountID sets the "account_id" field if the given value is not nil.
-func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUpdate {
-	if v != nil {
-		_u.SetAccountID(*v)
-	}
-	return _u
-}
-
-// ClearAccountID clears the value of the "account_id" field.
-func (_u *ChannelMonitorUpdate) ClearAccountID() *ChannelMonitorUpdate {
-	_u.mutation.ClearAccountID()
 	return _u
 }
 
@@ -511,6 +525,11 @@ func (_u *ChannelMonitorUpdate) check() error {
 			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.provider": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.CheckMode(); ok {
+		if err := channelmonitor.CheckModeValidator(v); err != nil {
+			return &ValidationError{Name: "check_mode", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.check_mode": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.APIMode(); ok {
 		if err := channelmonitor.APIModeValidator(v); err != nil {
 			return &ValidationError{Name: "api_mode", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.api_mode": %w`, err)}
@@ -577,6 +596,9 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(channelmonitor.FieldProvider, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.CheckMode(); ok {
+		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)
@@ -867,6 +889,40 @@ func (_u *ChannelMonitorUpdateOne) SetNillableProvider(v *channelmonitor.Provide
 	return _u
 }
 
+// SetCheckMode sets the "check_mode" field.
+func (_u *ChannelMonitorUpdateOne) SetCheckMode(v string) *ChannelMonitorUpdateOne {
+	_u.mutation.SetCheckMode(v)
+	return _u
+}
+
+// SetNillableCheckMode sets the "check_mode" field if the given value is not nil.
+func (_u *ChannelMonitorUpdateOne) SetNillableCheckMode(v *string) *ChannelMonitorUpdateOne {
+	if v != nil {
+		_u.SetCheckMode(*v)
+	}
+	return _u
+}
+
+// SetAccountID sets the "account_id" field.
+func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
+	_u.mutation.SetAccountID(v)
+	return _u
+}
+
+// SetNillableAccountID sets the "account_id" field if the given value is not nil.
+func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonitorUpdateOne {
+	if v != nil {
+		_u.SetAccountID(*v)
+	}
+	return _u
+}
+
+// ClearAccountID clears the value of the "account_id" field.
+func (_u *ChannelMonitorUpdateOne) ClearAccountID() *ChannelMonitorUpdateOne {
+	_u.mutation.ClearAccountID()
+	return _u
+}
+
 // SetAPIMode sets the "api_mode" field.
 func (_u *ChannelMonitorUpdateOne) SetAPIMode(v string) *ChannelMonitorUpdateOne {
 	_u.mutation.SetAPIMode(v)
@@ -1049,26 +1105,6 @@ func (_u *ChannelMonitorUpdateOne) SetNillableCreatedBy(v *int64) *ChannelMonito
 // AddCreatedBy adds value to the "created_by" field.
 func (_u *ChannelMonitorUpdateOne) AddCreatedBy(v int64) *ChannelMonitorUpdateOne {
 	_u.mutation.AddCreatedBy(v)
-	return _u
-}
-
-// SetAccountID sets the "account_id" field.
-func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
-	_u.mutation.SetAccountID(v)
-	return _u
-}
-
-// SetNillableAccountID sets the "account_id" field if the given value is not nil.
-func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonitorUpdateOne {
-	if v != nil {
-		_u.SetAccountID(*v)
-	}
-	return _u
-}
-
-// ClearAccountID clears the value of the "account_id" field.
-func (_u *ChannelMonitorUpdateOne) ClearAccountID() *ChannelMonitorUpdateOne {
-	_u.mutation.ClearAccountID()
 	return _u
 }
 
@@ -1310,6 +1346,11 @@ func (_u *ChannelMonitorUpdateOne) check() error {
 			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.provider": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.CheckMode(); ok {
+		if err := channelmonitor.CheckModeValidator(v); err != nil {
+			return &ValidationError{Name: "check_mode", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.check_mode": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.APIMode(); ok {
 		if err := channelmonitor.APIModeValidator(v); err != nil {
 			return &ValidationError{Name: "api_mode", err: fmt.Errorf(`ent: validator failed for field "ChannelMonitor.api_mode": %w`, err)}
@@ -1393,6 +1434,9 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	}
 	if value, ok := _u.mutation.Provider(); ok {
 		_spec.SetField(channelmonitor.FieldProvider, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.CheckMode(); ok {
+		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)

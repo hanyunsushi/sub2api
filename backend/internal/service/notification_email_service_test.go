@@ -4,7 +4,10 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"io"
+	"mime/quotedprintable"
 	"net"
+	"net/mail"
 	"strconv"
 	"strings"
 	"sync"
@@ -644,7 +647,7 @@ func TestEmailServiceSMTPUseTLSOnSubmissionPortRequiresSTARTTLS(t *testing.T) {
 	})
 
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "server does not advertise STARTTLS")
+	require.Contains(t, err.Error(), "smtp server does not support STARTTLS")
 	require.NotContains(t, err.Error(), "tls connection failed")
 }
 
@@ -699,6 +702,21 @@ func (s *notificationEmailTestSMTPServer) lastMessage() string {
 		return ""
 	}
 	return s.messageBodies[len(s.messageBodies)-1]
+}
+
+func (s *notificationEmailTestSMTPServer) lastMessageBody(t *testing.T) string {
+	t.Helper()
+
+	message, err := mail.ReadMessage(strings.NewReader(s.lastMessage()))
+	require.NoError(t, err)
+
+	bodyReader := io.Reader(message.Body)
+	if strings.EqualFold(message.Header.Get("Content-Transfer-Encoding"), "quoted-printable") {
+		bodyReader = quotedprintable.NewReader(message.Body)
+	}
+	body, err := io.ReadAll(bodyReader)
+	require.NoError(t, err)
+	return string(body)
 }
 
 func (s *notificationEmailTestSMTPServer) close() {

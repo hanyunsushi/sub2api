@@ -1,22 +1,39 @@
 <template>
   <div class="account-bulk-actions-bar mb-4 flex items-center justify-between rounded-lg bg-[var(--anthropic-section)] p-3 dark:bg-[var(--anthropic-section)]">
     <div class="flex flex-wrap items-center gap-2">
-      <span v-if="selectedIds.length > 0" class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <span v-if="allResultsSelected" class="text-sm font-medium text-primary-900 dark:text-primary-100">
+        {{ t('admin.accounts.bulkActions.selectedAll', { count: selectedIds.length }) }}
+      </span>
+      <span v-else-if="selectedIds.length > 0" class="text-sm font-medium text-primary-900 dark:text-primary-100">
         {{ t('admin.accounts.bulkActions.selected', { count: selectedIds.length }) }}
       </span>
       <template v-if="selectedIds.length > 0">
         <button
           @click="$emit('select-page')"
-          class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
-          data-testid="account-bulk-select-page"
+          class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
         >
           {{ t('admin.accounts.bulkActions.selectCurrentPage') }}
         </button>
-        <span class="text-gray-300 dark:text-[var(--anthropic-fg)]">•</span>
+      </template>
+      <template v-if="!allResultsSelected && totalResults > selectedIds.length">
+        <span v-if="selectedIds.length > 0" class="text-gray-300 dark:text-primary-800">•</span>
+        <button
+          :disabled="selectingAll"
+          @click="$emit('select-all-results')"
+          class="text-xs font-medium text-primary-700 hover:text-primary-800 disabled:cursor-not-allowed disabled:opacity-60 dark:text-primary-300 dark:hover:text-primary-200"
+        >
+          {{
+            selectingAll
+              ? t('admin.accounts.bulkActions.selectingAll')
+              : t('admin.accounts.bulkActions.selectAllResults', { count: totalResults })
+          }}
+        </button>
+      </template>
+      <template v-if="selectedIds.length > 0">
+        <span class="text-gray-300 dark:text-primary-800">•</span>
         <button
           @click="$emit('clear')"
-          class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
-          data-testid="account-bulk-clear"
+          class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
         >
           {{ t('admin.accounts.bulkActions.clear') }}
         </button>
@@ -41,13 +58,20 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 
-defineProps<{ selectedIds: number[] }>()
+defineProps<{
+  selectedIds: number[]
+  totalResults: number
+  selectingAll: boolean
+  allResultsSelected: boolean
+}>()
+
 defineEmits([
   'delete',
   'edit-selected',
   'edit-filtered',
   'clear',
   'select-page',
+  'select-all-results',
   'toggle-schedulable',
   'reset-status',
   'refresh-token',

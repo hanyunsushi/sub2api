@@ -13,7 +13,6 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { resolveRouteDocumentTitle } from './title'
-import { codexRoutes } from './codex'
 import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
 
 /**
@@ -539,6 +538,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/admin/plugins',
+    name: 'AdminPlugins',
+    component: () => import('@/views/admin/PluginsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Plugin Management',
+      titleKey: 'admin.plugins.title',
+      descriptionKey: 'admin.plugins.description'
+    }
+  },
+  {
     path: '/admin/announcements',
     name: 'AdminAnnouncements',
     component: () => import('@/views/admin/AnnouncementsView.vue'),
@@ -688,9 +699,6 @@ const routes: RouteRecordRaw[] = [
       descriptionKey: 'admin.affiliates.transfersDescription'
     }
   },
-
-  ...codexRoutes,
-
   // ==================== Payment Admin Routes ====================
   {
     path: '/admin/orders/dashboard',

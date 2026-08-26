@@ -239,38 +239,11 @@
 
   html {
     @apply scroll-smooth antialiased;
-    overscroll-behavior-y: none;
-    font-family: var(--atelier-font-sans);
+    color-scheme: light;
   }
 
-  #app,
-  body,
-  button,
-  input,
-  textarea,
-  select,
-  .app-layout-shell,
-  .app-layout-content,
-  .app-route-page,
-  .dropdown,
-  .floating-dropdown-portal,
-  .select-dropdown-portal,
-  .date-picker-dropdown-portal {
-    font-family: var(--atelier-font-sans);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    html,
-    body,
-    .modal-body,
-    .dialog-body,
-    .table-wrapper,
-    .table-container,
-    .overflow-auto,
-    .overflow-y-auto,
-    .overflow-x-auto {
-      scroll-behavior: smooth;
-    }
+  .dark {
+    color-scheme: dark;
   }
 
   body {

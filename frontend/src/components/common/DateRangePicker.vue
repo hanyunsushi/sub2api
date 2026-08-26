@@ -901,10 +901,8 @@ onUnmounted(() => {
   box-shadow: none;
 }
 
-.date-picker-dropdown-portal .date-picker-input:focus-visible {
-  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
-  outline-offset: 3px;
-  box-shadow: none;
+.dark .date-picker-input::-webkit-calendar-picker-indicator {
+  filter: none;
 }
 
 .date-picker-dropdown-portal .date-picker-input::-webkit-calendar-picker-indicator {

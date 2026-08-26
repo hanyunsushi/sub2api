@@ -33,6 +33,10 @@ type autoScheduleRuntimeStub struct {
 	failureThreshold int
 }
 
+func (s autoScheduleRuntimeStub) GetChannelMonitorRuntime(context.Context) ChannelMonitorRuntime {
+	return ChannelMonitorRuntime{Enabled: true, Mode: ChannelMonitorModeV1}
+}
+
 func (s autoScheduleRuntimeStub) ChannelMonitorAccountAutoScheduleEnabled(context.Context) bool {
 	return s.enabled
 }

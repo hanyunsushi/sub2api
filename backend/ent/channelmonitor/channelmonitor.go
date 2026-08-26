@@ -25,6 +25,10 @@ const (
 	FieldLogoURL = "logo_url"
 	// FieldProvider holds the string denoting the provider field in the database.
 	FieldProvider = "provider"
+	// FieldCheckMode holds the string denoting the check_mode field in the database.
+	FieldCheckMode = "check_mode"
+	// FieldAccountID holds the string denoting the account_id field in the database.
+	FieldAccountID = "account_id"
 	// FieldAPIMode holds the string denoting the api_mode field in the database.
 	FieldAPIMode = "api_mode"
 	// FieldEndpoint holds the string denoting the endpoint field in the database.
@@ -47,8 +51,6 @@ const (
 	FieldLastCheckedAt = "last_checked_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
-	// FieldAccountID holds the string denoting the account_id field in the database.
-	FieldAccountID = "account_id"
 	// FieldAccountIds holds the string denoting the account_ids field in the database.
 	FieldAccountIds = "account_ids"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
@@ -107,6 +109,8 @@ var Columns = []string{
 	FieldName,
 	FieldLogoURL,
 	FieldProvider,
+	FieldCheckMode,
+	FieldAccountID,
 	FieldAPIMode,
 	FieldEndpoint,
 	FieldAPIKeyEncrypted,
@@ -118,7 +122,6 @@ var Columns = []string{
 	FieldJitterSeconds,
 	FieldLastCheckedAt,
 	FieldCreatedBy,
-	FieldAccountID,
 	FieldAccountIds,
 	FieldTemplateID,
 	FieldExtraHeaders,
@@ -147,6 +150,10 @@ var (
 	NameValidator func(string) error
 	// DefaultLogoURL holds the default value on creation for the "logo_url" field.
 	DefaultLogoURL string
+	// DefaultCheckMode holds the default value on creation for the "check_mode" field.
+	DefaultCheckMode string
+	// CheckModeValidator is a validator for the "check_mode" field. It is called by the builders before save.
+	CheckModeValidator func(string) error
 	// DefaultAPIMode holds the default value on creation for the "api_mode" field.
 	DefaultAPIMode string
 	// APIModeValidator is a validator for the "api_mode" field. It is called by the builders before save.
@@ -186,10 +193,14 @@ type Provider string
 
 // Provider values.
 const (
-	ProviderOpenai    Provider = "openai"
-	ProviderAnthropic Provider = "anthropic"
-	ProviderGemini    Provider = "gemini"
-	ProviderGrok      Provider = "grok"
+	ProviderOpenai      Provider = "openai"
+	ProviderAnthropic   Provider = "anthropic"
+	ProviderGemini      Provider = "gemini"
+	ProviderGrok        Provider = "grok"
+	ProviderAntigravity Provider = "antigravity"
+	ProviderKimi        Provider = "kimi"
+	ProviderZhipu       Provider = "zhipu"
+	ProviderDeepseek    Provider = "deepseek"
 )
 
 func (pr Provider) String() string {
@@ -199,7 +210,7 @@ func (pr Provider) String() string {
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
 func ProviderValidator(pr Provider) error {
 	switch pr {
-	case ProviderOpenai, ProviderAnthropic, ProviderGemini, ProviderGrok:
+	case ProviderOpenai, ProviderAnthropic, ProviderGemini, ProviderGrok, ProviderAntigravity, ProviderKimi, ProviderZhipu, ProviderDeepseek:
 		return nil
 	default:
 		return fmt.Errorf("channelmonitor: invalid enum value for provider field: %q", pr)
@@ -237,6 +248,16 @@ func ByLogoURL(opts ...sql.OrderTermOption) OrderOption {
 // ByProvider orders the results by the provider field.
 func ByProvider(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldProvider, opts...).ToFunc()
+}
+
+// ByCheckMode orders the results by the check_mode field.
+func ByCheckMode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckMode, opts...).ToFunc()
+}
+
+// ByAccountID orders the results by the account_id field.
+func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
 }
 
 // ByAPIMode orders the results by the api_mode field.
@@ -287,11 +308,6 @@ func ByLastCheckedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedBy orders the results by the created_by field.
 func ByCreatedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedBy, opts...).ToFunc()
-}
-
-// ByAccountID orders the results by the account_id field.
-func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
 }
 
 // ByTemplateID orders the results by the template_id field.
