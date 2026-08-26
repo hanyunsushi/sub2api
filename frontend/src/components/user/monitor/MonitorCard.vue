@@ -23,8 +23,9 @@
           >
             {{ providerLabel(item.provider) }}
           </span>
-          <span class="monitor-model-token font-mono text-xs truncate text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-            {{ item.primary_model }}
+          <!-- 纯配额模式主模型是占位符 "quota"，展示层替换为本地化「配额」标签 -->
+          <span class="font-mono text-xs truncate text-gray-500 dark:text-gray-400">
+            {{ formatMonitorModel(item.primary_model) }}
           </span>
           <span
             v-if="item.group_name"
@@ -55,6 +56,9 @@
       secondary-unit="ms"
     />
 
+    <!-- 配额模式：最新用量/余额快照（服务端已按系统开关剥离，此处 flag 为纵深防御） -->
+    <MonitorQuotaView v-if="quotaVisible" :snapshot="item.latest_quota" class="mt-2" />
+
     <!-- Divider -->
     <div class="mt-4 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
 
@@ -82,16 +86,23 @@ import {
   useChannelMonitorFormat,
   providerGradient,
 } from '@/composables/useChannelMonitorFormat'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+import { isChannelMonitorQuotaVisible } from '@/utils/featureFlags'
+import ProviderIcon from './ProviderIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
 import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
 import MonitorTimeline from './MonitorTimeline.vue'
+import MonitorQuotaView from '@/components/common/MonitorQuotaView.vue'
 
+// 图标配色与 utils/platformColors.ts 的平台色对齐（新 4 家）。
 const PROVIDER_TINT: Record<string, string> = {
   openai: 'text-emerald-600 dark:text-emerald-300',
   anthropic: 'text-orange-600 dark:text-orange-300',
-  gemini: 'text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]',
-  grok: 'text-[var(--anthropic-fg-muted)] dark:text-[var(--anthropic-fg-muted)]',
+  gemini: 'text-sky-600 dark:text-sky-300',
+  grok: 'text-zinc-700 dark:text-zinc-200',
+  antigravity: 'text-purple-600 dark:text-purple-300',
+  kimi: 'text-pink-600 dark:text-pink-300',
+  zhipu: 'text-indigo-600 dark:text-indigo-300',
+  deepseek: 'text-teal-600 dark:text-teal-300',
 }
 
 const props = defineProps<{
@@ -112,53 +123,16 @@ const {
   providerLabel,
   providerBadgeClass,
   formatLatency,
+  formatMonitorModel,
 } = useChannelMonitorFormat()
 
 const providerTintClass = computed(() =>
   PROVIDER_TINT[props.item.provider] ?? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
 )
 
-function monitorProviderClass(provider: string): string {
-  switch (provider) {
-    case 'openai':
-      return 'monitor-provider-openai'
-    case 'anthropic':
-      return 'monitor-provider-anthropic'
-    case 'gemini':
-      return 'monitor-provider-gemini'
-    default:
-      return 'monitor-provider-default'
-  }
-}
-
-function monitorStatusClass(status: MonitorStatus | ''): string {
-  switch (status) {
-    case 'operational':
-      return 'monitor-status-operational'
-    case 'degraded':
-      return 'monitor-status-degraded'
-    case 'failed':
-      return 'monitor-status-failed'
-    case 'error':
-      return 'monitor-status-error'
-    default:
-      return 'monitor-status-unknown'
-  }
-}
-
-function monitorGroupClass(groupName?: string | null): string {
-  const normalized = (groupName || '').trim().toLowerCase()
-  if (normalized.includes('gpt') || normalized.includes('openai')) {
-    return 'monitor-group-gpt'
-  }
-  if (normalized.includes('claude') || normalized.includes('anthropic')) {
-    return 'monitor-group-claude'
-  }
-  if (normalized.includes('gemini')) {
-    return 'monitor-group-gemini'
-  }
-  return 'monitor-group-default'
-}
+const quotaVisible = computed(
+  () => isChannelMonitorQuotaVisible() && !!props.item.latest_quota
+)
 
 const availabilityLabel = computed(() => {
   const win = t(`channelStatus.windowTab.${props.window}`)

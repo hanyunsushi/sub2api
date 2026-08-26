@@ -689,7 +689,22 @@ import Select, { type SelectOption } from '@/components/common/Select.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Icon from '@/components/icons/Icon.vue'
 import UserErrorRequestsTable from '@/components/user/UserErrorRequestsTable.vue'
-import type { UsageLog, ApiKey, UsageQueryParams, UsageStatsResponse, UserErrorRequest } from '@/types'
+import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
+import { formatReasoningEffort } from '@/utils/format'
+import { getBillingModeLabel, getDisplayBillingMode as resolveDisplayBillingMode } from '@/utils/billingMode'
+import { resolveUsageRequestType, requestTypeToLegacyStream } from '@/utils/usageRequestType'
+import type {
+  ApiKey,
+  EndpointStat,
+  Group,
+  GroupStat,
+  ModelStat,
+  TrendDataPoint,
+  UsageLog,
+  UsageQueryParams,
+  UsageStatsResponse,
+  UserErrorRequest,
+} from '@/types'
 import type { Column } from '@/components/common/types'
 import { COMMON_ERROR_STATUS_CODES } from '@/utils/errorBadges'
 import { formatDateTime, formatReasoningEffort } from '@/utils/format'
@@ -931,10 +946,9 @@ const getRequestTypeExportText = (log: UsageLog): string => {
   return 'Unknown'
 }
 
-const formatUsageEndpoints = (log: UsageLog): string => {
-  const inbound = log.inbound_endpoint?.trim()
-  return inbound || '-'
-}
+const getDisplayBillingMode = (
+  row: Pick<UsageLog, 'billing_mode' | 'image_count'> | null | undefined
+): string | null | undefined => resolveDisplayBillingMode(row)
 
 const formatTokens = (value: number): string => {
   if (value >= 1_000_000_000) {

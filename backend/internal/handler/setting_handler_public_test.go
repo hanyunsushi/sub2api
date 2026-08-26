@@ -92,12 +92,14 @@ func TestSettingHandler_GetPublicSettings_ExposesForceEmailOnThirdPartySignup(t 
 	require.True(t, resp.Data.ForceEmailOnThirdPartySignup)
 }
 
-func TestSettingHandler_GetPublicSettings_NormalizesRemovedCloudflareTheme(t *testing.T) {
+func TestSettingHandler_GetPublicSettings_ExposesTencentCaptchaConfiguration(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	repo := &settingHandlerPublicRepoStub{
 		values: map[string]string{
-			service.SettingKeyAppearanceThemeDefault: "cloudflare",
+			service.SettingKeyTencentCaptchaEnabled: "true",
+			service.SettingKeyTencentCaptchaAppID:   "123456789",
+			service.SettingKeyTencentCaptchaRegion:  service.TencentCaptchaRegionINTL,
 		},
 	}
 	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
@@ -113,191 +115,16 @@ func TestSettingHandler_GetPublicSettings_NormalizesRemovedCloudflareTheme(t *te
 	var resp struct {
 		Code int `json:"code"`
 		Data struct {
-			AppearanceThemeDefault string `json:"appearance_theme_default"`
+			TencentCaptchaEnabled bool   `json:"tencent_captcha_enabled"`
+			TencentCaptchaAppID   string `json:"tencent_captcha_app_id"`
+			TencentCaptchaRegion  string `json:"tencent_captcha_region"`
 		} `json:"data"`
 	}
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
 	require.Equal(t, 0, resp.Code)
-	require.Equal(t, "anthropic", resp.Data.AppearanceThemeDefault)
-}
-
-func TestSettingHandler_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	repo := &settingHandlerPublicRepoStub{
-		values: map[string]string{
-			service.SettingKeyAILogoCDNBaseURL:         "https://img.example.com/lobe/light",
-			service.SettingKeyCustomAILogoPresets:      `["https://img.example.com/custom/a.png"]`,
-			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
-		},
-	}
-	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(http.MethodGet, "/api/v1/settings/public", nil)
-
-	h.GetPublicSettings(c)
-
-	require.Equal(t, http.StatusOK, recorder.Code)
-
-	var resp struct {
-		Code int `json:"code"`
-		Data struct {
-			AILogoCDNBaseURL         string   `json:"ai_logo_cdn_base_url"`
-			CustomAILogoPresets      []string `json:"custom_ai_logo_presets"`
-			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
-		} `json:"data"`
-	}
-	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.Equal(t, 0, resp.Code)
-	require.Equal(t, "https://img.example.com/lobe/light", resp.Data.AILogoCDNBaseURL)
-	require.Equal(t, []string{"https://img.example.com/custom/a.png"}, resp.Data.CustomAILogoPresets)
-	require.Equal(t, []string{"https://img.example.com/menu/a.svg"}, resp.Data.CustomMenuSVGIconPresets)
-}
-
-func TestSettingHandler_AppendCustomAILogoPreset_PersistsServerSideLibrary(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	repo := &settingHandlerPublicRepoStub{
-		values: map[string]string{
-			service.SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png"]`,
-		},
-	}
-	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(
-		http.MethodPost,
-		"/api/v1/settings/ai-logo-presets",
-		strings.NewReader(`{"url":" https://img.example.com/custom/b.png "}`),
-	)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	h.AppendCustomAILogoPreset(c)
-
-	require.Equal(t, http.StatusOK, recorder.Code)
-	require.JSONEq(t, `["https://img.example.com/custom/b.png","https://img.example.com/custom/a.png"]`, repo.values[service.SettingKeyCustomAILogoPresets])
-
-	var resp struct {
-		Code int `json:"code"`
-		Data struct {
-			CustomAILogoPresets []string `json:"custom_ai_logo_presets"`
-		} `json:"data"`
-	}
-	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.Equal(t, []string{
-		"https://img.example.com/custom/b.png",
-		"https://img.example.com/custom/a.png",
-	}, resp.Data.CustomAILogoPresets)
-}
-
-func TestSettingHandler_DeleteCustomAILogoPreset_PersistsServerSideLibrary(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	repo := &settingHandlerPublicRepoStub{
-		values: map[string]string{
-			service.SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png","https://img.example.com/custom/b.png"]`,
-		},
-	}
-	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(
-		http.MethodDelete,
-		"/api/v1/settings/ai-logo-presets",
-		strings.NewReader(`{"url":" https://img.example.com/custom/a.png "}`),
-	)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	h.DeleteCustomAILogoPreset(c)
-
-	require.Equal(t, http.StatusOK, recorder.Code)
-	require.JSONEq(t, `["https://img.example.com/custom/b.png"]`, repo.values[service.SettingKeyCustomAILogoPresets])
-
-	var resp struct {
-		Code int `json:"code"`
-		Data struct {
-			CustomAILogoPresets []string `json:"custom_ai_logo_presets"`
-		} `json:"data"`
-	}
-	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.Equal(t, []string{"https://img.example.com/custom/b.png"}, resp.Data.CustomAILogoPresets)
-}
-
-func TestSettingHandler_AppendCustomMenuSVGIconPreset_PersistsServerSideLibrary(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	repo := &settingHandlerPublicRepoStub{
-		values: map[string]string{
-			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
-		},
-	}
-	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(
-		http.MethodPost,
-		"/api/v1/settings/custom-menu-svg-icon-presets",
-		strings.NewReader(`{"url":" https://img.example.com/menu/b.svg "}`),
-	)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	h.AppendCustomMenuSVGIconPreset(c)
-
-	require.Equal(t, http.StatusOK, recorder.Code)
-	require.JSONEq(t, `["https://img.example.com/menu/b.svg","https://img.example.com/menu/a.svg"]`, repo.values[service.SettingKeyCustomMenuSVGIconPresets])
-
-	var resp struct {
-		Code int `json:"code"`
-		Data struct {
-			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
-		} `json:"data"`
-	}
-	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.Equal(t, []string{
-		"https://img.example.com/menu/b.svg",
-		"https://img.example.com/menu/a.svg",
-	}, resp.Data.CustomMenuSVGIconPresets)
-}
-
-func TestSettingHandler_DeleteCustomMenuSVGIconPreset_PersistsServerSideLibrary(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	repo := &settingHandlerPublicRepoStub{
-		values: map[string]string{
-			service.SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
-		},
-	}
-	h := NewSettingHandler(service.NewSettingService(repo, &config.Config{}), "test-version")
-
-	recorder := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(recorder)
-	c.Request = httptest.NewRequest(
-		http.MethodDelete,
-		"/api/v1/settings/custom-menu-svg-icon-presets",
-		strings.NewReader(`{"url":" https://img.example.com/menu/a.svg "}`),
-	)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	h.DeleteCustomMenuSVGIconPreset(c)
-
-	require.Equal(t, http.StatusOK, recorder.Code)
-	require.JSONEq(t, `["https://img.example.com/menu/b.svg"]`, repo.values[service.SettingKeyCustomMenuSVGIconPresets])
-
-	var resp struct {
-		Code int `json:"code"`
-		Data struct {
-			CustomMenuSVGIconPresets []string `json:"custom_menu_svg_icon_presets"`
-		} `json:"data"`
-	}
-	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.Equal(t, []string{
-		"https://img.example.com/menu/b.svg",
-	}, resp.Data.CustomMenuSVGIconPresets)
+	require.True(t, resp.Data.TencentCaptchaEnabled)
+	require.Equal(t, "123456789", resp.Data.TencentCaptchaAppID)
+	require.Equal(t, service.TencentCaptchaRegionINTL, resp.Data.TencentCaptchaRegion)
 }
 
 func TestSettingHandler_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
