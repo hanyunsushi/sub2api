@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/domain"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -76,7 +77,11 @@ type ChannelMonitorService struct {
 	encryptor SecretEncryptor
 	// settings is optional; when nil, RunCheck fails closed for active probes
 	// (mode defaults to v2 / retired) so tests without settings never hit upstream.
-	settings channelMonitorRuntimeReader
+	settings                 channelMonitorRuntimeReader
+	autoScheduleRepo         channelMonitorAccountScheduleRepository
+	autoScheduleRuntime      channelMonitorScheduleAutomation
+	autoScheduleFailuresMu   sync.Mutex
+	autoScheduleFailureCount map[channelMonitorAutoScheduleFailureKey]int
 	// scheduler 由 wire 通过 SetScheduler 注入；CRUD 后调用对应钩子即时同步任务。
 	// 测试或未注入场景下保持 nil，所有钩子调用变为 no-op。
 	scheduler MonitorScheduler
@@ -677,17 +682,20 @@ func (s *ChannelMonitorService) RunCheck(ctx context.Context, id int64) ([]*Chec
 		return nil, ErrChannelMonitorAPIKeyDecryptFailed
 	}
 
-	var results []*CheckResult
+	var (
+		results        []*CheckResult
+		accountResults map[int64][]*CheckResult
+	)
 	switch checkMode {
 	case MonitorCheckModeQuota:
 		results = s.runQuotaOnlyCheck(ctx, m)
 	case MonitorCheckModeQuotaProbe:
-		results = s.runChecksConcurrent(ctx, m)
+		results, accountResults = s.runChecksConcurrentWithAccountResults(ctx, m)
 		attachQuotaSnapshot(results, s.fetchQuotaSnapshot(ctx, m))
 	default:
-		results = s.runChecksConcurrent(ctx, m)
+		results, accountResults = s.runChecksConcurrentWithAccountResults(ctx, m)
 	}
-	s.persistCheckResults(ctx, m, results)
+	s.persistCheckResults(ctx, m, results, accountResults)
 	return results, nil
 }
 
@@ -759,6 +767,12 @@ func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *Chan
 func (s *ChannelMonitorService) SetAccountScheduleAutomation(repo channelMonitorAccountScheduleRepository, runtime channelMonitorScheduleAutomation) {
 	s.autoScheduleRepo = repo
 	s.autoScheduleRuntime = runtime
+	// The settings implementation provides both scheduling policy and the probe
+	// runtime gate. Reuse it when available so the two monitor paths cannot
+	// silently disagree; lightweight scheduling-only test doubles remain valid.
+	if reader, ok := runtime.(channelMonitorRuntimeReader); ok {
+		s.SetRuntimeReader(reader)
+	}
 }
 
 func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {

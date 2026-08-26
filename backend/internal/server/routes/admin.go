@@ -128,9 +128,6 @@ func RegisterAdminRoutes(
 		// 邀请返利（专属用户管理）
 		registerAffiliateRoutes(admin, h)
 
-		// Codex / CPA 管理
-		registerCodexMetadataRoutes(admin, h)
-
 		// 外部订阅展示配置
 		registerExternalSubscriptionRoutes(admin, h)
 

@@ -119,32 +119,7 @@ const labelClass = computed(() => {
   if (props.platform === 'gemini') {
     return 'group-token-label group-token-label--gemini'
   }
-  if (props.platform === 'antigravity') {
-    return `${base} bg-purple-200/60 text-purple-800 dark:bg-purple-800/40 dark:text-purple-300`
-  }
-  if (props.platform === 'grok') {
-    return `${base} bg-zinc-300/70 text-zinc-800 dark:bg-zinc-700/60 dark:text-zinc-200`
-  }
-  if (props.platform === 'kimi') {
-    return `${base} bg-pink-200/60 text-pink-800 dark:bg-pink-800/40 dark:text-pink-300`
-  }
-  if (props.platform === 'zhipu') {
-    return `${base} bg-indigo-200/60 text-indigo-800 dark:bg-indigo-800/40 dark:text-indigo-300`
-  }
-  if (props.platform === 'deepseek') {
-    return `${base} bg-teal-200/60 text-teal-800 dark:bg-teal-800/40 dark:text-teal-300`
-  }
-  if (props.platform === 'composite') {
-    return `${base} bg-cyan-200/70 text-cyan-900 dark:bg-cyan-900/50 dark:text-cyan-300`
-  }
-  return `${base} bg-violet-200/60 text-violet-800 dark:bg-violet-800/40 dark:text-violet-300`
-})
-
-const platformClass = computed(() => {
-  if (props.platform === 'anthropic') return 'group-token--anthropic'
-  if (props.platform === 'openai') return 'group-token--openai'
-  if (props.platform === 'gemini') return 'group-token--gemini'
-  return 'group-token--fallback'
+  return 'group-token-label group-token-label--neutral'
 })
 
 // Badge color based on platform and subscription type

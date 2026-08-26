@@ -630,9 +630,9 @@ var (
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "name", Type: field.TypeString, Size: 100},
+		{Name: "logo_url", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
 		{Name: "provider", Type: field.TypeEnum, Enums: []string{"openai", "anthropic", "gemini", "grok", "antigravity", "kimi", "zhipu", "deepseek"}},
 		{Name: "check_mode", Type: field.TypeString, Size: 32, Default: "probe"},
-		{Name: "account_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "api_mode", Type: field.TypeString, Size: 32, Default: "chat_completions"},
 		{Name: "endpoint", Type: field.TypeString, Size: 500},
 		{Name: "api_key_encrypted", Type: field.TypeString},
@@ -659,13 +659,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "channel_monitors_channel_monitor_request_templates_request_template",
-				Columns:    []*schema.Column{ChannelMonitorsColumns[21]},
+				Columns:    []*schema.Column{ChannelMonitorsColumns[22]},
 				RefColumns: []*schema.Column{ChannelMonitorRequestTemplatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "channel_monitors_accounts_account",
-				Columns:    []*schema.Column{ChannelMonitorsColumns[22]},
+				Columns:    []*schema.Column{ChannelMonitorsColumns[23]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -684,7 +684,7 @@ var (
 			{
 				Name:    "channelmonitor_provider_api_mode",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[4], ChannelMonitorsColumns[7]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[5], ChannelMonitorsColumns[7]},
 			},
 			{
 				Name:    "channelmonitor_group_name",
@@ -694,12 +694,12 @@ var (
 			{
 				Name:    "channelmonitor_template_id",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[21]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[22]},
 			},
 			{
 				Name:    "channelmonitor_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[6]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[23]},
 			},
 		},
 	}
@@ -813,67 +813,6 @@ var (
 				Name:    "channelmonitorrequesttemplate_provider_api_mode",
 				Unique:  false,
 				Columns: []*schema.Column{ChannelMonitorRequestTemplatesColumns[4], ChannelMonitorRequestTemplatesColumns[5]},
-			},
-		},
-	}
-	// CodexAccountMetadataColumns holds the columns for the "codex_account_metadata" table.
-	CodexAccountMetadataColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
-		{Name: "auth_name", Type: field.TypeString, Unique: true, Size: 255},
-		{Name: "display_name", Type: field.TypeString, Size: 255, Default: ""},
-		{Name: "note", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
-		{Name: "local_tags", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
-		{Name: "settings", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
-		{Name: "sort_order", Type: field.TypeInt, Default: 0},
-		{Name: "group_id", Type: field.TypeInt64, Nullable: true},
-	}
-	// CodexAccountMetadataTable holds the schema information for the "codex_account_metadata" table.
-	CodexAccountMetadataTable = &schema.Table{
-		Name:       "codex_account_metadata",
-		Columns:    CodexAccountMetadataColumns,
-		PrimaryKey: []*schema.Column{CodexAccountMetadataColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "codex_account_metadata_codex_groups_account_metadata",
-				Columns:    []*schema.Column{CodexAccountMetadataColumns[9]},
-				RefColumns: []*schema.Column{CodexGroupsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "codexaccountmetadata_group_id",
-				Unique:  false,
-				Columns: []*schema.Column{CodexAccountMetadataColumns[9]},
-			},
-			{
-				Name:    "codexaccountmetadata_sort_order_auth_name",
-				Unique:  false,
-				Columns: []*schema.Column{CodexAccountMetadataColumns[8], CodexAccountMetadataColumns[3]},
-			},
-		},
-	}
-	// CodexGroupsColumns holds the columns for the "codex_groups" table.
-	CodexGroupsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
-		{Name: "name", Type: field.TypeString, Unique: true, Size: 100},
-		{Name: "color", Type: field.TypeString, Size: 32, Default: "#d97757"},
-		{Name: "sort_order", Type: field.TypeInt, Default: 0},
-	}
-	// CodexGroupsTable holds the schema information for the "codex_groups" table.
-	CodexGroupsTable = &schema.Table{
-		Name:       "codex_groups",
-		Columns:    CodexGroupsColumns,
-		PrimaryKey: []*schema.Column{CodexGroupsColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "codexgroup_sort_order_name",
-				Unique:  false,
-				Columns: []*schema.Column{CodexGroupsColumns[5], CodexGroupsColumns[3]},
 			},
 		},
 	}
@@ -1077,7 +1016,7 @@ var (
 			{
 				Name:    "group_sort_order",
 				Unique:  false,
-				Columns: []*schema.Column{GroupsColumns[49]},
+				Columns: []*schema.Column{GroupsColumns[50]},
 			},
 			{
 				Name:    "idx_groups_duplicate_operation_id_active",
@@ -2174,8 +2113,6 @@ var (
 		ChannelMonitorDailyRollupsTable,
 		ChannelMonitorHistoriesTable,
 		ChannelMonitorRequestTemplatesTable,
-		CodexAccountMetadataTable,
-		CodexGroupsTable,
 		CompositeModelRoutesTable,
 		ErrorPassthroughRulesTable,
 		GroupsTable,
@@ -2260,13 +2197,6 @@ func init() {
 	}
 	ChannelMonitorRequestTemplatesTable.Annotation = &entsql.Annotation{
 		Table: "channel_monitor_request_templates",
-	}
-	CodexAccountMetadataTable.ForeignKeys[0].RefTable = CodexGroupsTable
-	CodexAccountMetadataTable.Annotation = &entsql.Annotation{
-		Table: "codex_account_metadata",
-	}
-	CodexGroupsTable.Annotation = &entsql.Annotation{
-		Table: "codex_groups",
 	}
 	CompositeModelRoutesTable.ForeignKeys[0].RefTable = GroupsTable
 	CompositeModelRoutesTable.Annotation = &entsql.Annotation{

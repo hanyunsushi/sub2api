@@ -97,6 +97,7 @@ func NewGroupHandler(adminService service.AdminService, dashboardService *servic
 // CreateGroupRequest represents create group request
 type CreateGroupRequest struct {
 	Name                      string                        `json:"name" binding:"required"`
+	LogoURL                   string                        `json:"logo_url" binding:"max=500"`
 	Description               string                        `json:"description"`
 	Platform                  string                        `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity grok kimi zhipu deepseek composite"`
 	RateMultiplier            float64                       `json:"rate_multiplier"`
@@ -165,6 +166,7 @@ type CreateGroupRequest struct {
 // UpdateGroupRequest represents update group request
 type UpdateGroupRequest struct {
 	Name                      string                         `json:"name"`
+	LogoURL                   *string                        `json:"logo_url" binding:"omitempty,max=500"`
 	Description               *string                        `json:"description"`
 	Platform                  string                         `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity grok kimi zhipu deepseek composite"`
 	RateMultiplier            *float64                       `json:"rate_multiplier"`

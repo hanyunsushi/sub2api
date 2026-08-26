@@ -87,7 +87,7 @@ import {
   providerGradient,
 } from '@/composables/useChannelMonitorFormat'
 import { isChannelMonitorQuotaVisible } from '@/utils/featureFlags'
-import ProviderIcon from './ProviderIcon.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
 import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
 import MonitorTimeline from './MonitorTimeline.vue'
@@ -129,6 +129,22 @@ const {
 const providerTintClass = computed(() =>
   PROVIDER_TINT[props.item.provider] ?? 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
 )
+
+function monitorProviderClass(provider: string): string {
+  return `monitor-provider-${provider || 'default'}`
+}
+
+function monitorStatusClass(status: MonitorStatus | ''): string {
+  return `monitor-status-${status || 'unknown'}`
+}
+
+function monitorGroupClass(groupName?: string | null): string {
+  const normalized = (groupName || '').trim().toLowerCase()
+  if (normalized.includes('gpt') || normalized.includes('openai')) return 'monitor-group-gpt'
+  if (normalized.includes('claude') || normalized.includes('anthropic')) return 'monitor-group-claude'
+  if (normalized.includes('gemini')) return 'monitor-group-gemini'
+  return 'monitor-group-default'
+}
 
 const quotaVisible = computed(
   () => isChannelMonitorQuotaVisible() && !!props.item.latest_quota

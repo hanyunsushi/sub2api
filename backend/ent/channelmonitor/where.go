@@ -70,6 +70,11 @@ func Name(v string) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldEQ(FieldName, v))
 }
 
+// LogoURL applies equality check predicate on the "logo_url" field. It's identical to LogoURLEQ.
+func LogoURL(v string) predicate.ChannelMonitor {
+	return predicate.ChannelMonitor(sql.FieldEQ(FieldLogoURL, v))
+}
+
 // CheckMode applies equality check predicate on the "check_mode" field. It's identical to CheckModeEQ.
 func CheckMode(v string) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldEQ(FieldCheckMode, v))
@@ -128,11 +133,6 @@ func LastCheckedAt(v time.Time) predicate.ChannelMonitor {
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
 func CreatedBy(v int64) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldEQ(FieldCreatedBy, v))
-}
-
-// AccountID applies equality check predicate on the "account_id" field. It's identical to AccountIDEQ.
-func AccountID(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldEQ(FieldAccountID, v))
 }
 
 // TemplateID applies equality check predicate on the "template_id" field. It's identical to TemplateIDEQ.
@@ -458,26 +458,6 @@ func AccountIDIn(vs ...int64) predicate.ChannelMonitor {
 // AccountIDNotIn applies the NotIn predicate on the "account_id" field.
 func AccountIDNotIn(vs ...int64) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldNotIn(FieldAccountID, vs...))
-}
-
-// AccountIDGT applies the GT predicate on the "account_id" field.
-func AccountIDGT(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldGT(FieldAccountID, v))
-}
-
-// AccountIDGTE applies the GTE predicate on the "account_id" field.
-func AccountIDGTE(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldGTE(FieldAccountID, v))
-}
-
-// AccountIDLT applies the LT predicate on the "account_id" field.
-func AccountIDLT(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldLT(FieldAccountID, v))
-}
-
-// AccountIDLTE applies the LTE predicate on the "account_id" field.
-func AccountIDLTE(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldLTE(FieldAccountID, v))
 }
 
 // AccountIDIsNil applies the IsNil predicate on the "account_id" field.
@@ -1003,36 +983,6 @@ func CreatedByLT(v int64) predicate.ChannelMonitor {
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
 func CreatedByLTE(v int64) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldLTE(FieldCreatedBy, v))
-}
-
-// AccountIDEQ applies the EQ predicate on the "account_id" field.
-func AccountIDEQ(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldEQ(FieldAccountID, v))
-}
-
-// AccountIDNEQ applies the NEQ predicate on the "account_id" field.
-func AccountIDNEQ(v int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldNEQ(FieldAccountID, v))
-}
-
-// AccountIDIn applies the In predicate on the "account_id" field.
-func AccountIDIn(vs ...int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldIn(FieldAccountID, vs...))
-}
-
-// AccountIDNotIn applies the NotIn predicate on the "account_id" field.
-func AccountIDNotIn(vs ...int64) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldNotIn(FieldAccountID, vs...))
-}
-
-// AccountIDIsNil applies the IsNil predicate on the "account_id" field.
-func AccountIDIsNil() predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldIsNull(FieldAccountID))
-}
-
-// AccountIDNotNil applies the NotNil predicate on the "account_id" field.
-func AccountIDNotNil() predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(sql.FieldNotNull(FieldAccountID))
 }
 
 // TemplateIDEQ applies the EQ predicate on the "template_id" field.

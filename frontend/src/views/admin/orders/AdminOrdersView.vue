@@ -150,7 +150,6 @@ const showRefundDialog = ref(false)
 const refundSubmitting = ref(false)
 const refundRequireForce = ref(false)
 const refundWarning = ref('')
-const refundQueryingIds = ref(new Set<number>())
 const orderAuditLogs = ref<AuditLog[]>([])
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -237,6 +236,10 @@ function closeRefundDialog() {
   showRefundDialog.value = false
   refundRequireForce.value = false
   refundWarning.value = ''
+}
+
+function isRefundPendingWarning(warning: string | undefined): boolean {
+  return /pending|处理中|待/.test(String(warning || '').toLowerCase())
 }
 
 async function handleRefund(data: { amount: number; reason: string; deduct_balance: boolean; force: boolean }) {

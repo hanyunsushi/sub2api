@@ -1584,7 +1584,7 @@ async function handleSubmit() {
         return
       }
       if (!entry.intervals || entry.intervals.length === 0) continue
-      const intervalErr = validateIntervals(entry.intervals, entry.billing_mode)
+      const intervalErr = validateIntervals(entry.intervals, entry.billing_mode, t)
       if (intervalErr) {
         const platformLabel = t('admin.groups.platforms.' + section.platform, section.platform)
         const modelLabel = entry.models.join(', ') || t('admin.channels.form.unnamed')

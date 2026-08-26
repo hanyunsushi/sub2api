@@ -771,35 +771,31 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 		headers[key] = value
 	}
 	accountIDs := normalizeAccountIDsRepo(row.AccountIds)
-	accountID := row.AccountID
 	if len(accountIDs) > 0 {
-		id := accountIDs[0]
-		accountID = &id
 	} else if row.AccountID != nil && *row.AccountID > 0 {
 		accountIDs = []int64{*row.AccountID}
 	}
 	out := &service.ChannelMonitor{
-		ID:                   row.ID,
-		Name:                 row.Name,
-		Provider:             string(row.Provider),
-		APIMode:              defaultAPIModeRepo(row.APIMode),
-		Endpoint:             row.Endpoint,
-		APIKey:               row.APIKeyEncrypted, // 仍为密文，service 层负责解密
-		PrimaryModel:         row.PrimaryModel,
-		ExtraModels:          extras,
-		GroupName:            row.GroupName,
-		Enabled:              row.Enabled,
-		IntervalSeconds:      row.IntervalSeconds,
-		JitterSeconds:        row.JitterSeconds,
-		LastCheckedAt:        row.LastCheckedAt,
-		CreatedBy:            row.CreatedBy,
-		CreatedAt:            row.CreatedAt,
-		UpdatedAt:            row.UpdatedAt,
-		ExtraHeaders:         headers,
-		BodyOverrideMode:     row.BodyOverrideMode,
-		BodyOverride:         row.BodyOverride,
-		CheckMode:            defaultCheckModeRepo(row.CheckMode),
-		DuplicateOperationID: duplicateOperationID,
+		ID:               row.ID,
+		Name:             row.Name,
+		Provider:         string(row.Provider),
+		APIMode:          defaultAPIModeRepo(row.APIMode),
+		Endpoint:         row.Endpoint,
+		APIKey:           row.APIKeyEncrypted, // 仍为密文，service 层负责解密
+		PrimaryModel:     row.PrimaryModel,
+		ExtraModels:      extras,
+		GroupName:        row.GroupName,
+		Enabled:          row.Enabled,
+		IntervalSeconds:  row.IntervalSeconds,
+		JitterSeconds:    row.JitterSeconds,
+		LastCheckedAt:    row.LastCheckedAt,
+		CreatedBy:        row.CreatedBy,
+		CreatedAt:        row.CreatedAt,
+		UpdatedAt:        row.UpdatedAt,
+		ExtraHeaders:     headers,
+		BodyOverrideMode: row.BodyOverrideMode,
+		BodyOverride:     row.BodyOverride,
+		CheckMode:        defaultCheckModeRepo(row.CheckMode),
 	}
 	if row.TemplateID != nil {
 		id := *row.TemplateID

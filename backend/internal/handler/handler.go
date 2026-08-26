@@ -41,7 +41,6 @@ type AdminHandlers struct {
 	PromptAudit            *securityaudit.PromptAdminHandler
 	Payment                *admin.PaymentHandler
 	Affiliate              *admin.AffiliateHandler
-	CodexMetadata          *admin.CodexMetadataHandler
 	ExternalSubscription   *admin.ExternalSubscriptionConfigHandler
 	Compliance             *admin.ComplianceHandler
 	AuditLog               *admin.AuditLogHandler

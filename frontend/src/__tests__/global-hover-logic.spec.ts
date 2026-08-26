@@ -48,7 +48,6 @@ const availableChannelsViewSource = readFileSync(resolve(__dirname, '../views/us
 const groupsViewSource = readFileSync(resolve(__dirname, '../views/admin/GroupsView.vue'), 'utf8')
 const opsConcurrencySource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsConcurrencyCard.vue'), 'utf8')
 const userDashboardChartsSource = readFileSync(resolve(__dirname, '../components/user/dashboard/UserDashboardCharts.vue'), 'utf8')
-const codexAccountsSource = readFileSync(resolve(__dirname, '../views/codex/CodexAccounts.vue'), 'utf8')
 const opsSystemLogTableSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsSystemLogTable.vue'), 'utf8')
 const opsOpenAITokenStatsSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsOpenAITokenStatsCard.vue'), 'utf8')
 const opsAlertEventsSource = readFileSync(resolve(__dirname, '../views/admin/ops/components/OpsAlertEventsCard.vue'), 'utf8')
@@ -1503,14 +1502,6 @@ describe('Anthropic hover and overlay taxonomy', () => {
     expect(userDashboardChartsSource).toContain('variant="text-control"')
     expect(userDashboardChartsSource).toContain('class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"')
     expect(userDashboardChartsSource).not.toContain('class="btn btn-secondary dashboard-paper-control dashboard-filter-refresh"')
-
-    expect(codexAccountsSource).toContain('codex-list-actions__filters')
-    expect(codexAccountsSource).toContain('class="codex-input codex-filter-input')
-    expect(codexAccountsSource).toContain('class="codex-select codex-filter-select')
-    expect(codexAccountsSource).toContain('class="filter-menu-button codex-filter-sort-button"')
-    const codexFilterSlice = sourceSlice(codexAccountsSource, '<div class="codex-list-actions__filters">', '<div v-if="filteredAccounts.length > 0"')
-    expect(codexFilterSlice).not.toContain('!min-h-9')
-    expect(codexFilterSlice).not.toContain('class="codex-button codex-button--compact"')
 
     expect(opsSystemLogTableSource).toContain('import DateRangePicker from')
     expect(opsSystemLogTableSource).toContain('class="btn btn-secondary ops-log-query-button"')

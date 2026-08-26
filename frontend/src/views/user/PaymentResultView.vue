@@ -110,7 +110,7 @@ import { usePaymentStore } from '@/stores/payment'
 import { useAuthStore } from '@/stores/auth'
 import { paymentAPI } from '@/api/payment'
 import type { PublicOrderVerifyResult } from '@/api/payment'
-import type { OrderStatus, PaymentOrder } from '@/types/payment'
+import type { PaymentOrder } from '@/types/payment'
 import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import { normalizePaymentMethodForDisplay, paymentMethodI18nKey } from './paymentUx'
 
@@ -205,7 +205,7 @@ function setResolvedOrder(nextOrder: PaymentOrder | null): void {
   refreshUserBalanceForSuccessfulOrder(nextOrder)
 }
 
-function refreshUserBalanceForSuccessfulOrder(nextOrder: ResolvedOrder | null): void {
+function refreshUserBalanceForSuccessfulOrder(nextOrder: PaymentOrder | null): void {
   if (!nextOrder || userBalanceRefreshStarted || normalizeOrderStatus(nextOrder.status) !== 'COMPLETED') {
     return
   }

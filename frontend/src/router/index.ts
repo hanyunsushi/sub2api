@@ -13,7 +13,6 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { resolveRouteDocumentTitle } from './title'
-import { codexRoutes } from './codex'
 import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
 
 /**
@@ -700,9 +699,6 @@ const routes: RouteRecordRaw[] = [
       descriptionKey: 'admin.affiliates.transfersDescription'
     }
   },
-
-  ...codexRoutes,
-
   // ==================== Payment Admin Routes ====================
   {
     path: '/admin/orders/dashboard',

@@ -4478,9 +4478,7 @@ import {
 import {
   getDefaultImagePreviewPrice,
   getDefaultVideoPreviewPrice,
-  getImagePricePlaceholder,
   getVideoPricePlaceholder,
-  imagePricingI18nKey,
   supportsImagePricingPlatform,
   supportsVideoPricingPlatform,
   videoPricingI18nKey,
@@ -5036,11 +5034,6 @@ const createForm = reactive({
   audio_realtime_price_per_min: null as number | null,
   audio_tts_price_per_million_chars: null as number | null,
   audio_stt_price_per_hour: null as number | null,
-  // 高峰时段倍率配置
-  peak_rate_enabled: false,
-  peak_start: "",
-  peak_end: "",
-  peak_rate_multiplier: 1.0,
   // 分组利润控制（五个 token 平台）；界面按百分比输入，提交时转小数
   profit_control_enabled: false,
   profit_min_margin_percent: 0,
@@ -5416,11 +5409,6 @@ const editForm = reactive({
   audio_realtime_price_per_min: null as number | null,
   audio_tts_price_per_million_chars: null as number | null,
   audio_stt_price_per_hour: null as number | null,
-  // 高峰时段倍率配置
-  peak_rate_enabled: false,
-  peak_start: "",
-  peak_end: "",
-  peak_rate_multiplier: 1.0,
   // 分组利润控制（五个 token 平台）；界面按百分比输入，提交时转小数
   profit_control_enabled: false,
   profit_min_margin_percent: 0,
@@ -5468,10 +5456,26 @@ type ImagePricingFormState = {
   image_price_4k: number | string | null;
 };
 
+type VideoPricingFormState = {
+  platform: GroupPlatform;
+  rate_multiplier: number;
+  video_rate_independent: boolean;
+  video_rate_multiplier: number;
+  video_price_480p: number | string | null;
+  video_price_720p: number | string | null;
+  video_price_1080p: number | string | null;
+};
+
 const imagePricingTiers = [
   { key: "image_price_1k", label: "1K" },
   { key: "image_price_2k", label: "2K" },
   { key: "image_price_4k", label: "4K" },
+] as const;
+
+const videoPricingTiers = [
+  { key: "video_price_480p", label: "480p" },
+  { key: "video_price_720p", label: "720p" },
+  { key: "video_price_1080p", label: "1080p" },
 ] as const;
 
 const normalizePreviewNumber = (value: number | string | null | undefined, fallback = 0) => {
@@ -5501,6 +5505,17 @@ const formatImagePricePreview = (value: number | string | null | undefined) => {
   return `$${price.toFixed(6).replace(/0+$/, "").replace(/\.$/, "")}`;
 };
 
+const formatVideoPricePreview = (value: number | string | null | undefined) => {
+  if (value === null || value === undefined || value === "") {
+    return t("admin.groups.videoPricing.notConfigured");
+  }
+  const price = Number(value);
+  if (!Number.isFinite(price) || price < 0) {
+    return t("admin.groups.videoPricing.notConfigured");
+  }
+  return "$" + price.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
+};
+
 const normalizeRateMultiplier = (value: number | string | null | undefined) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 1;
@@ -5512,10 +5527,10 @@ const buildImageFinalPricePreview = (form: ImagePricingFormState) => {
     : normalizePreviewNumber(form.rate_multiplier, 1);
   const multiplier = imageMultiplier;
   return imagePricingTiers.map((tier) => {
-    const basePrice = normalizePreviewNumber(form[tier.key]);
+    const basePrice = parsePreviewPrice(form[tier.key]) ?? getDefaultImagePreviewPrice(form.platform, tier.key);
     return {
       label: tier.label,
-      value: basePrice > 0
+      value: basePrice !== null
         ? formatImagePricePreview(basePrice * multiplier)
         : t("admin.groups.imagePricing.notConfigured"),
     };
@@ -5527,6 +5542,26 @@ const createImageFinalPricePreview = computed(() =>
 );
 const editImageFinalPricePreview = computed(() =>
   buildImageFinalPricePreview(editForm),
+);
+const buildVideoFinalPricePreview = (form: VideoPricingFormState) => {
+  const multiplier = form.video_rate_independent
+    ? normalizePreviewNumber(form.video_rate_multiplier, 1)
+    : normalizePreviewNumber(form.rate_multiplier, 1);
+  return videoPricingTiers.map((tier) => {
+    const basePrice = parsePreviewPrice(form[tier.key]) ?? getDefaultVideoPreviewPrice(form.platform, tier.key);
+    return {
+      label: tier.label,
+      value: basePrice !== null
+        ? formatVideoPricePreview(basePrice * multiplier)
+        : t("admin.groups.videoPricing.notConfigured"),
+    };
+  });
+};
+const createVideoFinalPricePreview = computed(() =>
+  buildVideoFinalPricePreview(createForm),
+);
+const editVideoFinalPricePreview = computed(() =>
+  buildVideoFinalPricePreview(editForm),
 );
 
 // Codex 网页搜索单次默认价（与后端 defaultWebSearchPricePerCall 一致，官方 $10/1000 次）

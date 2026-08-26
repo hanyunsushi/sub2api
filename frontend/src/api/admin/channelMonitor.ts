@@ -99,6 +99,7 @@ export interface ChannelMonitor {
   check_mode: CheckMode
   /** 配额模式关联的账号 ID；探活模式为 null */
   account_id: number | null
+  account_ids: number[]
   /** 主模型最近一次配额快照（配额模式；无历史时为 null） */
   latest_quota?: MonitorQuotaSnapshot | null
 }
@@ -139,7 +140,6 @@ export interface CreateParams {
   /** 配额模式必填：数据源账号（provider 需与账号平台一致）。
    * update 语义：>0=换绑，0=解绑（切回 probe 模式时前端发 0 清空存量关联）；
    * create 绝不发 0——后端会把 0 存成 &0 触发外键违约。 */
-  account_id?: number | null
   primary_model: string
   extra_models?: string[]
   group_name?: string

@@ -691,15 +691,10 @@ import Icon from '@/components/icons/Icon.vue'
 import UserErrorRequestsTable from '@/components/user/UserErrorRequestsTable.vue'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { formatReasoningEffort } from '@/utils/format'
-import { getBillingModeLabel, getDisplayBillingMode as resolveDisplayBillingMode } from '@/utils/billingMode'
-import { resolveUsageRequestType, requestTypeToLegacyStream } from '@/utils/usageRequestType'
+import { getBillingModeLabel, getDisplayBillingMode as resolveDisplayBillingMode, BILLING_MODE_TOKEN, getBillingModeBadgeClass, isImageUsage, imageUnitPrice } from '@/utils/billingMode'
+import { resolveUsageRequestType } from '@/utils/usageRequestType'
 import type {
   ApiKey,
-  EndpointStat,
-  Group,
-  GroupStat,
-  ModelStat,
-  TrendDataPoint,
   UsageLog,
   UsageQueryParams,
   UsageStatsResponse,
@@ -707,21 +702,11 @@ import type {
 } from '@/types'
 import type { Column } from '@/components/common/types'
 import { COMMON_ERROR_STATUS_CODES } from '@/utils/errorBadges'
-import { formatDateTime, formatReasoningEffort } from '@/utils/format'
-import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
+import { formatDateTime } from '@/utils/format'
 import { formatCacheTokens, formatMultiplier } from '@/utils/formatters'
 import { formatTokenPricePerMillion } from '@/utils/usagePricing'
 import { getUsageServiceTierLabel } from '@/utils/usageServiceTier'
-import { resolveUsageRequestType } from '@/utils/usageRequestType'
 import { semanticBadgeClass } from '@/utils/semanticBadge'
-import {
-  BILLING_MODE_TOKEN,
-  getBillingModeBadgeClass,
-  getBillingModeLabel,
-  isImageUsage,
-  getDisplayBillingMode,
-  imageUnitPrice,
-} from '@/utils/billingMode'
 import {
   formatImageBillingSize,
   formatImageInputSize,
@@ -915,6 +900,10 @@ const formatDuration = (ms: number | null | undefined): string => {
 
 const formatUserAgent = (ua: string): string => {
   return ua
+}
+
+const formatUsageEndpoints = (log: UsageLog): string => {
+  return log.inbound_endpoint || '-'
 }
 
 const getRequestTypeLabel = (log: UsageLog): string => {

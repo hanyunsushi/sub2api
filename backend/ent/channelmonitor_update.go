@@ -97,7 +97,6 @@ func (_u *ChannelMonitorUpdate) SetNillableCheckMode(v *string) *ChannelMonitorU
 
 // SetAccountID sets the "account_id" field.
 func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
-	_u.mutation.ResetAccountID()
 	_u.mutation.SetAccountID(v)
 	return _u
 }
@@ -107,12 +106,6 @@ func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUp
 	if v != nil {
 		_u.SetAccountID(*v)
 	}
-	return _u
-}
-
-// AddAccountID adds value to the "account_id" field.
-func (_u *ChannelMonitorUpdate) AddAccountID(v int64) *ChannelMonitorUpdate {
-	_u.mutation.AddAccountID(v)
 	return _u
 }
 
@@ -304,26 +297,6 @@ func (_u *ChannelMonitorUpdate) SetNillableCreatedBy(v *int64) *ChannelMonitorUp
 // AddCreatedBy adds value to the "created_by" field.
 func (_u *ChannelMonitorUpdate) AddCreatedBy(v int64) *ChannelMonitorUpdate {
 	_u.mutation.AddCreatedBy(v)
-	return _u
-}
-
-// SetAccountID sets the "account_id" field.
-func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
-	_u.mutation.SetAccountID(v)
-	return _u
-}
-
-// SetNillableAccountID sets the "account_id" field if the given value is not nil.
-func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUpdate {
-	if v != nil {
-		_u.SetAccountID(*v)
-	}
-	return _u
-}
-
-// ClearAccountID clears the value of the "account_id" field.
-func (_u *ChannelMonitorUpdate) ClearAccountID() *ChannelMonitorUpdate {
-	_u.mutation.ClearAccountID()
 	return _u
 }
 
@@ -626,15 +599,6 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if value, ok := _u.mutation.CheckMode(); ok {
 		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.AccountID(); ok {
-		_spec.SetField(channelmonitor.FieldAccountID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedAccountID(); ok {
-		_spec.AddField(channelmonitor.FieldAccountID, field.TypeInt64, value)
-	}
-	if _u.mutation.AccountIDCleared() {
-		_spec.ClearField(channelmonitor.FieldAccountID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)
@@ -941,7 +905,6 @@ func (_u *ChannelMonitorUpdateOne) SetNillableCheckMode(v *string) *ChannelMonit
 
 // SetAccountID sets the "account_id" field.
 func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
-	_u.mutation.ResetAccountID()
 	_u.mutation.SetAccountID(v)
 	return _u
 }
@@ -951,12 +914,6 @@ func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonito
 	if v != nil {
 		_u.SetAccountID(*v)
 	}
-	return _u
-}
-
-// AddAccountID adds value to the "account_id" field.
-func (_u *ChannelMonitorUpdateOne) AddAccountID(v int64) *ChannelMonitorUpdateOne {
-	_u.mutation.AddAccountID(v)
 	return _u
 }
 
@@ -1148,26 +1105,6 @@ func (_u *ChannelMonitorUpdateOne) SetNillableCreatedBy(v *int64) *ChannelMonito
 // AddCreatedBy adds value to the "created_by" field.
 func (_u *ChannelMonitorUpdateOne) AddCreatedBy(v int64) *ChannelMonitorUpdateOne {
 	_u.mutation.AddCreatedBy(v)
-	return _u
-}
-
-// SetAccountID sets the "account_id" field.
-func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
-	_u.mutation.SetAccountID(v)
-	return _u
-}
-
-// SetNillableAccountID sets the "account_id" field if the given value is not nil.
-func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonitorUpdateOne {
-	if v != nil {
-		_u.SetAccountID(*v)
-	}
-	return _u
-}
-
-// ClearAccountID clears the value of the "account_id" field.
-func (_u *ChannelMonitorUpdateOne) ClearAccountID() *ChannelMonitorUpdateOne {
-	_u.mutation.ClearAccountID()
 	return _u
 }
 
@@ -1500,15 +1437,6 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	}
 	if value, ok := _u.mutation.CheckMode(); ok {
 		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.AccountID(); ok {
-		_spec.SetField(channelmonitor.FieldAccountID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedAccountID(); ok {
-		_spec.AddField(channelmonitor.FieldAccountID, field.TypeInt64, value)
-	}
-	if _u.mutation.AccountIDCleared() {
-		_spec.ClearField(channelmonitor.FieldAccountID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)

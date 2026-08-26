@@ -473,6 +473,14 @@ const (
 	// pre-filled when creating a new channel monitor from the admin UI. Range: [15, 3600].
 	SettingKeyChannelMonitorDefaultIntervalSeconds = "channel_monitor_default_interval_seconds"
 
+	// SettingKeyChannelMonitorAccountAutoScheduleEnabled controls whether channel
+	// monitor results may update linked accounts' schedulable state.
+	SettingKeyChannelMonitorAccountAutoScheduleEnabled = "channel_monitor_account_auto_schedule_enabled"
+
+	// SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold controls how
+	// many consecutive failed checks disable a linked account.
+	SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold = "channel_monitor_account_auto_schedule_failure_threshold"
+
 	// SettingKeyChannelMonitorHideThroughput hides RPM/TPM (and similar absolute
 	// throughput rates) from non-admin user-facing monitor APIs and UI, so users
 	// cannot reverse-estimate fleet volume from rates × window length.

@@ -161,7 +161,6 @@ export default defineConfig(async ({ command, mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '')
   const backendUrl = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
-  const cpaManagementUrl = env.VITE_CPA_MANAGEMENT_PROXY_TARGET || 'http://127.0.0.1:8317'
   const devPort = Number(env.VITE_DEV_PORT || 3000)
   const designOverlayPlugins = await loadDesignOverlayPlugin(command)
 
@@ -253,11 +252,6 @@ export default defineConfig(async ({ command, mode }) => {
           target: backendUrl,
           changeOrigin: true
         },
-        '/cpa-management': {
-          target: cpaManagementUrl,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/cpa-management/, '/v0/management')
-        }
       }
     }
   }

@@ -56,8 +56,6 @@ type ChannelMonitor struct {
 	LastCheckedAt *time.Time `json:"last_checked_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy int64 `json:"created_by,omitempty"`
-	// Linked account id for optional channel-monitor driven account scheduling.
-	AccountID *int64 `json:"account_id,omitempty"`
 	// Linked account ids for optional channel-monitor driven account scheduling.
 	AccountIds []int64 `json:"account_ids,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
@@ -140,7 +138,7 @@ func (*ChannelMonitor) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case channelmonitor.FieldID, channelmonitor.FieldAccountID, channelmonitor.FieldIntervalSeconds, channelmonitor.FieldJitterSeconds, channelmonitor.FieldCreatedBy, channelmonitor.FieldTemplateID:
 			values[i] = new(sql.NullInt64)
-		case channelmonitor.FieldName, channelmonitor.FieldProvider, channelmonitor.FieldCheckMode, channelmonitor.FieldAPIMode, channelmonitor.FieldEndpoint, channelmonitor.FieldAPIKeyEncrypted, channelmonitor.FieldPrimaryModel, channelmonitor.FieldGroupName, channelmonitor.FieldBodyOverrideMode:
+		case channelmonitor.FieldName, channelmonitor.FieldLogoURL, channelmonitor.FieldProvider, channelmonitor.FieldCheckMode, channelmonitor.FieldAPIMode, channelmonitor.FieldEndpoint, channelmonitor.FieldAPIKeyEncrypted, channelmonitor.FieldPrimaryModel, channelmonitor.FieldGroupName, channelmonitor.FieldBodyOverrideMode:
 			values[i] = new(sql.NullString)
 		case channelmonitor.FieldCreatedAt, channelmonitor.FieldUpdatedAt, channelmonitor.FieldLastCheckedAt:
 			values[i] = new(sql.NullTime)
@@ -276,13 +274,6 @@ func (_m *ChannelMonitor) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
 			} else if value.Valid {
 				_m.CreatedBy = value.Int64
-			}
-		case channelmonitor.FieldAccountID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field account_id", values[i])
-			} else if value.Valid {
-				_m.AccountID = new(int64)
-				*_m.AccountID = value.Int64
 			}
 		case channelmonitor.FieldAccountIds:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -433,11 +424,6 @@ func (_m *ChannelMonitor) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_by=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
-	builder.WriteString(", ")
-	if v := _m.AccountID; v != nil {
-		builder.WriteString("account_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("account_ids=")
 	builder.WriteString(fmt.Sprintf("%v", _m.AccountIds))

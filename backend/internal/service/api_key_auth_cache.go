@@ -59,6 +59,7 @@ type APIKeyAuthUserSnapshot struct {
 type APIKeyAuthGroupSnapshot struct {
 	ID                              int64                         `json:"id"`
 	Name                            string                        `json:"name"`
+	LogoURL                         string                        `json:"logo_url,omitempty"`
 	Platform                        string                        `json:"platform"`
 	IsExclusive                     bool                          `json:"is_exclusive"`
 	Status                          string                        `json:"status"`

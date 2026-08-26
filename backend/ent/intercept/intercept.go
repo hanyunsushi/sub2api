@@ -22,8 +22,6 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
-	"github.com/Wei-Shaw/sub2api/ent/codexaccountmetadata"
-	"github.com/Wei-Shaw/sub2api/ent/codexgroup"
 	"github.com/Wei-Shaw/sub2api/ent/compositemodelroute"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/group"
@@ -484,60 +482,6 @@ func (f TraverseChannelMonitorRequestTemplate) Traverse(ctx context.Context, q e
 		return f(ctx, q)
 	}
 	return fmt.Errorf("unexpected query type %T. expect *ent.ChannelMonitorRequestTemplateQuery", q)
-}
-
-// The CodexAccountMetadataFunc type is an adapter to allow the use of ordinary function as a Querier.
-type CodexAccountMetadataFunc func(context.Context, *ent.CodexAccountMetadataQuery) (ent.Value, error)
-
-// Query calls f(ctx, q).
-func (f CodexAccountMetadataFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.CodexAccountMetadataQuery); ok {
-		return f(ctx, q)
-	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CodexAccountMetadataQuery", q)
-}
-
-// The TraverseCodexAccountMetadata type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseCodexAccountMetadata func(context.Context, *ent.CodexAccountMetadataQuery) error
-
-// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseCodexAccountMetadata) Intercept(next ent.Querier) ent.Querier {
-	return next
-}
-
-// Traverse calls f(ctx, q).
-func (f TraverseCodexAccountMetadata) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.CodexAccountMetadataQuery); ok {
-		return f(ctx, q)
-	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.CodexAccountMetadataQuery", q)
-}
-
-// The CodexGroupFunc type is an adapter to allow the use of ordinary function as a Querier.
-type CodexGroupFunc func(context.Context, *ent.CodexGroupQuery) (ent.Value, error)
-
-// Query calls f(ctx, q).
-func (f CodexGroupFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
-	if q, ok := q.(*ent.CodexGroupQuery); ok {
-		return f(ctx, q)
-	}
-	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CodexGroupQuery", q)
-}
-
-// The TraverseCodexGroup type is an adapter to allow the use of ordinary function as Traverser.
-type TraverseCodexGroup func(context.Context, *ent.CodexGroupQuery) error
-
-// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
-func (f TraverseCodexGroup) Intercept(next ent.Querier) ent.Querier {
-	return next
-}
-
-// Traverse calls f(ctx, q).
-func (f TraverseCodexGroup) Traverse(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.CodexGroupQuery); ok {
-		return f(ctx, q)
-	}
-	return fmt.Errorf("unexpected query type %T. expect *ent.CodexGroupQuery", q)
 }
 
 // The CompositeModelRouteFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -1246,10 +1190,6 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.ChannelMonitorHistoryQuery, predicate.ChannelMonitorHistory, channelmonitorhistory.OrderOption]{typ: ent.TypeChannelMonitorHistory, tq: q}, nil
 	case *ent.ChannelMonitorRequestTemplateQuery:
 		return &query[*ent.ChannelMonitorRequestTemplateQuery, predicate.ChannelMonitorRequestTemplate, channelmonitorrequesttemplate.OrderOption]{typ: ent.TypeChannelMonitorRequestTemplate, tq: q}, nil
-	case *ent.CodexAccountMetadataQuery:
-		return &query[*ent.CodexAccountMetadataQuery, predicate.CodexAccountMetadata, codexaccountmetadata.OrderOption]{typ: ent.TypeCodexAccountMetadata, tq: q}, nil
-	case *ent.CodexGroupQuery:
-		return &query[*ent.CodexGroupQuery, predicate.CodexGroup, codexgroup.OrderOption]{typ: ent.TypeCodexGroup, tq: q}, nil
 	case *ent.CompositeModelRouteQuery:
 		return &query[*ent.CompositeModelRouteQuery, predicate.CompositeModelRoute, compositemodelroute.OrderOption]{typ: ent.TypeCompositeModelRoute, tq: q}, nil
 	case *ent.ErrorPassthroughRuleQuery:

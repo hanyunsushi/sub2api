@@ -716,7 +716,6 @@ import ExternalQuotaProgressSettingsModal from '@/components/admin/account/Exter
 import type { SelectOption } from '@/components/common/Select.vue'
 import AccountStatusIndicator from '@/components/account/AccountStatusIndicator.vue'
 import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
-import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
 import AccountGroupsCell from '@/components/account/AccountGroupsCell.vue'
 import AccountCapacityCell from '@/components/account/AccountCapacityCell.vue'
@@ -731,8 +730,6 @@ import { buildGrokUsageRefreshKey, buildOpenAIUsageRefreshKey } from '@/utils/ac
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import { proxyExpiryBadgeClass, proxyExpiryLabelKey } from '@/utils/proxyExpiry'
 import { extractApiErrorMessage } from '@/utils/apiError'
-import { sanitizeUrl } from '@/utils/url'
-import { getFloatingPanelPosition } from '@/utils/floatingPanel'
 import { formatMultiplier } from '@/utils/formatters'
 import type { Account, AccountPlatform, AccountSchedulerGroupScore, AccountType, AccountUsageInfo, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel, UpstreamBillingProbeSnapshot } from '@/types'
 
@@ -898,7 +895,6 @@ const autoRefreshCountdown = ref(0)
 const autoRefreshETag = ref<string | null>(null)
 const autoRefreshFetching = ref(false)
 const AUTO_REFRESH_SILENT_WINDOW_MS = 15000
-const ACCOUNT_CALLING_GRACE_MS = 60_000
 const autoRefreshSilentUntil = ref(0)
 const hasPendingListSync = ref(false)
 const todayStatsByAccountId = ref<Record<string, WindowStats>>({})
@@ -909,7 +905,6 @@ const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
 const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
 const {
-  loadAccountExternalQuotaProgressSettings,
   getAccountExternalQuotaProgressPreference,
   setAccountExternalQuotaProgressPreference,
 } = useAccountExternalQuotaProgressSettings()
@@ -966,29 +961,9 @@ const scheduleAutoRefreshDropdownClose = () => {
     autoRefreshDropdownCloseTimer = null
   }, 160)
 }
-const accountCallingGraceUntil = reactive(new Map<number, number>())
-const accountCallingNow = ref(Date.now())
-let accountCallingGraceTimer: ReturnType<typeof setInterval> | null = null
 
 function hasLiveAccountActivity(row: Account) {
   return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
-}
-
-function syncAccountCallingGrace() {
-  const now = Date.now()
-  accountCallingNow.value = now
-  const liveAccountIds = new Set<number>()
-
-  for (const account of accounts.value) {
-    if (!hasLiveAccountActivity(account)) continue
-    liveAccountIds.add(account.id)
-    accountCallingGraceUntil.set(account.id, Date.now() + ACCOUNT_CALLING_GRACE_MS)
-  }
-
-  for (const [accountId, graceUntil] of accountCallingGraceUntil) {
-    if (liveAccountIds.has(accountId)) continue
-    if (graceUntil <= now) accountCallingGraceUntil.delete(accountId)
-  }
 }
 
 const desktopViewportQuery = '(min-width: 768px)'
@@ -1404,28 +1379,6 @@ const getAccountExternalQuota = (account: Account): AccountExternalQuota | null 
   return null
 }
 
-const getAccountExternalQuotaProgress = (account: Account): Pick<AccountExternalQuota, 'formattedUsage' | 'progress'> | null => {
-  const subscription = getMatchedExternalSubscription(account)
-  const preference = getAccountExternalQuotaProgressPreference(account, subscription ?? null)
-  const preferenceKey = buildAccountExternalQuotaProgressPreferenceKey(account, subscription ?? null)
-  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference, {
-    tokenStats: account.external_quota_token_stats?.[preferenceKey] ?? null,
-  })
-  if (!progress) return null
-
-  const used = progress.unit === 'tokens'
-    ? formatExternalTokens(progress.used)
-    : formatExternalAmount(progress.used, subscription?.currency)
-  const progressTotal = progress.unit === 'tokens'
-    ? formatExternalTokens(progress.total)
-    : formatExternalAmount(progress.total, subscription?.currency)
-
-  return {
-    formattedUsage: used && progressTotal ? `${used} / ${progressTotal}` : undefined,
-    progress
-  }
-}
-
 const closeExternalQuotaProgressSettings = () => {
   externalQuotaProgressSettings.show = false
   externalQuotaProgressSettings.account = null
@@ -1495,10 +1448,6 @@ const fetchExternalQuotaSummaries = async () => {
     console.error('Failed to load external subscription quota summaries:', error)
   }
 }
-
-const unsubscribeExternalQuotaSummaries = externalSubscriptionsAPI.subscribeDisplayStatuses((statuses) => {
-  externalSubscriptionStatuses.value = statuses
-})
 
 if (typeof window !== 'undefined') {
   loadSavedColumns()
@@ -2298,22 +2247,8 @@ const normalizeAccountPriority = (value?: number | null) => {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
 }
 
-const startAccountCallingGraceTicker = () => {
-  if (accountCallingGraceTimer) return
-  syncAccountCallingGrace()
-  accountCallingGraceTimer = setInterval(syncAccountCallingGrace, 1000)
-}
-
-const stopAccountCallingGraceTicker = () => {
-  if (!accountCallingGraceTimer) return
-  clearInterval(accountCallingGraceTimer)
-  accountCallingGraceTimer = null
-}
-
 const isAccountCalling = (row: Account) => {
-  if (hasLiveAccountActivity(row)) return true
-  const graceUntil = accountCallingGraceUntil.get(row.id) ?? 0
-  return graceUntil > accountCallingNow.value
+  return hasLiveAccountActivity(row)
 }
 
 const getAccountRowClass = (row: Account) => {

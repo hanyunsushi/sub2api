@@ -12,6 +12,7 @@ import type { OpsRequestDetailsPreset } from './OpsRequestDetailsModal.vue'
 import { useAdminSettingsStore } from '@/stores'
 import { formatNumber } from '@/utils/format'
 import { formatMemorySizeMB } from '../utils/opsFormatters'
+import { getOpsChartColors } from '@/utils/chartColors'
 
 type RealtimeWindow = '1min' | '5min' | '30min' | '1h'
 

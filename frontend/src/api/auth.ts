@@ -24,6 +24,11 @@ import type {
  */
 export type LoginResponse = AuthResponse | TotpLoginResponse
 
+export interface CreepeeSSOTicketResponse {
+  ticket: string
+  expires_in: number
+}
+
 export type OAuthLoginProvider =
   | 'github'
   | 'google'

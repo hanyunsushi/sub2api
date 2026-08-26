@@ -91,10 +91,6 @@ func (ChannelMonitor) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Int64("created_by"),
-		field.Int64("account_id").
-			Optional().
-			Nillable().
-			Comment("Linked account id for optional channel-monitor driven account scheduling."),
 		field.JSON("account_ids", []int64{}).
 			Default([]int64{}).
 			SchemaType(map[string]string{dialect.Postgres: "jsonb"}).

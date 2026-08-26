@@ -9,7 +9,6 @@ const readFile = (file: string) => readFileSync(resolve(frontendRoot, file), 'ut
 
 const appearanceThemeSource = readFile('src/composables/useAppearanceTheme.ts')
 const styleSource = readFile('src/style.css')
-const codexThemeSource = readFile('src/styles/codex-theme.css')
 const targetedRepairSource = readFile('src/styles/targeted-visual-repair.css')
 const sidebarSource = readFile('src/components/layout/AppSidebar.vue')
 const usageSource = readFile('src/views/user/UsageView.vue')
@@ -41,7 +40,7 @@ describe('Anthropic-only appearance contract', () => {
     expect(batchImageGuideSource).not.toContain('selection:')
   })
 
-  it('keeps the account update action and CPA page on the Anthropic contract', () => {
+  it('keeps the account update action on the Anthropic contract', () => {
     expect(editAccountSource).toMatch(
       /data-testid="account-edit-account-button-submit"[\s\S]*?class="btn btn-primary account-edit-submit-button"/,
     )
@@ -50,10 +49,6 @@ describe('Anthropic-only appearance contract', () => {
     expect(targetedRepairSource).toContain('--button-border-width-hover: 2px;')
     expect(targetedRepairSource).toContain('body .modal-overlay .account-edit-submit-button:where(:hover, :focus-visible):not(:disabled)')
     expect(targetedRepairSource).toContain('box-shadow: 0 0 0 var(--button-spacer-hover, 1px) var(--button-bg), 0 0 0 var(--button-border-width-hover, 2px) var(--button-border-hover) !important;')
-    expect(codexThemeSource).toContain('CPA management final Anthropic surface/focus contract')
-    expect(codexThemeSource).toContain(':root.theme-anthropic #app .app-layout-content .codex-admin')
-    expect(codexThemeSource).not.toContain('theme-cloudflare')
-    expect(codexThemeSource.toLowerCase()).not.toContain('#f6821f')
   })
 
   it('uses the same sidebar type size for system setting child routes', () => {

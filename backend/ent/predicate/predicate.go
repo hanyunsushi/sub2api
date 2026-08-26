@@ -48,12 +48,6 @@ type ChannelMonitorHistory func(*sql.Selector)
 // ChannelMonitorRequestTemplate is the predicate function for channelmonitorrequesttemplate builders.
 type ChannelMonitorRequestTemplate func(*sql.Selector)
 
-// CodexAccountMetadata is the predicate function for codexaccountmetadata builders.
-type CodexAccountMetadata func(*sql.Selector)
-
-// CodexGroup is the predicate function for codexgroup builders.
-type CodexGroup func(*sql.Selector)
-
 // CompositeModelRoute is the predicate function for compositemodelroute builders.
 type CompositeModelRoute func(*sql.Selector)
 

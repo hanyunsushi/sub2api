@@ -51,8 +51,6 @@ const (
 	FieldLastCheckedAt = "last_checked_at"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
-	// FieldAccountID holds the string denoting the account_id field in the database.
-	FieldAccountID = "account_id"
 	// FieldAccountIds holds the string denoting the account_ids field in the database.
 	FieldAccountIds = "account_ids"
 	// FieldTemplateID holds the string denoting the template_id field in the database.
@@ -124,7 +122,6 @@ var Columns = []string{
 	FieldJitterSeconds,
 	FieldLastCheckedAt,
 	FieldCreatedBy,
-	FieldAccountID,
 	FieldAccountIds,
 	FieldTemplateID,
 	FieldExtraHeaders,
@@ -151,6 +148,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultLogoURL holds the default value on creation for the "logo_url" field.
+	DefaultLogoURL string
 	// DefaultCheckMode holds the default value on creation for the "check_mode" field.
 	DefaultCheckMode string
 	// CheckModeValidator is a validator for the "check_mode" field. It is called by the builders before save.
@@ -309,11 +308,6 @@ func ByLastCheckedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedBy orders the results by the created_by field.
 func ByCreatedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedBy, opts...).ToFunc()
-}
-
-// ByAccountID orders the results by the account_id field.
-func ByAccountID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAccountID, opts...).ToFunc()
 }
 
 // ByTemplateID orders the results by the template_id field.

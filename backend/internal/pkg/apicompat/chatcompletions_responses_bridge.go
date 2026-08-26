@@ -474,7 +474,7 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 					mediaByCallID[callID] = media
 				}
 			} else {
-				outputText = rawString(outputRaw)
+				outputText = extractToolOutputTextPreservingUnknown(outputRaw)
 				if outputText == "" && len(outputRaw) > 0 && string(outputRaw) != "null" && string(outputRaw) != `""` {
 					// 对象/数组形式的输出（如 tool_search 的结果列表）整体字符串化。
 					outputText = string(outputRaw)
@@ -545,6 +545,30 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 	}
 
 	return messages, mediaByCallID, nil
+}
+
+// extractToolOutputTextPreservingUnknown lowers a content-part array only when
+// every part is text. Rich or unknown tool results stay byte-for-byte intact.
+func extractToolOutputTextPreservingUnknown(raw json.RawMessage) string {
+	if text, ok := textOnlyToolOutputParts(raw); ok {
+		return text
+	}
+	return rawString(raw)
+}
+
+func textOnlyToolOutputParts(raw json.RawMessage) (string, bool) {
+	var parts []ResponsesContentPart
+	if err := json.Unmarshal(raw, &parts); err != nil || len(parts) == 0 {
+		return "", false
+	}
+	texts := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if part.Type != "input_text" && part.Type != "output_text" {
+			return "", false
+		}
+		texts = append(texts, part.Text)
+	}
+	return strings.Join(texts, "\n\n"), true
 }
 
 // extractToolOutputMedia rewrites only recognized image nodes. Media-free

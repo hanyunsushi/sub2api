@@ -12,7 +12,6 @@ const themeFiles = [
   'public/site.webmanifest',
   'tailwind.config.js',
   'src/style.css',
-  'src/styles/codex-theme.css',
   'src/styles/onboarding.css',
   'src/assets/icons/stripe.svg',
   'src/components/common/ModelIcon.vue',
@@ -111,7 +110,6 @@ describe('Klein blue theme', () => {
   it('maps the light UI surfaces to the Atelier Zero palette with warm paper as the dominant canvas', () => {
     const tailwindConfig = readThemeFile('tailwind.config.js')
     const globalStyle = readThemeFile('src/style.css')
-    const codexTheme = readThemeFile('src/styles/codex-theme.css')
     const appHeader = readThemeFile('src/components/layout/AppHeader.vue')
     const notFoundView = readThemeFile('src/views/NotFoundView.vue')
     const legalDocumentView = readThemeFile('src/views/public/LegalDocumentView.vue')
@@ -144,15 +142,6 @@ describe('Klein blue theme', () => {
     expect(globalStyle).not.toContain('radial-gradient(circle at 90% 36%, rgba(199, 154, 58, 0.045), transparent 20rem)')
     expect(globalStyle).toContain('--atelier-material-grid: none;')
     expect(globalStyle).toContain('--atelier-component-warning: var(--atelier-dust);')
-    expect(codexTheme).toContain('--codex-bg: var(--atelier-paper);')
-    expect(codexTheme).toContain('--codex-surface-soft: color-mix(in srgb, var(--atelier-dust) 16%, var(--atelier-paper));')
-    expect(codexTheme).toContain('--material-card-surface: var(--atelier-paper-2);')
-    expect(codexTheme).not.toContain('#eef3ff')
-    expect(codexTheme).not.toContain('#edf2fb')
-    expect(codexTheme).not.toContain('#dce6ee')
-    expect(codexTheme).not.toContain('#e8eef8')
-    expect(codexTheme).not.toContain('#dbe5fa')
-    expect(codexTheme).toContain('--codex-text: #111827;')
     expect(appHeader).toContain('--buzz-balance-yellow: #c79a3a;')
     expect(appHeader).toContain('--buzz-balance-yellow-dark: #8e6c1f;')
     expect(globalStyle).toContain('.balance-buzz-text')

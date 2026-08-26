@@ -8,6 +8,7 @@ import (
 	"mime/quotedprintable"
 	"net"
 	"net/mail"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -646,7 +647,7 @@ func TestEmailServiceSMTPUseTLSOnSubmissionPortRequiresSTARTTLS(t *testing.T) {
 	})
 
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "server does not advertise STARTTLS")
+	require.Contains(t, err.Error(), "smtp server does not support STARTTLS")
 	require.NotContains(t, err.Error(), "tls connection failed")
 }
 
