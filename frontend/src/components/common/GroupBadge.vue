@@ -2,7 +2,7 @@
   <span
     :class="[
       'group-token inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium',
-      badgeClass
+      platformClass
     ]"
   >
     <!-- Platform logo -->
@@ -122,59 +122,8 @@ const labelClass = computed(() => {
   return 'group-token-label group-token-label--neutral'
 })
 
-// Badge color based on platform and subscription type
-const badgeClass = computed(() => {
-  if (props.platform === 'anthropic') {
-    // Claude: orange theme
-    return isSubscription.value
-      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-      : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
-  } else if (props.platform === 'openai') {
-    // OpenAI: green theme
-    return isSubscription.value
-      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-      : 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-  }
-  if (props.platform === 'gemini') {
-    return isSubscription.value
-      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-      : 'bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'
-  }
-  if (props.platform === 'antigravity') {
-    return isSubscription.value
-      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-      : 'bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/20 dark:text-fuchsia-400'
-  }
-  if (props.platform === 'grok') {
-    return isSubscription.value
-      ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
-      : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
-  }
-  if (props.platform === 'kimi') {
-    return isSubscription.value
-      ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
-      : 'bg-pink-50 text-pink-700 dark:bg-pink-900/20 dark:text-pink-400'
-  }
-  if (props.platform === 'zhipu') {
-    return isSubscription.value
-      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-      : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400'
-  }
-  if (props.platform === 'deepseek') {
-    return isSubscription.value
-      ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
-      : 'bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400'
-  }
-  if (props.platform === 'composite') {
-    return isSubscription.value
-      ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300'
-      : 'bg-cyan-50 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-300'
-  }
-  // Fallback: original colors
-  return isSubscription.value
-    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-})
+const platformClass = computed(() => `group-token--${props.platform || 'fallback'}`)
+
 </script>
 
 <style scoped>
@@ -190,18 +139,52 @@ const badgeClass = computed(() => {
 
 .group-token--anthropic {
   --group-token-color: var(--anthropic-accent);
+  background: var(--anthropic-warning-bg);
 }
 
 .group-token--openai {
   --group-token-color: var(--anthropic-success);
+  background: var(--anthropic-success-bg);
 }
 
 .group-token--gemini {
   --group-token-color: var(--anthropic-info);
+  background: var(--anthropic-info-bg);
+}
+
+.group-token--antigravity {
+  --group-token-color: #7764a8;
+  background: color-mix(in srgb, #7764a8 12%, var(--anthropic-page));
+}
+
+.group-token--grok {
+  --group-token-color: var(--anthropic-fg);
+  background: var(--anthropic-raised);
+}
+
+.group-token--kimi {
+  --group-token-color: #b05273;
+  background: color-mix(in srgb, #b05273 12%, var(--anthropic-page));
+}
+
+.group-token--zhipu {
+  --group-token-color: #536e9c;
+  background: color-mix(in srgb, #536e9c 12%, var(--anthropic-page));
+}
+
+.group-token--deepseek {
+  --group-token-color: #287d78;
+  background: color-mix(in srgb, #287d78 12%, var(--anthropic-page));
+}
+
+.group-token--composite {
+  --group-token-color: #377f9b;
+  background: color-mix(in srgb, #377f9b 12%, var(--anthropic-page));
 }
 
 .group-token--fallback {
   --group-token-color: var(--anthropic-muted);
+  background: var(--anthropic-section);
 }
 
 .group-token--subscription {

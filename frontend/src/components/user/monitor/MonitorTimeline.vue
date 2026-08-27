@@ -117,10 +117,11 @@ const displayBars = computed<Bar[]>(() => {
 <style scoped>
 .monitor-timeline-bars {
   min-width: 0;
+  overflow: hidden;
 }
 
 .monitor-timeline-bar {
   flex: 1 1 0;
-  min-width: 3px;
+  min-width: 0;
 }
 </style>

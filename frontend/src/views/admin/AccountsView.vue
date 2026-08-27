@@ -298,7 +298,7 @@
                   />
                 </div>
                 <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+                  <span class="min-w-0 truncate text-sm font-medium leading-5 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
                   <span
                     v-if="accountDisplayEmail(row)"
                     class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] truncate max-w-[200px]"
