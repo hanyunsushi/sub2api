@@ -2970,6 +2970,10 @@ onMounted(async () => {
   }
 
   load()
+  // Load external subscription balances alongside the account list so matched
+  // provider details are available on the first render, not only after a
+  // manual refresh.
+  fetchExternalQuotaSummaries()
   loadUpstreamBillingProbeGlobalState()
   const [proxiesResult, groupsResult] = await Promise.allSettled([
     adminAPI.proxies.getAll(),

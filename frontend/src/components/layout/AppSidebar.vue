@@ -125,29 +125,6 @@
             </router-link>
           </template>
 
-          <template v-if="adminSystemSectionItems.length">
-            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
-                {{ t('nav.settings') }}
-              </span>
-            </div>
-
-            <template v-for="item in adminSystemSectionItems" :key="item.path">
-              <router-link data-testid="merge-app-sidebar-handle-menu-item-click-item-path-1"
-                :to="item.path"
-                class="sidebar-link sidebar-subsection-link sidebar-system-child-link mb-0.5 py-1.5"
-                :class="{ 'sidebar-link-active': route.path === item.path, 'sidebar-link-collapsed': sidebarCollapsed }"
-                :title="sidebarCollapsed ? item.label : undefined"
-                @click="handleMenuItemClick(item.path)"
-              >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
-                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
-              </router-link>
-            </template>
-          </template>
-
           <template v-if="adminOtherNavItems.length">
             <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
               <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
@@ -1003,15 +980,9 @@ const adminNavItems = computed((): NavItem[] => {
 
 const adminPrimaryNavItems = computed(() =>
   adminNavItems.value.filter((item) =>
-    item.path !== '/admin/settings' &&
     !customAdminNavPathSet.value.has(item.path)
   )
 )
-
-const adminSystemSectionItems = computed(() => {
-  const group = adminNavItems.value.find((item) => item.path === '/admin/settings')
-  return group?.children ?? []
-})
 
 const adminOtherNavItems = computed(() =>
   adminNavItems.value.filter((item) => customAdminNavPathSet.value.has(item.path))

@@ -56,25 +56,22 @@ describe('AppSidebar custom menu open mode', () => {
 })
 
 describe('AppSidebar system settings group', () => {
-  it('keeps system settings children in a dedicated small-title subsection', () => {
+  it('renders system settings through the standard collapsible group', () => {
     expect(componentSource).toContain('function systemSettingsNavItem')
     expect(componentSource).toContain('expandOnly: true')
     expect(componentSource).toContain("label: t('nav.settings')")
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
-    expect(componentSource).toContain('const adminSystemSectionItems = computed(() => {')
-    expect(navTemplateSource).toContain("v-if=\"adminSystemSectionItems.length\"")
-    expect(navTemplateSource).toContain('sidebar-subsection-title')
-    expect(navTemplateSource).toContain('sidebar-system-child-link')
+    expect(componentSource).not.toContain('adminSystemSectionItems')
+    expect(componentSource).not.toContain("item.path !== '/admin/settings'")
+    expect(navTemplateSource).toContain('v-for="item in adminPrimaryNavItems"')
+    expect(navTemplateSource).toContain('v-if="item.children?.length"')
   })
 
-  it('highlights exactly one system-settings child route', () => {
-    const systemSectionStart = navTemplateSource.indexOf('v-if="adminSystemSectionItems.length"')
-    const otherSectionStart = navTemplateSource.indexOf('v-if="adminOtherNavItems.length"', systemSectionStart)
-    const systemSectionSource = navTemplateSource.slice(systemSectionStart, otherSectionStart)
-
-    expect(systemSectionSource).toContain("'sidebar-link-active': route.path === item.path")
-    expect(systemSectionSource).not.toContain("'sidebar-link-active': isActive(item.path)")
+  it('uses the same active-route logic as other collapsible groups', () => {
+    expect(navTemplateSource).toContain("'sidebar-link-active': route.path === child.path")
+    expect(componentSource).toContain('function isGroupActive')
+    expect(componentSource).toContain('function isGroupExpanded')
   })
 })
 
