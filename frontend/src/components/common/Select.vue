@@ -24,7 +24,7 @@
       @keydown.down.prevent="onTriggerKeyDown"
       @keydown.up.prevent="onTriggerKeyDown"
     >
-      <span class="select-value">
+      <span class="select-value website-bracket-anchor">
         <slot name="selected" :option="selectedOption">
           {{ selectedLabel }}
         </slot>
@@ -98,12 +98,12 @@
                   size="sm"
                   class="flex-shrink-0 text-[var(--anthropic-muted)]"
                 />
-                <span class="select-option-label" :class="option._creatable && 'italic text-[var(--anthropic-muted)] dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
+                <span class="select-option-label website-bracket-anchor" :class="option._creatable && 'italic text-[var(--anthropic-muted)] dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
                 <Icon
                   v-if="isSelected(option)"
                   name="check"
                   size="sm"
-                  class="text-[var(--anthropic-fg)]"
+                  class="select-option-check text-[var(--anthropic-fg)]"
                   :stroke-width="2"
                 />
               </slot>
@@ -773,9 +773,7 @@ onUnmounted(() => {
   border-color: transparent !important;
   outline: 0 !important;
   box-shadow: none !important;
-  text-decoration-line: underline !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: 3px !important;
+  text-decoration: none !important;
 }
 
 :global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .select-trigger:focus-visible),
@@ -851,10 +849,7 @@ onUnmounted(() => {
   font-weight: var(--anthropic-control-font-weight, 500) !important;
   line-height: var(--anthropic-control-line-height, 1.25rem) !important;
   letter-spacing: 0 !important;
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.24em;
+  text-decoration: none;
 }
 
 .select-trigger--text-control:hover,
@@ -864,7 +859,7 @@ onUnmounted(() => {
   background-color: transparent !important;
   color: var(--anthropic-fg, var(--atelier-ink)) !important;
   box-shadow: none !important;
-  text-decoration-color: currentColor;
+  text-decoration: none;
 }
 
 .select-trigger--text-control:focus:not(:focus-visible),
@@ -878,7 +873,7 @@ onUnmounted(() => {
   background-color: transparent !important;
   box-shadow: none !important;
   outline: 0 !important;
-  text-decoration-color: currentColor;
+  text-decoration: none;
 }
 
 .select-trigger--text-control:focus-visible {
@@ -1073,12 +1068,11 @@ onUnmounted(() => {
   border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--anthropic-fg, var(--atelier-ink)) !important;
-  text-decoration-line: underline !important;
-  text-underline-offset: 0.22em !important;
+  text-decoration: none !important;
 }
 
 .select-dropdown-portal--underline .select-option {
-  text-decoration-color: transparent !important;
+  text-decoration: none !important;
 }
 
 .select-dropdown-portal--underline .select-option-selected,
@@ -1086,7 +1080,7 @@ onUnmounted(() => {
 .select-dropdown-portal--underline .select-option-selected:hover,
 .select-dropdown-portal--underline .select-option-focused,
 .select-dropdown-portal--underline .select-option:hover {
-  text-decoration-color: currentColor !important;
+  text-decoration: none !important;
 }
 
 .select-dropdown-portal--underline .select-option-selected :where(.select-option-label, svg),
@@ -1117,6 +1111,35 @@ onUnmounted(() => {
 
 .select-dropdown-portal .select-option-label {
   @apply flex-1 min-w-0 truncate text-left;
+}
+
+/* Filter menus use website brackets anchored to the rendered label. Keep the
+   label out of the flex fill slot so its pseudo-elements follow text width. */
+.select-dropdown-portal--underline .select-option-label {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+.select-dropdown-portal--underline
+  .select-option-selected
+  :where(svg.select-option-check, .select-option-check) {
+  display: none !important;
+}
+
+.select-dropdown-portal--underline
+  .select-option-selected
+  .select-option-label::before,
+.select-dropdown-portal--underline
+  .select-option-selected
+  .select-option-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
 }
 
 .dark .select-trigger,

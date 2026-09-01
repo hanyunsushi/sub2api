@@ -59,7 +59,7 @@ import { sanitizeUrl } from '@/utils/url'
 const { t } = useI18n()
 const appStore = useAppStore()
 
-const siteName = computed(() => appStore.siteName || 'Sub2API')
+const siteName = computed(() => appStore.siteName || 'Kreepai')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const siteSubtitle = computed(() =>
   appStore.cachedPublicSettings?.site_subtitle || t('auth.layout.defaultSubtitle')

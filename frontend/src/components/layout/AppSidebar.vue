@@ -8,8 +8,7 @@
   >
     <!-- Logo/Brand -->
     <div class="sidebar-header" :class="{ 'sidebar-header-collapsed': sidebarCollapsed }">
-      <!-- Custom Logo or Default Logo -->
-      <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click" :to="homePath" class="sidebar-home-link sidebar-logo-link" aria-label="Home" @click="handleMenuItemClick(homePath)">
+      <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click" :to="homePath" class="sidebar-home-link sidebar-logo-link" aria-label="Kreepai" @click="handleMenuItemClick(homePath)">
         <div class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg">
           <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
@@ -18,7 +17,6 @@
         <router-link data-testid="layout-app-sidebar-router-link-brand-title" :to="homePath" class="sidebar-brand-title" @click="handleMenuItemClick(homePath)">
           {{ siteName }}
         </router-link>
-        <!-- Version Badge -->
         <VersionBadge :version="siteVersion" />
       </div>
     </div>
@@ -48,9 +46,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleGroupClick(item)"
               >
-                <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
                 <span
                   class="sidebar-label sidebar-label-flex"
                   :class="{ 'sidebar-label-collapsed': sidebarCollapsed }"
@@ -78,9 +74,7 @@
                   }"
                   @click="handleMenuItemClick(child.path)"
                 >
-                  <span class="sidebar-initial sidebar-child-initial" aria-hidden="true">
-                    {{ getNavInitial(child.label) }}
-                  </span>
+                  <component :is="child.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                   <span>{{ child.label }}</span>
                 </router-link>
               </div>
@@ -96,9 +90,7 @@
               :title="sidebarCollapsed ? item.label : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path"
@@ -118,34 +110,9 @@
               "
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
-          </template>
-
-          <template v-if="adminSystemSectionItems.length">
-            <div class="sidebar-section-title sidebar-subsection-title" :class="{ 'sidebar-section-title-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-              <span class="sidebar-section-title-text" :class="{ 'sidebar-section-title-text-collapsed': sidebarCollapsed }">
-                {{ t('nav.settings') }}
-              </span>
-            </div>
-
-            <template v-for="item in adminSystemSectionItems" :key="item.path">
-              <router-link data-testid="merge-app-sidebar-handle-menu-item-click-item-path-1"
-                :to="item.path"
-                class="sidebar-link sidebar-subsection-link sidebar-system-child-link mb-0.5 py-1.5"
-                :class="{ 'sidebar-link-active': route.path === item.path, 'sidebar-link-collapsed': sidebarCollapsed }"
-                :title="sidebarCollapsed ? item.label : undefined"
-                @click="handleMenuItemClick(item.path)"
-              >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
-                <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
-              </router-link>
-            </template>
           </template>
 
           <template v-if="adminOtherNavItems.length">
@@ -166,9 +133,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </a>
               <router-link data-testid="merge-app-sidebar-handle-menu-item-click-item-path-3"
@@ -179,9 +144,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </router-link>
             </template>
@@ -208,9 +171,7 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-2"
@@ -222,9 +183,7 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -247,9 +206,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </a>
               <router-link data-testid="merge-app-sidebar-handle-menu-item-click-item-path-5"
@@ -260,9 +217,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </router-link>
             </template>
@@ -285,9 +240,7 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </a>
             <router-link data-testid="layout-app-sidebar-router-link-handle-menu-item-click-item-path-3"
@@ -299,9 +252,7 @@
               :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
               @click="handleMenuItemClick(item.path)"
             >
-              <span class="sidebar-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                {{ getNavInitial(item.label) }}
-              </span>
+              <component :is="item.icon" class="sidebar-icon" aria-hidden="true" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -325,9 +276,7 @@
                 :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </a>
               <router-link data-testid="merge-app-sidebar-handle-menu-item-click-item-path-7"
@@ -339,9 +288,7 @@
                 :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
                 @click="handleMenuItemClick(item.path)"
               >
-                <span class="sidebar-initial sidebar-child-initial" :aria-hidden="sidebarCollapsed ? 'false' : 'true'">
-                  {{ getNavInitial(item.label) }}
-                </span>
+                <component :is="item.icon" class="sidebar-icon sidebar-child-icon" aria-hidden="true" />
                 <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               </router-link>
             </template>
@@ -360,7 +307,7 @@
         :title="sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
       >
         <span class="sidebar-collapse-mark" aria-hidden="true">
-          {{ sidebarCollapsed ? '›' : '‹' }}
+          <component :is="sidebarCollapsed ? ChevronDoubleRightIcon : ChevronDoubleLeftIcon" class="sidebar-collapse-icon" />
         </span>
         <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ t('nav.collapse') }}</span>
       </button>
@@ -457,7 +404,6 @@ const siteName = computed(() => appStore.siteName)
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const siteVersion = computed(() => appStore.siteVersion)
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
-
 // SVG Icon Components
 const DashboardIcon = {
   render: () =>
@@ -803,6 +749,18 @@ const PriceTagIcon = {
     )
 }
 
+const ChevronDoubleLeftIcon = {
+  render: () => h('svg', { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' }, [
+    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M13.5 19.5L6 12l7.5-7.5M20.25 19.5L12.75 12l7.5-7.5' })
+  ])
+}
+
+const ChevronDoubleRightIcon = {
+  render: () => h('svg', { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' }, [
+    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M10.5 4.5L18 12l-7.5 7.5M3.75 4.5l7.5 7.5-7.5 7.5' })
+  ])
+}
+
 // Public-settings flags go through the registry in utils/featureFlags.ts,
 // which handles the opt-in vs opt-out fallback when settings haven't loaded
 // yet. Admin-only flags (not in public settings) stay inline below.
@@ -827,7 +785,9 @@ function customMenuNavItem(item: {
   return {
     path: openMode === 'redirect' ? item.url : `/custom/${item.id}`,
     label: item.label,
-    icon: null,
+    // Custom SVG uploads are intentionally not injected into the DOM here;
+    // use a stable local icon so every sidebar entry keeps the same contract.
+    icon: PluginIcon,
     iconSvg: item.icon_svg,
     openMode: item.open_mode === 'redirect' ? 'redirect' : 'iframe',
   }
@@ -881,10 +841,6 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
 function finalizeNav(items: NavItem[]): NavItem[] {
   const visible = applyFeatureFlags(items)
   return authStore.isSimpleMode ? visible.filter(item => !item.hideInSimpleMode) : visible
-}
-
-function getNavInitial(label: string): string {
-  return label.trim().slice(0, 1).toUpperCase()
 }
 
 // User navigation items (for regular users)
@@ -1003,15 +959,9 @@ const adminNavItems = computed((): NavItem[] => {
 
 const adminPrimaryNavItems = computed(() =>
   adminNavItems.value.filter((item) =>
-    item.path !== '/admin/settings' &&
     !customAdminNavPathSet.value.has(item.path)
   )
 )
-
-const adminSystemSectionItems = computed(() => {
-  const group = adminNavItems.value.find((item) => item.path === '/admin/settings')
-  return group?.children ?? []
-})
 
 const adminOtherNavItems = computed(() =>
   adminNavItems.value.filter((item) => customAdminNavPathSet.value.has(item.path))
@@ -1214,6 +1164,7 @@ onBeforeUnmount(() => {
   captureSidebarScroll()
   cancelSidebarScrollRestoreSchedule()
 })
+
 </script>
 
 <style scoped>
@@ -1281,8 +1232,8 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--sidebar-text, var(--atelier-ink));
-  font-family: var(--font-display, var(--atelier-font-serif));
+  color: var(--atelier-ink);
+  font-family: "Fraunces", "Source Han Serif SC", serif;
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.08;
@@ -1361,32 +1312,19 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.sidebar-initial {
-  display: none;
+.sidebar-icon {
+  display: inline-block;
   width: 1.25rem;
   min-width: 1.25rem;
   height: 1.25rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
   color: var(--sidebar-text, currentColor);
-  font-family: var(--atelier-font-sans);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0;
-  background: transparent;
+  flex: 0 0 auto;
 }
 
-.sidebar-child-initial {
+.sidebar-child-icon {
   width: 1rem;
   min-width: 1rem;
   height: 1rem;
-  font-size: 0.625rem;
-}
-
-.sidebar-link-collapsed .sidebar-initial {
-  display: inline-flex;
 }
 
 .sidebar-group-caret {
@@ -1427,6 +1365,12 @@ onBeforeUnmount(() => {
   font-size: 1rem;
   font-weight: 500;
   line-height: 1;
+}
+
+.sidebar-collapse-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  display: block;
 }
 
 </style>

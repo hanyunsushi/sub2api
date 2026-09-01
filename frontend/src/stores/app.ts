@@ -36,7 +36,7 @@ export const useAppStore = defineStore('app', () => {
   // Public settings cache state
   const publicSettingsLoaded = ref<boolean>(false)
   const publicSettingsLoading = ref<boolean>(false)
-  const siteName = ref<string>('Sub2API')
+  const siteName = ref<string>('Kreepai')
   const siteLogo = ref<string>('')
   const siteVersion = ref<string>('')
   const contactInfo = ref<string>('')
@@ -324,19 +324,24 @@ export const useAppStore = defineStore('app', () => {
    * Apply settings to store state (internal helper to avoid code duplication)
    */
   function applySettings(config: PublicSettings): void {
+    const configuredSiteName = typeof config.site_name === 'string' ? config.site_name.trim() : ''
+    const normalizedConfig =
+      !configuredSiteName || ['Sub2API', 'Kreeper & AI', 'Kreeper & Co'].includes(configuredSiteName)
+        ? { ...config, site_name: 'Kreepai' }
+        : config
     if (typeof window !== 'undefined') {
-      window.__APP_CONFIG__ = { ...config }
+      window.__APP_CONFIG__ = { ...normalizedConfig }
     }
-    cachedPublicSettings.value = config
-    siteName.value = config.site_name || 'Sub2API'
-    siteLogo.value = config.site_logo || ''
-    siteVersion.value = config.version || ''
-    contactInfo.value = config.contact_info || ''
-    apiBaseUrl.value = config.api_base_url || ''
-    docUrl.value = config.doc_url || ''
+    cachedPublicSettings.value = normalizedConfig
+    siteName.value = normalizedConfig.site_name || 'Kreepai'
+    siteLogo.value = normalizedConfig.site_logo || ''
+    siteVersion.value = normalizedConfig.version || ''
+    contactInfo.value = normalizedConfig.contact_info || ''
+    apiBaseUrl.value = normalizedConfig.api_base_url || ''
+    docUrl.value = normalizedConfig.doc_url || ''
     updateAppearanceThemeDefault('anthropic')
-    setAILogoRuntimeConfig(config)
-    setCustomMenuIconRuntimeConfig(config)
+    setAILogoRuntimeConfig(normalizedConfig)
+    setCustomMenuIconRuntimeConfig(normalizedConfig)
     publicSettingsLoaded.value = true
   }
 

@@ -1,35 +1,7 @@
 import { defineConfig, loadEnv, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
-import { existsSync } from 'fs'
 import { resolve } from 'path'
-import { pathToFileURL } from 'url'
-
-const designOverlayPluginPath = [
-  '/Users',
-  'hinaw',
-  'Documents',
-  'Codex',
-  '2026-07-01',
-  'wo-xai',
-  'outputs',
-  'design-overlay',
-  'src',
-  'vite-plugin.js'
-].join('/')
-
-const anthropicDesignSystemPath = [
-  '/Users',
-  'hinaw',
-  'Library',
-  'Application Support',
-  'Open Design',
-  'namespaces',
-  'release-stable',
-  'data',
-  'projects',
-  'brand-anthropic-a38199'
-].join('/')
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({
@@ -124,45 +96,13 @@ function injectPublicSettings(backendUrl: string): Plugin {
   }
 }
 
-async function loadDesignOverlayPlugin(command: string): Promise<Plugin[]> {
-  if (command !== 'serve' || !existsSync(designOverlayPluginPath)) {
-    return []
-  }
-
-  try {
-    const overlayModule = (await import(pathToFileURL(designOverlayPluginPath).href)) as {
-      designOverlay?: (options: {
-        project: string
-        designSystems: string[]
-        port: number
-        reuseExisting: boolean
-      }) => Plugin
-    }
-
-    if (typeof overlayModule.designOverlay !== 'function') {
-      return []
-    }
-
-    return [
-      overlayModule.designOverlay({
-        project: __dirname,
-        designSystems: [anthropicDesignSystemPath],
-        port: 4777,
-        reuseExisting: true
-      })
-    ]
-  } catch (e) {
-    console.warn('[vite] design overlay unavailable:', (e as Error).message)
-    return []
-  }
-}
-
-export default defineConfig(async ({ command, mode }) => {
+export default defineConfig(({ mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '')
-  const backendUrl = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
+  // Local preview follows the active OCI deployment by default. Developers
+  // running a local backend can still override this with VITE_DEV_PROXY_TARGET.
+  const backendUrl = env.VITE_DEV_PROXY_TARGET || 'https://ai.kreeper.cc'
   const devPort = Number(env.VITE_DEV_PORT || 3000)
-  const designOverlayPlugins = await loadDesignOverlayPlugin(command)
 
   return {
     plugins: [
@@ -170,8 +110,7 @@ export default defineConfig(async ({ command, mode }) => {
       checker({
         vueTsc: true
       }),
-      injectPublicSettings(backendUrl),
-      ...designOverlayPlugins
+      injectPublicSettings(backendUrl)
     ],
   resolve: {
     alias: {

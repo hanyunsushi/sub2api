@@ -111,7 +111,7 @@ body,
   color: var(--anthropic-fg);
   font-family: var(--atelier-font-serif);
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   line-height: 1.12;
   text-wrap: balance;
 }
@@ -1588,10 +1588,8 @@ body,
   background: transparent;
   color: var(--anthropic-fg);
   box-shadow: none;
-  text-decoration-line: underline;
+  text-decoration: none;
   text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.24em;
 }
 
 .app-layout-content :where(.filter-menu-button-danger) {
@@ -2871,16 +2869,13 @@ body,
 }
 
 #app .app-layout-content .accounts-table-page .account-external-quota-link {
-  text-decoration-line: underline !important;
-  text-decoration-color: transparent !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: 0.24em !important;
+  text-decoration: none !important;
 }
 
 #app .app-layout-content .accounts-table-page .account-external-quota-link:where(:hover, :focus-visible) {
   background: transparent !important;
   color: var(--anthropic-fg) !important;
-  text-decoration-color: currentColor !important;
+  text-decoration: none !important;
 }
 
 #app .app-layout-content .accounts-table-page > .space-y-3 > .codex-account-card-calling {
@@ -3164,10 +3159,7 @@ body,
   background: transparent !important;
   color: var(--anthropic-fg) !important;
   box-shadow: none !important;
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.24em;
+  text-decoration: none;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover, .date-picker-trigger-open, .select-trigger:hover, .select-trigger-open) {
@@ -3194,6 +3186,1240 @@ body,
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
   transform: translateY(1px) rotate(180deg) !important;
+}
+
+/* Last cascade layer: legacy route-specific rules above may still set an
+   underline on filter controls. This layer is intentionally last. */
+#app .app-layout-content :where(
+  .table-page-filter-section, .table-filter-shell, .table-filter-left,
+  .table-filter-actions, .accounts-filter-shell, .accounts-filter-left,
+  .accounts-filter-actions, .users-filter-shell, .users-filter-left,
+  .users-filter-actions, .users-filter-tools, .proxies-filter-left,
+  .proxies-filter-actions, .usage-time-filter-card, .usage-time-filter-shell,
+  .usage-time-filter-range, .usage-time-filter-granularity, .usage-filter-shell,
+  .usage-filter-left, .usage-filter-actions, .usage-record-filter-wrap,
+  .global-pricing-filter-card, .global-pricing-filter-shell,
+  .global-pricing-filter-left, .global-pricing-filter-actions,
+  .dashboard-filter-card, .dashboard-filter-shell, .dashboard-filter-range,
+  .dashboard-filter-granularity, .keys-filter-shell, .monitor-filter-shell,
+  .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid,
+  .codex-toolbar, .codex-list-actions__primary, .codex-list-actions__filters,
+  .risk-control-toolbar-actions, .risk-control-record-filters,
+  .payment-dashboard-filter-bar, .payment-plans-filter-bar, .order-filter-card
+) :where(.select-trigger, .date-picker-trigger, .filter-menu-button, .ops-toolbar-text-button) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+/* Select/date controls can appear in compact toolbar wrappers without one of
+   the legacy taxonomy classes above; keep their trigger contract consistent. */
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger)::before,
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+/* Menu rows are hit areas only; their text anchors own the single bracket
+   treatment. This prevents the legacy row-level and label-level markers from
+   rendering twice. */
+body :where(
+  .filter-underline-menu .select-option,
+  .filter-underline-menu .date-picker-preset,
+  .topbar-underline-menu .dropdown-item,
+  .topbar-underline-menu .balance-row
+)::before,
+body :where(
+  .filter-underline-menu .select-option,
+  .filter-underline-menu .date-picker-preset,
+  .topbar-underline-menu .dropdown-item,
+  .topbar-underline-menu .balance-row
+)::after {
+  content: none !important;
+}
+
+#app .app-layout-content :where(.website-bracket-anchor) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+}
+
+body :where(.date-picker-preset-label, .select-option-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::before,
+#app .app-layout-content .website-bracket-anchor::after,
+body .date-picker-preset-label::before,
+body .date-picker-preset-label::after,
+body .select-option-label::before,
+body .select-option-label::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::before,
+body .date-picker-preset-label::before,
+body .select-option-label::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::after,
+body .date-picker-preset-label::after,
+body .select-option-label::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::before,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::after,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::before,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app .app-layout-content :where(.channel-monitor-v2-header, .channel-monitor-v2-header ~ .card, .channel-monitor-v2-header ~ section.card) {
+  background: var(--anthropic-page) !important;
+  background-color: var(--anthropic-page) !important;
+}
+
+/* Keep the final filter option contract after every route-specific cascade. */
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label) {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+body .filter-underline-menu .select-option-selected :where(svg.select-option-check, .select-option-check) {
+  display: none !important;
+}
+
+body .filter-underline-menu .select-option-selected .select-option-label::before,
+body .filter-underline-menu .select-option-selected .select-option-label::after,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Selected filter/date options use a fixed website bracket marker instead of
+   the default check icon. Hover reveals the same marker, never a second one. */
+body .filter-underline-menu .select-option-selected > :where(svg, .icon),
+body .filter-underline-menu .select-option-selected :where(svg.select-option-check, .select-option-check),
+body .filter-underline-menu .date-picker-preset-active > :where(svg, .icon) {
+  display: none !important;
+}
+
+body .filter-underline-menu .select-option-selected .select-option-label::before,
+body .filter-underline-menu .select-option-selected .select-option-label::after,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+body .filter-underline-menu .select-option-selected .select-option-label,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label {
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+}
+
+/* EOF precedence marker */
+
+/* Filter actions are text controls, not full-width fields. Keep their hit
+   area and bracket geometry sized to the rendered label across every route. */
+#app .app-layout-content .filter-menu-button,
+#app .app-layout-content .ops-toolbar-text-button {
+  position: relative !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 0 auto !important;
+}
+
+#app .app-layout-content .filter-menu-button::before,
+#app .app-layout-content .filter-menu-button::after,
+#app .app-layout-content .ops-toolbar-text-button::before,
+#app .app-layout-content .ops-toolbar-text-button::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app .app-layout-content .filter-menu-button::before,
+#app .app-layout-content .ops-toolbar-text-button::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app .app-layout-content .filter-menu-button::after,
+#app .app-layout-content .ops-toolbar-text-button::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app .app-layout-content .filter-menu-button:is(:hover, :focus-visible, .filter-menu-button-open)::before,
+#app .app-layout-content .filter-menu-button:is(:hover, :focus-visible, .filter-menu-button-open)::after,
+#app .app-layout-content .ops-toolbar-text-button:is(:hover, :focus-visible)::before,
+#app .app-layout-content .ops-toolbar-text-button:is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* High-specificity guard: this legacy stylesheet contains older row-level
+   bracket rules later in the file. Keep ownership on the text anchors even
+   when those rules are present. */
+html body .topbar-underline-menu .dropdown-item::before,
+html body .topbar-underline-menu .dropdown-item::after,
+html body .topbar-underline-menu .balance-row::before,
+html body .topbar-underline-menu .balance-row::after,
+html body .topbar-underline-menu .account-tools-menu-item::before,
+html body .topbar-underline-menu .account-tools-menu-item::after,
+html body .filter-underline-menu .select-option::before,
+html body .filter-underline-menu .select-option::after,
+html body .filter-underline-menu .date-picker-preset::before,
+html body .filter-underline-menu .date-picker-preset::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body .topbar-underline-menu .website-bracket-anchor,
+html body .filter-underline-menu .select-option-label,
+html body .filter-underline-menu .date-picker-preset-label {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+html body .topbar-underline-menu .website-bracket-anchor::before,
+html body .topbar-underline-menu .website-bracket-anchor::after,
+html body .filter-underline-menu .select-option-label::before,
+html body .filter-underline-menu .select-option-label::after,
+html body .filter-underline-menu .date-picker-preset-label::before,
+html body .filter-underline-menu .date-picker-preset-label::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+html body .topbar-underline-menu .website-bracket-anchor::before,
+html body .filter-underline-menu .select-option-label::before,
+html body .filter-underline-menu .date-picker-preset-label::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+html body .topbar-underline-menu .website-bracket-anchor::after,
+html body .filter-underline-menu .select-option-label::after,
+html body .filter-underline-menu .date-picker-preset-label::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+html body .topbar-underline-menu .dropdown-item:hover .website-bracket-anchor::before,
+html body .topbar-underline-menu .dropdown-item:hover .website-bracket-anchor::after,
+html body .topbar-underline-menu .balance-row:hover .website-bracket-anchor::before,
+html body .topbar-underline-menu .balance-row:hover .website-bracket-anchor::after,
+html body .filter-underline-menu .select-option:hover .select-option-label::before,
+html body .filter-underline-menu .select-option:hover .select-option-label::after,
+html body .filter-underline-menu .date-picker-preset:hover .date-picker-preset-label::before,
+html body .filter-underline-menu .date-picker-preset:hover .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app .app-layout-content .select-trigger .website-bracket-anchor::before,
+#app .app-layout-content .select-trigger .website-bracket-anchor::after,
+#app .app-layout-content .date-picker-trigger .website-bracket-anchor::before,
+#app .app-layout-content .date-picker-trigger .website-bracket-anchor::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  content: "" !important;
+}
+
+#app .app-layout-content .select-trigger .website-bracket-anchor::before,
+#app .app-layout-content .date-picker-trigger .website-bracket-anchor::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+}
+
+#app .app-layout-content .select-trigger .website-bracket-anchor::after,
+#app .app-layout-content .date-picker-trigger .website-bracket-anchor::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+}
+
+#app .app-layout-content .select-trigger:is(:hover, :focus-visible, .select-trigger-open) .website-bracket-anchor::before,
+#app .app-layout-content .select-trigger:is(:hover, :focus-visible, .select-trigger-open) .website-bracket-anchor::after,
+#app .app-layout-content .date-picker-trigger:is(:hover, :focus-visible, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app .app-layout-content .date-picker-trigger:is(:hover, :focus-visible, .date-picker-trigger-open) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Definitive bracket ownership for all menu and control surfaces. */
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::before,
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::before,
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::after,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::before,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::after,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger)::before,
+#app :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Absolute final precedence: labels own brackets; menu rows never do. */
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::before,
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+body :where(.topbar-underline-menu .website-bracket-anchor, .filter-underline-menu .select-option-label, .filter-underline-menu .date-picker-preset-label)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::before,
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::after,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::before,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::after,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger)::before,
+#app :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Definitive bracket ownership for teleported menus. The row remains the
+   interaction hit area, while its text label owns the content-sized pair. */
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+body .topbar-underline-menu .website-bracket-anchor,
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+body .topbar-underline-menu .website-bracket-anchor::before,
+body .topbar-underline-menu .website-bracket-anchor::after,
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label)::before,
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+body .topbar-underline-menu .website-bracket-anchor::before,
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+body .topbar-underline-menu .website-bracket-anchor::after,
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::before,
+body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) .website-bracket-anchor::after,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::before,
+body .filter-underline-menu .select-option:is(:hover, :focus-visible, .select-option-focused, .select-option-selected) .select-option-label::after,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset:is(:hover, :focus-visible, .date-picker-preset-active) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Select/date triggers are full-width hit areas, but their markers follow the
+   rendered value rather than the toolbar width. */
+#app :where(.select-trigger, .date-picker-trigger)::before,
+#app :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger) .website-bracket-anchor::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Dropdown rows with an explicit text anchor must have one bracket pair only.
+   The row keeps the hit area; the anchor owns the visual geometry. */
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor):is(:hover, :focus-visible) .website-bracket-anchor::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor):is(:hover, :focus-visible) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Anchor spans are content-sized even when their parent is a full-width row. */
+body :where(.topbar-underline-menu, .filter-underline-menu) .website-bracket-anchor {
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+}
+
+/* Utility-class fallback for route templates that still carry
+   `hover:underline`/`underline` on an interactive filter action. */
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"]) {
+  position: relative !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"])::before,
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"])::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"])::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"])::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"]):is(:hover, :focus-visible)::before,
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"]):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Keep utility hover actions content-sized as well; this prevents brackets
+   from being positioned against a full-width toolbar or table row. */
+#app .app-layout-content :where([class~="hover:underline"], [class~="underline"]) {
+  width: max-content !important;
+  max-width: 100% !important;
+}
+
+/* Named legacy actions that predate the utility-class contract. */
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+) {
+  position: relative !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+)::before,
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+):is(:hover, :focus-visible)::before,
+#app .app-layout-content :where(
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-metric-card button[data-testid*="open-details"]
+):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* The V2 header contains the filter controls and their teleported menus. */
+#app .app-layout-content .channel-monitor-v2-header :where(
+  .select-trigger,
+  .filter-trigger,
+  .filter-dropdown,
+  .bg-white,
+  .bg-gray-50,
+  .bg-gray-50\/60
+) {
+  background-color: var(--anthropic-page) !important;
+}
+
+/* Final filter contract: every route uses the website bracket hover, never a
+   real underline. Keep the trigger hit area stable and anchor brackets to the
+   rendered label so they do not follow a full-width filter row. */
+#app .app-layout-content :where(
+  .table-page-filter-section,
+  .table-filter-shell,
+  .table-filter-left,
+  .table-filter-actions,
+  .accounts-filter-shell,
+  .accounts-filter-left,
+  .accounts-filter-actions,
+  .users-filter-shell,
+  .users-filter-left,
+  .users-filter-actions,
+  .users-filter-tools,
+  .proxies-filter-left,
+  .proxies-filter-actions,
+  .usage-time-filter-card,
+  .usage-time-filter-shell,
+  .usage-time-filter-range,
+  .usage-time-filter-granularity,
+  .usage-filter-shell,
+  .usage-filter-left,
+  .usage-filter-actions,
+  .usage-record-filter-wrap,
+  .global-pricing-filter-card,
+  .global-pricing-filter-shell,
+  .global-pricing-filter-left,
+  .global-pricing-filter-actions,
+  .dashboard-filter-card,
+  .dashboard-filter-shell,
+  .dashboard-filter-range,
+  .dashboard-filter-granularity,
+  .keys-filter-shell,
+  .monitor-filter-shell,
+  .ops-monitor-toolbar-controls,
+  .ops-card-filter-bar,
+  .ops-card-filter-grid,
+  .codex-toolbar,
+  .codex-list-actions__filters,
+  .risk-control-toolbar-actions,
+  .risk-control-record-filters,
+  .payment-dashboard-filter-bar,
+  .payment-plans-filter-bar,
+  .order-filter-card
+) :where(.select-trigger, .date-picker-trigger, .filter-menu-button, .ops-toolbar-text-button) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger)::before,
+#app :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+#app :where(.website-bracket-anchor),
+body :where(.date-picker-preset-label, .select-option-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app :where(.website-bracket-anchor)::before,
+#app :where(.website-bracket-anchor)::after,
+body :where(.date-picker-preset-label, .select-option-label)::before,
+body :where(.date-picker-preset-label, .select-option-label)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where(.website-bracket-anchor)::before,
+body :where(.date-picker-preset-label, .select-option-label)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where(.website-bracket-anchor)::after,
+body :where(.date-picker-preset-label, .select-option-label)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::before,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::after,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::before,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Channel monitor V2 uses the same paper surface in light and dark mode. */
+#app .app-layout-content :where(
+  .channel-monitor-v2-header,
+  .channel-monitor-v2-header ~ .card,
+  .channel-monitor-v2-header ~ section.card,
+  .channel-monitor-v2-header ~ .space-y-2
+) {
+  background: var(--anthropic-page) !important;
+  background-color: var(--anthropic-page) !important;
+}
+
+#app .app-layout-content :where(.channel-monitor-v2-header, .channel-monitor-v2-header ~ .card, .channel-monitor-v2-header ~ section.card) :where(.bg-white, .bg-gray-50, .bg-gray-50\/60) {
+  background-color: var(--anthropic-page) !important;
+}
+
+/* Final precedence layer: legacy text-control rules above must not restore
+   underlines or clip the bracket markers. */
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+) {
+  position: relative !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset) {
+  position: relative !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+)::before,
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+)::after,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+)::after,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+):is(:hover, :focus-visible)::before,
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control)
+):is(:hover, :focus-visible)::after,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset):is(:hover, :focus-visible)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(.dropdown-item, .balance-row, .account-tools-menu-item, .select-option, .date-picker-preset):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger--text-control, .select-trigger--text-control):not(:focus-visible) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+/* Catch legacy utility classes that still emit a real underline. The
+   bracket treatment is content-sized and applies consistently across the
+   authenticated console surfaces. */
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover) {
+  position: relative !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::before,
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  font-family: var(--font-body, sans-serif) !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover):is(:hover, :focus-visible)::before,
+#app :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Brackets follow the text box, never the full-width menu row. */
+#app :where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button, .date-picker-trigger--text-control, .select-trigger--text-control),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  [class~="website-bracket-hover"],
+  [class~="hover:underline"]
+) {
+  width: max-content !important;
+  max-width: 100% !important;
+}
+
+/* Sidebar rows remain full-width for hit targets; their label owns the
+   bracket geometry so it tracks the rendered label width. */
+#app .sidebar .sidebar-link {
+  width: 100% !important;
+}
+
+#app .sidebar .sidebar-link::before,
+#app .sidebar .sidebar-link::after {
+  content: none !important;
+}
+
+#app .sidebar .sidebar-link > .sidebar-label {
+  position: relative;
+  overflow: visible !important;
+  text-decoration: none !important;
+}
+
+#app .sidebar .sidebar-link > .sidebar-label::before,
+#app .sidebar .sidebar-link > .sidebar-label::after {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  color: currentColor;
+  pointer-events: none;
+  line-height: 1;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+#app .sidebar .sidebar-link > .sidebar-label::before {
+  content: "[";
+  right: calc(100% + 0.28em);
+  transform: translate(-0.18em, -50%);
+}
+
+#app .sidebar .sidebar-link > .sidebar-label::after {
+  content: "]";
+  left: calc(100% + 0.28em);
+  transform: translate(0.18em, -50%);
+}
+
+#app .sidebar .sidebar-link:is(:hover, :focus-visible) > .sidebar-label::before,
+#app .sidebar .sidebar-link:is(:hover, :focus-visible) > .sidebar-label::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* Replace every remaining utility-class underline hover without affecting
+   links that intentionally use a static informational underline. */
+#app [class~="hover:underline"],
+#app [class~="hover:underline"]:is(:hover, :focus-visible) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+/* Website-style bracket hover treatment. Keep the resting state quiet and
+   reveal the paired brackets around text controls on hover/focus. */
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+) {
+  position: relative;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+)::before,
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+)::after {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  color: currentColor;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+)::before {
+  content: "[";
+  right: calc(100% + 0.28em);
+  transform: translate(-0.18em, -50%);
+}
+
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+)::after {
+  content: "]";
+  left: calc(100% + 0.28em);
+  transform: translate(0.18em, -50%);
+}
+
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+):is(:hover, :focus-visible)::before,
+:where(
+  .app-header-atelier :where(a, button):not(.btn-primary):not(.date-picker-apply):not(.language-bar-trigger):not(.user-menu-trigger),
+  .topbar-underline-menu :where(.dropdown-item, .balance-row),
+  .filter-underline-menu :where(.dropdown-item, .account-tools-menu-item, .select-option, .date-picker-preset),
+  .sidebar .sidebar-link,
+  .app-layout-content :where(.filter-menu-button, .ops-toolbar-text-button)
+):is(:hover, :focus-visible)::after {
+  opacity: 1;
+  transform: translate(0, -50%);
 }
 
 /* Edit-account footer is teleported outside .app-layout-content. */
@@ -3379,6 +4605,83 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 /* User monitor cards: Anthropic tutorial-card single-card hover contract. */
+#app .app-layout-content .channel-monitor-v2-header {
+  background: var(--anthropic-page) !important;
+}
+
+/* Website parity: replace underline hover feedback with absolute [] markers. */
+:where(.website-bracket-hover, [class~="hover:underline"]) {
+  position: relative;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+:where(.website-bracket-hover, [class~="hover:underline"])::before,
+:where(.website-bracket-hover, [class~="hover:underline"])::after {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  pointer-events: none;
+  color: currentColor;
+  font-family: var(--font-body, sans-serif);
+  font-weight: 400;
+  line-height: 1;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+:where(.website-bracket-hover, [class~="hover:underline"])::before {
+  content: '[';
+  left: -0.78em;
+  transform: translate(-0.18em, -50%);
+}
+
+:where(.website-bracket-hover, [class~="hover:underline"])::after {
+  content: ']';
+  right: -0.78em;
+  transform: translate(0.18em, -50%);
+}
+
+:where(.website-bracket-hover, [class~="hover:underline"]):where(:hover, :focus-visible)::before,
+:where(.website-bracket-hover, [class~="hover:underline"]):where(:hover, :focus-visible)::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"]) {
+  position: relative;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"])::before,
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"])::after {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  pointer-events: none;
+  color: currentColor;
+  line-height: 1;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"])::before {
+  content: '[';
+  left: -0.78em;
+  transform: translate(-0.18em, -50%);
+}
+
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"])::after {
+  content: ']';
+  right: -0.78em;
+  transform: translate(0.18em, -50%);
+}
+
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"]):where(:hover, :focus-visible)::before,
+.app-header-atelier :where(.header-balance-chip-fixed, .dropdown-item, .balance-row, [data-testid="layout-app-header-link-a"]):where(:hover, :focus-visible)::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
 #app .app-layout-content :where(.monitor-page-linked-hover-group .monitor-linked-card) {
   border-color: var(--anthropic-cookbook-border) !important;
   background: var(--anthropic-page) !important;
@@ -4505,10 +5808,8 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   background: transparent !important;
   color: var(--anthropic-fg) !important;
   box-shadow: none !important;
-  text-decoration-line: underline;
+  text-decoration: none;
   text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.24em;
 }
 
 #app .app-layout-content .ops-dashboard-atelier .ops-monitor-toolbar-controls :where(.select-trigger:hover, .select-trigger-open, .ops-toolbar-text-button:hover, .ops-toolbar-text-button:focus-visible) {
@@ -5095,9 +6396,7 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   -webkit-text-fill-color: var(--anthropic-fg) !important;
   box-shadow: none !important;
   outline: 0 !important;
-  text-decoration-line: underline !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: 0.24em !important;
+  text-decoration: none !important;
 }
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(
@@ -5156,4 +6455,119 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 
 #app .app-layout-content .admin-dashboard-atelier .dashboard-filter-card :where(.date-picker-trigger:hover .date-picker-chevron, .date-picker-trigger-open .date-picker-chevron, .select-trigger:hover .select-icon, .select-trigger-open .select-icon) {
   transform: translateY(1px) rotate(180deg) !important;
+}
+
+/* End-of-file cascade marker for filter repairs. */
+
+/* Final option geometry: rows remain hit areas; the label alone owns the
+   content-sized brackets and selected marker. */
+body .filter-underline-menu :where(.select-option, .date-picker-preset)::before,
+body .filter-underline-menu :where(.select-option, .date-picker-preset)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label) {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+body .filter-underline-menu .select-option-selected :where(svg.select-option-check, .select-option-check) {
+  display: none !important;
+}
+
+body .filter-underline-menu .select-option-selected .select-option-label::before,
+body .filter-underline-menu .select-option-selected .select-option-label::after,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::before,
+body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Final filter cascade: this must remain after every route-specific rule. */
+#app .app-layout-content :where(
+  .table-page-filter-section, .table-filter-shell, .table-filter-left,
+  .table-filter-actions, .accounts-filter-shell, .accounts-filter-left,
+  .accounts-filter-actions, .users-filter-shell, .users-filter-left,
+  .users-filter-actions, .users-filter-tools, .proxies-filter-left,
+  .proxies-filter-actions, .usage-time-filter-card, .usage-time-filter-shell,
+  .usage-time-filter-range, .usage-time-filter-granularity, .usage-filter-shell,
+  .usage-filter-left, .usage-filter-actions, .usage-record-filter-wrap,
+  .global-pricing-filter-card, .global-pricing-filter-shell,
+  .global-pricing-filter-left, .global-pricing-filter-actions,
+  .dashboard-filter-card, .dashboard-filter-shell, .dashboard-filter-range,
+  .dashboard-filter-granularity, .keys-filter-shell, .monitor-filter-shell,
+  .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid,
+  .codex-toolbar, .codex-list-actions__primary, .codex-list-actions__filters,
+  .risk-control-toolbar-actions, .risk-control-record-filters,
+  .payment-dashboard-filter-bar, .payment-plans-filter-bar, .order-filter-card
+) :where(.select-trigger, .date-picker-trigger, .filter-menu-button, .ops-toolbar-text-button) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger)::before,
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+#app .app-layout-content .website-bracket-anchor,
+body :where(.date-picker-preset-label, .select-option-label, .topbar-underline-menu .website-bracket-anchor) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::before,
+#app .app-layout-content .website-bracket-anchor::after,
+body :where(.date-picker-preset-label, .select-option-label)::before,
+body :where(.date-picker-preset-label, .select-option-label)::after {
+  position: absolute !important;
+  top: 50% !important;
+  opacity: 0 !important;
+  color: currentColor !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::before,
+body :where(.date-picker-preset-label, .select-option-label)::before {
+  content: "[" !important;
+  right: calc(100% + 0.28em) !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+#app .app-layout-content .website-bracket-anchor::after,
+body :where(.date-picker-preset-label, .select-option-label)::after {
+  content: "]" !important;
+  left: calc(100% + 0.28em) !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::before,
+#app .app-layout-content :where(.select-trigger, .date-picker-trigger):is(:hover, :focus-visible, .select-trigger-open, .date-picker-trigger-open) .website-bracket-anchor::after,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::before,
+body .select-option:is(:hover, :focus-visible, .select-option-focused) .select-option-label::after,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::before,
+body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+#app .app-layout-content :where(.channel-monitor-v2-header, .channel-monitor-v2-header ~ .card, .channel-monitor-v2-header ~ section.card) {
+  background: var(--anthropic-page) !important;
+  background-color: var(--anthropic-page) !important;
 }

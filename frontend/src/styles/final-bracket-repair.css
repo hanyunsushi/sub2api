@@ -1,0 +1,1516 @@
+/* Final website-bracket contract. This file is imported after the legacy
+   visual repair cascade so route-specific rules cannot reintroduce overlap. */
+
+:root {
+  /* Every website-style bracket uses the same fixed 3px text gap. */
+  --website-bracket-gap: 3px;
+  --website-bracket-offset: var(--website-bracket-gap);
+}
+
+body :where(.website-bracket-anchor, .select-option-label, .date-picker-preset-label) {
+  position: relative !important;
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+body :where(.account-external-quota-link, .account-card-text-action) {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+/* Match the website topbar geometry: brackets sit outside the text box with
+   a stable offset instead of touching adjacent glyphs or controls. */
+body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before,
+body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after {
+  top: 50% !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+}
+
+body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before {
+  left: calc(-1 * var(--website-bracket-offset)) !important;
+  right: auto !important;
+  transform: translate(-0.04em, -50%) !important;
+}
+
+body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after {
+  left: auto !important;
+  right: calc(-1 * var(--website-bracket-offset)) !important;
+  transform: translate(0.04em, -50%) !important;
+}
+
+/* Standalone text-action buttons own their bracket pair directly. */
+body :where(.filter-menu-button, .ops-toolbar-text-button)::before,
+body :where(.filter-menu-button, .ops-toolbar-text-button)::after,
+body :where(.account-card-text-action)::before,
+body :where(.account-card-text-action)::after {
+  top: 50% !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action)::before {
+  left: calc(-1 * var(--website-bracket-offset)) !important;
+  right: auto !important;
+  transform: translate(-0.04em, -50%) !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action)::after {
+  left: auto !important;
+  right: calc(-1 * var(--website-bracket-offset)) !important;
+  transform: translate(0.04em, -50%) !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open)::before {
+  content: "[" !important;
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open)::after {
+  content: "]" !important;
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action)::before {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+body :where(.filter-menu-button, .ops-toolbar-text-button, .account-card-text-action)::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+/* Sidebar navigation never uses the bracket treatment. */
+html body #app .sidebar .sidebar-link::before,
+html body #app .sidebar .sidebar-link::after,
+html body #app .sidebar .sidebar-label::before,
+html body #app .sidebar .sidebar-label::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+/* Menu rows provide the hit area; anchored labels provide the one visible
+   bracket pair. */
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor)::before,
+body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset
+):has(.website-bracket-anchor)::after {
+  content: none !important;
+}
+
+body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label) {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* Account column toggles use the same selected [] marker as other filters. */
+body .filter-underline-menu .account-column-option > :where(svg, .icon) {
+  display: none !important;
+}
+
+body .filter-underline-menu .account-column-option-active .website-bracket-anchor::before,
+body .filter-underline-menu .account-column-option-active .website-bracket-anchor::after,
+body .filter-underline-menu .account-column-option:is(:hover, :focus-visible) .website-bracket-anchor::before,
+body .filter-underline-menu .account-column-option:is(:hover, :focus-visible) .website-bracket-anchor::after,
+body .filter-underline-menu .account-tools-menu-item:is(:hover, :focus-visible) .website-bracket-anchor::before,
+body .filter-underline-menu .account-tools-menu-item:is(:hover, :focus-visible) .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Keep bracket-triggering controls separated like the website topbar. */
+#app .app-layout-content :where(
+  .table-filter-shell,
+  .table-filter-left,
+  .table-filter-actions,
+  .accounts-filter-left,
+  .accounts-filter-actions,
+  .users-filter-left,
+  .users-filter-actions,
+  .users-filter-tools,
+  .proxies-filter-left,
+  .proxies-filter-actions,
+  .usage-time-filter-shell,
+  .usage-filter-shell,
+  .usage-filter-left,
+  .usage-filter-actions,
+  .global-pricing-filter-left,
+  .global-pricing-filter-actions,
+  .dashboard-filter-shell,
+  .dashboard-filter-range,
+  .dashboard-filter-granularity,
+  .monitor-filter-shell,
+  .ops-monitor-toolbar-controls,
+  .ops-card-filter-bar,
+  .ops-card-filter-grid,
+  .codex-list-actions__filters
+) {
+  column-gap: var(--anthropic-control-gap, 0.75rem) !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] > div {
+  column-gap: var(--anthropic-control-gap, 0.75rem) !important;
+}
+
+/* External quota links are text actions, never real underlines. */
+#app .app-layout-content .account-external-quota-link {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+/* Highest-priority overrides for the old account/table rules that still use
+   !important on underlines and row-sized flex labels. */
+html body #app .app-layout-content .accounts-table-page .account-external-quota-link,
+html body #app .app-layout-content .accounts-table-page .table-wrapper [data-column-key="actions"] .account-card-text-action {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: transparent !important;
+}
+
+html body #app .app-layout-content :where(.select-trigger, .date-picker-trigger)::before,
+html body #app .app-layout-content :where(.select-trigger, .date-picker-trigger)::after {
+  content: none !important;
+}
+
+/* Provider filters use a custom slot; keep its label content-sized even when
+   the slot wrapper is a flex item. */
+html body .filter-underline-menu .select-option-label.website-bracket-anchor {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+html body #app .app-layout-content :where(
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action
+)::before {
+  left: calc(-1 * var(--website-bracket-offset)) !important;
+  right: auto !important;
+}
+
+html body #app .app-layout-content :where(
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action
+)::after {
+  left: auto !important;
+  right: calc(-1 * var(--website-bracket-offset)) !important;
+}
+
+html body .filter-underline-menu .account-column-option > svg,
+html body .filter-underline-menu .account-column-option > :where(.icon, .select-option-check) {
+  display: none !important;
+}
+
+html body .filter-underline-menu .account-tools-menu-item > .website-bracket-anchor,
+html body .filter-underline-menu .account-column-option > .website-bracket-anchor {
+  display: inline-block !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* The final geometry must clear both competing inset properties from the
+   earlier cascade; setting the opposite side to auto is required. */
+html body .filter-underline-menu .website-bracket-anchor::before {
+  left: calc(-1 * var(--website-bracket-offset)) !important;
+  right: auto !important;
+}
+
+html body .filter-underline-menu .select-option-label.website-bracket-anchor::before,
+html body .filter-underline-menu .date-picker-preset-label.website-bracket-anchor::before {
+  left: calc(-1 * var(--website-bracket-offset)) !important;
+  right: auto !important;
+}
+
+html body .filter-underline-menu .website-bracket-anchor::after {
+  left: auto !important;
+  right: calc(-1 * var(--website-bracket-offset)) !important;
+}
+
+html body .filter-underline-menu .select-option-label.website-bracket-anchor::after,
+html body .filter-underline-menu .date-picker-preset-label.website-bracket-anchor::after {
+  left: auto !important;
+  right: calc(-1 * var(--website-bracket-offset)) !important;
+}
+
+/* Arrow controls keep bracket ownership on the label. This avoids the old
+   collision where the button's ::after marker competed with the real caret. */
+html body #app .app-layout-content .filter-menu-button-with-caret::before,
+html body #app .app-layout-content .filter-menu-button-with-caret::after {
+  content: none !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret {
+  gap: 0.6rem !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret .filter-menu-trigger-label {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::before,
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app .app-layout-content :where(.select-trigger, .date-picker-trigger) {
+  gap: 0.6rem !important;
+}
+
+html body #app .app-layout-content :where(.select-icon, .date-picker-chevron, .filter-menu-caret, .account-card-text-caret) {
+  margin-left: 0.15rem !important;
+}
+
+/* Account auto-refresh uses a fixed selected [] state, never the legacy check. */
+html body .filter-underline-menu .account-auto-refresh-option {
+  justify-content: flex-start !important;
+  padding-inline: 1.5rem !important;
+}
+
+html body .filter-underline-menu .account-auto-refresh-option > .website-bracket-anchor {
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  flex: 0 0 auto !important;
+}
+
+html body .filter-underline-menu .account-auto-refresh-option-active > .website-bracket-anchor::before,
+html body .filter-underline-menu .account-auto-refresh-option-active > .website-bracket-anchor::after,
+html body .filter-underline-menu .account-auto-refresh-option:is(:hover, :focus-visible) > .website-bracket-anchor::before,
+html body .filter-underline-menu .account-auto-refresh-option:is(:hover, :focus-visible) > .website-bracket-anchor::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Reserve marker space inside option rows, including the custom provider slot. */
+html body .filter-underline-menu .select-option {
+  padding-inline: 1.5rem !important;
+}
+
+/* The first provider option has no icon.  Keep its label centered in the
+   same inset as icon-bearing options so its brackets cannot touch the text. */
+html body .filter-underline-menu .select-option > .flex {
+  gap: 0.5rem !important;
+  padding-inline: 0.5rem !important;
+}
+
+html body .filter-underline-menu .select-option > .flex {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* The all-provider option has no leading logo. Its own offset keeps the
+   selected bracket pair visibly clear of the shorter label. */
+html body .filter-underline-menu .monitor-provider-option-all::before {
+  left: calc(-1 * (var(--website-bracket-offset) + 0.08em)) !important;
+}
+
+html body .filter-underline-menu .monitor-provider-option-all::after {
+  right: calc(-1 * (var(--website-bracket-offset) + 0.1em)) !important;
+}
+
+/* Header subscription rows are two bounded columns. Long provider labels,
+   balances, and expiry strings ellipsize inside the panel instead of escaping. */
+html body .header-balance-dropdown-panel {
+  overflow-x: hidden !important;
+}
+
+html body .header-balance-dropdown-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(5rem, 7rem) !important;
+  align-items: center !important;
+  column-gap: 1rem !important;
+  min-width: 0 !important;
+}
+
+html body .header-balance-dropdown-label,
+html body .header-balance-dropdown-label-copy,
+html body .header-balance-dropdown-value,
+html body .header-balance-dropdown-value-copy {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+html body .header-balance-dropdown-value {
+  justify-self: stretch !important;
+}
+
+html body .topbar-underline-menu .header-balance-dropdown-anchor {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+}
+
+html body .header-balance-dropdown-text {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::before,
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Account-card text menus use their own caret.  Keep enough breathing room
+   for the pair of outer brackets without changing the click target. */
+html body #app .app-layout-content .account-card-text-action {
+  gap: 0.6rem !important;
+}
+
+/* Legacy menu rules hide the row pseudo-elements with !important. Reassert
+   marker content only for anchors inside filter menus; app-content triggers
+   stay quiet until hover/focus/open. */
+html body #app .app-layout-content .website-bracket-anchor::before,
+html body #app .app-layout-content .website-bracket-anchor::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+html body .filter-underline-menu .website-bracket-anchor::before {
+  content: "[" !important;
+}
+
+html body .filter-underline-menu .website-bracket-anchor::after {
+  content: "]" !important;
+}
+
+/* Trigger labels and account links only reveal brackets while engaged. */
+html body #app .app-layout-content .filter-menu-button-with-caret .filter-menu-trigger-label::before,
+html body #app .app-layout-content .filter-menu-button-with-caret .filter-menu-trigger-label::after,
+html body #app .app-layout-content .account-card-more-trigger::before,
+html body #app .app-layout-content .account-card-more-trigger::after,
+html body #app .app-layout-content .account-external-quota-link::before,
+html body #app .app-layout-content .account-external-quota-link::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::before,
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::after,
+html body #app .app-layout-content .account-card-more-trigger:is(:hover, :focus-visible, .account-card-more-trigger-open)::before,
+html body #app .app-layout-content .account-card-more-trigger:is(:hover, :focus-visible, .account-card-more-trigger-open)::after,
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::before,
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::before,
+html body #app .app-layout-content .account-card-more-trigger:is(:hover, :focus-visible, .account-card-more-trigger-open)::before,
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::before {
+  content: "[" !important;
+}
+
+html body #app .app-layout-content .filter-menu-button-with-caret:is(:hover, :focus-visible, .filter-menu-button-open) .filter-menu-trigger-label::after,
+html body #app .app-layout-content .account-card-more-trigger:is(:hover, :focus-visible, .account-card-more-trigger-open)::after,
+html body #app .app-layout-content .account-external-quota-link:is(:hover, :focus-visible)::after {
+  content: "]" !important;
+}
+
+/* The provider trigger has a short CJK label and no leading logo in the
+   selected state. Reserve marker space inside the content-sized anchor so
+   the left bracket cannot touch the first glyph. */
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor {
+  box-sizing: border-box !important;
+  padding-inline: 0.35em !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::before {
+  left: 0 !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::after {
+  left: auto !important;
+  right: 0 !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Restore the visible pair only while the trigger is engaged. */
+html body #app .app-layout-content .monitor-provider-select > .select-trigger:is(:hover, :focus-visible, .select-trigger-open) > .select-value.website-bracket-anchor::before {
+  content: "[" !important;
+  opacity: 1 !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger:is(:hover, :focus-visible, .select-trigger-open) > .select-value.website-bracket-anchor::after {
+  content: "]" !important;
+  opacity: 1 !important;
+}
+
+/* Final geometry contract: all bracket pairs sit exactly 3px from the
+   content box, with mirrored left/right rules. Using calc(100% + 3px)
+   avoids font-size-dependent drift from em offsets. */
+html body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  [class~="underline"],
+  [class~="hover:underline"],
+  .website-bracket-hover
+)::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  [class~="underline"],
+  [class~="hover:underline"],
+  .website-bracket-hover
+)::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* The header has a few legacy row-level markers without an anchor child;
+   keep those on the same fixed, mirrored 3px contract as text anchors. */
+html body .app-header-atelier :where(
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body .app-header-atelier :where(
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Provider trigger labels are content-sized, so no extra font-relative
+   padding is needed once the bracket gap is fixed in pixels. */
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor {
+  padding-inline: 0 !important;
+}
+
+html body #app :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  [class~="underline"],
+  [class~="hover:underline"],
+  .website-bracket-hover
+)::before,
+html body .topbar-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before,
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  [class~="underline"],
+  [class~="hover:underline"],
+  .website-bracket-hover
+)::after,
+html body .topbar-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after,
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+}
+
+/* Reassert the same fixed gap against the higher-specificity legacy rules
+   used by select/date controls and underline utility classes. */
+html body #app .app-layout-content .select-trigger .website-bracket-anchor::before,
+html body #app .app-layout-content .date-picker-trigger .website-bracket-anchor::before,
+html body #app .app-layout-content :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+  transform: translate(0, -50%) !important;
+}
+
+html body #app .app-layout-content .select-trigger .website-bracket-anchor::after,
+html body #app .app-layout-content .date-picker-trigger .website-bracket-anchor::after,
+html body #app .app-layout-content :where([class~="underline"], [class~="hover:underline"], .website-bracket-hover)::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Header controls and row-level legacy markers use the same 3px distance. */
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::before {
+  left: auto !important;
+  right: calc(100% + var(--website-bracket-gap)) !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Final interaction split: the topbar follows the website reference
+   geometry; all application-content controls fall back to underline hover. */
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::before {
+  right: 0.78em !important;
+  left: auto !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::after {
+  left: 0.78em !important;
+  right: auto !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+html body .topbar-underline-menu :where(
+  .website-bracket-anchor,
+  .header-balance-dropdown-anchor
+)::before {
+  right: 0.78em !important;
+  left: auto !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+html body .topbar-underline-menu :where(
+  .website-bracket-anchor,
+  .header-balance-dropdown-anchor
+)::after {
+  left: 0.78em !important;
+  right: auto !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+/* Disable every non-topbar bracket carrier and restore the underline
+   interaction on the same text surfaces. */
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+)::before,
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+html body :where(.filter-underline-menu, body) :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  [class~="hover:underline"]
+)::before,
+html body :where(.filter-underline-menu, body) :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  [class~="hover:underline"]
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before,
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after,
+html body .filter-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset,
+  .account-column-option,
+  .account-auto-refresh-option
+)::before,
+html body .filter-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset,
+  .account-column-option,
+  .account-auto-refresh-option
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+}
+
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* EOF rollback guard for route-specific filter button marker rules. */
+html body #app .app-layout-content .filter-menu-button::before,
+html body #app .app-layout-content .filter-menu-button::after,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::before,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::after,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::before,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Absolute EOF guard: no former bracket carrier may render a pseudo marker. */
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Final global guard: all former website bracket carriers are underline-only. */
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Complete rollback of the temporary website bracket treatment. Keep the
+   original text-link underline behavior for every legacy carrier, including
+   teleported account actions and the personal-information menu. */
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Clear route-specific filter button pseudo-elements that carry higher
+   specificity than the shared rollback selector. */
+html body #app .app-layout-content .filter-menu-button::before,
+html body #app .app-layout-content .filter-menu-button::after,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::before,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::after,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::before,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body .filter-underline-menu :where(
+  .select-option,
+  .date-picker-preset,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option
+):is(:hover, :focus-visible, .select-option-selected, .date-picker-preset-active, .account-column-option-active, .account-auto-refresh-option-active) :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* Keep explicitly informational/static underlines visible outside the
+   topbar; the previous global bracket layer removed them. */
+html body #app .app-layout-content [class~="underline"] {
+  text-decoration-line: underline !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* Higher-specificity select/date rules previously reintroduced bracket
+   content after the non-topbar reset; explicitly suppress those carriers. */
+html body #app .app-layout-content .website-bracket-anchor::before,
+html body #app .app-layout-content .website-bracket-anchor::after,
+html body #app .app-layout-content .select-trigger .website-bracket-anchor::before,
+html body #app .app-layout-content .select-trigger .website-bracket-anchor::after,
+html body #app .app-layout-content .date-picker-trigger .website-bracket-anchor::before,
+html body #app .app-layout-content .date-picker-trigger .website-bracket-anchor::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body #app .app-layout-content .website-bracket-anchor:is(:hover, :focus-visible)::before,
+html body #app .app-layout-content .website-bracket-anchor:is(:hover, :focus-visible)::after,
+html body #app .app-layout-content .select-trigger:is(:hover, :focus-visible, .select-trigger-open) .website-bracket-anchor::before,
+html body #app .app-layout-content .select-trigger:is(:hover, :focus-visible, .select-trigger-open) .website-bracket-anchor::after,
+html body #app .app-layout-content .date-picker-trigger:is(:hover, :focus-visible, .date-picker-trigger-open) .website-bracket-anchor::before,
+html body #app .app-layout-content .date-picker-trigger:is(:hover, :focus-visible, .date-picker-trigger-open) .website-bracket-anchor::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body #app .app-layout-content :where(
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open)::before,
+html body #app .app-layout-content :where(
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+):is(:hover, :focus-visible)::before,
+html body .filter-underline-menu :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+):is(:hover, :focus-visible)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body #app .app-layout-content .monitor-provider-select > .select-trigger:is(:hover, :focus-visible, .select-trigger-open) > .select-value.website-bracket-anchor::before,
+html body #app .app-layout-content .monitor-provider-select > .select-trigger:is(:hover, :focus-visible, .select-trigger-open) > .select-value.website-bracket-anchor::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Filter menu legacy selectors are more specific than the shared reset;
+   suppress their row/label pseudo-elements explicitly. */
+html body .filter-underline-menu .select-option::before,
+html body .filter-underline-menu .select-option::after,
+html body .filter-underline-menu .date-picker-preset::before,
+html body .filter-underline-menu .date-picker-preset::after,
+html body .filter-underline-menu .account-tools-menu-item::before,
+html body .filter-underline-menu .account-tools-menu-item::after,
+html body .filter-underline-menu .account-column-option::before,
+html body .filter-underline-menu .account-column-option::after,
+html body .filter-underline-menu .account-auto-refresh-option::before,
+html body .filter-underline-menu .account-auto-refresh-option::after,
+html body .filter-underline-menu .select-option .website-bracket-anchor::before,
+html body .filter-underline-menu .select-option .website-bracket-anchor::after,
+html body .filter-underline-menu .select-option .select-option-label::before,
+html body .filter-underline-menu .select-option .select-option-label::after,
+html body .filter-underline-menu .date-picker-preset .date-picker-preset-label::before,
+html body .filter-underline-menu .date-picker-preset .date-picker-preset-label::after,
+html body .filter-underline-menu .account-tools-menu-item .website-bracket-anchor::before,
+html body .filter-underline-menu .account-tools-menu-item .website-bracket-anchor::after,
+html body .filter-underline-menu .account-column-option .website-bracket-anchor::before,
+html body .filter-underline-menu .account-column-option .website-bracket-anchor::after,
+html body .filter-underline-menu .account-auto-refresh-option .website-bracket-anchor::before,
+html body .filter-underline-menu .account-auto-refresh-option .website-bracket-anchor::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::after {
+  left: calc(100% + var(--website-bracket-gap)) !important;
+  right: auto !important;
+  transform: translate(0, -50%) !important;
+}
+
+/* Global non-topbar fallback: any remaining bracket marker outside the
+   website header is removed and behaves as a normal underlined action. */
+html body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+)::before,
+html body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .website-bracket-hover,
+  [class~="hover:underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* Reassert website topbar markers after the global fallback. */
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+) {
+  text-decoration-line: none !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::before {
+  content: "[" !important;
+  right: 0.78em !important;
+  left: auto !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::after {
+  content: "]" !important;
+  left: 0.78em !important;
+  right: auto !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::before,
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+)::after {
+  opacity: 0 !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+):is(:hover, :focus-visible)::before,
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .dropdown-item,
+  .balance-row,
+  [data-testid="layout-app-header-link-a"]
+):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+}
+
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover)::before {
+  content: "[" !important;
+  right: 0.78em !important;
+  left: auto !important;
+  transform: translate(-0.18em, -50%) !important;
+}
+
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover)::after {
+  content: "]" !important;
+  left: 0.78em !important;
+  right: auto !important;
+  transform: translate(0.18em, -50%) !important;
+}
+
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover)::before,
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover)::after {
+  opacity: 0 !important;
+}
+
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover):is(:hover, :focus-visible)::before,
+html body #app .app-header-atelier :where(.website-bracket-anchor, .website-bracket-hover):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+}
+
+/* Teleported topbar menus live under body rather than inside the header;
+   restore their website bracket anchors after the global non-topbar reset. */
+html body .topbar-underline-menu :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::before {
+  content: "[" !important;
+  right: 0.78em !important;
+  left: auto !important;
+  transform: translate(-0.18em, -50%) !important;
+  opacity: 0 !important;
+}
+
+html body .topbar-underline-menu :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::after {
+  content: "]" !important;
+  left: 0.78em !important;
+  right: auto !important;
+  transform: translate(0.18em, -50%) !important;
+  opacity: 0 !important;
+}
+
+html body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::before,
+html body .topbar-underline-menu :where(.dropdown-item, .balance-row, .account-tools-menu-item):is(:hover, :focus-visible) :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::after,
+html body .topbar-underline-menu :where(.website-bracket-anchor, .header-balance-dropdown-anchor):is(:hover, :focus-visible)::before,
+html body .topbar-underline-menu :where(.website-bracket-anchor, .header-balance-dropdown-anchor):is(:hover, :focus-visible)::after {
+  opacity: 1 !important;
+}
+
+/* These controls are not website text links: keep the mobile sidebar
+   trigger and user-table balance actions free of bracket markers. */
+html body #app .app-header-atelier .app-header-menu-toggle::before,
+html body #app .app-header-atelier .app-header-menu-toggle::after,
+html body #app .app-layout-content [class~="underline"]::before,
+html body #app .app-layout-content [class~="underline"]::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Restore the checkmarks that were hidden when selected filters were using
+   bracket markers.  Selected options should show their native check icon. */
+html body .filter-underline-menu .select-option-selected :where(svg.select-option-check, .select-option-check),
+html body .filter-underline-menu .account-column-option-active > :where(svg, .icon),
+html body .filter-underline-menu .account-column-option[aria-pressed="true"] > :where(svg, .icon) {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Final rollback: remove every [] marker carrier.  All interactive text,
+   including the former topbar bracket treatment, now uses underline hover. */
+html body :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after,
+html body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset
+)::before,
+html body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset
+)::after,
+html body .app-header-atelier .app-header-menu-toggle::before,
+html body .app-header-atelier .app-header-menu-toggle::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open),
+html body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset
+):is(:hover, :focus-visible, .select-option-selected, .date-picker-preset-active, .account-column-option-active, .account-auto-refresh-option-active) :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .website-bracket-anchor,
+  .website-bracket-hover
+):is(:hover, :focus-visible) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* Absolute final override: no bracket pseudo-elements remain anywhere. */
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .website-bracket-anchor,
+  .website-bracket-hover
+)::before,
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .website-bracket-anchor,
+  .website-bracket-hover
+)::after,
+html body .topbar-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .website-bracket-anchor,
+  .header-balance-dropdown-anchor
+)::before,
+html body .topbar-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .website-bracket-anchor,
+  .header-balance-dropdown-anchor
+)::after,
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after,
+html body .filter-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset,
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::before,
+html body .filter-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset,
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+)::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body #app .app-header-atelier :where(
+  a,
+  button,
+  .header-balance-chip-fixed,
+  .website-bracket-anchor,
+  .website-bracket-hover
+):is(:hover, :focus-visible),
+html body #app .app-layout-content :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open),
+html body .topbar-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .website-bracket-anchor,
+  .header-balance-dropdown-anchor
+):is(:hover, :focus-visible),
+html body .filter-underline-menu :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  .select-option,
+  .date-picker-preset
+):is(:hover, :focus-visible, .select-option-selected, .date-picker-preset-active, .account-column-option-active, .account-auto-refresh-option-active) :where(
+  .website-bracket-anchor,
+  .select-option-label,
+  .date-picker-preset-label
+) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: 0.2em !important;
+  text-decoration-color: currentColor !important;
+}
+
+/* EOF rollback guard for route-specific filter button marker rules. */
+html body #app .app-layout-content .filter-menu-button::before,
+html body #app .app-layout-content .filter-menu-button::after,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::before,
+html body #app .app-layout-content .users-filter-tools .filter-menu-button::after,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::before,
+html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::after {
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}

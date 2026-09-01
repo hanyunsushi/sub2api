@@ -136,7 +136,7 @@ const cssBlock = (source: string, selector: string) => {
 }
 
 describe('Anthropic design-system component contract', () => {
-  it('loads the local Anthropic font and runtime contract in the correct order', () => {
+  it('loads the local design-system fonts and runtime contract in the correct order', () => {
     expect(mainSource).toContain("import './assets/fonts/local-fonts.css'")
     expect(mainSource).toContain("import './style.css'")
     expect(mainSource).toContain("import './styles/targeted-visual-repair.css'")
@@ -149,6 +149,8 @@ describe('Anthropic design-system component contract', () => {
     expect(localFontsSource).toContain("font-family: 'Anthropic Sans'")
     expect(localFontsSource).toContain("font-family: 'Anthropic Serif'")
     expect(localFontsSource).toContain("font-family: 'Anthropic Mono'")
+    expect(localFontsSource).toContain("font-family: 'Smiley Sans Body'")
+    expect(localFontsSource).toContain("font-family: 'Resource Han Rounded CN'")
     expect(localFontsSource).not.toContain('fonts.googleapis.com')
   })
 
@@ -173,9 +175,9 @@ describe('Anthropic design-system component contract', () => {
       '--atelier-status-info: #6396d6;',
       '--atelier-status-warning: #eda100;',
       '--atelier-status-danger: #b53333;',
-      '--sans: "Anthropic Sans",',
-      '--serif: "Anthropic Serif",',
-      '--mono: "Anthropic Mono",',
+      '--font-display: "Fraunces", "Source Han Serif SC", serif;',
+      '--font-body: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;',
+      '--font-mono: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;',
     ]) {
       expect(baseThemeBlock).toContain(needle)
     }

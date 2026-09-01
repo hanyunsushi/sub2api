@@ -16,30 +16,21 @@ const navTemplateSource = componentSource.slice(
 )
 
 describe('AppSidebar nav icon rendering', () => {
-  it('renders sidebar navigation as text without SVG or custom uploaded icon surfaces', () => {
-    expect(navTemplateSource).toContain('sidebar-initial')
-    expect(navTemplateSource).toContain('{{ getNavInitial(item.label) }}')
-    expect(navTemplateSource).toContain('{{ getNavInitial(child.label) }}')
-    expect(navTemplateSource).not.toContain('<component :is="item.icon"')
-    expect(navTemplateSource).not.toContain('<component :is="child.icon"')
-    expect(navTemplateSource).not.toContain('renderCustomMenuIcon(item.iconSvg)')
-    expect(navTemplateSource).not.toContain('isCustomMenuIconURL(item.iconSvg)')
-    expect(navTemplateSource).not.toContain('v-html="sanitizeSvg(item.iconSvg)"')
-    expect(navTemplateSource).not.toContain('sidebar-svg-icon')
-    expect(navTemplateSource).not.toContain('<img')
+  it('renders built-in navigation entries with their SVG icon components', () => {
+    expect(navTemplateSource).toContain('<component :is="item.icon" class="sidebar-icon"')
+    expect(navTemplateSource).toContain('<component :is="child.icon" class="sidebar-icon sidebar-child-icon"')
+    expect(navTemplateSource).not.toContain('sidebar-initial')
+    expect(navTemplateSource).not.toContain('{{ getNavInitial(item.label) }}')
+    expect(navTemplateSource).not.toContain('{{ getNavInitial(child.label) }}')
   })
 
-  it('uses text caret controls instead of sidebar SVG arrow components', () => {
+  it('uses the compact CSS caret controls for collapsible groups', () => {
     expect(navTemplateSource).toContain('sidebar-group-caret')
     expect(componentSource).toContain('.sidebar-group-caret::before')
     expect(componentSource).toContain('.sidebar-collapse-mark')
-    expect(componentSource).toContain('function getNavInitial')
-    expect(componentSource).not.toContain('sanitizeSvg')
-    expect(componentSource).not.toContain('isCustomMenuIconURL')
-    expect(componentSource).not.toContain('renderCustomMenuIcon')
-    expect(componentSource).not.toContain('const ChevronDownIcon')
-    expect(componentSource).not.toContain('const ChevronDoubleLeftIcon')
-    expect(componentSource).not.toContain('const ChevronDoubleRightIcon')
+    expect(componentSource).toContain('const DashboardIcon')
+    expect(componentSource).toContain('const ChevronDoubleLeftIcon')
+    expect(componentSource).toContain('const ChevronDoubleRightIcon')
   })
 })
 
@@ -56,25 +47,22 @@ describe('AppSidebar custom menu open mode', () => {
 })
 
 describe('AppSidebar system settings group', () => {
-  it('keeps system settings children in a dedicated small-title subsection', () => {
+  it('renders system settings through the standard collapsible group', () => {
     expect(componentSource).toContain('function systemSettingsNavItem')
     expect(componentSource).toContain('expandOnly: true')
     expect(componentSource).toContain("label: t('nav.settings')")
     expect(componentSource).toContain("{ path: '/admin/settings', label: t('nav.settingsGeneral')")
     expect(componentSource).toContain("{ path: '/admin/settings/external-subscriptions', label: t('nav.externalSubscriptions')")
-    expect(componentSource).toContain('const adminSystemSectionItems = computed(() => {')
-    expect(navTemplateSource).toContain("v-if=\"adminSystemSectionItems.length\"")
-    expect(navTemplateSource).toContain('sidebar-subsection-title')
-    expect(navTemplateSource).toContain('sidebar-system-child-link')
+    expect(componentSource).not.toContain('adminSystemSectionItems')
+    expect(componentSource).not.toContain("item.path !== '/admin/settings'")
+    expect(navTemplateSource).toContain('v-for="item in adminPrimaryNavItems"')
+    expect(navTemplateSource).toContain('v-if="item.children?.length"')
   })
 
-  it('highlights exactly one system-settings child route', () => {
-    const systemSectionStart = navTemplateSource.indexOf('v-if="adminSystemSectionItems.length"')
-    const otherSectionStart = navTemplateSource.indexOf('v-if="adminOtherNavItems.length"', systemSectionStart)
-    const systemSectionSource = navTemplateSource.slice(systemSectionStart, otherSectionStart)
-
-    expect(systemSectionSource).toContain("'sidebar-link-active': route.path === item.path")
-    expect(systemSectionSource).not.toContain("'sidebar-link-active': isActive(item.path)")
+  it('uses the same active-route logic as other collapsible groups', () => {
+    expect(navTemplateSource).toContain("'sidebar-link-active': route.path === child.path")
+    expect(componentSource).toContain('function isGroupActive')
+    expect(componentSource).toContain('function isGroupExpanded')
   })
 })
 
@@ -102,17 +90,17 @@ describe('AppSidebar scroll position persistence', () => {
 })
 
 describe('AppSidebar header styles', () => {
-  it('links only the top-left logo to the public welcome page', () => {
+  it('links the static expanded Kreeper wordmark to the public welcome page', () => {
     const homeLinkMatch = componentSource.match(/<router-link[^>]*:to="homePath"[^>]*class="sidebar-home-link sidebar-logo-link"[\s\S]*?<\/router-link>/)
 
     expect(componentSource).toContain("const homePath = computed(() => '/home')")
     expect(componentSource).not.toContain("isAdmin.value ? '/admin/dashboard' : '/dashboard'")
     expect(homeLinkMatch).not.toBeNull()
     expect(homeLinkMatch?.[0]).toContain('sidebar-home-link')
-    expect(homeLinkMatch?.[0]).toContain('sidebar-logo-link')
-    expect(homeLinkMatch?.[0]).toContain('aria-label="Home"')
+    expect(homeLinkMatch?.[0]).toContain('aria-label="Kreepai"')
     expect(homeLinkMatch?.[0]).toContain('sidebar-logo')
-    expect(homeLinkMatch?.[0]).not.toContain('sidebar-brand')
+    expect(homeLinkMatch?.[0]).not.toContain('lottie')
+    expect(homeLinkMatch?.[0]).not.toContain('sidebar-brand-title-collapsed')
     expect(homeLinkMatch?.[0]).not.toContain('VersionBadge')
   })
 
@@ -145,18 +133,15 @@ describe('AppSidebar header styles', () => {
     expect(versionNeutralBlock?.[0]).not.toContain('#e8e6dc')
   })
 
-  it('uses the design-system display typeface for the brand title', () => {
-    const sidebarBrandTitleTemplateMatch = componentSource.match(/<router-link[^>]*class="sidebar-brand-title"[\s\S]*?<\/router-link>/)
-    const sidebarBrandTitleBlockMatch = componentSource.match(/\.sidebar-brand-title\s*\{[\s\S]*?\n\}/)
+  it('uses the website expanded wordmark dimensions and brand color', () => {
+    const sidebarBrandTitleTemplateMatch = componentSource.match(/<router-link[^>]*class="[^"]*sidebar-brand-title[^"]*"[\s\S]*?<\/router-link>/)
+    const sidebarBrandMotionBlockMatch = componentSource.match(/\.sidebar-brand-title\s*\{[\s\S]*?\n\}/)
 
     expect(sidebarBrandTitleTemplateMatch).not.toBeNull()
-    expect(sidebarBrandTitleTemplateMatch?.[0]).not.toContain('font-bold')
-    expect(sidebarBrandTitleTemplateMatch?.[0]).not.toContain('text-lg')
-    expect(sidebarBrandTitleBlockMatch).not.toBeNull()
-    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('font-family: var(--font-display, var(--atelier-font-serif));')
-    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('font-weight: 500;')
-    expect(sidebarBrandTitleBlockMatch?.[0]).toContain('letter-spacing: 0;')
-    expect(sidebarBrandTitleBlockMatch?.[0]).not.toContain('font-weight: 700')
+    expect(sidebarBrandTitleTemplateMatch?.[0]).toContain('{{ siteName }}')
+    expect(sidebarBrandMotionBlockMatch).not.toBeNull()
+    expect(sidebarBrandMotionBlockMatch?.[0]).toContain('font-size: 1.25rem;')
+    expect(componentSource).not.toContain('lottie-web')
   })
 })
 

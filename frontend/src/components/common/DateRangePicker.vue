@@ -13,7 +13,7 @@
       aria-haspopup="dialog"
       :class="['date-picker-trigger', datePickerTriggerVariantClass, isOpen && 'date-picker-trigger-open']"
     >
-      <span class="date-picker-value">
+      <span class="date-picker-value website-bracket-anchor">
         {{ displayValue }}
       </span>
       <span class="date-picker-chevron" aria-hidden="true"></span>
@@ -39,7 +39,7 @@
               @click="selectPreset(preset)"
               :class="['date-picker-preset', isPresetActive(preset) && 'date-picker-preset-active']"
             >
-              {{ t(preset.labelKey) }}
+              <span class="date-picker-preset-label">{{ t(preset.labelKey) }}</span>
             </button>
           </div>
 
@@ -577,10 +577,7 @@ onUnmounted(() => {
   font-weight: var(--anthropic-control-font-weight, 500) !important;
   line-height: var(--anthropic-control-line-height, 1.25rem) !important;
   letter-spacing: 0 !important;
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.24em;
+  text-decoration: none;
 }
 
 .date-picker-trigger--text-control:hover,
@@ -590,7 +587,7 @@ onUnmounted(() => {
   background-color: transparent !important;
   color: var(--atelier-ink) !important;
   box-shadow: none !important;
-  text-decoration-color: currentColor;
+  text-decoration: none;
 }
 
 .date-picker-trigger--text-control:focus-visible {
@@ -606,9 +603,7 @@ onUnmounted(() => {
   background: transparent;
   color: var(--atelier-ink);
   box-shadow: none;
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-decoration: none;
 }
 
 :global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .date-picker-trigger),
@@ -721,9 +716,7 @@ onUnmounted(() => {
   border: 0 !important;
   border-color: transparent !important;
   box-shadow: none !important;
-  text-decoration-line: underline !important;
-  text-decoration-thickness: 1px !important;
-  text-underline-offset: 3px !important;
+  text-decoration: none !important;
 }
 
 :global(#app .app-layout-content .layout-section-fixed.table-page-filter-section .date-picker-trigger:focus-visible),
@@ -857,12 +850,30 @@ onUnmounted(() => {
 .date-picker-dropdown-portal .date-picker-preset:hover:not(.date-picker-preset-active) {
   background: var(--date-picker-hover-surface);
   color: var(--anthropic-fg, var(--atelier-ink));
-  text-decoration-line: underline;
+  text-decoration: none;
 }
 
 .date-picker-dropdown-portal .date-picker-preset-active:hover {
   background: var(--date-picker-active-surface);
   color: var(--date-picker-active-text);
+}
+
+.date-picker-dropdown-portal--underline .date-picker-preset-label {
+  display: inline-block !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+.date-picker-dropdown-portal--underline
+  .date-picker-preset-active
+  .date-picker-preset-label::before,
+.date-picker-dropdown-portal--underline
+  .date-picker-preset-active
+  .date-picker-preset-label::after {
+  opacity: 1 !important;
+  transform: translate(0, -50%) !important;
 }
 
 .date-picker-dropdown-portal .date-picker-divider {
@@ -898,6 +909,13 @@ onUnmounted(() => {
 .date-picker-dropdown-portal .date-picker-input:focus {
   border-color: var(--anthropic-border, var(--atelier-material-edge));
   outline: none;
+  box-shadow: none;
+}
+
+.date-picker-dropdown-portal .date-picker-input:focus-visible {
+  border-color: var(--anthropic-focus, var(--atelier-material-edge));
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+  outline-offset: 2px;
   box-shadow: none;
 }
 

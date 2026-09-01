@@ -100,7 +100,7 @@ describe('DateRangePicker', () => {
     expect(componentSource).toContain('<span class="date-picker-chevron" aria-hidden="true"></span>')
     expect(componentSource).toContain(':global(#app .app-layout-content .usage-filter-left .date-picker-trigger)')
     expect(componentSource).toContain('background-color: transparent !important;')
-    expect(componentSource).toContain('text-decoration-line: underline !important;')
+    expect(componentSource).toContain('text-decoration: none !important;')
   })
 
   it('uses design-system text date inputs instead of native date pickers', () => {

@@ -32,7 +32,7 @@
                   :class="{ 'filter-menu-button-open': showAutoRefreshDropdown }"
                   :title="t('admin.accounts.autoRefresh')"
                 >
-                  <span>
+                  <span class="website-bracket-anchor filter-menu-trigger-label">
                     {{
                       autoRefreshEnabled
                         ? t('admin.accounts.autoRefreshCountdown', { seconds: autoRefreshCountdown })
@@ -54,20 +54,22 @@
                   <div class="p-2">
                     <button data-testid="admin-accounts-button-set-auto-refresh-enabled-auto-refresh-enabled"
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
-                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                      class="dropdown-item account-auto-refresh-option flex w-full items-center text-left text-sm text-[var(--anthropic-muted)]"
+                      :class="{ 'account-auto-refresh-option-active': autoRefreshEnabled }"
+                      :aria-pressed="autoRefreshEnabled"
                     >
-                      <span>{{ t('admin.accounts.enableAutoRefresh') }}</span>
-                      <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
+                      <span class="website-bracket-anchor">{{ t('admin.accounts.enableAutoRefresh') }}</span>
                     </button>
                     <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
                     <button data-testid="admin-accounts-button-set-auto-refresh-interval-sec"
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
                       @click="setAutoRefreshInterval(sec)"
-                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                      class="dropdown-item account-auto-refresh-option flex w-full items-center text-left text-sm text-[var(--anthropic-muted)]"
+                      :class="{ 'account-auto-refresh-option-active': autoRefreshIntervalSeconds === sec }"
+                      :aria-pressed="autoRefreshIntervalSeconds === sec"
                     >
-                      <span>{{ autoRefreshIntervalLabel(sec) }}</span>
-                      <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
+                      <span class="website-bracket-anchor">{{ autoRefreshIntervalLabel(sec) }}</span>
                     </button>
                   </div>
                 </FloatingDropdown>
@@ -89,7 +91,7 @@
                   :title="t('admin.accounts.moreActions')"
                   :aria-expanded="showAccountToolsDropdown"
                 >
-                  <span>{{ t('admin.accounts.moreActions') }}</span>
+                  <span class="website-bracket-anchor filter-menu-trigger-label">{{ t('admin.accounts.moreActions') }}</span>
                   <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <FloatingDropdown
@@ -112,19 +114,19 @@
                       <span class="account-tools-menu-icon bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]">
                         <Icon name="sync" size="sm" />
                       </span>
-                      <span class="flex-1 text-left">{{ t('admin.accounts.syncFromCrs') }}</span>
+                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.syncFromCrs') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-import-data" class="account-tools-menu-item" @click="openImportData">
                       <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
                         <Icon name="upload" size="sm" />
                       </span>
-                      <span class="flex-1 text-left">{{ t('admin.accounts.dataImport') }}</span>
+                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.dataImport') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-export-data-dialog-from-menu" class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
                       <span class="account-tools-menu-icon bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-300">
                         <Icon name="download" size="sm" />
                       </span>
-                      <span class="flex-1 text-left">
+                      <span class="flex-1 text-left website-bracket-anchor">
                         {{ selIds.length ? t('admin.accounts.dataExportSelected') : t('admin.accounts.dataExport') }}
                       </span>
                       <span
@@ -145,13 +147,13 @@
                       <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                         <Icon name="shield" size="sm" />
                       </span>
-                      <span class="flex-1 text-left">{{ t('admin.errorPassthrough.title') }}</span>
+                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.errorPassthrough.title') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-tls-fingerprint-profiles" class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
                       <span class="account-tools-menu-icon bg-[var(--anthropic-raised)] text-slate-600 dark:bg-[var(--anthropic-section)] dark:text-slate-200">
                         <Icon name="lock" size="sm" />
                       </span>
-                      <span class="flex-1 text-left">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
+                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
                     </button>
 
                     <div class="my-2 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
@@ -168,9 +170,11 @@
                         v-for="col in toggleableColumns"
                         :key="col.key"
                         @click="toggleColumn(col.key)"
-                      class="dropdown-item flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                      class="dropdown-item account-column-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
+                      :class="{ 'account-column-option-active': isColumnVisible(col.key) }"
+                      :aria-pressed="isColumnVisible(col.key)"
                       >
-                        <span class="truncate">{{ col.label }}</span>
+                        <span class="truncate website-bracket-anchor">{{ col.label }}</span>
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
                       </button>
                     </div>
@@ -298,7 +302,7 @@
                   />
                 </div>
                 <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+                  <span class="min-w-0 truncate text-sm font-medium leading-5 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
                   <span
                     v-if="accountDisplayEmail(row)"
                     class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] truncate max-w-[200px]"
@@ -318,7 +322,7 @@
                     {{ getAccountExternalQuota(row)?.label }}
                   </span>
                   <a data-testid="admin-accounts-link-a"
-                    class="account-external-quota-link font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                    class="account-external-quota-link website-bracket-anchor font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     :href="getAccountExternalQuota(row)?.url"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -2970,6 +2974,10 @@ onMounted(async () => {
   }
 
   load()
+  // Load external subscription balances alongside the account list so matched
+  // provider details are available on the first render, not only after a
+  // manual refresh.
+  fetchExternalQuotaSummaries()
   loadUpstreamBillingProbeGlobalState()
   const [proxiesResult, groupsResult] = await Promise.allSettled([
     adminAPI.proxies.getAll(),
@@ -3029,9 +3037,7 @@ onUnmounted(() => {
   color: var(--anthropic-muted);
   font-size: 0.875rem;
   line-height: 1.25rem;
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 0.22em;
+  text-decoration: none;
   box-shadow: none;
   transition:
     color 0.2s ease,
@@ -3043,7 +3049,7 @@ onUnmounted(() => {
   border-color: transparent;
   background: transparent;
   color: var(--anthropic-fg);
-  text-decoration-color: currentColor;
+  text-decoration: none;
   box-shadow: none;
 }
 

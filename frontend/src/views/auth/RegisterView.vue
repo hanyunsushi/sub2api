@@ -506,7 +506,7 @@ const validationToastMessage = computed(() =>
 )
 
 const siteName = computed(
-  () => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API'
+  () => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Kreepai'
 )
 
 const showOAuthLogin = computed(
