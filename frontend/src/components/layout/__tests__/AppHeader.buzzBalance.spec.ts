@@ -717,6 +717,16 @@ describe("AppHeader BuzzAI balance", () => {
 
     const toggle = wrapper.get('[data-testid="layout-app-header-button-toggle-mobile-sidebar"]');
     expect(toggle.classes()).toContain("app-header-menu-toggle");
+    const icon = toggle.get("svg.app-header-menu-toggle-icon");
+    expect(icon.attributes("aria-hidden")).toBe("true");
+    expect(icon.attributes("viewBox")).toBe("0 0 32 32");
+    expect(icon.attributes("stroke-width")).toBe("2.5");
+    expect(icon.attributes("stroke-linecap")).toBe("round");
+    expect(icon.attributes("stroke-linejoin")).toBe("round");
+    expect(icon.findAll("path")).toHaveLength(2);
+    expect(icon.findAll("path")[0].attributes("stroke-dasharray")).toBe("12 63");
+    expect(icon.findAll("path")[0].attributes("d")).toBe("M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22");
+    expect(icon.findAll("path")[1].attributes("d")).toBe("M7 16 27 16");
     expect(appHeaderSource).toContain(".app-header-menu-toggle {");
     const menuToggleBlock = appHeaderSource.slice(
       appHeaderSource.indexOf(".app-header-menu-toggle {"),
@@ -725,6 +735,12 @@ describe("AppHeader BuzzAI balance", () => {
     expect(menuToggleBlock).toContain("border-color: transparent !important;");
     expect(menuToggleBlock).toContain("background: transparent !important;");
     expect(menuToggleBlock).toContain("box-shadow: none !important;");
+    expect(menuToggleBlock).toContain(".app-header-menu-toggle-icon {");
+    expect(menuToggleBlock).toContain("width: 22px;");
+    expect(menuToggleBlock).toContain("height: 22px;");
+    expect(menuToggleBlock).toContain("flex: 0 0 22px;");
+    expect(menuToggleBlock).not.toContain("::before");
+    expect(menuToggleBlock).not.toContain("::after");
   });
 
   it("uses the shared display-status API across header remounts", async () => {

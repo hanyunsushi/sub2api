@@ -22,7 +22,7 @@
         v-model="provider"
         :options="providerFilterOptions"
         :placeholder="t('admin.channelMonitor.allProviders')"
-        class="w-44"
+        class="w-44 monitor-provider-select"
         @change="$emit('reload')"
       >
         <template #selected="{ option }">
@@ -44,7 +44,15 @@
               :model="String(option.value)"
               class="!h-5 !w-5 !rounded"
             />
-            <span class="select-option-label">{{ option.label }}</span>
+            <span
+              :class="[
+                'select-option-label',
+                'website-bracket-anchor',
+                { 'monitor-provider-option-all': !option.value },
+              ]"
+            >
+              {{ option.label }}
+            </span>
           </span>
         </template>
       </Select>

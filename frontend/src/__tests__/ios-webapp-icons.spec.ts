@@ -22,7 +22,7 @@ describe('iOS web app icons', () => {
     expect(html).toContain('<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />')
     expect(html).toContain('<link rel="manifest" href="/site.webmanifest" />')
     expect(html).toContain('<meta name="apple-mobile-web-app-capable" content="yes" />')
-    expect(html).toContain('<meta name="apple-mobile-web-app-title" content="Sub2API" />')
+    expect(html).toContain('<meta name="apple-mobile-web-app-title" content="Kreepai" />')
   })
 
   it('ships square PNG assets for iOS and PWA install surfaces', () => {

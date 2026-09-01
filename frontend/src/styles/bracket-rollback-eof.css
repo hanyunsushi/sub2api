@@ -1,0 +1,65 @@
+/* Loaded after every legacy visual-repair rule so no bracket pseudo-element
+   can survive the global rollback. */
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body #app :where(
+  .website-bracket-anchor,
+  .website-bracket-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button,
+  .account-tools-menu-item,
+  .account-column-option,
+  .account-auto-refresh-option,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* The account table's legacy rule has an app-layout-content class in its
+   selector, so match that specificity to make this EOF rollback authoritative. */
+html body #app .app-layout-content :where(
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button
+)::before,
+html body #app .app-layout-content :where(
+  .account-usage-query-action,
+  .openai-quota-reset-action,
+  .ops-log-reset-button,
+  .ops-log-cleanup-button
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}

@@ -16,8 +16,8 @@ describe('auth view public settings hydration source', () => {
   })
 
   it('derives register copy from the app store instead of a local Sub2API fallback ref', () => {
-    expect(registerViewSource).toContain("appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API'")
-    expect(registerViewSource).not.toContain("const siteName = ref<string>('Sub2API')")
+    expect(registerViewSource).toContain("appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Kreepai'")
+    expect(registerViewSource).not.toContain("const siteName = ref<string>('Kreepai')")
     expect(registerViewSource).toContain('appStore.cachedPublicSettings ||')
     expect(registerViewSource).toContain('(await appStore.fetchPublicSettings()) ||')
     expect(registerViewSource).toContain('(await getPublicSettings())')

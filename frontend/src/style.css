@@ -102,9 +102,15 @@
   --atelier-module-enter-duration: 0.9s;
   --selection-bg: color-mix(in srgb, var(--color-clay) 50%, transparent);
   --selection-text: var(--color-slate-dark);
-  --sans: "Anthropic Sans", "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
-  --serif: "Anthropic Serif", "Source Han Serif SC", Georgia, "Times New Roman", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
-  --mono: "Anthropic Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-display: "Fraunces", "Source Han Serif SC", serif;
+  --font-body: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;
+  --font-mono: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;
+  --font-body-latin: "Smiley Sans Body";
+  --font-body-cjk: "Resource Han Rounded CN";
+  --font-body-stack: var(--font-body-latin), var(--font-body-cjk), sans-serif;
+  --sans: var(--font-body);
+  --serif: var(--font-display);
+  --mono: var(--font-mono);
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -207,9 +213,12 @@
   --atelier-scrollbar-hover: #5e5d59;
   --atelier-scrollbar-track: #f0eee6;
   --atelier-module-enter-duration: 0.9s;
-  --sans: "Anthropic Sans", "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
-  --serif: "Anthropic Serif", "Source Han Serif SC", Georgia, "Times New Roman", "Songti SC", "Noto Serif CJK SC", SimSun, serif;
-  --mono: "Anthropic Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-display: "Fraunces", "Source Han Serif SC", serif;
+  --font-body: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;
+  --font-mono: "Smiley Sans Body", "Resource Han Rounded CN", sans-serif;
+  --sans: var(--font-body);
+  --serif: var(--font-display);
+  --mono: var(--font-mono);
   --atelier-font-sans: var(--sans);
   --atelier-font-serif: var(--serif);
   --atelier-font-mono: var(--mono);
@@ -2019,6 +2028,7 @@ body,
   background: var(--anthropic-page);
   color: var(--anthropic-fg);
   font-family: var(--atelier-font-sans);
+  font-synthesis-weight: none;
 }
 
 .app-layout-content {
@@ -2029,7 +2039,7 @@ body,
   color: var(--anthropic-fg);
   font-family: var(--atelier-font-serif);
   font-weight: 500;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   line-height: 1.12;
   text-wrap: balance;
 }

@@ -10,6 +10,8 @@ import { updateFavicon } from '@/utils/favicon'
 import './assets/fonts/local-fonts.css'
 import './style.css'
 import './styles/targeted-visual-repair.css'
+import './styles/final-bracket-repair.css'
+import './styles/bracket-rollback-eof.css'
 
 async function bootstrap() {
   // Apply theme class globally before app mount to keep all routes consistent.
@@ -25,7 +27,7 @@ async function bootstrap() {
   appStore.initFromInjectedConfig()
 
   // Set document title immediately after config is loaded
-  if (appStore.siteName && appStore.siteName !== 'Sub2API') {
+  if (appStore.siteName) {
     document.title = `${appStore.siteName} - AI API Gateway`
   }
   if (appStore.siteLogo) {

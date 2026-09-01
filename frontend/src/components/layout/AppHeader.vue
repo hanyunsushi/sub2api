@@ -8,7 +8,22 @@
           class="btn-ghost btn-icon app-header-menu-toggle lg:hidden"
           aria-label="Toggle Menu"
         >
-          <Icon name="menu" size="md" />
+          <svg
+            class="app-header-menu-toggle-icon"
+            aria-hidden="true"
+            fill="none"
+            viewBox="0 0 32 32"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              stroke-dasharray="12 63"
+              d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"
+            />
+            <path d="M7 16 27 16" />
+          </svg>
         </button>
 
         <div
@@ -103,24 +118,24 @@
               @mouseenter="cancelBalanceDropdownClose"
               @mouseleave="scheduleCloseBalanceDropdown"
             >
-              <div class="balance-row balance-row-system flex min-w-0 items-center justify-between gap-4 rounded-lg px-3 py-2">
-                <div class="text-xs font-medium">
-                  系统余额
+              <div class="balance-row balance-row-system header-balance-dropdown-row rounded-lg px-3 py-2">
+                <div class="header-balance-dropdown-label text-xs font-medium">
+                  <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">系统余额</span></span>
                 </div>
-                <div class="balance-system-text text-sm font-semibold">
-                  {{ formattedSystemBalance }}
+                <div class="balance-system-text header-balance-dropdown-value text-sm font-semibold">
+                  <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formattedSystemBalance }}</span></span>
                 </div>
               </div>
               <div
                 v-for="subscription in visibleExternalSubscriptions"
                 :key="subscription.provider"
                 :class="[
-                  'balance-row balance-row-external flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2',
+                  'balance-row balance-row-external header-balance-dropdown-row rounded-lg px-3 py-2',
                   `balance-row-${providerClassSuffix(subscription.provider)}`
                 ]"
               >
                 <div
-                  class="flex min-w-0 flex-1 items-center gap-2"
+                  class="header-balance-dropdown-label flex min-w-0 items-center gap-2"
                 >
                   <ProviderBrandIcon
                     data-testid="header-balance-dropdown-provider-logo"
@@ -131,18 +146,18 @@
                     :data-logo-url="subscription.logo_url || ''"
                   />
                   <div
-                    :class="[balanceProviderTextClass(subscription), 'min-w-0 truncate text-xs font-medium']"
+                    :class="[balanceProviderTextClass(subscription), 'header-balance-dropdown-label-copy min-w-0 text-xs font-medium']"
                     :title="externalSubscriptionChipLabel(subscription)"
                   >
-                    {{ externalSubscriptionChipLabel(subscription) }}
+                    <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ externalSubscriptionChipLabel(subscription) }}</span></span>
                   </div>
                 </div>
-                <div class="min-w-0 max-w-[10rem] flex-shrink text-right">
+                <div class="header-balance-dropdown-value min-w-0 text-right">
                   <div
-                    :class="[balanceProviderTextClass(subscription), 'truncate text-sm font-semibold']"
+                    :class="[balanceProviderTextClass(subscription), 'header-balance-dropdown-value-copy text-sm font-semibold']"
                     :title="formatExternalSubscriptionBalance(subscription, true, { walletOnly: true })"
                   >
-                    {{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}
+                    <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}</span></span>
                   </div>
                   <div
                     class="balance-expiry-text truncate text-[11px] leading-4"
@@ -165,7 +180,7 @@
           :href="docUrl"
           target="_blank"
           rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-0 py-1.5 text-sm font-medium text-[var(--anthropic-muted)] underline decoration-transparent underline-offset-[0.22em] transition-colors hover:text-[var(--anthropic-fg)] hover:decoration-current dark:text-dark-400 dark:hover:text-[var(--anthropic-fg)]"
+            class="website-bracket-hover flex items-center gap-1.5 px-0 py-1.5 text-sm font-medium text-[var(--anthropic-muted)] transition-colors dark:text-dark-400"
         >
           <Icon name="book" size="sm" />
           <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
@@ -253,22 +268,22 @@
                   {{ t('common.balance') }}
                 </div>
                 <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                  {{ formatHeaderMoney(availableBalance) }}
+                  <span class="website-bracket-anchor">{{ formatHeaderMoney(availableBalance) }}</span>
                 </div>
                 <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
-                  {{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}
+                  <span class="website-bracket-anchor">{{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}</span>
                 </div>
               </div>
 
               <div class="py-1">
                 <router-link data-testid="layout-app-header-router-link-close-dropdown" to="/profile" @click="closeDropdown" class="dropdown-item">
                   <Icon name="user" size="sm" />
-                  {{ t('nav.profile') }}
+                  <span class="website-bracket-anchor">{{ t('nav.profile') }}</span>
                 </router-link>
 
                 <router-link data-testid="layout-app-header-router-link-close-dropdown-2" to="/keys" @click="closeDropdown" class="dropdown-item">
                   <Icon name="key" size="sm" />
-                  {{ t('nav.apiKeys') }}
+                  <span class="website-bracket-anchor">{{ t('nav.apiKeys') }}</span>
                 </router-link>
 
                 <a data-testid="layout-app-header-link-close-dropdown"
@@ -286,7 +301,7 @@
                       d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
                     />
                   </svg>
-                  {{ t('nav.github') }}
+                  <span class="website-bracket-anchor">{{ t('nav.github') }}</span>
                 </a>
 
               </div>
@@ -324,7 +339,7 @@
                       d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a1 1 0 110 2 1 1 0 010-2zm1.07-7.75c0-.6-.49-1.25-1.32-1.25-.7 0-1.22.4-1.43 1.02a1 1 0 11-1.9-.62A3.41 3.41 0 0111.8 5c2.02 0 3.25 1.4 3.25 2.9 0 2-1.83 2.55-2.43 3.12-.43.4-.47.75-.47 1.23a1 1 0 01-2 0c0-1 .16-1.82 1.1-2.7.69-.64 1.82-1.05 1.82-2.06z"
                     />
                   </svg>
-                  {{ $t('onboarding.restartTour') }}
+                  <span class="website-bracket-anchor">{{ $t('onboarding.restartTour') }}</span>
                 </button>
               </div>
 
@@ -346,7 +361,7 @@
                       d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
                     />
                   </svg>
-                  {{ t('nav.logout') }}
+                  <span class="website-bracket-anchor">{{ t('nav.logout') }}</span>
                 </button>
               </div>
           </FloatingDropdown>
@@ -811,6 +826,13 @@ watch(
   border-color: transparent !important;
   background: transparent !important;
   box-shadow: none !important;
+}
+
+.app-header-menu-toggle-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
 }
 
 .app-header-menu-toggle:hover,
