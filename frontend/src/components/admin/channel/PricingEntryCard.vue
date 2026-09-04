@@ -106,7 +106,7 @@
             {{ t('admin.channels.form.defaultPrices', '默认价格（未命中区间时使用）') }}
             <span class="ml-1 font-normal text-[var(--anthropic-muted)]">$/MTok</span>
           </label>
-          <div class="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-6">
+          <div class="pricing-default-grid mt-1 grid gap-2">
             <div>
               <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.inputPrice', '输入') }}</label>
               <input data-testid="admin-channel-pricing-entry-card-input-number" :value="entry.input_price" @input="emitField('input_price', ($event.target as HTMLInputElement).value)"
@@ -118,18 +118,28 @@
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
-              <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.cacheWritePrice', '缓存写入') }}</label>
+              <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.cacheWrite5mPrice', '缓存写入（5 分钟）') }}</label>
               <input data-testid="admin-channel-pricing-entry-card-input-number-3" :value="entry.cache_write_price" @input="emitField('cache_write_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
+              <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.cacheWrite1hPrice', '缓存写入（1 小时）') }}</label>
+              <input data-testid="admin-channel-pricing-entry-card-input-number-4" :value="entry.cache_write_1h_price" @input="emitField('cache_write_1h_price', ($event.target as HTMLInputElement).value)"
+                type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
+            </div>
+            <div>
               <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.cacheReadPrice', '缓存读取') }}</label>
-              <input data-testid="admin-channel-pricing-entry-card-input-number-4" :value="entry.cache_read_price" @input="emitField('cache_read_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-5" :value="entry.cache_read_price" @input="emitField('cache_read_price', ($event.target as HTMLInputElement).value)"
+                type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
+            </div>
+            <div>
+              <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.imageInputPrice', '图片输入') }}</label>
+              <input data-testid="admin-channel-pricing-entry-card-input-number-6" :value="entry.image_input_price" @input="emitField('image_input_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
             <div>
               <label class="text-xs text-[var(--anthropic-muted)]">{{ t('admin.channels.form.imageTokenPrice', '图片输出') }}</label>
-              <input data-testid="admin-channel-pricing-entry-card-input-number-5" :value="entry.image_output_price" @input="emitField('image_output_price', ($event.target as HTMLInputElement).value)"
+              <input data-testid="admin-channel-pricing-entry-card-input-number-7" :value="entry.image_output_price" @input="emitField('image_output_price', ($event.target as HTMLInputElement).value)"
                 type="number" step="any" min="0" class="input mt-0.5 text-sm" :placeholder="t('admin.channels.form.pricePlaceholder', '默认')" />
             </div>
           </div>
@@ -307,6 +317,7 @@ function addInterval() {
   intervals.push({
     min_tokens: 0, max_tokens: null, tier_label: '',
     input_price: null, output_price: null, cache_write_price: null,
+    cache_write_1h_price: null,
     cache_read_price: null, per_request_price: null,
     input_multiplier: null, output_multiplier: null,
     cache_write_multiplier: null, cache_read_multiplier: null,
@@ -323,6 +334,7 @@ function addMediaTier() {
   intervals.push({
     min_tokens: 0, max_tokens: null, tier_label: labels[intervals.length] || '',
     input_price: null, output_price: null, cache_write_price: null,
+    cache_write_1h_price: null,
     cache_read_price: null, per_request_price: null,
     input_multiplier: null, output_multiplier: null,
     cache_write_multiplier: null, cache_read_multiplier: null,
@@ -354,7 +366,7 @@ async function onModelsUpdate(newModels: string[]) {
   // 检查是否所有价格字段都为空
   const e = props.entry
   const hasPrice = e.input_price != null || e.output_price != null ||
-                   e.cache_write_price != null || e.cache_read_price != null
+                   e.cache_write_price != null || e.cache_write_1h_price != null || e.cache_read_price != null
   if (hasPrice) return
 
   // 查询第一个新增模型的默认价格
@@ -367,6 +379,7 @@ async function onModelsUpdate(newModels: string[]) {
         input_price: perTokenToMTok(result.input_price ?? null),
         output_price: perTokenToMTok(result.output_price ?? null),
         cache_write_price: perTokenToMTok(result.cache_write_price ?? null),
+        cache_write_1h_price: perTokenToMTok(result.cache_write_1h_price ?? null),
         cache_read_price: perTokenToMTok(result.cache_read_price ?? null),
         image_input_price: perTokenToMTok(result.image_input_price ?? null),
         image_output_price: perTokenToMTok(result.image_output_price ?? null),
@@ -379,6 +392,10 @@ async function onModelsUpdate(newModels: string[]) {
 </script>
 
 <style scoped>
+.pricing-default-grid {
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+}
+
 .collapsible-content {
   display: grid;
   grid-template-rows: 1fr;

@@ -131,13 +131,54 @@
                 <Select variant="text-control" v-model="errorFilter.status_code" :options="errorStatusOptions" @change="applyErrorFilters" />
               </div>
             </template>
-            <div v-else class="min-w-[180px]">
+            <template v-else>
+            <div class="min-w-[180px]">
               <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
               <Select
                 variant="text-control"
                 v-model="filters.api_key_id"
                 :options="apiKeyOptions"
                 :placeholder="t('usage.allApiKeys')"
+                @change="applyFilters"
+              />
+            </div>
+
+            <div class="min-w-[160px]">
+              <label class="input-label">{{ t('usage.type') }}</label>
+              <Select
+                variant="text-control"
+                v-model="filters.request_type"
+                :options="requestTypeOptions"
+                @change="applyFilters"
+              />
+            </div>
+
+            <div class="min-w-[160px]">
+              <label class="input-label">{{ t('usage.compactionFilter') }}</label>
+              <Select
+                variant="text-control"
+                v-model="filters.native_compaction_v2"
+                :options="compactionOptions"
+                @change="applyFilters"
+              />
+            </div>
+
+            <div class="min-w-[170px]">
+              <label class="input-label">{{ t('admin.usage.billingType') }}</label>
+              <Select
+                variant="text-control"
+                v-model="filters.billing_type"
+                :options="billingTypeOptions"
+                @change="applyFilters"
+              />
+            </div>
+
+            <div class="min-w-[170px]">
+              <label class="input-label">{{ t('admin.usage.billingMode') }}</label>
+              <Select
+                variant="text-control"
+                v-model="filters.billing_mode"
+                :options="billingModeOptions"
                 @change="applyFilters"
               />
             </div>
@@ -151,6 +192,7 @@
                 @change="onDateRangeChange"
               />
             </div>
+            </template>
           </div>
 
           <div class="usage-filter-actions table-filter-actions ml-auto flex items-center gap-3">
@@ -179,6 +221,7 @@
                   v-for="col in currentToggleableColumns"
                   :key="col.key"
                   type="button"
+                  :data-testid="`usage-column-toggle-${col.key}`"
                   @click="toggleCurrentColumn(col.key)"
                   class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)]"
                 >
@@ -693,7 +736,7 @@ import UserErrorRequestsTable from '@/components/user/UserErrorRequestsTable.vue
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { formatReasoningEffort } from '@/utils/format'
 import { getBillingModeLabel, getDisplayBillingMode as resolveDisplayBillingMode, BILLING_MODE_TOKEN, getBillingModeBadgeClass, isImageUsage, imageUnitPrice } from '@/utils/billingMode'
-import { resolveUsageRequestType } from '@/utils/usageRequestType'
+import { requestTypeToLegacyStream, resolveUsageRequestType } from '@/utils/usageRequestType'
 import type {
   ApiKey,
   UsageLog,
@@ -856,8 +899,12 @@ const endDate = ref(formatLocalDate(now))
 
 const filters = ref<UsageQueryParams>({
   api_key_id: undefined,
-  start_date: undefined,
-  end_date: undefined
+  start_date: startDate.value,
+  end_date: endDate.value,
+  request_type: undefined,
+  native_compaction_v2: null,
+  billing_type: null,
+  billing_mode: null,
 })
 
 // Initialize filters with date range
@@ -892,6 +939,31 @@ const sortState = reactive({
   sort_order: 'desc' as 'asc' | 'desc'
 })
 
+const granularity = ref<'day' | 'hour'>('day')
+const requestTypeOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('admin.usage.allTypes') },
+  { value: 'ws_v2', label: t('usage.ws') },
+  { value: 'live', label: t('usage.live') },
+  { value: 'stream', label: t('usage.stream') },
+  { value: 'sync', label: t('usage.sync') },
+])
+const compactionOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('usage.allCompactionTypes') },
+  { value: true, label: t('usage.compactionOnly') },
+])
+const billingTypeOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('admin.usage.allBillingTypes') },
+  { value: 0, label: t('admin.usage.billingTypeBalance') },
+  { value: 1, label: t('admin.usage.billingTypeSubscription') },
+])
+const billingModeOptions = computed<SelectOption[]>(() => [
+  { value: null, label: t('admin.usage.allBillingModes') },
+  { value: 'token', label: t('admin.usage.billingModeToken') },
+  { value: 'per_request', label: t('admin.usage.billingModePerRequest') },
+  { value: 'image', label: t('admin.usage.billingModeImage') },
+  { value: 'video', label: t('admin.usage.billingModeVideo') },
+])
+
 const formatDuration = (ms: number | null | undefined): string => {
   if (ms == null) return '-'
   if (ms < 1000) return `${ms.toFixed(0)}ms`
@@ -925,7 +997,6 @@ const getRequestTypeBadgeClass = (log: UsageLog): string => {
   return semanticBadgeClass('warning')
 }
 
-
 const getRequestTypeExportText = (log: UsageLog): string => {
   const requestType = resolveUsageRequestType(log)
   if (requestType === 'cyber') return 'Cyber'
@@ -951,6 +1022,19 @@ const formatTokens = (value: number): string => {
   return value.toLocaleString()
 }
 
+const normalizedFilters = computed<UsageQueryParams>(() => {
+  const requestType = filters.value.request_type
+  const legacyStream = requestType
+    ? requestTypeToLegacyStream(requestType)
+    : filters.value.stream
+  return {
+    ...filters.value,
+    start_date: startDate.value,
+    end_date: endDate.value,
+    stream: legacyStream === null ? undefined : legacyStream,
+  }
+})
+
 type UsageTableQueryParams = UsageQueryParams & {
   sort_by?: string
   sort_order?: 'asc' | 'desc'
@@ -959,7 +1043,7 @@ type UsageTableQueryParams = UsageQueryParams & {
 const buildUsageQueryParams = (page: number, pageSize: number): UsageTableQueryParams => ({
   page,
   page_size: pageSize,
-  ...filters.value,
+  ...normalizedFilters.value,
   sort_by: sortState.sort_by,
   sort_order: sortState.sort_order
 })
@@ -1008,24 +1092,48 @@ const loadApiKeys = async () => {
   }
 }
 
-const loadUsageStats = async () => {
+const loadUsageStats = async (useAdvancedFilters = false) => {
   try {
     const apiKeyId = filters.value.api_key_id ? Number(filters.value.api_key_id) : undefined
-    const stats = await usageAPI.getStatsByDateRange(
-      filters.value.start_date || startDate.value,
-      filters.value.end_date || endDate.value,
-      apiKeyId
-    )
+    const stats = useAdvancedFilters
+      ? await usageAPI.getStats(normalizedFilters.value)
+      : await usageAPI.getStatsByDateRange(
+          filters.value.start_date || startDate.value,
+          filters.value.end_date || endDate.value,
+          apiKeyId
+        )
     usageStats.value = stats
   } catch (error) {
     console.error('Failed to load usage stats:', error)
   }
 }
 
+const loadDashboardAnalytics = async () => {
+  const params = {
+    ...normalizedFilters.value,
+    granularity: granularity.value,
+  }
+  try {
+    await Promise.all([
+      usageAPI.getDashboardModels(params),
+      usageAPI.getDashboardSnapshotV2({
+        ...params,
+        include_trend: true,
+        include_model_stats: false,
+        include_group_stats: true,
+      }),
+    ])
+  } catch (error) {
+    // Dashboard analytics are supplemental to the usage table.
+    console.error('Failed to load usage dashboard analytics:', error)
+  }
+}
+
 const applyFilters = () => {
   pagination.page = 1
   loadUsageLogs()
-  loadUsageStats()
+  loadUsageStats(true)
+  loadDashboardAnalytics()
   resetErrorRows()
 }
 
@@ -1035,14 +1143,19 @@ const refreshData = () => {
     return
   }
   loadUsageLogs()
-  loadUsageStats()
+  loadUsageStats(true)
+  loadDashboardAnalytics()
 }
 
 const resetFilters = () => {
   filters.value = {
     api_key_id: undefined,
-    start_date: undefined,
-    end_date: undefined
+    start_date: startDate.value,
+    end_date: endDate.value,
+    request_type: undefined,
+    native_compaction_v2: null,
+    billing_type: null,
+    billing_mode: null,
   }
   // Reset date range to default (last 7 days)
   const now = new Date()
@@ -1052,6 +1165,7 @@ const resetFilters = () => {
   endDate.value = formatLocalDate(now)
   filters.value.start_date = startDate.value
   filters.value.end_date = endDate.value
+  granularity.value = 'day'
   pagination.page = 1
   if (activeTab.value === 'errors') {
     errorFilter.value = { model: '', category: '', api_key_id: null, status_code: null }
@@ -1059,7 +1173,8 @@ const resetFilters = () => {
     return
   }
   loadUsageLogs()
-  loadUsageStats()
+  loadUsageStats(true)
+  loadDashboardAnalytics()
 }
 
 const handlePageChange = (page: number) => {

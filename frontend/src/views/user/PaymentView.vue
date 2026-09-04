@@ -80,7 +80,7 @@
                   <span class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ creditedAmount.toFixed(2) }}</span>
                 </div>
                 <p v-if="balanceRechargeMultiplier !== 1" class="border-t border-[var(--anthropic-border)] pt-2 text-xs text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
-                  {{ t('payment.rechargeRatePreview', { usd: balanceRechargeMultiplier.toFixed(2) }) }}
+                  {{ t('payment.rechargeRatePreview', { currency: selectedCurrency, usd: balanceRechargeMultiplier.toFixed(2) }) }}
                 </p>
               </div>
             </div>

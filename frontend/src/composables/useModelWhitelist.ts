@@ -35,6 +35,7 @@ export const claudeModels = [
   'claude-opus-5',
   'claude-sonnet-4-6',
   'claude-sonnet-5',
+  'claude-fable-5-1',
   'claude-fable-5'
 ]
 
@@ -56,6 +57,7 @@ const geminiModels = [
 // 基于官方 API 返回的模型列表，只支持 Claude 4.5+ 和 Gemini 2.5+
 const antigravityModels = [
   // Claude 4.5+ 系列
+  'claude-fable-5-1',
   'claude-fable-5',
   'claude-opus-4-6',
   'claude-opus-4-6-thinking',
@@ -109,7 +111,8 @@ const qwenModels = [
 
 // DeepSeek
 const deepseekModels = [
-  'deepseek-chat', 'deepseek-coder', 'deepseek-reasoner',
+  'deepseek-v4-pro', 'deepseek-v4-flash', 'deepseek-v4-flash-vision-exp',
+  'deepseek-coder',
   'deepseek-v3', 'deepseek-v3-0324',
   'deepseek-r1', 'deepseek-r1-0528',
   'deepseek-r1-distill-qwen-32b', 'deepseek-r1-distill-qwen-14b', 'deepseek-r1-distill-qwen-7b',
@@ -265,6 +268,7 @@ export const allModels = allModelsList.map(m => ({ value: m, label: m }))
 const ANTHROPIC_PRESET_CHIP = 'bg-[color-mix(in_srgb,var(--anthropic-accent)_14%,var(--anthropic-page))] text-[var(--anthropic-accent)] hover:bg-[color-mix(in_srgb,var(--anthropic-accent)_22%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))] dark:text-[var(--anthropic-accent)]'
 
 const anthropicPresetMappings = [
+  { label: 'Fable 5.1', from: 'claude-fable-5-1', to: 'claude-fable-5-1', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Fable 5', from: 'claude-fable-5', to: 'claude-fable-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Sonnet 5', from: 'claude-sonnet-5', to: 'claude-sonnet-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Sonnet 4', from: 'claude-sonnet-4-20250514', to: 'claude-sonnet-4-20250514', color: ANTHROPIC_PRESET_CHIP },
@@ -274,6 +278,7 @@ const anthropicPresetMappings = [
   { label: 'Opus 4.6', from: 'claude-opus-4-6', to: 'claude-opus-4-6', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus 4.7', from: 'claude-opus-4-7', to: 'claude-opus-4-7', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus 4.8', from: 'claude-opus-4-8', to: 'claude-opus-4-8', color: ANTHROPIC_PRESET_CHIP },
+  { label: 'Opus 5', from: 'claude-opus-5', to: 'claude-opus-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Haiku 3.5', from: 'claude-3-5-haiku-20241022', to: 'claude-3-5-haiku-20241022', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Haiku 4.5', from: 'claude-haiku-4-5-20251001', to: 'claude-haiku-4-5-20251001', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus->Sonnet', from: 'claude-opus-4-6', to: 'claude-sonnet-4-5-20250929', color: ANTHROPIC_PRESET_CHIP }
@@ -328,6 +333,7 @@ const grokPresetMappings = [
 const antigravityPresetMappings = [
   // Claude 通配符映射
   { label: 'Claude→Sonnet', from: 'claude-*', to: 'claude-sonnet-4-5', color: ANTHROPIC_PRESET_CHIP },
+  { label: 'Fable 5.1', from: 'claude-fable-5-1', to: 'claude-fable-5-1', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Fable 5', from: 'claude-fable-5', to: 'claude-fable-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Sonnet→Sonnet', from: 'claude-sonnet-*', to: 'claude-sonnet-4-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus→Opus', from: 'claude-opus-*', to: 'claude-opus-4-6-thinking', color: ANTHROPIC_PRESET_CHIP },
@@ -364,6 +370,7 @@ const antigravityPresetMappings = [
 
 // Bedrock 预设映射（与后端 DefaultBedrockModelMapping 保持一致）
 const bedrockPresetMappings = [
+  { label: 'Fable 5.1', from: 'claude-fable-5-1', to: 'anthropic.claude-fable-5-1', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Fable 5', from: 'claude-fable-5', to: 'anthropic.claude-fable-5', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus 4.6', from: 'claude-opus-4-6', to: 'us.anthropic.claude-opus-4-6-v1', color: ANTHROPIC_PRESET_CHIP },
   { label: 'Opus 4.7', from: 'claude-opus-4-7', to: 'us.anthropic.claude-opus-4-7-v1', color: ANTHROPIC_PRESET_CHIP },
