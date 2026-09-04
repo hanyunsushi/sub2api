@@ -34,6 +34,13 @@ git diff --check
 
 For migrations, authentication, payment, network or production data changes, record backup, rollback and runtime checks in the project authority before release.
 
+## Upstream Merge
+
+1. Verify the remote `upstream/main` SHA and create a local protection branch.
+2. Merge with `git merge --no-commit --no-ff`, preserving local custom fields, route-shells, visual contracts and external-subscription behavior while taking official additions.
+3. Regenerate Ent output after schema changes, then run the backend full suite and frontend gates above.
+4. Review the complete diff and commit the development merge. Do not infer a production, OCI or backup update from a successful local merge.
+
 ## See Also
 
 - [Project Authority](../../agent.md)

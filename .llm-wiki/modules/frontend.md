@@ -6,6 +6,9 @@ sources:
   - frontend/src/App.vue
   - frontend/src/router/
   - frontend/src/stores/
+  - frontend/src/views/admin/UsageView.vue
+  - frontend/src/views/user/UsageView.vue
+  - frontend/src/views/admin/GroupsView.vue
 ---
 
 # Frontend Module
@@ -27,6 +30,12 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 | `src/api/` | Typed API clients |
 | `src/stores/` | Pinia state and lifecycle management |
 | `src/views/` | Route-level screens |
+
+## Current Capability Surface
+
+- Admin and user usage views share request-type, compaction and billing filters with date-range analytics; queries normalize new request types to the legacy stream parameter where the API still requires it.
+- Group management exposes the official OpenAI fast-mode and reasoning-effort policy controls while retaining the local route-shell and Anthropic/Kreepai presentation contract.
+- Channel/model pricing surfaces render long-context cache tiers, image/video/per-request billing and provider/model branding through the shared API contracts.
 
 ## Responsive Visual Contracts
 
