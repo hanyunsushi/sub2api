@@ -2,12 +2,12 @@
   <div>
     <div
       v-if="loading && items.length === 0"
-      class="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+      class="monitor-channel-card-grid grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
     >
       <div
         v-for="i in 6"
         :key="i"
-        class="p-5 rounded-lg min-h-[280px] bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] animate-pulse"
+        class="monitor-channel-card p-5 rounded-lg min-h-[280px] bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] animate-pulse"
       >
         <div class="flex items-start gap-3">
           <div class="w-9 h-9 rounded-xl bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>

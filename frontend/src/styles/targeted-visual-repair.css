@@ -3308,6 +3308,176 @@ body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::a
   background-color: var(--anthropic-page) !important;
 }
 
+/* Keep any remaining mobile card renderer compact like the account-card grid.
+   Usage and group tables opt out of this renderer and remain real lists. */
+#app .app-layout-content .data-table-mobile-cards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 1fr)) !important;
+  gap: 0.75rem !important;
+}
+
+#app .app-layout-content .data-table-mobile-cards > * {
+  margin-top: 0 !important;
+}
+
+#app .app-layout-content .data-table-mobile-cards .data-table-mobile-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 22.5rem !important;
+  justify-self: start !important;
+}
+
+/* Profile identity/status and account-card statuses use solid semantic chips
+   with light text, while unrelated badges retain the neutral Atelier treatment. */
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) :where(.badge-primary, .badge-success, .badge-warning, .badge-danger, .badge-gray) {
+  border-color: transparent !important;
+  color: var(--anthropic-page) !important;
+  text-shadow: none !important;
+}
+
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) .badge-primary {
+  background: var(--anthropic-info) !important;
+}
+
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) .badge-success {
+  background: var(--anthropic-success) !important;
+}
+
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) .badge-warning {
+  background: var(--anthropic-warning) !important;
+}
+
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) .badge-danger {
+  background: var(--anthropic-error) !important;
+}
+
+#app .app-layout-content :where(.profile-overview-hero, .accounts-table-page .account-status-indicator) .badge-gray {
+  background: var(--anthropic-muted) !important;
+}
+
+/* Channel-monitor cards follow the same compact mobile width contract. */
+@media (max-width: 767px) {
+  #app .app-layout-content .monitor-channel-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)) !important;
+  }
+
+  #app .app-layout-content .monitor-channel-card-grid .monitor-channel-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    justify-self: stretch !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #app .app-layout-content .data-table-mobile-cards,
+  #app .app-layout-content .monitor-channel-card-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #app .app-layout-content .data-table-mobile-cards .data-table-mobile-card,
+  #app .app-layout-content .monitor-channel-card-grid .monitor-channel-card {
+    max-width: 100% !important;
+  }
+}
+
+/* Keep account cards on the same grid below DataTable's shared 768px mobile
+   renderer breakpoint. The generic mobile renderer is intentionally skipped
+   for AccountsView so a narrower viewport reduces each card's track instead
+   of replacing the grid with full-width detail panels. */
+@media (max-width: 767px) {
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame,
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody {
+    display: grid !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)) !important;
+    gap: 0.625rem !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 22.5rem !important;
+    justify-self: start !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
+    max-width: 100% !important;
+  }
+}
+
+/* Narrow portrait toolbars must be allowed to shrink before their controls
+   wrap. The 645px portrait preview sits above the old 640px breakpoint, so
+   keep the mobile contract at the width where the fixed desktop controls
+   would otherwise overflow. */
+@media (max-width: 720px) {
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell :where(.table-filter-left, .table-filter-actions) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    margin-left: 0 !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left > .relative.w-full {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left > :where(.relative.select-root--field, .relative.select-root--text-control) {
+    width: calc(50% - (var(--anthropic-control-gap) / 2)) !important;
+    flex: 1 1 calc(50% - (var(--anthropic-control-gap) / 2)) !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-left :where(.select-trigger, .select-value) {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  #app .app-layout-content .table-page-filter-section > .table-filter-shell .table-filter-actions > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 0 1 auto !important;
+  }
+}
+
 /* Keep the final filter option contract after every route-specific cascade. */
 body .filter-underline-menu :where(.select-option-label, .date-picker-preset-label) {
   display: inline-block !important;
@@ -4717,27 +4887,27 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
 }
 
 #app .app-layout-content .monitor-status-badge.monitor-status-operational {
-  border-color: color-mix(in srgb, var(--anthropic-success) 36%, transparent) !important;
-  background: transparent !important;
-  color: var(--anthropic-success) !important;
+  border-color: transparent !important;
+  background: var(--anthropic-success) !important;
+  color: var(--anthropic-page) !important;
 }
 
 #app .app-layout-content .monitor-status-badge.monitor-status-degraded {
-  border-color: color-mix(in srgb, var(--anthropic-warning) 36%, transparent) !important;
-  background: transparent !important;
-  color: var(--anthropic-warning) !important;
+  border-color: transparent !important;
+  background: var(--anthropic-warning) !important;
+  color: var(--anthropic-page) !important;
 }
 
 #app .app-layout-content :where(.monitor-status-badge.monitor-status-failed, .monitor-status-badge.monitor-status-error) {
-  border-color: color-mix(in srgb, var(--anthropic-error) 36%, transparent) !important;
-  background: transparent !important;
-  color: var(--anthropic-error) !important;
+  border-color: transparent !important;
+  background: var(--anthropic-error) !important;
+  color: var(--anthropic-page) !important;
 }
 
 #app .app-layout-content .monitor-status-badge.monitor-status-unknown {
-  border-color: var(--anthropic-border) !important;
-  background: transparent !important;
-  color: var(--anthropic-muted) !important;
+  border-color: transparent !important;
+  background: var(--anthropic-muted) !important;
+  color: var(--anthropic-page) !important;
 }
 
 #app .app-layout-content .monitor-provider-badge.monitor-provider-openai {
@@ -6457,6 +6627,54 @@ body :where(.date-picker-dropdown-portal) .date-picker-apply:where(:hover, :focu
   transform: translateY(1px) rotate(180deg) !important;
 }
 
+/* The table layout switches to mobile-mode below 1024px, while the browser
+   viewport may still be wider than the narrow-screen media query because of
+   device scaling. Tie the account toolbar to that structural mode so its
+   controls always wrap inside the available card width. */
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell {
+  width: 100% !important;
+  min-width: 0 !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell :where(.table-filter-left, .table-filter-actions) {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 1 1 100% !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell .table-filter-left > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell .table-filter-left > .relative.w-full {
+  width: 100% !important;
+  flex: 1 1 100% !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell .table-filter-left > :where(.relative.select-root--field, .relative.select-root--text-control) {
+  width: calc(50% - (var(--anthropic-control-gap) / 2)) !important;
+  flex: 1 1 calc(50% - (var(--anthropic-control-gap) / 2)) !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell .table-filter-left :where(.select-trigger, .select-value) {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .table-page-filter-section > .table-filter-shell .table-filter-actions > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex: 0 1 auto !important;
+}
+
 /* End-of-file cascade marker for filter repairs. */
 
 /* Final option geometry: rows remain hit areas; the label alone owns the
@@ -6490,6 +6708,60 @@ body .filter-underline-menu .date-picker-preset-active .date-picker-preset-label
   opacity: 1 !important;
   transform: translate(0, -50%) !important;
 }
+
+/* Status surfaces share the account-card solid semantic treatment. Table
+   status cells are scoped by column so provider/type/group badges stay intact. */
+#app .app-layout-content :where(
+  .monitor-status-badge,
+  td[data-column-key="status"] .badge,
+  .api-key-status-badge,
+  .payment-status-badge,
+  .channel-monitor-v2-header .badge
+) {
+  border-color: transparent !important;
+  color: var(--anthropic-page) !important;
+  text-shadow: none !important;
+}
+
+#app .app-layout-content :where(
+  td[data-column-key="status"] .badge-primary,
+  .api-key-status-badge.badge-primary,
+  .payment-status-badge.badge-primary,
+  .channel-monitor-v2-header .badge-primary
+) { background: var(--anthropic-info) !important; }
+
+#app .app-layout-content :where(
+  .monitor-status-badge.monitor-status-operational,
+  td[data-column-key="status"] .badge-success,
+  .api-key-status-badge.badge-success,
+  .payment-status-badge.badge-success,
+  .channel-monitor-v2-header .badge-success
+) { background: var(--anthropic-success) !important; }
+
+#app .app-layout-content :where(
+  .monitor-status-badge.monitor-status-degraded,
+  td[data-column-key="status"] .badge-warning,
+  .api-key-status-badge.badge-warning,
+  .payment-status-badge.badge-warning,
+  .channel-monitor-v2-header .badge-warning
+) { background: var(--anthropic-warning) !important; }
+
+#app .app-layout-content :where(
+  .monitor-status-badge.monitor-status-failed,
+  .monitor-status-badge.monitor-status-error,
+  td[data-column-key="status"] .badge-danger,
+  .api-key-status-badge.badge-danger,
+  .payment-status-badge.badge-danger,
+  .channel-monitor-v2-header .badge-danger
+) { background: var(--anthropic-error) !important; }
+
+#app .app-layout-content :where(
+  .monitor-status-badge.monitor-status-unknown,
+  td[data-column-key="status"] .badge-gray,
+  .api-key-status-badge.badge-gray,
+  .payment-status-badge.badge-gray,
+  .channel-monitor-v2-header .badge-gray
+) { background: var(--anthropic-muted) !important; }
 
 /* Final filter cascade: this must remain after every route-specific rule. */
 #app .app-layout-content :where(
@@ -6570,4 +6842,56 @@ body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::a
 #app .app-layout-content :where(.channel-monitor-v2-header, .channel-monitor-v2-header ~ .card, .channel-monitor-v2-header ~ section.card) {
   background: var(--anthropic-page) !important;
   background-color: var(--anthropic-page) !important;
+}
+/* Final account-card width lock: wide layouts add columns, never card width. */
+#app .app-layout-content .accounts-table-page .table-wrapper > table > tbody,
+#app .app-layout-content .accounts-table-page .table-wrapper > table > tbody.table-body {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 22.5rem)) !important;
+  justify-content: start !important;
+}
+
+#app .app-layout-content .accounts-table-page .table-wrapper > table > tbody > tr {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 22.5rem !important;
+  justify-self: start !important;
+}
+
+@media (max-width: 480px) {
+  #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody,
+  #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody.table-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-content: stretch !important;
+  }
+
+  #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody > tr {
+    max-width: 100% !important;
+    justify-self: stretch !important;
+  }
+}
+
+/* Match DataTable's mobile-mode selector weight so its legacy 1fr rule cannot
+   widen cards again at 481-767px. */
+@media (max-width: 767px) {
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 22.5rem)) !important;
+    justify-content: start !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
+    max-width: 22.5rem !important;
+    justify-self: start !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-content: stretch !important;
+  }
+
+  #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
+    max-width: 100% !important;
+    justify-self: stretch !important;
+  }
 }

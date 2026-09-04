@@ -1,0 +1,1 @@
+/Users/hinaw/Library/Mobile Documents/com~apple~CloudDocs/obsidian vault/knowledge vault/dev/sub2api-codex-custom-plan.md

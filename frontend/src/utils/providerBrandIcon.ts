@@ -315,7 +315,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
     { iconModel: 'perplexity', label: 'PX', background: '#EAFBFD', color: '#0891A5', border: '#A5F3FC' },
   ],
   [
-    ['moonshot', 'kimi'],
+    ['moonshot'],
     { iconModel: 'moonshot', label: 'KM', background: '#EEF2F7', color: '#334155', border: '#CBD5E1' },
   ],
   [
@@ -420,6 +420,14 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
 ]
 
+const kimiBrandPreset: ProviderBrandPreset = {
+  iconModel: 'kimi',
+  label: 'KI',
+  background: '#FDF2F8',
+  color: '#BE185D',
+  border: '#FBCFE8',
+}
+
 const modelBrandMap: Array<[string[], ProviderBrandPreset]> = [
   [['gpt', 'o1', 'o3', 'o4', 'chatgpt', 'dall-e', 'whisper', 'tts-1', 'embedding', 'moderation', 'babbage', 'davinci', 'curie', 'ada'], providerBrandMap[0][1]],
   [['claude'], providerBrandMap[1][1]],
@@ -432,7 +440,8 @@ const modelBrandMap: Array<[string[], ProviderBrandPreset]> = [
   [['qwen', 'qwq'], providerBrandMap[8][1]],
   [['command', 'cohere'], providerBrandMap[9][1]],
   [['perplexity', 'pplx'], providerBrandMap[10][1]],
-  [['moonshot', 'kimi'], providerBrandMap[11][1]],
+  [['moonshot'], providerBrandMap[11][1]],
+  [['kimi'], kimiBrandPreset],
   [['glm', 'chatglm'], providerBrandMap[12][1]],
   [['grok'], providerBrandMap[13][1]],
   [['llama'], providerBrandMap[16][1]],
@@ -511,8 +520,9 @@ export function aiLogoUrlForProvider(provider?: string | null, model?: string | 
   const normalizedModel = normalize(model)
   const providerPreset = findPreset(normalizedProvider, providerBrandMap)
   const modelPreset = findPreset(normalizedModel, modelBrandMap)
-  const iconModel = providerPreset?.iconModel || modelPreset?.iconModel || ''
+  const iconModel = (normalizedProvider === 'kimi' ? kimiBrandPreset.iconModel : providerPreset?.iconModel) || modelPreset?.iconModel || ''
   return (
+    (normalizedProvider === 'kimi' ? findLogoPreset('kimi')?.url : '') ||
     providerPreset?.iconUrl ||
     modelPreset?.iconUrl ||
     findLogoPreset(normalizedProvider)?.url ||
@@ -525,6 +535,7 @@ export function aiLogoUrlForProvider(provider?: string | null, model?: string | 
 export function providerBrandInfo(provider?: string | null, model?: string | null): ProviderBrandInfo {
   const normalizedProvider = normalize(provider)
   const normalizedModel = normalize(model)
+  if (normalizedProvider === 'kimi') return toInfo(kimiBrandPreset, normalizedProvider)
   const providerPreset = findPreset(normalizedProvider, providerBrandMap)
   if (providerPreset) return toInfo(providerPreset, normalizedProvider)
 

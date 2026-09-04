@@ -244,6 +244,7 @@
           :columns="visibleColumns"
           :data="usageLogs"
           :loading="loading"
+          mobile-table-layout
           :server-side-sort="true"
           vertical-scroll-mode="page"
           :estimate-row-height="88"

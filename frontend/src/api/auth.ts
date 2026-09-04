@@ -24,11 +24,6 @@ import type {
  */
 export type LoginResponse = AuthResponse | TotpLoginResponse
 
-export interface CreepeeSSOTicketResponse {
-  ticket: string
-  expires_in: number
-}
-
 export type OAuthLoginProvider =
   | 'github'
   | 'google'
@@ -340,11 +335,6 @@ export async function refreshToken(): Promise<RefreshTokenResponse> {
  */
 export async function revokeAllSessions(): Promise<{ message: string }> {
   const { data } = await apiClient.post<{ message: string }>('/auth/revoke-all-sessions')
-  return data
-}
-
-export async function issueCreepeeSSOTicket(): Promise<CreepeeSSOTicketResponse> {
-  const { data } = await apiClient.post<CreepeeSSOTicketResponse>('/auth/creepee-sso/issue')
   return data
 }
 
@@ -712,7 +702,6 @@ export const authAPI = {
   resetPassword,
   refreshToken,
   revokeAllSessions,
-  issueCreepeeSSOTicket,
   getPendingOAuthBindLoginKind,
   isPendingOAuthCreateAccountRequired,
   hasPendingOAuthSuggestedProfile,

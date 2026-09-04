@@ -13,16 +13,22 @@ const targetedStyleSource = readFileSync(
 )
 
 describe('AppLayout route transition', () => {
+  it('matches the official sidebar offset transition timing', () => {
+    expect(componentSource).toContain('transition-[margin-left] duration-300')
+    expect(componentSource).not.toContain('transition-[margin-left] duration-200')
+    expect(styleSource).toContain('will-change: margin-left;')
+  })
+
   it('offsets desktop content by the compact app sidebar rail width', () => {
     expect(componentSource).toContain("sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[220px]'")
     expect(componentSource).not.toContain("'lg:ml-64'")
   })
 
-  it('does not animate AI sidecar margin squeeze across the whole page', () => {
+  it('does not retain the retired AI sidecar layout contract', () => {
     expect(componentSource).toContain('transition-[margin-left]')
     expect(componentSource).not.toContain('transition-[margin-left,margin-right]')
-    expect(styleSource).toContain('body.ai-search-panel-open:not(.ai-search-panel-fullscreen) .app-layout-content')
-    expect(styleSource).toContain('margin-right: var(--ai-search-sidecar-width);')
+    expect(styleSource).not.toContain('ai-search-panel-open')
+    expect(styleSource).not.toContain('--ai-search-sidecar-width')
     expect(styleSource).not.toContain('transition-property: margin-left, margin-right;')
   })
 

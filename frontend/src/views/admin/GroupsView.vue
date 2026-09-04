@@ -111,6 +111,7 @@
           :columns="columns"
           :data="groups"
           :loading="loading"
+          mobile-table-layout
           :server-side-sort="true"
           default-sort-key="sort_order"
           default-sort-order="asc"

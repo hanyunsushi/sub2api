@@ -54,22 +54,24 @@
                   <div class="p-2">
                     <button data-testid="admin-accounts-button-set-auto-refresh-enabled-auto-refresh-enabled"
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
-                      class="dropdown-item account-auto-refresh-option flex w-full items-center text-left text-sm text-[var(--anthropic-muted)]"
+                      class="dropdown-item account-auto-refresh-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                       :class="{ 'account-auto-refresh-option-active': autoRefreshEnabled }"
                       :aria-pressed="autoRefreshEnabled"
                     >
                       <span class="website-bracket-anchor">{{ t('admin.accounts.enableAutoRefresh') }}</span>
+                      <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="account-auto-refresh-check" />
                     </button>
                     <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
                     <button data-testid="admin-accounts-button-set-auto-refresh-interval-sec"
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
                       @click="setAutoRefreshInterval(sec)"
-                      class="dropdown-item account-auto-refresh-option flex w-full items-center text-left text-sm text-[var(--anthropic-muted)]"
+                      class="dropdown-item account-auto-refresh-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
                       :class="{ 'account-auto-refresh-option-active': autoRefreshIntervalSeconds === sec }"
                       :aria-pressed="autoRefreshIntervalSeconds === sec"
                     >
                       <span class="website-bracket-anchor">{{ autoRefreshIntervalLabel(sec) }}</span>
+                      <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="account-auto-refresh-check" />
                     </button>
                   </div>
                 </FloatingDropdown>
@@ -230,10 +232,11 @@
           :external-sort-order="sortState.sort_order"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
           vertical-scroll-mode="page"
-          :estimate-row-height="72"
-          :overscan="5"
-          :virtualize-threshold="50"
-        >
+            :estimate-row-height="72"
+            :overscan="5"
+            :virtualize-threshold="50"
+            mobile-table-layout
+          >
           <template #header-select>
             <input data-testid="admin-accounts-input-checkbox"
               type="checkbox"
@@ -420,18 +423,30 @@
             </div>
           </template>
           <template #cell-usage="{ row }">
-            <AccountUsageCell
-              :account="row"
-              :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
-              :today-stats-loading="todayStatsLoading"
-              :manual-refresh-token="usageManualRefreshToken"
-              :batched-usage="usageBatchByAccountId[String(row.id)] ?? null"
-              :batched-usage-error="usageBatchErrorByAccountId[String(row.id)] ?? null"
-              :batched-usage-loading="usageBatchLoadingByAccountId[String(row.id)] === true"
-              :request-batched-usage="isDesktopViewport ? queueBatchedUsage : null"
-              @account-updated="handleAccountUpdated"
-              @usage-loaded="handleAccountUsageLoaded(row.id, $event)"
-            />
+            <div class="account-usage-stack">
+              <AccountUsageCell
+                :account="row"
+                :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
+                :today-stats-loading="todayStatsLoading"
+                :manual-refresh-token="usageManualRefreshToken"
+                :batched-usage="usageBatchByAccountId[String(row.id)] ?? null"
+                :batched-usage-error="usageBatchErrorByAccountId[String(row.id)] ?? null"
+                :batched-usage-loading="usageBatchLoadingByAccountId[String(row.id)] === true"
+                :request-batched-usage="isDesktopViewport ? queueBatchedUsage : null"
+                @account-updated="handleAccountUpdated"
+                @usage-loaded="handleAccountUsageLoaded(row.id, $event)"
+              />
+              <UsageProgressBar
+                v-if="getAccountExternalQuota(row)?.progress"
+                data-testid="account-external-quota-usage-progress"
+                class="account-external-quota-usage-progress"
+                label="EXT"
+                :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0"
+                :title="getAccountExternalQuota(row)?.formattedUsage"
+                color="amber"
+                :show-now-when-idle="false"
+              />
+            </div>
           </template>
           <template #cell-proxy="{ row }">
             <div class="flex flex-col gap-1">
@@ -720,6 +735,7 @@ import ExternalQuotaProgressSettingsModal from '@/components/admin/account/Exter
 import type { SelectOption } from '@/components/common/Select.vue'
 import AccountStatusIndicator from '@/components/account/AccountStatusIndicator.vue'
 import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
+import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
 import AccountGroupsCell from '@/components/account/AccountGroupsCell.vue'
 import AccountCapacityCell from '@/components/account/AccountCapacityCell.vue'

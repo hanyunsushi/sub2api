@@ -146,6 +146,25 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
+  it('matches the official smooth sidebar collapse transition contract', () => {
+    const sidebarBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar {'),
+      styleSource.indexOf('.dark .sidebar {'),
+    )
+    const sidebarLinkBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-link {'),
+      styleSource.indexOf('.sidebar .sidebar-link:hover {'),
+    )
+
+    expect(sidebarBlock).toContain('width 0.3s ease')
+    expect(sidebarBlock).toContain('transform 0.3s ease')
+    expect(sidebarBlock).toContain('will-change: width, transform;')
+    expect(sidebarLinkBlock).toContain('transition: all 0.2s ease')
+    expect(styleSource).toContain('opacity 0.12s ease')
+    expect(styleSource).toContain('max-width 0.2s ease')
+    expect(componentSource).toContain('max-width 0.22s ease')
+  })
+
   it('uses the compact app sidebar rail width instead of the wider default Tailwind rail', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),
