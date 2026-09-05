@@ -27,10 +27,8 @@
 
     <!-- Progress bar row -->
     <div class="usage-progress-row flex items-center gap-1">
-      <!-- Label badge (fixed width for alignment) -->
-      <span
-        :class="['usage-progress-label w-[32px] shrink-0 rounded px-1 text-center text-[10px] font-medium', labelClass]"
-      >
+      <!-- Label badge (fixed width for alignment; auto mode is used by compact monitor rows) -->
+      <span :class="['usage-progress-label', labelSizeClass, labelClass]">
         {{ label }}
       </span>
 
@@ -62,15 +60,20 @@ import { useI18n } from 'vue-i18n'
 import type { WindowStats } from '@/types'
 import { formatCompactNumber } from '@/utils/format'
 
-const props = defineProps<{
-  label: string
-  utilization: number // Percentage (0-100+)
-  resetsAt?: string | null
-  color: 'neutral' | 'success' | 'warning' | 'indigo' | 'emerald' | 'purple' | 'amber'
-  windowStats?: WindowStats | null
-  showNowWhenIdle?: boolean
-  remainingCapacity?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    label: string
+    utilization: number // Percentage (0-100+)
+    resetsAt?: string | null
+    color: 'neutral' | 'success' | 'warning' | 'indigo' | 'emerald' | 'purple' | 'amber'
+    windowStats?: WindowStats | null
+    showNowWhenIdle?: boolean
+    remainingCapacity?: boolean
+    /** fixed: 定宽居中徽章（账号页纵向对齐）；auto: 限宽截断左对齐（监控页组合标签） */
+    labelWidth?: 'fixed' | 'auto'
+  }>(),
+  { labelWidth: 'fixed' }
+)
 
 const { t } = useI18n()
 
@@ -110,6 +113,14 @@ const labelClass = computed(() => {
   }
   return colors[props.color]
 })
+
+// Label badge width mode: fixed 定宽保证账号页纵向对齐；auto 限宽截断适配
+// 监控页「Pro/7 天」类组合标签。百分比列在两种模式下保持不变。
+const labelSizeClass = computed(() =>
+  props.labelWidth === 'auto'
+    ? 'max-w-[72px] shrink-0 truncate rounded px-1 text-left text-[10px] font-medium'
+    : 'w-[32px] shrink-0 rounded px-1 text-center text-[10px] font-medium'
+)
 
 // Progress bar color based on utilization
 const barClass = computed(() => {

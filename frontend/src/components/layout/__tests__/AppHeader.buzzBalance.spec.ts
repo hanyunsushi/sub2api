@@ -287,12 +287,11 @@ function defaultExternalStatuses(
 
 describe("AppHeader BuzzAI balance", () => {
   it("keeps the top-right balance chip compact and without a provider divider", () => {
-    expect(appHeaderSource.indexOf('<AISearchBox v-if="user" />')).toBeLessThan(
-      appHeaderSource.indexOf('header-balance-chip-shell'),
-    );
+    expect(appHeaderSource).not.toContain('AISearchBox')
+    expect(appHeaderSource).not.toContain('Ask Creepee')
     expect(appHeaderSource.indexOf('header-balance-chip-shell')).toBeLessThan(
       appHeaderSource.indexOf('<AnnouncementBell v-if="user" />'),
-    );
+    )
     expect(appHeaderSource).toContain("width: 8.25rem;");
     expect(appHeaderSource).toContain("min-width: 8.25rem;");
     expect(appHeaderSource).toContain("max-width: 8.25rem;");

@@ -340,15 +340,6 @@ function statusSearchText(status: ExternalSubscriptionStatus) {
   ].join(' ').toLowerCase()
 }
 
-function statusLogoText(status: ExternalSubscriptionStatus) {
-  return [
-    status.provider,
-    status.name,
-    status.site_url,
-    ...status.match_keywords,
-  ].join(' ')
-}
-
 function buildPreviewLogos(
   statuses: ExternalSubscriptionStatus[],
   monitors: UserMonitorView[],
@@ -371,8 +362,8 @@ function buildPreviewLogos(
     const logoUrl = status.logo_url || ''
     appendLogo({
       key: `status:${status.provider}:${status.name || status.site_url || logoUrl}`,
-      provider: statusLogoText(status),
-      model: status.name,
+      provider: status.provider || status.name || status.site_url || '',
+      model: status.name || status.provider || '',
       logoUrl,
       title: status.name || status.provider,
     })

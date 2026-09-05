@@ -3,7 +3,6 @@ import { RouterView, useRouter, useRoute } from 'vue-router'
 import { onMounted, onBeforeUnmount, watch } from 'vue'
 import Toast from '@/components/common/Toast.vue'
 import NavigationProgress from '@/components/common/NavigationProgress.vue'
-import AISearchPanel from '@/components/layout/AISearchPanel.vue'
 import AdminComplianceDialog from '@/components/admin/AdminComplianceDialog.vue'
 import { resolveRouteDocumentTitle } from '@/router/title'
 import AnnouncementPopup from '@/components/common/AnnouncementPopup.vue'
@@ -142,7 +141,6 @@ onMounted(async () => {
   <RouterView v-slot="{ Component, route: viewRoute }">
     <component :is="Component" :key="viewRoute.path" />
   </RouterView>
-  <AISearchPanel v-if="authStore.isAuthenticated" />
   <Toast />
   <AnnouncementPopup />
   <AdminComplianceDialog />

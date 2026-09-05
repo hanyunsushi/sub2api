@@ -63,3 +63,13 @@ html body #app .app-layout-content :where(
   opacity: 0 !important;
   transform: none !important;
 }
+
+/* FloatingDropdown teleports the avatar menu to body, so the app-scoped
+   rollback above cannot reach these anchors. */
+html body .user-profile-dropdown :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::before,
+html body .user-profile-dropdown :where(.website-bracket-anchor, .header-balance-dropdown-anchor)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}

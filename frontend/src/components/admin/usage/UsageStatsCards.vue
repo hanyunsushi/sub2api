@@ -36,7 +36,7 @@
               />
             </svg>
             <span
-              class="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-56 -translate-x-1/2 rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-3 text-left text-xs text-[var(--anthropic-muted)] opacity-0 shadow-none transition-opacity duration-150 group-hover:opacity-100 group-focus:opacity-100 dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)] dark:text-[var(--anthropic-muted)]"
+              class="pointer-events-none absolute left-1/2 top-full z-30 mt-2 hidden w-56 -translate-x-1/2 rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-3 text-left text-xs text-[var(--anthropic-muted)] shadow-none transition-opacity duration-150 group-hover:block group-focus:block dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)] dark:text-[var(--anthropic-muted)]"
             >
               <span class="mb-2 block font-medium text-gray-900 dark:text-white">
                 {{ cacheDetailLabel() }}

@@ -45,9 +45,6 @@
 
       <!-- Right: Search + Balance + Announcements + Docs + Language + Subscriptions + User Dropdown -->
       <div class="app-header-control-group flex items-center gap-3">
-        <!-- AI Search -->
-        <AISearchBox v-if="user" />
-
         <!-- Balance Display -->
         <div
           v-if="user"
@@ -249,7 +246,7 @@
             :trigger-el="dropdownButtonRef"
             placement="bottom-end"
             :offset="8"
-            panel-class="dropdown topbar-underline-menu w-56"
+            panel-class="dropdown topbar-underline-menu user-profile-dropdown w-56"
             @mouseenter="cancelDropdownClose"
             @mouseleave="scheduleCloseDropdown"
             @close="closeDropdown"
@@ -383,7 +380,6 @@ import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMi
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
-import AISearchBox from '@/components/layout/AISearchBox.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeUrl } from '@/utils/url'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'

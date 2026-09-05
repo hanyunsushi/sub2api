@@ -57,6 +57,7 @@ describe('provider brand icon resolution', () => {
     expect(providerBrandModel('cohere', '')).toBe('command')
     expect(providerBrandModel('perplexity', '')).toBe('perplexity')
     expect(providerBrandModel('moonshot', '')).toBe('moonshot')
+    expect(providerBrandModel('kimi', '')).toBe('kimi')
     expect(providerBrandModel('zhipu', '')).toBe('glm')
     expect(providerBrandModel('cloudflare', '')).toBe('@cf/')
   })

@@ -89,6 +89,15 @@ describe('AppSidebar scroll position persistence', () => {
   })
 })
 
+describe('AppSidebar collapsible groups', () => {
+  it('lets the user collapse a group even while a child route is active', () => {
+    // The expand state must come from the user's override first, falling back
+    // to the active-route heuristic only when the user has not clicked yet.
+    expect(componentSource).toContain('const groupExpandOverrides = ref<Map<string, boolean>>(new Map())')
+    expect(componentSource).not.toContain('expandedGroups.value.has(item.path) || isGroupActive(item)')
+  })
+})
+
 describe('AppSidebar header styles', () => {
   it('links the static expanded Kreeper wordmark to the public welcome page', () => {
     const homeLinkMatch = componentSource.match(/<router-link[^>]*:to="homePath"[^>]*class="sidebar-home-link sidebar-logo-link"[\s\S]*?<\/router-link>/)
@@ -146,6 +155,25 @@ describe('AppSidebar header styles', () => {
 })
 
 describe('AppSidebar atelier palette', () => {
+  it('matches the official smooth sidebar collapse transition contract', () => {
+    const sidebarBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar {'),
+      styleSource.indexOf('.dark .sidebar {'),
+    )
+    const sidebarLinkBlock = styleSource.slice(
+      styleSource.indexOf('.sidebar-link {'),
+      styleSource.indexOf('.sidebar .sidebar-link:hover {'),
+    )
+
+    expect(sidebarBlock).toContain('width 0.3s ease')
+    expect(sidebarBlock).toContain('transform 0.3s ease')
+    expect(sidebarBlock).toContain('will-change: width, transform;')
+    expect(sidebarLinkBlock).toContain('transition: all 0.2s ease')
+    expect(styleSource).toContain('opacity 0.12s ease')
+    expect(styleSource).toContain('max-width 0.2s ease')
+    expect(componentSource).toContain('max-width 0.22s ease')
+  })
+
   it('uses the compact app sidebar rail width instead of the wider default Tailwind rail', () => {
     const sidebarBlock = styleSource.slice(
       styleSource.indexOf('.sidebar {'),

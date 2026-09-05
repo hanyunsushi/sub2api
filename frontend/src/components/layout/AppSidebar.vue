@@ -398,6 +398,11 @@ let sidebarRestoreFrame = 0
 let sidebarRestoreTimeout = 0
 let sidebarRestoreAttempts = 0
 let latestSidebarScrollTop = appStore.sidebarNavScrollTop
+// Per-group expand/collapse overrides. A group with no entry follows the
+// automatic behavior (expanded while the active route is one of its children);
+// a chevron click records the user's choice, which wins over the automatic
+// state so an active group can still be collapsed manually.
+const groupExpandOverrides = ref<Map<string, boolean>>(new Map())
 
 // Site settings from appStore (cached, no flicker)
 const siteName = computed(() => appStore.siteName)
@@ -1080,15 +1085,16 @@ function isGroupActive(item: NavItem): boolean {
 }
 
 function isGroupExpanded(item: NavItem): boolean {
+  const override = groupExpandOverrides.value.get(item.path)
+  if (override !== undefined) return override
   return expandedGroups.value.has(item.path) || isGroupActive(item)
 }
 
 function toggleGroup(item: NavItem) {
-  if (expandedGroups.value.has(item.path)) {
-    expandedGroups.value.delete(item.path)
-  } else {
-    expandedGroups.value.add(item.path)
-  }
+  const next = !isGroupExpanded(item)
+  groupExpandOverrides.value.set(item.path, next)
+  if (next) expandedGroups.value.add(item.path)
+  else expandedGroups.value.delete(item.path)
 }
 
 /**
@@ -1116,6 +1122,7 @@ function handleGroupClick(item: NavItem) {
   if (route.path === item.path) {
     restoreSidebarScroll()
   }
+  groupExpandOverrides.value.set(item.path, true)
 }
 
 // Fetch admin settings (for feature-gated nav items like Ops).

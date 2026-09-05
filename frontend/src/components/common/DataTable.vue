@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!isDesktopViewport" class="space-y-3">
+  <div v-if="!isDesktopViewport && !props.mobileTableLayout" class="data-table-mobile-cards space-y-3">
     <template v-if="loading">
-      <div v-for="i in 5" :key="i" class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+      <div v-for="i in 5" :key="i" class="data-table-mobile-card rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
         <div class="space-y-3">
           <div v-for="column in dataColumns" :key="column.key" class="flex justify-between">
             <div class="h-4 w-20 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
@@ -15,7 +15,7 @@
     </template>
 
     <template v-else-if="!data || data.length === 0">
-      <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-12 text-center dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+      <div class="data-table-mobile-card rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-12 text-center dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
         <slot name="empty">
           <div class="flex flex-col items-center">
             <Icon
@@ -50,7 +50,7 @@
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
         :class="[
-          'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]',
+          'data-table-mobile-card rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]',
           resolveRowClass(row, index),
           { 'cursor-pointer': clickableRows }
         ]"
@@ -544,6 +544,8 @@ interface Props {
   virtualizeThreshold?: number
   /** Enable controlled row selection. Stable row keys are strongly recommended. */
   selectable?: boolean
+  /** Keep the table/card grid renderer for pages with a domain-specific mobile card layout. */
+  mobileTableLayout?: boolean
   /** Selected row keys. Keys outside the current data page are preserved. */
   selectedKeys?: Array<string | number>
   /** Accessible label for a row selection checkbox. */
@@ -557,7 +559,8 @@ const props = withDefaults(defineProps<Props>(), {
   expandableActions: true,
   defaultSortOrder: 'asc',
   serverSideSort: false,
-  verticalScrollMode: 'internal'
+  verticalScrollMode: 'internal',
+  mobileTableLayout: false
 })
 
 const verticalScrollMode = computed(() => props.verticalScrollMode)
