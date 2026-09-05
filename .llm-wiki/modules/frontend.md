@@ -42,6 +42,7 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 
 - `DataTable` exposes `.data-table-mobile-cards` and `.data-table-mobile-card` for the shared narrow-screen card renderer. Cards are capped at 22.5rem and return to full width below 480px.
 - AccountsView keeps its table-backed account cards on fixed `300px` maximum grid tracks at wide and `mobile-mode` widths; below 480px the single track returns to full width. This prevents cards from expanding with a wider parent through `1fr` tracks. The shared generic mobile card renderer remains capped at `22.5rem`.
+- AccountsView does not expose a separate rate-multiplier shortcut in the card corner; rate changes remain available through the account table editing flows.
 - Channel monitor loading and populated grids share `.monitor-channel-card-grid` and `.monitor-channel-card` and follow the same narrow-screen cap.
 - Profile identity/status chips and account status indicators use solid semantic backgrounds with light text; other badges retain the neutral Atelier treatment.
 - `FloatingDropdown` menus are teleported to `body`; profile-menu bracket rollback therefore lives in `bracket-rollback-eof.css` with a body-level selector.

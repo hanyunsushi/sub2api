@@ -213,24 +213,17 @@ describe('AccountsView external quota card metadata', () => {
     )
   })
 
-  it('keeps rate and priority together on the account card and supports quick priority edits', () => {
-    expect(source).toContain('data-testid="account-rate-quick-adjust"')
+  it('keeps priority quick edits on the account card without a rate shortcut', () => {
+    expect(source).not.toContain('data-testid="account-rate-quick-adjust"')
     expect(source).toContain('data-testid="account-priority-quick-adjust"')
     expect(source).toContain('data-testid="account-card-controls"')
     expect(source).toContain("localText('降低优先级', 'Lower priority')")
     expect(source).toContain("localText('提高优先级', 'Raise priority')")
-    expect(source).toContain('rateMultiplierMenu')
-    expect(source).toContain('openRateMultiplierMenu(row, $event)')
-    expect(source).toContain('adminAPI.accounts.updateRateMultiplier')
-    expect(source).toContain('handleRateMultiplierSave')
     expect(source).toContain('handlePriorityQuickAdjust')
     expect(source).toContain('priorityUpdatingIds')
     expect(source).toContain('adminAPI.accounts.update(account.id, { priority: nextPriority })')
     expect(source).toContain('rate_multiplier')
-    expect(source).not.toContain('account-rate-quick-adjust flex flex-col items-center')
-    expect(source.indexOf('data-testid="account-rate-quick-adjust"')).toBeLessThan(
-      source.indexOf('data-testid="account-priority-quick-adjust"')
-    )
+    expect(source).not.toContain('openRateMultiplierMenu(row, $event)')
     expect(source).not.toContain('adminAPI.accounts.update(row.id, { rate_multiplier')
   })
 
