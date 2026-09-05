@@ -23,12 +23,12 @@ describe('AccountsView responsive toolbar contract', () => {
     expect(viewSource).toContain('mobile-table-layout')
     expect(dataTableSource).toContain('!isDesktopViewport && !props.mobileTableLayout')
     expect(repairSource).toContain('accounts-table-page .account-card-table-frame > .table-wrapper')
-    expect(repairSource).toContain('max-width: 22.5rem !important;')
+    expect(repairSource).toContain('max-width: 300px !important;')
     expect(repairSource).toContain('@media (max-width: 480px)')
   })
 
   it('caps account card tracks on wide screens instead of stretching them with the page', () => {
-    const compactTrack = 'grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 22.5rem)) !important;'
+    const compactTrack = 'grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 300px)) !important;'
     expect(repairSource).toContain(compactTrack)
     expect(repairSource).toContain('justify-content: start !important;')
     expect(repairSource).toContain(
