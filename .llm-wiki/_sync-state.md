@@ -2,7 +2,7 @@
 title: Current Documentation Sync State
 updated: 2026-09-06
 base_commit: 9f12bad52e44e682a8ff126324d0bf92e012b4b1
-head_commit: 885b59d71d5c07787ce0c9009d93d52ec14d8a55
+head_commit: f23646aa03e40ced563babe6976a4ece90115aeb
 ---
 
 # Impact
