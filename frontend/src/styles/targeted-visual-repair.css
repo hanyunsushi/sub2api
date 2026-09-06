@@ -2793,7 +2793,6 @@ body,
   isolation: isolate;
 }
 
-#app .app-layout-content .accounts-table-page .account-rate-quick-adjust,
 #app .app-layout-content .accounts-table-page .account-priority-quick-adjust {
   box-shadow: 0 1px 2px rgba(23, 21, 18, 0.08);
 }
@@ -3414,7 +3413,7 @@ body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::a
   #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
     width: 100% !important;
     min-width: 0 !important;
-    max-width: 22.5rem !important;
+    max-width: 300px !important;
     justify-self: start !important;
   }
 }
@@ -6843,18 +6842,19 @@ body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::a
   background: var(--anthropic-page) !important;
   background-color: var(--anthropic-page) !important;
 }
-/* Final account-card width lock: wide layouts add columns, never card width. */
+/* Account cards choose the largest column count that fits at 300px minimum,
+   then share the remaining container width so the row aligns edge-to-edge. */
 #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody,
 #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody.table-body {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 22.5rem)) !important;
-  justify-content: start !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;
+  justify-content: stretch !important;
 }
 
 #app .app-layout-content .accounts-table-page .table-wrapper > table > tbody > tr {
   width: 100% !important;
   min-width: 0 !important;
-  max-width: 22.5rem !important;
-  justify-self: start !important;
+  max-width: none !important;
+  justify-self: stretch !important;
 }
 
 @media (max-width: 480px) {
@@ -6874,13 +6874,13 @@ body .date-picker-preset:is(:hover, :focus-visible) .date-picker-preset-label::a
    widen cards again at 481-767px. */
 @media (max-width: 767px) {
   #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22.5rem), 22.5rem)) !important;
-    justify-content: start !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;
+    justify-content: stretch !important;
   }
 
   #app .app-layout-content .table-page-layout.mobile-mode.accounts-table-page .account-card-table-frame > .table-wrapper > table > tbody > tr {
-    max-width: 22.5rem !important;
-    justify-self: start !important;
+    max-width: none !important;
+    justify-self: stretch !important;
   }
 }
 
