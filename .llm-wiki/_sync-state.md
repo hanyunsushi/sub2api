@@ -2,7 +2,7 @@
 title: Current Documentation Sync State
 updated: 2026-09-06
 base_commit: 9f12bad52e44e682a8ff126324d0bf92e012b4b1
-head_commit: f23646aa03e40ced563babe6976a4ece90115aeb
+head_commit: 5f2fba16ad5ba81c3a44f5e828bdd260d651493b
 ---
 
 # Impact
@@ -24,4 +24,4 @@ head_commit: f23646aa03e40ced563babe6976a4ece90115aeb
 - Stale references: 0 in updated Wiki pages
 - Unresolved conflicts: 0
 
-The runtime code tree from `9f12bad52` is deployed to OCI; the later `885b59d71` change only advances Wiki metadata, and the development/production source trees are equal. PostgreSQL/Redis, Cloudflare, Bridge, website and backup data were not replaced. The release rollback tag and pre-release source copy remain available.
+The runtime code tree from `9f12bad52` is deployed to OCI; changes through `5f2fba16a` after the image build only update Wiki metadata, and the development/production source trees are equal. PostgreSQL/Redis, Cloudflare, Bridge, website and backup data were not replaced. The release rollback tag and pre-release source copy remain available.
