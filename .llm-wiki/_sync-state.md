@@ -1,8 +1,8 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-09-05
-base_commit: 6ee4493112bddb2516c2470fde93d7e67ddbe9c0
-head_commit: 84db8fcb309bfcc15616d7c5e9d95fdd635dbe94
+updated: 2026-09-06
+base_commit: 9f12bad52e44e682a8ff126324d0bf92e012b4b1
+head_commit: 885b59d71d5c07787ce0c9009d93d52ec14d8a55
 ---
 
 # Impact
@@ -15,7 +15,7 @@ head_commit: 84db8fcb309bfcc15616d7c5e9d95fdd635dbe94
 | Official upstream merge: backend schema, migrations, gateway and Responses compatibility | `.llm-wiki/modules/backend.md` + authority | backend capability and merge-gate sections | merge `84db8fcb3` with upstream `ab99d56e9` / `v0.2.1`; `go generate ./ent`; `go test ./... -count=1` passed |
 | Official upstream merge: frontend usage, group policy and pricing surfaces | `.llm-wiki/modules/frontend.md` + authority | frontend capability and merge-gate sections | upstream `ab99d56e9`; typecheck/build/lint passed; lint retained 5 warnings |
 | Local customization preservation during merge | authority + frontend/backend module context | custom boundary and release state | seven conflicts resolved explicitly; no unresolved conflicts; Kreepai/Anthropic UI and external-subscription boundaries retained |
-| OCI full release of merged source | authority runtime snapshot | release commit, image, rollback, backup and health evidence | OCI image `sub2api-custom:codex` at `sha256:a60eadd31c7c7b14e2bfe6eb248b54c63a8d7249eeffddb0bf34c8261f64650d`; backup checksums passed; local/public health and version `0.2.1` verified |
+| OCI full release of merged source | authority runtime snapshot | release commit, image, rollback, backup and health evidence | OCI image `sub2api-custom:codex` at `sha256:91834d9f7093c9d09fe4ae723b4c9787787f5c0e4747de48476af8564260a681`; backup checksums passed; local/public health and version `0.2.1` verified |
 
 # Lint
 
@@ -24,4 +24,4 @@ head_commit: 84db8fcb309bfcc15616d7c5e9d95fdd635dbe94
 - Stale references: 0 in updated Wiki pages
 - Unresolved conflicts: 0
 
-The source merge commit `84db8fcb3` is deployed to OCI as source commit `84db8fcb3`; PostgreSQL/Redis, Cloudflare, Bridge, website and backup data were not replaced. The release rollback tag and pre-release source copy remain available.
+The runtime code tree from `9f12bad52` is deployed to OCI; the later `885b59d71` change only advances Wiki metadata, and the development/production source trees are equal. PostgreSQL/Redis, Cloudflare, Bridge, website and backup data were not replaced. The release rollback tag and pre-release source copy remain available.
