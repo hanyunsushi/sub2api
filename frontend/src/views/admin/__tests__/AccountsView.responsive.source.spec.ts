@@ -23,23 +23,19 @@ describe('AccountsView responsive toolbar contract', () => {
     expect(viewSource).toContain('mobile-table-layout')
     expect(dataTableSource).toContain('!isDesktopViewport && !props.mobileTableLayout')
     expect(repairSource).toContain('accounts-table-page .account-card-table-frame > .table-wrapper')
-    expect(repairSource).toContain('max-width: 300px !important;')
+    expect(repairSource).toContain('grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;')
     expect(repairSource).toContain('@media (max-width: 480px)')
   })
 
-  it('caps account card tracks on wide screens instead of stretching them with the page', () => {
-    const compactTrack = 'grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 300px)) !important;'
+  it('fits the largest number of 300px-minimum account tracks and fills the row', () => {
+    const compactTrack = 'grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;'
     expect(repairSource).toContain(compactTrack)
-    expect(repairSource).toContain('justify-content: start !important;')
+    expect(repairSource).toContain('justify-content: stretch !important;')
     expect(repairSource).toContain(
       '.accounts-table-page .table-wrapper > table > tbody > tr'
     )
 
-    const finalLockIndex = repairSource.lastIndexOf(compactTrack)
-    const mobileModeLegacyTrackIndex = repairSource.lastIndexOf(
-      'grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)) !important;'
-    )
-    expect(finalLockIndex).toBeGreaterThan(mobileModeLegacyTrackIndex)
+    expect(repairSource).toContain('max-width: none !important;')
   })
 
   it('keeps auto-refresh selections visibly checkable', () => {
