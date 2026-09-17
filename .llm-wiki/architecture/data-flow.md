@@ -1,6 +1,6 @@
 ---
 title: Data Flow
-updated: 2026-09-03
+updated: 2026-09-14
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -18,6 +18,13 @@ Browser -> Tunnel/proxy -> Gin route -> auth/middleware -> service/repository
 ```
 
 The frontend bootstraps injected settings, initializes Pinia and i18n, waits for router readiness, then mounts. After mount it checks setup status and loads public settings. Authentication changes drive subscription polling and announcement loading; logout clears those stores.
+
+Security headers are applied before the embedded frontend middleware. The only
+cross-origin document exception is `GET`/`HEAD /admin/dashboard`, whose
+`frame-ancestors` policy allows exactly `https://www.kreeper.cc`,
+`http://localhost:3100` and `http://127.0.0.1:3100`, and omits
+`X-Frame-Options`; API responses, other admin pages and non-GET requests keep
+the default frame denial.
 
 Usage analytics follow the same boundary: route views normalize filters, typed API clients call the admin/user usage handlers, and repositories read the migrated usage dimensions from PostgreSQL. Dashboard summaries and tables therefore share request type, compaction and billing semantics without moving durable state into the frontend.
 

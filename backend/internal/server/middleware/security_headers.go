@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -52,7 +53,11 @@ const (
 	// ObsidianCodexBridgeLocalhostOrigin 兼容用户把本地 Bridge 配为 localhost 的场景。
 	ObsidianCodexBridgeLocalhostOrigin = "http://localhost:43110"
 	// CreepeeHostedBridgeOrigin is the production-hosted Creepee bridge sidecar.
-	CreepeeHostedBridgeOrigin = "https://obsi.creeperxco.cn"
+	CreepeeHostedBridgeOrigin     = "https://obsi.creeperxco.cn"
+	OpenDesignAdminEmbedOrigin    = "https://www.kreeper.cc"
+	OpenDesignLocalEmbedOrigin    = "http://localhost:3100"
+	OpenDesignLoopbackEmbedOrigin = "http://127.0.0.1:3100"
+	adminDashboardPath            = "/admin/dashboard"
 )
 
 var requiredCSPDirectiveValues = []struct {
@@ -137,7 +142,16 @@ func SecurityHeaders(cfg config.CSPConfig, getFrameSrcOrigins func() []string) g
 		}
 
 		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-Frame-Options", "DENY")
+		if isEmbeddableAdminDashboard(c) {
+			c.Writer.Header().Del("X-Frame-Options")
+			finalPolicy = setDirective(finalPolicy, "frame-ancestors", strings.Join([]string{
+				OpenDesignAdminEmbedOrigin,
+				OpenDesignLocalEmbedOrigin,
+				OpenDesignLoopbackEmbedOrigin,
+			}, " "))
+		} else {
+			c.Header("X-Frame-Options", "DENY")
+		}
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
 		if isAPIRoutePath(c) {
 			c.Next()
@@ -158,6 +172,16 @@ func SecurityHeaders(cfg config.CSPConfig, getFrameSrcOrigins func() []string) g
 		}
 		c.Next()
 	}
+}
+
+func isEmbeddableAdminDashboard(c *gin.Context) bool {
+	if c == nil || c.Request == nil || c.Request.URL == nil {
+		return false
+	}
+	if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead {
+		return false
+	}
+	return strings.TrimRight(c.Request.URL.Path, "/") == adminDashboardPath
 }
 
 func isAPIRoutePath(c *gin.Context) bool {
@@ -219,6 +243,19 @@ func addToDirective(policy, directive, value string) string {
 		trimmed += ";"
 	}
 	return trimmed + " " + newCSPDirective(directive, value)
+}
+
+func setDirective(policy, directive, value string) string {
+	parts := strings.Split(policy, ";")
+	for index, part := range parts {
+		fields := strings.Fields(strings.TrimSpace(part))
+		if len(fields) == 0 || fields[0] != directive {
+			continue
+		}
+		parts[index] = directive + " " + value
+		return strings.Join(parts, ";")
+	}
+	return addToDirective(policy, directive, value)
 }
 
 func cspDirectiveEnd(policy, directive string) (int, bool) {

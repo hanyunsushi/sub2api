@@ -151,6 +151,66 @@ func TestSecurityHeaders(t *testing.T) {
 		assert.Equal(t, "DENY", w.Header().Get("X-Frame-Options"))
 	})
 
+	t.Run("admin_dashboard_allows_only_website_and_local_preview_embedding", func(t *testing.T) {
+		cfg := config.CSPConfig{
+			Enabled: true,
+			Policy:  "default-src 'self'; frame-ancestors 'none'",
+		}
+		middleware := SecurityHeaders(cfg, nil)
+
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest(http.MethodGet, "/admin/dashboard?from=control-panel", nil)
+
+		middleware(c)
+
+		csp := w.Header().Get("Content-Security-Policy")
+		assert.Empty(t, w.Header().Get("X-Frame-Options"))
+		assert.Equal(t, 1, countDirectiveValue(csp, "frame-ancestors", OpenDesignAdminEmbedOrigin))
+		assert.Equal(t, 1, countDirectiveValue(csp, "frame-ancestors", OpenDesignLocalEmbedOrigin))
+		assert.Equal(t, 1, countDirectiveValue(csp, "frame-ancestors", OpenDesignLoopbackEmbedOrigin))
+		assert.Contains(t, csp, "frame-ancestors https://www.kreeper.cc http://localhost:3100 http://127.0.0.1:3100;")
+		assert.NotContains(t, csp, "frame-ancestors 'none'")
+	})
+
+	t.Run("admin_dashboard_head_and_trailing_slash_allow_exact_preview_origins", func(t *testing.T) {
+		for _, path := range []string{"/admin/dashboard", "/admin/dashboard/"} {
+			middleware := SecurityHeaders(config.CSPConfig{Enabled: true, Policy: config.DefaultCSPPolicy}, nil)
+			response := httptest.NewRecorder()
+			context, _ := gin.CreateTestContext(response)
+			context.Request = httptest.NewRequest(http.MethodHead, path, nil)
+			middleware(context)
+			assert.Empty(t, response.Header().Get("X-Frame-Options"))
+			assert.Contains(t, response.Header().Get("Content-Security-Policy"), "frame-ancestors https://www.kreeper.cc http://localhost:3100 http://127.0.0.1:3100;")
+		}
+	})
+
+	t.Run("other_admin_pages_remain_non_embeddable", func(t *testing.T) {
+		middleware := SecurityHeaders(config.CSPConfig{Enabled: true, Policy: config.DefaultCSPPolicy}, nil)
+
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest(http.MethodGet, "/admin/users", nil)
+
+		middleware(c)
+
+		assert.Equal(t, "DENY", w.Header().Get("X-Frame-Options"))
+		assert.Contains(t, w.Header().Get("Content-Security-Policy"), "frame-ancestors 'none'")
+	})
+
+	t.Run("admin_dashboard_non_get_remains_non_embeddable", func(t *testing.T) {
+		middleware := SecurityHeaders(config.CSPConfig{Enabled: true, Policy: config.DefaultCSPPolicy}, nil)
+
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = httptest.NewRequest(http.MethodPost, "/admin/dashboard", nil)
+
+		middleware(c)
+
+		assert.Equal(t, "DENY", w.Header().Get("X-Frame-Options"))
+		assert.Contains(t, w.Header().Get("Content-Security-Policy"), "frame-ancestors 'none'")
+	})
+
 	t.Run("api_route_skips_csp_nonce_generation", func(t *testing.T) {
 		cfg := config.CSPConfig{
 			Enabled: true,

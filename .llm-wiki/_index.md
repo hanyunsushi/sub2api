@@ -19,3 +19,4 @@ updated: 2026-09-04
 # Guides
 
 - [Development and Testing](guides/development-and-testing.md) - Minimal local workflow
+- [OCI Operations and Artifact Retention](guides/oci-operations.md) - Safe application-only release, rollback, and cleanup
