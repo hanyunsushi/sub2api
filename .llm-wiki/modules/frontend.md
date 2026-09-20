@@ -38,6 +38,8 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 - Channel/model pricing surfaces render long-context cache tiers, image/video/per-request billing and provider/model branding through the shared API contracts.
 - The `v0.2.1` merge adds account upstream-request-ID header editing, Codex manifest account controls, refreshed account/channel/group usage surfaces and the corresponding localized labels while retaining the local visual contract.
 - The `v0.2.7` merge adds the upstream provider/account/group controls, model-allowlist terminology, bulk subscription/key flows and refreshed operational views. TypeScript compilation and Vite production bundling pass; the locale completeness gate still reports divergence between retained local customization keys and the upstream locale schema.
+- AccountsView restores the local account-card table contract: 300px minimum auto-fit tracks, external quota progress controls, one-minute calling grace state, semantic calling/paused row classes, text actions and highlighted More menu. Rate multiplier changes remain in table and bulk-edit flows; no card shortcut popup is exposed.
+- SettingsView uses text-only `route-tabs settings-route-tabs` with a shared moving indicator and preserves custom-menu ordering/open-mode controls. AccountActionMenu supports both viewport-anchored and legacy row-position invocation so teleported menus remain usable across account-card layouts.
 
 ## Responsive Visual Contracts
 

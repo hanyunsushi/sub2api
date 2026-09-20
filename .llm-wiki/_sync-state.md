@@ -1,13 +1,15 @@
 ---
 title: Current Documentation Sync State
 updated: 2026-09-20
-base_commit: 48d61795e
-head_commit: da1f1049e
+base_commit: da1f1049e
+head_commit: bc64e2cb3
 ---
 
 # Impact
 
 The development branch merged `upstream/main` at `1a9d49e16` (upstream `v0.2.7`) into local commit `48d61795e`, then fixed the runtime locale completeness contract in `eb2bbf01f`. Conflicts were resolved with upstream functionality retained and local account/external-subscription/visual contracts restored. The OCI application image was released from the resulting source; stateful services and volumes were unchanged.
+
+The account-card and admin-settings route-tab repair is committed as `bc64e2cb3` and released to OCI as `sub2api-custom:codex@sha256:e6779b6bb1df4148db0c044dbebf54f81c1ff46472322a3b77edf4e43e6b15fc`. A transient failed container start was caused by an AppleDouble `._001_init.sql` residue from an interrupted source transfer; all `._*` source residues were removed before the successful application-only rebuild. Rollback remains `sub2api-custom:codex-pre-20260920T054450Z@sha256:3188f4db60f64c2e4749d0cd55cf91e28191ceab794e37eee1a48ac8d4b08d0f`.
 
 Dashboard embedding policy now permits exactly the production website and localhost/127.0.0.1 port 3100 for GET/HEAD only. Full Go tests and targeted trailing-slash/HEAD tests pass. The application-only OCI release and rollback image are recorded in the authority; stateful container IDs, start times and mounts match before/after. The real AI frame renders in an isolated website session without CSP errors; cross-origin SSO is not claimed. Source scope: the two middleware security-header files; documentation scope: data-flow, authority and schema.
 
@@ -22,6 +24,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | OCI full release of merged source | authority runtime snapshot | release commit, image, rollback, backup and health evidence | `eb2bbf01f` released as `sub2api-custom:codex@sha256:3188f4db60f64c2e4749d0cd55cf91e28191ceab794e37eee1a48ac8d4b08d0f`; rollback tag points to `sha256:b40f7cf9fdf6033f4e0d9f429b1526098b4eab526239bec0c945567accb782ff`; local/public health, routes and version `0.2.7` verified; formal volumes unchanged |
 | KreeperAI admin dashboard iframe policy | `backend/internal/server/middleware/security_headers.go` and tests | `agent.md`, security/runtime module context | New image `sub2api-custom:codex` digest `sha256:b6156e884c745dde520b70bcc2e68d0331105b3bf3a11d197c501b70b045a376`; only `GET`/`HEAD /admin/dashboard` allows `https://www.kreeper.cc`, other admin/API responses retain frame protections; full Go tests and public header probes passed |
 | Upstream v0.2.7 merge and locale contract repair | backend/frontend modules + authority | backend/frontend module pages, authority merge state | `go generate ./ent`, `go generate ./cmd/server`, `go test ./...` passed; merged modular/legacy locale completeness, `vue-tsc`, Vite build and lint passed; OCI release verified |
+| Account-card and settings route-tab repair | `.llm-wiki/modules/frontend.md` + authority | frontend module, authority release section | `bc64e2cb3`; focused account/settings contracts, `vue-tsc`, Vite build and diff check passed; OCI active digest `sha256:e6779b6b...`; health, routes and formal volumes verified |
 
 # Lint
 
@@ -31,4 +34,4 @@ Dashboard embedding policy now permits exactly the production website and localh
 - Unresolved conflicts: 0
 - Build caveat: `pnpm run build` now passes after the completeness test was aligned with runtime modular/legacy locale merging and the missing English/Chinese UI keys were filled; lint retains 5 pre-existing warnings and Vite reports existing chunk-size/deprecation warnings.
 
-The OCI runtime is deployed from `eb2bbf01f` as `sub2api-custom:codex@sha256:3188f4db60f64c2e4749d0cd55cf91e28191ceab794e37eee1a48ac8d4b08d0f`; the pre-release application image is retained under `sub2api-custom:codex-pre-20260920T040934Z`, and the pre-release source copy remains available. PostgreSQL/Redis containers and formal volumes, Cloudflare, Bridge, website and backup data were not replaced.
+The OCI runtime is deployed from `bc64e2cb3` as `sub2api-custom:codex@sha256:e6779b6bb1df4148db0c044dbebf54f81c1ff46472322a3b77edf4e43e6b15fc`; the pre-release application image is retained under `sub2api-custom:codex-pre-20260920T054450Z`, and the pre-release source copy remains available. PostgreSQL/Redis containers and formal volumes, Cloudflare, Bridge, website and backup data were not replaced.
