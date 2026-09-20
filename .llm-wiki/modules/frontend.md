@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-09-05
+updated: 2026-09-20
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -37,6 +37,7 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 - Group management exposes the official OpenAI fast-mode and reasoning-effort policy controls while retaining the local route-shell and Anthropic/Kreepai presentation contract.
 - Channel/model pricing surfaces render long-context cache tiers, image/video/per-request billing and provider/model branding through the shared API contracts.
 - The `v0.2.1` merge adds account upstream-request-ID header editing, Codex manifest account controls, refreshed account/channel/group usage surfaces and the corresponding localized labels while retaining the local visual contract.
+- The `v0.2.7` merge adds the upstream provider/account/group controls, model-allowlist terminology, bulk subscription/key flows and refreshed operational views. TypeScript compilation and Vite production bundling pass; the locale completeness gate still reports divergence between retained local customization keys and the upstream locale schema.
 
 ## Responsive Visual Contracts
 
