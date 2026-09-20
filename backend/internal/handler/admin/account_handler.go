@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/antigravity"
@@ -61,10 +62,11 @@ type AccountHandler struct {
 	sessionLimitCache                 service.SessionLimitCache
 	rpmCache                          service.RPMCache
 	tokenCacheInvalidator             service.TokenCacheInvalidator
-	externalSubscriptionConfigService *service.ExternalSubscriptionConfigService
 	grokImportProber                  grokImportProber
 	upstreamBillingProbe              *service.UpstreamBillingProbeService
 	ollamaCloudUsage                  *service.OllamaCloudUsageService
+	externalSubscriptionConfigService *service.ExternalSubscriptionConfigService
+	cfg                               *config.Config
 }
 
 // SetUpstreamBillingProbeService attaches the optional remote billing probe service.
@@ -76,43 +78,46 @@ func (h *AccountHandler) SetOllamaCloudUsageService(usage *service.OllamaCloudUs
 	h.ollamaCloudUsage = usage
 }
 
-func (h *AccountHandler) SetGrokOAuthService(oauth service.GrokOAuthTokenService) {
-	h.grokOAuthService = oauth
+func (h *AccountHandler) SetExternalSubscriptionConfigService(svc *service.ExternalSubscriptionConfigService) {
+	h.externalSubscriptionConfigService = svc
 }
 
 // NewAccountHandler creates a new admin account handler
-func NewAccountHandler(
-	adminService service.AdminService,
-	oauthService *service.OAuthService,
-	openaiOAuthService *service.OpenAIOAuthService,
-	geminiOAuthService *service.GeminiOAuthService,
-	antigravityOAuthService *service.AntigravityOAuthService,
-	rateLimitService *service.RateLimitService,
-	accountUsageService *service.AccountUsageService,
-	accountTestService *service.AccountTestService,
-	concurrencyService *service.ConcurrencyService,
-	crsSyncService *service.CRSSyncService,
-	sessionLimitCache service.SessionLimitCache,
-	rpmCache service.RPMCache,
-	tokenCacheInvalidator service.TokenCacheInvalidator,
-	externalSubscriptionConfigService *service.ExternalSubscriptionConfigService,
-) *AccountHandler {
-	return &AccountHandler{
-		adminService:                      adminService,
-		oauthService:                      oauthService,
-		openaiOAuthService:                openaiOAuthService,
-		geminiOAuthService:                geminiOAuthService,
-		antigravityOAuthService:           antigravityOAuthService,
-		rateLimitService:                  rateLimitService,
-		accountUsageService:               accountUsageService,
-		accountTestService:                accountTestService,
-		concurrencyService:                concurrencyService,
-		crsSyncService:                    crsSyncService,
-		sessionLimitCache:                 sessionLimitCache,
-		rpmCache:                          rpmCache,
-		tokenCacheInvalidator:             tokenCacheInvalidator,
-		externalSubscriptionConfigService: externalSubscriptionConfigService,
+func NewAccountHandler(adminService service.AdminService, args ...any) *AccountHandler {
+	h := &AccountHandler{adminService: adminService}
+	for _, arg := range args {
+		switch v := arg.(type) {
+		case *service.OAuthService:
+			h.oauthService = v
+		case *service.OpenAIOAuthService:
+			h.openaiOAuthService = v
+		case *service.GeminiOAuthService:
+			h.geminiOAuthService = v
+		case *service.AntigravityOAuthService:
+			h.antigravityOAuthService = v
+		case service.GrokOAuthTokenService:
+			h.grokOAuthService = v
+		case *service.RateLimitService:
+			h.rateLimitService = v
+		case *service.AccountUsageService:
+			h.accountUsageService = v
+		case *service.AccountTestService:
+			h.accountTestService = v
+		case *service.ConcurrencyService:
+			h.concurrencyService = v
+		case *service.CRSSyncService:
+			h.crsSyncService = v
+		case service.SessionLimitCache:
+			h.sessionLimitCache = v
+		case service.RPMCache:
+			h.rpmCache = v
+		case service.TokenCacheInvalidator:
+			h.tokenCacheInvalidator = v
+		case *service.ExternalSubscriptionConfigService:
+			h.externalSubscriptionConfigService = v
+		}
 	}
+	return h
 }
 
 // CreateAccountRequest represents create account request
@@ -157,9 +162,54 @@ type UpdateAccountRequest struct {
 	ConfirmMixedChannelRisk *bool          `json:"confirm_mixed_channel_risk"` // 用户确认混合渠道风险
 }
 
-// UpdateAccountRateMultiplierRequest represents a narrow account rate update request.
 type UpdateAccountRateMultiplierRequest struct {
 	RateMultiplier *float64 `json:"rate_multiplier" binding:"required"`
+}
+
+func (h *AccountHandler) UpdateRateMultiplier(c *gin.Context) {
+	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid account ID")
+		return
+	}
+	var req UpdateAccountRateMultiplierRequest
+	if err := c.ShouldBindJSON(&req); err != nil || req.RateMultiplier == nil {
+		response.BadRequest(c, "rate_multiplier is required")
+		return
+	}
+	if *req.RateMultiplier < 0 {
+		response.BadRequest(c, "rate_multiplier must be >= 0")
+		return
+	}
+	account, err := h.adminService.UpdateAccount(c.Request.Context(), accountID, &service.UpdateAccountInput{RateMultiplier: req.RateMultiplier})
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
+}
+
+type SetScheduleLockedRequest struct {
+	Locked bool `json:"locked"`
+}
+
+func (h *AccountHandler) SetScheduleLocked(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid account ID")
+		return
+	}
+	var req SetScheduleLockedRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+	account, err := h.adminService.SetAccountScheduleLocked(c.Request.Context(), id, req.Locked)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
 }
 
 // BulkUpdateAccountsRequest represents the payload for bulk editing accounts
@@ -200,14 +250,15 @@ type CheckMixedChannelRequest struct {
 // AccountWithConcurrency extends Account with real-time concurrency info
 type AccountWithConcurrency struct {
 	*dto.Account
+	simpleMode         bool                         `json:"-"`
 	CurrentConcurrency int                          `json:"current_concurrency"`
 	SchedulerScore     *AccountSchedulerScore       `json:"scheduler_score,omitempty"`
 	SchedulerScores    []AccountSchedulerGroupScore `json:"scheduler_scores,omitempty"`
 	// 以下字段仅对 Anthropic OAuth/SetupToken 账号有效，且仅在启用相应功能时返回
-	CurrentWindowCost       *float64                        `json:"current_window_cost,omitempty"`        // 当前窗口费用
-	ActiveSessions          *int                            `json:"active_sessions,omitempty"`            // 当前活跃会话数
-	CurrentRPM              *int                            `json:"current_rpm,omitempty"`                // 当前分钟 RPM 计数
-	ExternalQuotaTokenStats map[string]*service.WindowStats `json:"external_quota_token_stats,omitempty"` // 外部订阅账号卡片 token 额度条统计
+	CurrentWindowCost       *float64                        `json:"current_window_cost,omitempty"` // 当前窗口费用
+	ActiveSessions          *int                            `json:"active_sessions,omitempty"`     // 当前活跃会话数
+	CurrentRPM              *int                            `json:"current_rpm,omitempty"`         // 当前分钟 RPM 计数
+	ExternalQuotaTokenStats map[string]*service.WindowStats `json:"external_quota_token_stats,omitempty"`
 }
 
 // AccountListItemWithConcurrency is the compact account-list envelope used
@@ -221,6 +272,110 @@ type AccountListItemWithConcurrency struct {
 	CurrentWindowCost  *float64                     `json:"current_window_cost,omitempty"`
 	ActiveSessions     *int                         `json:"active_sessions,omitempty"`
 	CurrentRPM         *int                         `json:"current_rpm,omitempty"`
+}
+
+type simpleModeGroupReference struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Platform string `json:"platform"`
+	Status   string `json:"status"`
+}
+
+type simpleModeAccountGroupReference struct {
+	AccountID int64                     `json:"account_id"`
+	GroupID   int64                     `json:"group_id"`
+	Priority  int                       `json:"priority"`
+	CreatedAt time.Time                 `json:"created_at"`
+	Group     *simpleModeGroupReference `json:"group,omitempty"`
+}
+
+func simpleModeGroupReferenceFromDTO(group *dto.Group) *simpleModeGroupReference {
+	if group == nil {
+		return nil
+	}
+	return &simpleModeGroupReference{ID: group.ID, Name: group.Name, Platform: group.Platform, Status: group.Status}
+}
+
+func simpleModeCompositeGroupIDs(account *dto.Account) map[int64]struct{} {
+	hidden := make(map[int64]struct{})
+	if account == nil {
+		return hidden
+	}
+	for _, group := range account.Groups {
+		if group != nil && group.Platform == service.PlatformComposite {
+			hidden[group.ID] = struct{}{}
+		}
+	}
+	for _, accountGroup := range account.AccountGroups {
+		if accountGroup.Group != nil && accountGroup.Group.Platform == service.PlatformComposite {
+			hidden[accountGroup.GroupID] = struct{}{}
+		}
+	}
+	return hidden
+}
+
+func filterSimpleModeGroupIDs(groupIDs []int64, hidden map[int64]struct{}) []int64 {
+	visible := make([]int64, 0, len(groupIDs))
+	for _, groupID := range groupIDs {
+		if _, ok := hidden[groupID]; !ok {
+			visible = append(visible, groupID)
+		}
+	}
+	return visible
+}
+
+func simpleModeCompositeServiceGroupIDs(account *service.Account) map[int64]struct{} {
+	hidden := make(map[int64]struct{})
+	if account == nil {
+		return hidden
+	}
+	for _, group := range account.Groups {
+		if group != nil && group.Platform == service.PlatformComposite {
+			hidden[group.ID] = struct{}{}
+		}
+	}
+	for _, accountGroup := range account.AccountGroups {
+		if accountGroup.Group != nil && accountGroup.Group.Platform == service.PlatformComposite {
+			hidden[accountGroup.GroupID] = struct{}{}
+		}
+	}
+	return hidden
+}
+
+func (a AccountWithConcurrency) MarshalJSON() ([]byte, error) {
+	type alias AccountWithConcurrency
+	if !a.simpleMode || a.Account == nil {
+		return json.Marshal(alias(a))
+	}
+	groups := make([]simpleModeGroupReference, 0, len(a.Groups))
+	compositeIDs := simpleModeCompositeGroupIDs(a.Account)
+	for _, group := range a.Groups {
+		if group != nil && group.Platform == service.PlatformComposite {
+			continue
+		}
+		if ref := simpleModeGroupReferenceFromDTO(group); ref != nil {
+			groups = append(groups, *ref)
+		}
+	}
+	accountGroups := make([]simpleModeAccountGroupReference, 0, len(a.AccountGroups))
+	for _, accountGroup := range a.AccountGroups {
+		if accountGroup.Group != nil && accountGroup.Group.Platform == service.PlatformComposite {
+			continue
+		}
+		if _, hidden := compositeIDs[accountGroup.GroupID]; hidden {
+			continue
+		}
+		accountGroups = append(accountGroups, simpleModeAccountGroupReference{
+			AccountID: accountGroup.AccountID, GroupID: accountGroup.GroupID, Priority: accountGroup.Priority,
+			CreatedAt: accountGroup.CreatedAt, Group: simpleModeGroupReferenceFromDTO(accountGroup.Group),
+		})
+	}
+	return json.Marshal(struct {
+		alias
+		GroupIDs      []int64                           `json:"group_ids,omitempty"`
+		Groups        []simpleModeGroupReference        `json:"groups"`
+		AccountGroups []simpleModeAccountGroupReference `json:"account_groups"`
+	}{alias: alias(a), GroupIDs: filterSimpleModeGroupIDs(a.GroupIDs, compositeIDs), Groups: groups, AccountGroups: accountGroups})
 }
 
 type AccountSchedulerScore struct {
@@ -247,6 +402,66 @@ func (h *AccountHandler) accountResponseFromService(account *service.Account) *d
 	return out
 }
 
+func (h *AccountHandler) loadExternalQuotaTokenStats(ctx context.Context, accounts []service.Account) map[int64]map[string]*service.WindowStats {
+	result := make(map[int64]map[string]*service.WindowStats)
+	if h.externalSubscriptionConfigService == nil || h.accountUsageService == nil {
+		return result
+	}
+	settings, err := h.externalSubscriptionConfigService.GetAccountQuotaProgressSettings(ctx)
+	if err != nil {
+		return result
+	}
+	ids := make(map[int64]struct{}, len(accounts))
+	for i := range accounts {
+		ids[accounts[i].ID] = struct{}{}
+	}
+	for key, pref := range settings {
+		if !pref.Enabled || pref.Mode != service.ExternalSubscriptionAccountQuotaProgressModeTokenTotal || pref.TokenTotal == nil || *pref.TokenTotal <= 0 {
+			continue
+		}
+		id, ok := accountIDFromExternalQuotaPreferenceKey(key)
+		if !ok {
+			continue
+		}
+		if _, ok = ids[id]; !ok {
+			continue
+		}
+		start, ok := parseExternalQuotaTokenResetAt(pref.TokenResetAt, time.Now())
+		if !ok {
+			if fallback, exists := settings[externalQuotaAccountPreferenceKey(id)]; exists {
+				start, ok = parseExternalQuotaTokenResetAt(fallback.TokenResetAt, time.Now())
+			}
+		}
+		if !ok {
+			continue
+		}
+		stats, err := h.accountUsageService.GetAccountWindowStatsBatch(ctx, []int64{id}, start)
+		if err != nil || stats[id] == nil {
+			continue
+		}
+		if result[id] == nil {
+			result[id] = make(map[string]*service.WindowStats)
+		}
+		result[id][key] = stats[id]
+	}
+	return result
+}
+func accountIDFromExternalQuotaPreferenceKey(key string) (int64, bool) {
+	parts := strings.SplitN(strings.TrimSpace(key), ":", 2)
+	if len(parts) == 0 {
+		return 0, false
+	}
+	id, err := strconv.ParseInt(parts[0], 10, 64)
+	return id, err == nil && id > 0
+}
+func externalQuotaAccountPreferenceKey(id int64) string {
+	return strconv.FormatInt(id, 10) + ":account"
+}
+func parseExternalQuotaTokenResetAt(value string, now time.Time) (time.Time, bool) {
+	t, err := time.Parse(time.RFC3339Nano, strings.TrimSpace(value))
+	return t.UTC(), err == nil && !t.After(now)
+}
+
 func (h *AccountHandler) accountListResponseFromService(account *service.Account) *dto.Account {
 	out := dto.AccountFromServiceShallow(account)
 	if out != nil && account != nil {
@@ -258,9 +473,14 @@ func (h *AccountHandler) accountListResponseFromService(account *service.Account
 	return out
 }
 
+func (h *AccountHandler) isSimpleMode() bool {
+	return h != nil && h.cfg != nil && h.cfg.RunMode == config.RunModeSimple
+}
+
 func (h *AccountHandler) buildAccountResponseWithRuntime(ctx context.Context, account *service.Account) AccountWithConcurrency {
 	item := AccountWithConcurrency{
 		Account:            h.accountResponseFromService(account),
+		simpleMode:         h.isSimpleMode(),
 		CurrentConcurrency: 0,
 	}
 	if account == nil {
@@ -594,9 +814,7 @@ func (h *AccountHandler) List(c *gin.Context) {
 	var windowCosts map[int64]float64
 	var activeSessions map[int64]int
 	var rpmCounts map[int64]int
-	externalQuotaTokenStats := h.loadExternalQuotaTokenStats(c.Request.Context(), accounts)
-
-	// 仅当前页存在 OpenAI 账号时才计算调度分数，避免为空结果付出池查询开销。
+	// 双重门控：用户要看该列，且当前页确实有 OpenAI 账号，才进入昂贵的候选池打分路径。
 	var schedulerScores map[int64]*AccountSchedulerScore
 	var schedulerGroupScores map[int64][]AccountSchedulerGroupScore
 	pageHasOpenAIAccounts := false
@@ -684,15 +902,20 @@ func (h *AccountHandler) List(c *gin.Context) {
 	}
 
 	// Build response with concurrency info
+	externalQuotaTokenStats := h.loadExternalQuotaTokenStats(c.Request.Context(), accounts)
 	result := make([]AccountWithConcurrency, len(accounts))
 	for i := range accounts {
 		acc := &accounts[i]
 		accountResponse := h.accountResponseFromService(acc)
 		if lite {
 			accountResponse = h.accountListResponseFromService(acc)
+			if h.isSimpleMode() {
+				accountResponse.GroupIDs = filterSimpleModeGroupIDs(accountResponse.GroupIDs, simpleModeCompositeServiceGroupIDs(acc))
+			}
 		}
 		item := AccountWithConcurrency{
 			Account:            accountResponse,
+			simpleMode:         h.isSimpleMode(),
 			CurrentConcurrency: concurrencyCounts[acc.ID],
 			SchedulerScore:     schedulerScores[acc.ID],
 			SchedulerScores:    schedulerGroupScores[acc.ID],
@@ -718,10 +941,7 @@ func (h *AccountHandler) List(c *gin.Context) {
 				item.CurrentRPM = &rpm
 			}
 		}
-
-		if statsByKey, ok := externalQuotaTokenStats[acc.ID]; ok && len(statsByKey) > 0 {
-			item.ExternalQuotaTokenStats = statsByKey
-		}
+		item.ExternalQuotaTokenStats = externalQuotaTokenStats[acc.ID]
 
 		result[i] = item
 	}
@@ -802,123 +1022,6 @@ func buildAccountsListETag[T any](
 	}
 	sum := sha256.Sum256(raw)
 	return "\"" + hex.EncodeToString(sum[:]) + "\""
-}
-
-func (h *AccountHandler) loadExternalQuotaTokenStats(ctx context.Context, accounts []service.Account) map[int64]map[string]*service.WindowStats {
-	result := make(map[int64]map[string]*service.WindowStats)
-	if h.externalSubscriptionConfigService == nil || h.accountUsageService == nil || len(accounts) == 0 {
-		return result
-	}
-	now := time.Now()
-
-	accountIDs := make(map[int64]struct{}, len(accounts))
-	for i := range accounts {
-		accountIDs[accounts[i].ID] = struct{}{}
-	}
-
-	settings, err := h.externalSubscriptionConfigService.GetAccountQuotaProgressSettings(ctx)
-	if err != nil || len(settings) == 0 {
-		return result
-	}
-
-	type tokenStatsRequest struct {
-		key       string
-		accountID int64
-	}
-	requestsByStart := make(map[string][]tokenStatsRequest)
-	startTimes := make(map[string]time.Time)
-	for key, preference := range settings {
-		if !preference.Enabled || preference.Mode != service.ExternalSubscriptionAccountQuotaProgressModeTokenTotal {
-			continue
-		}
-		if preference.TokenTotal == nil || *preference.TokenTotal <= 0 {
-			continue
-		}
-		accountID, ok := accountIDFromExternalQuotaPreferenceKey(key)
-		if !ok {
-			continue
-		}
-		if _, exists := accountIDs[accountID]; !exists {
-			continue
-		}
-		startTime, ok := parseExternalQuotaTokenResetAt(preference.TokenResetAt, now)
-		if !ok {
-			if fallbackPreference, exists := settings[externalQuotaAccountPreferenceKey(accountID)]; exists {
-				if fallbackPreference.Enabled &&
-					fallbackPreference.Mode == service.ExternalSubscriptionAccountQuotaProgressModeTokenTotal &&
-					fallbackPreference.TokenTotal != nil &&
-					*fallbackPreference.TokenTotal > 0 {
-					startTime, ok = parseExternalQuotaTokenResetAt(fallbackPreference.TokenResetAt, now)
-				}
-			}
-		}
-		if !ok {
-			continue
-		}
-		startKey := startTime.UTC().Format(time.RFC3339Nano)
-		startTimes[startKey] = startTime
-		requestsByStart[startKey] = append(requestsByStart[startKey], tokenStatsRequest{
-			key:       key,
-			accountID: accountID,
-		})
-	}
-
-	for startKey, requests := range requestsByStart {
-		if len(requests) == 0 {
-			continue
-		}
-		ids := make([]int64, 0, len(requests))
-		for _, request := range requests {
-			ids = append(ids, request.accountID)
-		}
-		statsByAccount, err := h.accountUsageService.GetAccountWindowStatsBatch(ctx, ids, startTimes[startKey])
-		if err != nil {
-			continue
-		}
-		for _, request := range requests {
-			stats := statsByAccount[request.accountID]
-			if stats == nil {
-				stats = &service.WindowStats{}
-			}
-			if result[request.accountID] == nil {
-				result[request.accountID] = make(map[string]*service.WindowStats)
-			}
-			result[request.accountID][request.key] = stats
-		}
-	}
-
-	return result
-}
-
-func accountIDFromExternalQuotaPreferenceKey(key string) (int64, bool) {
-	parts := strings.SplitN(strings.TrimSpace(key), ":", 2)
-	if len(parts) == 0 || parts[0] == "" {
-		return 0, false
-	}
-	id, err := strconv.ParseInt(parts[0], 10, 64)
-	if err != nil || id <= 0 {
-		return 0, false
-	}
-	return id, true
-}
-
-func externalQuotaAccountPreferenceKey(accountID int64) string {
-	return strconv.FormatInt(accountID, 10) + ":account"
-}
-
-func parseExternalQuotaTokenResetAt(value string, now time.Time) (time.Time, bool) {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return time.Time{}, false
-	}
-	parsed, err := time.Parse(time.RFC3339Nano, trimmed)
-	if err != nil {
-		return time.Time{}, false
-	}
-	if !now.IsZero() && parsed.After(now) {
-		return time.Time{}, false
-	}
-	return parsed.UTC(), true
 }
 
 func ifNoneMatchMatched(ifNoneMatch, etag string) bool {
@@ -1210,40 +1313,6 @@ func (h *AccountHandler) Update(c *gin.Context) {
 	// 异步执行，探测失败不影响账号更新响应。
 	if len(req.Credentials) > 0 {
 		h.scheduleOpenAIResponsesProbe(account)
-	}
-
-	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
-}
-
-// UpdateRateMultiplier handles updating only an account billing rate multiplier.
-// PUT /api/v1/admin/accounts/:id/rate-multiplier
-func (h *AccountHandler) UpdateRateMultiplier(c *gin.Context) {
-	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		response.BadRequest(c, "Invalid account ID")
-		return
-	}
-
-	var req UpdateAccountRateMultiplierRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-	if req.RateMultiplier == nil {
-		response.BadRequest(c, "rate_multiplier is required")
-		return
-	}
-	if *req.RateMultiplier < 0 {
-		response.BadRequest(c, "rate_multiplier must be >= 0")
-		return
-	}
-
-	account, err := h.adminService.UpdateAccount(c.Request.Context(), accountID, &service.UpdateAccountInput{
-		RateMultiplier: req.RateMultiplier,
-	})
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
 	}
 
 	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
@@ -1597,6 +1666,7 @@ func (h *AccountHandler) Refresh(c *gin.Context) {
 
 	if warning == "missing_project_id_temporary" {
 		response.Success(c, gin.H{
+			"account": h.buildAccountResponseWithRuntime(c.Request.Context(), updatedAccount),
 			"message": "Token refreshed successfully, but project_id could not be retrieved (will retry automatically)",
 			"warning": "missing_project_id_temporary",
 		})
@@ -2109,6 +2179,14 @@ func (h *AccountHandler) BatchCreate(c *gin.Context) {
 			response.ErrorFrom(c, err)
 			return
 		}
+	}
+	groupIDs := make([]int64, 0)
+	for _, item := range req.Accounts {
+		groupIDs = append(groupIDs, item.GroupIDs...)
+	}
+	if err := h.adminService.ValidateAccountGroupBindings(c.Request.Context(), groupIDs); err != nil {
+		response.ErrorFrom(c, err)
+		return
 	}
 
 	executeAdminIdempotentJSON(c, "admin.accounts.batch_create", req, service.DefaultWriteIdempotencyTTL(), func(ctx context.Context) (any, error) {
@@ -2783,10 +2861,6 @@ type SetSchedulableRequest struct {
 	Schedulable bool `json:"schedulable"`
 }
 
-type SetScheduleLockedRequest struct {
-	Locked bool `json:"locked"`
-}
-
 // SetSchedulable handles toggling account schedulable status
 // POST /api/v1/admin/accounts/:id/schedulable
 func (h *AccountHandler) SetSchedulable(c *gin.Context) {
@@ -2803,30 +2877,6 @@ func (h *AccountHandler) SetSchedulable(c *gin.Context) {
 	}
 
 	account, err := h.adminService.SetAccountSchedulable(c.Request.Context(), accountID, req.Schedulable)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-
-	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
-}
-
-// SetScheduleLocked handles toggling account schedule automation lock
-// POST /api/v1/admin/accounts/:id/schedule-lock
-func (h *AccountHandler) SetScheduleLocked(c *gin.Context) {
-	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		response.BadRequest(c, "Invalid account ID")
-		return
-	}
-
-	var req SetScheduleLockedRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-
-	account, err := h.adminService.SetAccountScheduleLocked(c.Request.Context(), accountID, req.Locked)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return
@@ -2852,6 +2902,14 @@ func (h *AccountHandler) GetAvailableModels(c *gin.Context) {
 
 	// Handle OpenAI accounts
 	if account.IsOpenAI() {
+		// Prefer the shared, account-keyed upstream catalog. If discovery fails,
+		// retain the legacy local catalog below so the test dialog remains usable.
+		if h.accountTestService != nil {
+			if models, fetchErr := h.accountTestService.FetchOpenAIAccountModels(c.Request.Context(), account); fetchErr == nil {
+				response.Success(c, models)
+				return
+			}
+		}
 		// OpenAI 自动透传会绕过常规模型改写，测试/模型列表也应回落到默认模型集。
 		if account.IsOpenAIPassthroughEnabled() {
 			response.Success(c, openai.DefaultModels)

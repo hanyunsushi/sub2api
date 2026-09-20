@@ -26,7 +26,9 @@ import type {
   UpstreamBillingProbeSettings,
   UpstreamBillingRatesResponse,
   OllamaCloudUsageSettings,
-  OllamaCloudUsageState
+  OllamaCloudUsageState,
+  GrokMediaEligibilityMode,
+  GrokMediaEligibilityState
 } from '@/types'
 
 /**
@@ -238,13 +240,21 @@ export async function update(id: number, updates: UpdateAccountRequest): Promise
   return data
 }
 
-/**
- * Update only an account billing rate multiplier.
- */
-export async function updateRateMultiplier(id: number, rateMultiplier: number): Promise<Account> {
-  const { data } = await apiClient.put<Account>(`/admin/accounts/${id}/rate-multiplier`, {
-    rate_multiplier: rateMultiplier
-  })
+export async function getGrokMediaEligibility(id: number): Promise<GrokMediaEligibilityState> {
+  const { data } = await apiClient.get<GrokMediaEligibilityState>(
+    `/admin/accounts/${id}/grok-media-eligibility`
+  )
+  return data
+}
+
+export async function updateGrokMediaEligibility(
+  id: number,
+  mode: GrokMediaEligibilityMode
+): Promise<GrokMediaEligibilityState> {
+  const { data } = await apiClient.put<GrokMediaEligibilityState>(
+    `/admin/accounts/${id}/grok-media-eligibility`,
+    { mode }
+  )
   return data
 }
 
@@ -278,6 +288,11 @@ export async function toggleStatus(id: number, status: 'active' | 'inactive'): P
   return update(id, { status })
 }
 
+export async function setScheduleLocked(id: number, locked: boolean): Promise<Account> {
+  const { data } = await apiClient.put<Account>(`/admin/accounts/${id}/schedule-locked`, { locked })
+  return data
+}
+
 /**
  * Test account connectivity
  * @param id - Account ID
@@ -301,9 +316,13 @@ export async function testAccount(id: number): Promise<{
  * @param id - Account ID
  * @returns Updated account
  */
-export async function refreshCredentials(id: number): Promise<Account> {
-  const { data } = await apiClient.post<Account>(`/admin/accounts/${id}/refresh`)
-  return data
+export type RefreshCredentialsResult =
+  | { account: Account; message: string; warning: 'missing_project_id_temporary' }
+  | { account: Account; message?: never; warning?: never }
+
+export async function refreshCredentials(id: number): Promise<RefreshCredentialsResult> {
+  const { data } = await apiClient.post<Account | RefreshCredentialsResult>(`/admin/accounts/${id}/refresh`)
+  return 'account' in data ? data : { account: data }
 }
 
 /**
@@ -580,13 +599,6 @@ export async function setSchedulable(id: number, schedulable: boolean): Promise<
   return data
 }
 
-export async function setScheduleLocked(id: number, locked: boolean): Promise<Account> {
-  const { data } = await apiClient.post<Account>(`/admin/accounts/${id}/schedule-lock`, {
-    locked
-  })
-  return data
-}
-
 /**
  * Get available models for an account
  * @param id - Account ID
@@ -617,6 +629,7 @@ export interface UpstreamModelMetadata {
   supported_reasoning_levels?: string[]
   input_modalities?: string[]
   context_window?: number
+  max_context_window?: number
   max_output_tokens?: number
 }
 
@@ -1071,10 +1084,12 @@ export const accountsAPI = {
   create,
   duplicate,
   update,
-  updateRateMultiplier,
+  getGrokMediaEligibility,
+  updateGrokMediaEligibility,
   checkMixedChannelRisk,
   delete: deleteAccount,
   toggleStatus,
+  setScheduleLocked,
   testAccount,
   refreshCredentials,
   applyOAuthCredentials,
@@ -1090,7 +1105,6 @@ export const accountsAPI = {
   getTempUnschedulableStatus,
   resetTempUnschedulable,
   setSchedulable,
-  setScheduleLocked,
   getAvailableModels,
   syncUpstreamModels,
   syncUpstreamModelsPreview,

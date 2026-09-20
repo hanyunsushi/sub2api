@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/config"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 )
@@ -194,6 +195,7 @@ func (h *GrokOAuthHandler) scheduleGrokImportProbe(account *service.Account) {
 // ProvideAccountHandler injects the Grok active prober for production while
 // keeping NewAccountHandler convenient for focused unit tests.
 func ProvideAccountHandler(
+	cfg *config.Config,
 	adminService service.AdminService,
 	oauthService *service.OAuthService,
 	openaiOAuthService *service.OpenAIOAuthService,
@@ -217,6 +219,7 @@ func ProvideAccountHandler(
 		openaiOAuthService,
 		geminiOAuthService,
 		antigravityOAuthService,
+		grokOAuthService,
 		rateLimitService,
 		accountUsageService,
 		accountTestService,
@@ -225,9 +228,9 @@ func ProvideAccountHandler(
 		sessionLimitCache,
 		rpmCache,
 		tokenCacheInvalidator,
-		externalSubscriptionConfigService,
 	)
-	handler.SetGrokOAuthService(grokOAuthService)
+	handler.SetExternalSubscriptionConfigService(externalSubscriptionConfigService)
 	handler.grokImportProber = grokQuotaService
+	handler.cfg = cfg
 	return handler
 }

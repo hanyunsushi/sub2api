@@ -7,8 +7,8 @@
   >
     <form id="bulk-edit-account-form" class="space-y-5" @submit.prevent="() => handleSubmit()">
       <!-- Info -->
-      <div class="rounded-lg bg-[var(--anthropic-info-bg)] p-4 dark:bg-[var(--anthropic-info-bg)]">
-        <p class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+      <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+        <p class="text-sm text-blue-700 dark:text-blue-400">
           <svg class="mr-1.5 inline h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
@@ -34,7 +34,7 @@
       <!-- OpenAI passthrough -->
       <div
         v-if="allOpenAIPassthroughCapable"
-        class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600"
       >
         <div class="mb-3 flex items-center justify-between">
           <div class="flex-1 pr-4">
@@ -45,16 +45,16 @@
             >
               {{ t('admin.accounts.openai.oauthPassthrough') }}
             </label>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.openai.oauthPassthroughDesc') }}
             </p>
           </div>
-          <input data-testid="account-bulk-edit-account-input-enable-open-ai-passthrough"
+          <input
             v-model="enableOpenAIPassthrough"
             id="bulk-edit-openai-passthrough-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-passthrough-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -63,16 +63,20 @@
           role="group"
           aria-labelledby="bulk-edit-openai-passthrough-label"
         >
-          <button data-testid="account-bulk-edit-account-button-openai-passthrough-enabled-openai-passthrough-enabled"
+          <button
             id="bulk-edit-openai-passthrough-toggle"
             type="button"
             :class="[
-              'anthropic-switch cursor-pointer focus:outline-none',
-              openaiPassthroughEnabled ? 'anthropic-switch-active' : ''
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openaiPassthroughEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
           >
-            <span class="anthropic-switch-thumb"
+            <span
+              :class="[
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                openaiPassthroughEnabled ? 'translate-x-5' : 'translate-x-0'
+              ]"
             />
           </button>
         </div>
@@ -190,7 +194,7 @@
       </div>
 
       <!-- Base URL (API Key only) -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-base-url-label"
@@ -199,15 +203,15 @@
           >
             {{ t('admin.accounts.baseUrl') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-base-url"
+          <input
             v-model="enableBaseUrl"
             id="bulk-edit-base-url-enabled"
             type="checkbox"
             aria-controls="bulk-edit-base-url"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
-        <input data-testid="account-bulk-edit-account-input-base-url"
+        <input
           v-model="baseUrl"
           id="bulk-edit-base-url"
           type="text"
@@ -228,7 +232,7 @@
       </div>
 
       <!-- Model restriction -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-model-restriction-label"
@@ -237,12 +241,12 @@
           >
             {{ t('admin.accounts.modelRestriction') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-model-restriction"
+          <input
             v-model="enableModelRestriction"
             id="bulk-edit-model-restriction-enabled"
             type="checkbox"
             aria-controls="bulk-edit-model-restriction-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -264,13 +268,13 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button data-testid="account-bulk-edit-account-button-model-restriction-mode-whitelist"
+              <button
                 type="button"
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                   modelRestrictionMode === 'whitelist'
-                    ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                    : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                 ]"
                 @click="modelRestrictionMode = 'whitelist'"
               >
@@ -289,13 +293,13 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button data-testid="account-bulk-edit-account-button-model-restriction-mode-mapping"
+              <button
                 type="button"
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                   modelRestrictionMode === 'mapping'
-                    ? 'bg-accent-200 text-accent-700 dark:bg-accent-900/30 dark:text-accent-500'
-                    : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500'
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                 ]"
                 @click="modelRestrictionMode = 'mapping'"
               >
@@ -318,8 +322,8 @@
 
             <!-- Whitelist Mode -->
             <div v-if="modelRestrictionMode === 'whitelist'">
-              <div class="mb-3 rounded-lg bg-[var(--anthropic-info-bg)] p-3 dark:bg-[var(--anthropic-info-bg)]">
-                <p class="text-xs text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+              <div class="mb-3 rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+                <p class="text-xs text-blue-700 dark:text-blue-400">
                   <svg
                     class="mr-1 inline h-4 w-4"
                     fill="none"
@@ -342,7 +346,7 @@
                 :platforms="targetSelectedPlatforms"
               />
 
-              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="text-xs text-gray-500 dark:text-gray-400">
                 {{ t('admin.accounts.selectedModels', { count: allowedModels.length }) }}
                 <span v-if="allowedModels.length === 0">{{
                   t('admin.accounts.supportsAllModels')
@@ -352,8 +356,8 @@
 
             <!-- Mapping Mode -->
             <div v-else>
-              <div class="mb-3 rounded-lg bg-accent-100 p-3 dark:bg-accent-900/20">
-                <p class="text-xs text-accent-700 dark:text-accent-500">
+              <div class="mb-3 rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20">
+                <p class="text-xs text-purple-700 dark:text-purple-400">
                   <svg
                     class="mr-1 inline h-4 w-4"
                     fill="none"
@@ -378,14 +382,14 @@
                   :key="index"
                   class="flex items-center gap-2"
                 >
-                  <input data-testid="account-bulk-edit-account-input-mapping-from"
+                  <input
                     v-model="mapping.from"
                     type="text"
                     class="input flex-1"
                     :placeholder="t('admin.accounts.requestModel')"
                   />
                   <svg
-                    class="h-4 w-4 flex-shrink-0 text-[var(--anthropic-muted)]"
+                    class="h-4 w-4 flex-shrink-0 text-gray-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -397,13 +401,13 @@
                       d="M14 5l7 7m0 0l-7 7m7-7H3"
                     />
                   </svg>
-                  <input data-testid="account-bulk-edit-account-input-mapping-to"
+                  <input
                     v-model="mapping.to"
                     type="text"
                     class="input flex-1"
                     :placeholder="t('admin.accounts.actualModel')"
                   />
-                  <button data-testid="account-bulk-edit-account-button-remove-model-mapping-index"
+                  <button
                     type="button"
                     class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     @click="removeModelMapping(index)"
@@ -420,9 +424,9 @@
                 </div>
               </div>
 
-              <button data-testid="account-bulk-edit-account-button-add-model-mapping"
+              <button
                 type="button"
-                class="mb-3 w-full rounded-lg border-2 border-dashed border-[var(--anthropic-border)] px-4 py-2 text-[var(--anthropic-muted)] transition-colors hover:border-[var(--anthropic-border)] hover:text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-dark-400 dark:hover:text-gray-300"
+                class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
                 @click="addModelMapping"
               >
                 <svg
@@ -443,7 +447,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button data-testid="account-bulk-edit-account-button-add-preset-mapping-preset-from-preset-to"
+                <button
                   v-for="preset in filteredPresets"
                   :key="preset.label"
                   type="button"
@@ -459,7 +463,7 @@
       </div>
 
       <!-- Custom error codes -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <div>
             <label
@@ -469,16 +473,16 @@
             >
               {{ t('admin.accounts.customErrorCodes') }}
             </label>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.customErrorCodesHint') }}
             </p>
           </div>
-          <input data-testid="account-bulk-edit-account-input-enable-custom-error-codes"
+          <input
             v-model="enableCustomErrorCodes"
             id="bulk-edit-custom-error-codes-enabled"
             type="checkbox"
             aria-controls="bulk-edit-custom-error-codes-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -492,7 +496,7 @@
 
           <!-- Error Code Buttons -->
           <div class="flex flex-wrap gap-2">
-            <button data-testid="account-bulk-edit-account-button-toggle-error-code-code-value"
+            <button
               v-for="code in commonErrorCodes"
               :key="code.value"
               type="button"
@@ -500,7 +504,7 @@
                 'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                 selectedErrorCodes.includes(code.value)
                   ? 'bg-red-100 text-red-700 ring-1 ring-red-500 dark:bg-red-900/30 dark:text-red-400'
-                  : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
               @click="toggleErrorCode(code.value)"
             >
@@ -510,7 +514,7 @@
 
           <!-- Manual input -->
           <div class="flex items-center gap-2">
-            <input data-testid="account-bulk-edit-account-input-custom-error-code-input"
+            <input
               v-model="customErrorCodeInput"
               id="bulk-edit-custom-error-code-input"
               type="number"
@@ -521,7 +525,7 @@
               aria-labelledby="bulk-edit-custom-error-codes-label"
               @keyup.enter="addCustomErrorCode"
             />
-            <button data-testid="account-bulk-edit-account-button-add-custom-error-code" type="button" class="btn btn-secondary px-3" @click="addCustomErrorCode">
+            <button type="button" class="btn btn-secondary px-3" @click="addCustomErrorCode">
               <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   stroke-linecap="round"
@@ -541,7 +545,7 @@
               class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
             >
               {{ code }}
-              <button data-testid="account-bulk-edit-account-button-remove-error-code-code"
+              <button
                 type="button"
                 class="hover:text-red-900 dark:hover:text-red-300"
                 @click="removeErrorCode(code)"
@@ -549,7 +553,7 @@
                 <Icon name="x" size="xs" class="h-3.5 w-3.5" :stroke-width="2" />
               </button>
             </span>
-            <span v-if="selectedErrorCodes.length === 0" class="text-xs text-[var(--anthropic-muted)]">
+            <span v-if="selectedErrorCodes.length === 0" class="text-xs text-gray-400">
               {{ t('admin.accounts.noneSelectedUsesDefault') }}
             </span>
           </div>
@@ -557,7 +561,7 @@
       </div>
 
       <!-- Intercept warmup requests (Anthropic only) -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="flex items-center justify-between">
           <div class="flex-1 pr-4">
             <label
@@ -567,28 +571,32 @@
             >
               {{ t('admin.accounts.interceptWarmupRequests') }}
             </label>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.interceptWarmupRequestsDesc') }}
             </p>
           </div>
-          <input data-testid="account-bulk-edit-account-input-enable-intercept-warmup"
+          <input
             v-model="enableInterceptWarmup"
             id="bulk-edit-intercept-warmup-enabled"
             type="checkbox"
             aria-controls="bulk-edit-intercept-warmup-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div v-if="enableInterceptWarmup" id="bulk-edit-intercept-warmup-body" class="mt-3">
-          <button data-testid="account-bulk-edit-account-button-intercept-warmup-requests-intercept-warmup-requests"
+          <button
             type="button"
             :class="[
-              'anthropic-switch cursor-pointer focus:outline-none',
-              interceptWarmupRequests ? 'anthropic-switch-active' : ''
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              interceptWarmupRequests ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="interceptWarmupRequests = !interceptWarmupRequests"
           >
-            <span class="anthropic-switch-thumb"
+            <span
+              :class="[
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                interceptWarmupRequests ? 'translate-x-5' : 'translate-x-0'
+              ]"
             />
           </button>
         </div>
@@ -614,14 +622,14 @@
             id="bulk-edit-header-override-enabled"
             type="checkbox"
             aria-controls="bulk-edit-header-override-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div v-if="enableHeaderOverride" id="bulk-edit-header-override-body" class="mt-3 space-y-3">
           <button
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
               headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="headerOverrideEnabled = !headerOverrideEnabled"
@@ -658,7 +666,7 @@
       </div>
 
       <!-- Proxy -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-proxy-label"
@@ -667,12 +675,12 @@
           >
             {{ t('admin.accounts.proxy') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-proxy"
+          <input
             v-model="enableProxy"
             id="bulk-edit-proxy-enabled"
             type="checkbox"
             aria-controls="bulk-edit-proxy-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-proxy-body" :class="!enableProxy && 'pointer-events-none opacity-50'">
@@ -685,7 +693,7 @@
       </div>
 
       <!-- Concurrency & Priority -->
-      <div class="grid grid-cols-2 gap-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)] lg:grid-cols-4">
+      <div class="grid grid-cols-2 gap-4 border-t border-gray-200 pt-4 dark:border-dark-600 lg:grid-cols-4">
         <div>
           <div class="mb-3 flex items-center justify-between">
             <label
@@ -695,15 +703,15 @@
             >
               {{ t('admin.accounts.concurrency') }}
             </label>
-            <input data-testid="account-bulk-edit-account-input-enable-concurrency"
+            <input
               v-model="enableConcurrency"
               id="bulk-edit-concurrency-enabled"
               type="checkbox"
               aria-controls="bulk-edit-concurrency"
-              class="anthropic-checkbox rounded"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input data-testid="account-bulk-edit-account-input-concurrency"
+          <input
             v-model.number="concurrency"
             id="bulk-edit-concurrency"
             type="number"
@@ -724,15 +732,15 @@
             >
               {{ t('admin.accounts.loadFactor') }}
             </label>
-            <input data-testid="account-bulk-edit-account-input-enable-load-factor"
+            <input
               v-model="enableLoadFactor"
               id="bulk-edit-load-factor-enabled"
               type="checkbox"
               aria-controls="bulk-edit-load-factor"
-              class="anthropic-checkbox rounded"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input data-testid="account-bulk-edit-account-input-load-factor"
+          <input
             v-model.number="loadFactor"
             id="bulk-edit-load-factor"
             type="number"
@@ -754,15 +762,15 @@
             >
               {{ t('admin.accounts.priority') }}
             </label>
-            <input data-testid="account-bulk-edit-account-input-enable-priority"
+            <input
               v-model="enablePriority"
               id="bulk-edit-priority-enabled"
               type="checkbox"
               aria-controls="bulk-edit-priority"
-              class="anthropic-checkbox rounded"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input data-testid="account-bulk-edit-account-input-priority"
+          <input
             v-model.number="priority"
             id="bulk-edit-priority"
             type="number"
@@ -782,15 +790,15 @@
             >
               {{ t('admin.accounts.billingRateMultiplier') }}
             </label>
-            <input data-testid="account-bulk-edit-account-input-enable-rate-multiplier"
+            <input
               v-model="enableRateMultiplier"
               id="bulk-edit-rate-multiplier-enabled"
               type="checkbox"
               aria-controls="bulk-edit-rate-multiplier"
-              class="anthropic-checkbox rounded"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
-          <input data-testid="account-bulk-edit-account-input-rate-multiplier"
+          <input
             v-model.number="rateMultiplier"
             id="bulk-edit-rate-multiplier"
             type="number"
@@ -814,7 +822,7 @@
       </div>
 
       <!-- Status -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-status-label"
@@ -823,12 +831,12 @@
           >
             {{ t('common.status') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-status"
+          <input
             v-model="enableStatus"
             id="bulk-edit-status-enabled"
             type="checkbox"
             aria-controls="bulk-edit-status"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-status" :class="!enableStatus && 'pointer-events-none opacity-50'">
@@ -841,7 +849,7 @@
       </div>
 
       <!-- OpenAI OAuth WS mode -->
-      <div v-if="allOpenAIOAuth" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allOpenAIOAuth" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-openai-ws-mode-label"
@@ -850,23 +858,23 @@
           >
             {{ t('admin.accounts.openai.wsMode') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-open-aiws-mode"
+          <input
             v-model="enableOpenAIWSMode"
             id="bulk-edit-openai-ws-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-ws-mode"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
           id="bulk-edit-openai-ws-mode"
           :class="!enableOpenAIWSMode && 'pointer-events-none opacity-50'"
         >
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.wsModeDesc') }}
           </p>
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-            {{ t(openAIWSModeConcurrencyHintKey) }}
+          <p v-if="openAIWSModeHintKey" class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+            {{ t(openAIWSModeHintKey) }}
           </p>
           <Select
             v-model="openaiOAuthResponsesWebSocketV2Mode"
@@ -878,7 +886,7 @@
       </div>
 
       <!-- OpenAI OAuth Codex CLI only -->
-      <div v-if="allOpenAIOAuth" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allOpenAIOAuth" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-openai-codex-cli-only-label"
@@ -887,38 +895,42 @@
           >
             {{ t('admin.accounts.openai.codexCLIOnly') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only"
+          <input
             v-model="enableCodexCLIOnly"
             id="bulk-edit-openai-codex-cli-only-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-codex-cli-only"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
           id="bulk-edit-openai-codex-cli-only"
           :class="!enableCodexCLIOnly && 'pointer-events-none opacity-50'"
         >
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.codexCLIOnlyDesc') }}
           </p>
-          <button data-testid="account-bulk-edit-account-button-codex-cli-only-enabled-codex-cli-only-enabled"
+          <button
             id="bulk-edit-openai-codex-cli-only-toggle"
             type="button"
             :class="[
-              'anthropic-switch cursor-pointer focus:outline-none',
-              codexCLIOnlyEnabled ? 'anthropic-switch-active' : ''
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
           >
-            <span class="anthropic-switch-thumb"
+            <span
+              :class="[
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                codexCLIOnlyEnabled ? 'translate-x-5' : 'translate-x-0'
+              ]"
             />
           </button>
         </div>
       </div>
 
-      <!-- OpenAI OAuth: 额外放行 Codex app-server 客户端 -->
-      <div v-if="allOpenAIOAuth" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <!-- OpenAI OAuth: Codex app-server -->
+      <div v-if="allOpenAIOAuth" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-openai-codex-app-server-label"
@@ -927,31 +939,35 @@
           >
             {{ t('admin.accounts.openai.codexCLIOnlyAppServer') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-codex-cli-only-app-server"
+          <input
             v-model="enableCodexCLIOnlyAppServer"
             id="bulk-edit-openai-codex-app-server-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-codex-app-server"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
           id="bulk-edit-openai-codex-app-server"
           :class="!enableCodexCLIOnlyAppServer && 'pointer-events-none opacity-50'"
         >
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.codexCLIOnlyAppServerDesc') }}
           </p>
-          <button data-testid="account-bulk-edit-account-button-codex-cli-only-app-server-enabled-codex-cli-only-app-server-enabled"
+          <button
             id="bulk-edit-openai-codex-app-server-toggle"
             type="button"
             :class="[
-              'anthropic-switch cursor-pointer focus:outline-none',
-              codexCLIOnlyAppServerEnabled ? 'anthropic-switch-active' : ''
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyAppServerEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="codexCLIOnlyAppServerEnabled = !codexCLIOnlyAppServerEnabled"
           >
-            <span class="anthropic-switch-thumb"
+            <span
+              :class="[
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                codexCLIOnlyAppServerEnabled ? 'translate-x-5' : 'translate-x-0'
+              ]"
             />
           </button>
         </div>
@@ -1111,7 +1127,7 @@
       </div>
 
       <!-- OpenAI API Key WS mode -->
-      <div v-if="allOpenAIAPIKey" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allOpenAIAPIKey" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-openai-apikey-ws-mode-label"
@@ -1120,23 +1136,23 @@
           >
             {{ t('admin.accounts.openai.wsMode') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-open-aiapi-key-ws-mode"
+          <input
             v-model="enableOpenAIAPIKeyWSMode"
             id="bulk-edit-openai-apikey-ws-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-apikey-ws-mode"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
           id="bulk-edit-openai-apikey-ws-mode"
           :class="!enableOpenAIAPIKeyWSMode && 'pointer-events-none opacity-50'"
         >
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.openai.wsModeDesc') }}
           </p>
-          <p class="mb-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-            {{ t(openAIAPIKeyWSModeConcurrencyHintKey) }}
+          <p v-if="openAIAPIKeyWSModeHintKey" class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+            {{ t(openAIAPIKeyWSModeHintKey) }}
           </p>
           <Select
             v-model="openaiAPIKeyResponsesWebSocketV2Mode"
@@ -1148,7 +1164,7 @@
       </div>
 
       <!-- OpenAI Compact mode -->
-      <div v-if="allOpenAIPassthroughCapable" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allOpenAIPassthroughCapable" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <div class="flex-1 pr-4">
             <label
@@ -1158,16 +1174,16 @@
             >
               {{ t('admin.accounts.openai.compactMode') }}
             </label>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.openai.compactModeDesc') }}
             </p>
           </div>
-          <input data-testid="account-bulk-edit-account-input-enable-open-ai-compact-mode"
+          <input
             v-model="enableOpenAICompactMode"
             id="bulk-edit-openai-compact-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-compact-mode"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1184,7 +1200,7 @@
       </div>
 
       <!-- OpenAI Compact model mapping -->
-      <div v-if="allOpenAIPassthroughCapable" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allOpenAIPassthroughCapable" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <div class="flex-1 pr-4">
             <label
@@ -1194,16 +1210,16 @@
             >
               {{ t('admin.accounts.openai.compactModelMapping') }}
             </label>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.openai.compactModelMappingDesc') }}
             </p>
           </div>
-          <input data-testid="account-bulk-edit-account-input-enable-open-ai-compact-model-mapping"
+          <input
             v-model="enableOpenAICompactModelMapping"
             id="bulk-edit-openai-compact-model-mapping-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-compact-model-mapping"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1223,7 +1239,7 @@
                 :placeholder="t('admin.accounts.fromModel')"
                 data-testid="bulk-edit-openai-compact-model-mapping-input"
               />
-              <span class="text-[var(--anthropic-muted)]">→</span>
+              <span class="text-gray-400">→</span>
               <input
                 v-model="mapping.to"
                 type="text"
@@ -1231,7 +1247,7 @@
                 :placeholder="t('admin.accounts.toModel')"
                 data-testid="bulk-edit-openai-compact-model-mapping-input"
               />
-              <button data-testid="account-bulk-edit-account-button-remove-open-ai-compact-model-mapping-index"
+              <button
                 type="button"
                 class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                 @click="removeOpenAICompactModelMapping(index)"
@@ -1242,7 +1258,7 @@
           </div>
           <button
             type="button"
-            class="mb-3 w-full rounded-lg border-2 border-dashed border-[var(--anthropic-border)] px-4 py-2 text-[var(--anthropic-muted)] transition-colors hover:border-[var(--anthropic-border)] hover:text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-dark-400 dark:hover:text-gray-300"
+            class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
             data-testid="bulk-edit-openai-compact-model-mapping-add"
             @click="addOpenAICompactModelMapping"
           >
@@ -1252,7 +1268,7 @@
       </div>
 
       <!-- RPM Limit (仅全部为 Anthropic OAuth/SetupToken 时显示) -->
-      <div v-if="allAnthropicOAuthOrSetupToken" class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div v-if="allAnthropicOAuthOrSetupToken" class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-rpm-limit-label"
@@ -1261,12 +1277,12 @@
           >
             {{ t('admin.accounts.quotaControl.rpmLimit.label') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-rpm-limit"
+          <input
             v-model="enableRpmLimit"
             id="bulk-edit-rpm-limit-enabled"
             type="checkbox"
             aria-controls="bulk-edit-rpm-limit-body"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -1277,16 +1293,20 @@
           aria-labelledby="bulk-edit-rpm-limit-label"
         >
           <div class="mb-3 flex items-center justify-between">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.accounts.quotaControl.rpmLimit.hint') }}</span>
-            <button data-testid="account-bulk-edit-account-button-rpm-limit-enabled-rpm-limit-enabled"
+            <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.quotaControl.rpmLimit.hint') }}</span>
+            <button
               type="button"
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
-                'anthropic-switch cursor-pointer focus:outline-none',
-                 rpmLimitEnabled ? 'anthropic-switch-active' : ''
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                rpmLimitEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
-              <span class="anthropic-switch-thumb"
+              <span
+                :class="[
+                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                  rpmLimitEnabled ? 'translate-x-5' : 'translate-x-0'
+                ]"
               />
             </button>
           </div>
@@ -1294,7 +1314,7 @@
           <div v-if="rpmLimitEnabled" class="space-y-3">
             <div>
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.baseRpm') }}</label>
-              <input data-testid="account-bulk-edit-account-input-bulk-base-rpm"
+              <input
                 v-model.number="bulkBaseRpm"
                 type="number"
                 min="1"
@@ -1309,26 +1329,26 @@
             <div>
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.strategy') }}</label>
               <div class="flex gap-2">
-                <button data-testid="account-bulk-edit-account-button-bulk-rpm-strategy-tiered"
+                <button
                   type="button"
                   @click="bulkRpmStrategy = 'tiered'"
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     bulkRpmStrategy === 'tiered'
-                      ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                      : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
                   {{ t('admin.accounts.quotaControl.rpmLimit.strategyTiered') }}
                 </button>
-                <button data-testid="account-bulk-edit-account-button-bulk-rpm-strategy-sticky-exempt"
+                <button
                   type="button"
                   @click="bulkRpmStrategy = 'sticky_exempt'"
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     bulkRpmStrategy === 'sticky_exempt'
-                      ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                      : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-dark-500'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
                   {{ t('admin.accounts.quotaControl.rpmLimit.strategyStickyExempt') }}
@@ -1338,7 +1358,7 @@
 
             <div v-if="bulkRpmStrategy === 'tiered'">
               <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.rpmLimit.stickyBuffer') }}</label>
-              <input data-testid="account-bulk-edit-account-input-bulk-rpm-sticky-buffer"
+              <input
                 v-model.number="bulkRpmStickyBuffer"
                 type="number"
                 min="1"
@@ -1355,17 +1375,17 @@
         <!-- 用户消息限速模式（独立于 RPM 开关，始终可见） -->
         <div class="mt-4">
           <label class="input-label">{{ t('admin.accounts.quotaControl.rpmLimit.userMsgQueue') }}</label>
-          <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-2">
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 mb-2">
             {{ t('admin.accounts.quotaControl.rpmLimit.userMsgQueueHint') }}
           </p>
           <div class="flex space-x-2">
-            <button data-testid="account-bulk-edit-account-button-user-msg-queue-mode-user-msg-queue-mode-opt-value-null-opt-value" type="button" v-for="opt in umqModeOptions" :key="opt.value"
+            <button type="button" v-for="opt in umqModeOptions" :key="opt.value"
               @click="userMsgQueueMode = userMsgQueueMode === opt.value ? null : opt.value"
               :class="[
                 'px-3 py-1.5 text-sm rounded-md border transition-colors',
                 userMsgQueueMode === opt.value
-                  ? 'bg-[var(--anthropic-fg)] text-white border-[var(--anthropic-fg)]'
-                  : 'bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-section)] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]'
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white dark:bg-dark-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-dark-500 hover:bg-gray-50 dark:hover:bg-dark-600'
               ]">
               {{ opt.label }}
             </button>
@@ -1374,7 +1394,7 @@
       </div>
 
       <!-- Groups -->
-      <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
         <div class="mb-3 flex items-center justify-between">
           <label
             id="bulk-edit-groups-label"
@@ -1383,12 +1403,12 @@
           >
             {{ t('nav.groups') }}
           </label>
-          <input data-testid="account-bulk-edit-account-input-enable-groups"
+          <input
             v-model="enableGroups"
             id="bulk-edit-groups-enabled"
             type="checkbox"
             aria-controls="bulk-edit-groups"
-            class="anthropic-checkbox rounded"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-groups" :class="!enableGroups && 'pointer-events-none opacity-50'">
@@ -1403,10 +1423,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="account-bulk-edit-account-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
+        <button type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="account-bulk-edit-account-button-submit"
+        <button
           type="submit"
           form="bulk-edit-account-form"
           :disabled="submitting"
@@ -1489,11 +1509,11 @@ import {
 import GrokBaseUrlPresets from '@/components/account/GrokBaseUrlPresets.vue'
 import {
   OPENAI_WS_MODE_CTX_POOL,
-  OPENAI_WS_MODE_HTTP_BRIDGE,
   OPENAI_WS_MODE_OFF,
   OPENAI_WS_MODE_PASSTHROUGH,
+  OPENAI_WS_MODE_HTTP_BRIDGE,
   isOpenAIWSModeEnabled,
-  resolveOpenAIWSModeConcurrencyHintKey
+  resolveOpenAIWSModeHintKey
 } from '@/utils/openaiWsMode'
 import type { OpenAIWSMode } from '@/utils/openaiWsMode'
 interface Props {
@@ -1539,7 +1559,7 @@ const allOpenAIPassthroughCapable = computed(() => {
     targetSelectedPlatforms.value.length === 1 &&
     targetSelectedPlatforms.value[0] === 'openai' &&
     targetSelectedTypes.value.length > 0 &&
-    targetSelectedTypes.value.every(t => t === 'oauth' || t === 'apikey')
+    targetSelectedTypes.value.every(t => t === 'oauth' || t === 'setup-token' || t === 'apikey')
   )
 })
 
@@ -1548,7 +1568,7 @@ const allOpenAIOAuth = computed(() => {
     targetSelectedPlatforms.value.length === 1 &&
     targetSelectedPlatforms.value[0] === 'openai' &&
     targetSelectedTypes.value.length > 0 &&
-    targetSelectedTypes.value.every(t => t === 'oauth')
+    targetSelectedTypes.value.every(t => t === 'oauth' || t === 'setup-token')
   )
 })
 
@@ -1766,7 +1786,8 @@ const openAIEndpointCapabilityOptions = computed<
   Array<{ value: OpenAIEndpointCapability; label: string }>
 >(() => [
   { value: 'chat_completions', label: openAITextEndpointCapabilityLabel.value },
-  { value: 'embeddings', label: t('admin.accounts.openai.capabilityEmbeddings') }
+  { value: 'embeddings', label: t('admin.accounts.openai.capabilityEmbeddings') },
+  { value: 'seedance', label: 'Seedance (Ark)' }
 ])
 const openAITextGenerationCapabilityEnabled = computed(() =>
   openAIEndpointCapabilities.value.includes('chat_completions')
@@ -1776,9 +1797,9 @@ const openAIResponsesModeApplicable = computed(
 )
 
 const normalizeOpenAIEndpointCapabilities = (values: OpenAIEndpointCapability[]) => {
-  const allowed: OpenAIEndpointCapability[] = ['chat_completions', 'embeddings']
+  const allowed: OpenAIEndpointCapability[] = ['chat_completions', 'embeddings', 'seedance']
   const selected = allowed.filter((value) => values.includes(value))
-  return selected.length > 0 ? selected : allowed
+  return selected.length > 0 ? selected : ['chat_completions', 'embeddings'] as OpenAIEndpointCapability[]
 }
 
 const toggleOpenAIEndpointCapability = (
@@ -1804,11 +1825,11 @@ const toggleOpenAIEndpointCapability = (
     capability
   ])
 }
-const openAIWSModeConcurrencyHintKey = computed(() =>
-  resolveOpenAIWSModeConcurrencyHintKey(openaiOAuthResponsesWebSocketV2Mode.value)
+const openAIWSModeHintKey = computed(() =>
+  resolveOpenAIWSModeHintKey(openaiOAuthResponsesWebSocketV2Mode.value)
 )
-const openAIAPIKeyWSModeConcurrencyHintKey = computed(() =>
-  resolveOpenAIWSModeConcurrencyHintKey(openaiAPIKeyResponsesWebSocketV2Mode.value)
+const openAIAPIKeyWSModeHintKey = computed(() =>
+  resolveOpenAIWSModeHintKey(openaiAPIKeyResponsesWebSocketV2Mode.value)
 )
 
 // Model mapping helpers
@@ -1976,7 +1997,7 @@ const buildUpdatePayload = (): Record<string, unknown> | null => {
 
   if (applyOpenAIEndpointCapabilities) {
     credentials.openai_capabilities =
-      openAIEndpointCapabilities.value.length === 2
+      openAIEndpointCapabilities.value.length === 2 && !openAIEndpointCapabilities.value.includes('seedance')
         ? null
         : [...openAIEndpointCapabilities.value]
     credentialsChanged = true
@@ -2057,11 +2078,15 @@ const buildUpdatePayload = (): Record<string, unknown> | null => {
     extra.codex_cli_only = codexCLIOnlyEnabled.value
   }
 
-  if (enableCodexCLIOnly.value && enableCodexCLIOnlyAppServer.value) {
+  // 子开关从属于 codex_cli_only：仅当同一次批量编辑也把父开关设为开启时才写入，
+  // 与 Create/Edit 语义对齐，避免在父开关关闭的账号上写入无意义的孤立字段。
+  if (
+    enableCodexCLIOnlyAppServer.value &&
+    enableCodexCLIOnly.value &&
+    codexCLIOnlyEnabled.value
+  ) {
     const extra = ensureExtra()
-    delete extra.codex_cli_only_allowed_clients
-    extra.codex_cli_only_allow_app_server =
-      codexCLIOnlyEnabled.value && codexCLIOnlyAppServerEnabled.value
+    extra.codex_cli_only_allow_app_server = codexCLIOnlyAppServerEnabled.value
   }
 
   if (enableCodexFingerprintMode.value) {

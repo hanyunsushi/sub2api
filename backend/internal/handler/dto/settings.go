@@ -28,6 +28,8 @@ type CustomEndpoint struct {
 
 // SystemSettings represents the admin settings API response payload.
 type SystemSettings struct {
+	ChannelMonitorHideUserRanking       bool                     `json:"channel_monitor_hide_user_ranking"`
+	SubscriptionEnabled                 bool                     `json:"subscription_enabled"`
 	RegistrationEnabled                 bool                     `json:"registration_enabled"`
 	EmailVerifyEnabled                  bool                     `json:"email_verify_enabled"`
 	RegistrationEmailSuffixWhitelist    []string                 `json:"registration_email_suffix_whitelist"`
@@ -270,13 +272,13 @@ type SystemSettings struct {
 
 	// Payment configuration
 	PaymentEnabled                   bool     `json:"payment_enabled"`
+	PaymentBalanceDisabled           bool     `json:"payment_balance_disabled"`
 	PaymentMinAmount                 float64  `json:"payment_min_amount"`
 	PaymentMaxAmount                 float64  `json:"payment_max_amount"`
 	PaymentDailyLimit                float64  `json:"payment_daily_limit"`
 	PaymentOrderTimeoutMin           int      `json:"payment_order_timeout_minutes"`
 	PaymentMaxPendingOrders          int      `json:"payment_max_pending_orders"`
 	PaymentEnabledTypes              []string `json:"payment_enabled_types"`
-	PaymentBalanceDisabled           bool     `json:"payment_balance_disabled"`
 	PaymentBalanceRechargeMultiplier float64  `json:"payment_balance_recharge_multiplier"`
 	PaymentSubscriptionUSDToCNYRate  float64  `json:"payment_subscription_usd_to_cny_rate"`
 	PaymentRechargeFeeRate           float64  `json:"payment_recharge_fee_rate"`
@@ -356,6 +358,8 @@ type DefaultSubscriptionSetting struct {
 }
 
 type PublicSettings struct {
+	ChannelMonitorHideUserRanking       bool                     `json:"channel_monitor_hide_user_ranking"`
+	SubscriptionEnabled                 bool                     `json:"subscription_enabled"`
 	RegistrationEnabled                 bool                     `json:"registration_enabled"`
 	EmailVerifyEnabled                  bool                     `json:"email_verify_enabled"`
 	ForceEmailOnThirdPartySignup        bool                     `json:"force_email_on_third_party_signup"`
@@ -407,6 +411,7 @@ type PublicSettings struct {
 	GoogleOAuthEnabled                  bool                     `json:"google_oauth_enabled"`
 	BackendModeEnabled                  bool                     `json:"backend_mode_enabled"`
 	PaymentEnabled                      bool                     `json:"payment_enabled"`
+	PaymentBalanceDisabled              bool                     `json:"payment_balance_disabled"`
 	Version                             string                   `json:"version"`
 	// 服务器全局时区（IANA 名称与当前 UTC 偏移，如 "Asia/Shanghai" / "+08:00"）。
 	// 高峰时段等按服务器本地时间判定的窗口，前端展示时据此标注，避免用户按浏览器本地时间误读。

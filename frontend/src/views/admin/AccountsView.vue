@@ -1,13 +1,13 @@
 <template>
   <AppLayout>
-    <TablePageLayout scroll-mode="page" class="accounts-table-page">
+    <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell accounts-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+        <div class="flex flex-wrap-reverse items-start justify-between gap-3">
           <AccountTableFilters
             v-model:searchQuery="params.search"
             :filters="params"
             :groups="groups"
-            @update:filters="handleAccountFilterUpdate"
+            @update:filters="(newFilters) => Object.assign(params, newFilters)"
             @change="debouncedReload"
             @update:searchQuery="debouncedReload"
           />
@@ -18,170 +18,145 @@
           >
             <template #after>
               <!-- Auto Refresh Dropdown -->
-              <div
-                class="relative"
-                ref="autoRefreshDropdownRef"
-                @pointerenter="openAutoRefreshDropdown"
-                @mouseenter="openAutoRefreshDropdown"
-                @mouseleave="scheduleAutoRefreshDropdownClose"
-              >
-                <button data-testid="admin-accounts-button-button"
-                  ref="autoRefreshButtonRef"
-                  @click="openAutoRefreshDropdown"
-                  class="filter-menu-button filter-menu-button-with-caret"
-                  :class="{ 'filter-menu-button-open': showAutoRefreshDropdown }"
+              <div class="relative" ref="autoRefreshDropdownRef">
+                <button
+                  @click="
+                    showAutoRefreshDropdown = !showAutoRefreshDropdown;
+                    showAccountToolsDropdown = false
+                  "
+                  class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.accounts.autoRefresh')"
                 >
-                  <span class="website-bracket-anchor filter-menu-trigger-label">
+                  <Icon name="refresh" size="sm" :class="[autoRefreshEnabled ? 'animate-spin' : '']" />
+                  <span class="hidden md:inline">
                     {{
                       autoRefreshEnabled
                         ? t('admin.accounts.autoRefreshCountdown', { seconds: autoRefreshCountdown })
-                      : t('admin.accounts.autoRefresh')
+                        : t('admin.accounts.autoRefresh')
                     }}
                   </span>
-                  <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
-                <FloatingDropdown
-                  :show="showAutoRefreshDropdown"
-                  :trigger-el="autoRefreshButtonRef"
-                  placement="bottom-end"
-                  :offset="8"
-                  panel-class="filter-underline-menu w-56 origin-top-right"
-                  @mouseenter="cancelAutoRefreshDropdownClose"
-                  @mouseleave="scheduleAutoRefreshDropdownClose"
-                  @close="showAutoRefreshDropdown = false"
+                <div
+                  v-if="showAutoRefreshDropdown"
+                  class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
                 >
                   <div class="p-2">
-                    <button data-testid="admin-accounts-button-set-auto-refresh-enabled-auto-refresh-enabled"
+                    <button
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
-                      class="dropdown-item account-auto-refresh-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
-                      :class="{ 'account-auto-refresh-option-active': autoRefreshEnabled }"
-                      :aria-pressed="autoRefreshEnabled"
+                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
-                      <span class="website-bracket-anchor">{{ t('admin.accounts.enableAutoRefresh') }}</span>
-                      <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="account-auto-refresh-check" />
+                      <span>{{ t('admin.accounts.enableAutoRefresh') }}</span>
+                      <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="text-primary-500" />
                     </button>
-                    <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
-                    <button data-testid="admin-accounts-button-set-auto-refresh-interval-sec"
+                    <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
+                    <button
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
                       @click="setAutoRefreshInterval(sec)"
-                      class="dropdown-item account-auto-refresh-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
-                      :class="{ 'account-auto-refresh-option-active': autoRefreshIntervalSeconds === sec }"
-                      :aria-pressed="autoRefreshIntervalSeconds === sec"
+                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
-                      <span class="website-bracket-anchor">{{ autoRefreshIntervalLabel(sec) }}</span>
-                      <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="account-auto-refresh-check" />
+                      <span>{{ autoRefreshIntervalLabel(sec) }}</span>
+                      <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="text-primary-500" />
                     </button>
                   </div>
-                </FloatingDropdown>
+                </div>
               </div>
 
               <!-- More Tools Dropdown -->
-              <div
-                class="relative"
-                ref="accountToolsDropdownRef"
-                @pointerenter="openAccountToolsDropdown"
-                @mouseenter="openAccountToolsDropdown"
-                @mouseleave="scheduleAccountToolsDropdownClose"
-              >
-                <button data-testid="admin-accounts-button-button-2"
-                  ref="accountToolsButtonRef"
-                  @click="openAccountToolsDropdown"
-                  class="filter-menu-button filter-menu-button-with-caret"
-                  :class="{ 'filter-menu-button-open': showAccountToolsDropdown }"
+              <div class="relative" ref="accountToolsDropdownRef">
+                <button
+                  ref="accountToolsTriggerRef"
+                  @click="toggleAccountToolsDropdown"
+                  class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.accounts.moreActions')"
                   :aria-expanded="showAccountToolsDropdown"
                 >
-                  <span class="website-bracket-anchor filter-menu-trigger-label">{{ t('admin.accounts.moreActions') }}</span>
-                  <span class="filter-menu-caret" aria-hidden="true"></span>
+                  <Icon name="more" size="sm" class="md:mr-1.5" />
+                  <span class="hidden md:inline">{{ t('admin.accounts.moreActions') }}</span>
+                  <Icon name="chevronDown" size="xs" class="ml-1 hidden md:inline" />
                 </button>
-                <FloatingDropdown
-                  :show="showAccountToolsDropdown"
-                  :trigger-el="accountToolsButtonRef"
-                  placement="bottom-end"
-                  :offset="8"
-                  panel-class="filter-underline-menu w-[min(20rem,calc(100vw-2rem))] origin-top-right"
-                  @mouseenter="cancelAccountToolsDropdownClose"
-                  @mouseleave="scheduleAccountToolsDropdownClose"
-                  @close="showAccountToolsDropdown = false"
-                >
-                  <div class="max-h-[70vh] overflow-y-auto p-2">
-                    <div class="px-2 py-2">
-                      <div class="text-xs font-semibold uppercase tracking-wide text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                        {{ t('admin.accounts.dataActions') }}
+                <Teleport to="body">
+                  <div
+                    v-if="showAccountToolsDropdown"
+                    class="fixed z-[9999] origin-top-right overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-dark-700 dark:bg-dark-800"
+                    :style="accountToolsDropdownStyle"
+                    @click.stop
+                  >
+                    <div class="overflow-y-auto p-2" :style="{ maxHeight: `${accountToolsDropdownPosition.maxHeight}px` }">
+                      <div class="px-2 py-2">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                          {{ t('admin.accounts.dataActions') }}
+                        </div>
                       </div>
-                    </div>
-                    <button data-testid="admin-accounts-button-open-sync-from-crs" class="account-tools-menu-item" @click="openSyncFromCrs">
-                      <span class="account-tools-menu-icon bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]">
-                        <Icon name="sync" size="sm" />
-                      </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.syncFromCrs') }}</span>
-                    </button>
-                    <button data-testid="admin-accounts-button-open-import-data" class="account-tools-menu-item" @click="openImportData">
-                      <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
-                        <Icon name="upload" size="sm" />
-                      </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.dataImport') }}</span>
-                    </button>
-                    <button data-testid="admin-accounts-button-open-export-data-dialog-from-menu" class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
-                      <span class="account-tools-menu-icon bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-300">
-                        <Icon name="download" size="sm" />
-                      </span>
-                      <span class="flex-1 text-left website-bracket-anchor">
-                        {{ selIds.length ? t('admin.accounts.dataExportSelected') : t('admin.accounts.dataExport') }}
-                      </span>
-                      <span
-                        v-if="selIds.length"
-                        class="rounded-full bg-[var(--anthropic-section)] px-2 py-0.5 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]"
-                      >
-                        {{ t('admin.accounts.selectedCount', { count: selIds.length }) }}
-                      </span>
-                    </button>
-
-                    <div class="my-2 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
-                    <div class="px-2 py-2">
-                      <div class="text-xs font-semibold uppercase tracking-wide text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                        {{ t('admin.accounts.toolActions') }}
-                      </div>
-                    </div>
-                    <button data-testid="admin-accounts-button-open-error-passthrough" class="account-tools-menu-item" @click="openErrorPassthrough">
-                      <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-                        <Icon name="shield" size="sm" />
-                      </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.errorPassthrough.title') }}</span>
-                    </button>
-                    <button data-testid="admin-accounts-button-open-tls-fingerprint-profiles" class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
-                      <span class="account-tools-menu-icon bg-[var(--anthropic-raised)] text-slate-600 dark:bg-[var(--anthropic-section)] dark:text-slate-200">
-                        <Icon name="lock" size="sm" />
-                      </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
-                    </button>
-
-                    <div class="my-2 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
-                    <div class="px-2 py-2">
-                      <div class="flex items-center justify-between gap-3">
-                        <span class="text-xs font-semibold uppercase tracking-wide text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                          {{ t('admin.accounts.viewColumns') }}
+                      <button class="account-tools-menu-item" @click="openSyncFromCrs">
+                        <span class="account-tools-menu-icon bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+                          <Icon name="sync" size="sm" />
                         </span>
-                        <Icon name="grid" size="sm" class="text-[var(--anthropic-muted)]" />
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-1">
-                      <button data-testid="admin-accounts-button-toggle-column-col-key"
-                        v-for="col in toggleableColumns"
-                        :key="col.key"
-                        @click="toggleColumn(col.key)"
-                      class="dropdown-item account-column-option flex w-full items-center justify-between text-left text-sm text-[var(--anthropic-muted)]"
-                      :class="{ 'account-column-option-active': isColumnVisible(col.key) }"
-                      :aria-pressed="isColumnVisible(col.key)"
-                      >
-                        <span class="truncate website-bracket-anchor">{{ col.label }}</span>
-                        <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
+                        <span class="flex-1 text-left">{{ t('admin.accounts.syncFromCrs') }}</span>
                       </button>
+                      <button class="account-tools-menu-item" @click="openImportData">
+                        <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
+                          <Icon name="upload" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.accounts.dataImport') }}</span>
+                      </button>
+                      <button class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
+                        <span class="account-tools-menu-icon bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300">
+                          <Icon name="download" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">
+                          {{ selIds.length ? t('admin.accounts.dataExportSelected') : t('admin.accounts.dataExport') }}
+                        </span>
+                        <span
+                          v-if="selIds.length"
+                          class="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                        >
+                          {{ t('admin.accounts.selectedCount', { count: selIds.length }) }}
+                        </span>
+                      </button>
+
+                      <div class="my-2 border-t border-gray-100 dark:border-dark-700"></div>
+                      <div class="px-2 py-2">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                          {{ t('admin.accounts.toolActions') }}
+                        </div>
+                      </div>
+                      <button class="account-tools-menu-item" @click="openErrorPassthrough">
+                        <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
+                          <Icon name="shield" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.errorPassthrough.title') }}</span>
+                      </button>
+                      <button class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
+                        <span class="account-tools-menu-icon bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200">
+                          <Icon name="lock" size="sm" />
+                        </span>
+                        <span class="flex-1 text-left">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
+                      </button>
+
+                      <div class="my-2 border-t border-gray-100 dark:border-dark-700"></div>
+                      <div class="px-2 py-2">
+                        <div class="flex items-center justify-between gap-3">
+                          <span class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                            {{ t('admin.accounts.viewColumns') }}
+                          </span>
+                          <Icon name="grid" size="sm" class="text-gray-400" />
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-1 gap-1">
+                        <button
+                          v-for="col in toggleableColumns"
+                          :key="col.key"
+                          @click="toggleColumn(col.key)"
+                          class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                        >
+                          <span class="truncate">{{ col.label }}</span>
+                          <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </FloatingDropdown>
+                </Teleport>
               </div>
             </template>
           </AccountTableActions>
@@ -191,7 +166,7 @@
           class="mt-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-200"
         >
           <span>{{ t('admin.accounts.listPendingSyncHint') }}</span>
-          <button data-testid="admin-accounts-button-sync-pending-list-changes"
+          <button
             class="btn btn-secondary px-2 py-1 text-xs"
             @click="syncPendingListChanges"
           >
@@ -216,132 +191,69 @@
           @select-all-results="handleSelectAllResults"
           @toggle-schedulable="handleBulkToggleSchedulable"
         />
-        <div ref="accountTableRef" class="account-card-table-frame flex min-h-fit flex-none flex-col overflow-visible">
-          <DataTable
-            ref="dataTableRef"
-            :columns="cols"
-            :data="accounts"
-            :loading="loading"
-            :row-class="getAccountRowClass"
-            row-key="id"
-            :server-side-sort="true"
+        <div ref="accountTableRef" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <DataTable
+          ref="dataTableRef"
+          :columns="cols"
+          :data="accounts"
+          :loading="loading"
+          row-key="id"
+          :server-side-sort="true"
           @sort="handleSort"
           default-sort-key="name"
           default-sort-order="asc"
-          :external-sort-key="sortState.sort_by"
-          :external-sort-order="sortState.sort_order"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
-          vertical-scroll-mode="page"
-            :estimate-row-height="72"
-            :overscan="5"
-            :virtualize-threshold="50"
-            mobile-table-layout
-          >
+          :estimate-row-height="156"
+          :overscan="5"
+          :virtualize-threshold="50"
+        >
           <template #header-select>
-            <input data-testid="admin-accounts-input-checkbox"
+            <input
               type="checkbox"
-              class="h-4 w-4 cursor-pointer rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+              class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               :checked="allVisibleSelected"
               @click.stop
               @change="toggleSelectAllVisible($event)"
             />
           </template>
           <template #cell-select="{ row }">
-            <div data-testid="account-card-controls" class="account-card-controls inline-flex items-center gap-1.5">
-              <div
-                data-testid="account-priority-quick-adjust"
-                class="account-priority-quick-adjust inline-flex h-6 items-center overflow-hidden rounded-md border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] font-mono text-[11px] font-semibold leading-none text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-dark-300"
-                :title="t('admin.accounts.priority')"
-              >
-                <button data-testid="admin-accounts-button-handle-priority-quick-adjust-row-1"
-                  type="button"
-                  class="account-priority-step"
-                  :title="localText('提高优先级', 'Raise priority')"
-                  :disabled="priorityUpdatingIds.has(row.id) || normalizeAccountPriority(row.priority) <= 0"
-                  @click.stop="handlePriorityQuickAdjust(row, -1)"
-                >
-                  <Icon name="chevronUp" size="xs" />
-                </button>
-                <span data-testid="account-card-priority" class="account-priority-value">
-                  P{{ row.priority ?? '-' }}
-                </span>
-                <button data-testid="admin-accounts-button-handle-priority-quick-adjust-row-1-2"
-                  type="button"
-                  class="account-priority-step"
-                  :title="localText('降低优先级', 'Lower priority')"
-                  :disabled="priorityUpdatingIds.has(row.id)"
-                  @click.stop="handlePriorityQuickAdjust(row, 1)"
-                >
-                  <Icon name="chevronDown" size="xs" />
-                </button>
-              </div>
-              <input data-testid="admin-accounts-input-checkbox-2" type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]" />
-            </div>
+            <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
           </template>
           <template #cell-id="{ value }">
-            <span class="font-mono text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">#{{ value }}</span>
+            <span class="font-mono text-xs text-gray-500 dark:text-gray-400">#{{ value }}</span>
           </template>
           <template #cell-name="{ row, value }">
-            <div class="flex min-w-0 flex-1 flex-col">
-              <div class="account-card-name-main flex min-w-0 items-start gap-2">
-                <div
-                  data-testid="account-provider-logo"
-                  class="account-provider-logo"
-                  :title="getAccountLogoProvider(row)"
-                >
-                  <ProviderBrandIcon
-                    :provider="getAccountLogoProvider(row)"
-                    :model="row.name || row.platform"
-                    :logo-url="getAccountCustomLogo(row)"
-                  />
-                </div>
-                <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="min-w-0 truncate text-sm font-medium leading-5 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
-                  <span
-                    v-if="accountDisplayEmail(row)"
-                    class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] truncate max-w-[200px]"
-                    :title="accountDisplayEmail(row) + (row.parent_chatgpt_account_id ? ' · ' + row.parent_chatgpt_account_id : '')"
-                  >
-                    {{ accountDisplayEmail(row) }}
-                  </span>
-                </div>
-              </div>
-              <div
-                v-if="getAccountExternalQuota(row)"
-                data-testid="account-external-quota"
-                class="account-external-quota mt-2 grid gap-1 px-0 py-0.5 text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-300"
+            <div class="flex flex-col">
+              <HelpTooltip
+                v-if="accountHomepageUrl(row)"
+                :content="accountHomepageUrl(row)"
+                width-class="w-max max-w-sm break-all"
+                class="-ml-1 self-start"
               >
-                <div class="account-external-quota-row account-external-quota-row-head">
-                  <span class="account-external-quota-label font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ getAccountExternalQuota(row)?.label }}
-                  </span>
-                  <a data-testid="admin-accounts-link-a"
-                    class="account-external-quota-link website-bracket-anchor font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
-                    :href="getAccountExternalQuota(row)?.url"
+                <template #trigger>
+                  <a
+                    :href="accountHomepageUrl(row)"
                     target="_blank"
                     rel="noopener noreferrer"
+                    class="border-b border-dotted border-gray-300 font-medium text-gray-900 dark:border-dark-600 dark:text-white"
                   >
-                    {{ localText('前往官网', 'Official site') }}
+                    {{ value }}
                   </a>
-                </div>
-                <div class="account-external-quota-row">
-                  <span class="account-external-quota-label">{{ localText('余额', 'Balance') }}</span>
-                  <span class="account-external-quota-value font-mono font-semibold">{{ getAccountExternalQuota(row)?.formattedBalance }}</span>
-                </div>
-                <div v-if="getAccountExternalQuota(row)?.formattedUsage" class="account-external-quota-row">
-                  <span class="account-external-quota-label">{{ localText('已用', 'Used') }}</span>
-                  <span class="account-external-quota-value font-mono">{{ getAccountExternalQuota(row)?.formattedUsage }}</span>
-                </div>
-                <div class="account-external-quota-row">
-                  <span class="account-external-quota-label">{{ localText('期限', 'Expiry') }}</span>
-                  <span class="account-external-quota-value font-mono">{{ getAccountExternalQuota(row)?.formattedExpiry }}</span>
-                </div>
-              </div>
+                </template>
+              </HelpTooltip>
+              <span v-else class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              <span
+                v-if="accountDisplayEmail(row)"
+                class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
+                :title="accountDisplayEmail(row) + (row.parent_chatgpt_account_id ? ' · ' + row.parent_chatgpt_account_id : '')"
+              >
+                {{ accountDisplayEmail(row) }}
+              </span>
             </div>
           </template>
           <template #cell-notes="{ value }">
-            <span v-if="value" :title="value" class="block max-w-xs truncate text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ value }}</span>
-            <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
+            <span v-if="value" :title="value" class="block max-w-xs truncate text-sm text-gray-600 dark:text-gray-300">{{ value }}</span>
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
           <template #cell-platform_type="{ row }">
             <div class="flex min-w-0 flex-col gap-1">
@@ -380,22 +292,9 @@
             </div>
           </template>
           <template #cell-schedulable="{ row }">
-            <div class="inline-flex items-center gap-1.5">
-              <button data-testid="admin-accounts-button-handle-toggle-schedulable-row" @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="account-toggle-switch relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'account-toggle-switch-active bg-[var(--anthropic-focus)] hover:bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] hover:bg-gray-300 dark:bg-[var(--anthropic-section)] dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
-                <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
-              </button>
-              <button
-                data-testid="account-schedule-lock-action"
-                type="button"
-                class="account-schedule-lock-action inline-flex h-6 w-6 items-center justify-center rounded-md border text-[var(--anthropic-muted)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                :class="row.schedule_locked ? 'account-schedule-lock-action-locked border-transparent bg-transparent text-[var(--anthropic-fg)] hover:bg-transparent dark:border-transparent dark:bg-transparent dark:text-[var(--anthropic-fg)]' : 'account-schedule-lock-action-unlocked border-transparent bg-transparent hover:border-transparent hover:bg-transparent hover:text-[var(--anthropic-fg)] dark:border-transparent dark:bg-transparent dark:text-dark-300 dark:hover:bg-transparent dark:hover:text-[var(--anthropic-fg)]'"
-                :disabled="togglingScheduleLock === row.id"
-                :title="row.schedule_locked ? t('admin.accounts.scheduleLocked') : t('admin.accounts.scheduleUnlocked')"
-                @click="handleToggleScheduleLock(row)"
-              >
-                <Icon :name="row.schedule_locked ? 'lock' : 'unlock'" size="xs" />
-              </button>
-            </div>
+            <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-primary-500 hover:bg-primary-600' : 'bg-gray-200 hover:bg-gray-300 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
+              <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
+            </button>
           </template>
           <template #cell-today_stats="{ row }">
             <AccountTodayStatsCell
@@ -414,49 +313,37 @@
             </div>
           </template>
           <template #cell-usage="{ row }">
-            <div class="account-usage-stack">
-              <AccountUsageCell
-                :account="row"
-                :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
-                :today-stats-loading="todayStatsLoading"
-                :manual-refresh-token="usageManualRefreshToken"
-                :batched-usage="usageBatchByAccountId[String(row.id)] ?? null"
-                :batched-usage-error="usageBatchErrorByAccountId[String(row.id)] ?? null"
-                :batched-usage-loading="usageBatchLoadingByAccountId[String(row.id)] === true"
-                :request-batched-usage="isDesktopViewport ? queueBatchedUsage : null"
-                @account-updated="handleAccountUpdated"
-                @usage-loaded="handleAccountUsageLoaded(row.id, $event)"
-              />
-              <UsageProgressBar
-                v-if="getAccountExternalQuota(row)?.progress"
-                data-testid="account-external-quota-usage-progress"
-                class="account-external-quota-usage-progress"
-                label="EXT"
-                :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0"
-                :title="getAccountExternalQuota(row)?.formattedUsage"
-                color="amber"
-                :show-now-when-idle="false"
-              />
-            </div>
+            <AccountUsageCell
+              :account="row"
+              :today-stats="todayStatsByAccountId[String(row.id)] ?? null"
+              :today-stats-loading="todayStatsLoading"
+              :manual-refresh-token="usageManualRefreshToken"
+              :batched-usage="usageBatchByAccountId[String(row.id)] ?? null"
+              :batched-usage-error="usageBatchErrorByAccountId[String(row.id)] ?? null"
+              :batched-usage-loading="usageBatchLoadingByAccountId[String(row.id)] === true"
+              :request-batched-usage="isDesktopViewport ? queueBatchedUsage : null"
+              @account-updated="handleAccountUpdated"
+              @usage-loaded="handleAccountUsageLoaded(row.id, $event)"
+            />
           </template>
           <template #cell-proxy="{ row }">
             <div class="flex flex-col gap-1">
               <div v-if="row.proxy" class="flex items-center gap-2">
-                <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ row.proxy.name }}</span>
-                <span v-if="row.proxy.country_code" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <span class="text-sm text-gray-700 dark:text-gray-300">{{ row.proxy.name }}</span>
+                <span v-if="row.proxy.country_code" class="text-xs text-gray-500 dark:text-gray-400">
                   ({{ row.proxy.country_code }})
                 </span>
               </div>
-              <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
+              <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
               <div v-if="row.proxy && row.proxy.expires_at" class="flex items-center gap-2 text-xs">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatDateTime(row.proxy.expires_at) }}</span>
+                <span class="text-gray-600 dark:text-gray-300">{{ formatDateTime(row.proxy.expires_at) }}</span>
                 <span :class="proxyExpiryBadge(row.proxy)">{{ proxyExpiryText(row.proxy) }}</span>
               </div>
               <div v-if="row.proxy_fallback_origin_id" class="flex items-center gap-1">
                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" :title="t('admin.accounts.fallbackActiveTip', { origin: row.proxy_fallback_origin_name })">
                   {{ t('admin.accounts.fallbackActive') }}
                 </span>
-                <button data-testid="admin-accounts-button-on-revert-fallback-row" class="text-xs px-1.5 py-0.5 rounded border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
+                <button class="text-xs px-1.5 py-0.5 rounded border border-gray-300 dark:border-dark-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
               </div>
             </div>
           </template>
@@ -477,7 +364,7 @@
           <template #header-upstream_billing_rate="{ column }">
             <div class="flex items-center gap-1">
               <span>{{ column.label }}</span>
-              <span data-testid="merge-accounts-view-span-6-6" @click.stop>
+              <span @click.stop>
                 <HelpTooltip :content="t('admin.accounts.upstreamBilling.trustWarning')" width-class="w-80" />
               </span>
             </div>
@@ -492,7 +379,7 @@
             />
           </template>
           <template #cell-priority="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ value }}</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300">{{ value }}</span>
           </template>
           <template #header-scheduler_score="{ column }">
             <div class="flex items-center">
@@ -506,9 +393,11 @@
                 v-for="score in getSchedulerScoreRows(row)"
                 :key="String(score.group_id)"
                 class="flex items-center gap-1 whitespace-nowrap text-gray-700 dark:text-gray-300"
-                :title="`${formatSchedulerScoreGroup(score)} / ${formatStickySchedulerScore(score)}`"
+                :title="`${formatSchedulerScoreGroup(score)} / ${formatSchedulerScore(score.base_score)} / ${formatStickySchedulerScore(score)}`"
               >
                 <span class="max-w-[4.75rem] truncate text-gray-500 dark:text-dark-400">{{ formatSchedulerScoreGroup(score) }}</span>
+                <span class="text-gray-300 dark:text-gray-600">/</span>
+                <span>{{ formatSchedulerScore(score.base_score) }}</span>
                 <span class="text-gray-300 dark:text-gray-600">/</span>
                 <span class="text-primary-700 dark:text-primary-300">{{ formatStickySchedulerScore(score) }}</span>
               </div>
@@ -516,14 +405,14 @@
             <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
           <template #cell-last_used_at="{ value }">
-            <span class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatRelativeTime(value) }}</span>
+            <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatRelativeTime(value) }}</span>
           </template>
           <template #cell-created_at="{ value }">
-            <span class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
+            <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
           </template>
           <template #cell-expires_at="{ row, value }">
             <div class="flex flex-col items-start gap-1">
-              <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatExpiresAt(value) }}</span>
+              <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatExpiresAt(value) }}</span>
               <div v-if="isExpired(value) || (row.auto_pause_on_expired && value)" class="flex items-center gap-1">
                 <span
                   v-if="isExpired(value)"
@@ -542,37 +431,17 @@
           </template>
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button data-testid="admin-accounts-button-handle-edit-row" @click="handleEdit(row)" class="account-card-text-action">
-                <span>{{ t('common.edit') }}</span>
+              <button @click="handleEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
-              <button data-testid="admin-accounts-button-handle-delete-row" @click="handleDelete(row)" class="account-card-text-action account-card-text-action-danger">
-                <span>{{ t('common.delete') }}</span>
+              <button @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
-              <button
-                data-testid="admin-accounts-button-open-menu-row-event"
-                @click="openMenu(row, $event)"
-                @mouseenter="openMenu(row, $event)"
-                @pointerenter="openMenu(row, $event)"
-                @mouseleave="scheduleMenuClose"
-                @pointerleave="scheduleMenuClose"
-                @focus="openMenu(row, $event)"
-                @blur="scheduleMenuClose"
-                class="account-card-text-action account-card-more-trigger"
-                :class="{ 'account-card-more-trigger-open': menu.show && menu.acc?.id === row.id }"
-                aria-haspopup="menu"
-                :aria-expanded="menu.show && menu.acc?.id === row.id ? 'true' : 'false'"
-              >
-                <span>{{ t('common.more') }}</span>
-                <span class="account-card-text-caret" aria-hidden="true"></span>
-              </button>
-              <button
-                data-testid="account-external-quota-progress-action"
-                type="button"
-                class="account-card-text-action"
-                :title="localText('额度条', 'Quota bar')"
-                @click="openExternalQuotaProgressSettings(row)"
-              >
-                <span>{{ localText('额度条', 'Quota bar') }}</span>
+              <button @click="openMenu(row, $event)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
+                <span class="text-xs">{{ t('common.more') }}</span>
               </button>
             </div>
           </template>
@@ -587,32 +456,7 @@
     <AccountTestModal :show="showTest" :account="testingAcc" @close="closeTestModal" />
     <AccountStatsModal :show="showStats" :account="statsAcc" @close="closeStatsModal" />
     <ScheduledTestsPanel :show="showSchedulePanel" :account-id="scheduleAcc?.id ?? null" :model-options="scheduleModelOptions" @close="closeSchedulePanel" />
-    <AccountActionMenu
-      :show="menu.show"
-      :account="menu.acc"
-      :position="menu.pos"
-      @close="closeMenu"
-      @menu-enter="cancelMenuClose"
-      @menu-leave="scheduleMenuClose"
-      @test="handleTest"
-      @stats="handleViewStats"
-      @schedule="handleSchedule"
-      @duplicate="handleDuplicateAccount"
-      @reauth="handleReAuth"
-      @refresh-token="handleRefresh"
-      @recover-state="handleRecoverState"
-      @reset-quota="handleResetQuota"
-      @set-privacy="handleSetPrivacy"
-      @create-spark-shadow="handleCreateSparkShadow"
-    />
-    <ExternalQuotaProgressSettingsModal
-      :show="externalQuotaProgressSettings.show"
-      :account="externalQuotaProgressSettings.account"
-      :subscription="externalQuotaProgressSettings.subscription"
-      :settings="externalQuotaProgressSettings.current"
-      @close="closeExternalQuotaProgressSettings"
-      @save="saveExternalQuotaProgressSettings"
-    />
+    <AccountActionMenu :show="menu.show" :account="menu.acc" :anchor-rect="menu.anchorRect" @close="menu.show = false" @test="handleTest" @stats="handleViewStats" @schedule="handleSchedule" @duplicate="handleDuplicateAccount" @reauth="handleReAuth" @refresh-token="handleRefresh" @recover-state="handleRecoverState" @reset-quota="handleResetQuota" @set-privacy="handleSetPrivacy" @create-spark-shadow="handleCreateSparkShadow" />
     <SyncFromCrsModal :show="showSync" @close="showSync = false" @synced="reload" />
     <ImportDataModal :show="showImportData" @close="showImportData = false" @imported="handleDataImported" />
     <BulkEditAccountModal
@@ -630,8 +474,8 @@
     <ConfirmDialog :show="showDeleteDialog" :title="t('admin.accounts.deleteAccount')" :message="t('admin.accounts.deleteConfirm', { name: deletingAcc?.name })" :confirm-text="t('common.delete')" :cancel-text="t('common.cancel')" :danger="true" @confirm="confirmDelete" @cancel="showDeleteDialog = false" />
     <ConfirmDialog :show="showCreateShadowDialog" :title="t('admin.accounts.createSparkShadow')" :message="t('admin.accounts.createSparkShadowConfirm', { name: creatingShadowAcc?.name })" @confirm="confirmCreateSparkShadow" @cancel="showCreateShadowDialog = false" />
     <ConfirmDialog :show="showExportDataDialog" :title="t('admin.accounts.dataExport')" :message="t('admin.accounts.dataExportConfirmMessage')" :confirm-text="t('admin.accounts.dataExportConfirm')" :cancel-text="t('common.cancel')" @confirm="handleExportData" @cancel="showExportDataDialog = false">
-      <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-        <input data-testid="admin-accounts-input-include-proxy-on-export" type="checkbox" class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]" v-model="includeProxyOnExport" />
+      <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" v-model="includeProxyOnExport" />
         <span>{{ t('admin.accounts.dataExportIncludeProxies') }}</span>
       </label>
     </ConfirmDialog>
@@ -642,31 +486,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, nextTick, onMounted, onUnmounted, toRaw, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, toRaw, watch } from 'vue'
 import { useIntervalFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
-import externalSubscriptionsAPI, { type ExternalSubscriptionStatus } from '@/api/admin/externalSubscriptions'
 import { useTableLoader } from '@/composables/useTableLoader'
 import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
 import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
-import { buildAccountExternalQuotaProgressPreferenceKey, useAccountExternalQuotaProgressSettings } from '@/composables/useAccountExternalQuotaProgressSettings'
-import { findMatchingExternalSubscription } from '@/utils/externalSubscriptionMatch'
-import {
-  buildAccountExternalQuotaProgressMeta,
-  type AccountExternalQuotaProgressPreference,
-  type ExternalQuotaProgressMeta,
-} from '@/utils/externalSubscriptionQuotaProgress'
+import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import { CreateAccountModal, EditAccountModal, BulkEditAccountModal, SyncFromCrsModal, TempUnschedStatusModal } from '@/components/account'
 import AccountTableActions from '@/components/admin/account/AccountTableActions.vue'
 import AccountTableFilters from '@/components/admin/account/AccountTableFilters.vue'
@@ -677,16 +513,13 @@ import ReAuthAccountModal from '@/components/admin/account/ReAuthAccountModal.vu
 import AccountTestModal from '@/components/admin/account/AccountTestModal.vue'
 import AccountStatsModal from '@/components/admin/account/AccountStatsModal.vue'
 import ScheduledTestsPanel from '@/components/admin/account/ScheduledTestsPanel.vue'
-import ExternalQuotaProgressSettingsModal from '@/components/admin/account/ExternalQuotaProgressSettingsModal.vue'
 import type { SelectOption } from '@/components/common/Select.vue'
 import AccountStatusIndicator from '@/components/account/AccountStatusIndicator.vue'
 import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
-import UsageProgressBar from '@/components/account/UsageProgressBar.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
 import AccountGroupsCell from '@/components/account/AccountGroupsCell.vue'
 import AccountCapacityCell from '@/components/account/AccountCapacityCell.vue'
 import UpstreamBillingRateCell from '@/components/account/UpstreamBillingRateCell.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import PlatformTypeBadge from '@/components/common/PlatformTypeBadge.vue'
 import Icon from '@/components/icons/Icon.vue'
 import ErrorPassthroughRulesModal from '@/components/admin/ErrorPassthroughRulesModal.vue'
@@ -696,14 +529,14 @@ import { buildGrokUsageRefreshKey, buildOpenAIUsageRefreshKey } from '@/utils/ac
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import { proxyExpiryBadgeClass, proxyExpiryLabelKey } from '@/utils/proxyExpiry'
 import { extractApiErrorMessage } from '@/utils/apiError'
+import { sanitizeUrl } from '@/utils/url'
+import { getFloatingPanelPosition } from '@/utils/floatingPanel'
 import { formatMultiplier } from '@/utils/formatters'
 import type { Account, AccountListItem, AccountPlatform, AccountSchedulerGroupScore, AccountType, AccountUsageInfo, Proxy as AccountProxy, AdminGroup, WindowStats, ClaudeModel, UpstreamBillingProbeSnapshot } from '@/types'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const appStore = useAppStore()
 const authStore = useAuthStore()
-
-const localText = (zh: string, en: string) => locale?.value?.startsWith('zh') ? zh : en
 
 const proxies = ref<AccountProxy[]>([])
 const groups = ref<AdminGroup[]>([])
@@ -781,10 +614,7 @@ const showSchedulePanel = ref(false)
 const scheduleAcc = ref<Account | null>(null)
 const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
-const togglingScheduleLock = ref<number | null>(null)
-const priorityUpdatingIds = reactive<Set<number>>(new Set())
-const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null, triggerRect: DOMRect | null}>({ show: false, acc: null, pos: null, triggerRect: null })
-let menuCloseTimer: ReturnType<typeof setTimeout> | null = null
+const menu = reactive<{show:boolean, acc:Account|null, anchorRect:DOMRect|null}>({ show: false, acc: null, anchorRect: null })
 const exportingData = ref(false)
 const probingUpstreamBilling = reactive(new Set<number>())
 const upstreamBillingProbeGloballyEnabled = ref<boolean | undefined>(undefined)
@@ -797,8 +627,20 @@ useIntervalFn(() => { upstreamBillingNow.value = Date.now() }, 60_000)
 // Account tools dropdown
 const showAccountToolsDropdown = ref(false)
 const accountToolsDropdownRef = ref<HTMLElement | null>(null)
-const accountToolsButtonRef = ref<HTMLElement | null>(null)
-let accountToolsDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
+const accountToolsTriggerRef = ref<HTMLElement | null>(null)
+const accountToolsDropdownPosition = reactive({
+  top: null as number | null,
+  bottom: null as number | null,
+  left: 16,
+  width: 320,
+  maxHeight: 0
+})
+const accountToolsDropdownStyle = computed(() => ({
+  top: accountToolsDropdownPosition.top == null ? 'auto' : `${accountToolsDropdownPosition.top}px`,
+  bottom: accountToolsDropdownPosition.bottom == null ? 'auto' : `${accountToolsDropdownPosition.bottom}px`,
+  left: `${accountToolsDropdownPosition.left}px`,
+  width: `${accountToolsDropdownPosition.width}px`
+}))
 const hiddenColumns = reactive<Set<string>>(new Set())
 const DEFAULT_HIDDEN_COLUMNS = ['today_stats', 'proxy', 'notes', 'scheduler_score', 'rate_multiplier']
 const HIDDEN_COLUMNS_KEY = 'account-hidden-columns'
@@ -846,8 +688,6 @@ const sortState = reactive<AccountSortState>(loadInitialAccountSortState())
 // Auto refresh settings
 const showAutoRefreshDropdown = ref(false)
 const autoRefreshDropdownRef = ref<HTMLElement | null>(null)
-const autoRefreshButtonRef = ref<HTMLElement | null>(null)
-let autoRefreshDropdownCloseTimer: ReturnType<typeof setTimeout> | null = null
 const AUTO_REFRESH_STORAGE_KEY = 'account-auto-refresh'
 const autoRefreshIntervals = [5, 10, 15, 30] as const
 const autoRefreshEnabled = ref(false)
@@ -864,68 +704,6 @@ const todayStatsError = ref<string | null>(null)
 const todayStatsReqSeq = ref(0)
 const pendingTodayStatsRefresh = ref(false)
 const usageManualRefreshToken = ref(0)
-const externalSubscriptionStatuses = ref<ExternalSubscriptionStatus[]>([])
-const {
-  getAccountExternalQuotaProgressPreference,
-  setAccountExternalQuotaProgressPreference,
-} = useAccountExternalQuotaProgressSettings()
-const externalQuotaProgressSettings = reactive<{
-  show: boolean
-  account: Account | null
-  subscription: ExternalSubscriptionStatus | null
-  current: AccountExternalQuotaProgressPreference | null
-}>({
-  show: false,
-  account: null,
-  subscription: null,
-  current: null,
-})
-
-const cancelAccountToolsDropdownClose = () => {
-  if (accountToolsDropdownCloseTimer) {
-    clearTimeout(accountToolsDropdownCloseTimer)
-    accountToolsDropdownCloseTimer = null
-  }
-}
-
-const openAccountToolsDropdown = () => {
-  cancelAccountToolsDropdownClose()
-  showAccountToolsDropdown.value = true
-  showAutoRefreshDropdown.value = false
-}
-
-const scheduleAccountToolsDropdownClose = () => {
-  cancelAccountToolsDropdownClose()
-  accountToolsDropdownCloseTimer = setTimeout(() => {
-    showAccountToolsDropdown.value = false
-    accountToolsDropdownCloseTimer = null
-  }, 160)
-}
-
-const cancelAutoRefreshDropdownClose = () => {
-  if (autoRefreshDropdownCloseTimer) {
-    clearTimeout(autoRefreshDropdownCloseTimer)
-    autoRefreshDropdownCloseTimer = null
-  }
-}
-
-const openAutoRefreshDropdown = () => {
-  cancelAutoRefreshDropdownClose()
-  showAutoRefreshDropdown.value = true
-  showAccountToolsDropdown.value = false
-}
-
-const scheduleAutoRefreshDropdownClose = () => {
-  cancelAutoRefreshDropdownClose()
-  autoRefreshDropdownCloseTimer = setTimeout(() => {
-    showAutoRefreshDropdown.value = false
-    autoRefreshDropdownCloseTimer = null
-  }, 160)
-}
-
-function hasLiveAccountActivity(row: Account) {
-  return (row.current_concurrency ?? 0) > 0 || (row.active_sessions ?? 0) > 0
-}
 
 const desktopViewportQuery = '(min-width: 768px)'
 const isDesktopViewport = ref(
@@ -1140,7 +918,7 @@ const autoRefreshIntervalLabel = (sec: number) => {
 const formatSchedulerScore = (value: unknown): string => {
   const num = Number(value)
   if (!Number.isFinite(num)) return '-'
-  return num.toFixed(2)
+  return num.toFixed(6).replace(/\.?0+$/, '')
 }
 
 const formatStickySchedulerScore = (score: AccountSchedulerGroupScore): string => {
@@ -1230,183 +1008,6 @@ const saveAutoRefreshToStorage = () => {
     )
   } catch (e) {
     console.error('Failed to save auto refresh settings:', e)
-  }
-}
-
-interface AccountExternalQuota {
-  label: string
-  url: string
-  formattedBalance: string
-  formattedExpiry: string
-  formattedUsage?: string
-  progress?: ExternalQuotaProgressMeta | null
-}
-
-const formatExternalAmount = (value?: number | null, currency?: string | null) => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null
-  const normalized = (currency || '').trim().toUpperCase()
-  if (normalized === 'CNY' || normalized === 'RMB') return `¥${value.toFixed(2)}`
-  if (normalized === 'JPY') return `¥${value.toFixed(0)}`
-  if (normalized && normalized !== 'USD') return `${normalized} ${value.toFixed(2)}`
-  return `$${value.toFixed(2)}`
-}
-
-const formatExternalTokens = (value?: number | null) => {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null
-  return `${Math.round(value).toLocaleString()} token`
-}
-
-const formatExternalDate = (value?: string | null) => {
-  if (!value) return localText('长期', 'Long-term')
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) return localText('长期', 'Long-term')
-  return parsed.toISOString().slice(0, 10)
-}
-
-const isExternalSubscriptionInvalidToken = (code?: string | null) => {
-  const normalized = (code || '').trim().toUpperCase()
-  return normalized === '401' || normalized === 'INVALID_TOKEN' || normalized === 'TOKEN_EXPIRED'
-}
-
-const externalSubscriptionLabels: Record<string, string> = {
-  buzz: 'Buzz',
-  qlhazycoder: 'QL',
-  packycode: 'Packy',
-  xhyapi: 'XHY',
-  pixel: 'Pixel',
-  liust: 'LIUST',
-  tcdmx: 'TCDMX',
-  rawchat: 'RawChat'
-}
-
-const getExternalSubscriptionLabel = (subscription: ExternalSubscriptionStatus) => {
-  return externalSubscriptionLabels[subscription.provider] || subscription.name || subscription.provider
-}
-
-const getMatchedExternalSubscription = (account: Account) => {
-  return findMatchingExternalSubscription(account, externalSubscriptionStatuses.value)
-}
-
-const buildExternalSubscriptionQuota = (subscription: ExternalSubscriptionStatus, account: Account): AccountExternalQuota => {
-  if (subscription.error_code) {
-    const isInvalidToken = isExternalSubscriptionInvalidToken(subscription.error_code)
-    return {
-      label: getExternalSubscriptionLabel(subscription),
-      url: subscription.site_url,
-      formattedBalance: isInvalidToken
-        ? localText('Token 失效', 'Token invalid')
-        : localText('读取失败', 'Read failed'),
-      formattedExpiry: isInvalidToken
-        ? localText('请更新 Token', 'Update token')
-        : (subscription.error_message || localText('请检查配置', 'Check settings')),
-      progress: null
-    }
-  }
-
-  const total = formatExternalAmount(subscription.total_limit_usd, subscription.currency)
-  const remaining = formatExternalAmount(subscription.remaining_usd, subscription.currency)
-  const preference = getAccountExternalQuotaProgressPreference(account, subscription)
-  const preferenceKey = buildAccountExternalQuotaProgressPreferenceKey(account, subscription)
-  const progress = buildAccountExternalQuotaProgressMeta(subscription, preference, {
-    tokenStats: account.external_quota_token_stats?.[preferenceKey] ?? null,
-  })
-  const used = progress?.unit === 'tokens'
-    ? formatExternalTokens(progress.used)
-    : progress ? formatExternalAmount(progress.used, subscription.currency) : null
-  const progressTotal = progress?.unit === 'tokens'
-    ? formatExternalTokens(progress.total)
-    : progress ? formatExternalAmount(progress.total, subscription.currency) : null
-  return {
-    label: getExternalSubscriptionLabel(subscription),
-    url: subscription.site_url,
-    formattedBalance: remaining && total
-      ? `${remaining} / ${total}`
-      : remaining || (total
-        ? `${localText('余额未知', 'Balance unknown')} / ${total}`
-        : subscription.balance_strategy === 'openai_billing'
-          ? localText('额度待授权', 'Quota authorization required')
-          : localText('余额未知', 'Balance unknown')),
-    formattedExpiry: formatExternalDate(subscription.expires_at),
-    formattedUsage: progress && used && progressTotal
-      ? `${used} / ${progressTotal}`
-      : formatExternalAmount(subscription.used_usd, subscription.currency) ?? undefined,
-    progress
-  }
-}
-
-const getAccountExternalQuota = (account: Account): AccountExternalQuota | null => {
-  const subscription = getMatchedExternalSubscription(account)
-  if (subscription) return buildExternalSubscriptionQuota(subscription, account)
-  return null
-}
-
-const closeExternalQuotaProgressSettings = () => {
-  externalQuotaProgressSettings.show = false
-  externalQuotaProgressSettings.account = null
-  externalQuotaProgressSettings.subscription = null
-  externalQuotaProgressSettings.current = null
-}
-
-const openExternalQuotaProgressSettings = (account: Account) => {
-  const subscription = getMatchedExternalSubscription(account)
-  externalQuotaProgressSettings.account = account
-  externalQuotaProgressSettings.subscription = subscription
-  externalQuotaProgressSettings.current = getAccountExternalQuotaProgressPreference(account, subscription ?? null)
-  externalQuotaProgressSettings.show = true
-}
-
-const saveExternalQuotaProgressSettings = async (settings: AccountExternalQuotaProgressPreference) => {
-  if (!externalQuotaProgressSettings.account) return
-  await setAccountExternalQuotaProgressPreference(
-    externalQuotaProgressSettings.account,
-    externalQuotaProgressSettings.subscription ?? null,
-    settings,
-  )
-  await load()
-  closeExternalQuotaProgressSettings()
-}
-
-const buildAccountLogoSearchText = (account: Account) => {
-  const credentials = account.credentials ?? {}
-  const extra = account.extra ?? {}
-  return [
-    account.name,
-    account.notes,
-    account.platform,
-    account.type,
-    account.custom_base_url,
-    credentials.base_url,
-    credentials.api_base_url,
-    credentials.endpoint,
-    extra.custom_base_url,
-    extra.external_provider
-  ]
-    .filter((part): part is string => typeof part === 'string' && part.trim() !== '')
-    .join(' ')
-    .toLowerCase()
-}
-
-const getAccountCustomLogo = (account: Account) => {
-  const extra = account.extra ?? {}
-  const customLogoURL = typeof extra.custom_logo_url === 'string'
-    ? extra.custom_logo_url.trim()
-    : typeof extra.logo_url === 'string'
-      ? extra.logo_url.trim()
-      : ''
-  return customLogoURL || null
-}
-
-const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(account) || account.name || account.platform
-
-const fetchExternalQuotaSummaries = async () => {
-  if (!authStore.isAdmin) return
-  try {
-    externalSubscriptionStatuses.value = await externalSubscriptionsAPI.getDisplayStatuses()
-  } catch (error) {
-    if (externalSubscriptionStatuses.value.length === 0) {
-      externalSubscriptionStatuses.value = []
-    }
-    console.error('Failed to load external subscription quota summaries:', error)
   }
 }
 
@@ -1725,23 +1326,6 @@ const handleSort = (key: string, order: AccountSortOrder) => {
   load()
 }
 
-const handleAccountFilterUpdate = (newFilters: Record<string, any>) => {
-  Object.assign(params, newFilters)
-  const sortBy = typeof newFilters.sort_by === 'string' && ACCOUNT_SORTABLE_KEYS.has(newFilters.sort_by)
-    ? newFilters.sort_by
-    : sortState.sort_by
-  const sortOrder: AccountSortOrder = newFilters.sort_order === 'desc'
-    ? 'desc'
-    : newFilters.sort_order === 'asc'
-      ? 'asc'
-      : sortState.sort_order
-  sortState.sort_by = sortBy
-  sortState.sort_order = sortOrder
-  const requestParams = params as any
-  requestParams.sort_by = sortBy
-  requestParams.sort_order = sortOrder
-}
-
 watch(loading, (isLoading, wasLoading) => {
   if (wasLoading && !isLoading) {
     upstreamBillingNow.value = Date.now()
@@ -1784,7 +1368,6 @@ const isAnyModalOpen = computed(() => {
     showTest.value ||
     showStats.value ||
     showSchedulePanel.value ||
-    externalQuotaProgressSettings.show ||
     showErrorPassthrough.value ||
     showTLSFingerprintProfiles.value
   )
@@ -1820,7 +1403,6 @@ const syncAccountRefs = (nextAccount: Account) => {
   if (reAuthAcc.value?.id === nextAccount.id) reAuthAcc.value = nextAccount
   if (tempUnschedAcc.value?.id === nextAccount.id) tempUnschedAcc.value = nextAccount
   if (deletingAcc.value?.id === nextAccount.id) deletingAcc.value = nextAccount
-  if (externalQuotaProgressSettings.account?.id === nextAccount.id) externalQuotaProgressSettings.account = nextAccount
   if (menu.acc?.id === nextAccount.id) menu.acc = nextAccount
 }
 
@@ -1896,7 +1478,7 @@ const refreshAccountsIncrementally = async () => {
 }
 
 const handleManualRefresh = async () => {
-  await Promise.all([load(), fetchExternalQuotaSummaries(), loadUpstreamBillingProbeGlobalState()])
+  await Promise.all([load(), loadUpstreamBillingProbeGlobalState()])
   // Force usage cells to refetch /usage on explicit user refresh.
   usageManualRefreshToken.value += 1
 }
@@ -1912,6 +1494,25 @@ const loadUpstreamBillingProbeGlobalState = async () => {
 
 const closeAccountToolsDropdown = () => {
   showAccountToolsDropdown.value = false
+}
+
+const updateAccountToolsDropdownPosition = () => {
+  const trigger = accountToolsTriggerRef.value
+  if (!trigger) return
+
+  const position = getFloatingPanelPosition(
+    trigger.getBoundingClientRect(),
+    document.documentElement.clientWidth || window.innerWidth,
+    window.innerHeight
+  )
+  Object.assign(accountToolsDropdownPosition, position)
+}
+
+const toggleAccountToolsDropdown = () => {
+  const nextVisible = !showAccountToolsDropdown.value
+  showAutoRefreshDropdown.value = false
+  if (nextVisible) updateAccountToolsDropdownPosition()
+  showAccountToolsDropdown.value = nextVisible
 }
 
 const openSyncFromCrs = () => {
@@ -2084,10 +1685,6 @@ function getOpenAIAuthMode(row: any): string | undefined {
   return typeof authMode === 'string' && authMode.trim() ? authMode : undefined
 }
 
-function accountDisplayEmail(row: any): string {
-  return row.extra?.email_address || row.extra?.email || row.credentials?.email || row.parent_email || ''
-}
-
 // Antigravity 订阅等级辅助函数
 function getAntigravityTierFromRow(row: any): string | null {
   if (row.platform !== 'antigravity') return null
@@ -2112,6 +1709,18 @@ function getAntigravityTierLabel(row: any): string | null {
   }
 }
 
+// 账号显示邮箱:优先账号自身(extra/credentials),影子账号回退母账号 parent_email。
+// 供名称单元格 v-if/标题/文本三处共用,避免同一回退链在模板里重复三次。
+function accountDisplayEmail(row: any): string {
+  return row.extra?.email_address || row.extra?.email || row.credentials?.email || row.parent_email || ''
+}
+
+function accountHomepageUrl(row: Account): string {
+  if (row.type !== 'apikey' || typeof row.credentials?.base_url !== 'string') return ''
+  const baseUrl = sanitizeUrl(row.credentials.base_url)
+  return baseUrl ? new URL(baseUrl).origin : ''
+}
+
 type OpenAICompactBadgeState = 'active' | 'blocked' | 'auto'
 
 function getOpenAICompactState(row: any): OpenAICompactBadgeState | null {
@@ -2134,13 +1743,13 @@ function getOpenAICompactMeta(row: any): { label: string; className: string; dot
       return {
         label: t('admin.accounts.openai.compactSupported'),
         className: 'text-emerald-600 dark:text-emerald-300',
-        dotClass: 'bg-emerald-500'
+        dotClass: 'bg-emerald-500 shadow-[0_0_0_2px_rgba(16,185,129,0.14)]'
       }
     case 'blocked':
       return {
         label: t('admin.accounts.openai.compactUnsupported'),
         className: 'text-rose-600 dark:text-rose-300',
-        dotClass: 'bg-rose-500'
+        dotClass: 'bg-rose-500 shadow-[0_0_0_2px_rgba(244,63,94,0.14)]'
       }
     case 'auto':
       return {
@@ -2162,9 +1771,9 @@ function getOpenAICompactTitle(row: any): string {
 function getAntigravityTierClass(row: any): string {
   const tier = getAntigravityTierFromRow(row)
   switch (tier) {
-    case 'free-tier': return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
-    case 'g1-pro-tier': return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
-    case 'g1-ultra-tier': return 'bg-accent-200 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
+    case 'free-tier': return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
+    case 'g1-pro-tier': return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    case 'g1-ultra-tier': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
     default: return ''
   }
 }
@@ -2233,108 +1842,12 @@ const handleEdit = async (a: AccountListItem) => {
   edAcc.value = account
   showEdit.value = true
 }
-
-const cancelMenuClose = () => {
-  if (menuCloseTimer) {
-    clearTimeout(menuCloseTimer)
-    menuCloseTimer = null
-  }
-}
-
-const closeMenu = () => {
-  cancelMenuClose()
-  menu.show = false
-  menu.triggerRect = null
-}
-
-const scheduleMenuClose = () => {
-  cancelMenuClose()
-  menuCloseTimer = setTimeout(() => {
-    menu.show = false
-    menuCloseTimer = null
-  }, 180)
-}
-
-const positionMenuFromTrigger = (triggerRect: DOMRect, panelHeight = 240) => {
-  const menuWidth = 208
-  const padding = 8
-  const offset = 6
-  const viewportWidth = window.innerWidth
-  const viewportHeight = window.innerHeight
-
-  const left = Math.max(padding, Math.min(
-    viewportWidth < 768
-      ? triggerRect.left + triggerRect.width / 2 - menuWidth / 2
-      : triggerRect.right - menuWidth,
-    viewportWidth - menuWidth - padding
-  ))
-
-  const spaceBelow = viewportHeight - triggerRect.bottom - padding
-  const spaceAbove = triggerRect.top - padding
-  const opensUpward = panelHeight + offset > spaceBelow && spaceAbove > spaceBelow
-  const top = opensUpward
-    ? Math.max(padding, triggerRect.top - panelHeight - offset)
-    : Math.min(triggerRect.bottom + offset, viewportHeight - panelHeight - padding)
-
-  menu.pos = { top, left }
-}
-
-const openMenu = async (a: Account, e: Event) => {
-  cancelMenuClose()
+const openMenu = (a: Account, e: MouseEvent) => {
   menu.acc = a
-  showAccountToolsDropdown.value = false
-  showAutoRefreshDropdown.value = false
-
   const target = e.currentTarget as HTMLElement
-  if (target) {
-    menu.triggerRect = target.getBoundingClientRect()
-    positionMenuFromTrigger(menu.triggerRect)
-  } else {
-    menu.triggerRect = null
-    menu.pos = { top: 8, left: 8 }
-  }
-
+  menu.anchorRect = target.getBoundingClientRect()
   menu.show = true
-  await nextTick()
-  const panel = document.querySelector<HTMLElement>('[data-testid="admin-account-account-action-menu-div-div"]')
-  if (panel && menu.triggerRect) {
-    positionMenuFromTrigger(menu.triggerRect, panel.offsetHeight)
-  }
 }
-
-const normalizeAccountPriority = (value?: number | null) => {
-  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0
-}
-
-const isAccountCalling = (row: Account) => {
-  return hasLiveAccountActivity(row)
-}
-
-const getAccountRowClass = (row: Account) => {
-  return [
-    isAccountCalling(row) ? 'codex-account-card-calling' : '',
-    row.status === 'active' && !row.schedulable ? 'codex-account-card-paused' : '',
-  ].filter(Boolean).join(' ')
-}
-
-const handlePriorityQuickAdjust = async (account: Account, delta: number) => {
-  if (priorityUpdatingIds.has(account.id)) return
-  const nextPriority = Math.max(0, normalizeAccountPriority(account.priority) + delta)
-  if (nextPriority === normalizeAccountPriority(account.priority)) return
-
-  priorityUpdatingIds.add(account.id)
-  try {
-    const updated = await adminAPI.accounts.update(account.id, { priority: nextPriority })
-    patchAccountInList(updated)
-    enterAutoRefreshSilentWindow()
-    appStore.showSuccess(t('common.success'))
-  } catch (error: any) {
-    appStore.showError(error?.message || t('common.error'))
-  } finally {
-    priorityUpdatingIds.delete(account.id)
-  }
-}
-
 const toggleSelectAllVisible = (event: Event) => {
   const target = event.target as HTMLInputElement
   toggleVisible(target.checked)
@@ -2378,10 +1891,13 @@ const handleBulkResetStatus = async () => {
 }
 const handleBulkRefreshToken = async () => {
   if (!confirm(t('common.confirm'))) return
+  const accountIds = [...selIds.value]
   try {
-    const result = await adminAPI.accounts.batchRefresh(selIds.value)
+    const result = await adminAPI.accounts.batchRefresh(accountIds)
     if (result.failed > 0) {
       appStore.showError(t('admin.accounts.bulkActions.partialSuccess', { success: result.success, failed: result.failed }))
+      const failedIds = result.errors?.map(error => error.account_id) ?? []
+      setSelectedIds(failedIds.length > 0 ? failedIds : accountIds)
     } else {
       appStore.showSuccess(t('admin.accounts.bulkActions.refreshTokenSuccess', { count: result.success }))
       clearSelection()
@@ -2430,11 +1946,6 @@ const updateSchedulableInList = (accountIds: number[], schedulable: boolean) => 
   if (accountIds.length === 0) return
   const idSet = new Set(accountIds)
   accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedulable } : account))
-}
-const updateScheduleLockedInList = (accountIds: number[], scheduleLocked: boolean) => {
-  if (accountIds.length === 0) return
-  const idSet = new Set(accountIds)
-  accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedule_locked: scheduleLocked } : account))
 }
 const normalizeBulkSchedulableResult = (
   result: {
@@ -2771,7 +2282,13 @@ const handleExportData = async () => {
     link.download = filename
     link.click()
     URL.revokeObjectURL(url)
-    appStore.showSuccess(t('admin.accounts.dataExported'))
+    // spark 影子账号被后端排除出备份(其凭据透传母账号、调度配置不可经凭据型导入重建);
+    // 跳过非零时明确提示用户,避免「下载成功但少了账号」的静默丢失。
+    if (dataPayload.skipped_shadows && dataPayload.skipped_shadows > 0) {
+      appStore.showWarning(t('admin.accounts.dataExportedSkippedShadows', { count: dataPayload.skipped_shadows }))
+    } else {
+      appStore.showSuccess(t('admin.accounts.dataExported'))
+    }
   } catch (error: any) {
     if (isStepUpCancelled(error)) {
       // 用户主动取消 step-up 验证，静默返回，不弹错误提示。
@@ -2835,9 +2352,10 @@ const handleDuplicateAccount = async (a: Account) => {
 }
 const handleRefresh = async (a: Account) => {
   try {
-    const updated = await adminAPI.accounts.refreshCredentials(a.id)
-    patchAccountInList(updated)
+    const result = await adminAPI.accounts.refreshCredentials(a.id)
+    patchAccountInList(result.account)
     enterAutoRefreshSilentWindow()
+    if (result.warning) appStore.showWarning(result.message)
   } catch (error) {
     console.error('Failed to refresh credentials:', error)
   }
@@ -2863,12 +2381,39 @@ const handleResetQuota = async (a: Account) => {
     console.error('Failed to reset quota:', error)
   }
 }
+
+const privacyResultMessageKey = (account: Account): { type: 'success' | 'error'; key: string } => {
+  const mode = typeof account.extra?.privacy_mode === 'string' ? account.extra.privacy_mode : ''
+  if (account.platform === 'openai') {
+    switch (mode) {
+      case 'training_off':
+        return { type: 'success', key: 'admin.accounts.privacyTrainingOff' }
+      case 'training_set_cf_blocked':
+        return { type: 'error', key: 'admin.accounts.privacyCfBlocked' }
+      default:
+        return { type: 'error', key: 'admin.accounts.privacyFailed' }
+    }
+  }
+  if (account.platform === 'antigravity') {
+    if (mode === 'privacy_set') {
+      return { type: 'success', key: 'admin.accounts.privacyAntigravitySet' }
+    }
+    return { type: 'error', key: 'admin.accounts.privacyAntigravityFailed' }
+  }
+  return { type: 'error', key: 'admin.accounts.privacyFailed' }
+}
+
 const handleSetPrivacy = async (a: Account) => {
   try {
     const updated = await adminAPI.accounts.setPrivacy(a.id)
     patchAccountInList(updated)
     enterAutoRefreshSilentWindow()
-    appStore.showSuccess(t('common.success'))
+    const result = privacyResultMessageKey(updated)
+    if (result.type === 'success') {
+      appStore.showSuccess(t(result.key))
+    } else {
+      appStore.showError(t(result.key))
+    }
   } catch (error: any) {
     console.error('Failed to set privacy:', error)
     appStore.showError(error?.response?.data?.message || t('admin.accounts.privacyFailed'))
@@ -2889,10 +2434,10 @@ const handleCreateSparkShadow = (a: Account) => {
   showCreateShadowDialog.value = true
 }
 const confirmCreateSparkShadow = async () => {
-  const account = creatingShadowAcc.value
-  if (!account) return
+  const a = creatingShadowAcc.value
+  if (!a) return
   try {
-    await adminAPI.accounts.createSparkShadow(account.id, { name: `${account.name} (Spark)` })
+    await adminAPI.accounts.createSparkShadow(a.id, { name: `${a.name} (Spark)` })
     showCreateShadowDialog.value = false
     creatingShadowAcc.value = null
     appStore.showSuccess(t('admin.accounts.createSparkShadowSuccess'))
@@ -2916,20 +2461,6 @@ const handleToggleSchedulable = async (a: Account) => {
     appStore.showError(t('admin.accounts.failedToToggleSchedulable'))
   } finally {
     togglingSchedulable.value = null
-  }
-}
-const handleToggleScheduleLock = async (a: Account) => {
-  const nextLocked = !a.schedule_locked
-  togglingScheduleLock.value = a.id
-  try {
-    const updated = await adminAPI.accounts.setScheduleLocked(a.id, nextLocked)
-    updateScheduleLockedInList([a.id], updated?.schedule_locked ?? nextLocked)
-    enterAutoRefreshSilentWindow()
-  } catch (error) {
-    console.error('Failed to toggle schedule lock:', error)
-    appStore.showError(t('admin.accounts.failedToToggleScheduleLock'))
-  } finally {
-    togglingScheduleLock.value = null
   }
 }
 const handleShowTempUnsched = (a: Account) => { tempUnschedAcc.value = a; showTempUnsched.value = true }
@@ -2966,8 +2497,14 @@ const proxyExpiryText = (p: AccountProxy): string => {
 }
 
 // 表格滚动时关闭行操作菜单，并让顶部工具菜单继续贴紧触发按钮。
-const handleScroll = () => {
+const handleScroll = (event: Event) => {
+  if (event.target instanceof Element && event.target.closest('.action-menu-content')) return
   menu.show = false
+  if (showAccountToolsDropdown.value) updateAccountToolsDropdownPosition()
+}
+
+const handleViewportResize = () => {
+  if (showAccountToolsDropdown.value) updateAccountToolsDropdownPosition()
 }
 
 // 点击外部关闭顶部下拉菜单
@@ -2996,10 +2533,6 @@ onMounted(async () => {
   }
 
   load()
-  // Load external subscription balances alongside the account list so matched
-  // provider details are available on the first render, not only after a
-  // manual refresh.
-  fetchExternalQuotaSummaries()
   loadUpstreamBillingProbeGlobalState()
   const [proxiesResult, groupsResult] = await Promise.allSettled([
     adminAPI.proxies.getAll(),
@@ -3016,6 +2549,7 @@ onMounted(async () => {
     console.error('Failed to load groups:', groupsResult.reason)
   }
   window.addEventListener('scroll', handleScroll, true)
+  window.addEventListener('resize', handleViewportResize)
   document.addEventListener('click', handleClickOutside)
 
   if (autoRefreshEnabled.value) {
@@ -3034,6 +2568,7 @@ onUnmounted(() => {
   }
   pendingUsageBatchIds.clear()
   window.removeEventListener('scroll', handleScroll, true)
+  window.removeEventListener('resize', handleViewportResize)
   document.removeEventListener('click', handleClickOutside)
   if (desktopViewportMediaQuery && desktopViewportListener) {
     if (typeof desktopViewportMediaQuery.removeEventListener === 'function') {
@@ -3049,54 +2584,10 @@ onUnmounted(() => {
 
 <style scoped>
 .account-tools-menu-item {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 0.75rem;
-  border: 0;
-  border-radius: 0;
-  padding: 0.625rem 0.75rem;
-  background: transparent;
-  color: var(--anthropic-muted);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  text-decoration: none;
-  box-shadow: none;
-  transition:
-    color 0.2s ease,
-    text-decoration-color 0.2s ease;
-}
-
-.account-tools-menu-item:hover,
-.account-tools-menu-item:focus-visible {
-  border-color: transparent;
-  background: transparent;
-  color: var(--anthropic-fg);
-  text-decoration: none;
-  box-shadow: none;
+  @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700;
 }
 
 .account-tools-menu-icon {
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--anthropic-border-subtle);
-  border-radius: 8px;
-  background: var(--anthropic-page);
-  color: var(--anthropic-muted);
-  box-shadow: none;
-}
-
-.account-usage-stack {
-  display: grid;
-  gap: 0.25rem;
-  min-width: 0;
-}
-
-.account-external-quota-usage-progress {
-  min-width: 0;
+  @apply inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md;
 }
 </style>
