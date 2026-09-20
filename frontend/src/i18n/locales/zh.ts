@@ -787,6 +787,8 @@ export default {
     groupLabel: '分组',
     selectGroup: '选择分组',
     statusLabel: '状态',
+    logoUrlLabel: 'Logo URL',
+    logoUrlHint: '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则显示默认密钥图标。',
     selectStatus: '选择状态',
     saving: '保存中...',
     noKeysYet: '暂无 API 密钥',
@@ -2678,6 +2680,8 @@ export default {
       form: {
         name: '名称',
         namePlaceholder: '输入渠道名称',
+        logoUrl: 'Logo URL',
+        logoUrlHint: '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则只显示默认图标。',
         description: '描述',
         descriptionPlaceholder: '可选描述',
         status: '状态',
