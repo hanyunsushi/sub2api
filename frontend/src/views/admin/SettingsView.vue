@@ -4,7 +4,7 @@
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div
-          class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"
+          class="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
         ></div>
       </div>
 
@@ -12,13 +12,17 @@
       <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
         <!-- Tab Navigation -->
         <div class="settings-tabs-shell">
-          <nav
-            class="settings-tabs-scroll"
-            role="tablist"
-            :aria-label="t('admin.settings.title')"
-          >
-            <div class="settings-tabs">
-              <button
+          <nav class="settings-tabs-scroll">
+            <div
+              ref="settingsTabsRef"
+              class="settings-tabs route-tabs settings-route-tabs"
+              data-route-tabs="admin-settings"
+              role="tablist"
+              :aria-label="t('admin.settings.title')"
+              @mouseleave="moveSettingsTabIndicatorToSelected"
+              @focusout="handleSettingsTabsFocusout"
+            >
+              <button data-testid="admin-settings-button-select-settings-tab-tab-key"
                 v-for="tab in settingsTabs"
                 :key="tab.key"
                 :id="`settings-tab-${tab.key}`"
@@ -30,12 +34,12 @@
                   'settings-tab',
                   activeTab === tab.key && 'settings-tab-active',
                 ]"
+                :data-route-id="tab.key"
+                @mouseenter="moveSettingsTabIndicatorFromEvent"
+                @focus="moveSettingsTabIndicatorFromEvent"
                 @click="selectSettingsTab(tab.key)"
                 @keydown="handleSettingsTabKeydown($event, tab.key)"
               >
-                <span class="settings-tab-icon">
-                  <Icon :name="tab.icon" size="sm" />
-                </span>
                 <span class="settings-tab-label">{{
                   t(`admin.settings.tabs.${tab.key}`)
                 }}</span>
@@ -81,7 +85,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -94,7 +98,7 @@
                 <span class="text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.adminApiKey.notConfigured") }}
                 </span>
-                <button
+                <button data-testid="admin-settings-button-create-admin-api-key"
                   type="button"
                   @click="createAdminApiKey"
                   :disabled="adminApiKeyOperating"
@@ -144,7 +148,7 @@
                     </code>
                   </div>
                   <div class="flex gap-2">
-                    <button
+                    <button data-testid="admin-settings-button-regenerate-admin-api-key"
                       type="button"
                       @click="regenerateAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -156,7 +160,7 @@
                           : t("admin.settings.adminApiKey.regenerate")
                       }}
                     </button>
-                    <button
+                    <button data-testid="admin-settings-button-delete-admin-api-key"
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
@@ -183,7 +187,7 @@
                     >
                       {{ newAdminApiKey }}
                     </code>
-                    <button
+                    <button data-testid="admin-settings-button-copy-new-key"
                       type="button"
                       @click="copyNewKey"
                       class="btn btn-primary btn-sm flex-shrink-0"
@@ -221,7 +225,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -249,7 +253,7 @@
                     >
                       {{ t("admin.settings.overloadCooldown.cooldownMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-overload-cooldown-form-cooldown-minutes"
                       v-model.number="overloadCooldownForm.cooldown_minutes"
                       type="number"
                       min="1"
@@ -267,7 +271,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-overload-cooldown-settings"
                     type="button"
                     @click="saveOverloadCooldownSettings"
                     :disabled="overloadCooldownSaving"
@@ -322,7 +326,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -354,7 +358,7 @@
                         )
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rate-limit429-cooldown-form-cooldown-seconds"
                       v-model.number="rateLimit429CooldownForm.cooldown_seconds"
                       type="number"
                       min="1"
@@ -374,7 +378,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rate-limit429-cooldown-settings"
                     type="button"
                     @click="saveRateLimit429CooldownSettings"
                     :disabled="rateLimit429CooldownSaving"
@@ -430,7 +434,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -461,7 +465,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.action") }}
                     </label>
-                    <select
+                    <select data-testid="admin-settings-select-stream-timeout-form-action"
                       v-model="streamTimeoutForm.action"
                       class="input w-64"
                     >
@@ -489,7 +493,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.tempUnschedMinutes") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-temp-unsched-minutes"
                       v-model.number="streamTimeoutForm.temp_unsched_minutes"
                       type="number"
                       min="1"
@@ -510,7 +514,7 @@
                     >
                       {{ t("admin.settings.streamTimeout.thresholdCount") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-count"
                       v-model.number="streamTimeoutForm.threshold_count"
                       type="number"
                       min="1"
@@ -531,7 +535,7 @@
                         t("admin.settings.streamTimeout.thresholdWindowMinutes")
                       }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-stream-timeout-form-threshold-window-minutes"
                       v-model.number="
                         streamTimeoutForm.threshold_window_minutes
                       "
@@ -554,7 +558,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-stream-timeout-settings"
                     type="button"
                     @click="saveStreamTimeoutSettings"
                     :disabled="streamTimeoutSaving"
@@ -610,7 +614,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -709,7 +713,7 @@
                       :key="index"
                       class="flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rectifier-form-apikey-signature-patterns-index"
                         v-model="rectifierForm.apikey_signature_patterns[index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -717,7 +721,7 @@
                           t('admin.settings.rectifier.apikeyPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-remove-rectifier-pattern"
                         type="button"
                         @click="
                           rectifierForm.apikey_signature_patterns.splice(
@@ -742,10 +746,10 @@
                         </svg>
                       </button>
                     </div>
-                    <button
+                    <button data-testid="admin-settings-button-add-rectifier-pattern"
                       type="button"
                       @click="rectifierForm.apikey_signature_patterns.push('')"
-                      class="btn btn-ghost btn-xs text-primary-600 dark:text-primary-400"
+                      class="btn btn-ghost btn-xs text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     >
                       + {{ t("admin.settings.rectifier.addPattern") }}
                     </button>
@@ -756,7 +760,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-rectifier-settings"
                     type="button"
                     @click="saveRectifierSettings"
                     :disabled="rectifierSaving"
@@ -809,7 +813,7 @@
                 class="flex items-center gap-2 text-gray-500"
               >
                 <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
+                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"
                 ></div>
                 {{ t("common.loading") }}
               </div>
@@ -871,7 +875,7 @@
                     >
                       {{ t("admin.settings.betaPolicy.errorMessage") }}
                     </label>
-                    <input
+                    <input data-testid="admin-settings-input-rule-error-message"
                       v-model="rule.error_message"
                       type="text"
                       class="input"
@@ -892,11 +896,11 @@
                       {{ t("admin.settings.betaPolicy.quickPresets") }}
                     </label>
                     <div class="flex flex-wrap gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-apply-beta-preset-rule-preset"
                         v-for="preset in betaPresets[rule.beta_token]"
                         :key="preset.label"
                         type="button"
-                        class="inline-flex items-center gap-1 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
+                        class="inline-flex items-center gap-1 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-[var(--anthropic-fg)] transition-colors hover:bg-[var(--anthropic-section)] dark:border-primary-800 dark:bg-[var(--anthropic-section)] dark:text-primary-300 dark:hover:bg-primary-900/50"
                         @click="applyBetaPreset(rule, preset)"
                         :title="preset.description"
                       >
@@ -921,7 +925,7 @@
                       :key="index"
                       class="mb-1.5 flex items-center gap-2"
                     >
-                      <input
+                      <input data-testid="admin-settings-input-rule-model-whitelist-index"
                         v-model="rule.model_whitelist![index]"
                         type="text"
                         class="input input-sm flex-1"
@@ -929,7 +933,7 @@
                           t('admin.settings.betaPolicy.modelPatternPlaceholder')
                         "
                       />
-                      <button
+                      <button data-testid="admin-settings-button-remove-beta-model-pattern"
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
                         class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -950,13 +954,13 @@
                       </button>
                     </div>
                     <!-- Add pattern button -->
-                    <button
+                    <button data-testid="admin-settings-button-add-beta-model-pattern"
                       type="button"
                       @click="
                         if (!rule.model_whitelist) rule.model_whitelist = [];
                         rule.model_whitelist.push('');
                       "
-                      class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                     >
                       <svg
                         class="h-3.5 w-3.5"
@@ -980,11 +984,11 @@
                           t("admin.settings.betaPolicy.commonPatterns")
                         }}:</span
                       >
-                      <button
+                      <button data-testid="admin-settings-button-add-quick-pattern-rule-pattern"
                         v-for="pattern in commonModelPatterns"
                         :key="pattern"
                         type="button"
-                        class="rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300"
+                        class="rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300"
                         @click="addQuickPattern(rule, pattern)"
                       >
                         {{ pattern }}
@@ -1014,7 +1018,7 @@
                     </p>
                     <!-- Fallback Error Message (only when fallback_action=block) -->
                     <div v-if="rule.fallback_action === 'block'" class="mt-2">
-                      <input
+                      <input data-testid="admin-settings-input-rule-fallback-error-message"
                         v-model="rule.fallback_error_message"
                         type="text"
                         class="input"
@@ -1035,7 +1039,7 @@
                 <div
                   class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <button
+                  <button data-testid="admin-settings-button-save-beta-policy-settings"
                     type="button"
                     @click="saveBetaPolicySettings"
                     :disabled="betaPolicySaving"
@@ -1184,7 +1188,6 @@
                           | 'all'
                           | 'priority'
                           | 'flex'
-                          | 'missing'
                       "
                       :options="openaiFastPolicyTierOptions"
                     />
@@ -1330,7 +1333,7 @@
                   <button
                     type="button"
                     @click="addOpenAIFastPolicyModelPattern(rule)"
-                    class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    class="mb-2 inline-flex items-center gap-1 text-xs text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                   >
                     <svg
                       class="h-3.5 w-3.5"
@@ -1937,7 +1940,7 @@
                         {{ t("admin.settings.panelRateLimit.heavyRpm") }}
                       </label>
                       <div class="flex items-center gap-2">
-                        <input
+                        <input data-testid="merge-settings-view-number-1"
                           v-model.number="panelRateLimitForm.heavy_rpm"
                           type="number"
                           min="0"
@@ -1960,7 +1963,7 @@
                         {{ t("admin.settings.panelRateLimit.publicIpRpm") }}
                       </label>
                       <div class="flex items-center gap-2">
-                        <input
+                        <input data-testid="merge-settings-view-number-2"
                           v-model.number="panelRateLimitForm.public_ip_rpm"
                           type="number"
                           min="0"
@@ -2141,7 +2144,7 @@
                       <a
                         href="https://dash.cloudflare.com/"
                         target="_blank"
-                        class="text-primary-600 hover:text-primary-500"
+                        class="text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]"
                         >{{
                           t("admin.settings.turnstile.cloudflareDashboard")
                         }}</a
@@ -2597,22 +2600,22 @@
                       <template v-if="isZhLocale">
                         开通引导：GitHub Settings → Developer settings →
                         <a
-                          data-testid="github-oauth-apps-guide-link"
+                          data-testid="github-oauth-apps-guide-link-zh"
                           href="https://github.com/settings/developers"
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+                          class="font-medium text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
                         >OAuth Apps</a>
                         → New OAuth App；Homepage URL 填站点域名，Authorization callback URL 填下面的后端回调地址。
                       </template>
                       <template v-else>
                         Setup guide: GitHub Settings → Developer settings →
                         <a
-                          data-testid="github-oauth-apps-guide-link"
+                          data-testid="github-oauth-apps-guide-link-en"
                           href="https://github.com/settings/developers"
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+                          class="font-medium text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
                         >OAuth Apps</a>
                         → New OAuth App. Use your site origin as Homepage URL and the backend callback URL below as Authorization callback URL.
                       </template>
@@ -3234,7 +3237,7 @@
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="none"
-                          class="h-4 w-4 text-primary-600"
+                          class="h-4 w-4 text-[var(--anthropic-fg)]"
                         />
                         <span class="text-sm text-gray-700 dark:text-gray-300">
                           {{ t("admin.settings.dingtalk.corpPolicy.none") }}
@@ -3245,7 +3248,7 @@
                           v-model="form.dingtalk_connect_corp_restriction_policy"
                           type="radio"
                           value="internal_only"
-                          class="h-4 w-4 text-primary-600"
+                          class="h-4 w-4 text-[var(--anthropic-fg)]"
                         />
                         <span class="text-sm text-gray-700 dark:text-gray-300">
                           {{ t("admin.settings.dingtalk.corpPolicy.internalOnly") }}
@@ -6101,7 +6104,7 @@
                       <button
                         v-if="(provider.quota_used ?? 0) > 0"
                         type="button"
-                        class="text-xs text-primary-600 hover:text-primary-700"
+                        class="text-xs text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]"
                         @click="resetWebSearchUsage(pIdx)"
                       >
                         {{ t("admin.settings.webSearchEmulation.resetUsage") }}
@@ -6140,7 +6143,7 @@
             @click.self="wsTestDialogOpen = false"
           >
             <div
-              class="mx-4 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-dark-800"
+              class="mx-4 w-full max-w-lg rounded-xl border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]"
             >
               <h3
                 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white"
@@ -6491,7 +6494,7 @@
 
                 <button
                   type="button"
-                  class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+                  class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                   @click="addEndpoint"
                 >
                   <svg
@@ -6560,7 +6563,7 @@
                   :upload-label="t('admin.settings.site.uploadImage')"
                   :remove-label="t('admin.settings.site.remove')"
                   :hint="t('admin.settings.site.logoHint')"
-                  :max-size="300 * 1024"
+                  :max-size="null"
                 />
               </div>
 
@@ -6629,6 +6632,81 @@
               </p>
             </div>
             <div class="space-y-4 p-6">
+              <div
+                v-if="form.custom_menu_items.length"
+                class="custom-menu-order-list rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              >
+                <div class="mb-3">
+                  <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    {{ t("admin.settings.customMenu.orderTitle") }}
+                  </h3>
+                  <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    {{ t("admin.settings.customMenu.orderDescription") }}
+                  </p>
+                </div>
+                <div class="grid gap-2">
+                  <div
+                    v-for="(item, index) in form.custom_menu_items"
+                    :key="`order-${item.id || index}`"
+                    class="flex min-h-11 items-center gap-3 rounded-md border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  >
+                    <span class="w-8 flex-shrink-0 text-xs font-semibold tabular-nums text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                      {{ index + 1 }}
+                    </span>
+                    <span class="min-w-0 flex-1 truncate text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">
+                      {{
+                        item.label ||
+                        t("admin.settings.customMenu.itemLabel", { n: index + 1 })
+                      }}
+                    </span>
+                    <div class="flex flex-shrink-0 items-center gap-1">
+                      <button data-testid="admin-settings-button-custom-menu-order-move-up"
+                        type="button"
+                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
+                        :disabled="index === 0"
+                        :title="t('admin.settings.customMenu.moveUp')"
+                        @click="moveMenuItem(index, -1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 15l7-7 7 7"
+                          />
+                        </svg>
+                      </button>
+                      <button data-testid="admin-settings-button-custom-menu-order-move-down"
+                        type="button"
+                        class="rounded-md p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-200"
+                        :disabled="index === form.custom_menu_items.length - 1"
+                        :title="t('admin.settings.customMenu.moveDown')"
+                        @click="moveMenuItem(index, 1)"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Existing menu items -->
               <div
                 v-for="(item, index) in form.custom_menu_items"
@@ -6747,6 +6825,26 @@
                     </select>
                   </div>
 
+                  <!-- Open mode -->
+                  <div>
+                    <label
+                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                    >
+                      {{ t("admin.settings.customMenu.openMode") }}
+                    </label>
+                    <select data-testid="admin-settings-select-item-open-mode" v-model="item.open_mode" class="input text-sm">
+                      <option value="iframe">
+                        {{ t("admin.settings.customMenu.openModeIframe") }}
+                      </option>
+                      <option value="redirect">
+                        {{ t("admin.settings.customMenu.openModeRedirect") }}
+                      </option>
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.customMenu.openModeHint") }}
+                    </p>
+                  </div>
+
                   <!-- URL (full width) -->
                   <div class="sm:col-span-2">
                     <label
@@ -6764,17 +6862,6 @@
                     />
                   </div>
 
-                  <label class="flex items-center gap-2 sm:col-span-2">
-                    <input
-                      v-model="item.hide_open_button"
-                      type="checkbox"
-                      data-testid="custom-menu-hide-open-button"
-                    />
-                    <span class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ t("admin.settings.customMenu.hideOpenButton") }}
-                    </span>
-                  </label>
-
                   <!-- SVG Icon (full width) -->
                   <div class="sm:col-span-2">
                     <label
@@ -6782,13 +6869,16 @@
                     >
                       {{ t("admin.settings.customMenu.iconSvg") }}
                     </label>
-                    <ImageUpload
+                    <CustomMenuIconPicker
                       :model-value="item.icon_svg"
-                      mode="svg"
-                      size="sm"
                       :upload-label="t('admin.settings.customMenu.uploadSvg')"
                       :remove-label="t('admin.settings.customMenu.removeSvg')"
+                      :url-label="t('admin.settings.customMenu.svgUrl')"
+                      :url-placeholder="t('admin.settings.customMenu.svgUrlPlaceholder')"
+                      :url-hint="t('admin.settings.customMenu.svgUrlHint')"
+                      :presets-label="t('admin.settings.customMenu.savedSvgIcons')"
                       @update:model-value="(v: string) => (item.icon_svg = v)"
+                      @presets-updated="handleCustomMenuIconPresetsUpdated"
                     />
                   </div>
                 </div>
@@ -6797,7 +6887,7 @@
               <!-- Add button -->
               <button
                 type="button"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-[var(--anthropic-fg)] dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                 @click="addMenuItem"
               >
                 <svg
@@ -6859,7 +6949,7 @@
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
                         form.login_agreement_mode === 'modal'
-                          ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
+                          ? 'bg-white text-[var(--anthropic-fg)] shadow-sm dark:bg-dark-800 dark:text-primary-300'
                           : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
                       "
                       @click="form.login_agreement_mode = 'modal'"
@@ -6872,7 +6962,7 @@
                       class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
                       :class="
                         form.login_agreement_mode === 'checkbox'
-                          ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
+                          ? 'bg-white text-[var(--anthropic-fg)] shadow-sm dark:bg-dark-800 dark:text-primary-300'
                           : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
                       "
                       @click="form.login_agreement_mode = 'checkbox'"
@@ -7036,7 +7126,7 @@
             <p class="mt-1.5 text-xs">
               <router-link
                 to="/admin/channels/monitor"
-                class="inline-flex items-center gap-1 text-primary-600 hover:underline dark:text-primary-400"
+                class="inline-flex items-center gap-1 text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
               >
                 {{ t('admin.settings.features.channelMonitor.configureLink') }}
                 <span aria-hidden="true">→</span>
@@ -7116,29 +7206,16 @@
                 </p>
               </div>
 
-              <div v-if="form.channel_monitor_mode === 'v2'" class="space-y-4">
-                <div class="flex items-start justify-between gap-4">
-                  <div class="min-w-0">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                      {{ t('admin.settings.features.channelMonitor.hideThroughput') }}
-                    </p>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      {{ t('admin.settings.features.channelMonitor.hideThroughputHint') }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.channel_monitor_hide_throughput" />
+              <div v-if="form.channel_monitor_mode === 'v2'" class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ t('admin.settings.features.channelMonitor.hideThroughput') }}
+                  </p>
+                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ t('admin.settings.features.channelMonitor.hideThroughputHint') }}
+                  </p>
                 </div>
-                <div class="flex items-start justify-between gap-4">
-                  <div class="min-w-0">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                      {{ t('admin.settings.features.channelMonitor.hideUserRanking') }}
-                    </p>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      {{ t('admin.settings.features.channelMonitor.hideUserRankingHint') }}
-                    </p>
-                  </div>
-                  <Toggle v-model="form.channel_monitor_hide_user_ranking" />
-                </div>
+                <Toggle v-model="form.channel_monitor_hide_throughput" />
               </div>
 
               <div v-if="form.channel_monitor_mode === 'v1'" class="flex items-start justify-between gap-4">
@@ -7167,7 +7244,7 @@
             <p class="mt-1.5 text-xs">
               <router-link
                 to="/admin/channels/pricing"
-                class="inline-flex items-center gap-1 text-primary-600 hover:underline dark:text-primary-400"
+                class="inline-flex items-center gap-1 text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
               >
                 {{ t('admin.settings.features.availableChannels.configureLink') }}
                 <span aria-hidden="true">→</span>
@@ -7242,36 +7319,6 @@
         <div class="card">
           <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('admin.settings.features.siteBillingMode.title') }}
-            </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {{ t('admin.settings.features.siteBillingMode.description') }}
-            </p>
-          </div>
-          <div class="space-y-5 p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div class="min-w-0">
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {{ t('admin.settings.features.siteBillingMode.label') }}
-                </label>
-                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                  {{ siteBillingModeHint }}
-                </p>
-              </div>
-              <div class="w-full shrink-0 sm:w-56">
-                <Select
-                  :modelValue="siteBillingMode"
-                  :options="siteBillingModeOptions"
-                  @update:modelValue="siteBillingMode = $event as SiteBillingMode"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('admin.settings.features.pluginManagement.title') }}
             </h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -7304,7 +7351,7 @@
             <p class="mt-1.5 text-xs">
               <router-link
                 to="/admin/risk-control"
-                class="inline-flex items-center gap-1 text-primary-600 hover:underline dark:text-primary-400"
+                class="inline-flex items-center gap-1 text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
               >
                 {{ t('admin.settings.features.riskControl.configureLink') }}
                 <span aria-hidden="true">→</span>
@@ -7539,7 +7586,7 @@
                           {{ entry.aff_code }}
                           <span
                             v-if="entry.aff_code_custom"
-                            class="ml-1 inline-block rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                            class="ml-1 inline-block rounded bg-[var(--anthropic-section)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-primary-300"
                           >{{ t('admin.settings.features.affiliate.customUsers.customBadge') }}</span>
                         </td>
                         <td class="px-3 py-2 text-sm">
@@ -7548,7 +7595,7 @@
                         </td>
                         <td class="px-3 py-2 text-sm">
                           <div class="flex items-center gap-2">
-                            <button type="button" class="text-primary-600 hover:underline" @click="openAffiliateModal(entry)">
+                            <button type="button" class="text-[var(--anthropic-fg)] hover:underline" @click="openAffiliateModal(entry)">
                               {{ t('common.edit') }}
                             </button>
                             <button
@@ -7600,7 +7647,7 @@
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="closeAffiliateModal"
         >
-          <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-dark-900">
+          <div class="w-full max-w-md rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]">
             <h3 class="mb-4 text-lg font-semibold">
               {{ affiliateModal.mode === 'add' ? t('admin.settings.features.affiliate.modal.addTitle') : t('admin.settings.features.affiliate.modal.editTitle') }}
             </h3>
@@ -7627,7 +7674,7 @@
                 </div>
                 <!-- Search input + result dropdown — hidden once a selection is made -->
                 <template v-else>
-                  <input
+                  <input data-testid="admin-settings-input-affiliate-modal-user-query"
                     v-model="affiliateModal.userQuery"
                     type="text"
                     class="input"
@@ -7638,7 +7685,7 @@
                     v-if="affiliateModal.userResults.length > 0"
                     class="mt-1 max-h-40 overflow-y-auto rounded border border-gray-200 dark:border-dark-700"
                   >
-                    <button
+                    <button data-testid="admin-settings-button-select-affiliate-user-u"
                       v-for="u in affiliateModal.userResults"
                       :key="u.id"
                       type="button"
@@ -7725,7 +7772,7 @@
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           @click.self="affiliateBatchModal.open = false"
         >
-          <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-dark-900">
+          <div class="w-full max-w-md rounded-lg border border-[var(--anthropic-cookbook-border)] bg-[var(--anthropic-page)] p-6 shadow-none dark:border-[var(--anthropic-cookbook-border)] dark:bg-[var(--anthropic-page)]">
             <h3 class="mb-4 text-lg font-semibold">
               {{ t('admin.settings.features.affiliate.batchModal.title', { count: affiliateState.selected.length }) }}
             </h3>
@@ -7782,7 +7829,7 @@
                   :href="paymentGuideHref"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="ml-2 inline-flex items-center text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                  class="ml-2 inline-flex items-center text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                 >
                   <svg
                     class="mr-0.5 h-3.5 w-3.5"
@@ -7821,7 +7868,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-prefix"
                       v-model="form.payment_product_name_prefix"
                       type="text"
                       class="input"
@@ -7832,7 +7879,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.productNameSuffix")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-product-name-suffix"
                       v-model="form.payment_product_name_suffix"
                       type="text"
                       class="input"
@@ -7860,7 +7907,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number"
                       :value="form.payment_min_amount || ''"
                       @input="
                         form.payment_min_amount =
@@ -7879,7 +7926,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxAmount")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-2"
                       :value="form.payment_max_amount || ''"
                       @input="
                         form.payment_max_amount =
@@ -7898,7 +7945,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.dailyLimit")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-input-number-3"
                       :value="form.payment_daily_limit || ''"
                       @input="
                         form.payment_daily_limit =
@@ -7917,7 +7964,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.balanceRechargeMultiplier")
                     }}</label>
-                    <input
+                    <input data-testid="admin-settings-input-number-4"
                       :value="form.payment_balance_recharge_multiplier || ''"
                       @input="
                         form.payment_balance_recharge_multiplier =
@@ -7938,7 +7985,7 @@
                       }}
                     </p>
                     <p
-                      class="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                      class="mt-1 text-xs font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     >
                       {{
                         t("admin.settings.payment.balanceRechargePreview", {
@@ -7954,7 +8001,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.subscriptionUsdToCnyRate")
                     }}</label>
-                    <input
+                    <input data-testid="admin-settings-input-number-5"
                       :value="form.payment_subscription_usd_to_cny_rate || ''"
                       @input="
                         form.payment_subscription_usd_to_cny_rate =
@@ -7983,7 +8030,7 @@
                       t("admin.settings.payment.rechargeFeeRate")
                     }}</label>
                     <div class="relative">
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-order-timeout-minutes"
                         :value="form.payment_recharge_fee_rate ?? ''"
                         @input="
                           form.payment_recharge_fee_rate = Math.min(
@@ -8015,7 +8062,7 @@
                     </p>
                     <p
                       v-if="(Number(form.payment_recharge_fee_rate) || 0) > 0"
-                      class="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                      class="mt-1 text-xs font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     >
                       {{
                         t("admin.settings.payment.rechargeFeePreview", {
@@ -8030,7 +8077,7 @@
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
                       <span class="text-red-500">*</span></label
-                    ><input
+                    ><input data-testid="admin-settings-input-form-payment-max-pending-orders"
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
                       min="1"
@@ -8048,7 +8095,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
                     }}</label
-                    ><input
+                    ><input data-testid="admin-settings-view-input-form-payment-max-pending-orders"
                       v-model.number="form.payment_max_pending_orders"
                       type="number"
                       min="1"
@@ -8070,12 +8117,12 @@
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-view-button-form-payment-cancel-rate-limit-enabled-form-payment-cancel-rate-limit-enabled"
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'bg-primary-500'
+                            ? 'bg-[var(--anthropic-fg)]'
                             : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
@@ -8109,7 +8156,7 @@
                           t("admin.settings.payment.cancelRateLimitEvery")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-input-form-payment-cancel-rate-limit-max"
                         v-model.number="form.payment_cancel_rate_limit_window"
                         type="number"
                         min="1"
@@ -8134,7 +8181,7 @@
                           t("admin.settings.payment.cancelRateLimitAllowMax")
                         }}</span
                       >
-                      <input
+                      <input data-testid="admin-settings-view-input-form-payment-cancel-rate-limit-max"
                         v-model.number="form.payment_cancel_rate_limit_max"
                         type="number"
                         min="1"
@@ -8160,12 +8207,12 @@
                       t("admin.settings.payment.alipayForceQRCode")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="admin-settings-button-toggle-payment-type-pt-value"
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                           form.payment_alipay_force_qrcode
-                            ? 'bg-primary-500'
+                            ? 'bg-[var(--anthropic-fg)]'
                             : 'bg-gray-300 dark:bg-dark-600',
                         ]"
                         @click="
@@ -8192,7 +8239,7 @@
                       t("admin.settings.payment.alipayMobilePrecreateDeepLink")
                     }}</label>
                     <div class="flex items-center gap-2">
-                      <button
+                      <button data-testid="merge-settings-view-form-payment-alipay-mobile-precreate-deep-link-form-payment-alip-3"
                         type="button"
                         :class="[
                           'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
@@ -8226,7 +8273,7 @@
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
                   <div class="mt-1.5 flex flex-wrap gap-2">
-                    <button
+                    <button data-testid="admin-settings-view-button-toggle-payment-type"
                       v-for="pt in allPaymentTypes"
                       :key="pt.value"
                       type="button"
@@ -8234,7 +8281,7 @@
                       :class="[
                         'rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
                         isPaymentTypeEnabled(pt.value)
-                          ? 'border-primary-500 bg-primary-500 text-white shadow-sm'
+                          ? 'border-primary-500 bg-[var(--anthropic-fg)] text-white shadow-sm'
                           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
                       ]"
                     >
@@ -8243,11 +8290,11 @@
                   </div>
                   <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
                     {{ t("admin.settings.payment.enabledPaymentTypesHint") }}
-                    <a
+                    <a data-testid="admin-settings-view-a-payment-methods-href"
                       :href="paymentMethodsHref"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="ml-1 text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
+                      class="ml-1 text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-primary-300"
                     >
                       {{ t("admin.settings.payment.findProvider") }}
                       <svg
@@ -8285,7 +8332,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.helpText")
                     }}</label>
-                    <textarea
+                    <textarea data-testid="admin-settings-view-textarea-form-payment-help-text"
                       v-model="form.payment_help_text"
                       rows="3"
                       class="input"
@@ -8703,7 +8750,7 @@
                         class="sr-only peer"
                       />
                       <div
-                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-primary-600"
+                        class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-[var(--anthropic-fg)]"
                       ></div>
                     </label>
                     <input
@@ -8818,7 +8865,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  watch,
+} from "vue";
 import { useI18n } from "vue-i18n";
 import { adminAPI } from "@/api";
 import {
@@ -8849,6 +8904,7 @@ import type {
 } from "@/api/admin/settings";
 import type {
   AdminGroup,
+  CustomMenuItem,
   LoginAgreementDocument,
   NotifyEmailEntry,
   Proxy,
@@ -8856,14 +8912,7 @@ import type {
 import type { ProviderInstance } from "@/types/payment";
 import AppLayout from "@/components/layout/AppLayout.vue";
 import Icon from "@/components/icons/Icon.vue";
-import Select, { type SelectOption } from "@/components/common/Select.vue";
-import {
-  SITE_BILLING_MODES,
-  SITE_BILLING_MODE_I18N_KEYS,
-  billingModeToSettings,
-  resolveSiteBillingMode,
-  type SiteBillingMode,
-} from "@/utils/siteBillingMode";
+import Select from "@/components/common/Select.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import PaymentProviderList from "@/components/payment/PaymentProviderList.vue";
 import PaymentProviderDialog from "@/components/payment/PaymentProviderDialog.vue";
@@ -8872,6 +8921,7 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
+import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue'
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import OpenAIFastPolicyUserSelector from "@/views/admin/settings/OpenAIFastPolicyUserSelector.vue";
@@ -8900,6 +8950,10 @@ import {
   defaultFingerprintSignalRows,
   type FingerprintSignalRow,
 } from "./codexFingerprintSignals";
+import {
+  normalizeCustomMenuSVGIconPresetURLs,
+  setCustomMenuIconRuntimeConfig,
+} from "@/utils/customMenuIconPresets";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -8935,16 +8989,17 @@ type SettingsTab =
   | "email"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
+const settingsTabsRef = ref<HTMLElement | null>(null);
 const settingsTabs = [
-  { key: "general" as SettingsTab, icon: "home" as const },
-  { key: "agreement" as SettingsTab, icon: "document" as const },
-  { key: "features" as SettingsTab, icon: "bolt" as const },
-  { key: "security" as SettingsTab, icon: "shield" as const },
-  { key: "users" as SettingsTab, icon: "user" as const },
-  { key: "gateway" as SettingsTab, icon: "server" as const },
-  { key: "payment" as SettingsTab, icon: "creditCard" as const },
-  { key: "email" as SettingsTab, icon: "mail" as const },
-  { key: "backup" as SettingsTab, icon: "database" as const },
+  { key: "general" as SettingsTab },
+  { key: "agreement" as SettingsTab },
+  { key: "features" as SettingsTab },
+  { key: "security" as SettingsTab },
+  { key: "users" as SettingsTab },
+  { key: "gateway" as SettingsTab },
+  { key: "payment" as SettingsTab },
+  { key: "email" as SettingsTab },
+  { key: "backup" as SettingsTab },
 ];
 
 const settingsTabKeyboardActions = {
@@ -8958,6 +9013,7 @@ const settingsTabKeyboardActions = {
 
 function selectSettingsTab(tab: SettingsTab): void {
   activeTab.value = tab;
+  void nextTick(moveSettingsTabIndicatorToSelected);
 }
 
 function focusSettingsTab(tab: SettingsTab): void {
@@ -8995,6 +9051,45 @@ function handleSettingsTabKeydown(event: KeyboardEvent, tab: SettingsTab): void 
 
   selectSettingsTab(nextTab);
   focusSettingsTab(nextTab);
+}
+
+function moveSettingsTabIndicator(button: HTMLElement | null): void {
+  const tabs = settingsTabsRef.value;
+  if (!tabs || !button) return;
+
+  const tabsRect = tabs.getBoundingClientRect();
+  const buttonRect = button.getBoundingClientRect();
+  tabs.style.setProperty(
+    "--route-indicator-x",
+    `${buttonRect.left - tabsRect.left}px`,
+  );
+  tabs.style.setProperty("--route-indicator-w", `${buttonRect.width}px`);
+}
+
+function selectedSettingsTabButton(): HTMLElement | null {
+  return (
+    settingsTabsRef.value?.querySelector<HTMLElement>(
+      `button[data-route-id="${activeTab.value}"]`,
+    ) ?? null
+  );
+}
+
+function moveSettingsTabIndicatorToSelected(): void {
+  moveSettingsTabIndicator(selectedSettingsTabButton());
+}
+
+function moveSettingsTabIndicatorFromEvent(event: Event): void {
+  moveSettingsTabIndicator(event.currentTarget as HTMLElement | null);
+}
+
+function handleSettingsTabsFocusout(event: FocusEvent): void {
+  const nextTarget = event.relatedTarget;
+  if (
+    !(nextTarget instanceof Node) ||
+    !settingsTabsRef.value?.contains(nextTarget)
+  ) {
+    moveSettingsTabIndicatorToSelected();
+  }
 }
 
 const { copyToClipboard } = useClipboard();
@@ -9545,7 +9640,6 @@ type SettingsForm = Omit<
   /** Form always binds a concrete boolean (SystemSettings marks this optional). */
   channel_monitor_hide_throughput: boolean;
   channel_monitor_show_quota: boolean;
-  channel_monitor_hide_user_ranking: boolean;
   smtp_password: string;
   turnstile_secret_key: string;
   tencent_captcha_app_secret_key: string;
@@ -9621,7 +9715,7 @@ const form = reactive<SettingsForm>({
   default_subscriptions: [],
   force_email_on_third_party_signup: false,
   default_user_rpm_limit: 0,
-  site_name: "Sub2API",
+  site_name: "Kreepai",
   site_logo: "",
   site_subtitle: "Subscription to API Conversion Platform",
   api_base_url: "",
@@ -9632,6 +9726,7 @@ const form = reactive<SettingsForm>({
   backend_mode_enabled: false,
   hide_ccs_import_button: false,
   payment_enabled: false,
+  subscription_enabled: true,
   risk_control_enabled: false,
   cyber_session_block_enabled: false,
   cyber_session_block_ttl_seconds: 3600,
@@ -9668,6 +9763,7 @@ const form = reactive<SettingsForm>({
     visibility: "user" | "admin";
     sort_order: number;
     hide_open_button?: boolean;
+    open_mode: "iframe" | "redirect";
   }>,
   custom_endpoints: [] as Array<{
     name: string;
@@ -9862,11 +9958,8 @@ const form = reactive<SettingsForm>({
   channel_monitor_default_interval_seconds: 60,
   channel_monitor_hide_throughput: false,
   channel_monitor_show_quota: false,
-  channel_monitor_hide_user_ranking: false,
   // Available Channels feature switch
   available_channels_enabled: false,
-  // Subscription feature switch (user sidebar "My Subscriptions" entry)
-  subscription_enabled: true,
   // Model Plaza feature switches + description
   model_plaza_enabled: false,
   model_plaza_require_auth: false,
@@ -10643,9 +10736,10 @@ function addMenuItem() {
     icon_svg: "",
     url: "",
     visibility: "user",
-    sort_order: form.custom_menu_items.length,
-  });
-}
+	    sort_order: form.custom_menu_items.length,
+    open_mode: "iframe",
+	  });
+	}
 
 function removeMenuItem(index: number) {
   form.custom_menu_items.splice(index, 1);
@@ -10663,8 +10757,15 @@ function moveMenuItem(index: number, direction: -1 | 1) {
   items[index] = items[targetIndex];
   items[targetIndex] = temp;
   // Re-index sort_order
-  items.forEach((item, i) => {
-    item.sort_order = i;
+	  items.forEach((item, i) => {
+	    item.sort_order = i;
+	  });
+	}
+
+function handleCustomMenuIconPresetsUpdated(urls: string[]) {
+  form.custom_menu_svg_icon_presets = normalizeCustomMenuSVGIconPresetURLs(urls);
+  setCustomMenuIconRuntimeConfig({
+    custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
   });
 }
 
@@ -10871,9 +10972,6 @@ async function loadSettings() {
     form.channel_monitor_show_quota = Boolean(
       settings.channel_monitor_show_quota
     );
-    form.channel_monitor_hide_user_ranking = Boolean(
-      settings.channel_monitor_hide_user_ranking
-    );
     form.login_agreement_updated_at =
       settings.login_agreement_updated_at || "2026-03-31";
     form.login_agreement_documents =
@@ -11074,24 +11172,6 @@ function findDuplicateDefaultSubscription(
   });
 }
 
-// 站点类型：由 subscription_enabled 与 payment_balance_disabled 两个开关派生的单选，
-// 保存时同时写回两者，避免出现「既无充值也无订阅」的组合。
-const siteBillingModeOptions = computed<SelectOption[]>(() =>
-  SITE_BILLING_MODES.map((mode) => ({
-    value: mode,
-    label: t(`admin.settings.features.siteBillingMode.options.${SITE_BILLING_MODE_I18N_KEYS[mode]}`),
-  })),
-);
-const siteBillingMode = computed<SiteBillingMode>({
-  get: () => resolveSiteBillingMode(form),
-  set: (mode) => {
-    Object.assign(form, billingModeToSettings(mode));
-  },
-});
-const siteBillingModeHint = computed(() =>
-  t(`admin.settings.features.siteBillingMode.hints.${SITE_BILLING_MODE_I18N_KEYS[siteBillingMode.value]}`),
-);
-
 async function saveSettings() {
   saving.value = true;
   try {
@@ -11240,6 +11320,10 @@ async function saveSettings() {
       );
     form.claude_oauth_system_prompt_blocks =
       claudeOAuthSystemPromptBlocksJSON;
+    const normalizedCustomMenuItems = form.custom_menu_items.map((item): CustomMenuItem => ({
+      ...item,
+      open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
+    }));
 
     const payload: UpdateSettingsRequest = {
       registration_enabled: form.registration_enabled,
@@ -11289,9 +11373,10 @@ async function saveSettings() {
       compact_home_enabled: form.compact_home_enabled,
       backend_mode_enabled: form.backend_mode_enabled,
       hide_ccs_import_button: form.hide_ccs_import_button,
+      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
       table_default_page_size: form.table_default_page_size,
       table_page_size_options: form.table_page_size_options,
-      custom_menu_items: form.custom_menu_items,
+      custom_menu_items: normalizedCustomMenuItems,
       custom_endpoints: form.custom_endpoints,
       frontend_url: form.frontend_url,
       smtp_host: form.smtp_host,
@@ -11546,11 +11631,8 @@ async function saveSettings() {
         Number(form.channel_monitor_default_interval_seconds) || 60,
       channel_monitor_hide_throughput: Boolean(form.channel_monitor_hide_throughput),
       channel_monitor_show_quota: Boolean(form.channel_monitor_show_quota),
-      channel_monitor_hide_user_ranking: Boolean(form.channel_monitor_hide_user_ranking),
       // Available Channels feature switch
       available_channels_enabled: form.available_channels_enabled,
-      // Subscription feature switch
-      subscription_enabled: form.subscription_enabled,
       // Model Plaza feature switches + description
       model_plaza_enabled: form.model_plaza_enabled,
       model_plaza_require_auth: form.model_plaza_require_auth,
@@ -12181,7 +12263,6 @@ const openaiFastPolicyTierOptions = computed(() => [
     label: t("admin.settings.openaiFastPolicy.tierUltrafast"),
   },
   { value: "flex", label: t("admin.settings.openaiFastPolicy.tierFlex") },
-  { value: "missing", label: t("admin.settings.openaiFastPolicy.tierMissing") },
 ]);
 
 const openaiFastPolicyActionOptions = computed(() => [
@@ -12652,6 +12733,18 @@ onMounted(() => {
   loadRectifierSettings();
   loadBetaPolicySettings();
   loadProviders();
+  void nextTick(moveSettingsTabIndicatorToSelected);
+  window.addEventListener("resize", moveSettingsTabIndicatorToSelected);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", moveSettingsTabIndicatorToSelected);
+});
+
+watch([activeTab, loading], () => {
+  if (!loading.value) {
+    void nextTick(moveSettingsTabIndicatorToSelected);
+  }
 });
 
 // =========================
@@ -13034,15 +13127,18 @@ watch(
 
 /* ============ 系统设置 Tab 导航 ============ */
 .settings-tabs-shell {
-  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
+  @apply sticky z-20 -mx-1;
   top: 4.75rem;
-  box-shadow:
-    0 12px 28px rgb(15 23 42 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.9) inset;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .settings-tabs-scroll {
-  @apply overflow-x-auto;
+  @apply flex w-full items-center justify-center overflow-x-auto;
+  padding: 0.25rem 0;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -13052,75 +13148,81 @@ watch(
 }
 
 .settings-tabs {
-  @apply flex min-w-max items-center gap-1;
+  --route-indicator-x: 0.25rem;
+  --route-indicator-w: 0px;
+  @apply flex min-w-max items-center justify-center;
+  position: relative;
+  isolation: isolate;
+  width: fit-content;
+  gap: 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 16px;
+  background: var(--anthropic-raised);
+  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
+}
+
+.settings-tabs::before {
+  position: absolute;
+  z-index: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0;
+  width: var(--route-indicator-w);
+  border-radius: 12px;
+  content: "";
+  pointer-events: none;
+  background: var(--anthropic-page);
+  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
+  transform: translateX(var(--route-indicator-x));
+  transition:
+    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
+  @apply relative flex min-h-10 min-w-[5.75rem] shrink-0 items-center justify-center whitespace-nowrap border-0 bg-transparent px-3.5 py-2 text-center text-sm font-medium outline-none transition-colors duration-200 ease-out;
+  z-index: 1;
+  border-radius: 12px;
+  color: var(--anthropic-muted);
+  box-shadow: none;
+  text-decoration-line: none;
+  text-decoration-color: transparent;
 }
 
 @media (min-width: 768px) {
   .settings-tabs {
-    @apply min-w-full;
+    @apply min-w-0;
   }
 
   .settings-tab {
-    @apply min-w-0 flex-1 basis-0 overflow-hidden px-2 text-[13px];
-  }
-
-  .settings-tab-icon {
-    @apply h-6 w-6;
+    @apply overflow-hidden px-3 text-[13px];
   }
 }
 
-.settings-tab::before {
-  @apply absolute inset-0 -z-10 rounded-xl opacity-0 transition-opacity duration-200;
-  content: "";
-  background: linear-gradient(135deg, rgb(248 250 252 / 0.95), rgb(241 245 249 / 0.8));
-}
-
-.settings-tab:hover::before,
-.settings-tab:focus-visible::before {
-  opacity: 1;
+.settings-tab:hover,
+.settings-tab:focus-visible {
+  color: var(--anthropic-fg);
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-tab:focus-visible {
-  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
+  outline: 2px solid var(--anthropic-focus, var(--atelier-focus));
+  outline-offset: 3px;
 }
 
 .settings-tab-active {
-  @apply border-primary-200/80 bg-white text-primary-700 shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
-  box-shadow:
-    0 8px 18px rgb(15 23 42 / 0.08),
-    0 1px 0 rgb(255 255 255 / 0.92) inset;
-}
-
-.settings-tab-active::before {
-  opacity: 0;
+  color: var(--anthropic-fg);
+  background: transparent;
+  box-shadow: none;
 }
 
 .settings-tab-active::after {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.25rem;
-  left: 0.75rem;
-  height: 2px;
-  border-radius: 9999px;
-  content: "";
-  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
-}
-
-.settings-tab-icon {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
-}
-
-.settings-tab:hover .settings-tab-icon,
-.settings-tab:focus-visible .settings-tab-icon {
-  @apply text-gray-700 dark:text-gray-200;
-}
-
-.settings-tab-active .settings-tab-icon {
-  @apply bg-primary-50 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300;
+  display: none;
+  content: none;
 }
 
 .settings-tab-label {
@@ -13133,20 +13235,16 @@ watch(
    because Vue's scoped-CSS compiler was dropping the `:global(.dark) ...`
    rules in the production build, leaving inactive tabs unreadable on dark. */
 .dark .settings-tabs-shell {
-  border-color: rgb(51 65 85 / 0.65);
-  background: rgb(15 23 42 / 0.86);
-  box-shadow:
-    0 16px 36px rgb(0 0 0 / 0.28),
-    0 1px 0 rgb(255 255 255 / 0.06) inset;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
-.dark .settings-tab::before {
-  background: linear-gradient(135deg, rgb(30 41 59 / 0.9), rgb(51 65 85 / 0.62));
+.dark .settings-tabs::before {
+  background: var(--anthropic-page);
 }
 
 .dark .settings-tab-active {
-  box-shadow:
-    0 12px 26px rgb(0 0 0 / 0.22),
-    0 1px 0 rgb(255 255 255 / 0.08) inset;
+  box-shadow: none;
 }
 </style>
