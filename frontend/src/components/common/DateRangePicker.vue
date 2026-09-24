@@ -139,22 +139,15 @@ const triggerRect = ref<DOMRect | null>(null)
 let hoverCloseTimer: ReturnType<typeof setTimeout> | null = null
 let stopDropdownOwnerListener: (() => void) | null = null
 
-const today = computed(() => {
-  // Use local timezone to avoid UTC timezone issues
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-})
+const today = () => formatDateToString(new Date())
 
 // Tomorrow's date - used for max date to handle timezone differences
 // When user is in a timezone behind the server, "today" on server might be "tomorrow" locally
-const tomorrow = computed(() => {
+const tomorrow = () => {
   const d = new Date()
   d.setDate(d.getDate() + 1)
   return formatDateToString(d)
-})
+}
 
 // Helper function to format date to YYYY-MM-DD using local timezone
 const formatDateToString = (date: Date): string => {
@@ -169,7 +162,7 @@ const presets: DatePreset[] = [
     labelKey: 'dates.today',
     value: 'today',
     getRange: () => {
-      const t = today.value
+      const t = today()
       return { start: t, end: t }
     }
   },
@@ -199,7 +192,7 @@ const presets: DatePreset[] = [
     labelKey: 'dates.last7Days',
     value: '7days',
     getRange: () => {
-      const end = today.value
+      const end = today()
       const d = new Date()
       d.setDate(d.getDate() - 6)
       const start = formatDateToString(d)
@@ -210,7 +203,7 @@ const presets: DatePreset[] = [
     labelKey: 'dates.last14Days',
     value: '14days',
     getRange: () => {
-      const end = today.value
+      const end = today()
       const d = new Date()
       d.setDate(d.getDate() - 13)
       const start = formatDateToString(d)
@@ -221,7 +214,7 @@ const presets: DatePreset[] = [
     labelKey: 'dates.last30Days',
     value: '30days',
     getRange: () => {
-      const end = today.value
+      const end = today()
       const d = new Date()
       d.setDate(d.getDate() - 29)
       const start = formatDateToString(d)
@@ -234,7 +227,7 @@ const presets: DatePreset[] = [
     getRange: () => {
       const now = new Date()
       const start = formatDateToString(new Date(now.getFullYear(), now.getMonth(), 1))
-      return { start, end: today.value }
+      return { start, end: today() }
     }
   },
   {
@@ -363,9 +356,9 @@ const clampDateInput = (value: string, min?: string, max?: string): string => {
 
 const normalizeDateInput = (field: 'start' | 'end') => {
   if (field === 'start') {
-    localStartDate.value = clampDateInput(localStartDate.value, undefined, localEndDate.value || tomorrow.value)
+    localStartDate.value = clampDateInput(localStartDate.value, undefined, localEndDate.value || tomorrow())
   } else {
-    localEndDate.value = clampDateInput(localEndDate.value, localStartDate.value, tomorrow.value)
+    localEndDate.value = clampDateInput(localEndDate.value, localStartDate.value, tomorrow())
   }
   onDateChange()
 }
@@ -470,6 +463,14 @@ const handleEscape = (event: KeyboardEvent) => {
     releaseDropdownOwner(instanceId)
   }
 }
+
+// Restore the applied range after dismissal, including parent updates from Apply.
+watch(isOpen, (open) => {
+  if (open) return
+  localStartDate.value = props.startDate
+  localEndDate.value = props.endDate
+  onDateChange()
+}, { flush: 'post' })
 
 // Sync local state with props
 watch(
