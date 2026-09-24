@@ -122,6 +122,7 @@ func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUs
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Empty(t, r.Header.Get("Authorization"))
 		require.Equal(t, "session=a6api-session; theme=light", r.Header.Get("Cookie"))
+		require.Equal(t, "123", r.Header.Get("New-API-User"))
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/api/status":
@@ -142,6 +143,7 @@ func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUs
 		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 		APIBaseURL:      server.URL,
 		APIToken:        "Cookie: session=a6api-session; theme=light",
+		UserID:          "123",
 		MatchKeywords:   []string{"a6api"},
 	}}, map[string]string{
 		SettingKeyExternalSubscriptionDeletedDefaultProviders: `["a6api"]`,

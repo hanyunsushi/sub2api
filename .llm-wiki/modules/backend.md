@@ -38,6 +38,7 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 ## Current Capability Surface
 
 - External subscriptions include an A6API provider using the New API user-quota strategy. It requests `/api/status` and `/api/user/self` with the configured browser `Cookie` header, accepts the nested `data.user.quota`/`used_quota` response, and converts quota units using the provider's `quota_per_unit` as USD. Other New API console providers retain their Bearer-token request path.
+- A6API requests also include the configured `New-API-User` value. The upstream endpoint returns `401 Unauthorized` with `New-Api-User header not provided` when the Cookie is valid but this header is absent.
 
 - Group persistence and admin APIs include OpenAI fast-mode controls, reasoning-effort ceilings with downgrade/deny behavior, and per-user public-group restrictions.
 - Usage logs and analytics expose request type, native compaction, requested/upstream reasoning effort, billing type and billing mode; the corresponding migrations and repository filters are versioned under `migrations/` and `internal/repository/`.

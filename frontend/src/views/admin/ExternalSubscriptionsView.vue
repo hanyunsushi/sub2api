@@ -383,6 +383,9 @@
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
             <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
+            <p v-if="isA6APIForm" class="mt-1 text-xs text-[var(--anthropic-muted)]">
+              {{ localText('A6API 还要求发送 New-API-User；请填写浏览器请求中的用户 ID。', 'A6API also requires New-API-User; use the user ID from the browser request.') }}
+            </p>
           </div>
           <div v-if="requiresRefreshToken">
             <label class="input-label">
@@ -507,6 +510,12 @@ const EXTERNAL_CARD_QUOTA_PROGRESS_PREFERENCE: AccountExternalQuotaProgressPrefe
   customTotal: null,
 }
 
+const isA6APIForm = computed(() => (
+  form.id.trim().toLowerCase() === 'a6api' ||
+  form.name.trim().toLowerCase() === 'a6api' ||
+  form.api_base_url.trim().toLowerCase().includes('a6api.com')
+))
+
 const templateOptions = computed(() => [
   { value: 'newapi_console', label: 'NewAPI Console' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
@@ -527,6 +536,7 @@ const balanceStrategyOptions = computed(() => [
 ])
 
 const requiresUserId = computed(() => (
+  isA6APIForm.value ||
   (form.template === 'newapi_console' && !['openai_billing', 'newapi_user_quota'].includes(form.balance_strategy)) ||
   form.template === 'cloudflare_ai_gateway_credits'
 ))
@@ -541,12 +551,6 @@ const userIdLabel = computed(() => (
 
 const userIdPlaceholder = computed(() => (
   form.template === 'cloudflare_ai_gateway_credits' ? 'Cloudflare account id' : '707'
-))
-
-const isA6APIForm = computed(() => (
-  form.id.trim().toLowerCase() === 'a6api' ||
-  form.name.trim().toLowerCase() === 'a6api' ||
-  form.api_base_url.trim().toLowerCase().includes('a6api.com')
 ))
 
 const apiTokenPlaceholder = computed(() => {

@@ -44,6 +44,7 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 ## Current Capability Surface
 
 - The admin external-subscription form identifies the A6API provider and labels its credential field as a browser login Cookie. The value is sent only to the backend configuration flow; model API keys are not presented as a supported balance credential.
+- The A6API form keeps the User ID field visible even with `NewAPI User Quota`, because A6API requires the `New-API-User` header alongside the Cookie.
 
 - Admin and user usage views share request-type, compaction and billing filters with date-range analytics; queries normalize new request types to the legacy stream parameter where the API still requires it.
 - Group management exposes the official OpenAI fast-mode and reasoning-effort policy controls while retaining the local route-shell and Anthropic/Kreepai presentation contract.
