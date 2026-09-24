@@ -2,7 +2,7 @@
 title: Current Documentation Sync State
 updated: 2026-09-25
 base_commit: da1f1049e
-head_commit: 2d7f8cab8
+head_commit: 695f948e8
 ---
 
 # Impact
@@ -11,7 +11,7 @@ The A6API external-subscription provider now uses browser Cookie authentication 
 
 Direct read-only verification of the supplied credential showed `/api/status` returning 200 while `/api/user/self` returned 401 `New-Api-User header not provided` for both the full Cookie and session-only value. The A6API form now requires and sends the User ID as `New-API-User`; regression coverage asserts Cookie and User ID are sent together.
 
-The OCI application-only release from `2d7f8cab8` runs as `sub2api-custom:codex@sha256:6ba4e7420f6674e8a0f1363ee562c96abb30427e64ca74f81de9c3d9213b4723`, with rollback `sub2api-custom:codex-pre-20260925T013307Z@sha256:e75f92a14c250ed724df007a30b49505690d4a77d6e2fa714395fd6464db299d`. An AppleDouble transfer residue was removed before the successful rebuild; application, PostgreSQL and Redis are healthy, formal volumes are unchanged, and representative local/public routes return 200.
+The OCI application-only release from `695f948e8` runs as `sub2api-custom:codex@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`, with rollback `sub2api-custom:codex-pre-20260925T025846Z@sha256:6ba4e7420f6674e8a0f1363ee562c96abb30427e64ca74f81de9c3d9213b4723`. A6API direct verification showed the required `New-Api-User` header; the form and backend now send it alongside the Cookie. Application, PostgreSQL and Redis are healthy, formal volumes are unchanged, and representative local/public routes return 200.
 
 The development branch merged `upstream/main` at `a3eb7ef302961cba716dc78b39b93b60c467db0e` (`v0.2.8`) in `98f6d208d`; the plugin account snapshot denylist was then updated for the upstream `Account.ScheduleLocked` field in `104c5a14e`. The merge retained local Anthropic/Kreeperai, external-subscription and Responses compatibility contracts while integrating upstream OpenCode Go usage, typesafe risk control, backup/archive, affiliate withdrawal, signed thinking and paginated CSV export capabilities. Full Go tests and frontend typecheck/lint/build passed.
 
@@ -38,7 +38,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | Frontend custom CSS cascade cleanup | `.llm-wiki/modules/frontend.md` + authority | style ownership contract and audit result | Removed 185 strictly shadowed declarations and 49 empty rules; 5,504 selector/property/context winners matched before/after; the only remaining exact scoped duplicates are three intentional legacy-browser fallbacks; full Vitest surfaced 177 unrelated failures and 2,437 passes |
 | Upstream v0.2.8 merge and OCI application release | authority + frontend/backend modules | merge capabilities, test gates and runtime snapshot | Merge `98f6d208d`, snapshot fix `104c5a14e`; `go test ./... -count=1`, frontend typecheck/lint/build and diff check passed; image `sha256:e75f92...299d`; rollback `sha256:e6779b...15fc`; routes/assets 200; formal volumes and stateful containers unchanged |
 | A6API Cookie balance integration and OCI release | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Cookie auth, nested quota parsing, USD conversion, credential label, release digest and rollback state | Commit `2d7f8cab8`; full Go/frontend gates passed; image `sha256:6ba4e742...b4723`; rollback `sha256:e75f92...299d`; metadata residue removed; health, routes, version and formal volumes verified |
-| A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass |
+| A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass; commit `695f948e8`; OCI image `sha256:5807f9...dd6bb` |
 
 # Lint
 
@@ -48,4 +48,4 @@ Dashboard embedding policy now permits exactly the production website and localh
 - Unresolved conflicts: 0
 - Build caveat: `pnpm run build` now passes after the completeness test was aligned with runtime modular/legacy locale merging and the missing English/Chinese UI keys were filled; lint retains 5 pre-existing warnings and Vite reports existing chunk-size/deprecation warnings.
 
-The OCI runtime is deployed from `2d7f8cab8` (based on the merged upstream `v0.2.8` source) as `sub2api-custom:codex@sha256:6ba4e7420f6674e8a0f1363ee562c96abb30427e64ca74f81de9c3d9213b4723`; rollback is retained under `sub2api-custom:codex-pre-20260925T013307Z`. PostgreSQL/Redis containers and formal volumes, Cloudflare, Bridge, website and backup data were not replaced.
+The OCI runtime is deployed from `695f948e8` (based on the merged upstream `v0.2.8` source) as `sub2api-custom:codex@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`; rollback is retained under `sub2api-custom:codex-pre-20260925T025846Z`. PostgreSQL/Redis containers and formal volumes, Cloudflare, Bridge, website and backup data were not replaced.
