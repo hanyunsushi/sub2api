@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-09-24
+updated: 2026-09-25
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -36,6 +36,8 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 | `migrations/` | Database version changes |
 
 ## Current Capability Surface
+
+- External subscriptions include an A6API provider using the New API user-quota strategy. It requests `/api/status` and `/api/user/self` with the configured browser `Cookie` header, accepts the nested `data.user.quota`/`used_quota` response, and converts quota units using the provider's `quota_per_unit` as USD. Other New API console providers retain their Bearer-token request path.
 
 - Group persistence and admin APIs include OpenAI fast-mode controls, reasoning-effort ceilings with downgrade/deny behavior, and per-user public-group restrictions.
 - Usage logs and analytics expose request type, native compaction, requested/upstream reasoning effort, billing type and billing mode; the corresponding migrations and repository filters are versioned under `migrations/` and `internal/repository/`.

@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-09-24
+updated: 2026-09-25
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -42,6 +42,8 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 - When cleaning cascade duplication, remove only declarations later overridden by the same exact selector in the same media/supports context. Keep state, portal, and responsive branches separate, and verify computed winners remain unchanged.
 
 ## Current Capability Surface
+
+- The admin external-subscription form identifies the A6API provider and labels its credential field as a browser login Cookie. The value is sent only to the backend configuration flow; model API keys are not presented as a supported balance credential.
 
 - Admin and user usage views share request-type, compaction and billing filters with date-range analytics; queries normalize new request types to the legacy stream parameter where the API still requires it.
 - Group management exposes the official OpenAI fast-mode and reasoning-effort policy controls while retaining the local route-shell and Anthropic/Kreepai presentation contract.
