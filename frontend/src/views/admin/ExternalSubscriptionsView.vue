@@ -375,7 +375,9 @@
               :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
             <p v-if="requiresConsoleToken" class="mt-1 text-xs text-[var(--anthropic-muted)]">
-              {{ localText('需使用服务商控制台访问 Token，模型 API Key 不能读取账户额度。', 'Use a console access token. A model API key cannot read account quota.') }}
+              {{ isA6APIForm
+                ? localText('需填写浏览器登录 Cookie（完整 Cookie 请求头值），模型 API Key 不能读取账户额度。', 'Paste the browser login Cookie value. A model API key cannot read account quota.')
+                : localText('需使用服务商控制台访问 Token，模型 API Key 不能读取账户额度。', 'Use a console access token. A model API key cannot read account quota.') }}
             </p>
           </div>
           <div v-if="requiresUserId">
@@ -541,7 +543,14 @@ const userIdPlaceholder = computed(() => (
   form.template === 'cloudflare_ai_gateway_credits' ? 'Cloudflare account id' : '707'
 ))
 
+const isA6APIForm = computed(() => (
+  form.id.trim().toLowerCase() === 'a6api' ||
+  form.name.trim().toLowerCase() === 'a6api' ||
+  form.api_base_url.trim().toLowerCase().includes('a6api.com')
+))
+
 const apiTokenPlaceholder = computed(() => {
+  if (isA6APIForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
   if (form.template === 'buzz_balance') return 'Buzz API Token'
   if (form.template === 'openrouter_credits') return 'sk-or-...'
@@ -556,7 +565,9 @@ const requiresConsoleToken = computed(() => (
 ))
 
 const apiTokenLabel = computed(() => (
-  requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
+  isA6APIForm.value
+    ? localText('登录 Cookie', 'Login Cookie')
+    : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
 ))
 
 const templateFilterOptions = computed(() => [

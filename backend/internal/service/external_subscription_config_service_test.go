@@ -69,6 +69,14 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 	require.False(t, pixel.Enabled)
 	require.False(t, pixel.APITokenConfigured)
 
+	a6api := requireExternalSubscriptionProvider(t, providers, "a6api")
+	require.Equal(t, "A6API", a6api.Name)
+	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, a6api.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, a6api.BalanceStrategy)
+	require.Equal(t, "https://a6api.com", a6api.APIBaseURL)
+	require.False(t, a6api.Enabled)
+	require.False(t, a6api.APITokenConfigured)
+
 	buzz := requireExternalSubscriptionProvider(t, providers, "buzz")
 	require.Equal(t, "Buzz", buzz.Name)
 	require.Equal(t, ExternalSubscriptionTemplateBuzzBalance, buzz.Template)
@@ -107,7 +115,46 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 	require.False(t, mimo.APITokenConfigured)
 	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
 
-	require.Len(t, providers, 11)
+	require.Len(t, providers, 12)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUserQuota(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Empty(t, r.Header.Get("Authorization"))
+		require.Equal(t, "session=a6api-session; theme=light", r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"quota_per_unit":500000,"version":"test"}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"user":{"quota":4493107,"used_quota":1234567}}}`))
+		default:
+			t.Fatalf("unexpected path %s", r.URL.Path)
+		}
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{{
+		ID:              "a6api",
+		Name:            "A6API",
+		Enabled:         true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+		APIBaseURL:      server.URL,
+		APIToken:        "Cookie: session=a6api-session; theme=light",
+		MatchKeywords:   []string{"a6api"},
+	}}, map[string]string{
+		SettingKeyExternalSubscriptionDeletedDefaultProviders: `["a6api"]`,
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	a6api := requireExternalSubscriptionStatus(t, statuses, "a6api")
+	require.Equal(t, "USD", a6api.Currency)
+	require.InDelta(t, 1234567.0/500000.0, a6api.UsedUSD, 0.000001)
+	require.NotNil(t, a6api.RemainingUSD)
+	require.InDelta(t, 4493107.0/500000.0, *a6api.RemainingUSD, 0.000001)
 }
 
 func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {
@@ -690,7 +737,7 @@ func TestExternalSubscriptionConfigServiceOpenAIBillingStrategyKeepsUsageWhenQuo
 	var requestedPaths []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedPaths = append(requestedPaths, r.URL.Path)
-		require.Equal(t, "Bearer a6-api-key", r.Header.Get("Authorization"))
+		require.Equal(t, "Bearer billing-api-key", r.Header.Get("Authorization"))
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.URL.Path {
@@ -708,14 +755,14 @@ func TestExternalSubscriptionConfigServiceOpenAIBillingStrategyKeepsUsageWhenQuo
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
 
 	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
-		ID:              "a6api",
-		Name:            "A6API",
+		ID:              "billing-provider",
+		Name:            "Billing Provider",
 		Enabled:         true,
 		Template:        ExternalSubscriptionTemplateNewAPIConsole,
 		BalanceStrategy: ExternalSubscriptionBalanceStrategyOpenAIBilling,
 		APIBaseURL:      server.URL,
-		APIToken:        "a6-api-key",
-		MatchKeywords:   []string{"a6api"},
+		APIToken:        "billing-api-key",
+		MatchKeywords:   []string{"billing-provider"},
 		SortOrder:       65,
 	})
 	require.NoError(t, err)
@@ -723,15 +770,15 @@ func TestExternalSubscriptionConfigServiceOpenAIBillingStrategyKeepsUsageWhenQuo
 
 	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
 	require.NoError(t, err)
-	a6 := requireExternalSubscriptionStatus(t, statuses, "a6api")
-	require.Equal(t, ExternalSubscriptionBalanceStrategyOpenAIBilling, a6.BalanceStrategy)
-	require.True(t, a6.Configured)
-	require.Equal(t, "USD", a6.Currency)
-	require.Nil(t, a6.TotalLimitUSD)
-	require.Nil(t, a6.RemainingUSD)
-	require.InDelta(t, 6.304574, a6.UsedUSD, 0.000001)
-	require.Len(t, a6.Subscriptions, 1)
-	require.Equal(t, "usage_only", a6.Subscriptions[0].Window)
+	billing := requireExternalSubscriptionStatus(t, statuses, "billing-provider")
+	require.Equal(t, ExternalSubscriptionBalanceStrategyOpenAIBilling, billing.BalanceStrategy)
+	require.True(t, billing.Configured)
+	require.Equal(t, "USD", billing.Currency)
+	require.Nil(t, billing.TotalLimitUSD)
+	require.Nil(t, billing.RemainingUSD)
+	require.InDelta(t, 6.304574, billing.UsedUSD, 0.000001)
+	require.Len(t, billing.Subscriptions, 1)
+	require.Equal(t, "usage_only", billing.Subscriptions[0].Window)
 	require.Equal(t, []string{"/v1/dashboard/billing/subscription", "/v1/dashboard/billing/usage"}, requestedPaths)
 }
 

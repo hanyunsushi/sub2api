@@ -99,8 +99,16 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleJSON(ctx context.Context, 
 	var envelope qlhazyCoderEnvelope
 	req := s.client.R().
 		SetContext(ctx).
-		SetHeader("Authorization", "Bearer "+settings.APIToken).
 		SetSuccessResult(&envelope)
+	if strings.EqualFold(cfg.Provider, "a6api") {
+		cookie := strings.TrimSpace(settings.APIToken)
+		if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
+			cookie = strings.TrimSpace(cookie[len("cookie:"):])
+		}
+		req.SetHeader("Cookie", cookie)
+	} else {
+		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
+	}
 	if auth.UserID != "" {
 		req.SetHeader("New-API-User", auth.UserID)
 	}

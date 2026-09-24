@@ -24,9 +24,24 @@ type qlhazyCoderStatusMetadata struct {
 }
 
 type qlhazyCoderUserSelf struct {
-	Quota        qlhazyCoderFloat `json:"quota"`
-	UsedQuota    qlhazyCoderFloat `json:"used_quota"`
-	RequestCount int64            `json:"request_count"`
+	Quota        qlhazyCoderFloat     `json:"quota"`
+	UsedQuota    qlhazyCoderFloat     `json:"used_quota"`
+	RequestCount int64                `json:"request_count"`
+	User         *qlhazyCoderUserSelf `json:"user,omitempty"`
+}
+
+func (u qlhazyCoderUserSelf) effectiveQuota() qlhazyCoderFloat {
+	if u.User != nil {
+		return u.User.effectiveQuota()
+	}
+	return u.Quota
+}
+
+func (u qlhazyCoderUserSelf) effectiveUsedQuota() qlhazyCoderFloat {
+	if u.User != nil {
+		return u.User.effectiveUsedQuota()
+	}
+	return u.UsedQuota
 }
 
 type qlhazyCoderSubscriptionSelf struct {

@@ -568,7 +568,7 @@ func (s *ExternalSubscriptionConfigService) mergeDefaultProviders(ctx context.Co
 
 func isDefaultExternalSubscriptionProvider(id string) bool {
 	switch strings.TrimSpace(strings.ToLower(id)) {
-	case "openrouter", "cloudflare", "rawchat", "mimo":
+	case "a6api", "openrouter", "cloudflare", "rawchat", "mimo":
 		return true
 	default:
 		return false
@@ -577,7 +577,7 @@ func isDefaultExternalSubscriptionProvider(id string) bool {
 
 func canMarkDeletedExternalSubscriptionProvider(id string) bool {
 	switch strings.TrimSpace(strings.ToLower(id)) {
-	case "buzz", "tcdmx", "qlhazycoder", "xhyapi", "pixel", "liust", "packycode", "openrouter", "cloudflare", "rawchat", "mimo":
+	case "buzz", "tcdmx", "qlhazycoder", "xhyapi", "pixel", "a6api", "liust", "packycode", "openrouter", "cloudflare", "rawchat", "mimo":
 		return true
 	default:
 		return false
@@ -746,6 +746,17 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			SortOrder:       40,
 		},
 		{
+			ID:              "a6api",
+			Name:            "A6API",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateNewAPIConsole,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+			APIBaseURL:      "https://a6api.com",
+			LogoURL:         "https://a6api.com/brand/a6-logo-large-transparent-512.png",
+			MatchKeywords:   []string{"a6api.com", "a6api"},
+			SortOrder:       45,
+		},
+		{
 			ID:              "liust",
 			Name:            "liust",
 			Enabled:         false,
@@ -883,6 +894,9 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	if provider.APIBaseURL == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_API_BASE_URL_REQUIRED", "external subscription provider API base URL is required")
 	}
+	if strings.EqualFold(provider.ID, "a6api") && strings.Contains(strings.ToLower(provider.APIBaseURL), "a6api.com") && (provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuto || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyOpenAIBilling) {
+		provider.BalanceStrategy = ExternalSubscriptionBalanceStrategyNewAPIUserQuota
+	}
 	provider.LogoURL = strings.TrimSpace(provider.LogoURL)
 	provider.APIToken = strings.TrimSpace(provider.APIToken)
 	provider.UserID = strings.TrimSpace(provider.UserID)
@@ -896,6 +910,8 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 
 func defaultExternalSubscriptionBalanceStrategy(providerID, template string) string {
 	switch strings.TrimSpace(strings.ToLower(providerID)) {
+	case "a6api":
+		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
 	case "packycode":
 		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
 	case "pixel":
@@ -912,6 +928,9 @@ func defaultExternalSubscriptionBalanceStrategy(providerID, template string) str
 }
 
 func effectiveExternalSubscriptionBalanceStrategy(provider externalSubscriptionStoredProvider) string {
+	if strings.EqualFold(provider.ID, "a6api") && strings.Contains(strings.ToLower(provider.APIBaseURL), "a6api.com") {
+		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
+	}
 	strategy := strings.TrimSpace(provider.BalanceStrategy)
 	if strategy == "" || strategy == ExternalSubscriptionBalanceStrategyAuto {
 		return defaultExternalSubscriptionBalanceStrategy(provider.ID, provider.Template)

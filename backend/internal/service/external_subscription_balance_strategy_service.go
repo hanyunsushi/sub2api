@@ -84,6 +84,9 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleUserQuotaStatus(ctx contex
 	if err := s.getNewAPIConsoleJSON(ctx, settings, auth, cfg, "/api/status", &metadata); err != nil {
 		return statusWithNewAPIConsoleError(result, err, cfg)
 	}
+	if strings.EqualFold(cfg.Provider, "a6api") {
+		metadata.QuotaDisplayType = "USD"
+	}
 	converter := newQLHazyCoderQuotaConverter(metadata)
 	result.Currency = converter.currency
 
@@ -92,8 +95,8 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleUserQuotaStatus(ctx contex
 		return statusWithNewAPIConsoleError(result, err, cfg)
 	}
 
-	result.UsedUSD = converter.amount(user.UsedQuota)
-	remaining := converter.amount(user.Quota)
+	result.UsedUSD = converter.amount(user.effectiveUsedQuota())
+	remaining := converter.amount(user.effectiveQuota())
 	result.RemainingUSD = &remaining
 	result.ActiveCount = 0
 	result.Subscriptions = []ExternalSubscriptionItem{}
