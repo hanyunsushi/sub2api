@@ -473,18 +473,13 @@ html body #app .app-layout-content .account-external-quota-link:is(:hover, :focu
    the left bracket cannot touch the first glyph. */
 html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor {
   box-sizing: border-box !important;
-  padding-inline: 0.35em !important;
 }
 
 html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::before {
-  left: 0 !important;
-  right: auto !important;
   transform: translate(0, -50%) !important;
 }
 
 html body #app .app-layout-content .monitor-provider-select > .select-trigger > .select-value.website-bracket-anchor::after {
-  left: auto !important;
-  right: 0 !important;
   transform: translate(0, -50%) !important;
 }
 
@@ -639,46 +634,9 @@ html body #app .app-layout-content :where([class~="underline"], [class~="hover:u
 }
 
 /* Header controls and row-level legacy markers use the same 3px distance. */
-html body #app .app-header-atelier :where(
-  a,
-  button,
-  .header-balance-chip-fixed,
-  .dropdown-item,
-  .balance-row,
-  [data-testid="layout-app-header-link-a"]
-)::before {
-  left: auto !important;
-  right: calc(100% + var(--website-bracket-gap)) !important;
-  transform: translate(0, -50%) !important;
-}
 
 /* Final interaction split: the topbar follows the website reference
    geometry; all application-content controls fall back to underline hover. */
-html body #app .app-header-atelier :where(
-  a,
-  button,
-  .header-balance-chip-fixed,
-  .dropdown-item,
-  .balance-row,
-  [data-testid="layout-app-header-link-a"]
-)::before {
-  right: 0.78em !important;
-  left: auto !important;
-  transform: translate(-0.18em, -50%) !important;
-}
-
-html body #app .app-header-atelier :where(
-  a,
-  button,
-  .header-balance-chip-fixed,
-  .dropdown-item,
-  .balance-row,
-  [data-testid="layout-app-header-link-a"]
-)::after {
-  left: 0.78em !important;
-  right: auto !important;
-  transform: translate(0.18em, -50%) !important;
-}
 
 html body .topbar-underline-menu :where(
   .website-bracket-anchor,
@@ -792,106 +750,10 @@ html body #app .app-layout-content :where(
 }
 
 /* EOF rollback guard for route-specific filter button marker rules. */
-html body #app .app-layout-content .filter-menu-button::before,
-html body #app .app-layout-content .filter-menu-button::after,
-html body #app .app-layout-content .users-filter-tools .filter-menu-button::before,
-html body #app .app-layout-content .users-filter-tools .filter-menu-button::after,
-html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::before,
-html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::after {
-  content: none !important;
-  opacity: 0 !important;
-  transform: none !important;
-}
 
 /* Absolute EOF guard: no former bracket carrier may render a pseudo marker. */
-html body #app :where(
-  .website-bracket-anchor,
-  .website-bracket-hover,
-  .select-option-label,
-  .date-picker-preset-label,
-  .filter-menu-button,
-  .ops-toolbar-text-button,
-  .account-card-text-action,
-  .account-external-quota-link,
-  .account-usage-query-action,
-  .openai-quota-reset-action,
-  .ops-log-reset-button,
-  .ops-log-cleanup-button,
-  .account-tools-menu-item,
-  .account-column-option,
-  .account-auto-refresh-option,
-  [class~="hover:underline"],
-  [class~="underline"]
-)::before,
-html body #app :where(
-  .website-bracket-anchor,
-  .website-bracket-hover,
-  .select-option-label,
-  .date-picker-preset-label,
-  .filter-menu-button,
-  .ops-toolbar-text-button,
-  .account-card-text-action,
-  .account-external-quota-link,
-  .account-usage-query-action,
-  .openai-quota-reset-action,
-  .ops-log-reset-button,
-  .ops-log-cleanup-button,
-  .account-tools-menu-item,
-  .account-column-option,
-  .account-auto-refresh-option,
-  [class~="hover:underline"],
-  [class~="underline"]
-)::after {
-  content: none !important;
-  display: none !important;
-  opacity: 0 !important;
-  transform: none !important;
-}
 
 /* Final global guard: all former website bracket carriers are underline-only. */
-html body #app :where(
-  .website-bracket-anchor,
-  .website-bracket-hover,
-  .select-option-label,
-  .date-picker-preset-label,
-  .filter-menu-button,
-  .ops-toolbar-text-button,
-  .account-card-text-action,
-  .account-external-quota-link,
-  .account-usage-query-action,
-  .openai-quota-reset-action,
-  .ops-log-reset-button,
-  .ops-log-cleanup-button,
-  .account-tools-menu-item,
-  .account-column-option,
-  .account-auto-refresh-option,
-  [class~="hover:underline"],
-  [class~="underline"]
-)::before,
-html body #app :where(
-  .website-bracket-anchor,
-  .website-bracket-hover,
-  .select-option-label,
-  .date-picker-preset-label,
-  .filter-menu-button,
-  .ops-toolbar-text-button,
-  .account-card-text-action,
-  .account-external-quota-link,
-  .account-usage-query-action,
-  .openai-quota-reset-action,
-  .ops-log-reset-button,
-  .ops-log-cleanup-button,
-  .account-tools-menu-item,
-  .account-column-option,
-  .account-auto-refresh-option,
-  [class~="hover:underline"],
-  [class~="underline"]
-)::after {
-  content: none !important;
-  display: none !important;
-  opacity: 0 !important;
-  transform: none !important;
-}
 
 /* Complete rollback of the temporary website bracket treatment. Keep the
    original text-link underline behavior for every legacy carrier, including
@@ -942,16 +804,6 @@ html body #app :where(
 
 /* Clear route-specific filter button pseudo-elements that carry higher
    specificity than the shared rollback selector. */
-html body #app .app-layout-content .filter-menu-button::before,
-html body #app .app-layout-content .filter-menu-button::after,
-html body #app .app-layout-content .users-filter-tools .filter-menu-button::before,
-html body #app .app-layout-content .users-filter-tools .filter-menu-button::after,
-html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::before,
-html body #app .app-layout-content .accounts-filter-actions .filter-menu-button::after {
-  content: none !important;
-  opacity: 0 !important;
-  transform: none !important;
-}
 
 html body .filter-underline-menu :where(
   .select-option,
@@ -1071,19 +923,6 @@ html body .filter-underline-menu .account-auto-refresh-option .website-bracket-a
   content: none !important;
   opacity: 0 !important;
   transform: none !important;
-}
-
-html body #app .app-header-atelier :where(
-  a,
-  button,
-  .header-balance-chip-fixed,
-  .dropdown-item,
-  .balance-row,
-  [data-testid="layout-app-header-link-a"]
-)::after {
-  left: calc(100% + var(--website-bracket-gap)) !important;
-  right: auto !important;
-  transform: translate(0, -50%) !important;
 }
 
 /* Global non-topbar fallback: any remaining bracket marker outside the

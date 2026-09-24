@@ -1,6 +1,6 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-09-20
+updated: 2026-09-23
 base_commit: da1f1049e
 head_commit: bc64e2cb3
 ---
@@ -25,6 +25,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | KreeperAI admin dashboard iframe policy | `backend/internal/server/middleware/security_headers.go` and tests | `agent.md`, security/runtime module context | New image `sub2api-custom:codex` digest `sha256:b6156e884c745dde520b70bcc2e68d0331105b3bf3a11d197c501b70b045a376`; only `GET`/`HEAD /admin/dashboard` allows `https://www.kreeper.cc`, other admin/API responses retain frame protections; full Go tests and public header probes passed |
 | Upstream v0.2.7 merge and locale contract repair | backend/frontend modules + authority | backend/frontend module pages, authority merge state | `go generate ./ent`, `go generate ./cmd/server`, `go test ./...` passed; merged modular/legacy locale completeness, `vue-tsc`, Vite build and lint passed; OCI release verified |
 | Account-card and settings route-tab repair | `.llm-wiki/modules/frontend.md` + authority | frontend module, authority release section | `bc64e2cb3`; focused account/settings contracts, `vue-tsc`, Vite build and diff check passed; OCI active digest `sha256:e6779b6b...`; health, routes and formal volumes verified |
+| Frontend custom CSS cascade cleanup | `.llm-wiki/modules/frontend.md` + authority | style ownership contract and audit result | Removed 185 strictly shadowed declarations and 49 empty rules; 5,504 selector/property/context winners matched before/after; the only remaining exact scoped duplicates are three intentional legacy-browser fallbacks; full Vitest surfaced 177 unrelated failures and 2,437 passes |
 
 # Lint
 

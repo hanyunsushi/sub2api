@@ -1515,7 +1515,6 @@
   top: 0 !important;
   z-index: 30;
   height: 4rem;
-  min-height: 4rem;
   box-sizing: border-box;
 }
 

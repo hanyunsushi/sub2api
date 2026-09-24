@@ -31,6 +31,12 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 | `src/stores/` | Pinia state and lifecycle management |
 | `src/views/` | Route-level screens |
 
+## Style Ownership
+
+- `src/style.css` owns base tokens and shared theme rules. `src/styles/targeted-visual-repair.css` owns maintained component and route contracts that intentionally run after the base sheet.
+- `src/styles/final-bracket-repair.css` and `src/styles/bracket-rollback-eof.css` remain ordered global interaction/rollback layers; their later position is intentional for shared and teleported elements.
+- When cleaning cascade duplication, remove only declarations later overridden by the same exact selector in the same media/supports context. Keep state, portal, and responsive branches separate, and verify computed winners remain unchanged.
+
 ## Current Capability Surface
 
 - Admin and user usage views share request-type, compaction and billing filters with date-range analytics; queries normalize new request types to the legacy stream parameter where the API still requires it.
