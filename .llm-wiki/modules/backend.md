@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-09-20
+updated: 2026-09-24
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -12,6 +12,10 @@ sources:
 ---
 
 # Backend Module
+
+## Upstream v0.2.8 integration and release
+
+The backend merge at upstream `a3eb7ef302961cba716dc78b39b93b60c467db0e` adds OpenCode Go usage, typesafe risk-control, backup/archive, affiliate withdrawal, signed-thinking and paginated CSV export capabilities. Ent and server generated code were rebuilt; `go test ./... -count=1` passed. The OCI application image is `sub2api-custom:codex@sha256:e75f92a14c250ed724df007a30b49505690d4a77d6e2fa714395fd6464db299d`, with the previous image retained as `sub2api-custom:codex-pre-20260924T031408Z` for rollback.
 
 The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persistence and Redis for runtime coordination/cache.
 

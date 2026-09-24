@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-09-20
+updated: 2026-09-24
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -12,6 +12,10 @@ sources:
 ---
 
 # Frontend Module
+
+## Upstream v0.2.8 integration and release
+
+The merged frontend includes the upstream v0.2.8 account usage, risk-control, backup/archive, affiliate withdrawal, signed-thinking and paginated-export surfaces while preserving the local Anthropic/Kreeperai styling, external-subscription controls and existing route contracts. The production OCI image was built from the merged source and verified through representative public routes and a static asset.
 
 The frontend is a Vue 3 single-page application built with Vite. `main.ts` creates the app, Pinia, router and i18n, applies appearance settings, then mounts after initial navigation is ready.
 
