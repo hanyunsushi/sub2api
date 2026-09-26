@@ -2,7 +2,7 @@
 title: Current Documentation Sync State
 updated: 2026-09-26
 base_commit: da1f1049e
-head_commit: 547d3b05a
+head_commit: 760885518
 ---
 
 # 2026-09-26 OCI Authentik OIDC public handoff
