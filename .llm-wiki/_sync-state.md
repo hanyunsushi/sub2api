@@ -1,9 +1,13 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-09-25
+updated: 2026-09-26
 base_commit: da1f1049e
 head_commit: 695f948e8
 ---
+
+# 2026-09-26 OCI Authentik OIDC deployment
+
+Authentik `2026.8.3` is now documented as an isolated OCI Compose project at `/home/ubuntu/authentik-oci` with its own PostgreSQL service and `authentik-oci_database` volume. It binds only `127.0.0.1:19000` and `127.0.0.1:19443`; existing Sub2API, PostgreSQL, Redis, website, Tunnel and DNS state were not changed. Server, worker and database are healthy; live/ready and initial setup/admin routes return HTTP 200. Public routing and Sub2API OIDC client configuration remain intentionally pending a hostname decision.
 
 # Impact
 
@@ -39,6 +43,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | Upstream v0.2.8 merge and OCI application release | authority + frontend/backend modules | merge capabilities, test gates and runtime snapshot | Merge `98f6d208d`, snapshot fix `104c5a14e`; `go test ./... -count=1`, frontend typecheck/lint/build and diff check passed; image `sha256:e75f92...299d`; rollback `sha256:e6779b...15fc`; routes/assets 200; formal volumes and stateful containers unchanged |
 | A6API Cookie balance integration and OCI release | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Cookie auth, nested quota parsing, USD conversion, credential label, release digest and rollback state | Commit `2d7f8cab8`; full Go/frontend gates passed; image `sha256:6ba4e742...b4723`; rollback `sha256:e75f92...299d`; metadata residue removed; health, routes, version and formal volumes verified |
 | A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass; commit `695f948e8`; OCI image `sha256:5807f9...dd6bb` |
+| OCI Authentik OIDC deployment | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Isolated Authentik runtime boundary, health checks, ports, volume and pending public handoff | Official Compose file, image `ghcr.io/goauthentik/server:2026.8.3`; all three Authentik services healthy; local health/setup/admin routes 200; existing service restart counts 0 |
 
 # Lint
 

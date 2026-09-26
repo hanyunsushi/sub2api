@@ -20,3 +20,4 @@ updated: 2026-09-04
 
 - [Development and Testing](guides/development-and-testing.md) - Minimal local workflow
 - [OCI Operations and Artifact Retention](guides/oci-operations.md) - Safe application-only release, rollback, and cleanup
+- [OCI Authentik OIDC](guides/oci-authentik-oidc.md) - Isolated Authentik deployment and OIDC handoff boundary
