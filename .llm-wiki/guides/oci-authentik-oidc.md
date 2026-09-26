@@ -34,10 +34,10 @@ The deployment was verified with the following runtime checks:
 
 # Tunnel Handoff
 
-The OCI Tunnel configuration now contains the route `oidc.kreeper.cc` -> `http://127.0.0.1:19000`, and `cloudflared` validates and runs with that rule. The DNS record was not created because the local Tunnel service credential does not include the account certificate required by `cloudflared tunnel route dns`; authoritative DNS still reports no `oidc.kreeper.cc` record. Complete Cloudflare account authorization or provide an API token with DNS edit permission before claiming public availability.
+The OCI Tunnel remote ingress configuration now contains `oidc.kreeper.cc` -> `http://127.0.0.1:19000` (configuration version `7`), while the local connector YAML retains the same route. The Tunnel DNS record is active and authoritative DNS resolves the hostname through Cloudflare. Public checks return HTTP 200 for `/-/health/ready/`, `/if/flow/initial-setup/`, and `/if/admin/`; `/` returns the expected Authentik redirect to `/setup`.
 
 # Next Handoff
 
-The initial setup page is ready locally. Authentik bootstrap admin creation and Sub2API OIDC client configuration remain separate operations. Do not treat the service as publicly reachable until the DNS record and external HTTPS checks pass.
+The initial setup page is ready at `https://oidc.kreeper.cc/if/flow/initial-setup/`. Authentik bootstrap admin creation and Sub2API OIDC client configuration remain separate operations. The generic `/application/o/openid-configuration` path returns 404 until an Authentik OAuth2 provider is created; use the provider-specific discovery URL after setup.
 
 See also: [OCI Operations and Artifact Retention](oci-operations.md), [Project Authority](../../agent.md).
