@@ -32,8 +32,12 @@ The deployment was verified with the following runtime checks:
 - Only loopback listeners `127.0.0.1:19000` and `127.0.0.1:19443` are added.
 - Existing `sub2api`, `sub2api-postgres`, `sub2api-redis`, and `kreeper-website` containers remain running with restart count `0`.
 
+# Tunnel Handoff
+
+The OCI Tunnel configuration now contains the route `oidc.kreeper.cc` -> `http://127.0.0.1:19000`, and `cloudflared` validates and runs with that rule. The DNS record was not created because the local Tunnel service credential does not include the account certificate required by `cloudflared tunnel route dns`; authoritative DNS still reports no `oidc.kreeper.cc` record. Complete Cloudflare account authorization or provide an API token with DNS edit permission before claiming public availability.
+
 # Next Handoff
 
-The initial setup page is ready locally. Public HTTPS exposure, DNS/Tunnel routing, Authentik bootstrap admin creation, and Sub2API OIDC client configuration remain separate operations requiring a hostname and explicit routing decision. Do not treat the local-only deployment as a complete public SSO integration.
+The initial setup page is ready locally. Authentik bootstrap admin creation and Sub2API OIDC client configuration remain separate operations. Do not treat the service as publicly reachable until the DNS record and external HTTPS checks pass.
 
 See also: [OCI Operations and Artifact Retention](oci-operations.md), [Project Authority](../../agent.md).

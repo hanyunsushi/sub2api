@@ -5,6 +5,10 @@ base_commit: da1f1049e
 head_commit: 604f794ec
 ---
 
+# 2026-09-26 OCI Authentik OIDC public handoff
+
+The Tunnel ingress now validates and runs with `oidc.kreeper.cc` routed to the local Authentik HTTP port. The DNS record is still absent because the OCI Tunnel service credential lacks the account certificate needed by the DNS route command and the interactive login callback has not completed. Public HTTPS and OIDC discovery are therefore pending Cloudflare authorization.
+
 # 2026-09-26 OCI Authentik OIDC deployment
 
 Authentik `2026.8.3` is now documented as an isolated OCI Compose project at `/home/ubuntu/authentik-oci` with its own PostgreSQL service and `authentik-oci_database` volume. It binds only `127.0.0.1:19000` and `127.0.0.1:19443`; existing Sub2API, PostgreSQL, Redis, website, Tunnel and DNS state were not changed. Server, worker and database are healthy; live/ready and initial setup/admin routes return HTTP 200. Public routing and Sub2API OIDC client configuration remain intentionally pending a hostname decision.
@@ -44,6 +48,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | A6API Cookie balance integration and OCI release | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Cookie auth, nested quota parsing, USD conversion, credential label, release digest and rollback state | Commit `2d7f8cab8`; full Go/frontend gates passed; image `sha256:6ba4e742...b4723`; rollback `sha256:e75f92...299d`; metadata residue removed; health, routes, version and formal volumes verified |
 | A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass; commit `695f948e8`; OCI image `sha256:5807f9...dd6bb` |
 | OCI Authentik OIDC deployment | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Isolated Authentik runtime boundary, health checks, ports, volume and pending public handoff | Official Compose file, image `ghcr.io/goauthentik/server:2026.8.3`; all three Authentik services healthy; local health/setup/admin routes 200; existing service restart counts 0 |
+| OCI Authentik public hostname handoff | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Tunnel route loaded while DNS remains pending Cloudflare authorization | `cloudflared` ingress validation and service restart passed; authoritative DNS has no `oidc.kreeper.cc`; no public route claim made |
 
 # Lint
 
