@@ -50,9 +50,6 @@ type CheckOptions struct {
 	// BodyOverride 在 merge 模式下做浅合并（key 命中黑名单时静默丢弃），
 	// 在 replace 模式下直接当作完整 body。
 	BodyOverride map[string]any
-	// RequestPathOverride 可把 adapter 的默认 path 换成完整 URL 路径。
-	// 仅供账号绑定探测复用账号 base_url 规范化逻辑，普通监控保持空值。
-	RequestPathOverride string
 }
 
 // runCheckForModel 对单个 (provider, model) 做一次完整检测。
@@ -300,20 +297,13 @@ func callProvider(ctx context.Context, provider, endpoint, apiKey, model, prompt
 		return "", "", 0, err
 	}
 	headers := mergeHeaders(adapter.buildHeaders(apiKey), opts)
-	requestPath := adapter.buildPath(model)
-	if opts != nil && strings.TrimSpace(opts.RequestPathOverride) != "" {
-		requestPath = strings.TrimSpace(opts.RequestPathOverride)
-	}
-	full := joinURL(endpoint, requestPath)
+	full := joinURL(endpoint, adapter.buildPath(model))
 	respBytes, status, err := postRawJSON(ctx, full, body, headers)
 	if err != nil {
 		return "", "", status, err
 	}
 	if provider == MonitorProviderOpenAI && apiMode == MonitorAPIModeResponses {
 		return extractOpenAIResponsesText(respBytes), string(respBytes), status, nil
-	}
-	if provider == MonitorProviderOpenAI && apiMode == MonitorAPIModeChatCompletions {
-		return extractOpenAIChatCompletionsText(respBytes), string(respBytes), status, nil
 	}
 	return extractMonitorResponseText(adapter, respBytes), string(respBytes), status, nil
 }
@@ -336,56 +326,13 @@ func extractAnthropicMonitorText(respBytes []byte) string {
 		if item.Get("type").String() != "text" {
 			return true
 		}
-		if text := strings.TrimSpace(item.Get("text").String()); text != "" {
+		text := strings.TrimSpace(item.Get("text").String())
+		if text != "" {
 			parts = append(parts, text)
 		}
 		return true
 	})
 	return strings.Join(parts, "\n")
-}
-
-// extractOpenAIChatCompletionsText 支持普通 JSON 和部分 OpenAI-compatible 上游会错误返回的 SSE。
-// QLHazyCoder 等兼容站即使请求 stream:false，也可能用 text/event-stream 包一层 delta。
-func extractOpenAIChatCompletionsText(respBytes []byte) string {
-	if text := gjson.GetBytes(respBytes, providerOpenAIChatAdapter.textPath).String(); strings.TrimSpace(text) != "" {
-		return text
-	}
-
-	var texts []string
-	forEachOpenAISSEDataPayload(string(respBytes), func(payload []byte) {
-		appendOpenAIChatCompletionText(&texts, payload)
-	})
-	if len(texts) > 0 {
-		return strings.Join(texts, "")
-	}
-	return gjson.GetBytes(respBytes, providerOpenAIChatAdapter.textPath).String()
-}
-
-func appendOpenAIChatCompletionText(texts *[]string, payload []byte) {
-	if texts == nil || !gjson.ValidBytes(payload) {
-		return
-	}
-
-	choices := gjson.GetBytes(payload, "choices")
-	if choices.IsArray() {
-		choices.ForEach(func(_, choice gjson.Result) bool {
-			appendNonEmptyText(texts, choice.Get("delta.content").String())
-			appendNonEmptyText(texts, choice.Get("message.content").String())
-			appendNonEmptyText(texts, choice.Get("text").String())
-			return true
-		})
-	}
-
-	if gjson.GetBytes(payload, "type").String() == "response.output_text.delta" {
-		appendNonEmptyText(texts, gjson.GetBytes(payload, "delta").String())
-	}
-}
-
-func appendNonEmptyText(texts *[]string, text string) {
-	if strings.TrimSpace(text) == "" {
-		return
-	}
-	*texts = append(*texts, text)
 }
 
 // extractOpenAIResponsesText 聚合 Responses API 的最终 assistant 文本。

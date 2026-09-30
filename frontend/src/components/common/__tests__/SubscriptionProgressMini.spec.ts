@@ -18,6 +18,6 @@ describe('subscription expiry calendar labels', () => {
     store.activeSubscriptions = [{ id: 1, group_id: 1, expires_at: expires.toISOString(), group: { name: 'Plan' } }]
     const w = mount(SubscriptionProgressMini, { global: { stubs: { Icon: true, RouterLink: true } } })
     await w.get('button').trigger('click')
-    expect(w.text()).toContain('subscriptionProgress.' + label)
+    expect(document.body.textContent).toContain('subscriptionProgress.' + label)
   })
 })

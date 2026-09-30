@@ -174,30 +174,36 @@ onMounted(() => {
   if (!canvas) return
   reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  renderer = new Renderer({
-    dpr: 1,
-    canvas,
-    alpha: true,
-    depth: false,
-    antialias: false,
-  })
+  try {
+    renderer = new Renderer({
+      dpr: 1,
+      canvas,
+      alpha: true,
+      depth: false,
+      antialias: false,
+    })
 
-  const gl = renderer.gl
-  const geometry = new Triangle(gl)
-  program = new Program(gl, {
-    vertex,
-    fragment,
-    uniforms: {
-      uTime: { value: 0 },
-      uResolution: { value: new Vec2() },
-      uHueShift: { value: props.hueShift },
-      uNoise: { value: props.noiseIntensity },
-      uScan: { value: props.scanlineIntensity },
-      uScanFreq: { value: props.scanlineFrequency },
-      uWarp: { value: props.warpAmount },
-    },
-  })
-  mesh = new Mesh(gl, { geometry, program })
+    const gl = renderer.gl
+    const geometry = new Triangle(gl)
+    program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        uTime: { value: 0 },
+        uResolution: { value: new Vec2() },
+        uHueShift: { value: props.hueShift },
+        uNoise: { value: props.noiseIntensity },
+        uScan: { value: props.scanlineIntensity },
+        uScanFreq: { value: props.scanlineFrequency },
+        uWarp: { value: props.warpAmount },
+      },
+    })
+    mesh = new Mesh(gl, { geometry, program })
+  } catch {
+    // Keep the page usable on browsers and test environments without WebGL.
+    destroy()
+    return
+  }
 
   if ('ResizeObserver' in window) {
     resizeObserver = new ResizeObserver(resize)

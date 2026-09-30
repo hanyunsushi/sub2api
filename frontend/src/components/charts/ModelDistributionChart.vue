@@ -167,7 +167,7 @@
               <th class="pb-2 text-right">{{ t('admin.dashboard.requests') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.tokens') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.actual') }}</th>
-              <th class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
+              <th v-if="props.showAccountCost" class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.standard') }}</th>
             </tr>
           </thead>
@@ -190,7 +190,7 @@
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ formatNumber(model.requests) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td v-if="props.showAccountCost" class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ formatTokens(model.total_tokens) }}
                 </td>
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
@@ -204,7 +204,7 @@
                 </td>
               </tr>
               <tr v-if="expandedKey === `model-${model.model}`">
-                <td colspan="6" class="p-0">
+                <td :colspan="props.showAccountCost ? 6 : 5" class="p-0">
                   <UserBreakdownSubTable
                     :items="breakdownItems"
                     :loading="breakdownLoading"
@@ -324,6 +324,7 @@ const props = withDefaults(defineProps<{
   metric?: DistributionMetric
   showSourceToggle?: boolean
   showMetricToggle?: boolean
+  showAccountCost?: boolean
   rankingLoading?: boolean
   rankingError?: boolean
   startDate?: string
@@ -342,6 +343,7 @@ const props = withDefaults(defineProps<{
   metric: 'tokens',
   showSourceToggle: false,
   showMetricToggle: false,
+  showAccountCost: true,
   rankingLoading: false,
   rankingError: false
 })

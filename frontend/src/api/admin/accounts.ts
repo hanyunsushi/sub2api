@@ -291,11 +291,6 @@ export async function toggleStatus(id: number, status: 'active' | 'inactive'): P
   return update(id, { status })
 }
 
-export async function setScheduleLocked(id: number, locked: boolean): Promise<Account> {
-  const { data } = await apiClient.put<Account>(`/admin/accounts/${id}/schedule-locked`, { locked })
-  return data
-}
-
 /**
  * Test account connectivity
  * @param id - Account ID
@@ -1149,7 +1144,6 @@ export const accountsAPI = {
   checkMixedChannelRisk,
   delete: deleteAccount,
   toggleStatus,
-  setScheduleLocked,
   testAccount,
   refreshCredentials,
   applyOAuthCredentials,

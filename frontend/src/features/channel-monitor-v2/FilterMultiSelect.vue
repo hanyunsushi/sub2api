@@ -238,13 +238,13 @@ onBeforeUnmount(() => {
   @apply border border-gray-200 dark:border-dark-600;
   @apply text-gray-900 dark:text-gray-100;
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
+  @apply focus:border-[var(--anthropic-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)];
   @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
+  @apply border-[var(--anthropic-focus)] ring-2 ring-[var(--anthropic-focus)];
 }
 
 .filter-menu summary::-webkit-details-marker {

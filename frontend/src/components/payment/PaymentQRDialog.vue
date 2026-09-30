@@ -45,11 +45,11 @@
           </div>
           <div class="flex justify-between">
             <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.amount') }}</span>
-            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ paidOrder.order_type === 'balance' ? '$' : '¥' }}{{ paidOrder.amount.toFixed(2) }}</span>
+            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatCurrency(paidOrder.amount, 'USD') }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.payAmount') }}</span>
-            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">¥{{ paidOrder.pay_amount.toFixed(2) }}</span>
+            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatCurrency(paidOrder.pay_amount, paidOrder.currency) }}</span>
           </div>
         </div>
       </div>
@@ -122,6 +122,12 @@ const VERIFY_RETRY_MAX_ATTEMPTS = 6
 
 const isAlipay = computed(() => isBuiltInAlipayMethod(props.paymentType))
 const isWxpay = computed(() => isBuiltInWxpayMethod(props.paymentType))
+
+function formatCurrency(amount: number, currency?: string): string {
+  const normalized = String(currency || '').toUpperCase()
+  const symbol = normalized === 'CNY' ? '¥' : '$'
+  return `${symbol}${amount.toFixed(2)}`
+}
 
 const dialogTitle = computed(() => {
   if (success.value) return t('payment.result.success')

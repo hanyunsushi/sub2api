@@ -1,8 +1,9 @@
 /**
- * Centralized platform color definitions.
+ * Shared platform presentation helpers.
  *
- * All components that need platform-specific styling should import from here
- * instead of defining their own color mappings.
+ * Platform identity remains visible through labels and icons. Surfaces,
+ * borders, and text use the Anthropic semantic palette so shared badges do
+ * not reintroduce provider-specific theme ramps.
  */
 
 export type Platform =
@@ -18,229 +19,152 @@ export type Platform =
   | 'opencode_go'
   | 'composite'
 
-// ── Badge (bg + text + border, for inline badges with border) ───────
-const BADGE: Record<Platform, string> = {
-  anthropic: 'bg-orange-500/10 text-orange-600 border-orange-500/30 dark:text-orange-400',
-  openai: 'bg-green-500/10 text-green-600 border-green-500/30 dark:text-green-400',
-  antigravity: 'bg-purple-500/10 text-purple-600 border-purple-500/30 dark:text-purple-400',
-  gemini: 'bg-blue-500/10 text-blue-600 border-blue-500/30 dark:text-blue-400',
-  grok: 'bg-zinc-800/10 text-zinc-800 border-zinc-800/30 dark:bg-zinc-500/10 dark:text-zinc-200 dark:border-zinc-500/30',
-  kimi: 'bg-pink-500/10 text-pink-600 border-pink-500/30 dark:text-pink-400',
-  zhipu: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/30 dark:text-indigo-400',
-  deepseek: 'bg-teal-500/10 text-teal-600 border-teal-500/30 dark:text-teal-400',
-  minimax: 'bg-rose-500/10 text-rose-600 border-rose-500/30 dark:text-rose-400',
-  opencode_go: 'bg-amber-500/10 text-amber-700 border-amber-500/30 dark:text-amber-300',
-  composite: 'bg-cyan-500/10 text-cyan-700 border-cyan-500/30 dark:text-cyan-300',
+type SemanticTone = 'success' | 'info' | 'warning' | 'neutral'
+
+const PLATFORM_TONE: Record<Platform, SemanticTone> = {
+  anthropic: 'warning',
+  openai: 'success',
+  antigravity: 'info',
+  gemini: 'info',
+  grok: 'neutral',
+  kimi: 'info',
+  zhipu: 'info',
+  deepseek: 'success',
+  minimax: 'warning',
+  opencode_go: 'warning',
+  composite: 'info',
 }
+
+const TONE_TEXT: Record<SemanticTone, string> = {
+  success: 'var(--anthropic-success)',
+  info: 'var(--anthropic-info)',
+  warning: 'var(--anthropic-warning)',
+  neutral: 'var(--anthropic-muted)',
+}
+
+const TONE_TEXT_CLASS: Record<SemanticTone, string> = {
+  success: 'text-[var(--anthropic-success)]',
+  info: 'text-[var(--anthropic-info)]',
+  warning: 'text-[var(--anthropic-warning)]',
+  neutral: 'text-[var(--anthropic-muted)]',
+}
+const TONE_BORDER_CLASS: Record<SemanticTone, string> = {
+  success: 'border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)]',
+  info: 'border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)]',
+  warning: 'border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)]',
+  neutral: 'border-[var(--anthropic-border-subtle)]',
+}
+const TONE_STRONG_BORDER_CLASS: Record<SemanticTone, string> = {
+  success: 'border-[color-mix(in_srgb,var(--anthropic-success)_48%,transparent)]',
+  info: 'border-[color-mix(in_srgb,var(--anthropic-info)_48%,transparent)]',
+  warning: 'border-[color-mix(in_srgb,var(--anthropic-warning)_48%,transparent)]',
+  neutral: 'border-[var(--anthropic-border-hover)]',
+}
+const TONE_BAR_CLASS: Record<SemanticTone, string> = {
+  success: 'bg-[var(--anthropic-success)]',
+  info: 'bg-[var(--anthropic-info)]',
+  warning: 'bg-[var(--anthropic-warning)]',
+  neutral: 'bg-[var(--anthropic-raised)]',
+}
+const TONE_BUTTON_CLASS: Record<SemanticTone, string> = {
+  success: 'bg-[var(--anthropic-success)] text-[var(--anthropic-page)] hover:bg-[color-mix(in_srgb,var(--anthropic-success)_82%,var(--anthropic-fg))]',
+  info: 'bg-[var(--anthropic-info)] text-[var(--anthropic-page)] hover:bg-[color-mix(in_srgb,var(--anthropic-info)_82%,var(--anthropic-fg))]',
+  warning: 'bg-[var(--anthropic-warning)] text-[var(--anthropic-page)] hover:bg-[color-mix(in_srgb,var(--anthropic-warning)_82%,var(--anthropic-fg))]',
+  neutral: 'bg-[var(--anthropic-muted)] text-[var(--anthropic-page)] hover:bg-[var(--anthropic-fg)]',
+}
+const TONE_GRADIENT_CLASS: Record<SemanticTone, string> = {
+  success: 'from-[var(--anthropic-success)] to-[var(--anthropic-success)]',
+  info: 'from-[var(--anthropic-info)] to-[var(--anthropic-info)]',
+  warning: 'from-[var(--anthropic-warning)] to-[var(--anthropic-warning)]',
+  neutral: 'from-[var(--anthropic-muted)] to-[var(--anthropic-muted)]',
+}
+const semanticText = (tone: SemanticTone) => TONE_TEXT_CLASS[tone]
+const semanticBorder = (tone: SemanticTone) => TONE_BORDER_CLASS[tone]
+const semanticStrongBorder = (tone: SemanticTone) => TONE_STRONG_BORDER_CLASS[tone]
+
+const BADGE: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => {
+    const tone = PLATFORM_TONE[platform]
+    return [platform, 'bg-transparent ' + semanticText(tone) + ' ' + semanticBorder(tone)]
+  }),
+) as Record<Platform, string>
+
+const BADGE_LIGHT = BADGE
+const BORDER: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    semanticBorder(PLATFORM_TONE[platform]),
+  ]),
+) as Record<Platform, string>
+const BORDER_STRONG: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    semanticStrongBorder(PLATFORM_TONE[platform]),
+  ]),
+) as Record<Platform, string>
+
+const ACCENT: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    TONE_TEXT[PLATFORM_TONE[platform]],
+  ]),
+) as Record<Platform, string>
+
+const ACCENT_BAR: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    TONE_BAR_CLASS[PLATFORM_TONE[platform]],
+  ]),
+) as Record<Platform, string>
+
+const TEXT: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    semanticText(PLATFORM_TONE[platform]),
+  ]),
+) as Record<Platform, string>
+const ICON = TEXT
+
+const BUTTON: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => {
+    return [platform, TONE_BUTTON_CLASS[PLATFORM_TONE[platform]]]
+  }),
+) as Record<Platform, string>
+
+const DISCOUNT: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    'bg-transparent ' + semanticText(PLATFORM_TONE[platform]) + ' ' + semanticBorder(PLATFORM_TONE[platform]),
+  ]),
+) as Record<Platform, string>
+
+const GRADIENT: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => {
+    return [platform, TONE_GRADIENT_CLASS[PLATFORM_TONE[platform]]]
+  }),
+) as Record<Platform, string>
+const GRADIENT_TEXT: Record<Platform, string> = TEXT
+const GRADIENT_SUBTEXT: Record<Platform, string> = Object.fromEntries(
+  (Object.keys(PLATFORM_TONE) as Platform[]).map((platform) => [
+    platform,
+    'text-[var(--anthropic-raised)]',
+  ]),
+) as Record<Platform, string>
+
 const BADGE_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border-[var(--anthropic-border-subtle)]'
-
-// ── Light badge (transparent surface + semantic hairline) ───────────
-const BADGE_LIGHT: Record<Platform, string> = {
-  anthropic: 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/10 dark:text-orange-300',
-  openai: 'bg-green-500/10 text-green-600 dark:bg-green-500/10 dark:text-green-300',
-  antigravity: 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/10 dark:text-purple-300',
-  gemini: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300',
-  grok: 'bg-zinc-800/10 text-zinc-800 dark:bg-zinc-500/10 dark:text-zinc-200',
-  kimi: 'bg-pink-500/10 text-pink-600 dark:bg-pink-500/10 dark:text-pink-300',
-  zhipu: 'bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
-  deepseek: 'bg-teal-500/10 text-teal-600 dark:bg-teal-500/10 dark:text-teal-300',
-  minimax: 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300',
-  opencode_go: 'bg-amber-500/10 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
-  composite: 'bg-cyan-500/10 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-300',
-}
-
-// ── Border ──────────────────────────────────────────────────────────
-const BORDER: Record<Platform, string> = {
-  anthropic: 'border-orange-500/20 dark:border-orange-500/20',
-  openai: 'border-green-500/20 dark:border-green-500/20',
-  antigravity: 'border-purple-500/20 dark:border-purple-500/20',
-  gemini: 'border-blue-500/20 dark:border-blue-500/20',
-  grok: 'border-zinc-800/20 dark:border-zinc-500/20',
-  kimi: 'border-pink-500/20 dark:border-pink-500/20',
-  zhipu: 'border-indigo-500/20 dark:border-indigo-500/20',
-  deepseek: 'border-teal-500/20 dark:border-teal-500/20',
-  minimax: 'border-rose-500/20 dark:border-rose-500/20',
-  opencode_go: 'border-amber-500/20 dark:border-amber-500/20',
-  composite: 'border-cyan-500/20 dark:border-cyan-500/20',
-}
-const BORDER_DEFAULT = 'border-[var(--atelier-line)] dark:border-[var(--anthropic-border)]'
-
-// ── Border strong (higher-contrast platform tint, e.g. plaza group cards) ──
-const BORDER_STRONG: Record<Platform, string> = {
-  anthropic: 'border-orange-500/35 dark:border-orange-500/30',
-  openai: 'border-green-500/35 dark:border-green-500/30',
-  antigravity: 'border-purple-500/35 dark:border-purple-500/30',
-  gemini: 'border-blue-500/35 dark:border-blue-500/30',
-  grok: 'border-zinc-800/35 dark:border-zinc-500/35',
-  kimi: 'border-pink-500/35 dark:border-pink-500/30',
-  zhipu: 'border-indigo-500/35 dark:border-indigo-500/30',
-  deepseek: 'border-teal-500/35 dark:border-teal-500/30',
-  minimax: 'border-rose-500/35 dark:border-rose-500/30',
-  opencode_go: 'border-amber-500/35 dark:border-amber-500/30',
-  composite: 'border-cyan-500/35 dark:border-cyan-500/30',
-}
-const BORDER_STRONG_DEFAULT = 'border-gray-300 dark:border-dark-600'
-
-// ── Accent (single raw color per platform; consumers derive washes/tints
-//    from it via CSS color-mix, e.g. plaza paid-price zone) ──
-const ACCENT: Record<Platform, string> = {
-  anthropic: '#f97316', // orange-500
-  openai: '#22c55e', // green-500
-  antigravity: '#a855f7', // purple-500
-  gemini: '#3b82f6', // blue-500
-  grok: '#71717a', // zinc-500
-  kimi: '#ec4899', // pink-500
-  zhipu: '#6366f1', // indigo-500
-  deepseek: '#14b8a6', // teal-500
-  minimax: '#f43f5e', // rose-500
-  opencode_go: '#f59e0b', // amber-500
-  composite: '#06b6d4', // cyan-500
-}
-const ACCENT_DEFAULT = '#14b8a6' // primary-500 (teal)
-
-// ── Accent bar (gradient) ───────────────────────────────────────────
-const ACCENT_BAR: Record<Platform, string> = {
-  anthropic: 'bg-gradient-to-r from-orange-400 to-orange-500',
-  openai: 'bg-gradient-to-r from-emerald-400 to-emerald-500',
-  antigravity: 'bg-gradient-to-r from-purple-400 to-purple-500',
-  gemini: 'bg-gradient-to-r from-blue-400 to-blue-500',
-  grok: 'bg-gradient-to-r from-zinc-700 to-zinc-900',
-  kimi: 'bg-gradient-to-r from-pink-400 to-pink-500',
-  zhipu: 'bg-gradient-to-r from-indigo-400 to-indigo-500',
-  deepseek: 'bg-gradient-to-r from-teal-400 to-teal-500',
-  minimax: 'bg-gradient-to-r from-rose-400 to-rose-500',
-  opencode_go: 'bg-gradient-to-r from-amber-400 to-amber-500',
-  composite: 'bg-gradient-to-r from-slate-500 to-cyan-500',
-}
+const BORDER_DEFAULT = 'border-[var(--anthropic-border)]'
+const BORDER_STRONG_DEFAULT = 'border-[var(--anthropic-border-hover)]'
+const ACCENT_DEFAULT = 'var(--anthropic-info)'
 const ACCENT_BAR_DEFAULT = 'bg-[var(--anthropic-raised)]'
-
-// ── Text (price, icon) ─────────────────────────────────────────────
-const TEXT: Record<Platform, string> = {
-  anthropic: 'text-orange-600 dark:text-orange-400',
-  openai: 'text-emerald-600 dark:text-emerald-400',
-  antigravity: 'text-purple-600 dark:text-purple-400',
-  gemini: 'text-blue-600 dark:text-blue-400',
-  grok: 'text-zinc-800 dark:text-zinc-200',
-  kimi: 'text-pink-600 dark:text-pink-400',
-  zhipu: 'text-indigo-600 dark:text-indigo-400',
-  deepseek: 'text-teal-600 dark:text-teal-400',
-  minimax: 'text-rose-600 dark:text-rose-400',
-  opencode_go: 'text-amber-700 dark:text-amber-300',
-  composite: 'text-cyan-700 dark:text-cyan-300',
-}
 const TEXT_DEFAULT = 'text-[var(--anthropic-fg)]'
-
-// ── Icon (check mark etc.) ──────────────────────────────────────────
-const ICON: Record<Platform, string> = {
-  anthropic: 'text-orange-500 dark:text-orange-400',
-  openai: 'text-emerald-500 dark:text-emerald-400',
-  antigravity: 'text-purple-500 dark:text-purple-400',
-  gemini: 'text-blue-500 dark:text-blue-400',
-  grok: 'text-zinc-800 dark:text-zinc-200',
-  kimi: 'text-pink-500 dark:text-pink-400',
-  zhipu: 'text-indigo-500 dark:text-indigo-400',
-  deepseek: 'text-teal-500 dark:text-teal-400',
-  minimax: 'text-rose-500 dark:text-rose-400',
-  opencode_go: 'text-amber-500 dark:text-amber-300',
-  composite: 'text-cyan-600 dark:text-cyan-300',
-}
-const ICON_DEFAULT = 'text-[var(--anthropic-fg)]'
-
-// ── Button (solid bg) ───────────────────────────────────────────────
-const BUTTON: Record<Platform, string> = {
-  anthropic: 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 dark:bg-orange-500/80 dark:hover:bg-orange-500',
-  openai: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 dark:bg-green-600/80 dark:hover:bg-green-600',
-  antigravity: 'bg-purple-500 text-white hover:bg-purple-600 active:bg-purple-700 dark:bg-purple-500/80 dark:hover:bg-purple-500',
-  gemini: 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:bg-blue-500/80 dark:hover:bg-blue-500',
-  grok: 'bg-zinc-800 text-white hover:bg-zinc-900 active:bg-black dark:bg-zinc-700 dark:hover:bg-zinc-600',
-  kimi: 'bg-pink-500 text-white hover:bg-pink-600 active:bg-pink-700 dark:bg-pink-500/80 dark:hover:bg-pink-500',
-  zhipu: 'bg-indigo-500 text-white hover:bg-indigo-600 active:bg-indigo-700 dark:bg-indigo-500/80 dark:hover:bg-indigo-500',
-  deepseek: 'bg-teal-500 text-white hover:bg-teal-600 active:bg-teal-700 dark:bg-teal-500/80 dark:hover:bg-teal-500',
-  minimax: 'bg-rose-500 text-white hover:bg-rose-600 active:bg-rose-700 dark:bg-rose-500/80 dark:hover:bg-rose-500',
-  opencode_go: 'bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700 dark:bg-amber-500/80 dark:hover:bg-amber-500',
-  composite: 'bg-cyan-700 text-white hover:bg-cyan-800 active:bg-cyan-900 dark:bg-cyan-600 dark:hover:bg-cyan-500',
-}
-const BUTTON_DEFAULT = 'bg-[var(--atelier-ink)] text-[var(--atelier-paper)] hover:bg-[var(--atelier-dark)]'
-
-// ── Discount badge ──────────────────────────────────────────────────
-const DISCOUNT: Record<Platform, string> = {
-  anthropic: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-  openai: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-  antigravity: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-  gemini: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  grok: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200',
-  kimi: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
-  zhipu: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-  deepseek: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
-  minimax: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
-  opencode_go: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
-  composite: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/40 dark:text-cyan-300',
-}
+const BUTTON_DEFAULT = 'bg-[var(--anthropic-fg)] text-[var(--anthropic-page)] hover:bg-[var(--anthropic-fg-hover)]'
 const DISCOUNT_DEFAULT = 'bg-transparent text-[var(--anthropic-muted)] border border-[var(--anthropic-border-subtle)]'
-
-// ── Header gradient (subscription confirm) ─────────────────────────
-const GRADIENT: Record<Platform, string> = {
-  anthropic: 'from-orange-500 to-orange-600',
-  openai: 'from-emerald-500 to-emerald-600',
-  antigravity: 'from-purple-500 to-purple-600',
-  gemini: 'from-blue-500 to-blue-600',
-  grok: 'from-zinc-700 to-zinc-900',
-  kimi: 'from-pink-500 to-pink-600',
-  zhipu: 'from-indigo-500 to-indigo-600',
-  deepseek: 'from-teal-500 to-teal-600',
-  minimax: 'from-rose-500 to-rose-600',
-  opencode_go: 'from-amber-500 to-amber-600',
-  composite: 'from-slate-600 to-cyan-600',
-}
-const GRADIENT_DEFAULT = 'from-[var(--atelier-ink)] to-[var(--atelier-dark)]'
-
-// ── Header text (light text on gradient bg) ────────────────────────
-const GRADIENT_TEXT: Record<Platform, string> = {
-  anthropic: 'text-orange-100',
-  openai: 'text-emerald-100',
-  antigravity: 'text-purple-100',
-  gemini: 'text-blue-100',
-  grok: 'text-zinc-100',
-  kimi: 'text-pink-100',
-  zhipu: 'text-indigo-100',
-  deepseek: 'text-teal-100',
-  minimax: 'text-rose-100',
-  opencode_go: 'text-amber-100',
-  composite: 'text-cyan-100',
-}
+const GRADIENT_DEFAULT = 'from-[var(--anthropic-fg)] to-[var(--anthropic-fg)]'
 const GRADIENT_TEXT_DEFAULT = 'text-[var(--anthropic-page)]'
-
-const GRADIENT_SUBTEXT: Record<Platform, string> = {
-  anthropic: 'text-orange-200',
-  openai: 'text-emerald-200',
-  antigravity: 'text-purple-200',
-  gemini: 'text-blue-200',
-  grok: 'text-zinc-300',
-  kimi: 'text-pink-200',
-  zhipu: 'text-indigo-200',
-  deepseek: 'text-teal-200',
-  minimax: 'text-rose-200',
-  opencode_go: 'text-amber-200',
-  composite: 'text-cyan-200',
-}
 const GRADIENT_SUBTEXT_DEFAULT = 'text-[var(--anthropic-raised)]'
 
-// ── Public API ──────────────────────────────────────────────────────
-
 function isPlatform(p: string): p is Platform {
-  return (
-    p === 'anthropic' ||
-    p === 'openai' ||
-    p === 'antigravity' ||
-    p === 'gemini' ||
-    p === 'grok' ||
-    p === 'kimi' ||
-    p === 'zhipu' ||
-    p === 'deepseek' ||
-    p === 'minimax' ||
-    p === 'opencode_go' ||
-    p === 'composite'
-  )
+  return Object.prototype.hasOwnProperty.call(PLATFORM_TONE, p)
 }
 
 export function platformBadgeClass(p: string): string {
@@ -272,7 +196,7 @@ export function platformTextClass(p: string): string {
 }
 
 export function platformIconClass(p: string): string {
-  return isPlatform(p) ? ICON[p] : ICON_DEFAULT
+  return isPlatform(p) ? ICON[p] : TEXT_DEFAULT
 }
 
 export function platformButtonClass(p: string): string {

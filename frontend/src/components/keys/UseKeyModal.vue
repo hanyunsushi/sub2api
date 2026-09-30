@@ -29,8 +29,8 @@
         </p>
 
         <!-- Client Tabs -->
-        <div v-if="clientTabs.length" class="border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-          <nav class="-mb-px flex space-x-6" aria-label="Client">
+        <div v-if="clientTabs.length" class="overflow-x-auto border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+          <nav class="-mb-px flex min-w-max space-x-6" aria-label="Client">
             <button data-testid="keys-use-key-button-active-client-tab-tab-id"
               v-for="tab in clientTabs"
               :key="tab.id"

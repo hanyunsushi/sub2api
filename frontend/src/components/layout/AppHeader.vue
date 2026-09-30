@@ -117,10 +117,10 @@
             >
               <div class="balance-row balance-row-system header-balance-dropdown-row rounded-lg px-3 py-2">
                 <div class="header-balance-dropdown-label text-xs font-medium">
-                  <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">系统余额</span></span>
+                  <span class="text-action-label header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">系统余额</span></span>
                 </div>
                 <div class="balance-system-text header-balance-dropdown-value text-sm font-semibold">
-                  <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formattedSystemBalance }}</span></span>
+                  <span class="text-action-label header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formattedSystemBalance }}</span></span>
                 </div>
               </div>
               <div
@@ -146,7 +146,7 @@
                     :class="[balanceProviderTextClass(subscription), 'header-balance-dropdown-label-copy min-w-0 text-xs font-medium']"
                     :title="externalSubscriptionChipLabel(subscription)"
                   >
-                    <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ externalSubscriptionChipLabel(subscription) }}</span></span>
+                    <span class="text-action-label header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ externalSubscriptionChipLabel(subscription) }}</span></span>
                   </div>
                 </div>
                 <div class="header-balance-dropdown-value min-w-0 text-right">
@@ -154,7 +154,7 @@
                     :class="[balanceProviderTextClass(subscription), 'header-balance-dropdown-value-copy text-sm font-semibold']"
                     :title="formatExternalSubscriptionBalance(subscription, true, { walletOnly: true })"
                   >
-                    <span class="website-bracket-anchor header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}</span></span>
+                    <span class="text-action-label header-balance-dropdown-anchor"><span class="header-balance-dropdown-text">{{ formatExternalSubscriptionBalance(subscription, true, { walletOnly: true }) }}</span></span>
                   </div>
                   <div
                     class="balance-expiry-text truncate text-[11px] leading-4"
@@ -177,7 +177,7 @@
           :href="docUrl"
           target="_blank"
           rel="noopener noreferrer"
-            class="website-bracket-hover flex items-center gap-1.5 px-0 py-1.5 text-sm font-medium text-[var(--anthropic-muted)] transition-colors dark:text-dark-400"
+            class="text-action-hover flex items-center gap-1.5 px-0 py-1.5 text-sm font-medium text-[var(--anthropic-muted)] transition-colors dark:text-dark-400"
         >
           <Icon name="book" size="sm" />
           <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
@@ -265,22 +265,22 @@
                   {{ t('common.balance') }}
                 </div>
                 <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-                  <span class="website-bracket-anchor">{{ formatHeaderMoney(availableBalance) }}</span>
+                  <span class="text-action-label">{{ formatHeaderMoney(availableBalance) }}</span>
                 </div>
                 <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
-                  <span class="website-bracket-anchor">{{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}</span>
+                  <span class="text-action-label">{{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}</span>
                 </div>
               </div>
 
               <div class="py-1">
                 <router-link data-testid="layout-app-header-router-link-close-dropdown" to="/profile" @click="closeDropdown" class="dropdown-item">
                   <Icon name="user" size="sm" />
-                  <span class="website-bracket-anchor">{{ t('nav.profile') }}</span>
+                  <span class="text-action-label">{{ t('nav.profile') }}</span>
                 </router-link>
 
                 <router-link data-testid="layout-app-header-router-link-close-dropdown-2" to="/keys" @click="closeDropdown" class="dropdown-item">
                   <Icon name="key" size="sm" />
-                  <span class="website-bracket-anchor">{{ t('nav.apiKeys') }}</span>
+                  <span class="text-action-label">{{ t('nav.apiKeys') }}</span>
                 </router-link>
 
                 <a data-testid="layout-app-header-link-close-dropdown"
@@ -298,7 +298,7 @@
                       d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
                     />
                   </svg>
-                  <span class="website-bracket-anchor">{{ t('nav.github') }}</span>
+                  <span class="text-action-label">{{ t('nav.github') }}</span>
                 </a>
 
               </div>
@@ -336,7 +336,7 @@
                       d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a1 1 0 110 2 1 1 0 010-2zm1.07-7.75c0-.6-.49-1.25-1.32-1.25-.7 0-1.22.4-1.43 1.02a1 1 0 11-1.9-.62A3.41 3.41 0 0111.8 5c2.02 0 3.25 1.4 3.25 2.9 0 2-1.83 2.55-2.43 3.12-.43.4-.47.75-.47 1.23a1 1 0 01-2 0c0-1 .16-1.82 1.1-2.7.69-.64 1.82-1.05 1.82-2.06z"
                     />
                   </svg>
-                  <span class="website-bracket-anchor">{{ $t('onboarding.restartTour') }}</span>
+                  <span class="text-action-label">{{ $t('onboarding.restartTour') }}</span>
                 </button>
               </div>
 
@@ -358,7 +358,7 @@
                       d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
                     />
                   </svg>
-                  <span class="website-bracket-anchor">{{ t('nav.logout') }}</span>
+                  <span class="text-action-label">{{ t('nav.logout') }}</span>
                 </button>
               </div>
           </FloatingDropdown>

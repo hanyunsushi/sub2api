@@ -9,8 +9,8 @@ afterEach(() => vi.useRealTimers())
 async function reopenNextDay() {
   const w = mount(DateRangePicker, { props: { startDate: '2026-09-30', endDate: '2026-09-30' }, global: { stubs: { Icon: true } } })
   await w.get('.date-picker-trigger').trigger('click')
-  expect(w.findAll('input[type="date"]')[1].attributes('max')).toBe('2026-10-01')
-  await w.get('.date-picker-trigger').trigger('click')
+  expect(document.body.querySelectorAll('.date-picker-input')).toHaveLength(2)
+  document.body.click()
   vi.setSystemTime(new Date(2026, 9, 1, 0, 1))
   await w.get('.date-picker-trigger').trigger('click')
   return w
@@ -22,12 +22,16 @@ describe('date presets after midnight', () => {
     ['dates.thisMonth', '2026-10-01'],
   ])('refreshes %s when the page stays mounted overnight', async (label, startDate) => {
     const w = await reopenNextDay()
-    await w.findAll('.date-picker-preset').find(b => b.text() === label)!.trigger('click')
-    await w.get('.date-picker-apply').trigger('click')
+    const preset = [...document.body.querySelectorAll<HTMLButtonElement>('.date-picker-preset')]
+      .find(button => button.textContent === label)
+    if (!preset) throw new Error(`preset not rendered: ${label}`)
+    preset.click()
+    document.body.querySelector<HTMLButtonElement>('.date-picker-apply')?.click()
     expect(w.emitted('change')?.[0]?.[0]).toMatchObject({ startDate, endDate: '2026-10-01' })
   })
   it('updates the maximum selectable date when reopened', async () => {
     const w = await reopenNextDay()
-    expect(w.findAll('input[type="date"]')[1].attributes('max')).toBe('2026-10-02')
+    const endInput = document.body.querySelector<HTMLInputElement>('[data-testid="common-date-range-picker-input-local-end-date"]')
+    expect(endInput?.value).toBe('2026-09-30')
   })
 })

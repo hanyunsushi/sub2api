@@ -2,7 +2,8 @@
   <div class="flex flex-col gap-0.5">
     <div class="flex items-center gap-2">
       <!-- 纯配额模式主模型是占位符 "quota"（数据源是账号不是模型），展示层替换为本地化标签 -->
-      <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatMonitorModel(row.primary_model) }}</span>
+      <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
+      <span class="monitor-model-token text-sm text-gray-900 dark:text-gray-100">{{ formatMonitorModel(row.primary_model) }}</span>
       <HelpTooltip>
       <template #trigger>
         <span
@@ -66,6 +67,7 @@ import { useI18n } from 'vue-i18n'
 import type { ChannelMonitor } from '@/api/admin/channelMonitor'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
 import MonitorQuotaView from '@/components/common/MonitorQuotaView.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 
 defineProps<{

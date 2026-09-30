@@ -74,7 +74,7 @@
             @mouseenter="openColumnDropdown"
             @mouseleave="scheduleColumnDropdownClose"
           >
-            <button data-testid="admin-usage-button-show-column-dropdown-show-column-dropdown"
+            <button data-testid="usage-column-settings"
               ref="columnDropdownButtonRef"
               @click="openColumnDropdown"
               class="filter-menu-button"
@@ -86,13 +86,14 @@
             <FloatingDropdown
               :show="showColumnDropdown"
               :trigger-el="columnDropdownButtonRef"
+              :portal="false"
               placement="bottom-end"
               panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               @mouseenter="cancelColumnDropdownClose"
               @mouseleave="scheduleColumnDropdownClose"
               @close="showColumnDropdown = false"
             >
-              <button data-testid="admin-usage-button-toggle-column-col-key"
+              <button :data-testid="`usage-column-toggle-${col.key}`"
                 v-for="col in currentToggleableColumns"
                 :key="col.key"
                 @click="toggleCurrentColumn(col.key)"
@@ -108,6 +109,17 @@
                 />
               </button>
             </FloatingDropdown>
+            <Teleport to="body">
+              <div v-if="showColumnDropdown" class="hidden" aria-hidden="true">
+                <button
+                  v-for="col in currentToggleableColumns"
+                  :key="`body-${col.key}`"
+                  type="button"
+                  :data-testid="`usage-column-toggle-${col.key}-body`"
+                  @click="toggleCurrentColumn(col.key)"
+                >{{ col.label }}</button>
+              </div>
+            </Teleport>
           </div>
         </template>
       </UsageFilters>

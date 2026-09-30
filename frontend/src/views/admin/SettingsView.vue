@@ -6454,6 +6454,22 @@
                 </div>
               </div>
 
+              <div class="grid grid-cols-1 gap-6 border-t border-gray-100 pt-4 dark:border-dark-700 md:grid-cols-2">
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">AI logo 图床基础 URL</label>
+                  <input v-model="form.ai_logo_cdn_base_url" type="url" class="input font-mono text-sm" placeholder="https://unpkg.com/@lobehub/icons-static-png@1.91.0/light" />
+                </div>
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">共享自定义 AI logo</label>
+                  <LogoPicker v-model="customAILogoPresetsInput" hint="每行一个 HTTPS 图片地址" />
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ localText("外部订阅", "External subscriptions") }}</h3>
+                <router-link class="btn btn-secondary" to="/admin/settings/external-subscriptions">{{ localText("管理外部订阅", "Manage external subscriptions") }}</router-link>
+              </div>
+
               <!-- API Base URL -->
               <div>
                 <label
@@ -6981,6 +6997,19 @@
                       {{ t("admin.settings.customMenu.openModeHint") }}
                     </p>
                   </div>
+
+                  <label class="flex items-start gap-2 rounded-md border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-3 text-sm text-[var(--anthropic-muted)] sm:col-span-2">
+                    <input
+                      data-testid="custom-menu-hide-open-button"
+                      v-model="item.hide_open_button"
+                      type="checkbox"
+                      class="mt-0.5 h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+                    />
+                    <span>
+                      <span class="block font-medium text-[var(--anthropic-fg)]">{{ localText("隐藏打开按钮", "Hide open button") }}</span>
+                      <span class="mt-1 block text-xs text-[var(--anthropic-muted)]">{{ localText("仅保留内嵌内容，不显示打开按钮。", "Keep the embedded content without showing an open button.") }}</span>
+                    </span>
+                  </label>
 
                   <!-- URL (full width) -->
                   <div class="sm:col-span-2">
@@ -8379,7 +8408,7 @@
                       <button data-testid="merge-settings-view-form-payment-alipay-mobile-precreate-deep-link-form-payment-alip-3"
                         type="button"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
                           form.payment_alipay_mobile_precreate_deep_link
                             ? 'bg-primary-500'
                             : 'bg-gray-300 dark:bg-dark-600',
@@ -9059,6 +9088,7 @@ import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
 import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
 import OpenAIFastPolicyUserSelector from "@/views/admin/settings/OpenAIFastPolicyUserSelector.vue";
@@ -9242,6 +9272,24 @@ const registrationEmailSuffixWhitelistTags = ref<string[]>([]);
 const registrationEmailSuffixWhitelistDraft = ref("");
 const forwardedClientIpHeaderDraft = ref("");
 const tablePageSizeOptionsInput = ref("10, 20, 50, 100");
+const customAILogoPresetsInput = ref("");
+
+function normalizeCustomAILogoPresetsInput(input: string): string[] {
+  return Array.from(new Set(
+    input
+      .split(/[\n,]/)
+      .map((value) => value.trim())
+      .filter((value) => {
+        if (!value) return false;
+        try {
+          const url = new URL(value);
+          return url.protocol === "http:" || url.protocol === "https:";
+        } catch {
+          return false;
+        }
+      }),
+  ));
+}
 
 // Admin API Key 状态
 const adminApiKeyLoading = ref(true);
@@ -9824,6 +9872,8 @@ type SettingsForm = Omit<
   // 系统全局平台限额 map；form 内始终归一化为全 4 平台对象（模板非空绑定依赖此不变量）
   default_platform_quotas: DefaultPlatformQuotasMap;
   account_scheduling_thresholds: ReturnType<typeof normalizeAccountSchedulingThresholdsMap>;
+  ai_logo_cdn_base_url: string;
+  custom_ai_logo_presets: string[];
 };
 
 const schedulingThresholdPlatforms = SCHEDULING_THRESHOLD_PLATFORMS;
@@ -9911,6 +9961,8 @@ const form = reactive<SettingsForm>({
     hide_open_button?: boolean;
     open_mode: "iframe" | "redirect";
   }>,
+  ai_logo_cdn_base_url: "",
+  custom_ai_logo_presets: [] as string[],
   custom_endpoints: [] as Array<{
     name: string;
     endpoint: string;
@@ -11167,6 +11219,11 @@ async function loadSettings() {
         ? settings.table_page_size_options
         : [10, 20, 50, 100],
     );
+    form.ai_logo_cdn_base_url = String(settings.ai_logo_cdn_base_url || "");
+    form.custom_ai_logo_presets = Array.isArray(settings.custom_ai_logo_presets)
+      ? settings.custom_ai_logo_presets.filter((value): value is string => typeof value === "string")
+      : [];
+    customAILogoPresetsInput.value = form.custom_ai_logo_presets.join("\n");
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
     smtpPasswordManuallyEdited.value = false;
@@ -11486,6 +11543,7 @@ async function saveSettings() {
       ...item,
       open_mode: item.open_mode === "redirect" ? "redirect" : "iframe",
     }));
+    form.custom_ai_logo_presets = normalizeCustomAILogoPresetsInput(customAILogoPresetsInput.value);
 
     const oauthSchedulingRate = form.openai_oauth_scheduling_rate_multiplier;
     if (
@@ -11539,6 +11597,8 @@ async function saveSettings() {
       site_logo: form.site_logo,
       site_subtitle: form.site_subtitle,
       api_base_url: form.api_base_url,
+      ai_logo_cdn_base_url: form.ai_logo_cdn_base_url,
+      custom_ai_logo_presets: form.custom_ai_logo_presets,
       contact_info: form.contact_info,
       doc_url: form.doc_url,
       home_content: form.home_content,
@@ -11886,6 +11946,11 @@ async function saveSettings() {
         ? updated.table_page_size_options
         : [10, 20, 50, 100],
     );
+    form.ai_logo_cdn_base_url = String(updated.ai_logo_cdn_base_url || "");
+    form.custom_ai_logo_presets = Array.isArray(updated.custom_ai_logo_presets)
+      ? updated.custom_ai_logo_presets.filter((value): value is string => typeof value === "string")
+      : [];
+    customAILogoPresetsInput.value = form.custom_ai_logo_presets.join("\n");
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
     smtpPasswordManuallyEdited.value = false;

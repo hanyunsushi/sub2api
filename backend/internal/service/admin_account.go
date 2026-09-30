@@ -1339,25 +1339,6 @@ func (s *adminServiceImpl) SetAccountSchedulable(ctx context.Context, id int64, 
 	return updated, nil
 }
 
-type accountScheduleLockWriter interface {
-	SetScheduleLocked(ctx context.Context, id int64, locked bool) error
-}
-
-func (s *adminServiceImpl) SetAccountScheduleLocked(ctx context.Context, id int64, locked bool) (*Account, error) {
-	writer, ok := s.accountRepo.(accountScheduleLockWriter)
-	if !ok {
-		return nil, fmt.Errorf("account repository does not support schedule lock")
-	}
-	if err := writer.SetScheduleLocked(ctx, id, locked); err != nil {
-		return nil, err
-	}
-	updated, err := s.accountRepo.GetByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return updated, nil
-}
-
 func (s *adminServiceImpl) RevertAccountProxyFallback(ctx context.Context, id int64) error {
 	if err := s.accountRepo.RevertProxyFallback(ctx, id); err != nil {
 		return err

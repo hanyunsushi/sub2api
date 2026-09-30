@@ -63,7 +63,7 @@ func ResponsesToChatCompletionsRequestWithOptions(req *ResponsesRequest, opts *R
 		ParallelToolCalls:   req.ParallelToolCalls,
 	}
 	if req.Reasoning != nil {
-		out.ReasoningEffort = normalizeChatReasoningEffort(req.Reasoning.Effort)
+		out.ReasoningEffort = req.Reasoning.Effort
 	}
 	effectiveTools, err := EffectiveResponsesTools(req)
 	if err != nil {
@@ -339,19 +339,44 @@ func responsesInputToChatMessagesWithOptions(instructions string, inputRaw json.
 	if err != nil {
 		return nil, err
 	}
-	return normalizeResponsesDerivedChatMessageRoles(normalizeChatMessagesWithToolOutputMedia(built, mediaByCallID)), nil
+	normalized := normalizeChatMessagesWithToolOutputMedia(built, mediaByCallID)
+	return normalizeResponsesDerivedChatMessageRoles(normalized), nil
 }
 
+// normalizeResponsesDerivedChatMessageRoles rewrites the Chat Completions
+// message list produced by the Responses bridge so that strict upstreams which
+// only accept system content at the very start of the conversation accept it.
+//
+// The bridge turns the Responses `instructions` field and every role:"developer"
+// item into a system message. Codex always sends both instructions and a leading
+// developer item, and it also injects developer notices into the middle of the
+// message history (for example when the user switches models). Forwarded as-is
+// that produces two leading system messages and mid-conversation system
+// messages, which Qwen-family upstreams reject with
+// "System message must be at the beginning." (HTTP 400).
+//
+// Leading system/developer messages are therefore merged into a single leading
+// system message, while later ones keep their position but are downgraded to
+// user messages so the same text still reaches the model.
 func normalizeResponsesDerivedChatMessageRoles(messages []ChatMessage) []ChatMessage {
-	isInstructionRole := func(role string) bool { return role == "system" || role == "developer" }
+	isInstructionRole := func(role string) bool {
+		return role == "system" || role == "developer"
+	}
+
 	leading := 0
 	for leading < len(messages) && isInstructionRole(messages[leading].Role) {
 		leading++
 	}
+
 	out := make([]ChatMessage, 0, len(messages))
-	if leading == 1 {
+	switch leading {
+	case 0:
+		// No leading instructions, nothing to merge.
+	case 1:
+		// A single leading prompt is already valid; keep its content byte for
+		// byte instead of round-tripping it through the text merge below.
 		out = append(out, messages[0])
-	} else if leading > 1 {
+	default:
 		merged := make([]string, 0, leading)
 		for _, m := range messages[:leading] {
 			if text := strings.TrimSpace(chatMessageContentText(m.Content)); text != "" {
@@ -363,6 +388,7 @@ func normalizeResponsesDerivedChatMessageRoles(messages []ChatMessage) []ChatMes
 			out = append(out, ChatMessage{Role: "system", Content: content})
 		}
 	}
+
 	for _, m := range messages[leading:] {
 		if isInstructionRole(m.Role) {
 			m.Role = "user"
@@ -440,7 +466,7 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 			}
 			continue
 		case "function_call":
-			arguments := responsesArgumentsToChatString(item["arguments"])
+			arguments := rawString(item["arguments"])
 			if strings.TrimSpace(arguments) == "" {
 				arguments = "{}"
 			}
@@ -539,7 +565,7 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 					mediaByCallID[callID] = media
 				}
 			} else {
-				outputText = extractToolOutputTextPreservingUnknown(outputRaw)
+				outputText = rawString(outputRaw)
 				if outputText == "" && len(outputRaw) > 0 && string(outputRaw) != "null" && string(outputRaw) != `""` {
 					// 对象/数组形式的输出（如 tool_search 的结果列表）整体字符串化。
 					outputText = string(outputRaw)
@@ -554,6 +580,10 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 			pendingReasoning = ""
 			continue
 		case "agent_message":
+			// Codex multi_agent_v2 用 agent_message 在父线程与子智能体之间传递任务和回复：
+			// input_text 是信封（消息类型、任务名、发送者），正文放在 encrypted_content 片段里
+			// （自定义 provider 下为明文）。chat 上游没有对应条目，按原顺序拼成一条 user 消息，
+			// 否则子智能体收不到任务却仍返回 200。
 			text := agentMessageText(item["content"])
 			if text == "" {
 				pendingReasoning = ""
@@ -623,30 +653,7 @@ func buildChatMessagesFromItems(messages []ChatMessage, rawItems []json.RawMessa
 	return messages, mediaByCallID, nil
 }
 
-// extractToolOutputTextPreservingUnknown lowers a content-part array only when
-// every part is text. Rich or unknown tool results stay byte-for-byte intact.
-func extractToolOutputTextPreservingUnknown(raw json.RawMessage) string {
-	if text, ok := textOnlyToolOutputParts(raw); ok {
-		return text
-	}
-	return rawString(raw)
-}
-
-func textOnlyToolOutputParts(raw json.RawMessage) (string, bool) {
-	var parts []ResponsesContentPart
-	if err := json.Unmarshal(raw, &parts); err != nil || len(parts) == 0 {
-		return "", false
-	}
-	texts := make([]string, 0, len(parts))
-	for _, part := range parts {
-		if part.Type != "input_text" && part.Type != "output_text" {
-			return "", false
-		}
-		texts = append(texts, part.Text)
-	}
-	return strings.Join(texts, "\n\n"), true
-}
-
+// agentMessageText 按原顺序拼接 agent_message 里 input_text 与 encrypted_content 片段的文本。
 func agentMessageText(raw json.RawMessage) string {
 	raw = bytesTrimSpace(raw)
 	if len(raw) == 0 || string(raw) == "null" {
@@ -1718,10 +1725,7 @@ func ChatCompletionsChunkToResponsesEvents(
 		}
 		if choice.Delta.Content != nil && *choice.Delta.Content != "" {
 			// First real content closes the reasoning item, then opens the
-			// message item and its output_text content part. Empty content deltas
-			// are intentionally ignored because some upstreams emit a leading
-			// {"content":""}; sending it opens an empty message and confuses
-			// strict Responses clients.
+			// message item and its output_text content part.
 			events = append(events, closeChatReasoningItem(state)...)
 			events = append(events, ensureChatToResponsesMessageItem(state)...)
 			events = append(events, ensureChatToResponsesTextPart(state)...)
@@ -2242,45 +2246,6 @@ func chatToResponsesEvent(
 	evt.Type = eventType
 	evt.SequenceNumber = seq
 	return evt
-}
-
-// normalizeChatReasoningEffort maps a Responses reasoning effort to a value the
-// Chat Completions protocol accepts. The Responses API allows "xhigh" (codex's
-// highest tier for gpt-5.5 etc.), but chat/completions upstreams (mimo, and the
-// OpenAI chat/completions schema) only accept low/medium/high and 400 on
-// "xhigh". Map xhigh→high; pass through known values; drop unknown/empty.
-func normalizeChatReasoningEffort(effort string) string {
-	switch strings.ToLower(strings.TrimSpace(effort)) {
-	case "xhigh", "extrahigh", "max", "high":
-		return "high"
-	case "medium":
-		return "medium"
-	case "low", "minimal", "none":
-		return "low"
-	default:
-		return "" // omit unknown/empty so the upstream uses its default
-	}
-}
-
-// responsesArgumentsToChatString converts a Responses function_call.arguments
-// field into the stringified-JSON form required by Chat Completions
-// (ChatFunctionCall.Arguments is a string).
-//
-//   - stringified JSON: "{\"x\":1}" → use the inner string as-is
-//   - raw JSON object:   {"x":1}     → serialize to its string form
-//   - empty/absent                   → ""
-func responsesArgumentsToChatString(raw json.RawMessage) string {
-	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
-	if len(trimmed) == 0 || string(trimmed) == "null" {
-		return ""
-	}
-	// Already a JSON string — return the inner value verbatim.
-	var s string
-	if err := json.Unmarshal(trimmed, &s); err == nil {
-		return s
-	}
-	// Object/array/other JSON — serialize to its compact string form.
-	return string(trimmed)
 }
 
 func rawString(raw json.RawMessage) string {

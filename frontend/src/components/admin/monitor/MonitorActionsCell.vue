@@ -23,7 +23,7 @@
       class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-info)] disabled:cursor-not-allowed disabled:opacity-50"
     >
       <Icon name="copy" size="sm" />
-      <span class="text-xs">{{ t('admin.channelMonitor.duplicate') }}</span>
+      <span class="text-xs">{{ t(props.duplicating ? 'admin.channelMonitor.duplicating' : 'admin.channelMonitor.duplicate') }}</span>
     </button>
     <button data-testid="admin-monitor-monitor-actions-cell-button-emit-delete-row"
       @click="$emit('delete', row)"

@@ -32,7 +32,7 @@
                   :class="{ 'filter-menu-button-open': showAutoRefreshDropdown }"
                   :title="t('admin.accounts.autoRefresh')"
                 >
-                  <span class="website-bracket-anchor filter-menu-trigger-label">
+                  <span class="text-action-label filter-menu-trigger-label">
                     {{
                       autoRefreshEnabled
                         ? t('admin.accounts.autoRefreshCountdown', { seconds: autoRefreshCountdown })
@@ -58,7 +58,7 @@
                       :class="{ 'account-auto-refresh-option-active': autoRefreshEnabled }"
                       :aria-pressed="autoRefreshEnabled"
                     >
-                      <span class="website-bracket-anchor">{{ t('admin.accounts.enableAutoRefresh') }}</span>
+                      <span class="text-action-label">{{ t('admin.accounts.enableAutoRefresh') }}</span>
                       <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="account-auto-refresh-check" />
                     </button>
                     <div class="my-1 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
@@ -70,7 +70,7 @@
                       :class="{ 'account-auto-refresh-option-active': autoRefreshIntervalSeconds === sec }"
                       :aria-pressed="autoRefreshIntervalSeconds === sec"
                     >
-                      <span class="website-bracket-anchor">{{ autoRefreshIntervalLabel(sec) }}</span>
+                      <span class="text-action-label">{{ autoRefreshIntervalLabel(sec) }}</span>
                       <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="account-auto-refresh-check" />
                     </button>
                   </div>
@@ -93,7 +93,7 @@
                   :title="t('admin.accounts.moreActions')"
                   :aria-expanded="showAccountToolsDropdown"
                 >
-                  <span class="website-bracket-anchor filter-menu-trigger-label">{{ t('admin.accounts.moreActions') }}</span>
+                  <span class="text-action-label filter-menu-trigger-label">{{ t('admin.accounts.moreActions') }}</span>
                   <span class="filter-menu-caret" aria-hidden="true"></span>
                 </button>
                 <FloatingDropdown
@@ -116,19 +116,19 @@
                       <span class="account-tools-menu-icon bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]">
                         <Icon name="sync" size="sm" />
                       </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.syncFromCrs') }}</span>
+                      <span class="flex-1 text-left text-action-label">{{ t('admin.accounts.syncFromCrs') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-import-data" class="account-tools-menu-item" @click="openImportData">
                       <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
                         <Icon name="upload" size="sm" />
                       </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.accounts.dataImport') }}</span>
+                      <span class="flex-1 text-left text-action-label">{{ t('admin.accounts.dataImport') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-export-data-dialog-from-menu" class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
                       <span class="account-tools-menu-icon bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-300">
                         <Icon name="download" size="sm" />
                       </span>
-                      <span class="flex-1 text-left website-bracket-anchor">
+                      <span class="flex-1 text-left text-action-label">
                         {{ selIds.length ? t('admin.accounts.dataExportSelected') : t('admin.accounts.dataExport') }}
                       </span>
                       <span
@@ -149,13 +149,13 @@
                       <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                         <Icon name="shield" size="sm" />
                       </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.errorPassthrough.title') }}</span>
+                      <span class="flex-1 text-left text-action-label">{{ t('admin.errorPassthrough.title') }}</span>
                     </button>
                     <button data-testid="admin-accounts-button-open-tls-fingerprint-profiles" class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
                       <span class="account-tools-menu-icon bg-[var(--anthropic-raised)] text-slate-600 dark:bg-[var(--anthropic-section)] dark:text-slate-200">
                         <Icon name="lock" size="sm" />
                       </span>
-                      <span class="flex-1 text-left website-bracket-anchor">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
+                      <span class="flex-1 text-left text-action-label">{{ t('admin.tlsFingerprintProfiles.title') }}</span>
                     </button>
 
                     <div class="my-2 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]"></div>
@@ -176,7 +176,7 @@
                       :class="{ 'account-column-option-active': isColumnVisible(col.key) }"
                       :aria-pressed="isColumnVisible(col.key)"
                       >
-                        <span class="truncate website-bracket-anchor">{{ col.label }}</span>
+                        <span class="truncate text-action-label">{{ col.label }}</span>
                         <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
                       </button>
                     </div>
@@ -275,7 +275,7 @@
                   <Icon name="chevronDown" size="xs" />
                 </button>
               </div>
-              <input data-testid="admin-accounts-input-checkbox-2" type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]" />
+              <input data-testid="admin-accounts-input-checkbox-2" data-test="select-row" type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]" />
             </div>
           </template>
           <template #cell-id="{ value }">
@@ -296,7 +296,22 @@
                   />
                 </div>
                 <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="min-w-0 truncate text-sm font-medium leading-5 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+                  <HelpTooltip
+                    v-if="getAccountOfficialSiteUrl(row)"
+                    :content="getAccountOfficialSiteUrl(row) || ''"
+                    width-class="w-max max-w-sm break-all"
+                    class="self-start"
+                  >
+                    <template #trigger>
+                      <a
+                        :href="getAccountOfficialSiteUrl(row) || undefined"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="min-w-0 truncate border-b border-dotted border-[var(--anthropic-fg)] text-sm font-medium leading-5 text-gray-900 dark:border-white dark:text-white"
+                      >{{ value }}</a>
+                    </template>
+                  </HelpTooltip>
+                  <span v-else class="min-w-0 truncate text-sm font-medium leading-5 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
                   <span
                     v-if="accountDisplayEmail(row)"
                     class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] truncate max-w-[200px]"
@@ -316,7 +331,7 @@
                     {{ getAccountExternalQuota(row)?.label }}
                   </span>
                   <a data-testid="admin-accounts-link-a"
-                    class="account-external-quota-link website-bracket-anchor font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                    class="account-external-quota-link text-action-label font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
                     :href="getAccountExternalQuota(row)?.url"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -383,17 +398,6 @@
             <div class="inline-flex items-center gap-1.5">
               <button data-testid="admin-accounts-button-handle-toggle-schedulable-row" @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="account-toggle-switch relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'account-toggle-switch-active bg-[var(--anthropic-focus)] hover:bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] hover:bg-gray-300 dark:bg-[var(--anthropic-section)] dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
                 <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
-              </button>
-              <button
-                data-testid="account-schedule-lock-action"
-                type="button"
-                class="account-schedule-lock-action inline-flex h-6 w-6 items-center justify-center rounded-md border text-[var(--anthropic-muted)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                :class="row.schedule_locked ? 'account-schedule-lock-action-locked border-transparent bg-transparent text-[var(--anthropic-fg)] hover:bg-transparent dark:border-transparent dark:bg-transparent dark:text-[var(--anthropic-fg)]' : 'account-schedule-lock-action-unlocked border-transparent bg-transparent hover:border-transparent hover:bg-transparent hover:text-[var(--anthropic-fg)] dark:border-transparent dark:bg-transparent dark:text-dark-300 dark:hover:bg-transparent dark:hover:text-[var(--anthropic-fg)]'"
-                :disabled="togglingScheduleLock === row.id"
-                :title="row.schedule_locked ? t('admin.accounts.scheduleLocked') : t('admin.accounts.scheduleUnlocked')"
-                @click="handleToggleScheduleLock(row)"
-              >
-                <Icon :name="row.schedule_locked ? 'lock' : 'unlock'" size="xs" />
               </button>
             </div>
           </template>
@@ -781,7 +785,6 @@ const showSchedulePanel = ref(false)
 const scheduleAcc = ref<Account | null>(null)
 const scheduleModelOptions = ref<SelectOption[]>([])
 const togglingSchedulable = ref<number | null>(null)
-const togglingScheduleLock = ref<number | null>(null)
 const priorityUpdatingIds = reactive<Set<number>>(new Set())
 const menu = reactive<{show:boolean, acc:Account|null, pos:{top:number, left:number}|null, triggerRect: DOMRect | null}>({ show: false, acc: null, pos: null, triggerRect: null })
 let menuCloseTimer: ReturnType<typeof setTimeout> | null = null
@@ -1417,6 +1420,21 @@ const getAccountCustomLogo = (account: Account) => {
       ? extra.logo_url.trim()
       : ''
   return customLogoURL || null
+}
+
+const getAccountOfficialSiteUrl = (account: Account): string | null => {
+  if (account.platform !== 'openai' || account.type !== 'apikey') return null
+  const credentials = account.credentials ?? {}
+  const raw = [credentials.base_url, credentials.api_base_url]
+    .find((value): value is string => typeof value === 'string' && value.trim() !== '')
+  if (!raw) return null
+  try {
+    const url = new URL(raw.trim())
+    if (url.protocol !== 'https:') return null
+    return url.origin
+  } catch {
+    return null
+  }
 }
 
 const getAccountLogoProvider = (account: Account) => buildAccountLogoSearchText(account) || account.name || account.platform
@@ -2429,6 +2447,12 @@ const handleBulkRefreshToken = async () => {
     const result = await adminAPI.accounts.batchRefresh(selIds.value)
     if (result.failed > 0) {
       appStore.showError(t('admin.accounts.bulkActions.partialSuccess', { success: result.success, failed: result.failed }))
+      const failedIds = Array.isArray((result as any).failed_ids)
+        ? (result as any).failed_ids
+        : Array.isArray((result as any).errors)
+          ? (result as any).errors.map((entry: { account_id?: number }) => entry.account_id).filter((id: number | undefined): id is number => typeof id === 'number')
+          : []
+      setSelectedIds(failedIds.length > 0 ? failedIds : selIds.value)
     } else {
       appStore.showSuccess(t('admin.accounts.bulkActions.refreshTokenSuccess', { count: result.success }))
       clearSelection()
@@ -2477,11 +2501,6 @@ const updateSchedulableInList = (accountIds: number[], schedulable: boolean) => 
   if (accountIds.length === 0) return
   const idSet = new Set(accountIds)
   accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedulable } : account))
-}
-const updateScheduleLockedInList = (accountIds: number[], scheduleLocked: boolean) => {
-  if (accountIds.length === 0) return
-  const idSet = new Set(accountIds)
-  accounts.value = accounts.value.map((account) => (idSet.has(account.id) ? { ...account, schedule_locked: scheduleLocked } : account))
 }
 const normalizeBulkSchedulableResult = (
   result: {
@@ -2966,20 +2985,6 @@ const handleToggleSchedulable = async (a: Account) => {
     togglingSchedulable.value = null
   }
 }
-const handleToggleScheduleLock = async (a: Account) => {
-  const nextLocked = !a.schedule_locked
-  togglingScheduleLock.value = a.id
-  try {
-    const updated = await adminAPI.accounts.setScheduleLocked(a.id, nextLocked)
-    updateScheduleLockedInList([a.id], updated?.schedule_locked ?? nextLocked)
-    enterAutoRefreshSilentWindow()
-  } catch (error) {
-    console.error('Failed to toggle schedule lock:', error)
-    appStore.showError(t('admin.accounts.failedToToggleScheduleLock'))
-  } finally {
-    togglingScheduleLock.value = null
-  }
-}
 const handleShowTempUnsched = (a: Account) => { tempUnschedAcc.value = a; showTempUnsched.value = true }
 const handleTempUnschedReset = async (updated: Account) => {
   showTempUnsched.value = false
@@ -3014,7 +3019,9 @@ const proxyExpiryText = (p: AccountProxy): string => {
 }
 
 // 表格滚动时关闭行操作菜单，并让顶部工具菜单继续贴紧触发按钮。
-const handleScroll = () => {
+const handleScroll = (event: Event) => {
+  const target = event.target
+  if (target instanceof Element && target.closest('.action-menu-content')) return
   menu.show = false
 }
 

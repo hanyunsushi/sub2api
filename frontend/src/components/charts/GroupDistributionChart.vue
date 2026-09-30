@@ -60,7 +60,7 @@
               <th class="pb-2 text-right">{{ t('admin.dashboard.requests') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.tokens') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.actual') }}</th>
-              <th class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
+              <th v-if="props.showAccountCost" class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.standard') }}</th>
             </tr>
           </thead>
@@ -85,7 +85,7 @@
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ formatNumber(group.requests) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td v-if="props.showAccountCost" class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                   {{ formatTokens(group.total_tokens) }}
                 </td>
                 <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
@@ -100,7 +100,7 @@
               </tr>
               <!-- User breakdown sub-rows -->
               <tr v-if="expandedKey === `group-${group.group_id}`">
-                <td colspan="6" class="p-0">
+                <td :colspan="props.showAccountCost ? 6 : 5" class="p-0">
                   <UserBreakdownSubTable
                     :items="breakdownItems"
                     :loading="breakdownLoading"
@@ -143,6 +143,7 @@ const props = withDefaults(defineProps<{
   loading?: boolean
   metric?: DistributionMetric
   showMetricToggle?: boolean
+  showAccountCost?: boolean
   startDate?: string
   endDate?: string
   filters?: Record<string, any>
@@ -150,6 +151,7 @@ const props = withDefaults(defineProps<{
   loading: false,
   metric: 'tokens',
   showMetricToggle: false,
+  showAccountCost: true,
 })
 
 const emit = defineEmits<{

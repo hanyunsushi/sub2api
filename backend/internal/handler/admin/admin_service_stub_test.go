@@ -565,11 +565,6 @@ func (s *stubAdminService) SetAccountSchedulable(ctx context.Context, id int64, 
 	return &account, nil
 }
 
-func (s *stubAdminService) SetAccountScheduleLocked(ctx context.Context, id int64, locked bool) (*service.Account, error) {
-	account := service.Account{ID: id, Name: "account", Status: service.StatusActive, ScheduleLocked: locked}
-	return &account, nil
-}
-
 func (s *stubAdminService) BulkUpdateAccounts(ctx context.Context, input *service.BulkUpdateAccountsInput) (*service.BulkUpdateAccountsResult, error) {
 	s.lastBulkUpdateAccountInput = input
 	if s.bulkUpdateAccountErr != nil {

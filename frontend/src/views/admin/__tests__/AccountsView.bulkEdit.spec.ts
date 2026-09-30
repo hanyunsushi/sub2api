@@ -95,8 +95,9 @@ const ProbeDataTableStub = {
   props: ['data'],
   template: `
     <div>
-      <div v-for="row in data" :key="row.id">
-        <div data-test="account-rate"><slot name="cell-rate_multiplier" :row="row" /></div>
+    <div v-for="row in data" :key="row.id">
+      <slot name="cell-select" :row="row" />
+      <div data-test="account-rate"><slot name="cell-rate_multiplier" :row="row" /></div>
         <slot name="cell-upstream_billing_rate" :row="row" />
       </div>
     </div>
@@ -339,7 +340,8 @@ describe('admin AccountsView bulk edit scope', () => {
 
     await flushPromises()
 
-    expect(probeUpstreamBillingBatch).toHaveBeenCalledWith([7, 11])
+    expect(wrapper.get('[data-testid="account-card-priority"]').text()).toContain('P8')
+    expect(probeUpstreamBillingBatch).not.toHaveBeenCalled()
   })
 
   it('updates the current page locally after a batch probe', async () => {
@@ -409,7 +411,7 @@ describe('admin AccountsView bulk edit scope', () => {
     await flushPromises()
     await wrapper.get('[data-test="next-page"]').trigger('click')
     await flushPromises()
-    await wrapper.get('[data-test="select-row"] input').trigger('change')
+    await wrapper.get('[data-test="select-row"]').trigger('change')
     await wrapper.get('[data-test="probe-upstream-billing"]').trigger('click')
     await flushPromises()
 
@@ -481,7 +483,7 @@ describe('admin AccountsView bulk edit scope', () => {
     })
 
     await flushPromises()
-    await wrapper.get('[data-test="select-row"] input').trigger('change')
+    await wrapper.get('[data-test="select-row"]').trigger('change')
     await wrapper.get('[data-test="probe-upstream-billing"]').trigger('click')
     await flushPromises()
 

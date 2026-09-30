@@ -1419,16 +1419,23 @@ func (s *UserService) ToggleNotifyEmail(ctx context.Context, userID int64, email
 
 // buildNotifyVerifyEmailBody builds the HTML email body for notify email verification.
 func buildNotifyVerifyEmailBody(code, siteName string) string {
-	content := fmt.Sprintf(`
-<p>您正在添加额外的通知邮箱，请输入以下验证码完成验证。</p>
-<p>You are adding an extra notification email. Please enter this code to verify.</p>
-<span class="email-code">%s</span>
-<div class="email-block">
-  <p>此验证码将在 <strong>%d 分钟</strong>后失效。</p>
-  <p>If you did not request this code, please ignore this email.</p>
-</div>`,
+	return fmt.Sprintf(`
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:24px;background:#f5f5f5;color:#333;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <div style="max-width:600px;margin:0 auto;padding:32px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;">
+    <h1 style="margin:0 0 24px;font-size:24px;">%s</h1>
+    <p>您正在添加额外的通知邮箱，请输入以下验证码完成验证。</p>
+    <p>You are adding an extra notification email. Please enter this code to verify.</p>
+    <p style="margin:24px 0;padding:16px;background:#f3f4f6;border-radius:6px;text-align:center;font:700 32px/1 monospace;letter-spacing:8px;">%s</p>
+    <p style="color:#6b7280;font-size:14px;">此验证码将在 <strong>%d 分钟</strong>后失效。</p>
+    <p style="color:#6b7280;font-size:14px;">If you did not request this code, please ignore this email.</p>
+  </div>
+</body>
+</html>`,
+		html.EscapeString(siteName),
 		html.EscapeString(code),
 		int(verifyCodeTTL/time.Minute),
 	)
-	return buildAnthropicEmailBody(siteName, "通知邮箱验证", content)
 }

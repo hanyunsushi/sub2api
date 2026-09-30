@@ -256,12 +256,8 @@ func init() {
 	accountDescSchedulable := accountFields[17].Descriptor()
 	// account.DefaultSchedulable holds the default value on creation for the schedulable field.
 	account.DefaultSchedulable = accountDescSchedulable.Default.(bool)
-	// accountDescScheduleLocked is the schema descriptor for schedule_locked field.
-	accountDescScheduleLocked := accountFields[18].Descriptor()
-	// account.DefaultScheduleLocked holds the default value on creation for the schedule_locked field.
-	account.DefaultScheduleLocked = accountDescScheduleLocked.Default.(bool)
 	// accountDescSessionWindowStatus is the schema descriptor for session_window_status field.
-	accountDescSessionWindowStatus := accountFields[26].Descriptor()
+	accountDescSessionWindowStatus := accountFields[25].Descriptor()
 	// account.SessionWindowStatusValidator is a validator for the "session_window_status" field. It is called by the builders before save.
 	account.SessionWindowStatusValidator = accountDescSessionWindowStatus.Validators[0].(func(string) error)
 	accountgroupFields := schema.AccountGroup{}.Fields()
@@ -709,16 +705,12 @@ func init() {
 	channelmonitor.DefaultJitterSeconds = channelmonitorDescJitterSeconds.Default.(int)
 	// channelmonitor.JitterSecondsValidator is a validator for the "jitter_seconds" field. It is called by the builders before save.
 	channelmonitor.JitterSecondsValidator = channelmonitorDescJitterSeconds.Validators[0].(func(int) error)
-	// channelmonitorDescAccountIds is the schema descriptor for account_ids field.
-	channelmonitorDescAccountIds := channelmonitorFields[16].Descriptor()
-	// channelmonitor.DefaultAccountIds holds the default value on creation for the account_ids field.
-	channelmonitor.DefaultAccountIds = channelmonitorDescAccountIds.Default.([]int64)
 	// channelmonitorDescExtraHeaders is the schema descriptor for extra_headers field.
-	channelmonitorDescExtraHeaders := channelmonitorFields[18].Descriptor()
+	channelmonitorDescExtraHeaders := channelmonitorFields[17].Descriptor()
 	// channelmonitor.DefaultExtraHeaders holds the default value on creation for the extra_headers field.
 	channelmonitor.DefaultExtraHeaders = channelmonitorDescExtraHeaders.Default.(map[string]string)
 	// channelmonitorDescBodyOverrideMode is the schema descriptor for body_override_mode field.
-	channelmonitorDescBodyOverrideMode := channelmonitorFields[19].Descriptor()
+	channelmonitorDescBodyOverrideMode := channelmonitorFields[18].Descriptor()
 	// channelmonitor.DefaultBodyOverrideMode holds the default value on creation for the body_override_mode field.
 	channelmonitor.DefaultBodyOverrideMode = channelmonitorDescBodyOverrideMode.Default.(string)
 	// channelmonitor.BodyOverrideModeValidator is a validator for the "body_override_mode" field. It is called by the builders before save.

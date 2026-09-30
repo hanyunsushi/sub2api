@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-09-25
+updated: 2026-09-29
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -43,9 +43,11 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 - Group persistence and admin APIs include OpenAI fast-mode controls, reasoning-effort ceilings with downgrade/deny behavior, and per-user public-group restrictions.
 - Usage logs and analytics expose request type, native compaction, requested/upstream reasoning effort, billing type and billing mode; the corresponding migrations and repository filters are versioned under `migrations/` and `internal/repository/`.
 - Pricing supports long-context cache tiers, one-hour cache writes, image/video/per-request billing and model mappings used by the model plaza and channel/account statistics.
+- The dedicated global-pricing page/API and its custom snapshot service are retired. The model plaza and available-channel surfaces still use the LiteLLM pricing fallback and channel/model pricing APIs.
 - `internal/pkg/apicompat` maintains Chat Completions, Anthropic Messages and OpenAI Responses bridges. The Anthropic streaming converter now keeps output-item lifecycle balanced and assigns a distinct content index to each text part.
 - The `v0.2.1` merge adds upstream request-id lineage, encrypted-content tracking, Codex model-manifest projections, image base64 backfill and additional WebSocket/session-limit safeguards; migrations `232`–`234` are applied by the normal migration runner.
-- The `v0.2.7` upstream merge is represented by development commit `48d61795e` and includes model-allowlist/group repair, new provider migrations, subscription bulk operations, Seedance and provider media paths, plugin KV/runtime changes, and the regenerated Ent/Wire artifacts. Local external-subscription quota statistics, rate-multiplier and schedule-lock admin compatibility remain available.
+- The `v0.2.7` upstream merge is represented by development commit `48d61795e` and includes model-allowlist/group repair, new provider migrations, subscription bulk operations, Seedance and provider media paths, plugin KV/runtime changes, and the regenerated Ent/Wire artifacts. Local external-subscription quota statistics and rate-multiplier table/bulk management remain available; the retired schedule-lock compatibility and channel-monitor auto-scheduling bindings were removed by the current cleanup.
+- Channel monitoring keeps normal probes and quota monitoring with one `account_id`. Multi-account monitor bindings and monitor-driven account auto-scheduling are retired. Migration `241_remove_channel_monitor_account_auto_schedule.sql` removes the retired columns; historical migrations `151` and `152` remain unchanged.
 
 The local Kreepai/Anthropic route-shell, external-subscription services, account scheduling/brand fields and provider logo handling remain part of the development customization boundary while upstream behavior is integrated around them.
 

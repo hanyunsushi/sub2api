@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="popup-fade">
       <div
-        v-if="announcementStore.currentPopup"
+        v-if="displayedAnnouncement"
         class="fixed inset-0 z-[120] flex items-start justify-center overflow-y-auto bg-[rgba(20,19,19,0.48)] p-4 pt-[8vh]"
       >
         <div data-testid="common-announcement-popup-div-div"
@@ -29,7 +29,7 @@
 
               <!-- Title -->
               <h2 class="mb-2 font-serif text-2xl font-medium leading-tight text-[var(--atelier-ink)]">
-                {{ announcementStore.currentPopup.title }}
+                {{ displayedAnnouncement.title }}
               </h2>
 
               <div class="flex items-center gap-1.5 text-sm text-[var(--atelier-muted)]">
@@ -57,7 +57,7 @@
           <!-- Footer -->
           <div class="border-t border-[var(--atelier-line)] bg-[var(--atelier-paper-2)] px-8 py-5">
             <div class="flex items-center justify-end">
-              <button data-testid="common-announcement-popup-button-handle-dismiss"
+              <button data-testid="announcement-popup-dismiss"
                 @click="handleDismiss"
                 class="announcement-popup-dismiss rounded-lg px-6 py-2.5 text-sm font-medium text-[var(--atelier-paper)] shadow-none transition-all hover:shadow-none"
               >

@@ -4,7 +4,7 @@
       <!-- Filters -->
       <div class="card p-4 order-filter-card table-page-filter-section">
         <div class="table-filter-shell user-orders-filter-shell flex flex-wrap items-center gap-3">
-          <Select variant="text-control" v-model="currentFilter" :options="statusFilters" class="w-36" @change="fetchOrders" />
+          <Select variant="text-control" v-model="currentFilter" :options="statusFilters" class="w-36" @change="handlePageChange(1)" />
           <div class="table-filter-actions flex flex-1 items-center justify-end gap-3">
             <button data-testid="user-user-orders-button-fetch-orders" @click="fetchOrders" :disabled="loading" class="btn btn-primary anthropic-refresh-action-button user-orders-refresh-button" :title="t('common.refresh')">
               {{ t("common.refresh") }}

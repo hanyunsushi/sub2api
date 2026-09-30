@@ -33,8 +33,11 @@
         </template>
         <!-- Tab content (select phase) -->
         <template v-else>
+          <div v-if="tabs.length === 0" class="card py-16 text-center">
+            <p class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.billingUnavailable') }}</p>
+          </div>
           <!-- Top-up Tab -->
-          <template v-if="activeTab === 'recharge'">
+          <template v-else-if="activeTab === 'recharge'">
             <!-- Recharge Account Card -->
             <div class="card p-5">
               <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.rechargeAccount') }}</p>
@@ -125,6 +128,12 @@
                       <span :class="['text-lg font-bold', planTextClass]">×{{ selectedPlan.rate_multiplier ?? 1 }}</span>
                     </div>
                   </div>
+                  <div v-if="planHasPeakRate(selectedPlan)">
+                    <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.planCard.peakRate') }}</span>
+                    <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                      {{ planPeakRateLabel(selectedPlan) }}
+                    </div>
+                  </div>
                   <div v-if="selectedPlan.daily_limit_usd != null">
                     <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.planCard.dailyLimit') }}</span>
                     <div class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">${{ selectedPlan.daily_limit_usd }}</div>
@@ -198,6 +207,7 @@
                       </div>
                       <div class="flex flex-wrap gap-x-3 text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                         <span>{{ t('payment.planCard.rate') }}: ×{{ sub.group?.rate_multiplier ?? 1 }}</span>
+                        <span v-if="subscriptionHasPeakRate(sub)">{{ t('payment.planCard.peakRate') }}: {{ subscriptionPeakRateLabel(sub) }}</span>
                         <span v-if="sub.group?.daily_limit_usd == null && sub.group?.weekly_limit_usd == null && sub.group?.monthly_limit_usd == null">{{ t('payment.planCard.quota') }}: {{ t('payment.planCard.unlimited') }}</span>
                         <span v-if="sub.expires_at">{{ t('userSubscriptions.daysRemaining', { days: getDaysRemaining(sub.expires_at) }) }}</span>
                         <span v-else>{{ t('userSubscriptions.noExpiration') }}</span>
@@ -215,7 +225,7 @@
             <img data-testid="user-payment-img-preview-image-checkout-help-image-url" v-if="checkout.help_image_url" :src="checkout.help_image_url" alt=""
               class="h-40 max-w-full cursor-pointer rounded-lg object-contain transition-opacity hover:opacity-80"
               @click="previewImage = checkout.help_image_url" />
-            <p v-if="checkout.help_text" class="text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ checkout.help_text }}</p>
+            <div v-if="checkout.help_text" class="markdown-body w-full overflow-x-auto break-words" v-html="renderedHelpText"></div>
           </div>
         </div>
       </template>
@@ -251,14 +261,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import '@/styles/announcement-markdown.css'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePaymentStore } from '@/stores/payment'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import { useAppStore } from '@/stores'
+import { FeatureFlags, resolveFeatureFlag } from '@/utils/featureFlags'
 import { paymentAPI } from '@/api/payment'
 import { extractApiErrorMessage, extractI18nErrorMessage } from '@/utils/apiError'
 import { isMobileDevice } from '@/utils/device'
+import { hasPeakRate, formatPeakRateWindow, serverTimezoneLabel, type PeakRateFields } from '@/utils/peak-rate'
 import type { SubscriptionPlan, CheckoutInfoResponse, CreateOrderResult, OrderType } from '@/types/payment'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AmountInput from '@/components/payment/AmountInput.vue'
@@ -300,6 +315,14 @@ const activeSubscriptions = computed(() => subscriptionStore.activeSubscriptions
 function getDaysRemaining(expiresAt: string): number {
   const diff = new Date(expiresAt).getTime() - Date.now()
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+}
+
+function subscriptionHasPeakRate(sub: { group?: PeakRateFields | null }): boolean {
+  return hasPeakRate(sub.group)
+}
+
+function subscriptionPeakRateLabel(sub: { group?: PeakRateFields | null }): string {
+  return formatPeakRateWindow(sub.group, serverTimezoneLabel(appStore.cachedPublicSettings?.server_utc_offset))
 }
 
 const loading = ref(true)
@@ -489,11 +512,25 @@ const checkout = ref<CheckoutInfoResponse>({
   plans: [], balance_disabled: false, balance_recharge_multiplier: 1, subscription_usd_to_cny_rate: 0, recharge_fee_rate: 0, help_text: '', help_image_url: '', stripe_publishable_key: '',
 })
 
+const renderedHelpText = computed(() => DOMPurify.sanitize(
+  marked.parse(checkout.value.help_text || '', { async: false, gfm: true, breaks: false }),
+))
+
+// Subscription is opt-out through public settings; retain the official feature flag.
+const subscriptionEnabled = computed(() => resolveFeatureFlag(appStore.cachedPublicSettings, FeatureFlags.subscription))
+
 const tabs = computed(() => {
   const result: { key: 'recharge' | 'subscription'; label: string }[] = []
   if (!checkout.value.balance_disabled) result.push({ key: 'recharge', label: t('payment.tabTopUp') })
-  result.push({ key: 'subscription', label: t('payment.tabSubscribe') })
+  if (subscriptionEnabled.value) result.push({ key: 'subscription', label: t('payment.tabSubscribe') })
   return result
+})
+
+watch(tabs, (available) => {
+  if (available.some((tab) => tab.key === activeTab.value)) return
+  const leavingSubscription = activeTab.value === 'subscription'
+  activeTab.value = available[0]?.key ?? 'recharge'
+  if (leavingSubscription) selectedPlan.value = null
 })
 
 const visibleMethods = computed(() => getVisibleMethods(checkout.value.methods))
@@ -501,7 +538,7 @@ const enabledMethods = computed(() => Object.keys(visibleMethods.value))
 const validAmount = computed(() => amount.value ?? 0)
 const balanceRechargeMultiplier = computed(() => {
   const multiplier = checkout.value.balance_recharge_multiplier
-  return multiplier > 0 ? multiplier : 1
+  return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1
 })
 // 订阅 CNY 换算汇率（1 USD = X CNY）。0 = 未配置，订阅保持 price 直付（与后端 opt-in 条件严格镜像）。
 const subscriptionUsdToCnyRate = computed(() => {
@@ -650,24 +687,31 @@ const subTotalAmount = computed(() => {
   return roundPaymentAmount(subPaymentAmount.value + subFeeAmount.value, selectedCurrency.value)
 })
 
+function subscriptionTotalAmountForCurrency(value: number, currency: string): number {
+  const paymentAmount = subscriptionPaymentAmountForCurrency(value, currency)
+  if (feeRate.value <= 0 || paymentAmount <= 0) return paymentAmount
+  const fee = ceilPaymentAmount((paymentAmount * feeRate.value) / 100, currency)
+  return roundPaymentAmount(paymentAmount + fee, currency)
+}
+
 // Subscription-specific: method options based on gateway pay amount
 const subMethodOptions = computed<PaymentMethodOption[]>(() => {
-  const planPrice = selectedPlan.value?.price ?? 0
-  const payAmount = subscriptionPaymentAmountForCurrency(planPrice, selectedCurrency.value)
+  const price = selectedPlan.value?.price ?? 0
   return enabledMethods.value.map((type) => {
     const ml = visibleMethods.value[type]
+    const currency = normalizePaymentCurrency(ml?.currency)
     return {
       type,
       display_name: ml?.display_name,
       fee_rate: ml?.fee_rate ?? 0,
-      available: ml?.available !== false && amountFitsMethod(payAmount, type),
+      available: ml?.available !== false && amountFitsMethod(subscriptionTotalAmountForCurrency(price, currency), type),
     }
   })
 })
 
 const canSubmitSubscription = computed(() =>
   selectedPlan.value !== null
-    && amountFitsMethod(subscriptionPaymentAmountForCurrency(selectedPlan.value.price, selectedCurrency.value), selectedMethod.value)
+    && amountFitsMethod(subTotalAmount.value, selectedMethod.value)
     && selectedLimit.value?.available !== false
 )
 
@@ -706,6 +750,14 @@ const planValiditySuffix = computed(() => {
   return validitySuffixOf(selectedPlan.value, t)
 })
 
+function planHasPeakRate(plan: SubscriptionPlan): boolean {
+  return hasPeakRate(plan)
+}
+
+function planPeakRateLabel(plan: SubscriptionPlan): string {
+  return formatPeakRateWindow(plan, serverTimezoneLabel(appStore.cachedPublicSettings?.server_utc_offset))
+}
+
 function selectPlan(plan: SubscriptionPlan) {
   selectedPlan.value = plan
   errorMessage.value = ''
@@ -730,7 +782,7 @@ async function handleSubmitRecharge() {
 
 async function confirmSubscribe() {
   if (!selectedPlan.value || submitting.value) return
-  await createOrder(subPaymentAmount.value, 'subscription', selectedPlan.value.id)
+  await createOrder(selectedPlan.value.price, 'subscription', selectedPlan.value.id)
 }
 
 async function createOrder(orderAmount: number, orderType: OrderType, planId?: number, options: CreateOrderOptions = {}) {
@@ -1104,11 +1156,8 @@ onMounted(async () => {
       }
     }
     await resumeWechatPaymentFromQuery()
-    if (checkout.value.balance_disabled) {
-      activeTab.value = 'subscription'
-    }
-    // Handle renewal navigation: ?tab=subscription&group=123
-    if (route.query.tab === 'subscription') {
+    // Handle renewal navigation: ?tab=subscription&group=123 (when enabled).
+    if (route.query.tab === 'subscription' && subscriptionEnabled.value) {
       activeTab.value = 'subscription'
       if (route.query.group) {
         const groupId = Number(route.query.group)
@@ -1123,7 +1172,9 @@ onMounted(async () => {
     }
   } catch (err: unknown) { appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error'))) }
   finally { loading.value = false }
-  // Fetch active subscriptions (uses cache, non-blocking)
-  subscriptionStore.fetchActiveSubscriptions().catch(() => {})
+  // Fetch active subscriptions (uses cache, non-blocking); skip when subscriptions are off.
+  if (subscriptionEnabled.value) {
+    subscriptionStore.fetchActiveSubscriptions().catch(() => {})
+  }
 })
 </script>

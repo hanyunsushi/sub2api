@@ -66,7 +66,6 @@ type openAICaptureHandler struct {
 	status                    int
 	rawResponse               string
 	responsesLeadingReasoning bool
-	chatCompletionSSEChunks   []string
 }
 
 func (h *openAICaptureHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -80,17 +79,15 @@ func (h *openAICaptureHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	if h.status == 0 {
 		h.status = http.StatusOK
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(h.status)
 	if h.rawResponse != "" {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(h.status)
 		_, _ = w.Write([]byte(h.rawResponse))
 		return
 	}
 
 	answer := answerFromOpenAIRequest(parsed)
 	if h.lastPath == providerOpenAIResponsesPath {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(h.status)
 		output := []map[string]any{}
 		if h.responsesLeadingReasoning {
 			output = append(output, map[string]any{
@@ -111,17 +108,6 @@ func (h *openAICaptureHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		})
 		return
 	}
-	if len(h.chatCompletionSSEChunks) > 0 {
-		w.Header().Set("Content-Type", "text/event-stream")
-		w.WriteHeader(h.status)
-		for _, chunk := range h.chatCompletionSSEChunks {
-			_, _ = w.Write([]byte("data: " + chunk + "\n\n"))
-		}
-		_, _ = w.Write([]byte("data: [DONE]\n\n"))
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(h.status)
 	_ = json.NewEncoder(w).Encode(map[string]any{
 		"choices": []map[string]any{{"message": map[string]any{"content": answer}}},
 	})
@@ -342,33 +328,6 @@ func TestRunCheckForModel_OpenAIResponses_SkipsLeadingReasoningItem(t *testing.T
 	}
 	if h.lastPath != providerOpenAIResponsesPath {
 		t.Fatalf("expected responses path %q, got %q", providerOpenAIResponsesPath, h.lastPath)
-	}
-}
-
-func TestRunCheckForModel_OpenAIReplaceChatCompletionsExtractsSSEText(t *testing.T) {
-	h := &openAICaptureHandler{
-		chatCompletionSSEChunks: []string{
-			`{"choices":[{"delta":{"content":"o"}}]}`,
-			`{"choices":[{"delta":{"content":"k"}}]}`,
-		},
-	}
-	endpoint := setupFakeOpenAI(t, h)
-
-	res := runCheckForModel(context.Background(), MonitorProviderOpenAI, endpoint, "sk-openai", "gpt-5.4-mini", &CheckOptions{
-		BodyOverrideMode: MonitorBodyOverrideModeReplace,
-		BodyOverride: map[string]any{
-			"model":      "gpt-5.4-mini",
-			"stream":     false,
-			"messages":   []any{map[string]any{"role": "user", "content": "Respond with exactly: ok"}},
-			"max_tokens": float64(512),
-		},
-	})
-
-	if res.Status != MonitorStatusOperational {
-		t.Fatalf("replace chat_completions SSE response should be treated as non-empty text, got status=%s message=%q", res.Status, res.Message)
-	}
-	if h.lastPath != providerOpenAIPath {
-		t.Fatalf("expected chat completions path %q, got %q", providerOpenAIPath, h.lastPath)
 	}
 }
 

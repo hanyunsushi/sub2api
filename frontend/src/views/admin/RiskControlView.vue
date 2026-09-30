@@ -411,11 +411,11 @@
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.baseUrl') }}</label>
-                <input data-testid="admin-risk-control-input-config-form-base-url" v-model.trim="configForm.base_url" type="url" class="input" :placeholder="configForm.engine === 'typesafe' ? 'https://api.typesafe.ai' : 'https://api.openai.com'" />
+                <input data-testid="admin-risk-control-input-config-form-base-url" data-test="audit-base-url" v-model.trim="configForm.base_url" type="url" class="input" :placeholder="configForm.engine === 'typesafe' ? 'https://api.typesafe.ai' : 'https://api.openai.com'" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.model') }}</label>
-                <input data-testid="admin-risk-control-input-config-form-model" v-model.trim="configForm.model" type="text" class="input" :placeholder="configForm.engine === 'typesafe' ? 'jev-latest' : 'omni-moderation-latest'" />
+                <input data-testid="admin-risk-control-input-config-form-model" data-test="audit-model" v-model.trim="configForm.model" type="text" class="input" :placeholder="configForm.engine === 'typesafe' ? 'jev-latest' : 'omni-moderation-latest'" />
               </div>
               <div>
                 <label class="input-label">{{ t('admin.riskControl.timeoutMs') }}</label>

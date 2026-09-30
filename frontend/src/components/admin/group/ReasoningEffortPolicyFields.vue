@@ -45,7 +45,7 @@
         </div>
         <button data-testid="merge-reasoning-effort-policy-fields-add-mapping-1"
           type="button"
-          class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:text-primary-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-300"
+          class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-[var(--anthropic-focus)] transition-colors hover:bg-[color-mix(in_srgb,var(--anthropic-focus)_10%,transparent)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] dark:text-[var(--anthropic-focus)]"
           @click="addGroup"
         >
           <Icon name="plus" size="sm" />
@@ -194,7 +194,7 @@
 
           <button
             type="button"
-            class="inline-flex min-h-9 items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:text-primary-400 dark:hover:text-primary-300"
+            class="inline-flex min-h-9 items-center gap-1.5 text-sm font-medium text-[var(--anthropic-focus)] transition-colors hover:text-[var(--anthropic-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] dark:text-[var(--anthropic-focus)]"
             @click="addPair(group.id)"
           >
             <Icon name="plus" size="sm" />

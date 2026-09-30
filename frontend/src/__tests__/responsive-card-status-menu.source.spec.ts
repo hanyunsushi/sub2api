@@ -37,10 +37,10 @@ describe('responsive card and status visual contracts', () => {
 
   it('marks the teleported profile menu so brackets are suppressed outside #app', () => {
     const header = read('../components/layout/AppHeader.vue')
-    const rollbackCss = read('../styles/bracket-rollback-eof.css')
+    const finalBracketCss = read('../styles/text-action-contract.css')
 
     expect(header).toContain('topbar-underline-menu user-profile-dropdown')
-    expect(rollbackCss).toContain('html body .user-profile-dropdown')
-    expect(rollbackCss).toContain('content: none !important;')
+    expect(finalBracketCss).toContain('html body .user-profile-dropdown')
+    expect(finalBracketCss).toContain('content: none !important;')
   })
 })

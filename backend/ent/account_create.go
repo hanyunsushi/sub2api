@@ -279,20 +279,6 @@ func (_c *AccountCreate) SetNillableSchedulable(v *bool) *AccountCreate {
 	return _c
 }
 
-// SetScheduleLocked sets the "schedule_locked" field.
-func (_c *AccountCreate) SetScheduleLocked(v bool) *AccountCreate {
-	_c.mutation.SetScheduleLocked(v)
-	return _c
-}
-
-// SetNillableScheduleLocked sets the "schedule_locked" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableScheduleLocked(v *bool) *AccountCreate {
-	if v != nil {
-		_c.SetScheduleLocked(*v)
-	}
-	return _c
-}
-
 // SetRateLimitedAt sets the "rate_limited_at" field.
 func (_c *AccountCreate) SetRateLimitedAt(v time.Time) *AccountCreate {
 	_c.mutation.SetRateLimitedAt(v)
@@ -591,10 +577,6 @@ func (_c *AccountCreate) defaults() error {
 		v := account.DefaultSchedulable
 		_c.mutation.SetSchedulable(v)
 	}
-	if _, ok := _c.mutation.ScheduleLocked(); !ok {
-		v := account.DefaultScheduleLocked
-		_c.mutation.SetScheduleLocked(v)
-	}
 	if _, ok := _c.mutation.QuotaDimension(); !ok {
 		v := account.DefaultQuotaDimension
 		_c.mutation.SetQuotaDimension(v)
@@ -662,9 +644,6 @@ func (_c *AccountCreate) check() error {
 	}
 	if _, ok := _c.mutation.Schedulable(); !ok {
 		return &ValidationError{Name: "schedulable", err: errors.New(`ent: missing required field "Account.schedulable"`)}
-	}
-	if _, ok := _c.mutation.ScheduleLocked(); !ok {
-		return &ValidationError{Name: "schedule_locked", err: errors.New(`ent: missing required field "Account.schedule_locked"`)}
 	}
 	if v, ok := _c.mutation.SessionWindowStatus(); ok {
 		if err := account.SessionWindowStatusValidator(v); err != nil {
@@ -785,10 +764,6 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Schedulable(); ok {
 		_spec.SetField(account.FieldSchedulable, field.TypeBool, value)
 		_node.Schedulable = value
-	}
-	if value, ok := _c.mutation.ScheduleLocked(); ok {
-		_spec.SetField(account.FieldScheduleLocked, field.TypeBool, value)
-		_node.ScheduleLocked = value
 	}
 	if value, ok := _c.mutation.RateLimitedAt(); ok {
 		_spec.SetField(account.FieldRateLimitedAt, field.TypeTime, value)
@@ -1279,18 +1254,6 @@ func (u *AccountUpsert) SetSchedulable(v bool) *AccountUpsert {
 // UpdateSchedulable sets the "schedulable" field to the value that was provided on create.
 func (u *AccountUpsert) UpdateSchedulable() *AccountUpsert {
 	u.SetExcluded(account.FieldSchedulable)
-	return u
-}
-
-// SetScheduleLocked sets the "schedule_locked" field.
-func (u *AccountUpsert) SetScheduleLocked(v bool) *AccountUpsert {
-	u.Set(account.FieldScheduleLocked, v)
-	return u
-}
-
-// UpdateScheduleLocked sets the "schedule_locked" field to the value that was provided on create.
-func (u *AccountUpsert) UpdateScheduleLocked() *AccountUpsert {
-	u.SetExcluded(account.FieldScheduleLocked)
 	return u
 }
 
@@ -1881,20 +1844,6 @@ func (u *AccountUpsertOne) SetSchedulable(v bool) *AccountUpsertOne {
 func (u *AccountUpsertOne) UpdateSchedulable() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateSchedulable()
-	})
-}
-
-// SetScheduleLocked sets the "schedule_locked" field.
-func (u *AccountUpsertOne) SetScheduleLocked(v bool) *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetScheduleLocked(v)
-	})
-}
-
-// UpdateScheduleLocked sets the "schedule_locked" field to the value that was provided on create.
-func (u *AccountUpsertOne) UpdateScheduleLocked() *AccountUpsertOne {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateScheduleLocked()
 	})
 }
 
@@ -2680,20 +2629,6 @@ func (u *AccountUpsertBulk) SetSchedulable(v bool) *AccountUpsertBulk {
 func (u *AccountUpsertBulk) UpdateSchedulable() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateSchedulable()
-	})
-}
-
-// SetScheduleLocked sets the "schedule_locked" field.
-func (u *AccountUpsertBulk) SetScheduleLocked(v bool) *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.SetScheduleLocked(v)
-	})
-}
-
-// UpdateScheduleLocked sets the "schedule_locked" field to the value that was provided on create.
-func (u *AccountUpsertBulk) UpdateScheduleLocked() *AccountUpsertBulk {
-	return u.Update(func(s *AccountUpsert) {
-		s.UpdateScheduleLocked()
 	})
 }
 

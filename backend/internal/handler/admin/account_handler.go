@@ -167,56 +167,6 @@ type UpdateAccountRequest struct {
 	ConfirmMixedChannelRisk *bool          `json:"confirm_mixed_channel_risk"` // 用户确认混合渠道风险
 }
 
-type UpdateAccountRateMultiplierRequest struct {
-	RateMultiplier *float64 `json:"rate_multiplier" binding:"required"`
-}
-
-func (h *AccountHandler) UpdateRateMultiplier(c *gin.Context) {
-	accountID, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		response.BadRequest(c, "Invalid account ID")
-		return
-	}
-	var req UpdateAccountRateMultiplierRequest
-	if err := c.ShouldBindJSON(&req); err != nil || req.RateMultiplier == nil {
-		response.BadRequest(c, "rate_multiplier is required")
-		return
-	}
-	if *req.RateMultiplier < 0 {
-		response.BadRequest(c, "rate_multiplier must be >= 0")
-		return
-	}
-	account, err := h.adminService.UpdateAccount(c.Request.Context(), accountID, &service.UpdateAccountInput{RateMultiplier: req.RateMultiplier})
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
-}
-
-type SetScheduleLockedRequest struct {
-	Locked bool `json:"locked"`
-}
-
-func (h *AccountHandler) SetScheduleLocked(c *gin.Context) {
-	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	if err != nil {
-		response.BadRequest(c, "Invalid account ID")
-		return
-	}
-	var req SetScheduleLockedRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-	account, err := h.adminService.SetAccountScheduleLocked(c.Request.Context(), id, req.Locked)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	response.Success(c, h.buildAccountResponseWithRuntime(c.Request.Context(), account))
-}
-
 // BulkUpdateAccountsRequest represents the payload for bulk editing accounts
 type BulkUpdateAccountsRequest struct {
 	AccountIDs              []int64                   `json:"account_ids"`

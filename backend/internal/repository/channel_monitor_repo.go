@@ -124,7 +124,6 @@ func (r *channelMonitorRepository) Update(ctx context.Context, m *service.Channe
 		SetGroupName(m.GroupName).
 		SetEnabled(m.Enabled).
 		SetIntervalSeconds(m.IntervalSeconds).
-		SetAccountIds(normalizeMonitorAccountIDsRepo(m.AccountIDs, m.AccountID)).
 		SetJitterSeconds(m.JitterSeconds).
 		SetExtraHeaders(channelMonitorHeadersForPersistence(m)).
 		SetBodyOverrideMode(defaultBodyModeRepo(m.BodyOverrideMode)).
@@ -770,32 +769,31 @@ func entToServiceMonitor(row *dbent.ChannelMonitor) *service.ChannelMonitor {
 	for key, value := range row.ExtraHeaders {
 		headers[key] = value
 	}
-	accountIDs := normalizeAccountIDsRepo(row.AccountIds)
-	if len(accountIDs) > 0 {
-	} else if row.AccountID != nil && *row.AccountID > 0 {
-		accountIDs = []int64{*row.AccountID}
-	}
+	duplicateOperationID := headers[service.ChannelMonitorDuplicateOperationIDMetadataKey]
+	delete(headers, service.ChannelMonitorDuplicateOperationIDMetadataKey)
 	out := &service.ChannelMonitor{
-		ID:               row.ID,
-		Name:             row.Name,
-		Provider:         string(row.Provider),
-		APIMode:          defaultAPIModeRepo(row.APIMode),
-		Endpoint:         row.Endpoint,
-		APIKey:           row.APIKeyEncrypted, // 仍为密文，service 层负责解密
-		PrimaryModel:     row.PrimaryModel,
-		ExtraModels:      extras,
-		GroupName:        row.GroupName,
-		Enabled:          row.Enabled,
-		IntervalSeconds:  row.IntervalSeconds,
-		JitterSeconds:    row.JitterSeconds,
-		LastCheckedAt:    row.LastCheckedAt,
-		CreatedBy:        row.CreatedBy,
-		CreatedAt:        row.CreatedAt,
-		UpdatedAt:        row.UpdatedAt,
-		ExtraHeaders:     headers,
-		BodyOverrideMode: row.BodyOverrideMode,
-		BodyOverride:     row.BodyOverride,
-		CheckMode:        defaultCheckModeRepo(row.CheckMode),
+		ID:                   row.ID,
+		Name:                 row.Name,
+		LogoURL:              row.LogoURL,
+		Provider:             string(row.Provider),
+		APIMode:              defaultAPIModeRepo(row.APIMode),
+		Endpoint:             row.Endpoint,
+		APIKey:               row.APIKeyEncrypted, // 仍为密文，service 层负责解密
+		PrimaryModel:         row.PrimaryModel,
+		ExtraModels:          extras,
+		GroupName:            row.GroupName,
+		Enabled:              row.Enabled,
+		IntervalSeconds:      row.IntervalSeconds,
+		JitterSeconds:        row.JitterSeconds,
+		LastCheckedAt:        row.LastCheckedAt,
+		CreatedBy:            row.CreatedBy,
+		CreatedAt:            row.CreatedAt,
+		UpdatedAt:            row.UpdatedAt,
+		ExtraHeaders:         headers,
+		BodyOverrideMode:     row.BodyOverrideMode,
+		BodyOverride:         row.BodyOverride,
+		CheckMode:            defaultCheckModeRepo(row.CheckMode),
+		DuplicateOperationID: duplicateOperationID,
 	}
 	if row.TemplateID != nil {
 		id := *row.TemplateID
@@ -862,31 +860,4 @@ func emptySliceIfNil(in []string) []string {
 		return []string{}
 	}
 	return in
-}
-
-func normalizeAccountIDsRepo(in []int64) []int64 {
-	if len(in) == 0 {
-		return []int64{}
-	}
-	seen := make(map[int64]struct{}, len(in))
-	out := make([]int64, 0, len(in))
-	for _, id := range in {
-		if id <= 0 {
-			continue
-		}
-		if _, ok := seen[id]; ok {
-			continue
-		}
-		seen[id] = struct{}{}
-		out = append(out, id)
-	}
-	return out
-}
-
-func normalizeMonitorAccountIDsRepo(ids []int64, legacyID *int64) []int64 {
-	out := normalizeAccountIDsRepo(ids)
-	if len(out) > 0 || legacyID == nil || *legacyID <= 0 {
-		return out
-	}
-	return []int64{*legacyID}
 }

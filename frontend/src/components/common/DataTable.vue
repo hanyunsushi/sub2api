@@ -61,7 +61,7 @@
           <div v-if="selectable" class="flex justify-end">
             <input data-testid="merge-data-table-checkbox-1"
               type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-800"
+              class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-800"
               :checked="isRowSelected(row, index)"
               :aria-label="getRowSelectionLabel(row, index)"
               data-test="select-row"
@@ -278,7 +278,7 @@
             <td v-if="selectable" class="w-11 min-w-11 px-3 py-4 text-center">
               <input data-testid="merge-data-table-checkbox-2"
                 type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-800"
+                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-800"
                 :checked="isRowSelected(item.row, item.index)"
                 :aria-label="getRowSelectionLabel(item.row, item.index)"
                 data-test="select-row"

@@ -45,11 +45,7 @@ type Account struct {
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 
-	Schedulable bool
-	// ScheduleLocked protects the current Schedulable value from channel-monitor automation.
-	// It does not affect manual scheduling toggles or IsSchedulable() by itself.
-	ScheduleLocked bool
-
+	Schedulable      bool
 	RateLimitedAt    *time.Time
 	RateLimitResetAt *time.Time
 	OverloadUntil    *time.Time

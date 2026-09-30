@@ -254,12 +254,6 @@ type PricingService struct {
 	wg     sync.WaitGroup
 }
 
-// GlobalModelPricing is a user-visible snapshot row for the global pricing table.
-type GlobalModelPricing struct {
-	Model string
-	LiteLLMModelPricing
-}
-
 // NewPricingService 创建价格服务
 func NewPricingService(cfg *config.Config, remoteClient PricingRemoteClient) *PricingService {
 	s := &PricingService{
@@ -651,8 +645,8 @@ func (s *PricingService) parsePricingData(body []byte) (map[string]*LiteLLMModel
 			continue
 		}
 
-		// 只保留有有效价格的条目；图片模型可能只有 output_cost_per_image。
-		if !hasAnyPricingField(entry) {
+		// 只保留有有效价格的条目
+		if entry.InputCostPerToken == nil && entry.OutputCostPerToken == nil && entry.OutputCostPerImage == nil && entry.OutputCostPerImageToken == nil && entry.InputCostPerImageToken == nil {
 			continue
 		}
 
@@ -742,20 +736,6 @@ func (s *PricingService) parsePricingData(body []byte) (map[string]*LiteLLMModel
 	}
 
 	return result, nil
-}
-
-func hasAnyPricingField(entry LiteLLMRawEntry) bool {
-	return entry.InputCostPerToken != nil ||
-		entry.InputCostPerTokenPriority != nil ||
-		entry.OutputCostPerToken != nil ||
-		entry.OutputCostPerTokenPriority != nil ||
-		entry.CacheCreationInputTokenCost != nil ||
-		entry.CacheCreationInputTokenCostAbove1hr != nil ||
-		entry.CacheReadInputTokenCost != nil ||
-		entry.CacheReadInputTokenCostPriority != nil ||
-		entry.OutputCostPerImage != nil ||
-		entry.OutputCostPerImageToken != nil ||
-		entry.InputCostPerImageToken != nil
 }
 
 // deriveLongContextFromAboveTierFields 把 LiteLLM 目录的 *_above_XXXk_tokens 绝对价字段
@@ -1187,27 +1167,6 @@ func (s *PricingService) validatePricingURL(raw string) (string, error) {
 		return "", fmt.Errorf("invalid pricing url: %w", err)
 	}
 	return normalized, nil
-}
-
-// ListGlobalModelPricing returns a stable copy of the loaded global pricing table.
-func (s *PricingService) ListGlobalModelPricing() []GlobalModelPricing {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	items := make([]GlobalModelPricing, 0, len(s.pricingData))
-	for model, pricing := range s.pricingData {
-		if pricing == nil {
-			continue
-		}
-		items = append(items, GlobalModelPricing{
-			Model:               model,
-			LiteLLMModelPricing: *pricing,
-		})
-	}
-	sort.Slice(items, func(i, j int) bool {
-		return strings.ToLower(items[i].Model) < strings.ToLower(items[j].Model)
-	})
-	return items
 }
 
 // GetModelPricing 获取模型价格（带模糊匹配）

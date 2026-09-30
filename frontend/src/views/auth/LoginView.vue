@@ -210,7 +210,7 @@
     </div>
 
     <!-- Footer -->
-    <template v-if="!backendModeEnabled" #footer>
+    <template v-if="!backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
       <p class="auth-footer-copy">
         {{ t('auth.dontHaveAccount') }}
         <router-link
@@ -281,6 +281,7 @@ const passkeyLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 const publicSettingsLoaded = ref<boolean>(false)
+const registrationEnabled = ref<boolean>(false)
 
 // Public settings
 const turnstileEnabled = ref<boolean>(false)
@@ -405,7 +406,12 @@ onMounted(async () => {
   }
 
   try {
-    const settings = await getPublicSettings()
+    const settings = appStore.cachedPublicSettings ||
+      (typeof appStore.fetchPublicSettings === 'function'
+        ? (await appStore.fetchPublicSettings()) ||
+          (await getPublicSettings())
+        : await getPublicSettings())
+    registrationEnabled.value = settings.registration_enabled === true
     turnstileEnabled.value = settings.turnstile_enabled
     turnstileSiteKey.value = settings.turnstile_site_key || ''
     tencentCaptchaEnabled.value = settings.tencent_captcha_enabled === true
@@ -467,8 +473,16 @@ function applyLoginAgreementSettings(settings: {
 }
 
 function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettings>>): void {
+  registrationEnabled.value = settings.registration_enabled === true
   turnstileEnabled.value = settings.turnstile_enabled
   turnstileSiteKey.value = settings.turnstile_site_key || ''
+  tencentCaptchaEnabled.value = settings.tencent_captcha_enabled === true
+  tencentCaptchaAppId.value = settings.tencent_captcha_app_id || ''
+  tencentCaptchaRegion.value = settings.tencent_captcha_region || 'cn'
+  aliyunCaptchaEnabled.value = settings.aliyun_captcha_enabled === true
+  aliyunCaptchaSceneId.value = settings.aliyun_captcha_scene_id || ''
+  aliyunCaptchaPrefix.value = settings.aliyun_captcha_prefix || ''
+  aliyunCaptchaRegion.value = settings.aliyun_captcha_region || 'cn'
   linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
   dingtalkOAuthEnabled.value = settings.dingtalk_oauth_enabled ?? false
   wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
@@ -478,6 +492,7 @@ function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettin
   githubOAuthEnabled.value = settings.github_oauth_enabled
   googleOAuthEnabled.value = settings.google_oauth_enabled
   passwordResetEnabled.value = settings.password_reset_enabled
+  passkeyEnabled.value = settings.passkey_enabled === true
   applyLoginAgreementSettings(settings)
 }
 

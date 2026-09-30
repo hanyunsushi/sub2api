@@ -8,26 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func decodeAnthropicSystemText(t *testing.T, raw json.RawMessage) string {
-	t.Helper()
-	if raw == nil {
-		return ""
-	}
-
-	var plain string
-	if err := json.Unmarshal(raw, &plain); err == nil {
-		return plain
-	}
-
-	var blocks []struct {
-		Type string `json:"type"`
-		Text string `json:"text"`
-	}
-	require.NoError(t, json.Unmarshal(raw, &blocks))
-	require.NotEmpty(t, blocks)
-	return blocks[0].Text
-}
-
 func TestResponsesToAnthropicRequest_Instructions(t *testing.T) {
 	t.Run("instructions_becomes_system", func(t *testing.T) {
 		req := &ResponsesRequest{
@@ -39,7 +19,8 @@ func TestResponsesToAnthropicRequest_Instructions(t *testing.T) {
 		result, err := ResponsesToAnthropicRequest(req)
 		require.NoError(t, err)
 
-		system := decodeAnthropicSystemText(t, result.System)
+		var system string
+		require.NoError(t, json.Unmarshal(result.System, &system))
 		assert.Equal(t, "You are a helpful assistant.", system)
 		assert.NotEmpty(t, result.Messages)
 	})
@@ -68,7 +49,8 @@ func TestResponsesToAnthropicRequest_Instructions(t *testing.T) {
 		result, err := ResponsesToAnthropicRequest(req)
 		require.NoError(t, err)
 
-		system := decodeAnthropicSystemText(t, result.System)
+		var system string
+		require.NoError(t, json.Unmarshal(result.System, &system))
 		assert.Contains(t, system, "Top-level instruction.")
 		assert.Contains(t, system, "Input-level system prompt.")
 	})
@@ -83,7 +65,8 @@ func TestResponsesToAnthropicRequest_Instructions(t *testing.T) {
 		result, err := ResponsesToAnthropicRequest(req)
 		require.NoError(t, err)
 
-		system := decodeAnthropicSystemText(t, result.System)
+		var system string
+		require.NoError(t, json.Unmarshal(result.System, &system))
 		assert.Equal(t, "Be concise.", system)
 		require.Len(t, result.Messages, 1)
 		assert.Equal(t, "user", result.Messages[0].Role)
@@ -100,7 +83,8 @@ func TestConvertResponsesInputToAnthropic_DeveloperRole(t *testing.T) {
 		system, messages, err := convertResponsesInputToAnthropic("", json.RawMessage(input), false)
 		require.NoError(t, err)
 
-		systemText := decodeAnthropicSystemText(t, system)
+		var systemText string
+		require.NoError(t, json.Unmarshal(system, &systemText))
 		assert.Equal(t, "You are a code reviewer.", systemText)
 
 		require.Len(t, messages, 1)
@@ -135,7 +119,8 @@ func TestConvertResponsesInputToAnthropic_DeveloperRole(t *testing.T) {
 		system, _, err := convertResponsesInputToAnthropic("Main instruction.", json.RawMessage(input), false)
 		require.NoError(t, err)
 
-		systemText := decodeAnthropicSystemText(t, system)
+		var systemText string
+		require.NoError(t, json.Unmarshal(system, &systemText))
 		assert.Equal(t, "Main instruction.\n\nExtra context.", systemText)
 	})
 }

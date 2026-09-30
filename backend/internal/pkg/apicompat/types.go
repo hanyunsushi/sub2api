@@ -4,7 +4,10 @@
 // formats can be served through a unified gateway.
 package apicompat
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/json"
+)
 
 // ---------------------------------------------------------------------------
 // Anthropic Messages API types
@@ -270,31 +273,40 @@ type ResponsesInputItem struct {
 	EncryptedContent string `json:"encrypted_content,omitempty"`
 
 	// type=function_call
-	CallID string `json:"call_id,omitempty"`
-	Name   string `json:"name,omitempty"`
-	// Arguments is stringified JSON per the OpenAI spec, but codex / newer
-	// clients may send a raw JSON object. RawMessage accepts both; callers
-	// normalize via normalizeResponsesArguments.
-	Arguments json.RawMessage `json:"arguments,omitempty"`
-	ID        string          `json:"id,omitempty"`
+	CallID    string `json:"call_id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Arguments string `json:"arguments,omitempty"`
+	ID        string `json:"id,omitempty"`
 
 	// type=function_call_output
-	// Output is a plain string in older clients, but newer Responses clients
-	// (codex) send an array like [{"type":"output_text","text":"..."}].
-	// RawMessage accepts both; callers normalize via extractResponsesOutputText.
-	Output json.RawMessage `json:"output,omitempty"`
+	Output    string `json:"output,omitempty"`
+	outputRaw json.RawMessage
 }
 
-// jsonRawString marshals a Go string into a JSON-string RawMessage (i.e. a
-// quoted value). Used when building ResponsesInputItem.Arguments / .Output from
-// a string source, preserving the OpenAI wire format where these fields are
-// emitted as JSON strings.
-func jsonRawString(s string) json.RawMessage {
-	b, err := json.Marshal(s)
-	if err != nil {
-		return json.RawMessage(`""`)
+func (i *ResponsesInputItem) UnmarshalJSON(data []byte) error {
+	type alias ResponsesInputItem
+	var wire struct {
+		*alias
+		Output json.RawMessage `json:"output"`
 	}
-	return json.RawMessage(b)
+
+	*i = ResponsesInputItem{}
+	wire.alias = (*alias)(i)
+	if err := json.Unmarshal(data, &wire); err != nil {
+		return err
+	}
+
+	output := bytes.TrimSpace(wire.Output)
+	if len(output) == 0 || bytes.Equal(output, []byte("null")) {
+		return nil
+	}
+	if err := json.Unmarshal(output, &i.Output); err == nil {
+		return nil
+	}
+
+	i.outputRaw = append(i.outputRaw[:0], output...)
+	i.Output = string(output)
+	return nil
 }
 
 // ResponsesContentPart is a typed content part in a Responses message.

@@ -250,6 +250,15 @@
     color-scheme: light;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    html,
+    .sidebar-nav,
+    .overflow-y-auto,
+    .overflow-auto {
+      scroll-behavior: smooth;
+    }
+  }
+
   .dark {
     color-scheme: dark;
   }
@@ -2081,7 +2090,7 @@ body,
   text-transform: none;
 }
 
-.app-layout-content :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .layout-section-fixed, .table-container, .table-wrapper, .table-scroll-container, .codex-panel, .codex-account-card, .ops-metric-card, .ops-system-card, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .external-subscription-card, .global-pricing-card-frame, .pricing-row) {
+.app-layout-content :where(.card, .paper-card, .paper-surface, .stat-card, .summary-tile, .admin-material-surface, .layout-section-fixed, .table-container, .table-wrapper, .table-scroll-container, .codex-panel, .codex-account-card, .ops-metric-card, .ops-system-card, .ops-chart-card, .ops-concurrency-card, .ops-alert-card, .ops-log-card, .external-subscription-card, .pricing-row) {
   border-color: var(--anthropic-cookbook-border);
   border-radius: 8px;
   background: var(--anthropic-page);
@@ -3135,7 +3144,7 @@ body,
   background: var(--anthropic-focus);
 }
 
-.app-layout-content :where(.table-page-filter-section, .table-page-actions-section, .table-filter-shell, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap, .usage-filter-card, .usage-filter-shell, .global-pricing-filter-card, .order-filter-card, .payment-dashboard-filter-bar, .payment-plans-filter-bar, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .codex-toolbar, .codex-list-actions__filters, .accounts-filter-shell, .users-filter-shell, .proxies-filter-shell, .keys-filter-shell, .keys-page-actions) {
+.app-layout-content :where(.table-page-filter-section, .table-page-actions-section, .table-filter-shell, .dashboard-filter-card, .usage-time-filter-card, .usage-record-filter-wrap, .usage-filter-card, .usage-filter-shell, .order-filter-card, .payment-dashboard-filter-bar, .payment-plans-filter-bar, .risk-control-toolbar-actions, .risk-control-record-filters, .ops-card-filter-bar, .ops-card-filter-grid, .codex-toolbar, .codex-list-actions__filters, .accounts-filter-shell, .users-filter-shell, .proxies-filter-shell, .keys-filter-shell, .keys-page-actions) {
   border: 1px solid var(--anthropic-border-hover);
   border-radius: 8px;
   background: var(--anthropic-section);
@@ -3151,7 +3160,7 @@ body,
   letter-spacing: 0;
 }
 
-.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) {
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) {
   align-items: center;
   row-gap: var(--anthropic-control-group-gap);
   column-gap: var(--anthropic-control-gap);
@@ -3164,7 +3173,7 @@ body,
   letter-spacing: 0;
 }
 
-.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .global-pricing-filter-left, .global-pricing-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label, .filter-label, a, button, [role="button"], .btn, .select-trigger, .date-picker-trigger, .input, .codex-button, .codex-input, .codex-select, select, input[type="search"], input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"]) {
+.app-layout-content :where(.table-filter-shell, .table-filter-left, .table-filter-actions, .accounts-filter-left, .accounts-filter-actions, .users-filter-left, .users-filter-actions, .users-filter-tools, .proxies-filter-left, .proxies-filter-actions, .usage-time-filter-shell, .usage-filter-shell, .usage-filter-left, .usage-filter-actions, .dashboard-filter-shell, .dashboard-filter-range, .dashboard-filter-granularity, .ops-monitor-toolbar-controls, .ops-card-filter-bar, .ops-card-filter-grid, .codex-list-actions__filters, .keys-page-actions) :where(label, .filter-label, a, button, [role="button"], .btn, .select-trigger, .date-picker-trigger, .input, .codex-button, .codex-input, .codex-select, select, input[type="search"], input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"]) {
   min-height: var(--anthropic-control-height);
   align-items: center;
   font-family: var(--atelier-font-sans);

@@ -119,9 +119,12 @@ func TestResponsesToAnthropic_MixedToolsProduceValidAnthropicTools(t *testing.T)
 	assert.Equal(t, "apply_patch", tools[1].Name)
 	assert.JSONEq(t, `{"type":"object","properties":{}}`, string(tools[1].InputSchema))
 
-	assert.Empty(t, tools[2].Type)
+	assert.Equal(t, "web_search_20250305", tools[2].Type)
 	assert.Equal(t, "web_search", tools[2].Name)
-	assert.JSONEq(t, `{"type":"object","properties":{}}`, string(tools[2].InputSchema))
+	assert.Empty(t, tools[2].InputSchema)
+	serverToolWire, err := json.Marshal(tools[2])
+	require.NoError(t, err)
+	assert.NotContains(t, string(serverToolWire), `"input_schema"`)
 }
 
 func TestResponsesToAnthropic_DefaultToolNormalizesInputSchema(t *testing.T) {

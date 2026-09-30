@@ -17,17 +17,25 @@ const {
   updateWebSearchEmulationConfig,
   getAdminApiKey,
   getOverloadCooldownSettings,
+  updateOverloadCooldownSettings,
   getRateLimit429CooldownSettings,
   updateRateLimit429CooldownSettings,
   getPanelRateLimitSettings,
   updatePanelRateLimitSettings,
   getStreamTimeoutSettings,
+  updateStreamTimeoutSettings,
   getRectifierSettings,
+  updateRectifierSettings,
   getBetaPolicySettings,
+  updateBetaPolicySettings,
+  resetWebSearchUsage,
+  testWebSearchEmulation,
   getUpstreamBillingProbeSettings,
   updateUpstreamBillingProbeSettings,
   getOllamaCloudUsageSettings,
   updateOllamaCloudUsageSettings,
+  getOpenCodeGoUsageSettings,
+  updateOpenCodeGoUsageSettings,
   getGroups,
   listProxies,
   getProviders,
@@ -38,6 +46,11 @@ const {
   adminSettingsFetch,
   showError,
   showSuccess,
+  affiliatesListUsers,
+  affiliatesLookupUsers,
+  affiliatesUpdateUserSettings,
+  affiliatesClearUserSettings,
+  affiliatesBatchSetRate,
 } = vi.hoisted(() => ({
   getSettings: vi.fn(),
   updateSettings: vi.fn(),
@@ -45,6 +58,7 @@ const {
   updateWebSearchEmulationConfig: vi.fn(),
   getAdminApiKey: vi.fn(),
   getOverloadCooldownSettings: vi.fn(),
+  updateOverloadCooldownSettings: vi.fn().mockImplementation(async (payload) => payload),
   getRateLimit429CooldownSettings: vi.fn(),
   updateRateLimit429CooldownSettings: vi.fn(),
   getPanelRateLimitSettings: vi.fn().mockResolvedValue({
@@ -56,8 +70,13 @@ const {
   }),
   updatePanelRateLimitSettings: vi.fn().mockImplementation(async (payload) => payload),
   getStreamTimeoutSettings: vi.fn(),
+  updateStreamTimeoutSettings: vi.fn().mockImplementation(async (payload) => payload),
   getRectifierSettings: vi.fn(),
+  updateRectifierSettings: vi.fn().mockImplementation(async (payload) => payload),
   getBetaPolicySettings: vi.fn(),
+  updateBetaPolicySettings: vi.fn().mockImplementation(async (payload) => payload),
+  resetWebSearchUsage: vi.fn().mockResolvedValue(undefined),
+  testWebSearchEmulation: vi.fn().mockResolvedValue({}),
   getUpstreamBillingProbeSettings: vi.fn().mockResolvedValue({
     enabled: true,
     interval_minutes: 30,
@@ -69,6 +88,11 @@ const {
     debounce_minutes: 1,
   }),
   updateOllamaCloudUsageSettings: vi.fn().mockImplementation(async (payload) => payload),
+  getOpenCodeGoUsageSettings: vi.fn().mockResolvedValue({
+    enabled: false,
+    interval_minutes: 60,
+  }),
+  updateOpenCodeGoUsageSettings: vi.fn().mockImplementation(async (payload) => payload),
   getGroups: vi.fn(),
   listProxies: vi.fn(),
   getProviders: vi.fn(),
@@ -79,6 +103,11 @@ const {
   adminSettingsFetch: vi.fn(),
   showError: vi.fn(),
   showSuccess: vi.fn(),
+  affiliatesListUsers: vi.fn().mockResolvedValue({ items: [], total: 0 }),
+  affiliatesLookupUsers: vi.fn().mockResolvedValue([]),
+  affiliatesUpdateUserSettings: vi.fn().mockResolvedValue(undefined),
+  affiliatesClearUserSettings: vi.fn().mockResolvedValue(undefined),
+  affiliatesBatchSetRate: vi.fn().mockResolvedValue(undefined),
 }));
 
 const localeRef = vi.hoisted(() => ({ value: "zh-CN" }));
@@ -92,19 +121,27 @@ vi.mock("@/api", () => ({
       updateWebSearchEmulationConfig,
       getAdminApiKey,
       getOverloadCooldownSettings,
+      updateOverloadCooldownSettings,
       getRateLimit429CooldownSettings,
       updateRateLimit429CooldownSettings,
       getPanelRateLimitSettings,
       updatePanelRateLimitSettings,
       getStreamTimeoutSettings,
+      updateStreamTimeoutSettings,
       getRectifierSettings,
+      updateRectifierSettings,
       getBetaPolicySettings,
+      updateBetaPolicySettings,
+      resetWebSearchUsage,
+      testWebSearchEmulation,
     },
     accounts: {
       getUpstreamBillingProbeSettings,
       updateUpstreamBillingProbeSettings,
       getOllamaCloudUsageSettings,
       updateOllamaCloudUsageSettings,
+      getOpenCodeGoUsageSettings,
+      updateOpenCodeGoUsageSettings,
     },
     groups: {
       getAll: getGroups,
@@ -120,6 +157,17 @@ vi.mock("@/api", () => ({
     },
   },
 }));
+
+vi.mock("@/api/admin/affiliates", () => {
+  const affiliatesAPI = {
+    listUsers: affiliatesListUsers,
+    lookupUsers: affiliatesLookupUsers,
+    updateUserSettings: affiliatesUpdateUserSettings,
+    clearUserSettings: affiliatesClearUserSettings,
+    batchSetRate: affiliatesBatchSetRate,
+  };
+  return { affiliatesAPI, default: affiliatesAPI };
+});
 
 vi.mock("@/stores", () => ({
   useAppStore: () => ({
@@ -562,6 +610,10 @@ function mountView() {
         ProxySelector: true,
         ImageUpload: ImageUploadStub,
         BackupSettings: true,
+        TotpStepUpDialog: true,
+        LogoPicker: true,
+        CustomMenuIconPicker: true,
+        RouterLink: true,
       },
     },
   });
@@ -637,15 +689,23 @@ describe("admin SettingsView payment visible method controls", () => {
     updateWebSearchEmulationConfig.mockReset();
     getAdminApiKey.mockReset();
     getOverloadCooldownSettings.mockReset();
+    updateOverloadCooldownSettings.mockReset();
     getRateLimit429CooldownSettings.mockReset();
     updateRateLimit429CooldownSettings.mockReset();
     getStreamTimeoutSettings.mockReset();
+    updateStreamTimeoutSettings.mockReset();
     getRectifierSettings.mockReset();
+    updateRectifierSettings.mockReset();
     getBetaPolicySettings.mockReset();
+    updateBetaPolicySettings.mockReset();
+    resetWebSearchUsage.mockReset();
+    testWebSearchEmulation.mockReset();
     getUpstreamBillingProbeSettings.mockReset();
     updateUpstreamBillingProbeSettings.mockReset();
     getOllamaCloudUsageSettings.mockReset();
     updateOllamaCloudUsageSettings.mockReset();
+    getOpenCodeGoUsageSettings.mockReset();
+    updateOpenCodeGoUsageSettings.mockReset();
     getGroups.mockReset();
     listProxies.mockReset();
     getProviders.mockReset();
@@ -679,6 +739,7 @@ describe("admin SettingsView payment visible method controls", () => {
       enabled: true,
       cooldown_minutes: 10,
     });
+    updateOverloadCooldownSettings.mockImplementation(async (payload) => payload);
     getRateLimit429CooldownSettings.mockResolvedValue({
       enabled: true,
       cooldown_seconds: 5,
@@ -691,6 +752,7 @@ describe("admin SettingsView payment visible method controls", () => {
       threshold_count: 3,
       threshold_window_minutes: 10,
     });
+    updateStreamTimeoutSettings.mockImplementation(async (payload) => payload);
     getRectifierSettings.mockResolvedValue({
       enabled: true,
       thinking_signature_enabled: true,
@@ -698,9 +760,13 @@ describe("admin SettingsView payment visible method controls", () => {
       apikey_signature_enabled: false,
       apikey_signature_patterns: [],
     });
+    updateRectifierSettings.mockImplementation(async (payload) => payload);
     getBetaPolicySettings.mockResolvedValue({
       rules: [],
     });
+    updateBetaPolicySettings.mockImplementation(async (payload) => payload);
+    resetWebSearchUsage.mockResolvedValue(undefined);
+    testWebSearchEmulation.mockResolvedValue({});
     getUpstreamBillingProbeSettings.mockResolvedValue({
       enabled: true,
       interval_minutes: 30,
@@ -712,6 +778,11 @@ describe("admin SettingsView payment visible method controls", () => {
       debounce_minutes: 1,
     });
     updateOllamaCloudUsageSettings.mockImplementation(async (payload) => payload);
+    getOpenCodeGoUsageSettings.mockResolvedValue({
+      enabled: false,
+      interval_minutes: 60,
+    });
+    updateOpenCodeGoUsageSettings.mockImplementation(async (payload) => payload);
     getGroups.mockResolvedValue([]);
     listProxies.mockResolvedValue({
       items: [],
@@ -725,8 +796,8 @@ describe("admin SettingsView payment visible method controls", () => {
 
   it("loads and saves the open button visibility for each custom menu", async () => {
     const menuItems = [
-      { id: "docs", label: "Docs", url: "https://example.com/docs", icon_svg: "", visibility: "user", sort_order: 0 },
-      { id: "help", label: "Help", url: "https://example.com/help", icon_svg: "", visibility: "user", sort_order: 1, hide_open_button: true },
+      { id: "docs", label: "Docs", url: "https://example.com/docs", icon_svg: "", visibility: "user", sort_order: 0, open_mode: "iframe" },
+      { id: "help", label: "Help", url: "https://example.com/help", icon_svg: "", visibility: "user", sort_order: 1, open_mode: "iframe", hide_open_button: true },
     ];
     getSettings.mockResolvedValue({ ...baseSettingsResponse, custom_menu_items: menuItems });
     const wrapper = mountView();
@@ -1270,6 +1341,10 @@ describe("admin SettingsView payment visible method controls", () => {
           ProxySelector: true,
           ImageUpload: ImageUploadStub,
           BackupSettings: true,
+          TotpStepUpDialog: true,
+          LogoPicker: true,
+          CustomMenuIconPicker: true,
+          RouterLink: true,
         },
       },
     });
@@ -1616,6 +1691,10 @@ describe("admin SettingsView payment visible method controls", () => {
           ProxySelector: true,
           ImageUpload: ImageUploadStub,
           BackupSettings: true,
+          TotpStepUpDialog: true,
+          LogoPicker: true,
+          CustomMenuIconPicker: true,
+          RouterLink: true,
         },
       },
     });
@@ -1659,11 +1738,23 @@ describe("admin SettingsView wechat connect controls", () => {
     updateWebSearchEmulationConfig.mockReset();
     getAdminApiKey.mockReset();
     getOverloadCooldownSettings.mockReset();
+    updateOverloadCooldownSettings.mockReset();
     getRateLimit429CooldownSettings.mockReset();
     updateRateLimit429CooldownSettings.mockReset();
     getStreamTimeoutSettings.mockReset();
+    updateStreamTimeoutSettings.mockReset();
     getRectifierSettings.mockReset();
+    updateRectifierSettings.mockReset();
     getBetaPolicySettings.mockReset();
+    updateBetaPolicySettings.mockReset();
+    resetWebSearchUsage.mockReset();
+    testWebSearchEmulation.mockReset();
+    getUpstreamBillingProbeSettings.mockReset();
+    updateUpstreamBillingProbeSettings.mockReset();
+    getOllamaCloudUsageSettings.mockReset();
+    updateOllamaCloudUsageSettings.mockReset();
+    getOpenCodeGoUsageSettings.mockReset();
+    updateOpenCodeGoUsageSettings.mockReset();
     getGroups.mockReset();
     listProxies.mockReset();
     getProviders.mockReset();
@@ -1700,6 +1791,7 @@ describe("admin SettingsView wechat connect controls", () => {
       enabled: true,
       cooldown_minutes: 10,
     });
+    updateOverloadCooldownSettings.mockImplementation(async (payload) => payload);
     getRateLimit429CooldownSettings.mockResolvedValue({
       enabled: true,
       cooldown_seconds: 5,
@@ -1712,6 +1804,7 @@ describe("admin SettingsView wechat connect controls", () => {
       threshold_count: 3,
       threshold_window_minutes: 10,
     });
+    updateStreamTimeoutSettings.mockImplementation(async (payload) => payload);
     getRectifierSettings.mockResolvedValue({
       enabled: true,
       thinking_signature_enabled: true,
@@ -1719,9 +1812,29 @@ describe("admin SettingsView wechat connect controls", () => {
       apikey_signature_enabled: false,
       apikey_signature_patterns: [],
     });
+    updateRectifierSettings.mockImplementation(async (payload) => payload);
     getBetaPolicySettings.mockResolvedValue({
       rules: [],
     });
+    updateBetaPolicySettings.mockImplementation(async (payload) => payload);
+    resetWebSearchUsage.mockResolvedValue(undefined);
+    testWebSearchEmulation.mockResolvedValue({});
+    getUpstreamBillingProbeSettings.mockResolvedValue({
+      enabled: true,
+      interval_minutes: 30,
+    });
+    updateUpstreamBillingProbeSettings.mockImplementation(async (payload) => payload);
+    getOllamaCloudUsageSettings.mockResolvedValue({
+      enabled: false,
+      interval_minutes: 60,
+      debounce_minutes: 1,
+    });
+    updateOllamaCloudUsageSettings.mockImplementation(async (payload) => payload);
+    getOpenCodeGoUsageSettings.mockResolvedValue({
+      enabled: false,
+      interval_minutes: 60,
+    });
+    updateOpenCodeGoUsageSettings.mockImplementation(async (payload) => payload);
     getGroups.mockResolvedValue([]);
     listProxies.mockResolvedValue({
       items: [],
@@ -1907,11 +2020,23 @@ describe("admin SettingsView platform quota matrix", () => {
     updateWebSearchEmulationConfig.mockReset();
     getAdminApiKey.mockReset();
     getOverloadCooldownSettings.mockReset();
+    updateOverloadCooldownSettings.mockReset();
     getRateLimit429CooldownSettings.mockReset();
     updateRateLimit429CooldownSettings.mockReset();
     getStreamTimeoutSettings.mockReset();
+    updateStreamTimeoutSettings.mockReset();
     getRectifierSettings.mockReset();
+    updateRectifierSettings.mockReset();
     getBetaPolicySettings.mockReset();
+    updateBetaPolicySettings.mockReset();
+    resetWebSearchUsage.mockReset();
+    testWebSearchEmulation.mockReset();
+    getUpstreamBillingProbeSettings.mockReset();
+    updateUpstreamBillingProbeSettings.mockReset();
+    getOllamaCloudUsageSettings.mockReset();
+    updateOllamaCloudUsageSettings.mockReset();
+    getOpenCodeGoUsageSettings.mockReset();
+    updateOpenCodeGoUsageSettings.mockReset();
     getGroups.mockReset();
     listProxies.mockReset();
     getProviders.mockReset();
@@ -1933,11 +2058,33 @@ describe("admin SettingsView platform quota matrix", () => {
     updateWebSearchEmulationConfig.mockResolvedValue({ enabled: false, providers: [] });
     getAdminApiKey.mockResolvedValue({ exists: false, masked_key: "" });
     getOverloadCooldownSettings.mockResolvedValue({});
+    updateOverloadCooldownSettings.mockImplementation(async (payload) => payload);
     getRateLimit429CooldownSettings.mockResolvedValue({});
     updateRateLimit429CooldownSettings.mockResolvedValue({});
     getStreamTimeoutSettings.mockResolvedValue({});
+    updateStreamTimeoutSettings.mockImplementation(async (payload) => payload);
     getRectifierSettings.mockResolvedValue({});
+    updateRectifierSettings.mockImplementation(async (payload) => payload);
     getBetaPolicySettings.mockResolvedValue({});
+    updateBetaPolicySettings.mockImplementation(async (payload) => payload);
+    resetWebSearchUsage.mockResolvedValue(undefined);
+    testWebSearchEmulation.mockResolvedValue({});
+    getUpstreamBillingProbeSettings.mockResolvedValue({
+      enabled: true,
+      interval_minutes: 30,
+    });
+    updateUpstreamBillingProbeSettings.mockImplementation(async (payload) => payload);
+    getOllamaCloudUsageSettings.mockResolvedValue({
+      enabled: false,
+      interval_minutes: 60,
+      debounce_minutes: 1,
+    });
+    updateOllamaCloudUsageSettings.mockImplementation(async (payload) => payload);
+    getOpenCodeGoUsageSettings.mockResolvedValue({
+      enabled: false,
+      interval_minutes: 60,
+    });
+    updateOpenCodeGoUsageSettings.mockImplementation(async (payload) => payload);
     getGroups.mockResolvedValue([]);
     listProxies.mockResolvedValue({ items: [] });
     getProviders.mockResolvedValue({ data: [] });

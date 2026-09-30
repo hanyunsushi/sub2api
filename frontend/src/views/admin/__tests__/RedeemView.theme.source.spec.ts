@@ -22,11 +22,10 @@ describe('RedeemView theme source', () => {
     expect(source).not.toContain('dark:text-blue-300')
   })
 
-  it('scopes admin redeem primary leftovers to the Anthropic card surface', () => {
+  it('keeps the redeem page on the semantic Anthropic surface contract', () => {
     expect(source).toContain('class="admin-redeem-atelier"')
-    expect(repairSource).toContain('.admin-redeem-atelier.admin-redeem-atelier')
-    expect(repairSource).toContain('input[type="checkbox"].text-primary-600')
-    expect(repairSource).toContain('accent-color: #e3dacc !important;')
-    expect(repairSource).toContain('button.border-primary-500.bg-primary-50')
+    expect(repairSource).not.toContain('.admin-redeem-atelier.admin-redeem-atelier')
+    expect(repairSource).not.toContain('input[type="checkbox"].text-primary-600')
+    expect(repairSource).not.toContain('button.border-primary-500.bg-primary-50')
   })
 })

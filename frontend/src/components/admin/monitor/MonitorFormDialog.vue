@@ -45,12 +45,16 @@
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="selectProvider(opt.value)"
           >
-            <ProviderIcon v-if="opt.value === PROVIDER_GROK" :provider="opt.value" :size="18" />
-            <ProviderBrandIcon v-else :provider="opt.value" :model="form.primary_model || opt.value" :logo-url="form.logo_url" />
+            <ProviderBrandIcon :provider="opt.value" :model="form.primary_model || opt.value" :logo-url="form.logo_url" :prefer-model-icon="opt.value === PROVIDER_GROK" />
             <span>{{ opt.label }}</span>
           </button>
         </div>
       </div>
+
+      <LogoPicker
+        v-model="form.logo_url"
+        input-test-id="channel-monitor-logo-url"
+      />
 
       <!-- 配额模式数据源：关联账号（复用账号侧用量/余额服务） -->
       <div v-if="usesQuotaMode">
@@ -156,34 +160,6 @@
       </div>
 
       <div>
-        <label class="input-label">{{ t('admin.channelMonitor.form.accountBinding') }}</label>
-        <div class="channel-monitor-account-binding-list">
-          <button data-testid="admin-monitor-monitor-form-button-clear-account-binding"
-            type="button"
-            class="channel-monitor-account-binding-option"
-            :class="{ 'channel-monitor-account-binding-option--active': form.account_ids.length === 0 }"
-            @click="clearAccountBinding"
-          >
-            {{ t('admin.channelMonitor.form.accountBindingNone') }}
-          </button>
-          <button data-testid="admin-monitor-monitor-form-button-toggle-account-binding-account-id"
-            v-for="account in accountsForBinding"
-            :key="account.id"
-            type="button"
-            class="channel-monitor-account-binding-option"
-            :class="{ 'channel-monitor-account-binding-option--active': form.account_ids.includes(account.id) }"
-            @click="toggleAccountBinding(account.id)"
-          >
-            <span class="truncate">{{ account.name }}</span>
-            <span class="font-mono text-[11px] opacity-70">#{{ account.id }}</span>
-          </button>
-        </div>
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
-          {{ accountsForBindingLoading ? t('admin.channelMonitor.form.accountBindingLoading') : t('admin.channelMonitor.form.accountBindingHint') }}
-        </p>
-      </div>
-
-      <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-red-500">*</span></label>
         <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" data-testid="monitor-form-interval-seconds" />
         <p class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
@@ -281,12 +257,12 @@ import type {
   UpdateParams,
 } from '@/api/admin/channelMonitor'
 import type { ChannelMonitorTemplate } from '@/api/admin/channelMonitorTemplate'
-import type { Account, ApiKey } from '@/types'
+import type { ApiKey } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import Select from '@/components/common/Select.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
-import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import ModelTagInput from '@/components/admin/channel/ModelTagInput.vue'
 import { getPlatformTextClass } from '@/components/admin/channel/types'
 import MonitorKeyPickerDialog from '@/components/admin/monitor/MonitorKeyPickerDialog.vue'
@@ -365,7 +341,6 @@ interface MonitorForm {
   interval_seconds: number
   jitter_seconds: number
   enabled: boolean
-  account_ids: number[]
   // 高级设置快照
   template_id: number | null
   extra_headers: Record<string, string>
@@ -388,7 +363,6 @@ const form = reactive<MonitorForm>({
   interval_seconds: systemDefaultInterval.value,
   jitter_seconds: 0,
   enabled: true,
-  account_ids: [],
   template_id: null,
   extra_headers: {},
   body_override_mode: 'off',
@@ -403,13 +377,10 @@ const usesProbePart = computed(() => form.check_mode !== CHECK_MODE_QUOTA)
 const maxJitterSeconds = computed<number>(() => Math.max(0, (form.interval_seconds || 0) - 15))
 
 let suppressFormWatchers = false
-const accountBindingTouched = ref(false)
 
 // 可用模板列表（进入 dialog 时一次性拉取 cache；按 provider / api mode 过滤）。
 const templatesCache = ref<ChannelMonitorTemplate[]>([])
 const templatesLoading = ref(false)
-const accountsForBinding = ref<Account[]>([])
-const accountsForBindingLoading = ref(false)
 
 const templateOptions = computed(() => {
   const items = templatesCache.value.filter((t) => {
@@ -434,21 +405,6 @@ async function loadTemplates() {
     console.warn('load monitor templates failed', err)
   } finally {
     templatesLoading.value = false
-  }
-}
-
-async function loadAccountsForBinding() {
-  if (!adminAPI.accounts?.list) return
-  accountsForBindingLoading.value = true
-  try {
-    const res = await adminAPI.accounts.list(1, 100, { platform: form.provider })
-    accountsForBinding.value = res.items || []
-    applyCreateAccountBindingSuggestion()
-  } catch (err: unknown) {
-    accountsForBinding.value = []
-    console.warn('load channel monitor account binding options failed', err)
-  } finally {
-    accountsForBindingLoading.value = false
   }
 }
 
@@ -492,49 +448,6 @@ const apiModeOptions = computed<{ value: APIMode; label: string; hint: string }[
 
 function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
   return mode === API_MODE_RESPONSES ? API_MODE_RESPONSES : API_MODE_CHAT_COMPLETIONS
-}
-
-function normalizeAccountMatchName(name: string | null | undefined): string {
-  return (name || '').trim().toLowerCase()
-}
-
-function normalizeAccountIDs(ids: number[]): number[] {
-  const seen = new Set<number>()
-  const out: number[] = []
-  for (const id of ids) {
-    if (!Number.isFinite(id) || id <= 0 || seen.has(id)) continue
-    seen.add(id)
-    out.push(id)
-  }
-  return out
-}
-
-function matchingAccountIDsForMonitorName(): number[] {
-  const monitorName = normalizeAccountMatchName(form.name)
-  if (!monitorName) return []
-  return accountsForBinding.value
-    .filter(account => normalizeAccountMatchName(account.name) === monitorName)
-    .map(account => account.id)
-}
-
-function applyCreateAccountBindingSuggestion() {
-  if (editing.value || accountBindingTouched.value) return
-  form.account_ids = normalizeAccountIDs(matchingAccountIDsForMonitorName())
-}
-
-function toggleAccountBinding(id: number) {
-  if (!Number.isFinite(id) || id <= 0) return
-  accountBindingTouched.value = true
-  if (form.account_ids.includes(id)) {
-    form.account_ids = form.account_ids.filter(existing => existing !== id)
-    return
-  }
-  form.account_ids = normalizeAccountIDs([...form.account_ids, id])
-}
-
-function clearAccountBinding() {
-  accountBindingTouched.value = true
-  form.account_ids = []
 }
 
 function apiModeButtonClass(mode: APIMode): string {
@@ -810,9 +723,6 @@ watch(() => form.provider, () => {
   if (form.provider !== PROVIDER_OPENAI) {
     form.api_mode = API_MODE_CHAT_COMPLETIONS
   }
-  form.account_ids = []
-  accountBindingTouched.value = false
-  void loadAccountsForBinding()
   clearRequestSnapshot()
 }, { flush: 'sync' })
 
@@ -841,8 +751,6 @@ function resetForm() {
   form.interval_seconds = systemDefaultInterval.value
   form.jitter_seconds = 0
   form.enabled = true
-  form.account_ids = []
-  accountBindingTouched.value = false
   form.template_id = null
   form.extra_headers = {}
   form.body_override_mode = 'off'
@@ -866,8 +774,6 @@ function loadFromMonitor(m: ChannelMonitor) {
   form.interval_seconds = m.interval_seconds || systemDefaultInterval.value
   form.jitter_seconds = m.jitter_seconds || 0
   form.enabled = m.enabled
-  form.account_ids = normalizeAccountIDs((m.account_ids && m.account_ids.length > 0) ? m.account_ids : (m.account_id != null ? [m.account_id] : []))
-  accountBindingTouched.value = true
   form.template_id = m.template_id ?? null
   form.extra_headers = { ...(m.extra_headers || {}) }
   form.body_override_mode = m.body_override_mode || 'off'
@@ -884,16 +790,8 @@ watch(
     void loadTemplates()
     if (m) loadFromMonitor(m)
     else resetForm()
-    void loadAccountsForBinding()
   },
   { immediate: true },
-)
-
-watch(
-  () => form.name,
-  () => {
-    applyCreateAccountBindingSuggestion()
-  },
 )
 
 function useCurrentDomain() {
@@ -930,7 +828,6 @@ function pickMyKey(k: ApiKey) {
 }
 
 function buildPayload(): CreateParams {
-  const accountIDs = normalizeAccountIDs(form.account_ids)
   const payload: CreateParams = {
     name: form.name.trim(),
     logo_url: form.logo_url.trim(),
@@ -950,9 +847,6 @@ function buildPayload(): CreateParams {
     extra_headers: form.extra_headers,
     body_override_mode: form.body_override_mode,
     body_override: form.body_override,
-  }
-  if (accountIDs.length > 0 || accountBindingTouched.value) {
-    payload.account_ids = accountIDs
   }
   return payload
 }

@@ -13,7 +13,7 @@
       aria-haspopup="dialog"
       :class="['date-picker-trigger', datePickerTriggerVariantClass, isOpen && 'date-picker-trigger-open']"
     >
-      <span class="date-picker-value website-bracket-anchor">
+      <span class="date-picker-value text-action-label">
         {{ displayValue }}
       </span>
       <span class="date-picker-chevron" aria-hidden="true"></span>
@@ -279,8 +279,6 @@ const levelOneDropdownContextSelector = [
   '.usage-filter-card',
   '.usage-filter-shell',
   '.keys-filter-shell',
-  '.global-pricing-filter-card',
-  '.global-pricing-filter-shell',
   '.monitor-filter-shell',
   '.ops-monitor-toolbar-controls',
   '.ops-card-filter-bar',
@@ -626,10 +624,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .date-picker-trigger),
 :global(#app .app-layout-content .keys-filter-left .date-picker-trigger),
 :global(#app .app-layout-content .keys-filter-actions .date-picker-trigger),
-:global(#app .app-layout-content .global-pricing-filter-card .date-picker-trigger),
-:global(#app .app-layout-content .global-pricing-filter-shell .date-picker-trigger),
-:global(#app .app-layout-content .global-pricing-filter-left .date-picker-trigger),
-:global(#app .app-layout-content .global-pricing-filter-actions .date-picker-trigger),
 :global(#app .app-layout-content .dashboard-filter-card .date-picker-trigger),
 :global(#app .app-layout-content .dashboard-filter-shell .date-picker-trigger),
 :global(#app .app-layout-content .dashboard-filter-range .date-picker-trigger),
@@ -687,10 +681,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
 :global(#app .app-layout-content .keys-filter-left .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
 :global(#app .app-layout-content .keys-filter-actions .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-card .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-shell .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-left .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-actions .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-card .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-shell .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-range .date-picker-trigger:is(:hover, .date-picker-trigger-open)),
@@ -739,10 +729,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .date-picker-trigger:focus-visible),
 :global(#app .app-layout-content .keys-filter-left .date-picker-trigger:focus-visible),
 :global(#app .app-layout-content .keys-filter-actions .date-picker-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-card .date-picker-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-shell .date-picker-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-left .date-picker-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-actions .date-picker-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-card .date-picker-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-shell .date-picker-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-range .date-picker-trigger:focus-visible),

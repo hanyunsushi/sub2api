@@ -416,7 +416,6 @@ export default {
     groups: '分组管理',
     channels: '渠道管理',
     availableChannels: '可用渠道',
-    globalPricing: '全局定价',
     subscriptions: '订阅管理',
     accounts: '账号管理',
     proxies: 'IP管理',
@@ -1018,6 +1017,7 @@ export default {
     cacheWrite: '写入',
     serviceTier: '服务档位',
     serviceTierPriority: 'Fast',
+    serviceTierUltrafast: 'Ultrafast',
     serviceTierFlex: 'Flex',
     serviceTierStandard: 'Standard',
     rate: '倍率',
@@ -1179,55 +1179,6 @@ export default {
       intervals: '阶梯定价',
       unitPerMillion: '/ 1M token',
       unitPerRequest: '/ 次'
-    }
-  },
-
-  // Global Pricing (user-facing)
-  globalPricing: {
-    title: '全局定价',
-    description: '查看当前系统使用的全局模型价格表',
-    searchPlaceholder: '搜索模型、提供商或模式...',
-    loadFailed: '加载全局定价失败',
-    empty: '暂无匹配的全局价格',
-    dataHash: '数据版本',
-    unitPerMillion: '/ 1M tokens',
-    above1h: '1h+',
-    longContextThreshold: '长上下文阈值 {count} tokens',
-    summary: {
-      totalModels: '全局模型',
-      visibleModels: '当前显示',
-      providers: '提供商',
-      updated: '更新时间'
-    },
-    filters: {
-      allProviders: '全部提供商',
-      allModes: '全部模式',
-      promptCachingOnly: '仅缓存模型'
-    },
-    columns: {
-      brand: '标识',
-      model: '模型',
-      provider: '提供商',
-      mode: '模式',
-      input: '输入',
-      cacheWrite: '缓存写入',
-      cacheRead: '缓存读取',
-      output: '输出',
-      priority: '优先级价格',
-      image: '图片价格',
-      capabilities: '能力'
-    },
-    short: {
-      input: '输入',
-      output: '输出',
-      cacheRead: '读缓存',
-      perImage: '每图',
-      imageToken: '图 token'
-    },
-    capabilities: {
-      promptCaching: 'Prompt 缓存',
-      serviceTier: 'Service tier',
-      longContext: '长上下文'
     }
   },
 
@@ -2383,6 +2334,12 @@ export default {
       failedToLoad: '加载分组列表失败',
       failedToSave: '保存分组失败',
       failedToDelete: '删除分组失败',
+      webSearchPricing: {
+        title: 'Codex 网页搜索计费',
+        pricePerCall: '搜索单次价格（USD/次）',
+        pricePerCallHint: '留空使用默认价 $0.01/次；填 0 表示免费。',
+        finalPricePreview: '应用当前倍率后的单次价格：{price}'
+      },
       allPlatforms: '全部平台',
       allStatus: '全部状态',
       allGroups: '全部分组',
@@ -3106,11 +3063,6 @@ export default {
         extraModelsPlaceholder: '回车添加附加模型',
         groupName: '分组名称',
         groupNamePlaceholder: '可选，用于在用户视图中聚合显示',
-        accountBinding: '绑定账号',
-        accountBindingNone: '不绑定账号',
-        accountBindingPlaceholder: '选择要自动调度的账号',
-        accountBindingHint: '绑定后，渠道监控自动调度开关开启时会按检测结果开关所选账号调度；账号锁定调度时会跳过。',
-        accountBindingLoading: '正在加载账号...',
         intervalSeconds: '检测间隔 (秒)',
         intervalSecondsHint: '范围：15 - 3600 秒',
         jitterSeconds: '随机抖动 (± 秒)',
@@ -3413,10 +3365,7 @@ export default {
       schedulableHint: '开启后账号参与API请求调度',
       schedulableEnabled: '调度已开启',
       schedulableDisabled: '调度已关闭',
-      scheduleLocked: '已锁定调度：不参与渠道监控自动调度',
-      scheduleUnlocked: '未锁定调度：可由渠道监控自动调度',
       failedToToggleSchedulable: '切换调度状态失败',
-      failedToToggleScheduleLock: '切换调度锁定失败',
       groupCountTotal: '共 {count} 个分组',
       columns: {
         name: '名称',
@@ -5492,6 +5441,15 @@ export default {
         phase: '阶段',
         status: '状态码',
         message: '消息',
+        upstreamStatus: '上游状态码',
+        rootCause: '根因',
+        diagnosticPayloads: '诊断载荷',
+        payloads: {
+          client: '客户端响应',
+          upstream_message: '上游消息',
+          upstream_detail: '上游详情',
+          upstream_events: '上游事件'
+        },
         basicInfo: '基本信息',
         platform: '平台',
         model: '模型',
@@ -5986,10 +5944,6 @@ export default {
           enabledHint: '关闭后后台不再执行定时检测，已有数据保留。',
           defaultInterval: '默认检测间隔（秒）',
           defaultIntervalHint: '新建渠道监控时表单的默认值，可被单个渠道覆盖。范围 15 – 3600 秒。',
-          accountAutoSchedule: '开启渠道监控-账号自动调度',
-          accountAutoScheduleHint: '开启后，绑定账号的渠道监控结果会自动开关账号调度；已锁定调度的账号不参与自动调度。',
-          autoScheduleFailureThreshold: '失败关闭阈值',
-          autoScheduleFailureThresholdHint: '连续失败达到该次数后关闭账号调度；成功一次会立即恢复并清零失败计数。',
         },
         availableChannels: {
           title: '可用渠道',
@@ -6281,7 +6235,7 @@ export default {
         claudeOAuthSystemPromptPlaceholder: '留空时使用内置 Claude Code 扩展提示词。',
         claudeOAuthSystemPromptHint: '兼容旧配置：仅控制第三个注入的 system block。',
         claudeOAuthSystemPromptBlocks: 'Claude OAuth System Blocks',
-        claudeOAuthSystemPromptBlocksPlaceholder: '留空时使用内置 3 个 blocks。支持数组或 {"blocks": [...]}。',
+        claudeOAuthSystemPromptBlocksPlaceholder: '留空时使用内置 3 个 blocks。支持数组或 {\'{\'}"blocks": [...]{\'}\'}。',
         claudeOAuthSystemPromptBlocksHint: '每个 block 会保存为带 enabled、type、text、可选 cache_control 的 JSON。{billing_header} 会按请求动态生成；Claude Code 身份提示词和扩展提示词可直接编辑，也可用预设恢复默认值。',
         systemBlockTitle: 'System Block {index}',
         systemBlockPreset: '预设',
@@ -6981,8 +6935,10 @@ export default {
         addRule: '新增规则',
         saveHint: '保存时随系统设置一起提交（点击页面底部「保存」按钮）。',
         serviceTier: 'service_tier 匹配',
-        tierAll: '全部 tier',
+        tierAll: '全部 tier 值',
         tierPriority: 'priority（fast）',
+        tierUltrafast: 'ultrafast',
+        tierMissing: '省略 tier',
         tierFlex: 'flex',
         action: '处理方式',
         actionPass: '透传（保留 service_tier）',
@@ -6996,13 +6952,22 @@ export default {
         errorMessage: '错误消息',
         errorMessagePlaceholder: '拦截时返回的自定义错误消息',
         errorMessageHint: '留空则使用默认错误消息。',
-        modelWhitelist: '模型白名单',
-        modelWhitelistHint: '留空表示对所有模型生效；支持精确匹配与通配符（如 gpt-5.5*）。',
+        modelWhitelist: '目标模型',
+        modelWhitelistHint: '留空时“处理方式”应用于全部模型；支持精确匹配与通配符（如 gpt-5.5*）。',
         modelPatternPlaceholder: '例如: gpt-5.5 或 gpt-5.5*',
         addModelPattern: '添加模型规则',
-        fallbackAction: '未匹配模型处理方式',
-        fallbackActionHint: '当请求模型不在白名单中时的处理方式。',
-        fallbackErrorMessagePlaceholder: '未匹配模型被拦截时返回的自定义错误消息'
+        fallbackAction: '其他模型处理方式',
+        fallbackActionHint: '当请求模型不在目标模型中时的处理方式。',
+        fallbackErrorMessagePlaceholder: '其他模型被拦截时返回的自定义错误消息',
+        summaryTargetModels: '目标模型',
+        summaryOtherModels: '其他模型',
+        userIds: '指定用户',
+        userIdsHint: '输入任意邮箱关键词进行模糊搜索。留空表示对全部 Sub2API 用户生效；选中用户的 API Key 请求优先匹配用户规则。',
+        userSearchPlaceholder: '输入用户邮箱搜索',
+        userSearchEmpty: '未找到匹配用户',
+        userDeleted: '（已删除）',
+        userIdFallback: '用户 #{id}',
+        removeUser: '移除用户'
       },
       wechatConnect: {
         title: '微信登录',

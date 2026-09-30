@@ -133,15 +133,19 @@ func mapResponsesEffortToAnthropic(effort string) string {
 // (for Anthropic's polymorphic system field) and a list of Anthropic messages.
 func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMessage, preserveThinking bool) (json.RawMessage, []AnthropicMessage, error) {
 	var systemParts []string
-	if s := strings.TrimSpace(instructions); s != "" {
-		systemParts = append(systemParts, s)
+	if strings.TrimSpace(instructions) != "" {
+		systemParts = append(systemParts, strings.TrimSpace(instructions))
 	}
 
 	// Try as plain string input.
 	var inputStr string
 	if err := json.Unmarshal(inputRaw, &inputStr); err == nil {
 		content, _ := json.Marshal(inputStr)
-		return buildSystemJSON(systemParts), []AnthropicMessage{{Role: "user", Content: content}}, nil
+		var system json.RawMessage
+		if len(systemParts) > 0 {
+			system, _ = json.Marshal(strings.Join(systemParts, "\n\n"))
+		}
+		return system, []AnthropicMessage{{Role: "user", Content: content}}, nil
 	}
 
 	var items []ResponsesInputItem
@@ -154,18 +158,22 @@ func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMess
 	for _, item := range items {
 		switch {
 		case item.Role == "system" || item.Role == "developer":
-			// system / developer → Anthropic system field
-			if text := strings.TrimSpace(extractTextFromContent(item.Content)); text != "" {
+			text := extractTextFromContent(item.Content)
+			if text != "" {
 				systemParts = append(systemParts, text)
 			}
 
 		case item.Type == "function_call":
 			// function_call → assistant message with tool_use block
+			input := json.RawMessage("{}")
+			if item.Arguments != "" {
+				input = json.RawMessage(item.Arguments)
+			}
 			block := AnthropicContentBlock{
 				Type:  "tool_use",
 				ID:    fromResponsesCallIDToAnthropic(item.CallID),
 				Name:  item.Name,
-				Input: normalizeResponsesArguments(item.Arguments),
+				Input: input,
 			}
 			blockJSON, _ := json.Marshal([]AnthropicContentBlock{block})
 			messages = append(messages, AnthropicMessage{
@@ -175,10 +183,11 @@ func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMess
 
 		case item.Type == "function_call_output":
 			// function_call_output → user message with tool_result block
+			contentJSON := responsesFunctionOutputToAnthropicContent(item)
 			block := AnthropicContentBlock{
 				Type:      "tool_result",
 				ToolUseID: fromResponsesCallIDToAnthropic(item.CallID),
-				Content:   responsesFunctionOutputToAnthropicContent(item),
+				Content:   contentJSON,
 			}
 			blockJSON, _ := json.Marshal([]AnthropicContentBlock{block})
 			messages = append(messages, AnthropicMessage{
@@ -270,42 +279,17 @@ func convertResponsesInputToAnthropic(instructions string, inputRaw json.RawMess
 	messages = normalizeAnthropicToolPairing(messages)
 	messages = mergeConsecutiveMessages(messages)
 
-	return buildSystemJSON(systemParts), messages, nil
-}
+	var system json.RawMessage
+	if len(systemParts) > 0 {
+		system, _ = json.Marshal(strings.Join(systemParts, "\n\n"))
+	}
 
-// buildSystemJSON joins collected system prompt fragments into Anthropic's
-// system field. Returns nil when there is no non-empty content, so the system
-// field is omitted entirely — Anthropic returns 422 for an empty or
-// whitespace-only system.
-//
-// The system is emitted in ARRAY form ([{"type":"text","text":...}]), not as a
-// bare JSON string. Both are valid per the Anthropic spec and the official
-// Claude Code client uses the array form, but some third-party Anthropic-
-// compatible upstreams (e.g. buzz) return 422 when a string-form system is
-// combined with tools. The array form works in every case.
-func buildSystemJSON(parts []string) json.RawMessage {
-	joined := strings.TrimSpace(strings.Join(parts, "\n\n"))
-	if joined == "" {
-		return nil
-	}
-	out, err := json.Marshal([]map[string]string{
-		{"type": "text", "text": joined},
-	})
-	if err != nil {
-		return nil
-	}
-	return out
+	return system, messages, nil
 }
 
 func responsesFunctionOutputToAnthropicContent(item ResponsesInputItem) json.RawMessage {
-	raw := json.RawMessage(strings.TrimSpace(string(item.Output)))
-	if len(raw) == 0 || string(raw) == "null" {
-		content, _ := json.Marshal("(empty)")
-		return content
-	}
-
-	var output string
-	if err := json.Unmarshal(raw, &output); err == nil {
+	if len(item.outputRaw) == 0 {
+		output := item.Output
 		if output == "" {
 			output = "(empty)"
 		}
@@ -314,27 +298,19 @@ func responsesFunctionOutputToAnthropicContent(item ResponsesInputItem) json.Raw
 	}
 
 	var parts []ResponsesContentPart
-	if err := json.Unmarshal(raw, &parts); err == nil {
+	if err := json.Unmarshal(item.outputRaw, &parts); err == nil {
 		blocks := make([]AnthropicContentBlock, 0, len(parts))
-		textParts := make([]string, 0, len(parts))
-		hasImage := false
 		for _, part := range parts {
 			switch part.Type {
 			case "input_text", "output_text", "text":
 				if part.Text != "" {
-					textParts = append(textParts, part.Text)
 					blocks = append(blocks, AnthropicContentBlock{Type: "text", Text: part.Text})
 				}
 			case "input_image":
 				if source := dataURIToAnthropicImageSource(part.ImageURL); source != nil {
-					hasImage = true
 					blocks = append(blocks, AnthropicContentBlock{Type: "image", Source: source})
 				}
 			}
-		}
-		if !hasImage && len(textParts) > 0 {
-			content, _ := json.Marshal(strings.Join(textParts, "\n\n"))
-			return content
 		}
 		if len(blocks) > 0 {
 			content, _ := json.Marshal(blocks)
@@ -346,7 +322,7 @@ func responsesFunctionOutputToAnthropicContent(item ResponsesInputItem) json.Raw
 		}
 	}
 
-	content, _ := json.Marshal(string(raw))
+	content, _ := json.Marshal(item.Output)
 	return content
 }
 
@@ -681,34 +657,36 @@ func parseContentBlocks(raw json.RawMessage) []AnthropicContentBlock {
 
 // convertResponsesToAnthropicTools maps Responses API tools to Anthropic format.
 // Reverse of convertAnthropicToolsToResponses.
-//
-// Every emitted tool must carry a valid input_schema: Anthropic rejects the
-// whole request with 422 if any tool has a null/missing schema. Responses tools
-// of type "namespace" (codex MCP/agent tools) and bare "web_search" carry no
-// `parameters`, so they must be backfilled with an empty object schema.
-//
-// web_search is intentionally NOT translated to the Anthropic server-side
-// web_search_20250305 tool: third-party Anthropic-compatible upstreams (e.g.
-// buzz) often do not implement server tools and return 422. Emitting it as a
-// regular function tool keeps the request valid; the upstream model simply sees
-// a callable named web_search.
 func convertResponsesToAnthropicTools(tools []ResponsesTool) []AnthropicTool {
 	var out []AnthropicTool
 	for _, t := range tools {
-		name := t.Name
-		if name == "" && t.Type == "web_search" {
-			name = "web_search"
+		switch t.Type {
+		case "web_search", "google_search", "web_search_20250305":
+			out = append(out, AnthropicTool{
+				Type: "web_search_20250305",
+				Name: "web_search",
+			})
+		case "function":
+			out = append(out, AnthropicTool{
+				Name:        t.Name,
+				Description: t.Description,
+				InputSchema: normalizeAnthropicInputSchema(t.Parameters),
+			})
+		case "custom":
+			out = append(out, AnthropicTool{
+				Name:        t.Name,
+				Description: t.Description,
+				InputSchema: normalizeAnthropicInputSchema(t.Parameters),
+			})
+		default:
+			// Pass through unknown tool types
+			out = append(out, AnthropicTool{
+				Type:        t.Type,
+				Name:        t.Name,
+				Description: t.Description,
+				InputSchema: normalizeAnthropicInputSchema(t.Parameters),
+			})
 		}
-		toolType := t.Type
-		if t.Type == "function" || t.Type == "custom" || t.Type == "web_search" {
-			toolType = ""
-		}
-		out = append(out, AnthropicTool{
-			Type:        toolType,
-			Name:        name,
-			Description: t.Description,
-			InputSchema: normalizeAnthropicInputSchema(t.Parameters),
-		})
 	}
 	return out
 }
@@ -801,72 +779,4 @@ func convertResponsesToAnthropicToolChoice(raw json.RawMessage) (json.RawMessage
 
 	// Pass through unknown
 	return raw, nil
-}
-
-// normalizeResponsesArguments converts a Responses function_call.arguments
-// field into a JSON object suitable for Anthropic's tool_use.input.
-//
-// The arguments field has three observed shapes:
-//   - stringified JSON: "{\"x\":1}"  → unwrap one layer → {"x":1}
-//   - raw JSON object:   {"x":1}      → use as-is
-//   - empty/absent                    → {}
-//
-// Anything that does not resolve to a JSON object falls back to {} so the
-// upstream always receives a valid tool_use.input.
-func normalizeResponsesArguments(raw json.RawMessage) json.RawMessage {
-	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
-	if len(trimmed) == 0 || string(trimmed) == "null" {
-		return json.RawMessage("{}")
-	}
-
-	// Case 1: stringified JSON — unwrap one layer.
-	var s string
-	if err := json.Unmarshal(trimmed, &s); err == nil {
-		inner := strings.TrimSpace(s)
-		if inner == "" {
-			return json.RawMessage("{}")
-		}
-		if json.Valid([]byte(inner)) {
-			return json.RawMessage(inner)
-		}
-		return json.RawMessage("{}")
-	}
-
-	// Case 2: already a JSON object/value — use as-is.
-	return trimmed
-}
-
-// extractResponsesOutputText converts a Responses function_call_output.output
-// field into a plain string for Anthropic's tool_result.content.
-//
-// The output field has three observed shapes:
-//   - plain string: "result"                                  → use as-is
-//   - array of content parts: [{"type":"output_text",...}]    → join the text
-//   - empty/absent                                            → ""
-func extractResponsesOutputText(raw json.RawMessage) string {
-	trimmed := json.RawMessage(strings.TrimSpace(string(raw)))
-	if len(trimmed) == 0 || string(trimmed) == "null" {
-		return ""
-	}
-
-	// Case 1: plain string.
-	var s string
-	if err := json.Unmarshal(trimmed, &s); err == nil {
-		return s
-	}
-
-	// Case 2: array of content parts.
-	var parts []ResponsesContentPart
-	if err := json.Unmarshal(trimmed, &parts); err == nil {
-		var texts []string
-		for _, p := range parts {
-			if p.Text != "" {
-				texts = append(texts, p.Text)
-			}
-		}
-		return strings.Join(texts, "\n\n")
-	}
-
-	// Case 3: unknown structure — pass through raw JSON so content is not lost.
-	return string(trimmed)
 }

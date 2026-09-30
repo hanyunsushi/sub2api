@@ -205,7 +205,7 @@ func chatAssistantToResponses(m ChatMessage) ([]ResponsesInputItem, error) {
 			Type:      "function_call",
 			CallID:    tc.ID,
 			Name:      tc.Function.Name,
-			Arguments: jsonRawString(args),
+			Arguments: args,
 		})
 	}
 
@@ -295,7 +295,7 @@ func chatToolToResponses(m ChatMessage) ([]ResponsesInputItem, error) {
 	return []ResponsesInputItem{{
 		Type:   "function_call_output",
 		CallID: m.ToolCallID,
-		Output: jsonRawString(output),
+		Output: output,
 	}}, nil
 }
 
@@ -313,7 +313,7 @@ func chatFunctionToResponses(m ChatMessage) ([]ResponsesInputItem, error) {
 	return []ResponsesInputItem{{
 		Type:   "function_call_output",
 		CallID: m.Name,
-		Output: jsonRawString(output),
+		Output: output,
 	}}, nil
 }
 

@@ -1,15 +1,14 @@
-import { ref } from 'vue'
-
 const dropdownOpenEventName = 'sub2api:dropdown-open'
 
 export interface DropdownOpenEventDetail {
   owner: string
 }
 
-export const activeDropdownOwner = ref<string | null>(null)
+let activeDropdownOwner: string | null = null
 
 export const claimDropdownOwner = (owner: string) => {
-  activeDropdownOwner.value = owner
+  if (activeDropdownOwner === owner) return
+  activeDropdownOwner = owner
   if (typeof document === 'undefined') return
   document.dispatchEvent(
     new CustomEvent<DropdownOpenEventDetail>(dropdownOpenEventName, {
@@ -19,8 +18,8 @@ export const claimDropdownOwner = (owner: string) => {
 }
 
 export const releaseDropdownOwner = (owner: string) => {
-  if (activeDropdownOwner.value === owner) {
-    activeDropdownOwner.value = null
+  if (activeDropdownOwner === owner) {
+    activeDropdownOwner = null
   }
 }
 

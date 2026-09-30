@@ -67,6 +67,7 @@
         <DataTable :columns="columns" :data="monitors" :loading="loading">
           <template #cell-name="{ row, value }">
             <div class="flex items-center gap-1.5">
+              <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
               <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
               <HelpTooltip v-if="row.api_key_decrypt_failed" :content="t('admin.channelMonitor.apiKeyDecryptFailed')">
                 <Icon name="exclamationTriangle" size="sm" class="text-red-500" />
@@ -79,7 +80,7 @@
               {{ providerLabel(row.provider) }}
             </span>
             <!-- 三种检测模式并列展示，quota 系配额数据源与纯探活一眼可分 -->
-            <span class="ml-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="checkModeBadgeClass(row.check_mode)">
+            <span class="ml-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="[checkModeBadgeClass(row.check_mode), row.check_mode === 'probe' ? 'bg-gray-100' : 'bg-blue-100']">
               {{ checkModeLabel(row.check_mode) }}
             </span>
           </template>
@@ -200,6 +201,7 @@ import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 import MonitorSettingsPanel from '@/features/channel-monitor-v2/MonitorSettingsPanel.vue'
 import { isChannelMonitorV1Mode } from '@/utils/featureFlags'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 
 const { t } = useI18n()
 const appStore = useAppStore()

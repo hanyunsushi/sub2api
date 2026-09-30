@@ -1,6 +1,7 @@
 <template>
   <AppLayout>
     <div class="monitor-page-linked-hover-group">
+      <slot name="capacity" :items="items" :loading="loading" />
       <MonitorHero
         :overall-status="overallStatus"
         :interval-seconds="DEFAULT_INTERVAL_SECONDS"

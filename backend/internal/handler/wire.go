@@ -175,10 +175,6 @@ func ProvideAdminSettingHandler(settingService *service.SettingService, emailSer
 	return h
 }
 
-func ProvideGlobalPricingHandler(pricingService *service.PricingService) *GlobalPricingHandler {
-	return NewGlobalPricingHandler(pricingService)
-}
-
 // ProvideHandlers creates the Handlers struct
 func ProvideHandlers(
 	authHandler *AuthHandler,
@@ -201,7 +197,6 @@ func ProvideHandlers(
 	availableChannelHandler *AvailableChannelHandler,
 	modelPlazaHandler *ModelPlazaHandler,
 	asyncImageHandler *AsyncImageHandler,
-	globalPricingHandler *GlobalPricingHandler,
 	batchImageHandler *BatchImageHandler,
 	_ *service.IdempotencyCoordinator,
 	_ *service.IdempotencyCleanupService,
@@ -228,7 +223,6 @@ func ProvideHandlers(
 		AvailableChannel: availableChannelHandler,
 		ModelPlaza:       modelPlazaHandler,
 		AsyncImage:       asyncImageHandler,
-		GlobalPricing:    globalPricingHandler,
 		BatchImage:       batchImageHandler,
 	}
 }
@@ -255,7 +249,6 @@ var ProviderSet = wire.NewSet(
 	NewAvailableChannelHandler,
 	NewModelPlazaHandler,
 	NewAsyncImageHandler,
-	ProvideGlobalPricingHandler,
 	NewBatchImageHandler,
 
 	// Admin handlers

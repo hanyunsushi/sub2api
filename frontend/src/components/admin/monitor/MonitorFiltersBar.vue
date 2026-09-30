@@ -47,7 +47,7 @@
             <span
               :class="[
                 'select-option-label',
-                'website-bracket-anchor',
+                'text-action-label',
                 { 'monitor-provider-option-all': !option.value },
               ]"
             >

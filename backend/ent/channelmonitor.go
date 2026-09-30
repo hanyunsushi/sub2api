@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/Wei-Shaw/sub2api/ent/account"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
 )
@@ -56,8 +55,6 @@ type ChannelMonitor struct {
 	LastCheckedAt *time.Time `json:"last_checked_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy int64 `json:"created_by,omitempty"`
-	// Linked account ids for optional channel-monitor driven account scheduling.
-	AccountIds []int64 `json:"account_ids,omitempty"`
 	// TemplateID holds the value of the "template_id" field.
 	TemplateID *int64 `json:"template_id,omitempty"`
 	// ExtraHeaders holds the value of the "extra_headers" field.
@@ -80,11 +77,9 @@ type ChannelMonitorEdges struct {
 	DailyRollups []*ChannelMonitorDailyRollup `json:"daily_rollups,omitempty"`
 	// RequestTemplate holds the value of the request_template edge.
 	RequestTemplate *ChannelMonitorRequestTemplate `json:"request_template,omitempty"`
-	// Account holds the value of the account edge.
-	Account *Account `json:"account,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // HistoryOrErr returns the History value or an error if the edge
@@ -116,23 +111,12 @@ func (e ChannelMonitorEdges) RequestTemplateOrErr() (*ChannelMonitorRequestTempl
 	return nil, &NotLoadedError{edge: "request_template"}
 }
 
-// AccountOrErr returns the Account value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ChannelMonitorEdges) AccountOrErr() (*Account, error) {
-	if e.Account != nil {
-		return e.Account, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: account.Label}
-	}
-	return nil, &NotLoadedError{edge: "account"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*ChannelMonitor) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case channelmonitor.FieldExtraModels, channelmonitor.FieldAccountIds, channelmonitor.FieldExtraHeaders, channelmonitor.FieldBodyOverride:
+		case channelmonitor.FieldExtraModels, channelmonitor.FieldExtraHeaders, channelmonitor.FieldBodyOverride:
 			values[i] = new([]byte)
 		case channelmonitor.FieldEnabled:
 			values[i] = new(sql.NullBool)
@@ -275,14 +259,6 @@ func (_m *ChannelMonitor) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedBy = value.Int64
 			}
-		case channelmonitor.FieldAccountIds:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field account_ids", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.AccountIds); err != nil {
-					return fmt.Errorf("unmarshal field account_ids: %w", err)
-				}
-			}
 		case channelmonitor.FieldTemplateID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field template_id", values[i])
@@ -338,11 +314,6 @@ func (_m *ChannelMonitor) QueryDailyRollups() *ChannelMonitorDailyRollupQuery {
 // QueryRequestTemplate queries the "request_template" edge of the ChannelMonitor entity.
 func (_m *ChannelMonitor) QueryRequestTemplate() *ChannelMonitorRequestTemplateQuery {
 	return NewChannelMonitorClient(_m.config).QueryRequestTemplate(_m)
-}
-
-// QueryAccount queries the "account" edge of the ChannelMonitor entity.
-func (_m *ChannelMonitor) QueryAccount() *AccountQuery {
-	return NewChannelMonitorClient(_m.config).QueryAccount(_m)
 }
 
 // Update returns a builder for updating this ChannelMonitor.
@@ -424,9 +395,6 @@ func (_m *ChannelMonitor) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_by=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
-	builder.WriteString(", ")
-	builder.WriteString("account_ids=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AccountIds))
 	builder.WriteString(", ")
 	if v := _m.TemplateID; v != nil {
 		builder.WriteString("template_id=")

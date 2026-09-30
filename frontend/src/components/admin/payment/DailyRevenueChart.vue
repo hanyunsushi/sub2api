@@ -34,6 +34,7 @@ import {
 import { Line } from 'vue-chartjs'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { DailyPaymentStats } from '@/types/payment'
+import { chartCategoricalColors, withChartAlpha } from '@/utils/chartColors'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler)
 
@@ -44,12 +45,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const colors = [
-  ['rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.1)'],
-  ['rgb(168, 85, 247)', 'rgba(168, 85, 247, 0.1)'],
-  ['rgb(245, 158, 11)', 'rgba(245, 158, 11, 0.1)'],
-  ['rgb(239, 68, 68)', 'rgba(239, 68, 68, 0.1)'],
-]
+const colors = chartCategoricalColors.map((color) => [color, withChartAlpha(color, 0.1)])
 
 const chartData = computed(() => {
   if (!props.data || props.data.length === 0) return null

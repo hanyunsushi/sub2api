@@ -143,7 +143,7 @@ const barClass = computed(() => {
   }
   if (props.utilization >= 90) {
     return 'usage-progress-fill--danger bg-red-500'
-  } else if (props.utilization >= 70) {
+  } else if (props.utilization >= 75) {
     return 'usage-progress-fill--warning bg-amber-500'
   } else {
     return 'usage-progress-fill--safe bg-green-500'
@@ -162,7 +162,7 @@ const textClass = computed(() => {
   }
   if (props.utilization >= 90) {
     return 'text-red-600 dark:text-red-400'
-  } else if (props.utilization >= 70) {
+  } else if (props.utilization >= 75) {
     return 'text-amber-600 dark:text-amber-400'
   } else {
     return 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'

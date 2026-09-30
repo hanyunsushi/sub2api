@@ -416,7 +416,6 @@ export default {
     groups: 'Groups',
     channels: 'Channels',
     availableChannels: 'Available Channels',
-    globalPricing: 'Global Pricing',
     subscriptions: 'Subscriptions',
     accounts: 'Accounts',
     proxies: 'Proxies',
@@ -1014,6 +1013,7 @@ export default {
     cacheWrite: 'Write',
     serviceTier: 'Service tier',
     serviceTierPriority: 'Fast',
+    serviceTierUltrafast: 'Ultrafast',
     serviceTierFlex: 'Flex',
     serviceTierStandard: 'Standard',
     rate: 'Rate',
@@ -1175,55 +1175,6 @@ export default {
       intervals: 'Tiered Pricing',
       unitPerMillion: '/ 1M tokens',
       unitPerRequest: '/ request'
-    }
-  },
-
-  // Global Pricing (user-facing)
-  globalPricing: {
-    title: 'Global Pricing',
-    description: 'Current global model pricing used by the system',
-    searchPlaceholder: 'Search models, providers or modes...',
-    loadFailed: 'Failed to load global pricing',
-    empty: 'No matching global prices',
-    dataHash: 'Data version',
-    unitPerMillion: '/ 1M tokens',
-    above1h: '1h+',
-    longContextThreshold: 'Long context threshold {count} tokens',
-    summary: {
-      totalModels: 'Global models',
-      visibleModels: 'Visible now',
-      providers: 'Providers',
-      updated: 'Updated'
-    },
-    filters: {
-      allProviders: 'All providers',
-      allModes: 'All modes',
-      promptCachingOnly: 'Prompt caching only'
-    },
-    columns: {
-      brand: 'Brand',
-      model: 'Model',
-      provider: 'Provider',
-      mode: 'Mode',
-      input: 'Input',
-      cacheWrite: 'Cache Write',
-      cacheRead: 'Cache Read',
-      output: 'Output',
-      priority: 'Priority Prices',
-      image: 'Image Prices',
-      capabilities: 'Capabilities'
-    },
-    short: {
-      input: 'Input',
-      output: 'Output',
-      cacheRead: 'Cache read',
-      perImage: 'Per image',
-      imageToken: 'Image token'
-    },
-    capabilities: {
-      promptCaching: 'Prompt caching',
-      serviceTier: 'Service tier',
-      longContext: 'Long context'
     }
   },
 
@@ -2323,6 +2274,12 @@ export default {
       failedToSave: 'Failed to save group',
       failedToDelete: 'Failed to delete group',
       nameRequired: 'Please enter group name',
+      webSearchPricing: {
+        title: 'Codex Web Search Pricing',
+        pricePerCall: 'Price per search call (USD)',
+        pricePerCallHint: 'Leave empty to use the default $0.01 per call; 0 means free.',
+        finalPricePreview: 'Per-call price after current multiplier: {price}'
+      },
       rateMultipliers: 'Rate Multipliers',
       rateMultipliersTitle: 'Group Rate Multipliers',
       addUserRate: 'Add User Rate Multiplier',
@@ -3031,11 +2988,6 @@ export default {
         extraModelsPlaceholder: 'Press Enter to add extra model',
         groupName: 'Group Name',
         groupNamePlaceholder: 'Optional, used to group rows in user view',
-        accountBinding: 'Linked account',
-        accountBindingNone: 'No linked account',
-        accountBindingPlaceholder: 'Select account for auto scheduling',
-        accountBindingHint: 'When linked, monitor results may toggle selected accounts if auto scheduling is enabled; schedule-locked accounts are skipped.',
-        accountBindingLoading: 'Loading accounts...',
         intervalSeconds: 'Interval (seconds)',
         intervalSecondsHint: 'Range: 15 - 3600 seconds',
         jitterSeconds: 'Random Jitter (± seconds)',
@@ -3339,10 +3291,7 @@ export default {
       schedulableHint: 'Enable to include this account in API request scheduling',
       schedulableEnabled: 'Scheduling enabled',
       schedulableDisabled: 'Scheduling disabled',
-      scheduleLocked: 'Scheduling locked: excluded from channel monitor auto scheduling',
-      scheduleUnlocked: 'Scheduling unlocked: channel monitor may auto schedule this account',
       failedToToggleSchedulable: 'Failed to toggle scheduling status',
-      failedToToggleScheduleLock: 'Failed to toggle scheduling lock',
       groupCountTotal: '{count} groups total',
       platforms: {
         anthropic: 'Anthropic',
@@ -5342,6 +5291,15 @@ export default {
         phase: 'Phase',
         status: 'Status',
         message: 'Message',
+        upstreamStatus: 'Upstream Status',
+        rootCause: 'Root Cause',
+        diagnosticPayloads: 'Diagnostic Payloads',
+        payloads: {
+          client: 'Client Response',
+          upstream_message: 'Upstream Message',
+          upstream_detail: 'Upstream Detail',
+          upstream_events: 'Upstream Events'
+        },
         basicInfo: 'Basic Info',
         platform: 'Platform',
         model: 'Model',
@@ -5835,10 +5793,6 @@ export default {
           enabledHint: 'Disabling stops background checks; existing history is preserved.',
           defaultInterval: 'Default check interval (seconds)',
           defaultIntervalHint: 'Pre-fills the interval when creating a new monitor; each monitor can override it. Range 15 – 3600.',
-          accountAutoSchedule: 'Enable Channel Monitor account auto scheduling',
-          accountAutoScheduleHint: 'When enabled, linked monitor results toggle account scheduling; locked accounts are excluded.',
-          autoScheduleFailureThreshold: 'Failure disable threshold',
-          autoScheduleFailureThresholdHint: 'Disable account scheduling after this many consecutive failures; one success restores it and clears the count.',
         },
         availableChannels: {
           title: 'Available Channels',
@@ -6136,7 +6090,7 @@ export default {
         claudeOAuthSystemPromptPlaceholder: 'Leave empty to use the built-in Claude Code expansion prompt.',
         claudeOAuthSystemPromptHint: 'Legacy compatibility: controls only the third injected system block.',
         claudeOAuthSystemPromptBlocks: 'Claude OAuth System Blocks',
-        claudeOAuthSystemPromptBlocksPlaceholder: 'Leave empty to use the built-in 3 blocks. Supports an array or {"blocks": [...]}.',
+        claudeOAuthSystemPromptBlocksPlaceholder: 'Leave empty to use the built-in 3 blocks. Supports an array or {\'{\'}"blocks": [...]{\'}\'}.',
         claudeOAuthSystemPromptBlocksHint: 'Each block is saved as JSON with enabled, type, text, and optional cache_control. {billing_header} stays dynamic per request; the Claude Code identity and expansion prompts can be edited directly or restored from presets.',
         systemBlockTitle: 'System Block {index}',
         systemBlockPreset: 'Preset',
@@ -6835,8 +6789,10 @@ export default {
         addRule: 'Add rule',
         saveHint: 'Saved together with system settings (click the global Save button at the bottom of the page).',
         serviceTier: 'service_tier match',
-        tierAll: 'All tiers',
+        tierAll: 'All tier values',
         tierPriority: 'priority (fast)',
+        tierUltrafast: 'ultrafast',
+        tierMissing: 'Omitted tier',
         tierFlex: 'flex',
         action: 'Action',
         actionPass: 'Pass (keep service_tier)',
@@ -6850,13 +6806,22 @@ export default {
         errorMessage: 'Error message',
         errorMessagePlaceholder: 'Custom error message when blocked',
         errorMessageHint: 'Leave empty for the default message.',
-        modelWhitelist: 'Model whitelist',
-        modelWhitelistHint: 'Leave empty to apply to all models. Supports exact match and wildcard prefix (e.g., gpt-5.5*).',
+        modelWhitelist: 'Target models',
+        modelWhitelistHint: 'Leave empty to apply Action to all models. Supports exact match and wildcard prefix (e.g., gpt-5.5*).',
         modelPatternPlaceholder: 'e.g., gpt-5.5 or gpt-5.5*',
         addModelPattern: 'Add model pattern',
-        fallbackAction: 'Fallback action',
-        fallbackActionHint: 'Action for models not matching the whitelist.',
-        fallbackErrorMessagePlaceholder: 'Custom error message when non-whitelisted models are blocked'
+        fallbackAction: 'Other models action',
+        fallbackActionHint: 'Action for models outside the target models.',
+        fallbackErrorMessagePlaceholder: 'Custom error message when non-target models are blocked',
+        summaryTargetModels: 'Target models',
+        summaryOtherModels: 'Other models',
+        userIds: 'Specific users',
+        userIdsHint: 'Type any part of a user email to search. Leave empty to apply to all Sub2API users. Selected users match requests from their API keys and take precedence over global rules.',
+        userSearchPlaceholder: 'Search by user email',
+        userSearchEmpty: 'No matching users found',
+        userDeleted: '(deleted)',
+        userIdFallback: 'User #{id}',
+        removeUser: 'Remove user'
       },
       wechatConnect: {
         title: 'WeChat Connect',

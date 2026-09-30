@@ -30,6 +30,22 @@
               :custom-endpoints="publicSettings?.custom_endpoints || []"
             />
           </div>
+          <div v-if="selectedIds.length" class="flex flex-wrap items-center gap-3 text-sm">
+            <span class="text-[var(--anthropic-muted)]">
+              {{ t('keys.bulkEdit.selectedCount', { count: selectedIds.length }) }}
+            </span>
+            <button
+              class="btn btn-primary btn-sm"
+              :disabled="loading"
+              data-test="bulk-edit-keys"
+              @click="showBulkEditModal = true"
+            >
+              {{ t('keys.bulkEdit.title') }}
+            </button>
+            <button class="btn btn-secondary btn-sm" @click="selectedIds = []">
+              {{ t('keys.bulkEdit.clearSelection') }}
+            </button>
+          </div>
         </div>
       </template>
 
@@ -91,6 +107,11 @@
           :columns="columns"
           :data="apiKeys"
           :loading="loading"
+          selectable
+          row-key="id"
+          :selected-keys="selectedIds"
+          :selection-label="(key: ApiKey) => t('keys.bulkEdit.selectKey', { name: key.name })"
+          @update:selected-keys="handleSelectionChange"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
@@ -472,6 +493,54 @@
           />
         </div>
 
+        <fieldset v-if="!showEditModal" data-tour="key-form-provider">
+          <legend class="input-label">{{ t('keys.providerLabel') }}</legend>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <label
+              v-for="provider in createProviderOptions"
+              :key="provider.value"
+              class="relative min-w-0"
+              :class="provider.count === 0 ? 'cursor-not-allowed' : 'cursor-pointer'"
+            >
+              <input
+                type="radio"
+                name="key-provider"
+                :value="provider.value"
+                :checked="createProvider === provider.value"
+                :disabled="provider.count === 0"
+                class="peer sr-only"
+                @change="selectCreateProvider(provider.value)"
+              />
+              <span
+                class="flex h-full flex-col items-center gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-3 text-center transition-colors peer-checked:border-[var(--anthropic-fg)] peer-checked:bg-[var(--anthropic-section)] peer-checked:ring-1 peer-checked:ring-[var(--anthropic-fg)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--anthropic-focus)] peer-disabled:opacity-40"
+                :class="provider.count > 0 && 'hover:border-[var(--anthropic-fg)]'"
+              >
+                <span class="flex h-8 items-center justify-center gap-1.5" aria-hidden="true">
+                  <span
+                    v-for="platform in KEY_GROUP_PROVIDER_ICONS[provider.value]"
+                    :key="platform"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg"
+                    :class="platformBadgeLightClass(platform)"
+                  >
+                    <PlatformIcon :platform="platform" size="lg" />
+                  </span>
+                </span>
+                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{ provider.label }}</span>
+              </span>
+              <span
+                v-if="createProvider === provider.value"
+                class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]"
+                aria-hidden="true"
+              >
+                <Icon name="check" size="xs" :stroke-width="3" />
+              </span>
+            </label>
+          </div>
+          <p class="mt-2 text-xs leading-5 text-[var(--anthropic-muted)]" aria-live="polite">
+            {{ groups.length === 0 ? t('common.noGroupsAvailable') : t(`keys.providerHints.${createProvider}`) }}
+          </p>
+        </fieldset>
+
         <LogoPicker
           v-model="formData.logo_url"
           :label="t('keys.logoUrlLabel', 'Logo URL')"
@@ -482,7 +551,7 @@
           <label class="input-label">{{ t('keys.groupLabel') }}</label>
           <Select
             v-model="formData.group_id"
-            :options="groupOptions"
+            :options="formGroupOptions"
             :placeholder="t('keys.selectGroup')"
             :searchable="true"
             :search-placeholder="t('keys.searchGroup')"
@@ -958,6 +1027,14 @@
       </template>
     </BaseDialog>
 
+    <BulkEditKeysModal
+      :show="showBulkEditModal"
+      :selected-keys="selectedApiKeys"
+      :groups="groups"
+      @close="showBulkEditModal = false"
+      @updated="handleBulkUpdated"
+    />
+
     <!-- Delete Confirmation Dialog -->
     <ConfirmDialog
       :show="showDeleteDialog"
@@ -1119,7 +1196,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, reactive, computed, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
+	import { ref, reactive, computed, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
 	import { useI18n } from 'vue-i18n'
 	import { useAppStore } from '@/stores/app'
 	import { useOnboardingStore } from '@/stores/onboarding'
@@ -1130,6 +1207,7 @@ const { t } = useI18n()
 import { keysAPI, authAPI, usageAPI, userGroupsAPI } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
+import BulkEditKeysModal from '@/components/keys/BulkEditKeysModal.vue'
 	import DataTable from '@/components/common/DataTable.vue'
 	import Pagination from '@/components/common/Pagination.vue'
 	import BaseDialog from '@/components/common/BaseDialog.vue'
@@ -1139,12 +1217,13 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 	import SearchInput from '@/components/common/SearchInput.vue'
 	import LogoPicker from '@/components/common/LogoPicker.vue'
 	import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
+	import PlatformIcon from '@/components/common/PlatformIcon.vue'
 	import Icon from '@/components/icons/Icon.vue'
 	import UseKeyModal from '@/components/keys/UseKeyModal.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
 	import GroupBadge from '@/components/common/GroupBadge.vue'
 	import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
-	import type { ApiKey, Group, PublicSettings, SubscriptionType, GroupPlatform } from '@/types'
+import type { ApiKey, Group, PublicSettings, SubscriptionType, GroupPlatform } from '@/types'
 import type { Column } from '@/components/common/types'
 import type { BatchApiKeyUsageStats } from '@/api/usage'
 import { formatDateTime } from '@/utils/format'
@@ -1153,6 +1232,8 @@ import {
   buildCcSwitchImportDeeplink,
   type CcSwitchClientType
 } from '@/utils/ccswitchImport'
+import { platformBadgeLightClass } from '@/utils/platformColors'
+import { KEY_GROUP_PROVIDERS, KEY_GROUP_PROVIDER_ICONS, getKeyGroupProvider, type KeyGroupProvider } from '@/utils/keyGroupProviders'
 
 // Helper to format date for datetime-local input
 const formatDateTimeLocal = (isoDate: string): string => {
@@ -1275,6 +1356,9 @@ const columns = computed<Column[]>(() =>
 )
 
 const apiKeys = ref<ApiKey[]>([])
+const selectedIds = ref<number[]>([])
+const showBulkEditModal = ref(false)
+const selectedApiKeys = computed(() => apiKeys.value.filter((key) => selectedIds.value.includes(key.id)))
 const groups = ref<Group[]>([])
 const loading = ref(false)
 const submitting = ref(false)
@@ -1298,6 +1382,17 @@ const sortState = ref({
 const filterSearch = ref('')
 const filterStatus = ref('')
 const filterGroupId = ref<string | number>('')
+
+const handleSelectionChange = (ids: Array<string | number>) => {
+  const visibleIds = new Set(apiKeys.value.map((key) => key.id))
+  selectedIds.value = [...new Set(ids.map(Number))].filter((id) => visibleIds.has(id))
+}
+
+const handleBulkUpdated = (succeededIds: number[]) => {
+  const succeeded = new Set(succeededIds)
+  selectedIds.value = selectedIds.value.filter((id) => !succeeded.has(id))
+  loadApiKeys()
+}
 
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
@@ -1390,6 +1485,7 @@ const statusFilterOptions = computed(() => [
 ])
 
 const onFilterChange = () => {
+  selectedIds.value = []
   pagination.value.page = 1
   loadApiKeys()
 }
@@ -1416,6 +1512,34 @@ const groupOptions = computed(() =>
     platform: group.platform
   }))
 )
+
+const createProvider = ref<KeyGroupProvider>('anthropic')
+const createProviderOptions = computed(() => KEY_GROUP_PROVIDERS.map((value) => ({
+  value,
+  label: t(`keys.providers.${value}`),
+  count: groups.value.filter((group) => getKeyGroupProvider(group.platform) === value).length
+})))
+
+const formGroupOptions = computed(() => showEditModal.value
+  ? groupOptions.value
+  : groupOptions.value.filter((group) => getKeyGroupProvider(group.platform) === createProvider.value)
+)
+
+const selectCreateProvider = (provider: KeyGroupProvider) => {
+  if (createProvider.value === provider) return
+  createProvider.value = provider
+  formData.value.group_id = null
+}
+
+watch([showCreateModal, createProviderOptions], ([isOpen, providers], [wasOpen]) => {
+  if (!isOpen) return
+  if (!wasOpen || !providers.some((provider) => provider.value === createProvider.value && provider.count > 0)) {
+    selectCreateProvider(providers.find((provider) => provider.count > 0)?.value ?? 'anthropic')
+  }
+  if (!formGroupOptions.value.some((group) => group.value === formData.value.group_id)) {
+    formData.value.group_id = null
+  }
+})
 
 // Group dropdown search
 const groupSearchQuery = ref('')
@@ -1470,6 +1594,7 @@ const loadApiKeys = async () => {
     })
     if (signal.aborted) return
     apiKeys.value = response.items
+    handleSelectionChange(selectedIds.value)
     pagination.value.total = response.total
     pagination.value.pages = response.pages
 
@@ -1533,17 +1658,20 @@ const closeUseKeyModal = () => {
 }
 
 const handlePageChange = (page: number) => {
+  selectedIds.value = []
   pagination.value.page = page
   loadApiKeys()
 }
 
 const handlePageSizeChange = (pageSize: number) => {
+  selectedIds.value = []
   pagination.value.page_size = pageSize
   pagination.value.page = 1
   loadApiKeys()
 }
 
 const handleSort = (key: string, order: 'asc' | 'desc') => {
+  selectedIds.value = []
   sortState.value.sort_by = key
   sortState.value.sort_order = order
   pagination.value.page = 1
@@ -1814,14 +1942,18 @@ const setExpirationDays = (days: number) => {
 
 // Reset quota used for an API key
 const resetQuotaUsed = async () => {
-  if (!selectedKey.value) return
+  const key = selectedKey.value
+  if (!key) return
   showResetQuotaDialog.value = false
   try {
-    await keysAPI.update(selectedKey.value.id, { reset_quota: true })
+    const updatedKey = await keysAPI.update(key.id, { reset_quota: true })
     appStore.showSuccess(t('keys.quotaResetSuccess'))
-    // Update local state
-    if (selectedKey.value) {
-      selectedKey.value.quota_used = 0
+    key.quota_used = updatedKey.quota_used
+    if (key.status !== updatedKey.status) {
+      key.status = updatedKey.status
+      if (selectedKey.value?.id === key.id) {
+        formData.value.status = updatedKey.status === 'active' ? 'active' : 'inactive'
+      }
     }
   } catch (error: any) {
     const errorMsg = error.response?.data?.detail || t('keys.failedToResetQuota')

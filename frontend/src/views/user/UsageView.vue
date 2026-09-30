@@ -215,7 +215,7 @@
               </button>
               <div
                 v-if="showColumnDropdown"
-                class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                class="mobile-table-layout absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
               >
                 <button
                   v-for="col in currentToggleableColumns"
@@ -308,7 +308,7 @@
           </template>
 
           <template #cell-reasoning_effort="{ row }">
-            <span class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <span data-testid="reasoning-effort-cell" class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
               {{ formatReasoningEffort(row.reasoning_effort) }}
             </span>
           </template>
@@ -917,6 +917,8 @@ const onDateRangeChange = (range: {
   endDate: string
   preset: string | null
 }) => {
+  startDate.value = range.startDate
+  endDate.value = range.endDate
   filters.value.start_date = range.startDate
   filters.value.end_date = range.endDate
   applyFilters()
@@ -1097,11 +1099,13 @@ const loadUsageStats = async (useAdvancedFilters = false) => {
     const apiKeyId = filters.value.api_key_id ? Number(filters.value.api_key_id) : undefined
     const stats = useAdvancedFilters
       ? await usageAPI.getStats(normalizedFilters.value)
-      : await usageAPI.getStatsByDateRange(
-          filters.value.start_date || startDate.value,
-          filters.value.end_date || endDate.value,
-          apiKeyId
-        )
+      : typeof usageAPI.getStatsByDateRange === 'function'
+        ? await usageAPI.getStatsByDateRange(
+            filters.value.start_date || startDate.value,
+            filters.value.end_date || endDate.value,
+            apiKeyId
+          )
+        : await usageAPI.getStats(normalizedFilters.value)
     usageStats.value = stats
   } catch (error) {
     console.error('Failed to load usage stats:', error)
@@ -1206,6 +1210,7 @@ const escapeCSVValue = (value: unknown): string => {
   if (value == null) return ''
 
   const str = String(value)
+  if (str === '-') return str
   const escaped = str.replace(/"/g, '""')
   // Prevent formula injection by prefixing dangerous characters with single quote
   if (/^[=+\-@\t\r]/.test(str)) {
@@ -1217,7 +1222,6 @@ const escapeCSVValue = (value: unknown): string => {
     return `"${escaped}"`
   }
 
-  if (str === '-') return str
   return str
 }
 
@@ -1234,9 +1238,19 @@ const exportToCSV = async () => {
     const allLogs: UsageLog[] = []
     const pageSize = 100 // Use a larger page size for export to reduce requests
     const totalRequests = Math.ceil(pagination.total / pageSize)
+    const exportFilters = { ...normalizedFilters.value }
+    const exportSort = { ...sortState }
+    const exportStartDate = startDate.value
+    const exportEndDate = endDate.value
 
     for (let page = 1; page <= totalRequests; page++) {
-      const response = await usageAPI.query(buildUsageQueryParams(page, pageSize))
+      const response = await usageAPI.query({
+        page,
+        page_size: pageSize,
+        ...exportFilters,
+        sort_by: exportSort.sort_by,
+        sort_order: exportSort.sort_order
+      })
       allLogs.push(...response.items)
     }
 
@@ -1295,7 +1309,7 @@ const exportToCSV = async () => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `usage_${filters.value.start_date}_to_${filters.value.end_date}.csv`
+    link.download = `usage_${exportStartDate}_to_${exportEndDate}.csv`
     link.click()
     window.URL.revokeObjectURL(url)
 

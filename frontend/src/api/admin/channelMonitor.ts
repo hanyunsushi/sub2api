@@ -101,7 +101,6 @@ export interface ChannelMonitor {
   check_mode: CheckMode
   /** 配额模式关联的账号 ID；探活模式为 null */
   account_id: number | null
-  account_ids: number[]
   /** 主模型最近一次配额快照（配额模式；无历史时为 null） */
   latest_quota?: MonitorQuotaSnapshot | null
 }
@@ -148,7 +147,6 @@ export interface CreateParams {
   enabled?: boolean
   interval_seconds: number
   account_id?: number | null
-  account_ids?: number[]
   jitter_seconds?: number
   template_id?: number | null
   extra_headers?: Record<string, string>

@@ -117,7 +117,6 @@ var (
 		{Name: "expires_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "auto_pause_on_expired", Type: field.TypeBool, Default: true},
 		{Name: "schedulable", Type: field.TypeBool, Default: true},
-		{Name: "schedule_locked", Type: field.TypeBool, Default: false},
 		{Name: "rate_limited_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "rate_limit_reset_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "overload_until", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
@@ -138,13 +137,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_proxies_proxy",
-				Columns:    []*schema.Column{AccountsColumns[31]},
+				Columns:    []*schema.Column{AccountsColumns[30]},
 				RefColumns: []*schema.Column{ProxiesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "accounts_accounts_children",
-				Columns:    []*schema.Column{AccountsColumns[32]},
+				Columns:    []*schema.Column{AccountsColumns[31]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.Restrict,
 			},
@@ -168,7 +167,7 @@ var (
 			{
 				Name:    "account_proxy_id",
 				Unique:  false,
-				Columns: []*schema.Column{AccountsColumns[31]},
+				Columns: []*schema.Column{AccountsColumns[30]},
 			},
 			{
 				Name:    "account_priority",
@@ -186,24 +185,19 @@ var (
 				Columns: []*schema.Column{AccountsColumns[20]},
 			},
 			{
-				Name:    "account_schedule_locked",
+				Name:    "account_rate_limited_at",
 				Unique:  false,
 				Columns: []*schema.Column{AccountsColumns[21]},
 			},
 			{
-				Name:    "account_rate_limited_at",
+				Name:    "account_rate_limit_reset_at",
 				Unique:  false,
 				Columns: []*schema.Column{AccountsColumns[22]},
 			},
 			{
-				Name:    "account_rate_limit_reset_at",
-				Unique:  false,
-				Columns: []*schema.Column{AccountsColumns[23]},
-			},
-			{
 				Name:    "account_overload_until",
 				Unique:  false,
-				Columns: []*schema.Column{AccountsColumns[24]},
+				Columns: []*schema.Column{AccountsColumns[23]},
 			},
 			{
 				Name:    "account_platform_priority",
@@ -223,7 +217,7 @@ var (
 			{
 				Name:    "account_parent_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{AccountsColumns[32]},
+				Columns: []*schema.Column{AccountsColumns[31]},
 			},
 		},
 	}
@@ -633,6 +627,7 @@ var (
 		{Name: "logo_url", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
 		{Name: "provider", Type: field.TypeEnum, Enums: []string{"openai", "anthropic", "gemini", "grok", "antigravity", "kimi", "zhipu", "deepseek", "minimax", "opencode_go"}},
 		{Name: "check_mode", Type: field.TypeString, Size: 32, Default: "probe"},
+		{Name: "account_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "api_mode", Type: field.TypeString, Size: 32, Default: "chat_completions"},
 		{Name: "endpoint", Type: field.TypeString, Size: 500},
 		{Name: "api_key_encrypted", Type: field.TypeString},
@@ -644,12 +639,10 @@ var (
 		{Name: "jitter_seconds", Type: field.TypeInt, Default: 0},
 		{Name: "last_checked_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_by", Type: field.TypeInt64},
-		{Name: "account_ids", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
 		{Name: "extra_headers", Type: field.TypeJSON},
 		{Name: "body_override_mode", Type: field.TypeString, Size: 10, Default: "off"},
 		{Name: "body_override", Type: field.TypeJSON, Nullable: true},
 		{Name: "template_id", Type: field.TypeInt64, Nullable: true},
-		{Name: "account_id", Type: field.TypeInt64, Nullable: true},
 	}
 	// ChannelMonitorsTable holds the schema information for the "channel_monitors" table.
 	ChannelMonitorsTable = &schema.Table{
@@ -663,18 +656,12 @@ var (
 				RefColumns: []*schema.Column{ChannelMonitorRequestTemplatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
-			{
-				Symbol:     "channel_monitors_accounts_account",
-				Columns:    []*schema.Column{ChannelMonitorsColumns[23]},
-				RefColumns: []*schema.Column{AccountsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
 		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "channelmonitor_enabled_last_checked_at",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[13], ChannelMonitorsColumns[16]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[14], ChannelMonitorsColumns[17]},
 			},
 			{
 				Name:    "channelmonitor_provider",
@@ -684,12 +671,12 @@ var (
 			{
 				Name:    "channelmonitor_provider_api_mode",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[5], ChannelMonitorsColumns[7]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[5], ChannelMonitorsColumns[8]},
 			},
 			{
 				Name:    "channelmonitor_group_name",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[12]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[13]},
 			},
 			{
 				Name:    "channelmonitor_template_id",
@@ -699,7 +686,7 @@ var (
 			{
 				Name:    "channelmonitor_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{ChannelMonitorsColumns[23]},
+				Columns: []*schema.Column{ChannelMonitorsColumns[7]},
 			},
 		},
 	}
@@ -2188,7 +2175,6 @@ func init() {
 		Table: "batch_image_jobs",
 	}
 	ChannelMonitorsTable.ForeignKeys[0].RefTable = ChannelMonitorRequestTemplatesTable
-	ChannelMonitorsTable.ForeignKeys[1].RefTable = AccountsTable
 	ChannelMonitorsTable.Annotation = &entsql.Annotation{
 		Table: "channel_monitors",
 	}

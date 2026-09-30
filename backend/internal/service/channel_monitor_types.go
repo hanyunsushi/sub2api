@@ -47,14 +47,13 @@ type ChannelMonitor struct {
 	JitterSeconds   int // 每次调度 ± [0, jitter] 的随机偏移（秒），0 = 固定间隔
 	LastCheckedAt   *time.Time
 	CreatedBy       int64
-	AccountID       *int64
-	AccountIDs      []int64
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 
 	// 配额模式（check_mode = quota / quota_probe）：
 	// 关联已有账号复用账号侧用量服务，Endpoint/APIKey 可为空（quota 模式）。
 	CheckMode string // probe（默认）/ quota / quota_probe；空串按 probe 处理
+	AccountID *int64 // 关联账号 ID；账号删除后被 DB 置空（监控保留并报「账号未关联」）
 
 	// 请求自定义快照（来自模板拷贝 or 用户手填，运行时直接读取）
 	TemplateID       *int64            // 仅用于 UI 分组 + 一键应用，运行时不用
@@ -97,8 +96,6 @@ type ChannelMonitorCreateParams struct {
 	IntervalSeconds  int
 	JitterSeconds    int
 	CreatedBy        int64
-	AccountID        *int64
-	AccountIDs       *[]int64
 	TemplateID       *int64
 	ExtraHeaders     map[string]string
 	BodyOverrideMode string
@@ -106,6 +103,7 @@ type ChannelMonitorCreateParams struct {
 
 	// 配额模式：CheckMode 空串默认 probe；quota/quota_probe 必须关联账号。
 	CheckMode string
+	AccountID *int64
 }
 
 // ChannelMonitorUpdateParams 更新参数（指针字段表示"未提供则不更新"）。
@@ -121,9 +119,6 @@ type ChannelMonitorUpdateParams struct {
 	GroupName       *string
 	Enabled         *bool
 	IntervalSeconds *int
-	AccountID       *int64
-	AccountIDs      *[]int64
-	ClearAccount    bool
 	JitterSeconds   *int
 	// 自定义快照字段：指针为 nil 表示不更新，非 nil 覆盖
 	// TemplateID *(*int64)：用 ** 表达三态：nil=不更新；&nil=清空；&&id=设为 id。
@@ -137,6 +132,7 @@ type ChannelMonitorUpdateParams struct {
 	// 配额模式：CheckMode nil = 不更新；AccountID nil = 不更新，
 	// 指向 0 = 清空关联（退回 probe 模式时由 CheckMode 分支兜底）。
 	CheckMode *string
+	AccountID *int64
 }
 
 // CheckResult 单个模型一次检测的结果。

@@ -1,0 +1,142 @@
+/* Current text-control contract. Text actions use the existing underline
+   interaction; no generated marker or compatibility cascade is required. */
+
+:root {
+  --text-action-underline-offset: 0.2em;
+}
+
+html body :where(
+  .text-action-label,
+  .text-action-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+) {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  overflow: visible;
+  text-decoration: none;
+  text-decoration-line: none;
+}
+
+/* Keep pseudo-elements inert. The visible state is ordinary text decoration,
+   which remains stable in teleported menus and compact filter controls. */
+html body :where(
+  .text-action-label,
+  .text-action-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::before,
+html body :where(
+  .text-action-label,
+  .text-action-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+)::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+html body :where(
+  .text-action-label,
+  .text-action-hover,
+  .select-option-label,
+  .date-picker-preset-label,
+  .filter-menu-button,
+  .ops-toolbar-text-button,
+  .account-card-text-action,
+  .account-external-quota-link,
+  [class~="hover:underline"],
+  [class~="underline"]
+):is(:hover, :focus-visible, .filter-menu-button-open, .account-card-more-trigger-open) {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-underline-offset: var(--text-action-underline-offset);
+  text-decoration-color: currentColor;
+}
+
+html body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset,
+  .account-column-option,
+  .account-auto-refresh-option
+):is(:hover, :focus-visible, .select-option-focused, .select-option-selected, .date-picker-preset-active, .account-column-option-active, .account-auto-refresh-option-active) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body :where(.topbar-underline-menu, .filter-underline-menu) :where(
+  .dropdown-item,
+  .balance-row,
+  .account-tools-menu-item,
+  .select-option,
+  .date-picker-preset,
+  .account-column-option,
+  .account-auto-refresh-option
+):is(:hover, :focus-visible, .select-option-focused, .select-option-selected, .date-picker-preset-active, .account-column-option-active, .account-auto-refresh-option-active) :where(
+  .text-action-label,
+  .select-option-label,
+  .date-picker-preset-label
+) {
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-underline-offset: var(--text-action-underline-offset);
+  text-decoration-color: currentColor !important;
+}
+
+/* Selected filters retain their native check mark. */
+html body .filter-underline-menu .select-option-selected :where(svg.select-option-check, .select-option-check),
+html body .filter-underline-menu .account-column-option-active > :where(svg, .icon),
+html body .filter-underline-menu .account-column-option[aria-pressed="true"] > :where(svg, .icon) {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* FloatingDropdown teleports the profile menu to body, so it follows the
+   same text contract without inheriting app-content-only rules. */
+html body .user-profile-dropdown :where(.text-action-label, .header-balance-dropdown-anchor)::before,
+html body .user-profile-dropdown :where(.text-action-label, .header-balance-dropdown-anchor)::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .topbar-underline-menu .header-balance-dropdown-anchor {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+html body .header-balance-dropdown-text {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -5,7 +5,7 @@
       <div class="fixed inset-0 z-[9998]" @click="emit('close')"></div>
       <div
         ref="menuRef"
-        class="action-menu-content dropdown-highlight-menu account-card-action-menu fixed z-[9999] w-52 overflow-y-auto overscroll-contain rounded-xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-dark-800"
+        class="action-menu-content dropdown-highlight-menu account-card-action-menu fixed z-[9999] w-52 overflow-y-auto overscroll-contain rounded-xl bg-[var(--anthropic-page)] shadow-[var(--anthropic-dropdown-shadow)] ring-1 ring-black/5 dark:bg-dark-800"
         :style="menuStyle"
         @mouseenter="emit('menu-enter')"
         @mouseleave="emit('menu-leave')"

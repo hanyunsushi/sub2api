@@ -10,8 +10,7 @@ import { updateFavicon } from '@/utils/favicon'
 import './assets/fonts/local-fonts.css'
 import './style.css'
 import './styles/targeted-visual-repair.css'
-import './styles/final-bracket-repair.css'
-import './styles/bracket-rollback-eof.css'
+import './styles/text-action-contract.css'
 
 async function bootstrap() {
   // Apply theme class globally before app mount to keep all routes consistent.

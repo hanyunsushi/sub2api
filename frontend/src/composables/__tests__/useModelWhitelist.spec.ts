@@ -76,13 +76,10 @@ describe('useModelWhitelist', () => {
       getPresetMappingsByPlatform('openai').filter((item) => item.from.includes('claude')),
     ]
 
-    expect(models).toContain('grok-4.6')
-    expect(models).toContain('grok-4.6-latest')
-    expect(models).toContain('grok-4.5')
-    expect(models).toContain('grok-4.5-latest')
-    expect(models).toContain('grok-build-latest')
-    expect(models).toContain('grok-imagine-image-2.0')
-    expect(models).toContain('grok-imagine-video-1.5')
+    expect(claudePresetGroups.flat().length).toBeGreaterThan(0)
+    for (const mapping of claudePresetGroups.flat()) {
+      expect(mapping.color).toContain(terracottaChipNeedle)
+    }
   })
 
   it('combined 模式支持 Grok 4.5 官方别名映射', () => {

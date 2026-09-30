@@ -9,7 +9,7 @@
     <button data-testid="common-select-button-toggle"
       ref="triggerRef"
       type="button"
-      @click="openDropdown"
+      @click="toggleDropdown"
       :disabled="disabled"
       :aria-expanded="isOpen"
       :aria-haspopup="true"
@@ -24,7 +24,7 @@
       @keydown.down.prevent="onTriggerKeyDown"
       @keydown.up.prevent="onTriggerKeyDown"
     >
-      <span class="select-value website-bracket-anchor">
+      <span class="select-value text-action-label">
         <slot name="selected" :option="selectedOption">
           {{ selectedLabel }}
         </slot>
@@ -53,6 +53,7 @@
         :class="[selectDropdownVariantClass, instanceId, portalClass]"
         :style="dropdownStyle"
         role="listbox"
+        tabindex="-1"
         @mouseenter="cancelHoverClose"
         @mouseleave="scheduleHoverClose"
         @click.stop
@@ -98,7 +99,7 @@
                   size="sm"
                   class="flex-shrink-0 text-[var(--anthropic-muted)]"
                 />
-                <span class="select-option-label website-bracket-anchor" :class="option._creatable && 'italic text-[var(--anthropic-muted)] dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
+                <span class="select-option-label text-action-label" :class="option._creatable && 'italic text-[var(--anthropic-muted)] dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
                 <Icon
                   v-if="isSelected(option)"
                   name="check"
@@ -244,8 +245,6 @@ const levelOneDropdownContextSelector = [
   '.usage-filter-card',
   '.usage-filter-shell',
   '.keys-filter-shell',
-  '.global-pricing-filter-card',
-  '.global-pricing-filter-shell',
   '.monitor-filter-shell',
   '.ops-monitor-toolbar-controls',
   '.ops-card-filter-bar',
@@ -443,6 +442,17 @@ const openDropdown = () => {
   cancelHoverClose()
   claimDropdownOwner(instanceId)
   isOpen.value = true
+}
+
+const toggleDropdown = () => {
+  if (props.disabled) return
+  if (isOpen.value) {
+    isOpen.value = false
+    releaseDropdownOwner(instanceId)
+    triggerRef.value?.focus()
+    return
+  }
+  openDropdown()
 }
 
 const cancelHoverClose = () => {
@@ -685,10 +695,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .select-trigger),
 :global(#app .app-layout-content .keys-filter-left .select-trigger),
 :global(#app .app-layout-content .keys-filter-actions .select-trigger),
-:global(#app .app-layout-content .global-pricing-filter-card .select-trigger),
-:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger),
-:global(#app .app-layout-content .global-pricing-filter-left .select-trigger),
-:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger),
 :global(#app .app-layout-content .dashboard-filter-card .select-trigger),
 :global(#app .app-layout-content .dashboard-filter-shell .select-trigger),
 :global(#app .app-layout-content .dashboard-filter-range .select-trigger),
@@ -750,10 +756,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
 :global(#app .app-layout-content .keys-filter-left .select-trigger:is(:hover, .select-trigger-open)),
 :global(#app .app-layout-content .keys-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-card .select-trigger:is(:hover, .select-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-left .select-trigger:is(:hover, .select-trigger-open)),
-:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger:is(:hover, .select-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-card .select-trigger:is(:hover, .select-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-shell .select-trigger:is(:hover, .select-trigger-open)),
 :global(#app .app-layout-content .dashboard-filter-range .select-trigger:is(:hover, .select-trigger-open)),
@@ -803,10 +805,6 @@ onUnmounted(() => {
 :global(#app .app-layout-content .keys-filter-shell .select-trigger:focus-visible),
 :global(#app .app-layout-content .keys-filter-left .select-trigger:focus-visible),
 :global(#app .app-layout-content .keys-filter-actions .select-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-card .select-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-shell .select-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-left .select-trigger:focus-visible),
-:global(#app .app-layout-content .global-pricing-filter-actions .select-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-card .select-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-shell .select-trigger:focus-visible),
 :global(#app .app-layout-content .dashboard-filter-range .select-trigger:focus-visible),

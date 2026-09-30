@@ -51,9 +51,9 @@
           <div class="mt-5 grid gap-4 md:grid-cols-2">
             <div class="space-y-2">
               <p class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('affiliate.yourCode') }}</p>
-              <div class="flex items-center gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-                <code class="flex-1 truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ detail.aff_code }}</code>
-                <button data-testid="user-affiliate-button-copy-code" class="btn btn-secondary btn-sm" @click="copyCode">
+              <div class="flex flex-col items-stretch gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] sm:flex-row sm:items-center">
+                <code class="min-w-0 break-all sm:flex-1 sm:truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ detail.aff_code }}</code>
+                <button data-testid="user-affiliate-button-copy-code" class="btn btn-secondary btn-sm w-full sm:w-auto sm:shrink-0" @click="copyCode">
                   <Icon name="copy" size="sm" />
                   <span>{{ t('affiliate.copyCode') }}</span>
                 </button>
@@ -62,9 +62,9 @@
 
             <div class="space-y-2">
               <p class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('affiliate.inviteLink') }}</p>
-              <div class="flex items-center gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-                <code class="flex-1 truncate text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ inviteLink }}</code>
-                <button data-testid="user-affiliate-button-copy-invite-link" class="btn btn-secondary btn-sm" @click="copyInviteLink">
+              <div class="flex flex-col items-stretch gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] sm:flex-row sm:items-center">
+                <code class="min-w-0 break-all sm:flex-1 sm:truncate text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ inviteLink }}</code>
+                <button data-testid="user-affiliate-button-copy-invite-link" class="btn btn-secondary btn-sm w-full sm:w-auto sm:shrink-0" @click="copyInviteLink">
                   <Icon name="copy" size="sm" />
                   <span>{{ t('affiliate.copyLink') }}</span>
                 </button>

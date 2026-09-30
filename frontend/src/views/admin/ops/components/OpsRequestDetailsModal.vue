@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Pagination from '@/components/common/Pagination.vue'
@@ -40,6 +41,9 @@ const items = ref<OpsRequestDetail[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(10)
+const isDesktopViewport = useMediaQuery('(min-width: 768px)')
+const showTTFT = computed(() => props.preset.sort === 'ttft_desc')
+const latencyLabel = computed(() => t(showTTFT.value ? 'admin.ops.ttftLabel' : 'admin.ops.requestDetails.table.duration'))
 
 const close = () => emit('update:modelValue', false)
 
@@ -190,7 +194,23 @@ const kindBadgeClass = (kind: string) => {
 
           <div v-else class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
             <div class="min-h-0 flex-1 overflow-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+              <div v-if="!isDesktopViewport" class="divide-y divide-[var(--anthropic-border)] dark:divide-[var(--anthropic-border)]">
+                <div v-for="(row, idx) in items" :key="idx" class="space-y-2 p-4">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="rounded-full px-2 py-1 text-[10px] font-bold" :class="kindBadgeClass(row.kind)">
+                      {{ row.kind === 'error' ? t('admin.ops.requestDetails.kind.error') : t('admin.ops.requestDetails.kind.success') }}
+                    </span>
+                    <span class="text-xs font-medium text-[var(--anthropic-fg)]">{{ (row.platform || 'unknown').toUpperCase() }}</span>
+                    <span class="ml-auto text-[11px] text-[var(--anthropic-muted)]">{{ formatDateTime(row.created_at) }}</span>
+                  </div>
+                  <div class="break-all text-xs text-[var(--anthropic-muted)]">{{ row.model || '-' }}</div>
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--anthropic-muted)]">
+                    <span>{{ latencyLabel }}: {{ typeof (showTTFT ? row.first_token_ms : row.duration_ms) === 'number' ? `${showTTFT ? row.first_token_ms : row.duration_ms} ms` : '-' }}</span>
+                    <span>{{ row.status_code ?? '-' }}</span>
+                  </div>
+                </div>
+              </div>
+              <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
                 <thead class="sticky top-0 z-10 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
                 <tr>
                   <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
@@ -206,7 +226,7 @@ const kindBadgeClass = (kind: string) => {
                     {{ t('admin.ops.requestDetails.table.model') }}
                   </th>
                   <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ t('admin.ops.requestDetails.table.duration') }}
+                    {{ latencyLabel }}
                   </th>
                   <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                     {{ t('admin.ops.requestDetails.table.status') }}
@@ -236,7 +256,7 @@ const kindBadgeClass = (kind: string) => {
                     {{ row.model || '-' }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                    {{ typeof row.duration_ms === 'number' ? `${row.duration_ms} ms` : '-' }}
+                    {{ typeof (showTTFT ? row.first_token_ms : row.duration_ms) === 'number' ? `${showTTFT ? row.first_token_ms : row.duration_ms} ms` : '-' }}
                   </td>
                   <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
                     {{ row.status_code ?? '-' }}

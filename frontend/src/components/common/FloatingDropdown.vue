@@ -1,11 +1,11 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="!portal">
     <div data-testid="common-floating-dropdown-div-div"
-      v-if="isVisible"
+      v-if="show && triggerEl && !hiddenByOwner"
       ref="panelRef"
       class="floating-dropdown-portal"
       :class="panelClass"
-      :style="dropdownStyle"
+      :style="baseStyle"
       @mouseenter="emit('mouseenter', $event)"
       @mouseleave="emit('mouseleave', $event)"
       @click.stop
@@ -17,9 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, onUpdated, ref } from 'vue'
 import {
-  activeDropdownOwner,
   claimDropdownOwner,
   onDropdownOwnerClaimed,
   releaseDropdownOwner
@@ -36,6 +35,7 @@ interface Props {
   zIndex?: number
   viewportPadding?: number
   panelClass?: string
+  portal?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -44,7 +44,8 @@ const props = withDefaults(defineProps<Props>(), {
   offset: 4,
   zIndex: 100000040,
   viewportPadding: 8,
-  panelClass: ''
+  panelClass: '',
+  portal: true
 })
 
 const emit = defineEmits<{
@@ -53,137 +54,91 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const instanceId = `floating-dropdown-${Math.random().toString(36).substring(2, 9)}`
 const panelRef = ref<HTMLElement | null>(null)
-const triggerRect = ref<DOMRect | null>(null)
-const effectivePlacement = ref<DropdownPlacement>(props.placement)
+const hiddenByOwner = ref(false)
+const instanceId = `floating-dropdown-${Math.random().toString(36).slice(2, 9)}`
+let previousShow = Boolean(props.show && props.triggerEl)
 let stopDropdownOwnerListener: (() => void) | null = null
-let detachTriggerListeners: (() => void) | null = null
-let closeEmittedForForeignOwner = false
+let activeFloatingClose: (() => void) | null = null
 
-const isVisible = computed(() => (
-  props.show && !!props.triggerEl && activeDropdownOwner.value === instanceId
-))
+const baseStyle = computed(() => ({
+  position: 'fixed' as const,
+  zIndex: String(props.zIndex)
+}))
 
-const claimOwnerIfOpen = () => {
-  if (props.show && props.triggerEl) {
-    claimDropdownOwner(instanceId)
-  }
+const closeSelf = () => {
+  if (hiddenByOwner.value) return
+  hiddenByOwner.value = true
+  emit('close')
+}
+
+const claimFloatingOwner = () => {
+  if (!props.show || !props.triggerEl) return
+  if (activeFloatingClose && activeFloatingClose !== closeSelf) activeFloatingClose()
+  activeFloatingClose = closeSelf
+  hiddenByOwner.value = false
+  claimDropdownOwner(instanceId)
 }
 
 const updatePosition = () => {
-  if (!props.triggerEl) return
-  triggerRect.value = props.triggerEl.getBoundingClientRect()
+  if (!props.triggerEl || !panelRef.value) return
 
-  nextTick(() => {
-    if (!props.triggerEl || !panelRef.value || !triggerRect.value) return
-
-    const rect = props.triggerEl.getBoundingClientRect()
-    const panelHeight = panelRef.value.offsetHeight || 240
-    const spaceBelow = window.innerHeight - rect.bottom
-    const spaceAbove = rect.top
-    const [vertical, horizontal] = props.placement.split('-') as ['bottom' | 'top', 'start' | 'end']
-    const shouldFlipUp = vertical === 'bottom' && spaceBelow < panelHeight && spaceAbove > spaceBelow
-    const shouldFlipDown = vertical === 'top' && spaceAbove < panelHeight && spaceBelow > spaceAbove
-    const nextVertical = shouldFlipUp ? 'top' : shouldFlipDown ? 'bottom' : vertical
-
-    triggerRect.value = rect
-    effectivePlacement.value = `${nextVertical}-${horizontal}` as DropdownPlacement
-  })
-}
-
-const dropdownStyle = computed(() => {
-  if (!triggerRect.value) return { position: 'fixed', zIndex: String(props.zIndex) }
-
-  const rect = triggerRect.value
+  const rect = props.triggerEl.getBoundingClientRect()
   const panel = panelRef.value
-  const panelWidth = panel?.offsetWidth || (props.matchWidth ? rect.width : 0)
-  const [vertical, horizontal] = effectivePlacement.value.split('-') as ['bottom' | 'top', 'start' | 'end']
-  const style: Record<string, string> = {
-    position: 'fixed',
-    zIndex: String(props.zIndex)
-  }
-
+  const panelWidth = panel.offsetWidth || (props.matchWidth ? rect.width : 0)
+  const [vertical, horizontal] = props.placement.split('-') as ['bottom' | 'top', 'start' | 'end']
   const preferredLeft = horizontal === 'end' ? rect.right - panelWidth : rect.left
   const maxLeft = window.innerWidth - (panelWidth || rect.width) - props.viewportPadding
   const clampedLeft = Math.max(props.viewportPadding, Math.min(preferredLeft, maxLeft))
-  style.left = `${clampedLeft}px`
 
-  if (props.matchWidth) {
-    style.width = `${rect.width}px`
-  }
+  panel.style.left = `${clampedLeft}px`
+  if (props.matchWidth) panel.style.width = `${rect.width}px`
+  panel.style.top = ''
+  panel.style.bottom = ''
 
-  if (vertical === 'top') {
-    style.bottom = `${window.innerHeight - rect.top + props.offset}px`
+  const panelHeight = panel.offsetHeight || 240
+  const spaceBelow = window.innerHeight - rect.bottom
+  const spaceAbove = rect.top
+  const shouldFlipUp = vertical === 'bottom' && spaceBelow < panelHeight && spaceAbove > spaceBelow
+  const shouldFlipDown = vertical === 'top' && spaceAbove < panelHeight && spaceBelow > spaceAbove
+  const actualVertical = shouldFlipUp ? 'top' : shouldFlipDown ? 'bottom' : vertical
+  if (actualVertical === 'top') {
+    panel.style.bottom = `${window.innerHeight - rect.top + props.offset}px`
   } else {
-    style.top = `${rect.bottom + props.offset}px`
+    panel.style.top = `${rect.bottom + props.offset}px`
   }
+}
 
-  return style
+const schedulePositionUpdate = () => {
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(updatePosition)
+  else updatePosition()
+}
+
+onMounted(() => {
+  stopDropdownOwnerListener = onDropdownOwnerClaimed((owner) => {
+    if (owner !== instanceId && props.show) closeSelf()
+  })
+  if (props.show) claimFloatingOwner()
+  schedulePositionUpdate()
+  window.addEventListener('scroll', schedulePositionUpdate, { capture: true, passive: true })
+  window.addEventListener('resize', schedulePositionUpdate)
 })
 
-watch(
-  () => [isVisible.value, props.triggerEl, props.placement],
-  ([show]) => {
-    if (show) {
-      effectivePlacement.value = props.placement
-      updatePosition()
-      window.addEventListener('scroll', updatePosition, { capture: true, passive: true })
-      window.addEventListener('resize', updatePosition)
-    } else {
-      window.removeEventListener('scroll', updatePosition, { capture: true })
-      window.removeEventListener('resize', updatePosition)
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => props.show,
-  (show) => {
-    if (show) {
-      closeEmittedForForeignOwner = false
-      claimOwnerIfOpen()
-    } else {
-      closeEmittedForForeignOwner = false
-      releaseDropdownOwner(instanceId)
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => props.triggerEl,
-  (triggerEl) => {
-    detachTriggerListeners?.()
-    detachTriggerListeners = null
-    if (!triggerEl) return
-
-    const events = ['pointerenter', 'mouseenter', 'click', 'focusin'] as const
-    events.forEach((eventName) => triggerEl.addEventListener(eventName, claimOwnerIfOpen))
-    detachTriggerListeners = () => {
-      events.forEach((eventName) => triggerEl.removeEventListener(eventName, claimOwnerIfOpen))
-    }
-    claimOwnerIfOpen()
-  },
-  { immediate: true }
-)
-
-stopDropdownOwnerListener = onDropdownOwnerClaimed((owner) => {
-  if (owner !== instanceId && props.show && !closeEmittedForForeignOwner) {
-    closeEmittedForForeignOwner = true
-    emit('close')
-  }
+onUpdated(() => {
+  const isOpen = Boolean(props.show && props.triggerEl)
+  if (isOpen && !previousShow) claimFloatingOwner()
+  if (!props.show) hiddenByOwner.value = false
+  if (isOpen) schedulePositionUpdate()
+  previousShow = isOpen
 })
 
 onBeforeUnmount(() => {
+  if (activeFloatingClose === closeSelf) activeFloatingClose = null
   releaseDropdownOwner(instanceId)
   stopDropdownOwnerListener?.()
   stopDropdownOwnerListener = null
-  detachTriggerListeners?.()
-  detachTriggerListeners = null
-  window.removeEventListener('scroll', updatePosition, { capture: true })
-  window.removeEventListener('resize', updatePosition)
+  window.removeEventListener('scroll', schedulePositionUpdate, { capture: true })
+  window.removeEventListener('resize', schedulePositionUpdate)
 })
 </script>
 

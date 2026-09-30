@@ -143,7 +143,7 @@ func TestAnthropicToResponses_ToolUse(t *testing.T) {
 	assert.Empty(t, items[2].ID)
 	assert.Equal(t, "function_call_output", items[3].Type)
 	assert.Equal(t, "call_1", items[3].CallID)
-	assert.Equal(t, `"Sunny, 72°F"`, string(items[3].Output))
+	assert.Equal(t, "Sunny, 72°F", items[3].Output)
 }
 
 func TestAnthropicToResponses_ThinkingWithoutSignatureIgnored(t *testing.T) {
@@ -1425,7 +1425,7 @@ func TestAnthropicToResponses_ToolResultWithImage(t *testing.T) {
 	// function_call_output should have text-only output (no image).
 	assert.Equal(t, "function_call_output", items[2].Type)
 	assert.Equal(t, "toolu_1", items[2].CallID)
-	assert.Equal(t, `"(empty)"`, string(items[2].Output))
+	assert.Equal(t, "(empty)", items[2].Output)
 
 	// Image should be in a separate user message.
 	assert.Equal(t, "user", items[3].Role)
@@ -1462,7 +1462,7 @@ func TestAnthropicToResponses_ToolResultMixed(t *testing.T) {
 
 	// function_call_output should have text-only output.
 	assert.Equal(t, "function_call_output", items[2].Type)
-	assert.Equal(t, `"File metadata: 800x600 PNG"`, string(items[2].Output))
+	assert.Equal(t, "File metadata: 800x600 PNG", items[2].Output)
 
 	// Image should be in a separate user message.
 	assert.Equal(t, "user", items[3].Role)
@@ -1497,7 +1497,7 @@ func TestAnthropicToResponses_TextOnlyToolResultBackwardCompat(t *testing.T) {
 	require.Len(t, items, 3)
 
 	// Text-only tool_result should produce a plain string.
-	assert.Equal(t, `"Sunny, 72°F"`, string(items[2].Output))
+	assert.Equal(t, "Sunny, 72°F", items[2].Output)
 }
 
 func TestAnthropicToResponses_ImageEmptyMediaType(t *testing.T) {
@@ -1852,7 +1852,7 @@ func TestOpus55SignedThinkingResponsesRoundTrip(t *testing.T) {
 	require.NoError(t, err)
 	var items []ResponsesInputItem
 	require.NoError(t, json.Unmarshal(raw, &items))
-	items = append(items, ResponsesInputItem{Type: "function_call_output", CallID: response.Output[1].CallID, Output: json.RawMessage(`"ok"`)})
+	items = append(items, ResponsesInputItem{Type: "function_call_output", CallID: response.Output[1].CallID, Output: "ok"})
 	raw, err = json.Marshal(items)
 	require.NoError(t, err)
 	converted, err := ResponsesToAnthropicRequest(&ResponsesRequest{Model: "claude-opus-5-5", Input: raw})

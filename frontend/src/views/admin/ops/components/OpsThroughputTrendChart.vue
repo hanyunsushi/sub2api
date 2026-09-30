@@ -175,7 +175,7 @@ function downloadChart() {
 
 <template>
   <div class="ops-monitor-panel ops-chart-card ops-throughput-card flex h-full flex-col anthropic-card-shell p-6">
-    <div class="mb-4 flex shrink-0 items-center justify-between">
+    <div data-testid="throughput-chart-header" class="mb-4 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h3 class="flex items-center gap-2 text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
         <svg class="h-4 w-4 text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -183,13 +183,13 @@ function downloadChart() {
         {{ t('admin.ops.throughputTrend') }}
         <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.throughputTrend')" />
       </h3>
-      <div class="flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-        <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-[var(--anthropic-fg)]"></span>QPS</span>
-        <span class="flex items-center gap-1"><span class="ops-chart-dot-butter h-2 w-2 rounded-full"></span>{{ t('admin.ops.tpsK') }}</span>
+      <div data-testid="throughput-chart-toolbar" class="flex w-full min-w-0 flex-wrap items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] sm:w-auto sm:justify-end">
+        <span class="flex shrink-0 items-center gap-1"><span class="h-2 w-2 rounded-full bg-[var(--anthropic-fg)]"></span>QPS</span>
+        <span class="flex shrink-0 items-center gap-1"><span class="ops-chart-dot-butter h-2 w-2 rounded-full"></span>{{ t('admin.ops.tpsK') }}</span>
         <template v-if="!props.fullscreen">
           <button data-testid="admin-ops-components-ops-throughput-trend-chart-button-emit-open-details"
             type="button"
-            class="ml-2 inline-flex items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+            class="inline-flex shrink-0 items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
             :disabled="state !== 'ready'"
             :title="t('admin.ops.requestDetails.title')"
             @click="emit('openDetails')"
@@ -198,7 +198,7 @@ function downloadChart() {
           </button>
           <button data-testid="admin-ops-components-ops-throughput-trend-chart-button-reset-zoom"
             type="button"
-            class="ml-2 inline-flex items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+            class="inline-flex shrink-0 items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
             :disabled="state !== 'ready'"
             :title="t('admin.ops.charts.resetZoomHint')"
             @click="resetZoom"
@@ -207,7 +207,7 @@ function downloadChart() {
           </button>
           <button data-testid="admin-ops-components-ops-throughput-trend-chart-button-download-chart"
             type="button"
-            class="inline-flex items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+            class="inline-flex shrink-0 items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
             :disabled="state !== 'ready'"
             :title="t('admin.ops.charts.downloadChartHint')"
             @click="downloadChart"

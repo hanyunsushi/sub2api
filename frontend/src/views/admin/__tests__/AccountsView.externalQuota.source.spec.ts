@@ -10,11 +10,9 @@ const bulkActionsSource = readFileSync(resolve(__dirname, '../../../components/a
 const accountActionMenuSource = readFileSync(resolve(__dirname, '../../../components/admin/account/AccountActionMenu.vue'), 'utf8')
 const accountCapacityCellSource = readFileSync(resolve(__dirname, '../../../components/account/AccountCapacityCell.vue'), 'utf8')
 const dataTableSource = readFileSync(resolve(__dirname, '../../../components/common/DataTable.vue'), 'utf8')
-const iconSource = readFileSync(resolve(__dirname, '../../../components/icons/Icon.vue'), 'utf8')
 const monitorCapacitySource = readFileSync(resolve(__dirname, '../../../components/user/monitor/MonitorCapacityOverview.vue'), 'utf8')
 const externalSubscriptionMatchSource = readFileSync(resolve(__dirname, '../../../utils/externalSubscriptionMatch.ts'), 'utf8')
 const externalQuotaSettingsModalSource = readFileSync(resolve(__dirname, '../../../components/admin/account/ExternalQuotaProgressSettingsModal.vue'), 'utf8')
-const accountsAPISource = readFileSync(resolve(__dirname, '../../../api/admin/accounts.ts'), 'utf8')
 const electricBorderPath = resolve(__dirname, '../../../components/common/ElectricBorder.vue')
 const electricBorderSource = existsSync(electricBorderPath) ? readFileSync(electricBorderPath, 'utf8') : ''
 
@@ -124,28 +122,6 @@ describe('AccountsView external quota card metadata', () => {
     expect(source).not.toContain("import { useExternalQuotaProgressPreference } from '@/composables/useExternalQuotaProgressPreference'")
     expect(source).not.toContain('setExternalQuotaProgressEnabled(!externalQuotaProgressEnabled)')
     expect(source).not.toContain("localText('显示额度进度条', 'Show quota progress')")
-  })
-
-  it('renders a per-account schedule lock next to the scheduling control without changing schedulable directly', () => {
-    const lockPath = iconSource.match(/lock: '([^']+)'/)?.[1]
-    const unlockPath = iconSource.match(/unlock: '([^']+)'/)?.[1]
-
-    expect(source).toContain('data-testid="account-schedule-lock-action"')
-    expect(source).toContain('row.schedule_locked')
-    expect(source).toContain('account-schedule-lock-action-locked')
-    expect(source).toContain('border-transparent bg-transparent text-[var(--anthropic-fg)]')
-    expect(source).not.toContain('border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]')
-    expect(lockPath).toBeDefined()
-    expect(unlockPath).toBeDefined()
-    expect(unlockPath).not.toBe(lockPath)
-    expect(unlockPath).toContain('M13.5 10.5V6.75a4.5 4.5 0 119 0v1.5')
-    expect(unlockPath).toContain('M6.75 10.5h10.5')
-    expect(source).toContain('handleToggleScheduleLock(row)')
-    expect(source).toContain('togglingScheduleLock')
-    expect(source).toContain('adminAPI.accounts.setScheduleLocked')
-    expect(source).toContain('updateScheduleLockedInList([a.id], updated?.schedule_locked ?? nextLocked)')
-    expect(accountsAPISource).toContain('setScheduleLocked')
-    expect(accountsAPISource).toContain('/schedule-lock')
   })
 
   it('adds a token quota progress template with account-local usage stats and a refresh action', () => {
@@ -291,22 +267,6 @@ describe('AccountsView external quota card metadata', () => {
     expect(targetedRepairSource).toContain('border-color: var(--anthropic-info) !important;')
     expect(targetedRepairSource).toContain('background: var(--anthropic-info) !important;')
     expect(targetedRepairSource).toContain('color: var(--anthropic-page) !important;')
-  })
-
-  it('keeps schedule-lock buttons transparent so only the lock glyph turns black', () => {
-    expect(source).toContain('account-schedule-lock-action-locked border-transparent bg-transparent text-[var(--anthropic-fg)]')
-    expect(source).not.toContain('account-schedule-lock-action-locked border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)]')
-    expect(source).not.toContain('account-schedule-lock-action-locked border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]')
-    const lockedBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked')
-    expect(lockedBlock).toContain('border-color: transparent !important;')
-    expect(lockedBlock).toContain('background: transparent !important;')
-    expect(lockedBlock).toContain('color: var(--anthropic-fg) !important;')
-    const lockedSvgBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action-locked svg')
-    expect(lockedSvgBlock).toContain('color: var(--anthropic-fg) !important;')
-    expect(lockedSvgBlock).toContain('stroke: currentColor !important;')
-    const hoverBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .accounts-table-page .account-schedule-lock-action:focus-visible')
-    expect(hoverBlock).toContain('background: transparent !important;')
-    expect(hoverBlock).toContain('color: var(--anthropic-fg) !important;')
   })
 
   it('marks active and paused account rows with theme card color classes instead of ElectricBorder', () => {

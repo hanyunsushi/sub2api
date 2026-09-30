@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync/atomic"
 
@@ -306,53 +305,6 @@ func NewSettingService(settingRepo SettingRepository, cfg *config.Config) *Setti
 	return &SettingService{
 		settingRepo: settingRepo,
 		cfg:         cfg,
-	}
-}
-
-func parseChannelMonitorAccountAutoScheduleFailureThreshold(raw string) int {
-	v, err := strconv.Atoi(strings.TrimSpace(raw))
-	if err != nil {
-		return channelMonitorAccountAutoScheduleFailureThresholdDefault
-	}
-	return normalizeChannelMonitorAccountAutoScheduleFailureThreshold(v)
-}
-
-func (s *SettingService) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool {
-	if s == nil || s.settingRepo == nil {
-		return false
-	}
-	value, err := s.settingRepo.GetValue(ctx, SettingKeyChannelMonitorAccountAutoScheduleEnabled)
-	if err != nil {
-		return false
-	}
-	return value == "true"
-}
-
-func (s *SettingService) ChannelMonitorAccountAutoScheduleFailureThreshold(ctx context.Context) int {
-	if s == nil || s.settingRepo == nil {
-		return channelMonitorAccountAutoScheduleFailureThresholdDefault
-	}
-	value, err := s.settingRepo.GetValue(ctx, SettingKeyChannelMonitorAccountAutoScheduleFailureThreshold)
-	if err != nil {
-		return channelMonitorAccountAutoScheduleFailureThresholdDefault
-	}
-	return parseChannelMonitorAccountAutoScheduleFailureThreshold(value)
-}
-
-func (s *SettingService) ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string {
-	if s == nil || s.settingRepo == nil {
-		return nil
-	}
-	values, err := s.settingRepo.GetMultiple(ctx, []string{
-		SettingKeyAPIBaseURL,
-		SettingKeyFrontendURL,
-	})
-	if err != nil {
-		return nil
-	}
-	return []string{
-		values[SettingKeyAPIBaseURL],
-		values[SettingKeyFrontendURL],
 	}
 }
 

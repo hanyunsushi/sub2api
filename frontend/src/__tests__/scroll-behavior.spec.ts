@@ -35,14 +35,12 @@ describe('global scrolling behavior', () => {
     const dataTableSource = readFile('src/components/common/DataTable.vue')
     const accountsSource = readFile('src/views/admin/AccountsView.vue')
     const userUsageSource = readFile('src/views/user/UsageView.vue')
-    const globalPricingSource = readFile('src/views/user/GlobalPricingView.vue')
 
     expect(dataTableSource).not.toContain('data-lenis-scroll')
     expect(dataTableSource).not.toContain('lenisScroll')
     expect(accountsSource).not.toContain('lenis-scroll')
     expect(userUsageSource).not.toContain('lenis-scroll')
     expect(userUsageSource).toContain('vertical-scroll-mode="page"')
-    expect(globalPricingSource).toContain('scroll-mode="page"')
   })
 
   it('keeps native smooth behavior as a safe fallback', () => {

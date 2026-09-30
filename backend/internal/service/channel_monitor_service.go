@@ -6,15 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/domain"
-	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -77,11 +74,7 @@ type ChannelMonitorService struct {
 	encryptor SecretEncryptor
 	// settings is optional; when nil, RunCheck fails closed for active probes
 	// (mode defaults to v2 / retired) so tests without settings never hit upstream.
-	settings                 channelMonitorRuntimeReader
-	autoScheduleRepo         channelMonitorAccountScheduleRepository
-	autoScheduleRuntime      channelMonitorScheduleAutomation
-	autoScheduleFailuresMu   sync.Mutex
-	autoScheduleFailureCount map[channelMonitorAutoScheduleFailureKey]int
+	settings channelMonitorRuntimeReader
 	// scheduler 由 wire 通过 SetScheduler 注入；CRUD 后调用对应钩子即时同步任务。
 	// 测试或未注入场景下保持 nil，所有钩子调用变为 no-op。
 	scheduler MonitorScheduler
@@ -93,68 +86,15 @@ type ChannelMonitorService struct {
 
 const maxChannelMonitorNameRunes = 100
 
-// ChannelMonitorDuplicateOperationIDMetadataKey is stored in extra_headers.
-// The colon makes it an invalid HTTP header, so repository adapters can keep it internal.
+// ChannelMonitorDuplicateOperationIDMetadataKey is stored in the existing
+// extra_headers JSON column to avoid a schema migration. The colon makes it an
+// invalid HTTP header name, and repository adapters remove it before exposing
+// ExtraHeaders to the service layer.
 const ChannelMonitorDuplicateOperationIDMetadataKey = "sub2api:duplicate_operation_id"
-
-type channelMonitorAutoScheduleFailureKey struct {
-	monitorID int64
-	accountID int64
-}
-
-type channelMonitorAccountScheduleRepository interface {
-	SetSchedulable(ctx context.Context, id int64, schedulable bool) error
-	IsScheduleLocked(ctx context.Context, id int64) (bool, error)
-	ListByPlatform(ctx context.Context, platform string) ([]Account, error)
-	GetByIDs(ctx context.Context, ids []int64) ([]*Account, error)
-}
-
-type channelMonitorScheduleAutomation interface {
-	ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool
-	ChannelMonitorAccountAutoScheduleFailureThreshold(ctx context.Context) int
-	ChannelMonitorLocalGatewayOrigins(ctx context.Context) []string
-}
-
-type channelMonitorScheduleAutomationFunc func(context.Context) bool
-
-func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleEnabled(ctx context.Context) bool {
-	return f(ctx)
-}
-
-func (f channelMonitorScheduleAutomationFunc) ChannelMonitorAccountAutoScheduleFailureThreshold(context.Context) int {
-	return channelMonitorAccountAutoScheduleFailureThresholdDefault
-}
-
-func (f channelMonitorScheduleAutomationFunc) ChannelMonitorLocalGatewayOrigins(context.Context) []string {
-	return nil
-}
-
-const (
-	channelMonitorAccountAutoScheduleFailureThresholdMin     = 1
-	channelMonitorAccountAutoScheduleFailureThresholdMax     = 10
-	channelMonitorAccountAutoScheduleFailureThresholdDefault = 2
-)
-
-func normalizeChannelMonitorAccountAutoScheduleFailureThreshold(v int) int {
-	if v <= 0 {
-		return channelMonitorAccountAutoScheduleFailureThresholdDefault
-	}
-	if v < channelMonitorAccountAutoScheduleFailureThresholdMin {
-		return channelMonitorAccountAutoScheduleFailureThresholdMin
-	}
-	if v > channelMonitorAccountAutoScheduleFailureThresholdMax {
-		return channelMonitorAccountAutoScheduleFailureThresholdMax
-	}
-	return v
-}
 
 // NewChannelMonitorService 创建渠道监控服务实例。
 func NewChannelMonitorService(repo ChannelMonitorRepository, encryptor SecretEncryptor) *ChannelMonitorService {
-	return &ChannelMonitorService{
-		repo:                     repo,
-		encryptor:                encryptor,
-		autoScheduleFailureCount: make(map[channelMonitorAutoScheduleFailureKey]int),
-	}
+	return &ChannelMonitorService{repo: repo, encryptor: encryptor}
 }
 
 // SetRuntimeReader injects the settings reader used to gate active probes.
@@ -244,8 +184,6 @@ func (s *ChannelMonitorService) Create(ctx context.Context, p ChannelMonitorCrea
 		CheckMode:        checkMode,
 		AccountID:        cloneInt64Pointer(p.AccountID),
 	}
-	m.AccountIDs = s.resolveCreateAccountIDs(ctx, m.Name, m.Provider, p.AccountIDs, p.AccountID)
-	m.AccountID = firstAccountID(m.AccountIDs)
 	if err := s.repo.Create(ctx, m); err != nil {
 		return nil, fmt.Errorf("create channel monitor: %w", err)
 	}
@@ -295,6 +233,7 @@ func (s *ChannelMonitorService) Duplicate(
 
 	duplicate := &ChannelMonitor{
 		Name:                 duplicateChannelMonitorName(source.Name),
+		LogoURL:              source.LogoURL,
 		Provider:             source.Provider,
 		APIMode:              source.APIMode,
 		Endpoint:             source.Endpoint,
@@ -682,20 +621,17 @@ func (s *ChannelMonitorService) RunCheck(ctx context.Context, id int64) ([]*Chec
 		return nil, ErrChannelMonitorAPIKeyDecryptFailed
 	}
 
-	var (
-		results        []*CheckResult
-		accountResults map[int64][]*CheckResult
-	)
+	var results []*CheckResult
 	switch checkMode {
 	case MonitorCheckModeQuota:
 		results = s.runQuotaOnlyCheck(ctx, m)
 	case MonitorCheckModeQuotaProbe:
-		results, accountResults = s.runChecksConcurrentWithAccountResults(ctx, m)
+		results = s.runChecksConcurrent(ctx, m)
 		attachQuotaSnapshot(results, s.fetchQuotaSnapshot(ctx, m))
 	default:
-		results, accountResults = s.runChecksConcurrentWithAccountResults(ctx, m)
+		results = s.runChecksConcurrent(ctx, m)
 	}
-	s.persistCheckResults(ctx, m, results, accountResults)
+	s.persistCheckResults(ctx, m, results)
 	return results, nil
 }
 
@@ -735,7 +671,7 @@ func attachQuotaSnapshot(results []*CheckResult, snapshot *domain.MonitorQuotaSn
 
 // persistCheckResults 写入本次检测的历史记录并更新 last_checked_at。
 // 任一写库失败都只记日志，不影响调用方拿到 results（与 MVP 期望一致：宁可漏记历史也要先返回结果）。
-func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *ChannelMonitor, results []*CheckResult, accountResults map[int64][]*CheckResult) {
+func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {
 	rows := make([]*ChannelMonitorHistoryRow, 0, len(results))
 	for _, r := range results {
 		rows = append(rows, &ChannelMonitorHistoryRow{
@@ -757,196 +693,11 @@ func (s *ChannelMonitorService) persistCheckResults(ctx context.Context, m *Chan
 		slog.Error("channel_monitor: mark checked failed",
 			"monitor_id", m.ID, "error", err)
 	}
-	if len(accountResults) > 0 {
-		s.applyAccountAutoScheduleByAccountResults(ctx, m.ID, accountResults)
-		return
-	}
-	s.applyAccountAutoSchedule(ctx, m, results)
-}
-
-func (s *ChannelMonitorService) SetAccountScheduleAutomation(repo channelMonitorAccountScheduleRepository, runtime channelMonitorScheduleAutomation) {
-	s.autoScheduleRepo = repo
-	s.autoScheduleRuntime = runtime
-	// The settings implementation provides both scheduling policy and the probe
-	// runtime gate. Reuse it when available so the two monitor paths cannot
-	// silently disagree; lightweight scheduling-only test doubles remain valid.
-	if reader, ok := runtime.(channelMonitorRuntimeReader); ok {
-		s.SetRuntimeReader(reader)
-	}
-}
-
-func (s *ChannelMonitorService) applyAccountAutoSchedule(ctx context.Context, m *ChannelMonitor, results []*CheckResult) {
-	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil || m == nil {
-		return
-	}
-	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
-		return
-	}
-	accountIDs := s.resolveAutoScheduleAccountIDs(ctx, m)
-	if len(accountIDs) == 0 {
-		return
-	}
-	if len(results) == 0 {
-		return
-	}
-	localGatewayOrigins := s.autoScheduleRuntime.ChannelMonitorLocalGatewayOrigins(ctx)
-	healthy := true
-	for _, r := range results {
-		if r == nil {
-			continue
-		}
-		if isLocalGatewayCapacityResult(m.Endpoint, localGatewayOrigins, r) {
-			continue
-		}
-		if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
-			healthy = false
-			break
-		}
-	}
-	threshold := normalizeChannelMonitorAccountAutoScheduleFailureThreshold(
-		s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleFailureThreshold(ctx),
-	)
-	for _, accountID := range accountIDs {
-		schedulable := s.resolveAutoScheduleSchedulable(m.ID, accountID, healthy, threshold)
-		s.updateAutoScheduleAccount(ctx, m.ID, accountID, schedulable)
-	}
-}
-
-func (s *ChannelMonitorService) applyAccountAutoScheduleByAccountResults(ctx context.Context, monitorID int64, results map[int64][]*CheckResult) {
-	if s == nil || s.autoScheduleRepo == nil || s.autoScheduleRuntime == nil {
-		return
-	}
-	if !s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleEnabled(ctx) {
-		return
-	}
-	accountIDs := make([]int64, 0, len(results))
-	for accountID := range results {
-		accountIDs = append(accountIDs, accountID)
-	}
-	sort.Slice(accountIDs, func(i, j int) bool { return accountIDs[i] < accountIDs[j] })
-	for _, accountID := range accountIDs {
-		accountResults := results[accountID]
-		if accountID <= 0 || len(accountResults) == 0 {
-			continue
-		}
-		healthy := true
-		for _, r := range accountResults {
-			if r == nil {
-				continue
-			}
-			if r.Status == MonitorStatusFailed || r.Status == MonitorStatusError {
-				healthy = false
-				break
-			}
-		}
-		threshold := normalizeChannelMonitorAccountAutoScheduleFailureThreshold(
-			s.autoScheduleRuntime.ChannelMonitorAccountAutoScheduleFailureThreshold(ctx),
-		)
-		schedulable := s.resolveAutoScheduleSchedulable(monitorID, accountID, healthy, threshold)
-		s.updateAutoScheduleAccount(ctx, monitorID, accountID, schedulable)
-	}
-}
-
-func (s *ChannelMonitorService) resolveAutoScheduleSchedulable(monitorID int64, accountID int64, healthy bool, threshold int) bool {
-	if s == nil {
-		return healthy
-	}
-	key := channelMonitorAutoScheduleFailureKey{monitorID: monitorID, accountID: accountID}
-	s.autoScheduleFailuresMu.Lock()
-	defer s.autoScheduleFailuresMu.Unlock()
-	if s.autoScheduleFailureCount == nil {
-		s.autoScheduleFailureCount = make(map[channelMonitorAutoScheduleFailureKey]int)
-	}
-	if healthy {
-		delete(s.autoScheduleFailureCount, key)
-		return true
-	}
-	count := s.autoScheduleFailureCount[key] + 1
-	s.autoScheduleFailureCount[key] = count
-	return count < threshold
-}
-
-func (s *ChannelMonitorService) updateAutoScheduleAccount(ctx context.Context, monitorID int64, accountID int64, schedulable bool) {
-	locked, err := s.autoScheduleRepo.IsScheduleLocked(ctx, accountID)
-	if err != nil {
-		slog.Warn("channel_monitor: skip account auto schedule, lock state unavailable",
-			"monitor_id", monitorID, "account_id", accountID, "error", err)
-		return
-	}
-	if locked {
-		return
-	}
-	if err := s.autoScheduleRepo.SetSchedulable(ctx, accountID, schedulable); err != nil {
-		slog.Warn("channel_monitor: account auto schedule update failed",
-			"monitor_id", monitorID, "account_id", accountID, "schedulable", schedulable, "error", err)
-	}
-}
-
-func (s *ChannelMonitorService) resolveAutoScheduleAccountIDs(ctx context.Context, m *ChannelMonitor) []int64 {
-	_ = ctx
-	if accountIDs := normalizeAccountIDs(m.AccountIDs); len(accountIDs) > 0 {
-		return accountIDs
-	}
-	return normalizeAccountIDsFromOptional(m.AccountID)
-}
-
-func isLocalGatewayCapacityResult(endpoint string, localGatewayOrigins []string, result *CheckResult) bool {
-	if result == nil || result.Status != MonitorStatusError {
-		return false
-	}
-	if !channelMonitorEndpointMatchesAnyOrigin(endpoint, localGatewayOrigins) {
-		return false
-	}
-	msg := strings.ToLower(strings.TrimSpace(result.Message))
-	if !strings.Contains(msg, "upstream http 503") {
-		return false
-	}
-	if strings.Contains(msg, "no available accounts") {
-		return true
-	}
-	return strings.Contains(msg, "service temporarily unavailable") && strings.Contains(msg, "api_error")
-}
-
-func channelMonitorEndpointMatchesAnyOrigin(endpoint string, origins []string) bool {
-	endpointOrigin := normalizeChannelMonitorOrigin(endpoint)
-	if endpointOrigin == "" {
-		return false
-	}
-	for _, origin := range origins {
-		if endpointOrigin == normalizeChannelMonitorOrigin(origin) {
-			return true
-		}
-	}
-	return false
-}
-
-func normalizeChannelMonitorOrigin(raw string) string {
-	raw = strings.TrimSpace(raw)
-	if raw == "" {
-		return ""
-	}
-	u, err := url.Parse(raw)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return ""
-	}
-	return strings.ToLower(u.Scheme + "://" + u.Host)
-}
-
-func normalizeMonitorAccountMatchName(name string) string {
-	return strings.ToLower(strings.TrimSpace(name))
 }
 
 // runChecksConcurrent 对 primary + extra 模型并发执行检测。
 // errgroup 仅用于等待，不传播错误（每个 model 失败都已打包进 CheckResult）。
 func (s *ChannelMonitorService) runChecksConcurrent(ctx context.Context, m *ChannelMonitor) []*CheckResult {
-	results, _ := s.runChecksConcurrentWithAccountResults(ctx, m)
-	return results
-}
-
-func (s *ChannelMonitorService) runChecksConcurrentWithAccountResults(ctx context.Context, m *ChannelMonitor) ([]*CheckResult, map[int64][]*CheckResult) {
-	if results, accountResults, ok := s.runBoundAccountChecksConcurrent(ctx, m); ok {
-		return results, accountResults
-	}
 	models := append([]string{m.PrimaryModel}, m.ExtraModels...)
 	results := make([]*CheckResult, len(models))
 
@@ -975,286 +726,7 @@ func (s *ChannelMonitorService) runChecksConcurrentWithAccountResults(ctx contex
 		})
 	}
 	_ = eg.Wait()
-	return results, nil
-}
-
-type channelMonitorAccountProbePlan struct {
-	accountID          int64
-	provider           string
-	endpoint           string
-	apiKey             string
-	opts               *CheckOptions
-	unavailableMessage string
-}
-
-func (s *ChannelMonitorService) runBoundAccountChecksConcurrent(ctx context.Context, m *ChannelMonitor) ([]*CheckResult, map[int64][]*CheckResult, bool) {
-	plans, bound := s.channelMonitorAccountProbePlans(ctx, m)
-	if !bound {
-		return nil, nil, false
-	}
-	models := append([]string{m.PrimaryModel}, m.ExtraModels...)
-	results := make([]*CheckResult, len(models))
-	resultsByAccount := make(map[int64][]*CheckResult, len(plans))
-	pingEndpoint := ""
-	for _, plan := range plans {
-		if plan.endpoint != "" {
-			pingEndpoint = plan.endpoint
-			break
-		}
-	}
-	pingMs := pingEndpointOrigin(ctx, pingEndpoint)
-
-	var eg errgroup.Group
-	var mu sync.Mutex
-	for i, model := range models {
-		i, model := i, model
-		eg.Go(func() error {
-			modelAccountResults := make([]*CheckResult, 0, len(plans))
-			for _, plan := range plans {
-				var r *CheckResult
-				if plan.unavailableMessage != "" {
-					r = &CheckResult{
-						Model:     model,
-						Status:    MonitorStatusError,
-						Message:   plan.unavailableMessage,
-						CheckedAt: time.Now(),
-					}
-				} else {
-					r = runCheckForModel(ctx, plan.provider, plan.endpoint, plan.apiKey, model, plan.opts)
-				}
-				r.PingLatencyMs = pingMs
-				modelAccountResults = append(modelAccountResults, r)
-			}
-			merged := mergeMonitorAccountProbeResults(model, modelAccountResults)
-			merged.PingLatencyMs = pingMs
-			mu.Lock()
-			results[i] = merged
-			for idx, plan := range plans {
-				if idx < len(modelAccountResults) {
-					resultsByAccount[plan.accountID] = append(resultsByAccount[plan.accountID], modelAccountResults[idx])
-				}
-			}
-			mu.Unlock()
-			return nil
-		})
-	}
-	_ = eg.Wait()
-	return results, resultsByAccount, true
-}
-
-func (s *ChannelMonitorService) channelMonitorAccountProbePlans(ctx context.Context, m *ChannelMonitor) ([]channelMonitorAccountProbePlan, bool) {
-	if s == nil || s.autoScheduleRepo == nil || m == nil {
-		return nil, false
-	}
-	accountIDs := s.resolveAutoScheduleAccountIDs(ctx, m)
-	if len(accountIDs) == 0 {
-		return nil, false
-	}
-	accounts, err := s.autoScheduleRepo.GetByIDs(ctx, accountIDs)
-	if err != nil {
-		slog.Warn("channel_monitor: skip bound account probe, account lookup failed",
-			"monitor_id", m.ID, "error", err)
-		plans := make([]channelMonitorAccountProbePlan, 0, len(accountIDs))
-		for _, accountID := range accountIDs {
-			plans = append(plans, channelMonitorAccountProbePlan{
-				accountID:          accountID,
-				unavailableMessage: "bound account lookup failed",
-			})
-		}
-		return plans, true
-	}
-	accountByID := make(map[int64]*Account, len(accounts))
-	for _, account := range accounts {
-		if account != nil {
-			accountByID[account.ID] = account
-		}
-	}
-	plans := make([]channelMonitorAccountProbePlan, 0, len(accountIDs))
-	for _, accountID := range accountIDs {
-		account := accountByID[accountID]
-		if plan, ok := s.channelMonitorAccountProbePlan(m, account); ok {
-			plans = append(plans, plan)
-			continue
-		}
-		plans = append(plans, channelMonitorAccountProbePlan{
-			accountID:          accountID,
-			unavailableMessage: channelMonitorBoundAccountUnavailableMessage(m, account),
-		})
-	}
-	return plans, true
-}
-
-func channelMonitorBoundAccountUnavailableMessage(m *ChannelMonitor, account *Account) string {
-	message := "bound account unavailable"
-	switch {
-	case account == nil:
-		message += ": account not found"
-	case !account.IsActive():
-		if detail := strings.TrimSpace(account.ErrorMessage); detail != "" {
-			message += ": " + detail
-		} else {
-			message += ": status " + strings.TrimSpace(account.Status)
-		}
-	case m == nil || account.Platform != m.Provider:
-		message += ": provider mismatch"
-	case account.Type != AccountTypeAPIKey:
-		message += ": account type is not supported"
-	default:
-		message += ": credentials are incomplete"
-	}
-	return truncateMessage(sanitizeErrorMessage(message))
-}
-
-func (s *ChannelMonitorService) channelMonitorAccountProbePlan(m *ChannelMonitor, account *Account) (channelMonitorAccountProbePlan, bool) {
-	if m == nil || account == nil || !account.IsActive() {
-		return channelMonitorAccountProbePlan{}, false
-	}
-	if account.Platform != m.Provider || account.Type != AccountTypeAPIKey {
-		return channelMonitorAccountProbePlan{}, false
-	}
-	endpoint := ""
-	apiKey := ""
-	requestPath := ""
-	switch account.Platform {
-	case MonitorProviderOpenAI:
-		endpoint = account.GetOpenAIBaseURL()
-		apiKey = account.GetOpenAIApiKey()
-		apiMode := channelMonitorOpenAIProbeAPIMode(m.APIMode, account)
-		endpoint, requestPath = splitChannelMonitorOpenAIProbeURL(endpoint, apiMode)
-		opts := channelMonitorBoundProbeOptions(m, apiMode)
-		return channelMonitorAccountProbePlan{
-			accountID: account.ID,
-			provider:  account.Platform,
-			endpoint:  strings.TrimRight(strings.TrimSpace(endpoint), "/"),
-			apiKey:    apiKey,
-			opts:      opts.withRequestPath(requestPath),
-		}, strings.TrimRight(strings.TrimSpace(endpoint), "/") != "" && strings.TrimSpace(apiKey) != ""
-	case MonitorProviderAnthropic:
-		endpoint = account.GetBaseURL()
-		apiKey = account.GetCredential("api_key")
-	case MonitorProviderGemini:
-		endpoint = account.GetGeminiBaseURL("https://generativelanguage.googleapis.com")
-		apiKey = account.GetCredential("api_key")
-	default:
-		return channelMonitorAccountProbePlan{}, false
-	}
-	endpoint = strings.TrimRight(strings.TrimSpace(endpoint), "/")
-	if endpoint == "" || strings.TrimSpace(apiKey) == "" {
-		return channelMonitorAccountProbePlan{}, false
-	}
-	return channelMonitorAccountProbePlan{
-		accountID: account.ID,
-		provider:  account.Platform,
-		endpoint:  endpoint,
-		apiKey:    apiKey,
-		opts: &CheckOptions{
-			APIMode:             m.APIMode,
-			ExtraHeaders:        m.ExtraHeaders,
-			BodyOverrideMode:    m.BodyOverrideMode,
-			BodyOverride:        m.BodyOverride,
-			RequestPathOverride: requestPath,
-		},
-	}, true
-}
-
-func channelMonitorOpenAIProbeAPIMode(monitorAPIMode string, account *Account) string {
-	if account != nil && account.Type == AccountTypeAPIKey {
-		switch openai_compat.ResolveResponsesSupport(account.Extra) {
-		case openai_compat.ResponsesSupportYes:
-			return MonitorAPIModeResponses
-		case openai_compat.ResponsesSupportNo:
-			return MonitorAPIModeChatCompletions
-		}
-	}
-	return defaultAPIMode(monitorAPIMode)
-}
-
-func channelMonitorBoundProbeOptions(m *ChannelMonitor, apiMode string) *CheckOptions {
-	opts := &CheckOptions{
-		APIMode:          apiMode,
-		ExtraHeaders:     m.ExtraHeaders,
-		BodyOverrideMode: m.BodyOverrideMode,
-		BodyOverride:     m.BodyOverride,
-	}
-	if defaultAPIMode(apiMode) == MonitorAPIModeResponses &&
-		defaultAPIMode(m.APIMode) != MonitorAPIModeResponses &&
-		m.BodyOverrideMode == MonitorBodyOverrideModeReplace {
-		opts.BodyOverrideMode = MonitorBodyOverrideModeOff
-		opts.BodyOverride = nil
-	}
-	return opts
-}
-
-func (opts *CheckOptions) withRequestPath(path string) *CheckOptions {
-	if opts == nil {
-		opts = &CheckOptions{}
-	}
-	opts.RequestPathOverride = path
-	return opts
-}
-
-func splitChannelMonitorOpenAIProbeURL(baseURL, apiMode string) (endpoint string, requestPath string) {
-	full := buildOpenAIChatCompletionsURL(baseURL)
-	if defaultAPIMode(apiMode) == MonitorAPIModeResponses {
-		full = buildOpenAIResponsesURL(baseURL)
-	}
-	u, err := url.Parse(full)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return strings.TrimRight(strings.TrimSpace(baseURL), "/"), ""
-	}
-	path := u.EscapedPath()
-	if u.RawQuery != "" {
-		path += "?" + u.RawQuery
-	}
-	return u.Scheme + "://" + u.Host, path
-}
-
-func mergeMonitorAccountProbeResults(model string, results []*CheckResult) *CheckResult {
-	if len(results) == 0 {
-		return &CheckResult{Model: model, Status: MonitorStatusError, Message: "no bound account probe results", CheckedAt: time.Now()}
-	}
-	merged := cloneCheckResultForModel(results[0], model)
-	for _, r := range results[1:] {
-		merged = worseMonitorResult(merged, r, model)
-	}
-	if len(results) > 1 && merged.Message != "" {
-		merged.Message = truncateMessage(fmt.Sprintf("bound account probe: %s", merged.Message))
-	}
-	return merged
-}
-
-func cloneCheckResultForModel(r *CheckResult, model string) *CheckResult {
-	if r == nil {
-		return &CheckResult{Model: model, Status: MonitorStatusError, Message: "empty bound account probe result", CheckedAt: time.Now()}
-	}
-	clone := *r
-	clone.Model = model
-	return &clone
-}
-
-func worseMonitorResult(current *CheckResult, next *CheckResult, model string) *CheckResult {
-	if monitorStatusRank(next) > monitorStatusRank(current) {
-		return cloneCheckResultForModel(next, model)
-	}
-	return current
-}
-
-func monitorStatusRank(r *CheckResult) int {
-	if r == nil {
-		return 3
-	}
-	switch r.Status {
-	case MonitorStatusOperational:
-		return 0
-	case MonitorStatusDegraded:
-		return 1
-	case MonitorStatusFailed:
-		return 2
-	case MonitorStatusError:
-		return 3
-	default:
-		return 3
-	}
+	return results
 }
 
 // ---------- 调度器协作 ----------
@@ -1485,16 +957,6 @@ func applyMonitorUpdate(existing *ChannelMonitor, p ChannelMonitorUpdateParams) 
 		}
 		existing.IntervalSeconds = *p.IntervalSeconds
 	}
-	if p.ClearAccount {
-		existing.AccountID = nil
-		existing.AccountIDs = []int64{}
-	} else if p.AccountIDs != nil {
-		existing.AccountIDs = normalizeAccountIDs(*p.AccountIDs)
-		existing.AccountID = firstAccountID(existing.AccountIDs)
-	} else if p.AccountID != nil {
-		existing.AccountIDs = normalizeAccountIDsFromOptional(p.AccountID)
-		existing.AccountID = firstAccountID(existing.AccountIDs)
-	}
 	if p.JitterSeconds != nil {
 		existing.JitterSeconds = *p.JitterSeconds
 	}
@@ -1548,78 +1010,4 @@ func applyMonitorAdvancedUpdate(existing *ChannelMonitor, p ChannelMonitorUpdate
 	}
 	existing.APIMode = newAPIMode
 	return nil
-}
-
-func normalizeOptionalID(id *int64) *int64 {
-	if id == nil || *id <= 0 {
-		return nil
-	}
-	v := *id
-	return &v
-}
-
-func (s *ChannelMonitorService) resolveCreateAccountIDs(ctx context.Context, name, provider string, explicitIDs *[]int64, legacyID *int64) []int64 {
-	if explicitIDs != nil {
-		return normalizeAccountIDs(*explicitIDs)
-	}
-	if ids := normalizeAccountIDsFromOptional(legacyID); len(ids) > 0 {
-		return ids
-	}
-	if s == nil || s.autoScheduleRepo == nil {
-		return []int64{}
-	}
-	monitorName := normalizeMonitorAccountMatchName(name)
-	provider = strings.TrimSpace(provider)
-	if monitorName == "" || provider == "" {
-		return []int64{}
-	}
-	accounts, err := s.autoScheduleRepo.ListByPlatform(ctx, provider)
-	if err != nil {
-		slog.Warn("channel_monitor: skip create-time account binding lookup",
-			"provider", provider, "monitor_name", strings.TrimSpace(name), "error", err)
-		return []int64{}
-	}
-	matched := make([]int64, 0, 1)
-	for _, account := range accounts {
-		if normalizeMonitorAccountMatchName(account.Name) != monitorName {
-			continue
-		}
-		matched = append(matched, account.ID)
-	}
-	return normalizeAccountIDs(matched)
-}
-
-func normalizeAccountIDsFromOptional(id *int64) []int64 {
-	if id == nil {
-		return []int64{}
-	}
-	return normalizeAccountIDs([]int64{*id})
-}
-
-func normalizeAccountIDs(ids []int64) []int64 {
-	if len(ids) == 0 {
-		return []int64{}
-	}
-	seen := make(map[int64]struct{}, len(ids))
-	out := make([]int64, 0, len(ids))
-	for _, id := range ids {
-		if id <= 0 {
-			continue
-		}
-		if _, ok := seen[id]; ok {
-			continue
-		}
-		seen[id] = struct{}{}
-		out = append(out, id)
-	}
-	return out
-}
-
-func firstAccountID(ids []int64) *int64 {
-	ids = normalizeAccountIDs(ids)
-	if len(ids) == 0 {
-		return nil
-	}
-	id := ids[0]
-	return &id
 }

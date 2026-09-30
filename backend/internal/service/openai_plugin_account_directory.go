@@ -101,8 +101,6 @@ func accountToPluginInfo(account *Account) PluginAccountInfo {
 //     recurse into a stack-overflow panic if the reverse relation is ever
 //     populated. GroupIDs already conveys membership, so drop these for
 //     correctness (not secrecy).
-//   - ScheduleLocked: internal scheduling control state; plugins receive the
-//     host-authoritative Schedulable decision instead.
 //
 // Unexported fields (e.g. the hot-path caches) are never marshaled by encoding/json.
 func accountReadableSnapshotJSON(account *Account) []byte {
@@ -113,7 +111,6 @@ func accountReadableSnapshotJSON(account *Account) []byte {
 	clone.Credentials = nil
 	clone.Groups = nil
 	clone.AccountGroups = nil
-	clone.ScheduleLocked = false
 	data, err := json.Marshal(&clone)
 	if err != nil {
 		return nil

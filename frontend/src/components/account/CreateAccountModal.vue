@@ -1816,7 +1816,7 @@
               @click="headerOverrideEnabled = !headerOverrideEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+                headerOverrideEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2229,8 +2229,8 @@
             data-testid="grok-custom-base-url-toggle"
             @click="grokOAuthCustomBaseUrlEnabled = !grokOAuthCustomBaseUrlEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              grokOAuthCustomBaseUrlEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+              grokOAuthCustomBaseUrlEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -2269,8 +2269,8 @@
             type="button"
             @click="headerOverrideEnabled = !headerOverrideEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+              headerOverrideEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3106,8 +3106,8 @@
             data-testid="create-openai-flatten-namespaces-toggle"
             @click="openaiFlattenNamespacesEnabled = !openaiFlattenNamespacesEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              openaiFlattenNamespacesEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+              openaiFlattenNamespacesEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3229,8 +3229,8 @@
             :aria-checked="openAILongContextBillingEnabled"
             @click="toggleOpenAILongContextBilling"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              openAILongContextBillingEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+              openAILongContextBillingEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3423,8 +3423,8 @@
           :aria-checked="openAIImagesUrlToB64JsonEnabled"
           @click="openAIImagesUrlToB64JsonEnabled = !openAIImagesUrlToB64JsonEnabled"
           :class="[
-            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-            openAIImagesUrlToB64JsonEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
+            openAIImagesUrlToB64JsonEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
           ]"
         >
           <span
@@ -4229,7 +4229,7 @@ const cnAccentActiveClass = computed(() => {
     case 'opencode_go':
       return 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
     default:
-      return 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+      return 'border-[var(--anthropic-focus)] bg-[color-mix(in_srgb,var(--anthropic-focus)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-focus)_18%,var(--anthropic-section))]'
   }
 })
 const cnAccentIconClass = computed(() => {
@@ -4245,7 +4245,7 @@ const cnAccentIconClass = computed(() => {
     case 'opencode_go':
       return 'bg-amber-500 text-white'
     default:
-      return 'bg-primary-500 text-white'
+      return 'bg-[var(--anthropic-focus)] text-white'
   }
 })
 // 切换国产供应商平台：强制 apikey 类型，deepseek 无 coding 套餐故锁定 payg，

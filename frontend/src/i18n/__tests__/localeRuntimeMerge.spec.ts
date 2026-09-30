@@ -21,8 +21,6 @@ describe('runtime locale merge', () => {
       modular.admin.accounts.columns.upstreamBillingRate
     )
     expect(merged.admin.accounts.duplicateAccount).toBe(modular.admin.accounts.duplicateAccount)
-    expect(merged.nav.globalPricing).toBe(legacy.nav.globalPricing)
-    expect(merged.admin.codex.accounts.title).toBe(legacy.admin.codex.accounts.title)
   })
 
   it('loads the merged messages through the application locale loader', async () => {

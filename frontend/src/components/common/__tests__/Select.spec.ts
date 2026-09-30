@@ -14,9 +14,21 @@ vi.mock('vue-i18n', () => ({
   })
 }))
 
+const originalInnerWidth = window.innerWidth
+let unmountWrapper: (() => void) | undefined
+
+const setViewportWidth = (width: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: width,
+  })
+}
+
 afterEach(() => {
   vi.useRealTimers()
   document.body.innerHTML = ''
+  unmountWrapper?.()
+  unmountWrapper = undefined
   setViewportWidth(originalInnerWidth)
   vi.useRealTimers()
   vi.restoreAllMocks()
@@ -28,7 +40,7 @@ describe('Select portal styles', () => {
     expect(componentSource).toContain('@pointerenter="openDropdown"')
     expect(componentSource).toContain('@mouseleave="scheduleHoverClose"')
     expect(componentSource).toContain('@mouseenter="cancelHoverClose"')
-    expect(componentSource).toContain('@click="openDropdown"')
+    expect(componentSource).toContain('@click="toggleDropdown"')
     expect(componentSource).not.toContain('@mouseover="openDropdown"')
     expect(componentSource).not.toContain('@pointerenter="openDropdown"\n      @mouseenter="openDropdown"\n      @mouseover="openDropdown"')
     expect(componentSource).toContain('const openDropdown = () => {')

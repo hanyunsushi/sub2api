@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/Wei-Shaw/sub2api/ent/account"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -97,6 +96,7 @@ func (_u *ChannelMonitorUpdate) SetNillableCheckMode(v *string) *ChannelMonitorU
 
 // SetAccountID sets the "account_id" field.
 func (_u *ChannelMonitorUpdate) SetAccountID(v int64) *ChannelMonitorUpdate {
+	_u.mutation.ResetAccountID()
 	_u.mutation.SetAccountID(v)
 	return _u
 }
@@ -106,6 +106,12 @@ func (_u *ChannelMonitorUpdate) SetNillableAccountID(v *int64) *ChannelMonitorUp
 	if v != nil {
 		_u.SetAccountID(*v)
 	}
+	return _u
+}
+
+// AddAccountID adds value to the "account_id" field.
+func (_u *ChannelMonitorUpdate) AddAccountID(v int64) *ChannelMonitorUpdate {
+	_u.mutation.AddAccountID(v)
 	return _u
 }
 
@@ -300,18 +306,6 @@ func (_u *ChannelMonitorUpdate) AddCreatedBy(v int64) *ChannelMonitorUpdate {
 	return _u
 }
 
-// SetAccountIds sets the "account_ids" field.
-func (_u *ChannelMonitorUpdate) SetAccountIds(v []int64) *ChannelMonitorUpdate {
-	_u.mutation.SetAccountIds(v)
-	return _u
-}
-
-// AppendAccountIds appends value to the "account_ids" field.
-func (_u *ChannelMonitorUpdate) AppendAccountIds(v []int64) *ChannelMonitorUpdate {
-	_u.mutation.AppendAccountIds(v)
-	return _u
-}
-
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdate) SetTemplateID(v int64) *ChannelMonitorUpdate {
 	_u.mutation.SetTemplateID(v)
@@ -413,11 +407,6 @@ func (_u *ChannelMonitorUpdate) SetRequestTemplate(v *ChannelMonitorRequestTempl
 	return _u.SetRequestTemplateID(v.ID)
 }
 
-// SetAccount sets the "account" edge to the Account entity.
-func (_u *ChannelMonitorUpdate) SetAccount(v *Account) *ChannelMonitorUpdate {
-	return _u.SetAccountID(v.ID)
-}
-
 // Mutation returns the ChannelMonitorMutation object of the builder.
 func (_u *ChannelMonitorUpdate) Mutation() *ChannelMonitorMutation {
 	return _u.mutation
@@ -468,12 +457,6 @@ func (_u *ChannelMonitorUpdate) RemoveDailyRollups(v ...*ChannelMonitorDailyRoll
 // ClearRequestTemplate clears the "request_template" edge to the ChannelMonitorRequestTemplate entity.
 func (_u *ChannelMonitorUpdate) ClearRequestTemplate() *ChannelMonitorUpdate {
 	_u.mutation.ClearRequestTemplate()
-	return _u
-}
-
-// ClearAccount clears the "account" edge to the Account entity.
-func (_u *ChannelMonitorUpdate) ClearAccount() *ChannelMonitorUpdate {
-	_u.mutation.ClearAccount()
 	return _u
 }
 
@@ -600,6 +583,15 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if value, ok := _u.mutation.CheckMode(); ok {
 		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.AccountID(); ok {
+		_spec.SetField(channelmonitor.FieldAccountID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAccountID(); ok {
+		_spec.AddField(channelmonitor.FieldAccountID, field.TypeInt64, value)
+	}
+	if _u.mutation.AccountIDCleared() {
+		_spec.ClearField(channelmonitor.FieldAccountID, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)
 	}
@@ -652,14 +644,6 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
 		_spec.AddField(channelmonitor.FieldCreatedBy, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AccountIds(); ok {
-		_spec.SetField(channelmonitor.FieldAccountIds, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedAccountIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, channelmonitor.FieldAccountIds, value)
-		})
 	}
 	if value, ok := _u.mutation.ExtraHeaders(); ok {
 		_spec.SetField(channelmonitor.FieldExtraHeaders, field.TypeJSON, value)
@@ -792,35 +776,6 @@ func (_u *ChannelMonitorUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.AccountCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   channelmonitor.AccountTable,
-			Columns: []string{channelmonitor.AccountColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.AccountIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   channelmonitor.AccountTable,
-			Columns: []string{channelmonitor.AccountColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{channelmonitor.Label}
@@ -905,6 +860,7 @@ func (_u *ChannelMonitorUpdateOne) SetNillableCheckMode(v *string) *ChannelMonit
 
 // SetAccountID sets the "account_id" field.
 func (_u *ChannelMonitorUpdateOne) SetAccountID(v int64) *ChannelMonitorUpdateOne {
+	_u.mutation.ResetAccountID()
 	_u.mutation.SetAccountID(v)
 	return _u
 }
@@ -914,6 +870,12 @@ func (_u *ChannelMonitorUpdateOne) SetNillableAccountID(v *int64) *ChannelMonito
 	if v != nil {
 		_u.SetAccountID(*v)
 	}
+	return _u
+}
+
+// AddAccountID adds value to the "account_id" field.
+func (_u *ChannelMonitorUpdateOne) AddAccountID(v int64) *ChannelMonitorUpdateOne {
+	_u.mutation.AddAccountID(v)
 	return _u
 }
 
@@ -1108,18 +1070,6 @@ func (_u *ChannelMonitorUpdateOne) AddCreatedBy(v int64) *ChannelMonitorUpdateOn
 	return _u
 }
 
-// SetAccountIds sets the "account_ids" field.
-func (_u *ChannelMonitorUpdateOne) SetAccountIds(v []int64) *ChannelMonitorUpdateOne {
-	_u.mutation.SetAccountIds(v)
-	return _u
-}
-
-// AppendAccountIds appends value to the "account_ids" field.
-func (_u *ChannelMonitorUpdateOne) AppendAccountIds(v []int64) *ChannelMonitorUpdateOne {
-	_u.mutation.AppendAccountIds(v)
-	return _u
-}
-
 // SetTemplateID sets the "template_id" field.
 func (_u *ChannelMonitorUpdateOne) SetTemplateID(v int64) *ChannelMonitorUpdateOne {
 	_u.mutation.SetTemplateID(v)
@@ -1221,11 +1171,6 @@ func (_u *ChannelMonitorUpdateOne) SetRequestTemplate(v *ChannelMonitorRequestTe
 	return _u.SetRequestTemplateID(v.ID)
 }
 
-// SetAccount sets the "account" edge to the Account entity.
-func (_u *ChannelMonitorUpdateOne) SetAccount(v *Account) *ChannelMonitorUpdateOne {
-	return _u.SetAccountID(v.ID)
-}
-
 // Mutation returns the ChannelMonitorMutation object of the builder.
 func (_u *ChannelMonitorUpdateOne) Mutation() *ChannelMonitorMutation {
 	return _u.mutation
@@ -1276,12 +1221,6 @@ func (_u *ChannelMonitorUpdateOne) RemoveDailyRollups(v ...*ChannelMonitorDailyR
 // ClearRequestTemplate clears the "request_template" edge to the ChannelMonitorRequestTemplate entity.
 func (_u *ChannelMonitorUpdateOne) ClearRequestTemplate() *ChannelMonitorUpdateOne {
 	_u.mutation.ClearRequestTemplate()
-	return _u
-}
-
-// ClearAccount clears the "account" edge to the Account entity.
-func (_u *ChannelMonitorUpdateOne) ClearAccount() *ChannelMonitorUpdateOne {
-	_u.mutation.ClearAccount()
 	return _u
 }
 
@@ -1438,6 +1377,15 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	if value, ok := _u.mutation.CheckMode(); ok {
 		_spec.SetField(channelmonitor.FieldCheckMode, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.AccountID(); ok {
+		_spec.SetField(channelmonitor.FieldAccountID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAccountID(); ok {
+		_spec.AddField(channelmonitor.FieldAccountID, field.TypeInt64, value)
+	}
+	if _u.mutation.AccountIDCleared() {
+		_spec.ClearField(channelmonitor.FieldAccountID, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.APIMode(); ok {
 		_spec.SetField(channelmonitor.FieldAPIMode, field.TypeString, value)
 	}
@@ -1490,14 +1438,6 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 	}
 	if value, ok := _u.mutation.AddedCreatedBy(); ok {
 		_spec.AddField(channelmonitor.FieldCreatedBy, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AccountIds(); ok {
-		_spec.SetField(channelmonitor.FieldAccountIds, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedAccountIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, channelmonitor.FieldAccountIds, value)
-		})
 	}
 	if value, ok := _u.mutation.ExtraHeaders(); ok {
 		_spec.SetField(channelmonitor.FieldExtraHeaders, field.TypeJSON, value)
@@ -1623,35 +1563,6 @@ func (_u *ChannelMonitorUpdateOne) sqlSave(ctx context.Context) (_node *ChannelM
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(channelmonitorrequesttemplate.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.AccountCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   channelmonitor.AccountTable,
-			Columns: []string{channelmonitor.AccountColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.AccountIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   channelmonitor.AccountTable,
-			Columns: []string{channelmonitor.AccountColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

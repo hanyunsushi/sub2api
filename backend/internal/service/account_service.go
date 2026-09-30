@@ -164,7 +164,6 @@ type AccountBulkUpdate struct {
 	LoadFactor     *int
 	Status         *string
 	Schedulable    *bool
-	ScheduleLocked *bool
 	Credentials    map[string]any
 	Extra          map[string]any
 	ProbeEnabled   *bool

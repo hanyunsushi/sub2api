@@ -1,9 +1,15 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-09-26
+updated: 2026-09-30
 base_commit: da1f1049e
-head_commit: 760885518
+head_commit: 6dc168ba6d0a26cf034244113474e3c8211b7f8f
 ---
+
+# 2026-09-30 Official/custom behavior repair and verification
+
+The development worktree now records the final official/custom behavior boundary: official functionality follows the upstream contract, while the Anthropic/Kreeperai visual and interaction contract remains local. Shared platform presentation uses Anthropic semantic variables while retaining platform labels, icons and identity. SettingsView tests isolate the added settings, affiliate and public-settings child-component requests, so the suite does not contact a real backend.
+
+Final frontend verification passed: Vitest `396/396` files and `2853/2853` tests with no unhandled errors, `pnpm run typecheck`, `pnpm run build` with i18n `3/3`, and `git diff --check`. `pnpm run lint:check` has 0 errors and 5 pre-existing warnings. No production source, OCI image, runtime, stateful service or volume was changed.
 
 # 2026-09-26 OCI Authentik OIDC public handoff
 
@@ -47,6 +53,7 @@ Dashboard embedding policy now permits exactly the production website and localh
 | Upstream v0.2.8 merge and OCI application release | authority + frontend/backend modules | merge capabilities, test gates and runtime snapshot | Merge `98f6d208d`, snapshot fix `104c5a14e`; `go test ./... -count=1`, frontend typecheck/lint/build and diff check passed; image `sha256:e75f92...299d`; rollback `sha256:e6779b...15fc`; routes/assets 200; formal volumes and stateful containers unchanged |
 | A6API Cookie balance integration and OCI release | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Cookie auth, nested quota parsing, USD conversion, credential label, release digest and rollback state | Commit `2d7f8cab8`; full Go/frontend gates passed; image `sha256:6ba4e742...b4723`; rollback `sha256:e75f92...299d`; metadata residue removed; health, routes, version and formal volumes verified |
 | A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass; commit `695f948e8`; OCI image `sha256:5807f9...dd6bb` |
+| Official subscription management recovery with local visual preservation | `.llm-wiki/modules/frontend.md`, authority | Restore upstream bulk subscription actions and batch assignment without replacing the Anthropic/Kreeperai toolbar, dropdown or table contract | `SubscriptionsView.userUsageLink.spec.ts` and `SubscriptionsView.bulkActions.spec.ts`: 10/10; `pnpm run typecheck`, `pnpm run build`, i18n completeness and diff check pass; no production or OCI changes |
 | OCI Authentik OIDC deployment | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Isolated Authentik runtime boundary, health checks, ports, volume and pending public handoff | Official Compose file, image `ghcr.io/goauthentik/server:2026.8.3`; all three Authentik services healthy; local health/setup/admin routes 200; existing service restart counts 0 |
 | OCI Authentik public hostname handoff | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Remote Tunnel ingress, DNS, public Authentik health and pending OIDC provider setup | Remote config version `7`; public health/setup/admin routes 200; root redirects to `/setup`; no provider-specific discovery until bootstrap setup |
 

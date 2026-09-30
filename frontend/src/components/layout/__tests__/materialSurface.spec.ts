@@ -59,7 +59,7 @@ describe('right-side material surfaces', () => {
     expect(materialSystemBlock).toContain(':root.theme-anthropic,\n:root[data-theme="anthropic"] {\n  color-scheme: light;')
     expect(materialSystemBlock).toContain('background: var(--anthropic-page);')
     expect(materialSystemBlock).toContain('color: var(--anthropic-fg);')
-    expect(styleSource).toContain('.dark .sidebar {\n    --sidebar-bg: var(--atelier-paper-2);')
+    expect(styleSource).toContain('.dark .sidebar {\n    --sidebar-bg: var(--anthropic-page);')
     expect(styleSource).not.toContain('.dark .sidebar {\n    --sidebar-bg: #050505;')
     expect(styleSource).not.toContain('@media (prefers-reduced-transparency: reduce)')
     expect(dataTableSource).not.toContain('#11100d')

@@ -602,7 +602,7 @@ onMounted(async () => {
   syncAffiliateReferralCode()
 
   try {
-    const settings = await getPublicSettings()
+    const settings = appStore.cachedPublicSettings || (await appStore.fetchPublicSettings()) || (await getPublicSettings())
     registrationEnabled.value = settings.registration_enabled
     emailVerifyEnabled.value = settings.email_verify_enabled
     promoCodeEnabled.value = settings.promo_code_enabled
@@ -695,11 +695,11 @@ function applyLoginAgreementSettings(settings: {
 }
 
 function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettings>>): void {
-  registrationEnabled.value = settings.registration_enabled
-  emailVerifyEnabled.value = settings.email_verify_enabled
-  promoCodeEnabled.value = settings.promo_code_enabled
-  invitationCodeEnabled.value = settings.invitation_code_enabled
-  turnstileEnabled.value = settings.turnstile_enabled
+  registrationEnabled.value = settings.registration_enabled ?? registrationEnabled.value
+  emailVerifyEnabled.value = settings.email_verify_enabled ?? emailVerifyEnabled.value
+  promoCodeEnabled.value = settings.promo_code_enabled ?? promoCodeEnabled.value
+  invitationCodeEnabled.value = settings.invitation_code_enabled ?? invitationCodeEnabled.value
+  turnstileEnabled.value = settings.turnstile_enabled ?? turnstileEnabled.value
   turnstileSiteKey.value = settings.turnstile_site_key || ''
   linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
   wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)

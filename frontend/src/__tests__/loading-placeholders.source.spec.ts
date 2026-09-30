@@ -8,7 +8,6 @@ const styleSource = readFileSync(resolve(__dirname, '../style.css'), 'utf8')
 const targetedRepairSource = readFileSync(resolve(__dirname, '../styles/targeted-visual-repair.css'), 'utf8')
 const skeletonSource = readFileSync(resolve(__dirname, '../components/common/Skeleton.vue'), 'utf8')
 const keyUsageSource = readFileSync(resolve(__dirname, '../views/KeyUsageView.vue'), 'utf8')
-const globalPricingSource = readFileSync(resolve(__dirname, '../views/user/GlobalPricingView.vue'), 'utf8')
 
 const cssBlock = (source: string, selector: string, fromIndex = 0) => {
   const selectorIndex = source.indexOf(selector, fromIndex)
@@ -77,10 +76,5 @@ describe('Anthropic loading placeholders', () => {
     expect(keyUsageSource).not.toContain('linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)')
     expect(keyUsageSource).not.toContain('linear-gradient(90deg, #334155 25%, #1e293b 50%, #334155 75%)')
 
-    expect(globalPricingSource).toContain('.skeleton-line')
-    expect(globalPricingSource).toContain('.skeleton-icon')
-    expect(globalPricingSource).toContain('var(--anthropic-loading-gradient')
-    expect(globalPricingSource).not.toContain('@apply h-4 animate-pulse rounded bg-gray-200 dark:bg-dark-700;')
-    expect(globalPricingSource).not.toContain('@apply mx-auto h-7 w-7 animate-pulse rounded-md bg-gray-200 dark:bg-dark-700;')
   })
 })

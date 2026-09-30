@@ -94,12 +94,20 @@
         </div>
 
         <!-- Iframe embed mode -->
-        <div v-else class="custom-embed-shell">
-          <a data-testid="user-custom-page-link-a"
+        <div v-else class="custom-embed-shell" ref="customEmbedShell">
+          <a v-if="!menuItem.hide_open_button" data-testid="user-custom-page-link-a"
+            ref="customOpenButton"
             :href="embeddedUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-secondary btn-sm custom-open-fab"
+            :style="customOpenButtonStyle"
+            @pointerdown="startOpenButtonDrag"
+            @pointermove="moveOpenButtonDrag"
+            @pointerup="finishOpenButtonDrag"
+            @pointercancel="cancelOpenButtonDrag"
+            @lostpointercapture="cancelOpenButtonDrag"
+            @click="handleOpenButtonClick"
           >
             <Icon name="externalLink" size="sm" class="mr-1.5" :stroke-width="2" />
             {{ t('customPage.openInNewTab') }}
@@ -147,6 +155,15 @@ const markdownContainer = ref<HTMLElement | null>(null)
 const tocItems = ref<TocItem[]>([])
 const tocVisible = ref(typeof window !== 'undefined' ? window.innerWidth > 768 : true)
 const activeHeadingId = ref('')
+const customEmbedShell = ref<HTMLElement | null>(null)
+const customOpenButton = ref<HTMLElement | null>(null)
+const customOpenButtonPosition = ref<{ left: number; top: number } | null>(null)
+const customOpenButtonStyle = computed(() => customOpenButtonPosition.value
+  ? { left: `${customOpenButtonPosition.value.left}px`, top: `${customOpenButtonPosition.value.top}px`, right: 'auto' }
+  : undefined)
+let openButtonDrag: { pointerId: number; startX: number; startY: number; left: number; top: number; moved: boolean } | null = null
+let suppressOpenButtonClick = false
+let embedResizeObserver: ResizeObserver | null = null
 let themeObserver: MutationObserver | null = null
 
 const menuItemId = computed(() => route.params.id as string)
@@ -333,6 +350,60 @@ function injectCopyButtons() {
   })
 }
 
+function clampOpenButtonPosition(left: number, top: number) {
+  const shell = customEmbedShell.value
+  const button = customOpenButton.value
+  if (!shell || !button) return { left: 0, top: 0 }
+  return {
+    left: Math.max(0, Math.min(left, shell.clientWidth - button.offsetWidth)),
+    top: Math.max(0, Math.min(top, shell.clientHeight - button.offsetHeight)),
+  }
+}
+
+function startOpenButtonDrag(event: PointerEvent) {
+  if (event.button !== 0 || !customOpenButton.value) return
+  const rect = customOpenButton.value.getBoundingClientRect()
+  openButtonDrag = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    left: customOpenButtonPosition.value?.left ?? customOpenButton.value.offsetLeft ?? (rect.left - (customEmbedShell.value?.getBoundingClientRect().left ?? 0)),
+    top: customOpenButtonPosition.value?.top ?? customOpenButton.value.offsetTop ?? (rect.top - (customEmbedShell.value?.getBoundingClientRect().top ?? 0)),
+    moved: false,
+  }
+  customOpenButton.value.setPointerCapture(event.pointerId)
+}
+
+function moveOpenButtonDrag(event: PointerEvent) {
+  if (!openButtonDrag || event.pointerId !== openButtonDrag.pointerId) return
+  const dx = event.clientX - openButtonDrag.startX
+  const dy = event.clientY - openButtonDrag.startY
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) openButtonDrag.moved = true
+  if (openButtonDrag.moved) {
+    customOpenButtonPosition.value = clampOpenButtonPosition(openButtonDrag.left + dx, openButtonDrag.top + dy)
+  }
+}
+
+function finishOpenButtonDrag(event: PointerEvent) {
+  if (!openButtonDrag || event.pointerId !== openButtonDrag.pointerId) return
+  suppressOpenButtonClick = openButtonDrag.moved
+  if (customOpenButton.value?.hasPointerCapture(event.pointerId)) {
+    customOpenButton.value.releasePointerCapture(event.pointerId)
+  }
+  openButtonDrag = null
+}
+
+function cancelOpenButtonDrag() {
+  openButtonDrag = null
+}
+
+function handleOpenButtonClick(event: MouseEvent) {
+  if (suppressOpenButtonClick) {
+    if (event.detail !== 0) event.preventDefault()
+    suppressOpenButtonClick = false
+  }
+}
+
 watch(markdownSlug, (slug) => {
   if (slug) {
     fetchAndRenderMarkdown(slug)
@@ -364,6 +435,21 @@ onMounted(async () => {
   }
 })
 
+watch(customOpenButton, (button) => {
+  embedResizeObserver?.disconnect()
+  embedResizeObserver = null
+  if (!button || !customEmbedShell.value) return
+  embedResizeObserver = new ResizeObserver(() => {
+    if (customOpenButtonPosition.value) {
+      customOpenButtonPosition.value = clampOpenButtonPosition(
+        customOpenButtonPosition.value.left,
+        customOpenButtonPosition.value.top,
+      )
+    }
+  })
+  embedResizeObserver.observe(customEmbedShell.value)
+})
+
 onUnmounted(() => {
   if (scrollRafId) {
     cancelAnimationFrame(scrollRafId)
@@ -373,6 +459,8 @@ onUnmounted(() => {
     themeObserver.disconnect()
     themeObserver = null
   }
+  embedResizeObserver?.disconnect()
+  embedResizeObserver = null
 })
 </script>
 

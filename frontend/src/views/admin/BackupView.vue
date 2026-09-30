@@ -152,12 +152,12 @@
           <h4 class="mt-2 text-sm font-medium text-gray-900 dark:text-white md:col-span-2">{{ t('admin.backup.schedule.ordinaryRetention') }}</h4>
           <div>
             <label class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.backup.schedule.retainDays') }}</label>
-            <input data-testid="admin-backup-input-schedule-form-retain-days" v-model.number="scheduleForm.retain_days" type="number" min="0" class="input w-full" />
+            <input data-testid="backup-retain-days" data-test="backup-retain-days" v-model.number="scheduleForm.retain_days" type="number" min="0" class="input w-full" />
             <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.backup.schedule.retainDaysHint') }}</p>
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.backup.schedule.retainCount') }}</label>
-            <input data-testid="admin-backup-input-schedule-form-retain-count" v-model.number="scheduleForm.retain_count" type="number" min="0" class="input w-full" />
+            <input data-testid="backup-retain-count" data-test="backup-retain-count" v-model.number="scheduleForm.retain_count" type="number" min="0" class="input w-full" />
             <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.backup.schedule.retainCountHint') }}</p>
           </div>
         </div>

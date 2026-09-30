@@ -128,7 +128,7 @@ function handleUpload(event: Event) {
   if (!file) return
   reader?.abort()
 
-  if (props.maxSize && file.size > props.maxSize) {
+  if (typeof props.maxSize === 'number' && props.maxSize > 0 && file.size > props.maxSize) {
     error.value = t('common.fileTooLargeKb', {
       size: (file.size / 1024).toFixed(1),
       max: (props.maxSize / 1024).toFixed(0)

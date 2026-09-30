@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import Select from '@/components/common/Select.vue'
 
 import UsageView from '../UsageView.vue'
 
@@ -141,6 +144,7 @@ function mountUsageView() {
         AppLayout: simpleStub,
         Pagination: true,
         Select: true,
+        DataTable: chartStub,
         DateRangePicker: true,
         Icon: true,
         UsageStatsCards: chartStub,
@@ -391,7 +395,7 @@ describe('user UsageView', () => {
       keySelect.vm.$emit('update:modelValue', 1)
       keySelect.vm.$emit('change', 1)
       datePicker.vm.$emit('change', { startDate: '2026-04-01', endDate: '2026-04-08', preset: null })
-      wrapper.findComponent(UsageTable).vm.$emit('sort', 'actual_cost', 'asc')
+      wrapper.findComponent(DataTable).vm.$emit('sort', 'actual_cost', 'asc')
       await flushPromises()
       expect(query).toHaveBeenCalledWith(expect.objectContaining({
         api_key_id: 1, start_date: '2026-04-01', end_date: '2026-04-08',

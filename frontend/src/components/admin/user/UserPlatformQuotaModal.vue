@@ -43,8 +43,8 @@
                   <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-daily"
                     type="button"
                     class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
-                    :disabled="!!resetting[`${row.platform}.daily`]"
-                    :title="t('admin.users.platformQuota.reset.button')"
+                    :disabled="!!resetting[`${row.platform}.daily`] || !savedConfigured.has(row.platform)"
+                    :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'daily')"
                   >↻</button>
                 </div>
@@ -62,8 +62,8 @@
                   <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-weekly"
                     type="button"
                     class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
-                    :disabled="!!resetting[`${row.platform}.weekly`]"
-                    :title="t('admin.users.platformQuota.reset.button')"
+                    :disabled="!!resetting[`${row.platform}.weekly`] || !savedConfigured.has(row.platform)"
+                    :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'weekly')"
                   >↻</button>
                 </div>
@@ -81,8 +81,8 @@
                   <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-monthly"
                     type="button"
                     class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
-                    :disabled="!!resetting[`${row.platform}.monthly`]"
-                    :title="t('admin.users.platformQuota.reset.button')"
+                    :disabled="!!resetting[`${row.platform}.monthly`] || !savedConfigured.has(row.platform)"
+                    :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'monthly')"
                   >↻</button>
                 </div>
@@ -147,6 +147,17 @@ const loading = ref(false)
 const submitting = ref(false)
 const resetting = reactive<Record<string, boolean>>({})
 const quotas = ref<QuotaRow[]>([])
+const savedConfigured = ref<Set<PlatformQuotaPlatform>>(new Set())
+
+function configuredPlatforms(items: PlatformQuotaItem[]): Set<PlatformQuotaPlatform> {
+  const configured = new Set<PlatformQuotaPlatform>()
+  for (const item of items) {
+    if (item.daily_limit_usd != null || item.weekly_limit_usd != null || item.monthly_limit_usd != null) {
+      configured.add(item.platform)
+    }
+  }
+  return configured
+}
 
 function emptyRow(p: PlatformQuotaPlatform): QuotaRow {
   return {
@@ -189,9 +200,11 @@ async function load() {
   try {
     const data = await adminAPI.users.getPlatformQuotas(props.user.id)
     quotas.value = normalize(data.platform_quotas || [])
+    savedConfigured.value = configuredPlatforms(data.platform_quotas || [])
   } catch {
     appStore.showError(t('admin.users.platformQuota.loadFailed'))
     quotas.value = PLATFORM_QUOTA_PLATFORMS.map(emptyRow)
+    savedConfigured.value = new Set()
   } finally {
     loading.value = false
   }
@@ -223,7 +236,7 @@ async function onSave() {
   for (const row of quotas.value) {
     for (const win of ['daily', 'weekly', 'monthly'] as const) {
       const v = row[`${win}_limit_usd` as const]
-      if (typeof v === 'number' && Number.isNaN(v)) {
+      if (typeof v === 'number' && (!Number.isFinite(v) || v < 0)) {
         invalid.push(`${row.platform}.${win}`)
       }
     }
@@ -272,6 +285,7 @@ async function onReset(platform: PlatformQuotaPlatform, quotaWindow: PlatformQuo
   try {
     const data = await adminAPI.users.resetPlatformQuotaWindow(props.user.id, platform, quotaWindow)
     quotas.value = normalize(data.platform_quotas || [])
+    savedConfigured.value = configuredPlatforms(data.platform_quotas || [])
     appStore.showSuccess(t('admin.users.platformQuota.reset.success', { platform, window: windowLabel }))
   } catch (e: any) {
     appStore.showError(e?.response?.data?.message || t('admin.users.platformQuota.reset.failed'))

@@ -226,11 +226,17 @@ const allColumns = computed<Column[]>(() => [
   { key: 'actions', label: t('admin.ops.errorLog.action') },
 ])
 
-const columns = computed<Column[]>(() =>
-  props.visibleColumnKeys
+const columns = computed<Column[]>(() => {
+  const visibleColumns = props.visibleColumnKeys
     ? allColumns.value.filter((c) => props.visibleColumnKeys!.includes(c.key))
     : allColumns.value
-)
+  if (!props.summaryFirst) return visibleColumns
+  return [
+    ...visibleColumns.filter((c) => c.key === 'created_at'),
+    ...visibleColumns.filter((c) => c.key === 'message'),
+    ...visibleColumns.filter((c) => c.key !== 'created_at' && c.key !== 'message'),
+  ]
+})
 
 function isUpstreamRow(log: OpsErrorLog): boolean {
   const phase = String(log.phase || '').toLowerCase()
@@ -291,6 +297,7 @@ interface Props {
   pageSize: number
   userClickable?: boolean
   visibleColumnKeys?: string[]
+  summaryFirst?: boolean
   /** 嵌入统一卡片内使用：去掉自身卡片外观 */
   flat?: boolean
 }

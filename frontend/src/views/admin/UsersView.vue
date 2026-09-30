@@ -510,7 +510,7 @@
             <div class="flex items-center gap-1.5">
               <span>{{ column.label }}</span>
               <div class="usage-sort-trigger relative">
-                <button data-testid="admin-users-button-toggle-usage-sort-menu-usage-key"
+                <button :data-testid="`usage-sort-trigger-${usageKey}`" :data-test="`usage-sort-trigger-${usageKey}`"
                   :ref="el => setUsageSortButtonRef(usageKey, el)"
                   type="button"
                   class="flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
@@ -549,7 +549,7 @@
                   panel-class="dropdown-highlight-menu min-w-[136px]"
                   @close="openUsageSortMenu = null"
                 >
-                  <button data-testid="admin-users-button-toggle-usage-sort-usage-key-metric"
+                  <button :data-testid="`usage-sort-${usageKey}-${metric}`" :data-test="`usage-sort-${usageKey}-${metric}`"
                     v-for="metric in (['today', 'total'] as const)"
                     :key="metric"
                     type="button"
@@ -1775,6 +1775,10 @@ const handlePageSizeChange = (pageSize: number) => {
 }
 
 const handleSort = (key: string, order: 'asc' | 'desc') => {
+  if (key === 'last_used_at' && usageSort.value) {
+    usageSort.value = null
+    persistUsageSort()
+  }
   sortState.sort_by = key
   sortState.sort_order = order
   pagination.page = 1

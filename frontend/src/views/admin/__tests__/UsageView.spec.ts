@@ -7,6 +7,9 @@ import { defineComponent, ref } from 'vue'
 
 import UsageView from '../UsageView.vue'
 
+const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
+const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
+
 const { list, exportList, getStats, getSnapshotV2, getById, getModelStats, listErrorLogs, routeQuery, aoaToSheet, sheetAddAoa, saveAs, xlsxWrite } = vi.hoisted(() => {
   vi.stubGlobal('localStorage', {
     getItem: vi.fn(() => null),
@@ -526,9 +529,10 @@ describe('admin UsageView request ID column visibility', () => {
     )
 
     await wrapper.get('button[title="admin.users.columnSettings"]').trigger('click')
-    const requestIdToggle = wrapper.findAll('button').find((button) => button.text() === 'Request ID')
+    const requestIdToggle = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === 'Request ID')
     expect(requestIdToggle).toBeDefined()
-    await requestIdToggle!.trigger('click')
+    requestIdToggle!.click()
+    await wrapper.vm.$nextTick()
 
     expect(usageTable.props('columns')).toEqual(
       expect.arrayContaining([expect.objectContaining({ key: 'request_id', label: 'Request ID' })]),
@@ -571,9 +575,10 @@ describe('admin UsageView request ID column visibility', () => {
     )
 
     await wrapper.get('button[title="admin.users.columnSettings"]').trigger('click')
-    const upstreamToggle = wrapper.findAll('button').find((button) => button.text() === 'Upstream ID')
+    const upstreamToggle = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === 'Upstream ID')
     expect(upstreamToggle).toBeDefined()
-    await upstreamToggle!.trigger('click')
+    upstreamToggle!.click()
+    await wrapper.vm.$nextTick()
 
     expect(usageTable.props('columns')).toEqual(
       expect.arrayContaining([expect.objectContaining({ key: 'upstream_request_id', label: 'Upstream ID' })]),

@@ -6,6 +6,7 @@ import LogRetentionSelect from './LogRetentionSelect.vue'
 import { opsAPI, type OpsRuntimeLogConfig, type OpsSystemLog, type OpsSystemLogSinkHealth } from '@/api/admin/ops'
 import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
+import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import { useAppStore } from '@/stores'
 import { extractApiErrorMessage } from '@/utils/apiError'
 
@@ -462,10 +463,10 @@ onMounted(async () => {
               </label>
             </div>
             <div class="flex flex-wrap items-center gap-2 lg:justify-end">
-              <button type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving || runtimeLoading || !runtimeConfigLoaded" @click="saveRuntimeConfig">
+              <button type="button" class="btn btn-primary ops-log-runtime-save-button" :disabled="runtimeSaving || runtimeLoading || !runtimeConfigLoaded" @click="saveRuntimeConfig">
                 {{ runtimeSaving ? t('common.saving') : t('admin.ops.systemLogs.saveAndApply') }}
               </button>
-              <button type="button" class="btn btn-secondary btn-sm" :disabled="runtimeSaving" @click="resetRuntimeConfig">
+              <button type="button" class="filter-menu-button ops-log-runtime-reset-button" :disabled="runtimeSaving" @click="resetRuntimeConfig">
                 {{ t('admin.ops.systemLogs.resetDefaults') }}
               </button>
             </div>
@@ -481,15 +482,11 @@ onMounted(async () => {
         {{ t('admin.ops.systemLogs.timeRange') }}
         <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
-        {{ t('admin.ops.systemLogs.startTime') }}
-        <input v-model="filters.start_time" type="datetime-local" class="input mt-1" />
-      </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
-        {{ t('admin.ops.systemLogs.endTime') }}
-        <input v-model="filters.end_time" type="datetime-local" class="input mt-1" />
-      </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
+        <label class="ops-log-date-range-field text-xs text-gray-600 dark:text-gray-300">
+          {{ t('admin.ops.systemLogs.startTime') }}
+          <DateRangePicker v-model:start-date="filters.start_time" v-model:end-date="filters.end_time" class="mt-1" />
+        </label>
+       <label class="text-xs text-gray-600 dark:text-gray-300">
         {{ t('admin.ops.systemLogs.level') }}
         <Select v-model="filters.level" class="mt-1" :options="filterLevelOptions" />
       </label>
@@ -536,10 +533,10 @@ onMounted(async () => {
     </div>
 
     <div class="mb-3 flex flex-wrap gap-2">
-      <button type="button" class="btn btn-primary btn-sm" @click="applyFilters">{{ t('admin.ops.systemLogs.search') }}</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">{{ t('common.reset') }}</button>
-      <button type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">{{ t('admin.ops.systemLogs.cleanCurrentFilters') }}</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">{{ t('admin.ops.systemLogs.refreshHealth') }}</button>
+      <button type="button" class="btn btn-secondary ops-log-query-button" @click="applyFilters">{{ t('admin.ops.systemLogs.search') }}</button>
+      <button type="button" class="filter-menu-button ops-log-reset-button" @click="resetFilters">{{ t('common.reset') }}</button>
+      <button type="button" class="filter-menu-button filter-menu-button-danger ops-log-cleanup-button" @click="cleanupCurrentFilter">{{ t('admin.ops.systemLogs.cleanCurrentFilters') }}</button>
+      <button type="button" class="btn btn-primary anthropic-refresh-action-button ops-log-health-refresh-button" @click="fetchHealth">{{ t('admin.ops.systemLogs.refreshHealth') }}</button>
     </div>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">

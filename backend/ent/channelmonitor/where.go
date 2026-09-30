@@ -460,6 +460,26 @@ func AccountIDNotIn(vs ...int64) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldNotIn(FieldAccountID, vs...))
 }
 
+// AccountIDGT applies the GT predicate on the "account_id" field.
+func AccountIDGT(v int64) predicate.ChannelMonitor {
+	return predicate.ChannelMonitor(sql.FieldGT(FieldAccountID, v))
+}
+
+// AccountIDGTE applies the GTE predicate on the "account_id" field.
+func AccountIDGTE(v int64) predicate.ChannelMonitor {
+	return predicate.ChannelMonitor(sql.FieldGTE(FieldAccountID, v))
+}
+
+// AccountIDLT applies the LT predicate on the "account_id" field.
+func AccountIDLT(v int64) predicate.ChannelMonitor {
+	return predicate.ChannelMonitor(sql.FieldLT(FieldAccountID, v))
+}
+
+// AccountIDLTE applies the LTE predicate on the "account_id" field.
+func AccountIDLTE(v int64) predicate.ChannelMonitor {
+	return predicate.ChannelMonitor(sql.FieldLTE(FieldAccountID, v))
+}
+
 // AccountIDIsNil applies the IsNil predicate on the "account_id" field.
 func AccountIDIsNil() predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(sql.FieldIsNull(FieldAccountID))
@@ -1151,29 +1171,6 @@ func HasRequestTemplate() predicate.ChannelMonitor {
 func HasRequestTemplateWith(preds ...predicate.ChannelMonitorRequestTemplate) predicate.ChannelMonitor {
 	return predicate.ChannelMonitor(func(s *sql.Selector) {
 		step := newRequestTemplateStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasAccount applies the HasEdge predicate on the "account" edge.
-func HasAccount() predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, AccountTable, AccountColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAccountWith applies the HasEdge predicate on the "account" edge with a given conditions (other predicates).
-func HasAccountWith(preds ...predicate.Account) predicate.ChannelMonitor {
-	return predicate.ChannelMonitor(func(s *sql.Selector) {
-		step := newAccountStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
