@@ -2,14 +2,18 @@
 title: Current Documentation Sync State
 updated: 2026-09-30
 base_commit: da1f1049e
-head_commit: 6dc168ba6d0a26cf034244113474e3c8211b7f8f
+head_commit: 88cb179b63d185b8e79f6a89a720eaa3b3e60c49
 ---
 
 # 2026-09-30 Official/custom behavior repair and verification
 
 The development worktree now records the final official/custom behavior boundary: official functionality follows the upstream contract, while the Anthropic/Kreeperai visual and interaction contract remains local. Shared platform presentation uses Anthropic semantic variables while retaining platform labels, icons and identity. SettingsView tests isolate the added settings, affiliate and public-settings child-component requests, so the suite does not contact a real backend.
 
-Final frontend verification passed: Vitest `396/396` files and `2853/2853` tests with no unhandled errors, `pnpm run typecheck`, `pnpm run build` with i18n `3/3`, and `git diff --check`. `pnpm run lint:check` has 0 errors and 5 pre-existing warnings. No production source, OCI image, runtime, stateful service or volume was changed.
+The initial frontend verification passed: Vitest `398/398` files and `2931/2931` tests with no unhandled errors, `pnpm run typecheck`, `pnpm run build` with i18n `3/3`, and `git diff --check`. `pnpm run lint:check` has 0 errors and 5 pre-existing warnings. The OCI application-only release is recorded below.
+
+# 2026-09-30 Merge and OCI release
+
+Final verification passed: backend `go test ./... -count=1`, Ent/Wire generation, frontend Vitest `398/398` files and `2931/2931` tests, typecheck, build with i18n `3/3`, and diff check. Lint has 0 errors and 5 pre-existing warnings. Merge commit `88cb179b6` was pushed and released to OCI as `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; rollback is `sub2api-custom:codex-pre-20260930T093000Z@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`. Only the application container was replaced; stateful services and formal volumes were unchanged. Public version is `0.2.11` and representative routes/assets returned 200.
 
 # 2026-09-26 OCI Authentik OIDC public handoff
 

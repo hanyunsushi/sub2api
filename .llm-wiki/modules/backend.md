@@ -13,6 +13,12 @@ sources:
 
 # Backend Module
 
+## Merge `upstream/main` and OCI release (2026-09-30)
+
+The development branch merged `upstream/main` at `42bc7f6cffe24bcb471608e48e66b4a0afa1f882` into local cleanup commit `55de1f980` as `88cb179b63d185b8e79f6a89a720eaa3b3e60c49`. Official Claude reset credits, dashboard trend metrics, OpenAI plan/model mappings, CC Switch usage handling and batch image gateway wiring were retained; local Anthropic/Kreeperai behavior and retired custom contracts remained scoped as documented below. Ent and Wire code was regenerated.
+
+The OCI application-only release built from that code commit is `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; rollback is `sub2api-custom:codex-pre-20260930T093000Z@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`. The application, PostgreSQL and Redis remained healthy with restart count 0 and formal volumes unchanged. The public version is `0.2.11`.
+
 ## Upstream v0.2.8 integration and release
 
 The backend merge at upstream `a3eb7ef302961cba716dc78b39b93b60c467db0e` adds OpenCode Go usage, typesafe risk-control, backup/archive, affiliate withdrawal, signed-thinking and paginated CSV export capabilities. Ent and server generated code were rebuilt; `go test ./... -count=1` passed. The OCI application image is `sub2api-custom:codex@sha256:e75f92a14c250ed724df007a30b49505690d4a77d6e2fa714395fd6464db299d`, with the previous image retained as `sub2api-custom:codex-pre-20260924T031408Z` for rollback.

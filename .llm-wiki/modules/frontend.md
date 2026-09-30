@@ -13,6 +13,12 @@ sources:
 
 # Frontend Module
 
+## Merge `upstream/main` and OCI release (2026-09-30)
+
+The frontend portion of merge commit `88cb179b63d185b8e79f6a89a720eaa3b3e60c49` retains official usage, dashboard metric, model whitelist, OpenAI plan and CC Switch behavior while preserving the current Anthropic/Kreeperai labels, semantic colors, toolbar, overlay and table contracts. The final frontend gates passed: Vitest `398/398` files and `2931/2931` tests, typecheck, lint with 0 errors and 5 existing warnings, i18n `3/3`, and production build.
+
+The OCI application image built from the code commit is `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; the public version is `0.2.11`. Production representative routes and assets returned 200. Documentation-only changes after the image build are not part of the running image.
+
 ## Upstream v0.2.8 integration and release
 
 The merged frontend includes the upstream v0.2.8 account usage, risk-control, backup/archive, affiliate withdrawal, signed-thinking and paginated-export surfaces while preserving the local Anthropic/Kreeperai styling, external-subscription controls and existing route contracts. The production OCI image was built from the merged source and verified through representative public routes and a static asset.
@@ -24,7 +30,7 @@ The frontend is a Vue 3 single-page application built with Vite. `main.ts` creat
 - Official behavior is kept aligned with the upstream contract. Local Anthropic/Kreeperai visual and interaction behavior remains in place for shared controls, toolbars, overlays and tables; the Klein blue theme is not restored.
 - `src/utils/platformColors.ts` keeps platform labels and icon identity while mapping shared surfaces, borders, text and controls to Anthropic semantic variables instead of provider-specific color ramps.
 - `SettingsView` test mounts stub the optional settings APIs, affiliate API and child pickers that otherwise request public settings during mount. This keeps the test contract representative without making network calls.
-- Final frontend gates: Vitest `396/396` files and `2853/2853` tests passed with no unhandled errors; `pnpm run typecheck` passed; `pnpm run lint:check` passed with 0 errors and 5 pre-existing warnings; `pnpm run build` passed with i18n completeness `3/3`; `git diff --check` passed. These are development-worktree results and do not represent a production release.
+- Final frontend gates: Vitest `398/398` files and `2931/2931` tests passed with no unhandled errors; `pnpm run typecheck` passed; `pnpm run lint:check` passed with 0 errors and 5 pre-existing warnings; `pnpm run build` passed with i18n completeness `3/3`; `git diff --check` passed. The code was then released to OCI as the application-only release documented at the top of this page.
 
 ## Responsibility
 
