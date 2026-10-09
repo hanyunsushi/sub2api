@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-09-30
+updated: 2026-10-10
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -17,7 +17,7 @@ sources:
 
 The frontend portion of merge commit `88cb179b63d185b8e79f6a89a720eaa3b3e60c49` retains official usage, dashboard metric, model whitelist, OpenAI plan and CC Switch behavior while preserving the current Anthropic/Kreeperai labels, semantic colors, toolbar, overlay and table contracts. The final frontend gates passed: Vitest `398/398` files and `2931/2931` tests, typecheck, lint with 0 errors and 5 existing warnings, i18n `3/3`, and production build.
 
-The OCI application image built from the code commit is `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; the public version is `0.2.11`. Production representative routes and assets returned 200. Documentation-only changes after the image build are not part of the running image.
+Current image, release commit, rollback and runtime verification belong to the [Project Authority](../../agent.md), not this module page.
 
 ## Upstream v0.2.8 integration and release
 

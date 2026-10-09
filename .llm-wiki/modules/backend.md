@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-09-29
+updated: 2026-10-10
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -17,7 +17,7 @@ sources:
 
 The development branch merged `upstream/main` at `42bc7f6cffe24bcb471608e48e66b4a0afa1f882` into local cleanup commit `55de1f980` as `88cb179b63d185b8e79f6a89a720eaa3b3e60c49`. Official Claude reset credits, dashboard trend metrics, OpenAI plan/model mappings, CC Switch usage handling and batch image gateway wiring were retained; local Anthropic/Kreeperai behavior and retired custom contracts remained scoped as documented below. Ent and Wire code was regenerated.
 
-The OCI application-only release built from that code commit is `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; rollback is `sub2api-custom:codex-pre-20260930T093000Z@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`. The application, PostgreSQL and Redis remained healthy with restart count 0 and formal volumes unchanged. The public version is `0.2.11`.
+Current image, release commit, rollback and runtime verification belong to the [Project Authority](../../agent.md), not this module page.
 
 ## Upstream v0.2.8 integration and release
 

@@ -1,72 +1,29 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-09-30
-base_commit: da1f1049e
-head_commit: 88cb179b63d185b8e79f6a89a720eaa3b3e60c49
+updated: 2026-10-10
+base_commit: 88cb179b63d185b8e79f6a89a720eaa3b3e60c49
+head_commit: 3e2fb5cffba5568f1b31c9d1941a03d887300949
 ---
 
-# 2026-09-30 Official/custom behavior repair and verification
+# Doc Impact Map
 
-The development worktree now records the final official/custom behavior boundary: official functionality follows the upstream contract, while the Anthropic/Kreeperai visual and interaction contract remains local. Shared platform presentation uses Anthropic semantic variables while retaining platform labels, icons and identity. SettingsView tests isolate the added settings, affiliate and public-settings child-component requests, so the suite does not contact a real backend.
+| Changed area | Canonical owner | Evidence |
+| --- | --- | --- |
+| Pixel Access Token protocol, quota conversion and narrow legacy migration | [Backend](modules/backend.md) | Dedicated strategy tests, configuration migration tests, live provider/admin API |
+| Pixel preset, credential label, hidden refresh/user fields and save payload | [Frontend](modules/frontend.md) | Vue mount regression test, typed API enums, production-served JS |
+| Nonroot entrypoint permissions and safe source transfer | [OCI Operations](guides/oci-operations.md) | Dockerfile explicit 755 mode, actual running container stat |
+| Application-only release, rollback, backup, health and preserved configuration | [Project Authority](../agent.md) | OCI pre/post container and configuration fingerprints, authenticated balance refresh, public routes/assets |
 
-The initial frontend verification passed: Vitest `398/398` files and `2931/2931` tests with no unhandled errors, `pnpm run typecheck`, `pnpm run build` with i18n `3/3`, and `git diff --check`. `pnpm run lint:check` has 0 errors and 5 pre-existing warnings. The OCI application-only release is recorded below.
+# Verification
 
-# 2026-09-30 Merge and OCI release
+- Full backend tests, frontend typecheck/build and diff check passed.
+- Full Vitest: 399 files and 2932 tests passed; lint: 0 errors, 5 existing warnings.
+- Production Pixel balance refresh returned CNY without error; saved token, other providers, stateful containers and formal mounts were preserved.
+- Public version remains 0.2.11. Health, representative routes and Pixel template JS returned 200.
+- Documentation-only commits after the code baseline do not change the running image. Exact release IDs and monetary snapshots belong only to the authority.
 
-Final verification passed: backend `go test ./... -count=1`, Ent/Wire generation, frontend Vitest `398/398` files and `2931/2931` tests, typecheck, build with i18n `3/3`, and diff check. Lint has 0 errors and 5 pre-existing warnings. Merge commit `88cb179b6` was pushed and released to OCI as `sub2api-custom:codex@sha256:d914d2372f2a3dc23ed9a616265598f63241b63da8861724233b97d4865d9afd`; rollback is `sub2api-custom:codex-pre-20260930T093000Z@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`. Only the application container was replaced; stateful services and formal volumes were unchanged. Public version is `0.2.11` and representative routes/assets returned 200.
+# Documentation Lint
 
-# 2026-09-26 OCI Authentik OIDC public handoff
-
-The Tunnel remote ingress configuration version `7` now routes `oidc.kreeper.cc` to the local Authentik HTTP port. DNS is active, the public hostname reaches Authentik, and health/setup/admin routes return HTTP 200. OIDC provider-specific discovery and Sub2API client configuration remain pending initial Authentik administrator setup.
-
-# 2026-09-26 OCI Authentik OIDC deployment
-
-Authentik `2026.8.3` is now documented as an isolated OCI Compose project at `/home/ubuntu/authentik-oci` with its own PostgreSQL service and `authentik-oci_database` volume. It binds only `127.0.0.1:19000` and `127.0.0.1:19443`; existing Sub2API, PostgreSQL, Redis, website, Tunnel and DNS state were not changed. Server, worker and database are healthy; live/ready and initial setup/admin routes return HTTP 200. Public routing and Sub2API OIDC client configuration remain intentionally pending a hostname decision.
-
-# Impact
-
-The A6API external-subscription provider now uses browser Cookie authentication for the New API `/api/status` and `/api/user/self` endpoints, parses nested `data.user` quota fields, and converts quota units to USD with `quota_per_unit`. The admin form labels the credential as login Cookie. The focused and full backend/frontend release gates passed.
-
-Direct read-only verification of the supplied credential showed `/api/status` returning 200 while `/api/user/self` returned 401 `New-Api-User header not provided` for both the full Cookie and session-only value. The A6API form now requires and sends the User ID as `New-API-User`; regression coverage asserts Cookie and User ID are sent together.
-
-The OCI application-only release from `695f948e8` runs as `sub2api-custom:codex@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`, with rollback `sub2api-custom:codex-pre-20260925T025846Z@sha256:6ba4e7420f6674e8a0f1363ee562c96abb30427e64ca74f81de9c3d9213b4723`. A6API direct verification showed the required `New-Api-User` header; the form and backend now send it alongside the Cookie. Application, PostgreSQL and Redis are healthy, formal volumes are unchanged, and representative local/public routes return 200.
-
-The development branch merged `upstream/main` at `a3eb7ef302961cba716dc78b39b93b60c467db0e` (`v0.2.8`) in `98f6d208d`; the plugin account snapshot denylist was then updated for the upstream `Account.ScheduleLocked` field in `104c5a14e`. The merge retained local Anthropic/Kreeperai, external-subscription and Responses compatibility contracts while integrating upstream OpenCode Go usage, typesafe risk control, backup/archive, affiliate withdrawal, signed thinking and paginated CSV export capabilities. Full Go tests and frontend typecheck/lint/build passed.
-
-The OCI application-only release uses `sub2api-custom:codex@sha256:e75f92a14c250ed724df007a30b49505690d4a77d6e2fa714395fd6464db299d`, with rollback `sub2api-custom:codex-pre-20260924T031408Z@sha256:e6779b6bb1df4148db0c044dbebf54f81c1ff46472322a3b77edf4e43e6b15fc`. The application, PostgreSQL and Redis remained healthy with restart count 0; formal volumes were unchanged. Local and public representative routes and static assets returned HTTP 200, and the public version is `0.2.8`.
-
-The development branch merged `upstream/main` at `1a9d49e16` (upstream `v0.2.7`) into local commit `48d61795e`, then fixed the runtime locale completeness contract in `eb2bbf01f`. Conflicts were resolved with upstream functionality retained and local account/external-subscription/visual contracts restored. The OCI application image was released from the resulting source; stateful services and volumes were unchanged.
-
-The account-card and admin-settings route-tab repair is committed as `bc64e2cb3` and released to OCI as `sub2api-custom:codex@sha256:e6779b6bb1df4148db0c044dbebf54f81c1ff46472322a3b77edf4e43e6b15fc`. A transient failed container start was caused by an AppleDouble `._001_init.sql` residue from an interrupted source transfer; all `._*` source residues were removed before the successful application-only rebuild. Rollback remains `sub2api-custom:codex-pre-20260920T054450Z@sha256:3188f4db60f64c2e4749d0cd55cf91e28191ceab794e37eee1a48ac8d4b08d0f`.
-
-Dashboard embedding policy now permits exactly the production website and localhost/127.0.0.1 port 3100 for GET/HEAD only. Full Go tests and targeted trailing-slash/HEAD tests pass. The application-only OCI release and rollback image are recorded in the authority; stateful container IDs, start times and mounts match before/after. The real AI frame renders in an isolated website session without CSP errors; cross-origin SSO is not claimed. Source scope: the two middleware security-header files; documentation scope: data-flow, authority and schema.
-
-| Changed area | Canonical owner | Updated docs | Evidence |
-| --- | --- | --- | --- |
-| Project workflow and verification rules | `agent.md` authority | authority + testing guide | `SKILL-RUNTIME.md`, `llm-wiki/SKILL.md`, current `frontend/package.json` |
-| Frontend account responsive change | `.llm-wiki` module/architecture context | authority pending item + frontend module context | account tracks use 300px minimum auto-fit and fill the container; shared generic mobile cards remain 22.5rem; focused contract 4/4, typecheck, lint, index, build, diff check |
-| Frontend shared mobile cards, semantic status chips and teleported profile menu | `.llm-wiki/modules/frontend.md` + authority pending item | responsive contracts + current verification boundary | source contract 3/3, affected Vitest 47/47, typecheck, lint, build, diff check, `3001` HTTP 200 |
-| Official upstream merge: backend schema, migrations, gateway and Responses compatibility | `.llm-wiki/modules/backend.md` + authority | backend capability and merge-gate sections | merge `84db8fcb3` with upstream `ab99d56e9` / `v0.2.1`; `go generate ./ent`; `go test ./... -count=1` passed |
-| Official upstream merge: frontend usage, group policy and pricing surfaces | `.llm-wiki/modules/frontend.md` + authority | frontend capability and merge-gate sections | upstream `ab99d56e9`; typecheck/build/lint passed; lint retained 5 warnings |
-| Local customization preservation during merge | authority + frontend/backend module context | custom boundary and release state | seven conflicts resolved explicitly; no unresolved conflicts; Kreepai/Anthropic UI and external-subscription boundaries retained |
-| OCI full release of merged source | authority runtime snapshot | release commit, image, rollback, backup and health evidence | `eb2bbf01f` released as `sub2api-custom:codex@sha256:3188f4db60f64c2e4749d0cd55cf91e28191ceab794e37eee1a48ac8d4b08d0f`; rollback tag points to `sha256:b40f7cf9fdf6033f4e0d9f429b1526098b4eab526239bec0c945567accb782ff`; local/public health, routes and version `0.2.7` verified; formal volumes unchanged |
-| KreeperAI admin dashboard iframe policy | `backend/internal/server/middleware/security_headers.go` and tests | `agent.md`, security/runtime module context | New image `sub2api-custom:codex` digest `sha256:b6156e884c745dde520b70bcc2e68d0331105b3bf3a11d197c501b70b045a376`; only `GET`/`HEAD /admin/dashboard` allows `https://www.kreeper.cc`, other admin/API responses retain frame protections; full Go tests and public header probes passed |
-| Upstream v0.2.7 merge and locale contract repair | backend/frontend modules + authority | backend/frontend module pages, authority merge state | `go generate ./ent`, `go generate ./cmd/server`, `go test ./...` passed; merged modular/legacy locale completeness, `vue-tsc`, Vite build and lint passed; OCI release verified |
-| Account-card and settings route-tab repair | `.llm-wiki/modules/frontend.md` + authority | frontend module, authority release section | `bc64e2cb3`; focused account/settings contracts, `vue-tsc`, Vite build and diff check passed; OCI active digest `sha256:e6779b6b...`; health, routes and formal volumes verified |
-| Frontend custom CSS cascade cleanup | `.llm-wiki/modules/frontend.md` + authority | style ownership contract and audit result | Removed 185 strictly shadowed declarations and 49 empty rules; 5,504 selector/property/context winners matched before/after; the only remaining exact scoped duplicates are three intentional legacy-browser fallbacks; full Vitest surfaced 177 unrelated failures and 2,437 passes |
-| Upstream v0.2.8 merge and OCI application release | authority + frontend/backend modules | merge capabilities, test gates and runtime snapshot | Merge `98f6d208d`, snapshot fix `104c5a14e`; `go test ./... -count=1`, frontend typecheck/lint/build and diff check passed; image `sha256:e75f92...299d`; rollback `sha256:e6779b...15fc`; routes/assets 200; formal volumes and stateful containers unchanged |
-| A6API Cookie balance integration and OCI release | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Cookie auth, nested quota parsing, USD conversion, credential label, release digest and rollback state | Commit `2d7f8cab8`; full Go/frontend gates passed; image `sha256:6ba4e742...b4723`; rollback `sha256:e75f92...299d`; metadata residue removed; health, routes, version and formal volumes verified |
-| A6API New-API-User header repair | `.llm-wiki/modules/backend.md`, `.llm-wiki/modules/frontend.md`, authority | Preserve A6API Cookie and add required User ID field/header | Direct A6API test returned `401 New-Api-User header not provided`; frontend/backend regression tests pass; commit `695f948e8`; OCI image `sha256:5807f9...dd6bb` |
-| Official subscription management recovery with local visual preservation | `.llm-wiki/modules/frontend.md`, authority | Restore upstream bulk subscription actions and batch assignment without replacing the Anthropic/Kreeperai toolbar, dropdown or table contract | `SubscriptionsView.userUsageLink.spec.ts` and `SubscriptionsView.bulkActions.spec.ts`: 10/10; `pnpm run typecheck`, `pnpm run build`, i18n completeness and diff check pass; no production or OCI changes |
-| OCI Authentik OIDC deployment | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Isolated Authentik runtime boundary, health checks, ports, volume and pending public handoff | Official Compose file, image `ghcr.io/goauthentik/server:2026.8.3`; all three Authentik services healthy; local health/setup/admin routes 200; existing service restart counts 0 |
-| OCI Authentik public hostname handoff | `.llm-wiki/guides/oci-authentik-oidc.md`, authority | Remote Tunnel ingress, DNS, public Authentik health and pending OIDC provider setup | Remote config version `7`; public health/setup/admin routes 200; root redirects to `/setup`; no provider-specific discovery until bootstrap setup |
-
-# Lint
-
-- Broken links: 0 (relative Wiki links and authority entry checked)
-- Orphan pages: 0 (all pages reachable from `_index.md`)
-- Stale references: 0 in updated Wiki pages
-- Unresolved conflicts: 0
-- Build caveat: `pnpm run build` now passes after the completeness test was aligned with runtime modular/legacy locale merging and the missing English/Chinese UI keys were filled; lint retains 5 pre-existing warnings and Vite reports existing chunk-size/deprecation warnings.
-
-The OCI runtime is deployed from `695f948e8` (based on the merged upstream `v0.2.8` source) as `sub2api-custom:codex@sha256:5807f9b78f4225b7ad7beb4be70e854b9fa2c8df642a14ab3c4000a96c2dd6bb`; rollback is retained under `sub2api-custom:codex-pre-20260925T025846Z`. PostgreSQL/Redis containers and formal volumes, Cloudflare, Bridge, website and backup data were not replaced.
+- Wiki links and authority entry resolve; all article pages are reachable from the index.
+- Updated source paths exist, agent.md remains a valid authority symlink, and no credentials or raw logs are included.
+- This file records only the current impact map; Git owns prior sync history.
