@@ -291,7 +291,7 @@ const (
 	DefaultTCDMXSubscriptionAPIBaseURL          = "https://tcdmx.com"
 	DefaultQLHazyCoderSubscriptionAPIBaseURL    = "https://api.qlhazycoder.top"
 	DefaultXHYAPISubscriptionAPIBaseURL         = "https://xhyapi.com"
-	DefaultPixelSubscriptionAPIBaseURL          = "https://pixelapi.cc"
+	DefaultPixelSubscriptionAPIBaseURL          = "https://api.ai-pixel.online"
 	DefaultLiustSubscriptionAPIBaseURL          = "https://liust.xyz"
 	DefaultPackyCodeSubscriptionAPIBaseURL      = "https://www.packyapi.com"
 	DefaultOpenRouterCreditsAPIBaseURL          = "https://openrouter.ai"

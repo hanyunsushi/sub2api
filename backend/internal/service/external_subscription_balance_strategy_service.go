@@ -17,6 +17,8 @@ type externalAuthMeBalanceResponse struct {
 
 func (s *ExternalSubscriptionService) getStatusWithBalanceStrategy(ctx context.Context, cfg externalSubscriptionProviderConfig, template string, strategy string) (*ExternalSubscriptionStatus, error) {
 	switch strategy {
+	case ExternalSubscriptionBalanceStrategyPixelUserQuota:
+		return s.getPixelAccessTokenStatus(ctx, cfg)
 	case ExternalSubscriptionBalanceStrategyAuto, "":
 		return s.getStatusForTemplate(ctx, cfg, template)
 	case ExternalSubscriptionBalanceStrategyOpenAIBilling:
@@ -38,6 +40,8 @@ func (s *ExternalSubscriptionService) getStatusWithBalanceStrategy(ctx context.C
 
 func (s *ExternalSubscriptionService) getStatusForTemplate(ctx context.Context, cfg externalSubscriptionProviderConfig, template string) (*ExternalSubscriptionStatus, error) {
 	switch template {
+	case ExternalSubscriptionTemplatePixelAccessToken:
+		return s.getPixelAccessTokenStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateNewAPIConsole:
 		return s.getNewAPIConsoleSubscriptionStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateActiveSubscriptions:

@@ -227,6 +227,13 @@
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <button data-testid="admin-external-subscriptions-button-apply-preset-pixel-access-token"
+            type="button"
+            class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:bg-[var(--anthropic-raised)]"
+            @click="applyPreset('pixel_access_token')"
+          >
+            <div class="text-sm font-semibold">Pixel Access Token</div>
+          </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-console"
             type="button"
             class="rounded-lg border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
@@ -444,7 +451,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import externalSubscriptionsAPI, {
   type ExternalSubscriptionBalanceStrategy,
@@ -517,6 +524,7 @@ const isA6APIForm = computed(() => (
 ))
 
 const templateOptions = computed(() => [
+  { value: 'pixel_access_token', label: 'Pixel Access Token' },
   { value: 'newapi_console', label: 'NewAPI Console' },
   { value: 'active_subscriptions', label: 'Active Subscriptions' },
   { value: 'buzz_balance', label: 'Buzz Balance' },
@@ -527,6 +535,7 @@ const templateOptions = computed(() => [
 ])
 
 const balanceStrategyOptions = computed(() => [
+  { value: 'pixel_user_quota', label: 'Pixel Access Token' },
   { value: 'auto', label: localText('自动', 'Auto') },
   { value: 'newapi_user_quota', label: 'NewAPI User Quota' },
   { value: 'newapi_subscription', label: 'NewAPI Subscription' },
@@ -535,13 +544,17 @@ const balanceStrategyOptions = computed(() => [
   { value: 'active_with_auth_me_balance', label: 'Active + Auth Me' },
 ])
 
-const requiresUserId = computed(() => (
+const requiresPixelAccessToken = computed(() => form.template === 'pixel_access_token' || form.balance_strategy === 'pixel_user_quota')
+const requiresUserId = computed(() => !requiresPixelAccessToken.value && (
   isA6APIForm.value ||
   (form.template === 'newapi_console' && !['openai_billing', 'newapi_user_quota'].includes(form.balance_strategy)) ||
   form.template === 'cloudflare_ai_gateway_credits'
 ))
+const requiresRefreshToken = computed(() => form.template === 'active_subscriptions' && !requiresPixelAccessToken.value)
 
-const requiresRefreshToken = computed(() => form.template === 'active_subscriptions')
+watch(() => form.template, template => {
+  if (template === 'pixel_access_token') form.balance_strategy = 'pixel_user_quota'
+})
 
 const userIdLabel = computed(() => (
   form.template === 'cloudflare_ai_gateway_credits'
@@ -554,6 +567,7 @@ const userIdPlaceholder = computed(() => (
 ))
 
 const apiTokenPlaceholder = computed(() => {
+  if (requiresPixelAccessToken.value) return 'Pixel Access Token'
   if (isA6APIForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
   if (form.template === 'buzz_balance') return 'Buzz API Token'
@@ -569,7 +583,7 @@ const requiresConsoleToken = computed(() => (
 ))
 
 const apiTokenLabel = computed(() => (
-  isA6APIForm.value
+  requiresPixelAccessToken.value ? localText('访问令牌', 'Access Token') : isA6APIForm.value
     ? localText('登录 Cookie', 'Login Cookie')
     : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
 ))
@@ -672,6 +686,8 @@ function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
 
 function templateLabel(template: ExternalSubscriptionTemplate) {
   switch (template) {
+    case 'pixel_access_token':
+      return 'Pixel Access Token'
     case 'buzz_balance':
       return 'Buzz Balance'
     case 'active_subscriptions':
@@ -771,6 +787,17 @@ function resetForm() {
 
 function applyPreset(template: ExternalSubscriptionTemplate) {
   form.template = template
+  if (template === 'pixel_access_token') {
+    form.balance_strategy = 'pixel_user_quota'
+    form.api_base_url = 'https://api.ai-pixel.online'
+    if (!form.name) form.name = 'Pixel'
+    if (!form.id) form.id = 'pixel'
+    form.user_id = ''
+    form.refresh_token = ''
+    if (form.sort_order === 50) form.sort_order = 40
+    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'pixel\nai-pixel.online\npixelapi.cc'
+    return
+  }
   if (template === 'newapi_console') {
     if (form.balance_strategy === 'auto') form.balance_strategy = 'newapi_subscription'
     if (!form.api_base_url) form.api_base_url = 'https://api.example.com'
@@ -986,6 +1013,7 @@ function cardStatusText(card: ExternalSubscriptionCard) {
 }
 
 function formatTokenMeta(card: ExternalSubscriptionCard) {
+  if (card.template === 'pixel_access_token') return card.apiTokenConfigured ? 'Access Token ready' : localText('访问令牌未配置', 'Access Token missing')
   return card.apiTokenConfigured ? 'API Token ready' : localText('Token 未配置', 'Token missing')
 }
 

@@ -24,8 +24,10 @@ const (
 	ExternalSubscriptionTemplateCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
 	ExternalSubscriptionTemplateRawChatSubscriptions       = "rawchat_subscriptions"
 	ExternalSubscriptionTemplateMimoTokenPlan              = "mimo_token_plan"
+	ExternalSubscriptionTemplatePixelAccessToken           = "pixel_access_token"
 
 	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
+	ExternalSubscriptionBalanceStrategyPixelUserQuota          = "pixel_user_quota"
 	ExternalSubscriptionBalanceStrategyOpenAIBilling           = "openai_billing"
 	ExternalSubscriptionBalanceStrategyNewAPIUserQuota         = "newapi_user_quota"
 	ExternalSubscriptionBalanceStrategyNewAPISubscription      = "newapi_subscription"
@@ -739,8 +741,8 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "pixel",
 			Name:            "Pixel",
 			Enabled:         false,
-			Template:        ExternalSubscriptionTemplateActiveSubscriptions,
-			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuthMeBalance,
+			Template:        ExternalSubscriptionTemplatePixelAccessToken,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyPixelUserQuota,
 			APIBaseURL:      DefaultPixelSubscriptionAPIBaseURL,
 			MatchKeywords:   []string{"ai-pixel.online", "pixel"},
 			SortOrder:       40,
@@ -880,10 +882,26 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_PROVIDER_NAME_REQUIRED", "external subscription provider name is required")
 	}
 	provider.Template = strings.TrimSpace(provider.Template)
+	// Migrate only the built-in Pixel console contract, not custom providers.
+	if provider.ID == "pixel" && provider.Template == ExternalSubscriptionTemplateActiveSubscriptions &&
+		(provider.BalanceStrategy == "" || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuto || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuthMeBalance) {
+		baseURL := strings.TrimRight(strings.TrimSpace(provider.APIBaseURL), "/")
+		baseURL = strings.TrimSuffix(baseURL, "/v1")
+		baseURL = strings.TrimSuffix(baseURL, "/api")
+		switch baseURL {
+		case "https://pixelapi.cc", "https://ai-pixel.online", DefaultPixelSubscriptionAPIBaseURL:
+			provider.APIBaseURL = DefaultPixelSubscriptionAPIBaseURL
+			provider.Template = ExternalSubscriptionTemplatePixelAccessToken
+			provider.BalanceStrategy = ExternalSubscriptionBalanceStrategyPixelUserQuota
+		}
+	}
 	if !isExternalSubscriptionTemplate(provider.Template) {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_TEMPLATE_INVALID", "external subscription provider template is invalid")
 	}
 	provider.BalanceStrategy = strings.TrimSpace(provider.BalanceStrategy)
+	if provider.Template == ExternalSubscriptionTemplatePixelAccessToken {
+		provider.BalanceStrategy = ExternalSubscriptionBalanceStrategyPixelUserQuota
+	}
 	if provider.BalanceStrategy == "" {
 		provider.BalanceStrategy = defaultExternalSubscriptionBalanceStrategy(provider.ID, provider.Template)
 	}
@@ -891,6 +909,9 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_BALANCE_STRATEGY_INVALID", "external subscription provider balance strategy is invalid")
 	}
 	provider.APIBaseURL = normalizeExternalSubscriptionAPIBaseURL(provider.APIBaseURL, strings.TrimSpace(provider.APIBaseURL))
+	if provider.Template == ExternalSubscriptionTemplatePixelAccessToken || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyPixelUserQuota {
+		provider.APIBaseURL = strings.TrimSuffix(provider.APIBaseURL, "/v1")
+	}
 	if provider.APIBaseURL == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_API_BASE_URL_REQUIRED", "external subscription provider API base URL is required")
 	}
@@ -915,9 +936,11 @@ func defaultExternalSubscriptionBalanceStrategy(providerID, template string) str
 	case "packycode":
 		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
 	case "pixel":
-		return ExternalSubscriptionBalanceStrategyAuthMeBalance
+		return ExternalSubscriptionBalanceStrategyPixelUserQuota
 	}
 	switch strings.TrimSpace(template) {
+	case ExternalSubscriptionTemplatePixelAccessToken:
+		return ExternalSubscriptionBalanceStrategyPixelUserQuota
 	case ExternalSubscriptionTemplateNewAPIConsole:
 		return ExternalSubscriptionBalanceStrategyNewAPISubscription
 	case ExternalSubscriptionTemplateActiveSubscriptions:
@@ -941,6 +964,7 @@ func effectiveExternalSubscriptionBalanceStrategy(provider externalSubscriptionS
 func isExternalSubscriptionBalanceStrategy(strategy string) bool {
 	switch strings.TrimSpace(strategy) {
 	case ExternalSubscriptionBalanceStrategyAuto,
+		ExternalSubscriptionBalanceStrategyPixelUserQuota,
 		ExternalSubscriptionBalanceStrategyOpenAIBilling,
 		ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 		ExternalSubscriptionBalanceStrategyNewAPISubscription,
@@ -956,6 +980,7 @@ func isExternalSubscriptionBalanceStrategy(strategy string) bool {
 func isExternalSubscriptionTemplate(template string) bool {
 	switch template {
 	case ExternalSubscriptionTemplateNewAPIConsole,
+		ExternalSubscriptionTemplatePixelAccessToken,
 		ExternalSubscriptionTemplateActiveSubscriptions,
 		ExternalSubscriptionTemplateBuzzBalance,
 		ExternalSubscriptionTemplateOpenRouterCredits,

@@ -43,6 +43,7 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 
 ## Current Capability Surface
 
+- Pixel uses template `pixel_access_token` and balance strategy `pixel_user_quota`, implemented by `external_pixel_subscription_service.go::getPixelAccessTokenStatus`. A console Access Token is sent as Bearer authentication to `/api/status` and `/api/user/self` at `https://api.ai-pixel.online`. The `success/data` envelope and flat or nested user `quota`/`used_quota` fields are converted using provider metadata; missing quota is an error, not a zero balance. This strategy never calls the refresh-token endpoint. Known built-in Pixel legacy addresses/strategies are normalized without replacing saved credentials or other providers.
 - External subscriptions include an A6API provider using the New API user-quota strategy. It requests `/api/status` and `/api/user/self` with the configured browser `Cookie` header, accepts the nested `data.user.quota`/`used_quota` response, and converts quota units using the provider's `quota_per_unit` as USD. Other New API console providers retain their Bearer-token request path.
 - A6API requests also include the configured `New-API-User` value. The upstream endpoint returns `401 Unauthorized` with `New-Api-User header not provided` when the Cookie is valid but this header is absent.
 

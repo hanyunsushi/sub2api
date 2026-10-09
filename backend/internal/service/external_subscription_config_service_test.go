@@ -64,8 +64,9 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 	require.Empty(t, packy.APIToken)
 
 	pixel := requireExternalSubscriptionProvider(t, providers, "pixel")
-	require.Equal(t, ExternalSubscriptionTemplateActiveSubscriptions, pixel.Template)
-	require.Equal(t, ExternalSubscriptionBalanceStrategyAuthMeBalance, pixel.BalanceStrategy)
+	require.Equal(t, ExternalSubscriptionTemplatePixelAccessToken, pixel.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyPixelUserQuota, pixel.BalanceStrategy)
+	require.Equal(t, "https://api.ai-pixel.online", pixel.APIBaseURL)
 	require.False(t, pixel.Enabled)
 	require.False(t, pixel.APITokenConfigured)
 

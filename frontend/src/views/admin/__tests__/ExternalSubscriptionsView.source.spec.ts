@@ -51,6 +51,11 @@ describe('ExternalSubscriptionsView source', () => {
   })
 
   it('exposes a persistent balance strategy selector wired into provider payloads', () => {
+    expect(source).toContain("applyPreset('pixel_access_token')")
+    expect(source).toContain("pixel_user_quota")
+    expect(source).toContain("https://api.ai-pixel.online")
+    expect(source).toContain("localText('访问令牌', 'Access Token')")
+    expect(source).toContain("&& !requiresPixelAccessToken.value")
     expect(source).toContain('balance_strategy')
     expect(source).toContain('balanceStrategyOptions')
     expect(source).toContain('v-model="form.balance_strategy"')

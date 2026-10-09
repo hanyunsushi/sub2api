@@ -1,5 +1,6 @@
 import { apiClient } from '@/api/client'
 export type ExternalSubscriptionTemplate =
+  | 'pixel_access_token'
   | 'newapi_console'
   | 'active_subscriptions'
   | 'buzz_balance'
@@ -9,6 +10,7 @@ export type ExternalSubscriptionTemplate =
   | 'mimo_token_plan'
 
 export type ExternalSubscriptionBalanceStrategy =
+  | 'pixel_user_quota'
   | 'auto'
   | 'openai_billing'
   | 'newapi_user_quota'
