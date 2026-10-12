@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-10-11
+updated: 2026-10-12
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -12,6 +12,10 @@ sources:
 ---
 
 # Backend Module
+
+## Upstream v0.2.12–v0.2.15 integration
+
+The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. The official update adds the current typed platform/provider catalog paths, new provider protocol services and routing coverage, recharge-bonus/payment changes, long-context and web-search handling, operations/account-monitor fixes, security hardening and regenerated Ent/Wire artifacts. Local external-subscription and branding services remain separate extensions; this merge has not been deployed.
 
 ## Merge `upstream/main` and OCI release (2026-09-30)
 

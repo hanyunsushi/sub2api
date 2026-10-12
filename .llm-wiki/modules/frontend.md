@@ -14,6 +14,10 @@ sources:
 
 # Frontend Module
 
+## Upstream v0.2.12–v0.2.15 integration
+
+The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo, account-quota and menu extensions attached to their official surfaces. This source merge is not a production release.
+
 ## Responsibility
 
 Vue 3/Vite owns route views, client state and API interaction. The maintained presentation is the merged official frontend, including official light/dark mode, component utilities, layout, controls, charts and auth behavior. It is not the former Anthropic/Kreeperai design system.
