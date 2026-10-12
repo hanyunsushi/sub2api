@@ -526,19 +526,19 @@
           v-if="showGeminiTodayStats && todayStats"
           class="mb-0.5 flex items-center"
         >
-          <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
-            <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+          <div class="flex flex-wrap items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
+            <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
               {{ formatKeyRequests }} req
             </span>
-            <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+            <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
               {{ formatKeyTokens }}
             </span>
-            <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
+            <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
               A ${{ formatKeyCost }}
             </span>
             <span
               v-if="todayStats.user_cost != null"
-              class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
+              class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
               :title="t('usage.userBilled')"
             >
               U ${{ formatKeyUserCost }}
@@ -614,19 +614,19 @@
         v-if="todayStats"
         class="mb-0.5 flex items-center"
       >
-        <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
-          <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+        <div class="flex flex-wrap items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
+          <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
             {{ formatKeyRequests }} req
           </span>
-          <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+          <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
             {{ formatKeyTokens }}
           </span>
-          <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
+          <span class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
             A ${{ formatKeyCost }}
           </span>
           <span
             v-if="todayStats.user_cost != null"
-            class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
+            class="shrink-0 whitespace-nowrap rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
             :title="t('usage.userBilled')"
           >
             U ${{ formatKeyUserCost }}
