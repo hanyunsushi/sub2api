@@ -271,11 +271,11 @@
               >
                 {{ accountDisplayEmail(row) }}
               </span>
-              <div v-if="getAccountExternalQuota(row)" class="mt-2 space-y-1 text-xs text-gray-500 dark:text-dark-400" data-testid="account-external-quota">
+              <div v-if="getAccountExternalQuota(row)" class="account-external-quota mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500 dark:text-dark-400" data-testid="account-external-quota">
                 <a :href="getAccountExternalQuota(row)?.url" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline dark:text-primary-400">{{ getAccountExternalQuota(row)?.label }}</a>
                 <div class="font-mono">{{ getAccountExternalQuota(row)?.formattedBalance }}</div>
                 <div>{{ getAccountExternalQuota(row)?.formattedExpiry }}</div>
-                <UsageProgressBar v-if="getAccountExternalQuota(row)?.progress" label="EXT" :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0" color="emerald" :title="getAccountExternalQuota(row)?.formattedUsage" />
+                <UsageProgressBar v-if="getAccountExternalQuota(row)?.progress" class="w-full" label="EXT" :utilization="getAccountExternalQuota(row)?.progress?.percent ?? 0" color="emerald" :title="getAccountExternalQuota(row)?.formattedUsage" />
               </div>
             </div>
           </template>
@@ -326,6 +326,7 @@
           </template>
           <template #cell-today_stats="{ row }">
             <AccountTodayStatsCell
+              class="account-card-today-stats"
               :stats="todayStatsByAccountId[String(row.id)] ?? null"
               :loading="todayStatsLoading"
               :error="todayStatsError"
@@ -462,7 +463,7 @@
             </div>
           </template>
           <template #cell-actions="{ row }">
-            <div class="flex items-center gap-1">
+            <div class="account-card-actions flex flex-wrap items-center gap-1">
               <button @click="openExternalQuotaProgressSettings(row)" class="btn-ghost btn-icon" :title="localText('额度条', 'Quota bar')" data-testid="account-external-quota-progress-action"><Icon name="chart" size="sm" /></button>
               <button @click="handleEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
@@ -2873,19 +2874,70 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
   white-space: nowrap;
 }
 
+.accounts-page :deep(.data-card-grid) {
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.accounts-page :deep([data-row-id]) {
+  padding: 0.75rem;
+}
+
+.accounts-page :deep(.data-card-fields) {
+  align-items: start;
+  grid-auto-flow: row dense;
+  gap: 0.375rem 0.75rem;
+}
+
+.accounts-page :deep([data-field]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.accounts-page :deep([data-field] > span) {
+  flex-shrink: 0;
+  letter-spacing: normal;
+}
+
+.accounts-page :deep([data-field] > div) {
+  width: auto;
+  flex: 1;
+}
+
 .accounts-page :deep([data-field='select']) {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem;
+  right: 0.75rem;
 }
 
 .accounts-page :deep([data-field='name']),
 .accounts-page :deep([data-field='platform_type']),
+.accounts-page :deep([data-field='today_stats']),
 .accounts-page :deep([data-field='groups']),
 .accounts-page :deep([data-field='usage']),
 .accounts-page :deep([data-field='scheduler_score']),
-.accounts-page :deep([data-field='proxy']) {
+.accounts-page :deep([data-field='proxy']),
+.accounts-page :deep([data-field='upstream_billing_rate']),
+.accounts-page :deep([data-field='last_used_at']),
+.accounts-page :deep([data-field='created_at']),
+.accounts-page :deep([data-field='expires_at']),
+.accounts-page :deep([data-field='notes']) {
   grid-column: 1 / -1;
+}
+
+.accounts-page :deep([data-field='usage']),
+.accounts-page :deep([data-field='scheduler_score']),
+.accounts-page :deep([data-field='proxy']),
+.accounts-page :deep([data-field='notes']) {
+  align-items: start;
+}
+
+.accounts-page :deep(.account-card-today-stats > div),
+.accounts-page :deep([data-field='proxy'] > div > div) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
 }
 
 .accounts-page :deep([data-field='name']) {
@@ -2897,6 +2949,16 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
 .accounts-page :deep([data-field='select'] > span),
 .accounts-page :deep([data-field='platform_type'] > span) {
   display: none;
+}
+
+.accounts-page :deep(.data-card-fields > .border-t) {
+  padding-top: 0.5rem;
+}
+
+.account-card-actions > button {
+  flex-direction: row;
+  gap: 0.25rem;
+  min-height: 2rem;
 }
 
 .account-tools-menu-item {
