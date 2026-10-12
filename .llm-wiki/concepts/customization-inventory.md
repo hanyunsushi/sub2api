@@ -1,6 +1,6 @@
 ---
 title: Customization Inventory
-updated: 2026-10-11
+updated: 2026-10-12
 sources:
   - backend/internal/server/routes/admin.go
   - backend/internal/service/external_subscription_config_service.go
@@ -19,7 +19,7 @@ sources:
 
 ## Boundary
 
-The user decision is official frontend presentation and behavior, with existing functional extensions retained. The official baseline is the already merged local `upstream/main` commit `42bc7f6cffe24bcb471608e48e66b4a0afa1f882`. Current changes are uncommitted on `codex/cpa-management`; the protection branch is `backup/frontend-before-official-restore-20261011`. No new fetch, merge, push or deployment is part of this restoration.
+The user decision is official frontend presentation and behavior, with existing functional extensions retained. The official baseline is the already merged local `upstream/main` commit `42bc7f6cffe24bcb471608e48e66b4a0afa1f882`. The restoration is committed on `codex/cpa-management` and deployed to OCI. The protection branch is `backup/frontend-before-official-restore-20261011`; exact commits, runtime evidence and rollback state are owned by the Project Authority.
 
 The [file appendix](customization-files.md) accounts for 186 current paths, including tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
 
@@ -73,7 +73,7 @@ CPA/Codex management, dedicated global pricing, schedule locks, monitor-driven m
 
 ## Verification Boundary
 
-Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has not received this restoration. The existing 3001 preview retains its production API proxy as development configuration; it does not deploy code.
+Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has received this restoration; its exact release state is recorded in the authority. The existing 3001 preview retains its production API proxy as development configuration; it does not deploy code.
 
 ## See Also
 

@@ -1,11 +1,11 @@
 ---
 title: Customization Files
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # Customization Files
 
-This is the current development working-tree comparison against the already merged local `upstream/main` (`42bc7f6cffe24bcb471608e48e66b4a0afa1f882`). It includes uncommitted changes and non-ignored new files, not a new upstream fetch or a production snapshot.
+This is the current development working-tree comparison against the already merged local `upstream/main` (`42bc7f6cffe24bcb471608e48e66b4a0afa1f882`). It accounts for the committed restoration source and current documentation updates. Production release evidence belongs to the Project Authority; this is not a new upstream fetch.
 
 Total: **186 paths** (67 A, 119 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
 
