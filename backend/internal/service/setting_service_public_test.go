@@ -207,9 +207,8 @@ func TestSettingService_GetPublicSettings_ExposesAllowUserViewErrorRequests(t *t
 func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
-			SettingKeyAILogoCDNBaseURL:         "https://img.example.com/lobe/light/",
-			SettingKeyCustomAILogoPresets:      `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
-			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","javascript:alert(1)","https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
+			SettingKeyAILogoCDNBaseURL:    "https://img.example.com/lobe/light/",
+			SettingKeyCustomAILogoPresets: `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
 		},
 	}
 	svc := NewSettingService(repo, &config.Config{})
@@ -221,17 +220,12 @@ func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 		"https://img.example.com/custom/a.png",
 		"https://img.example.com/custom/b.svg",
 	}, settings.CustomAILogoPresets)
-	require.Equal(t, []string{
-		"https://img.example.com/menu/a.svg",
-		"https://img.example.com/menu/b.svg",
-	}, settings.CustomMenuSVGIconPresets)
 	injected, err := svc.GetPublicSettingsForInjection(context.Background())
 	require.NoError(t, err)
 	payload, err := json.Marshal(injected)
 	require.NoError(t, err)
 	require.Contains(t, string(payload), `"ai_logo_cdn_base_url":"https://img.example.com/lobe/light"`)
 	require.Contains(t, string(payload), `"custom_ai_logo_presets":["https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`)
-	require.Contains(t, string(payload), `"custom_menu_svg_icon_presets":["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`)
 }
 
 func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t *testing.T) {
@@ -276,51 +270,6 @@ func TestSettingService_DeleteCustomAILogoPreset_NormalizesRemovesAndPersists(t 
 	}, presets)
 
 	_, err = svc.DeleteCustomAILogoPreset(context.Background(), "javascript:alert(1)")
-	require.Error(t, err)
-}
-
-func TestSettingService_AppendCustomMenuSVGIconPreset_NormalizesDedupesAndPersists(t *testing.T) {
-	repo := &settingPublicRepoStub{
-		values: map[string]string{
-			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg"]`,
-		},
-	}
-	svc := NewSettingService(repo, &config.Config{})
-
-	presets, err := svc.AppendCustomMenuSVGIconPreset(context.Background(), " https://img.example.com/menu/b.svg ")
-	require.NoError(t, err)
-	require.Equal(t, []string{
-		"https://img.example.com/menu/b.svg",
-		"https://img.example.com/menu/a.svg",
-	}, presets)
-	require.JSONEq(t, `["https://img.example.com/menu/b.svg","https://img.example.com/menu/a.svg"]`, repo.values[SettingKeyCustomMenuSVGIconPresets])
-
-	_, err = svc.AppendCustomMenuSVGIconPreset(context.Background(), "javascript:alert(1)")
-	require.Error(t, err)
-}
-
-func TestSettingService_DeleteCustomMenuSVGIconPreset_RemovesServerSideLibraryItem(t *testing.T) {
-	repo := &settingPublicRepoStub{
-		values: map[string]string{
-			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
-		},
-	}
-	svc := NewSettingService(repo, &config.Config{})
-
-	presets, err := svc.DeleteCustomMenuSVGIconPreset(context.Background(), " https://img.example.com/menu/a.svg ")
-	require.NoError(t, err)
-	require.Equal(t, []string{
-		"https://img.example.com/menu/b.svg",
-	}, presets)
-	require.JSONEq(t, `["https://img.example.com/menu/b.svg"]`, repo.values[SettingKeyCustomMenuSVGIconPresets])
-
-	presets, err = svc.DeleteCustomMenuSVGIconPreset(context.Background(), "https://img.example.com/menu/missing.svg")
-	require.NoError(t, err)
-	require.Equal(t, []string{
-		"https://img.example.com/menu/b.svg",
-	}, presets)
-
-	_, err = svc.DeleteCustomMenuSVGIconPreset(context.Background(), "javascript:alert(1)")
 	require.Error(t, err)
 }
 

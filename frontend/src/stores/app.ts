@@ -14,7 +14,6 @@ import {
 } from '@/api/admin/system'
 import { getPublicSettings as fetchPublicSettingsAPI } from '@/api/auth'
 import { setAILogoRuntimeConfig } from '@/utils/providerBrandIcon'
-import { setCustomMenuIconRuntimeConfig } from '@/utils/customMenuIconPresets'
 
 export const useAppStore = defineStore('app', () => {
   // ==================== State ====================
@@ -293,7 +292,6 @@ export const useAppStore = defineStore('app', () => {
    */
   function applySettings(config: PublicSettings): void {
     setAILogoRuntimeConfig(config)
-    setCustomMenuIconRuntimeConfig(config)
     if (typeof window !== 'undefined') {
       window.__APP_CONFIG__ = { ...config }
     }

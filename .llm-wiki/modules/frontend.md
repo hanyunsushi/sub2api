@@ -16,7 +16,7 @@ sources:
 
 ## Upstream v0.2.12–v0.2.15 integration
 
-The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo, account-quota and menu extensions attached to their official surfaces. This source merge is not a production release.
+The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo and account-quota extensions attached to their official surfaces. This source merge is not a production release.
 
 ## Responsibility
 
@@ -29,11 +29,10 @@ Vue 3/Vite owns route views, client state and API interaction. The maintained pr
 | External provider CRUD and Pixel/A6API credential forms | `ExternalSubscriptionsView.vue`, `api/admin/externalSubscriptions.ts` |
 | Account quota-bar matching, totals and token windows | `AccountsView.vue`, quota progress utility/composable/modal |
 | Entity logo editing/display | Official key/group/channel/monitor forms plus `LogoPicker` and `ProviderBrandIcon` |
-| Shared logo/SVG libraries and CDN | `providerBrandIcon.ts`, `customMenuIconPresets.ts`, settings APIs |
-| Menu iframe/redirect mode | Official Settings/CustomPage views with `open_mode` |
+| Shared AI-logo library and CDN | `providerBrandIcon.ts`, AI-logo settings APIs |
 | Site branding | Official site name/logo settings and safe favicon injection |
 
-The [customization inventory](../concepts/customization-inventory.md) defines the complete active/retired boundary and cross-module persistence paths. External subscription management and account quota consumers enforce admin access. Auth-store changes clear external snapshots independently of mounted UI. Header balances, V1 shared capacity and PWA extensions are removed. The account management page renders cards at desktop and mobile sizes while preserving selection, bulk actions, sort, and quota display.
+The [customization inventory](../concepts/customization-inventory.md) defines the complete active/retired boundary and cross-module persistence paths. External subscription management and account quota consumers enforce admin access. Auth-store changes clear external snapshots independently of mounted UI. Header balances, V1 shared capacity, PWA extensions, the shared menu-icon library and direct menu redirects are removed. Menu icons use official `ImageUpload`; menu visibility, sorting, Markdown/embed and open-button controls follow official code. The account management page renders cards at desktop and mobile sizes while preserving selection, bulk actions, sort, and quota display.
 
 ## Official Behavior
 

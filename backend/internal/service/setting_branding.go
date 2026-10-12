@@ -74,46 +74,6 @@ func customAILogoPresetURLsJSON(values []string) (string, error) {
 	return string(raw), nil
 }
 
-func parseCustomMenuSVGIconPresetURLs(raw string) []string {
-	var values []string
-	if strings.TrimSpace(raw) == "" {
-		return []string{}
-	}
-	if err := json.Unmarshal([]byte(raw), &values); err != nil {
-		return []string{}
-	}
-	return normalizeCustomMenuSVGIconPresetURLs(values)
-}
-
-func normalizeCustomMenuSVGIconPresetURLs(values []string) []string {
-	result := make([]string, 0, len(values))
-	seen := make(map[string]struct{}, len(values))
-	for _, value := range values {
-		normalized := normalizeHTTPURL(value)
-		if normalized == "" {
-			continue
-		}
-		if _, ok := seen[normalized]; ok {
-			continue
-		}
-		seen[normalized] = struct{}{}
-		result = append(result, normalized)
-		if len(result) >= 48 {
-			break
-		}
-	}
-	return result
-}
-
-func customMenuSVGIconPresetURLsJSON(values []string) (string, error) {
-	normalized := normalizeCustomMenuSVGIconPresetURLs(values)
-	raw, err := json.Marshal(normalized)
-	if err != nil {
-		return "", err
-	}
-	return string(raw), nil
-}
-
 func (s *SettingService) AppendCustomAILogoPreset(ctx context.Context, rawURL string) ([]string, error) {
 	url := normalizeHTTPURL(rawURL)
 	if url == "" {
@@ -161,61 +121,6 @@ func (s *SettingService) DeleteCustomAILogoPreset(ctx context.Context, rawURL st
 		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
 	}
 	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomAILogoPresets: encoded}); err != nil {
-		return nil, err
-	}
-	if s.onUpdate != nil {
-		s.onUpdate()
-	}
-	return next, nil
-}
-
-func (s *SettingService) AppendCustomMenuSVGIconPreset(ctx context.Context, rawURL string) ([]string, error) {
-	url := normalizeHTTPURL(rawURL)
-	if url == "" {
-		return nil, infraerrors.BadRequest("INVALID_CUSTOM_MENU_SVG_ICON_URL", "custom menu SVG icon URL must be a valid http or https URL")
-	}
-
-	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomMenuSVGIconPresets)
-	if err != nil && !errors.Is(err, ErrSettingNotFound) {
-		return nil, err
-	}
-	current := parseCustomMenuSVGIconPresetURLs(currentRaw)
-	next := normalizeCustomMenuSVGIconPresetURLs(append([]string{url}, current...))
-	encoded, err := customMenuSVGIconPresetURLsJSON(next)
-	if err != nil {
-		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
-	}
-	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomMenuSVGIconPresets: encoded}); err != nil {
-		return nil, err
-	}
-	if s.onUpdate != nil {
-		s.onUpdate()
-	}
-	return next, nil
-}
-
-func (s *SettingService) DeleteCustomMenuSVGIconPreset(ctx context.Context, rawURL string) ([]string, error) {
-	url := normalizeHTTPURL(rawURL)
-	if url == "" {
-		return nil, infraerrors.BadRequest("INVALID_CUSTOM_MENU_SVG_ICON_URL", "custom menu SVG icon URL must be a valid http or https URL")
-	}
-
-	currentRaw, err := s.settingRepo.GetValue(ctx, SettingKeyCustomMenuSVGIconPresets)
-	if err != nil && !errors.Is(err, ErrSettingNotFound) {
-		return nil, err
-	}
-	current := parseCustomMenuSVGIconPresetURLs(currentRaw)
-	next := make([]string, 0, len(current))
-	for _, item := range current {
-		if item != url {
-			next = append(next, item)
-		}
-	}
-	encoded, err := customMenuSVGIconPresetURLsJSON(next)
-	if err != nil {
-		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
-	}
-	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyCustomMenuSVGIconPresets: encoded}); err != nil {
 		return nil, err
 	}
 	if s.onUpdate != nil {

@@ -365,11 +365,6 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 		return nil, fmt.Errorf("marshal custom AI logo presets: %w", err)
 	}
 	updates[SettingKeyCustomAILogoPresets] = customAILogoPresetsJSON
-	customMenuSVGIconPresetsJSON, err := customMenuSVGIconPresetURLsJSON(settings.CustomMenuSVGIconPresets)
-	if err != nil {
-		return nil, fmt.Errorf("marshal custom menu SVG icon presets: %w", err)
-	}
-	updates[SettingKeyCustomMenuSVGIconPresets] = customMenuSVGIconPresetsJSON
 
 	// 默认配置
 	updates[SettingKeyDefaultConcurrency] = strconv.Itoa(settings.DefaultConcurrency)

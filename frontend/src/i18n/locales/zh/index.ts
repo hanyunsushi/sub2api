@@ -13,9 +13,6 @@ export default {
     descending: '降序',
     selectAccount: '选择账号',
     externalSubscriptions: '外部订阅',
-    openMode: '打开方式',
-    iframe: '内嵌页面',
-    redirect: '直接跳转',
     logoCdn: 'Logo CDN 地址',
     logoPresets: '自定义 Logo URL',
     quotaBar: '额度条'

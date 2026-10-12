@@ -21,7 +21,7 @@ sources:
 
 The user decision is official frontend presentation and behavior, with existing functional extensions retained. The official baseline for this merge is `upstream/main` commit `9591136d45cef26453348ed9532a7ebbce7cf99c` (`v0.2.15` plus post-tag mainline fixes). The result is committed on `codex/cpa-management` as merge commit `076106755be184981cafe70411eef60d4cbef101` and is not yet deployed to OCI. The protection branch is `backup/cpa-management-before-upstream-merge-20261012171937`; exact runtime and rollback state are owned by the Project Authority.
 
-The [file appendix](customization-files.md) accounts for 190 current paths, including retained local changes, tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
+The [file appendix](customization-files.md) accounts for 186 current paths, including retained local changes, tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
 
 ## Retained Functional Extensions
 
@@ -41,15 +41,15 @@ The editor uses official shared components and gray/primary/dark utilities. Head
 
 `AccountsView` uses a responsive card grid at all viewport widths, while retaining provider matching, external balances/expiry, quota-bar settings, bulk selection/actions and sorting. `DataTable` renders its existing mobile-card cells in the grid, and swipe selection resolves cards by both pointer coordinates. `externalSubscriptionMatch.ts`, `externalSubscriptionQuotaProgress.ts`, `useAccountExternalQuotaProgressSettings.ts` and `ExternalQuotaProgressSettingsModal.vue` support `status_total`, `custom_total` and `token_total`, with custom totals and token reset dates. Backend account-list token statistics and settings persistence remain active. Save failures keep the dialog available and report an error.
 
-### Entity logos and shared libraries
+### Entity logos and shared AI-logo library
 
 `logo_url` remains persisted for API keys, groups, channels and channel monitors through handler, service, repository, DTO, authentication-cache and generated Ent paths. Migrations 144 and 145 remain unchanged. The official forms retain logo editing and clear-to-empty payloads; group creation/editing supports standard and simple modes. Account logos still read existing `extra.custom_logo_url` or `extra.logo_url` metadata, without a new account column.
 
-`LogoPicker`, `ProviderBrandIcon`, group badges/selectors and monitor/channel/key/group rows display these logos without restoring the old theme. Authenticated shared-library endpoints remain `/api/v1/settings/ai-logo-presets` and `/api/v1/settings/custom-menu-svg-icon-presets`. Frontend and backend AI-logo limits are both 64; menu icons are limited to 48. Public/admin settings retain CDN configuration and normalized HTTP(S) custom URLs.
+`LogoPicker`, `ProviderBrandIcon`, group badges/selectors and monitor/channel/key/group rows display these logos without restoring the old theme. The authenticated shared AI-logo endpoint remains `/api/v1/settings/ai-logo-presets`. Frontend and backend AI-logo limits are both 64. The shared menu SVG-icon library is removed, including frontend picker/API/runtime state and backend routes/settings/services. Public/admin settings retain CDN configuration and normalized HTTP(S) custom URLs.
 
 ### Custom menus and site branding
 
-Official menu SVG rendering, sorting, user/admin visibility and Markdown/embed behavior are retained, with the local shared SVG-icon library and `open_mode` (`iframe` or `redirect`). `CustomPageView` redirects only HTTP(S) embedded URLs and keeps official API-prefix handling, Markdown sanitation and drag behavior. `hide_open_button` is now retained by the Go DTO as well as the frontend, including a JSON round-trip regression test.
+Menus use the official SVG `ImageUpload`, sorting, user/admin visibility, Markdown/embed behavior and `hide_open_button` controls. `CustomPageView` matches `upstream/main`; the local direct-navigation watcher and opening-mode selector/types/DTO are removed. Existing menu items, URLs and icon values remain intact. Historical `open_mode` and menu-icon preset settings are not used to select behavior and are not rewritten in production. The existing JSON round-trip regression test covers official visibility and open-button fields.
 
 Official site name/logo and safe favicon injection remain. PWA metadata, Apple touch/192/512 PNG assets, manifests, icon-version injection and server PNG rendering are removed. The embedded web provider returns only official public settings; no-logo fallback is the official SVG favicon. Logo CDN and shared preset fields are wired through public/admin settings and initial HTML injection.
 

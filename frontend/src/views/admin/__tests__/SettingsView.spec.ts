@@ -567,7 +567,6 @@ function mountView() {
         ImageUpload: ImageUploadStub,
         BackupSettings: true,
         OpenAIFastPolicyUserSelector: true,
-        CustomMenuIconPicker: true,
       },
     },
   });
@@ -729,7 +728,7 @@ describe("admin SettingsView payment visible method controls", () => {
     adminSettingsFetch.mockResolvedValue(undefined);
   });
 
-  it("loads and saves the open button visibility and open mode for each custom menu", async () => {
+  it("loads and saves the open button visibility for each custom menu", async () => {
     const menuItems = [
       { id: "docs", label: "Docs", url: "https://example.com/docs", icon_svg: "", visibility: "user", sort_order: 0 },
       { id: "help", label: "Help", url: "https://example.com/help", icon_svg: "", visibility: "user", sort_order: 1, hide_open_button: true },
@@ -742,14 +741,13 @@ describe("admin SettingsView payment visible method controls", () => {
     expect(toggles.map(toggle => toggle.element.checked)).toEqual([false, true]);
     await toggles[0].setValue(true);
     await toggles[1].setValue(false);
-    await wrapper.findAll('[data-testid="custom-menu-open-mode"]')[1].setValue('redirect');
     await wrapper.find("form").trigger("submit.prevent");
     await flushPromises();
 
     expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({
       custom_menu_items: [
-        { ...menuItems[0], hide_open_button: true, open_mode: "iframe" },
-        { ...menuItems[1], hide_open_button: false, open_mode: "redirect" },
+        { ...menuItems[0], hide_open_button: true },
+        { ...menuItems[1], hide_open_button: false },
       ],
     }));
     wrapper.unmount();

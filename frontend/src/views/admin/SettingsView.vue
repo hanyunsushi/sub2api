@@ -6901,13 +6901,6 @@
                     />
                   </div>
 
-                  <label class="block sm:col-span-2">
-                    <span class="input-label">{{ t('customization.openMode') }}</span>
-                    <select v-model="item.open_mode" class="input" data-testid="custom-menu-open-mode">
-                      <option value="iframe">{{ t('customization.iframe') }}</option>
-                      <option value="redirect">{{ t('customization.redirect') }}</option>
-                    </select>
-                  </label>
                   <label class="flex items-center gap-2 sm:col-span-2">
                     <input
                       v-model="item.hide_open_button"
@@ -6926,9 +6919,7 @@
                     >
                       {{ t("admin.settings.customMenu.iconSvg") }}
                     </label>
-                    <CustomMenuIconPicker
-                      :custom-presets="form.custom_menu_svg_icon_presets"
-                      @presets-updated="(values: string[]) => (form.custom_menu_svg_icon_presets = values)"
+                    <ImageUpload
                       :model-value="item.icon_svg"
                       mode="svg"
                       size="sm"
@@ -8988,7 +8979,6 @@
 </template>
 
 <script setup lang="ts">
-import CustomMenuIconPicker from '@/components/common/CustomMenuIconPicker.vue';
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { listPlatformIds } from "@/constants/platformCatalog";
 import { useI18n } from "vue-i18n";
@@ -9824,7 +9814,6 @@ const form = reactive<SettingsForm>({
   site_logo: "",
   ai_logo_cdn_base_url: "",
   custom_ai_logo_presets: [],
-  custom_menu_svg_icon_presets: [],
   site_subtitle: "Subscription to API Conversion Platform",
   api_base_url: "",
   contact_info: "",
@@ -9873,7 +9862,6 @@ const form = reactive<SettingsForm>({
     visibility: "user" | "admin";
     sort_order: number;
     hide_open_button?: boolean;
-    open_mode?: "iframe" | "redirect";
   }>,
   custom_endpoints: [] as Array<{
     name: string;
@@ -10867,7 +10855,6 @@ function addMenuItem() {
     url: "",
     visibility: "user",
     sort_order: form.custom_menu_items.length,
-    open_mode: "iframe",
   });
 }
 
@@ -11078,7 +11065,6 @@ async function loadSettings() {
     if (settings.openai_oauth_scheduling_rate_multiplier === null) {
       form.openai_oauth_scheduling_rate_multiplier = null;
     }
-    form.custom_menu_items = form.custom_menu_items.map(item => ({ ...item, open_mode: item.open_mode === "redirect" ? "redirect" : "iframe" }));
     syncCaptchaProviderSelection();
     if (!form.claude_oauth_system_prompt_blocks?.trim()) {
       form.claude_oauth_system_prompt_blocks =
@@ -11537,7 +11523,6 @@ async function saveSettings() {
       site_logo: form.site_logo,
       ai_logo_cdn_base_url: form.ai_logo_cdn_base_url,
       custom_ai_logo_presets: form.custom_ai_logo_presets,
-      custom_menu_svg_icon_presets: form.custom_menu_svg_icon_presets,
       site_subtitle: form.site_subtitle,
       api_base_url: form.api_base_url,
       contact_info: form.contact_info,

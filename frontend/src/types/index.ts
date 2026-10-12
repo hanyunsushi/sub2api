@@ -194,7 +194,6 @@ export interface CustomMenuItem {
   hide_open_button?: boolean
   visibility: 'user' | 'admin'
   sort_order: number
-  open_mode?: 'iframe' | 'redirect'
 }
 
 export interface CustomEndpoint {
@@ -244,7 +243,6 @@ export interface PublicSettings {
   hide_ccs_import_button: boolean
   ai_logo_cdn_base_url?: string
   custom_ai_logo_presets?: string[]
-  custom_menu_svg_icon_presets?: string[]
   payment_enabled: boolean
   risk_control_enabled: boolean
   table_default_page_size: number

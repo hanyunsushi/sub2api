@@ -1,7 +1,7 @@
 ---
 title: Sub2API Wiki Schema
 updated: 2026-10-12
-last_synced_commit: 076106755be184981cafe70411eef60d4cbef101
+last_synced_commit: 41fdce90c38310b2881da26b1f2c19b88a7a8288
 commit_policy: committed
 authority_entry: ../agent.md
 ---
@@ -13,7 +13,7 @@ authority_entry: ../agent.md
 | Project Name | Sub2API |
 | Languages | Go 1.27, TypeScript/Vue 3 |
 | Frameworks | Gin, Ent, Vite, Vue Router, Pinia |
-| Database | PostgreSQL 16 |
+| Database | PostgreSQL 18 (OCI runtime) |
 | Cache | Redis |
 | Package Manager | Go modules, pnpm |
 | Test Framework | Go test, Vitest, ESLint, vue-tsc |

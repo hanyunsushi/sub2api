@@ -737,9 +737,8 @@ const (
 	SettingKeyExternalSubscriptionDeletedDefaultProviders = "external_subscription_deleted_default_providers"
 
 	// AI logo library
-	SettingKeyAILogoCDNBaseURL         = "ai_logo_cdn_base_url"
-	SettingKeyCustomAILogoPresets      = "custom_ai_logo_presets"
-	SettingKeyCustomMenuSVGIconPresets = "custom_menu_svg_icon_presets"
+	SettingKeyAILogoCDNBaseURL    = "ai_logo_cdn_base_url"
+	SettingKeyCustomAILogoPresets = "custom_ai_logo_presets"
 
 	// 订阅到期提醒
 	SettingKeySubscriptionExpiryNotifyEnabled = "subscription_expiry_notify_enabled" // 订阅到期提醒全局开关，默认开启

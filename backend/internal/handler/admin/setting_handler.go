@@ -263,7 +263,6 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		CustomEndpoints:                                        dto.ParseCustomEndpoints(settings.CustomEndpoints),
 		AILogoCDNBaseURL:                                       settings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                                    settings.CustomAILogoPresets,
-		CustomMenuSVGIconPresets:                               settings.CustomMenuSVGIconPresets,
 		DefaultConcurrency:                                     settings.DefaultConcurrency,
 		DefaultBalance:                                         settings.DefaultBalance,
 		RiskControlEnabled:                                     settings.RiskControlEnabled,

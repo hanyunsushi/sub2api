@@ -197,7 +197,6 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyCustomEndpoints,
 		SettingKeyAILogoCDNBaseURL,
 		SettingKeyCustomAILogoPresets,
-		SettingKeyCustomMenuSVGIconPresets,
 		SettingKeyLinuxDoConnectEnabled,
 		SettingKeyDingTalkConnectEnabled,
 		SettingKeyWeChatConnectEnabled,
@@ -344,7 +343,6 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		CustomEndpoints:                     settings[SettingKeyCustomEndpoints],
 		AILogoCDNBaseURL:                    normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
 		CustomAILogoPresets:                 parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
-		CustomMenuSVGIconPresets:            parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		LinuxDoOAuthEnabled:                 linuxDoEnabled,
 		DingTalkOAuthEnabled:                dingTalkEnabled,
 		WeChatOAuthEnabled:                  weChatEnabled,
@@ -606,7 +604,6 @@ type PublicSettingsInjectionPayload struct {
 	CustomEndpoints                     json.RawMessage          `json:"custom_endpoints"`
 	AILogoCDNBaseURL                    string                   `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets                 []string                 `json:"custom_ai_logo_presets"`
-	CustomMenuSVGIconPresets            []string                 `json:"custom_menu_svg_icon_presets"`
 	LinuxDoOAuthEnabled                 bool                     `json:"linuxdo_oauth_enabled"`
 	DingTalkOAuthEnabled                bool                     `json:"dingtalk_oauth_enabled"`
 	WeChatOAuthEnabled                  bool                     `json:"wechat_oauth_enabled"`
@@ -703,7 +700,6 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		CustomEndpoints:                     safeRawJSONArray(settings.CustomEndpoints),
 		AILogoCDNBaseURL:                    settings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                 settings.CustomAILogoPresets,
-		CustomMenuSVGIconPresets:            settings.CustomMenuSVGIconPresets,
 		LinuxDoOAuthEnabled:                 settings.LinuxDoOAuthEnabled,
 		DingTalkOAuthEnabled:                settings.DingTalkOAuthEnabled,
 		WeChatOAuthEnabled:                  settings.WeChatOAuthEnabled,

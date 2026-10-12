@@ -164,7 +164,6 @@ type UpdateSettingsRequest struct {
 	HideCcsImportButton         bool                  `json:"hide_ccs_import_button"`
 	AILogoCDNBaseURL            string                `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets         []string              `json:"custom_ai_logo_presets"`
-	CustomMenuSVGIconPresets    []string              `json:"custom_menu_svg_icon_presets"`
 	PurchaseSubscriptionEnabled *bool                 `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL     *string               `json:"purchase_subscription_url"`
 	TableDefaultPageSize        int                   `json:"table_default_page_size"`
@@ -1654,7 +1653,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HideCcsImportButton:                    req.HideCcsImportButton,
 		AILogoCDNBaseURL:                       req.AILogoCDNBaseURL,
 		CustomAILogoPresets:                    req.CustomAILogoPresets,
-		CustomMenuSVGIconPresets:               req.CustomMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:            purchaseEnabled,
 		PurchaseSubscriptionURL:                purchaseURL,
 		TableDefaultPageSize:                   req.TableDefaultPageSize,
@@ -2321,7 +2319,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HideCcsImportButton:                                    updatedSettings.HideCcsImportButton,
 		AILogoCDNBaseURL:                                       updatedSettings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                                    updatedSettings.CustomAILogoPresets,
-		CustomMenuSVGIconPresets:                               updatedSettings.CustomMenuSVGIconPresets,
 		PurchaseSubscriptionEnabled:                            updatedSettings.PurchaseSubscriptionEnabled,
 		PurchaseSubscriptionURL:                                updatedSettings.PurchaseSubscriptionURL,
 		TableDefaultPageSize:                                   updatedSettings.TableDefaultPageSize,

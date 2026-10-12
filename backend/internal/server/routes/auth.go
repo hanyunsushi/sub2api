@@ -260,7 +260,5 @@ func RegisterAuthRoutes(
 		authenticated.POST("/auth/oauth/bind-token", h.Auth.PrepareOAuthBindAccessTokenCookie)
 		authenticated.POST("/settings/ai-logo-presets", h.Setting.AppendCustomAILogoPreset)
 		authenticated.DELETE("/settings/ai-logo-presets", h.Setting.DeleteCustomAILogoPreset)
-		authenticated.POST("/settings/custom-menu-svg-icon-presets", h.Setting.AppendCustomMenuSVGIconPreset)
-		authenticated.DELETE("/settings/custom-menu-svg-icon-presets", h.Setting.DeleteCustomMenuSVGIconPreset)
 	}
 }

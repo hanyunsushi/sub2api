@@ -13,9 +13,6 @@ export default {
     descending: 'Descending',
     selectAccount: 'Select account',
     externalSubscriptions: 'External Subscriptions',
-    openMode: 'Open mode',
-    iframe: 'Embedded page',
-    redirect: 'Redirect',
     logoCdn: 'Logo CDN URL',
     logoPresets: 'Custom logo URLs',
     quotaBar: 'Quota bar'

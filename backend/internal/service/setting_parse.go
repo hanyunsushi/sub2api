@@ -77,7 +77,6 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		SettingKeyCustomEndpoints:                           "[]",
 		SettingKeyAILogoCDNBaseURL:                          DefaultAILogoCDNBaseURL,
 		SettingKeyCustomAILogoPresets:                       "[]",
-		SettingKeyCustomMenuSVGIconPresets:                  "[]",
 		SettingKeyWeChatConnectEnabled:                      "false",
 		SettingKeyWeChatConnectAppID:                        "",
 		SettingKeyWeChatConnectAppSecret:                    "",
@@ -377,7 +376,6 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		CustomEndpoints:                        settings[SettingKeyCustomEndpoints],
 		AILogoCDNBaseURL:                       normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
 		CustomAILogoPresets:                    parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
-		CustomMenuSVGIconPresets:               parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		BackendModeEnabled:                     settings[SettingKeyBackendModeEnabled] == "true",
 	}
 	result.TableDefaultPageSize, result.TablePageSizeOptions = parseTablePreferences(

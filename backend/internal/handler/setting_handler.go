@@ -85,7 +85,6 @@ func (h *SettingHandler) GetPublicSettings(c *gin.Context) {
 		CustomEndpoints:                     dto.ParseCustomEndpoints(settings.CustomEndpoints),
 		AILogoCDNBaseURL:                    settings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                 settings.CustomAILogoPresets,
-		CustomMenuSVGIconPresets:            settings.CustomMenuSVGIconPresets,
 		DingTalkOAuthEnabled:                settings.DingTalkOAuthEnabled,
 		LinuxDoOAuthEnabled:                 settings.LinuxDoOAuthEnabled,
 		WeChatOAuthEnabled:                  settings.WeChatOAuthEnabled,
@@ -170,46 +169,6 @@ func (h *SettingHandler) DeleteCustomAILogoPreset(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"custom_ai_logo_presets": presets,
-	})
-}
-
-// AppendCustomMenuSVGIconPreset appends a custom menu SVG icon URL to the shared server-side preset library.
-// POST /api/v1/settings/custom-menu-svg-icon-presets
-func (h *SettingHandler) AppendCustomMenuSVGIconPreset(c *gin.Context) {
-	var req appendCustomAILogoPresetRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-
-	presets, err := h.settingService.AppendCustomMenuSVGIconPreset(c.Request.Context(), req.URL)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-
-	response.Success(c, gin.H{
-		"custom_menu_svg_icon_presets": presets,
-	})
-}
-
-// DeleteCustomMenuSVGIconPreset removes a custom menu SVG icon URL from the shared server-side preset library.
-// DELETE /api/v1/settings/custom-menu-svg-icon-presets
-func (h *SettingHandler) DeleteCustomMenuSVGIconPreset(c *gin.Context) {
-	var req appendCustomAILogoPresetRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-
-	presets, err := h.settingService.DeleteCustomMenuSVGIconPreset(c.Request.Context(), req.URL)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-
-	response.Success(c, gin.H{
-		"custom_menu_svg_icon_presets": presets,
 	})
 }
 

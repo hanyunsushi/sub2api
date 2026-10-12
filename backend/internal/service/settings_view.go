@@ -166,7 +166,6 @@ type SystemSettings struct {
 	CustomEndpoints             string // JSON array of custom endpoints
 	AILogoCDNBaseURL            string
 	CustomAILogoPresets         []string
-	CustomMenuSVGIconPresets    []string
 
 	DefaultConcurrency           int
 	DefaultBalance               float64
@@ -372,7 +371,6 @@ type PublicSettings struct {
 	CustomEndpoints             string // JSON array of custom endpoints
 	AILogoCDNBaseURL            string
 	CustomAILogoPresets         []string
-	CustomMenuSVGIconPresets    []string
 
 	LinuxDoOAuthEnabled      bool
 	DingTalkOAuthEnabled     bool

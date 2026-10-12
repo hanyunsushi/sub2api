@@ -16,7 +16,6 @@ type CustomMenuItem struct {
 	PageSlug       string `json:"page_slug,omitempty"`
 	Visibility     string `json:"visibility"` // "user" or "admin"
 	SortOrder      int    `json:"sort_order"`
-	OpenMode       string `json:"open_mode,omitempty"` // "iframe" or "redirect"
 	HideOpenButton bool   `json:"hide_open_button,omitempty"`
 }
 
@@ -163,7 +162,6 @@ type SystemSettings struct {
 	HideCcsImportButton         bool             `json:"hide_ccs_import_button"`
 	AILogoCDNBaseURL            string           `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets         []string         `json:"custom_ai_logo_presets"`
-	CustomMenuSVGIconPresets    []string         `json:"custom_menu_svg_icon_presets"`
 	PurchaseSubscriptionEnabled bool             `json:"purchase_subscription_enabled"`
 	PurchaseSubscriptionURL     string           `json:"purchase_subscription_url"`
 	TableDefaultPageSize        int              `json:"table_default_page_size"`
@@ -409,7 +407,6 @@ type PublicSettings struct {
 	CustomEndpoints                     []CustomEndpoint         `json:"custom_endpoints"`
 	AILogoCDNBaseURL                    string                   `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets                 []string                 `json:"custom_ai_logo_presets"`
-	CustomMenuSVGIconPresets            []string                 `json:"custom_menu_svg_icon_presets"`
 	DingTalkOAuthEnabled                bool                     `json:"dingtalk_oauth_enabled"`
 	LinuxDoOAuthEnabled                 bool                     `json:"linuxdo_oauth_enabled"`
 	WeChatOAuthEnabled                  bool                     `json:"wechat_oauth_enabled"`

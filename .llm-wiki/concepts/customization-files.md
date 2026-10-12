@@ -5,9 +5,9 @@ updated: 2026-10-12
 
 # Customization Files
 
-This is the current development comparison against `upstream/main` (`9591136d45cef26453348ed9532a7ebbce7cf99c`) after merge commit `076106755be184981cafe70411eef60d4cbef101`. It accounts for retained local functionality, generated code, tests and documentation; ignored local preview configuration is excluded. Production release evidence belongs to the Project Authority; this merge has not been deployed.
+This is the current development comparison against `upstream/main` (`9591136d45cef26453348ed9532a7ebbce7cf99c`) after the upstream merge and removal of the shared menu-icon library and opening-mode extension. It includes retained local functionality, generated code, tests and documentation; ignored local preview configuration is excluded. Production release evidence belongs to the [Project Authority](../../agent.md).
 
-Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
+Total: **186 paths** (65 A, 121 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
 
 | Classification | Files |
 | --- | ---: |
@@ -16,8 +16,8 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | Backend code/config | 68 |
 | Generated Ent | 18 |
 | Tests | 35 |
-| Frontend code/config | 42 |
 | Assets | 2 |
+| Frontend code/config | 38 |
 
 [Feature boundaries](customization-inventory.md) and [Project Authority](../../agent.md) own the behavioral and runtime interpretation.
 
@@ -61,10 +61,10 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | Status | Path |
 | --- | --- |
 | M | [backend/cmd/server/wire_gen.go](../../backend/cmd/server/wire_gen.go) |
-| M | [backend/go.sum](../../backend/go.sum) |
 | M | [backend/ent/schema/api_key.go](../../backend/ent/schema/api_key.go) |
 | M | [backend/ent/schema/channel_monitor.go](../../backend/ent/schema/channel_monitor.go) |
 | M | [backend/ent/schema/group.go](../../backend/ent/schema/group.go) |
+| M | [backend/go.sum](../../backend/go.sum) |
 | M | [backend/internal/handler/admin/account_handler.go](../../backend/internal/handler/admin/account_handler.go) |
 | M | [backend/internal/handler/admin/channel_handler.go](../../backend/internal/handler/admin/channel_handler.go) |
 | M | [backend/internal/handler/admin/channel_monitor_handler.go](../../backend/internal/handler/admin/channel_monitor_handler.go) |
@@ -156,7 +156,6 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 
 | Status | Path |
 | --- | --- |
-| A | [backend/internal/service/user_service_notify_email_test.go](../../backend/internal/service/user_service_notify_email_test.go) |
 | M | [backend/internal/handler/admin/account_handler_grok_refresh_test.go](../../backend/internal/handler/admin/account_handler_grok_refresh_test.go) |
 | M | [backend/internal/handler/admin/account_handler_list_test.go](../../backend/internal/handler/admin/account_handler_list_test.go) |
 | M | [backend/internal/handler/admin/admin_service_stub_test.go](../../backend/internal/handler/admin/admin_service_stub_test.go) |
@@ -172,13 +171,16 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | A | [backend/internal/service/external_pixel_subscription_service_test.go](../../backend/internal/service/external_pixel_subscription_service_test.go) |
 | A | [backend/internal/service/external_subscription_config_service_test.go](../../backend/internal/service/external_subscription_config_service_test.go) |
 | M | [backend/internal/service/setting_service_public_test.go](../../backend/internal/service/setting_service_public_test.go) |
+| A | [backend/internal/service/user_service_notify_email_test.go](../../backend/internal/service/user_service_notify_email_test.go) |
 | M | [backend/internal/web/embed_test.go](../../backend/internal/web/embed_test.go) |
 | A | [backend/migrations/channel_monitor_logo_migration_test.go](../../backend/migrations/channel_monitor_logo_migration_test.go) |
 | A | [frontend/src/api/admin/__tests__/externalSubscriptions.spec.ts](../../frontend/src/api/admin/__tests__/externalSubscriptions.spec.ts) |
 | M | [frontend/src/components/charts/__tests__/TokenUsageTrend.spec.ts](../../frontend/src/components/charts/__tests__/TokenUsageTrend.spec.ts) |
+| M | [frontend/src/components/common/__tests__/DataTable.spec.ts](../../frontend/src/components/common/__tests__/DataTable.spec.ts) |
 | A | [frontend/src/components/common/__tests__/ProviderBrandIcon.spec.ts](../../frontend/src/components/common/__tests__/ProviderBrandIcon.spec.ts) |
 | A | [frontend/src/components/layout/__tests__/externalSubscriptionAccess.spec.ts](../../frontend/src/components/layout/__tests__/externalSubscriptionAccess.spec.ts) |
 | A | [frontend/src/composables/__tests__/useAccountExternalQuotaProgressSettings.spec.ts](../../frontend/src/composables/__tests__/useAccountExternalQuotaProgressSettings.spec.ts) |
+| M | [frontend/src/composables/__tests__/useSwipeSelect.spec.ts](../../frontend/src/composables/__tests__/useSwipeSelect.spec.ts) |
 | M | [frontend/src/stores/__tests__/auth.spec.ts](../../frontend/src/stores/__tests__/auth.spec.ts) |
 | A | [frontend/src/utils/__tests__/externalSubscriptionMatch.spec.ts](../../frontend/src/utils/__tests__/externalSubscriptionMatch.spec.ts) |
 | A | [frontend/src/utils/__tests__/externalSubscriptionQuotaProgress.spec.ts](../../frontend/src/utils/__tests__/externalSubscriptionQuotaProgress.spec.ts) |
@@ -188,9 +190,14 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | M | [frontend/src/views/admin/__tests__/GroupsView.duplicate.spec.ts](../../frontend/src/views/admin/__tests__/GroupsView.duplicate.spec.ts) |
 | M | [frontend/src/views/admin/__tests__/MonitorFormDialog.accountSelector.spec.ts](../../frontend/src/views/admin/__tests__/MonitorFormDialog.accountSelector.spec.ts) |
 | M | [frontend/src/views/admin/__tests__/SettingsView.spec.ts](../../frontend/src/views/admin/__tests__/SettingsView.spec.ts) |
-| M | [frontend/src/components/common/__tests__/DataTable.spec.ts](../../frontend/src/components/common/__tests__/DataTable.spec.ts) |
-| M | [frontend/src/composables/__tests__/useSwipeSelect.spec.ts](../../frontend/src/composables/__tests__/useSwipeSelect.spec.ts) |
 | M | [frontend/src/views/user/__tests__/KeysView.spec.ts](../../frontend/src/views/user/__tests__/KeysView.spec.ts) |
+
+## Assets
+
+| Status | Path |
+| --- | --- |
+| A | [frontend/public/brand/antigravity-logo.png](../../frontend/public/brand/antigravity-logo.png) |
+| M | [frontend/src/assets/icons/stripe.svg](../../frontend/src/assets/icons/stripe.svg) |
 
 ## Frontend code/config
 
@@ -203,14 +210,11 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | M | [frontend/src/api/admin/settings.ts](../../frontend/src/api/admin/settings.ts) |
 | A | [frontend/src/api/aiLogoPresets.ts](../../frontend/src/api/aiLogoPresets.ts) |
 | M | [frontend/src/api/channelMonitor.ts](../../frontend/src/api/channelMonitor.ts) |
-| A | [frontend/src/api/customMenuIconPresets.ts](../../frontend/src/api/customMenuIconPresets.ts) |
 | M | [frontend/src/api/keys.ts](../../frontend/src/api/keys.ts) |
 | A | [frontend/src/components/admin/account/ExternalQuotaProgressSettingsModal.vue](../../frontend/src/components/admin/account/ExternalQuotaProgressSettingsModal.vue) |
 | M | [frontend/src/components/admin/monitor/MonitorFormDialog.vue](../../frontend/src/components/admin/monitor/MonitorFormDialog.vue) |
-| A | [frontend/src/components/common/CustomMenuIconPicker.vue](../../frontend/src/components/common/CustomMenuIconPicker.vue) |
 | M | [frontend/src/components/common/DataTable.vue](../../frontend/src/components/common/DataTable.vue) |
 | M | [frontend/src/components/common/GroupBadge.vue](../../frontend/src/components/common/GroupBadge.vue) |
-| M | [frontend/src/composables/useSwipeSelect.ts](../../frontend/src/composables/useSwipeSelect.ts) |
 | M | [frontend/src/components/common/GroupOptionItem.vue](../../frontend/src/components/common/GroupOptionItem.vue) |
 | M | [frontend/src/components/common/GroupSelector.vue](../../frontend/src/components/common/GroupSelector.vue) |
 | A | [frontend/src/components/common/LogoPicker.vue](../../frontend/src/components/common/LogoPicker.vue) |
@@ -218,6 +222,7 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | M | [frontend/src/components/layout/AppSidebar.vue](../../frontend/src/components/layout/AppSidebar.vue) |
 | M | [frontend/src/components/user/monitor/MonitorCard.vue](../../frontend/src/components/user/monitor/MonitorCard.vue) |
 | A | [frontend/src/composables/useAccountExternalQuotaProgressSettings.ts](../../frontend/src/composables/useAccountExternalQuotaProgressSettings.ts) |
+| M | [frontend/src/composables/useSwipeSelect.ts](../../frontend/src/composables/useSwipeSelect.ts) |
 | M | [frontend/src/i18n/locales/en/index.ts](../../frontend/src/i18n/locales/en/index.ts) |
 | M | [frontend/src/i18n/locales/zh/index.ts](../../frontend/src/i18n/locales/zh/index.ts) |
 | M | [frontend/src/router/index.ts](../../frontend/src/router/index.ts) |
@@ -225,7 +230,6 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | M | [frontend/src/stores/auth.ts](../../frontend/src/stores/auth.ts) |
 | M | [frontend/src/styles/onboarding.css](../../frontend/src/styles/onboarding.css) |
 | M | [frontend/src/types/index.ts](../../frontend/src/types/index.ts) |
-| A | [frontend/src/utils/customMenuIconPresets.ts](../../frontend/src/utils/customMenuIconPresets.ts) |
 | A | [frontend/src/utils/externalSubscriptionMatch.ts](../../frontend/src/utils/externalSubscriptionMatch.ts) |
 | A | [frontend/src/utils/externalSubscriptionQuotaProgress.ts](../../frontend/src/utils/externalSubscriptionQuotaProgress.ts) |
 | A | [frontend/src/utils/providerBrandIcon.ts](../../frontend/src/utils/providerBrandIcon.ts) |
@@ -236,20 +240,4 @@ Total: **190 paths** (68 A, 122 M). A path delta is not a product feature; histo
 | M | [frontend/src/views/admin/GroupsView.vue](../../frontend/src/views/admin/GroupsView.vue) |
 | M | [frontend/src/views/admin/SettingsView.vue](../../frontend/src/views/admin/SettingsView.vue) |
 | M | [frontend/src/views/admin/ops/components/OpsAlertEventsCard.vue](../../frontend/src/views/admin/ops/components/OpsAlertEventsCard.vue) |
-| M | [frontend/src/views/user/CustomPageView.vue](../../frontend/src/views/user/CustomPageView.vue) |
 | M | [frontend/src/views/user/KeysView.vue](../../frontend/src/views/user/KeysView.vue) |
-
-## Assets
-
-| Status | Path |
-| --- | --- |
-| A | [frontend/public/brand/antigravity-logo.png](../../frontend/public/brand/antigravity-logo.png) |
-| M | [frontend/src/assets/icons/stripe.svg](../../frontend/src/assets/icons/stripe.svg) |
-
-## See Also
-
-[Customization Inventory](customization-inventory.md)
-
-[Frontend](../modules/frontend.md)
-
-[Backend](../modules/backend.md)

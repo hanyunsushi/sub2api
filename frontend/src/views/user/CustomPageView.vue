@@ -410,10 +410,6 @@ function injectCopyButtons() {
   })
 }
 
-watch([() => menuItem.value?.open_mode, embeddedUrl], ([mode, url]) => {
-  if (mode === 'redirect' && typeof url === 'string' && /^https?:\/\//i.test(url)) window.location.assign(url)
-}, { immediate: true })
-
 watch(markdownSlug, (slug) => {
   if (slug) {
     fetchAndRenderMarkdown(slug)
