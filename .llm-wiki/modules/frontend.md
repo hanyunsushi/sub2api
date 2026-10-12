@@ -16,7 +16,7 @@ sources:
 
 ## Upstream v0.2.12–v0.2.15 integration
 
-The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo and account-quota extensions attached to their official surfaces. This source merge is not a production release.
+The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo and account-quota extensions attached to their official surfaces. The source includes the merged update and official-menu restoration; running release evidence belongs to the Project Authority.
 
 ## Responsibility
 
