@@ -7,7 +7,7 @@ updated: 2026-10-12
 
 This is the current development comparison against `upstream/main` (`9591136d45cef26453348ed9532a7ebbce7cf99c`) after the upstream merge and removal of the shared menu-icon library and opening-mode extension. It includes retained local functionality, generated code, tests and documentation; ignored local preview configuration is excluded. Production release evidence belongs to the [Project Authority](../../agent.md).
 
-Total: **186 paths** (65 A, 121 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
+Total: **188 paths** (65 A, 123 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
 
 | Classification | Files |
 | --- | ---: |
@@ -17,7 +17,7 @@ Total: **186 paths** (65 A, 121 M). A path delta is not a product feature; histo
 | Generated Ent | 18 |
 | Tests | 35 |
 | Assets | 2 |
-| Frontend code/config | 38 |
+| Frontend code/config | 40 |
 
 [Feature boundaries](customization-inventory.md) and [Project Authority](../../agent.md) own the behavioral and runtime interpretation.
 
@@ -203,6 +203,8 @@ Total: **186 paths** (65 A, 121 M). A path delta is not a product feature; histo
 
 | Status | Path |
 | --- | --- |
+| M | [frontend/src/components/account/AccountUsageCell.vue](../../frontend/src/components/account/AccountUsageCell.vue) |
+| M | [frontend/src/components/account/UsageProgressBar.vue](../../frontend/src/components/account/UsageProgressBar.vue) |
 | M | [frontend/src/api/admin/channelMonitor.ts](../../frontend/src/api/admin/channelMonitor.ts) |
 | M | [frontend/src/api/admin/channels.ts](../../frontend/src/api/admin/channels.ts) |
 | A | [frontend/src/api/admin/externalSubscriptions.ts](../../frontend/src/api/admin/externalSubscriptions.ts) |

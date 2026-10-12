@@ -7,20 +7,21 @@ updated: 2026-10-12
 
 | Changed surface | Documentation owner | Evidence |
 | --- | --- | --- |
-| Account-local card density | Frontend module and customization inventory | 260px minimum grid tracks, priority wrapping and prior padding/gaps; all enabled information retained |
-| Verification and dev/prod boundary | Project Authority | Focused checks and isolated responsive browser comparison; local preview changed, production unchanged |
+| Account usage badge layout | Frontend module and customization inventory | `AccountUsageCell` and `UsageProgressBar` wrap badge rows while preserving each complete value |
+| Baseline comparison | Customization file appendix | Two additional modified shared components; 188 paths, 65 A and 123 M |
+| Verification and dev/prod boundary | Project Authority | User-marked localhost geometry, isolated long-value fixture, focused checks; no production release |
 
 # Verification
 
-- Source changes are limited to `AccountsView.vue` presentation; shared DataTable, backend/API, external subscriptions and persisted column visibility are unchanged.
-- Focused Vitest: 5 files / 90 tests pass, covering cards, selection, account bulk edit, priority and usage. Frontend typecheck, lint, i18n completeness 3/3 and final production build pass. Existing chunk/Browserslist/dynamic-import warnings remain.
-- With all fields enabled, simulated account cards retain every visible text value at 1440/1280/768/390/360px; the external-quota card measures 958px before and 616px after. Ordinary cards measure 578px. This is fixture evidence, not a universal height or production observation.
-- Width follow-up: at 1440px, the grid changes from three 365px cards to four 271px cards. Narrow viewports retain a full-width single column. Priority labels and four-digit edit controls wrap when necessary.
-- Responsive checks include dark mode at 360px, no page/card/field overflow, and OAuth multi-window usage/reset timestamps with scheduling scores. Selection of six rows, server sort/persistence, More-menu and quota-dialog open/close pass; console has no errors or framework overlay.
-- Existing 3001 preview is preserved. The compact-card change is development-only; actual production source/image/rollback and prior menu-restoration release remain owned by the authority.
+- Source commit: `34c84b0def46058bec47c71bac5f8c4901b96883`. Only two shared usage components change, adding `flex-wrap` to three statistic strips and `shrink-0 whitespace-nowrap` to their badges. No DataTable, card width, data/API or persistence change.
+- Focused Vitest: 3 files / 82 tests pass. Frontend typecheck, lint, i18n completeness 3/3 and production build pass; existing chunk/Browserslist/dynamic-import warnings remain. `git diff --check` passes.
+- On the user-marked localhost page at 1167x816, `939 req`, `166.5M`, `A $123.49` and `U $123.49` are preserved; U-cost wraps inside its field. A DOM/computed-style check finds 48 usage badges across 15 cards within their fields. This local rendering uses the existing preview session; it is not a new production release or provider-balance audit.
+- An isolated fixture renders the real DataTable, AccountUsageCell and UsageProgressBar components with the account-page styles and long values. It covers API Key, Gemini service-account, OpenAI OAuth and Anthropic OAuth, including `预计总费用 $2469.80`. Restoring the old CSS reproduces seven badge overflows and 19 split values at the observed card width; corrected CSS has zero of either across 25 badges, with identical text.
+- Corrected fixture checks at 1440/390/360px and an explicit 260px card in English/dark mode preserve all 25 badges, including `Est. total $2469.80`, with no statistic-strip/field overflow or split values.
+- The prior compact/narrow card fixture used shorter fees and did not cover the reported combination. Its blanket wording is qualified in the authority; current long-value evidence addresses that gap.
+- Existing 3001 preview is preserved. Production remains the authority's last release; no OCI, database, volume or deployment action is performed.
 
 # Documentation Lint
 
-- 13 Wiki pages, 228 local links and 35 source references have no missing targets; articles are reachable within two clicks.
-- The appendix still matches 186 paths (65 A, 121 M) against `upstream/main`; no source path was added or removed.
-- Authority symlink is valid, and `git diff --check` passes. Temporary browser/scripts/logs are outside the repository; credentials and build outputs are not documented.
+- 13 Wiki pages, 230 local links and 37 source references have no missing targets; articles are reachable within two clicks. The appendix exactly matches 188 Git paths (65 A, 123 M). Authority symlink and reciprocal index links are valid.
+- Temporary fixture and browser tab are removed after verification; no credentials, generated bundle or screenshot is committed.
