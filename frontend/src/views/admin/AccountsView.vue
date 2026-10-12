@@ -2875,6 +2875,7 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
 }
 
 .accounts-page :deep(.data-card-grid) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   align-items: start;
   gap: 0.75rem;
 }
@@ -2903,6 +2904,14 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
 .accounts-page :deep([data-field] > div) {
   width: auto;
   flex: 1;
+}
+
+.accounts-page :deep([data-field='priority']) {
+  flex-wrap: wrap;
+}
+
+.accounts-page :deep([data-field='priority'] > div) {
+  flex: 0 0 auto;
 }
 
 .accounts-page :deep([data-field='select']) {
