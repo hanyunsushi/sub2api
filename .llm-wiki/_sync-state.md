@@ -2,7 +2,7 @@
 title: Current Documentation Sync State
 updated: 2026-10-12
 base_commit: 42bc7f6cffe24bcb471608e48e66b4a0afa1f882
-head_commit: 62608ac87
+head_commit: 27a0dc7b1
 ---
 
 # Doc Impact Map
@@ -10,9 +10,9 @@ head_commit: 62608ac87
 | Changed area | Canonical owner | Evidence |
 | --- | --- | --- |
 | Official frontend and retained functional extensions | [Customization Inventory](concepts/customization-inventory.md), [Frontend](modules/frontend.md) | Account cards restored with selection, sorting and quota behavior; cache invalidation and generation guard retained |
-| Exact current working-tree diff coverage | [Customization Files](concepts/customization-files.md) | 187 paths: 68 A, 119 M, including untracked regression coverage; ignored local preview config excluded |
+| Exact current working-tree diff coverage | [Customization Files](concepts/customization-files.md) | 189 paths: 68 A, 121 M; ignored local preview config excluded |
 | Mail, build and test fixes | [Customization Inventory](concepts/customization-inventory.md), [Backend](modules/backend.md) | Official email template retained with escaping/shared TTL; pinned pnpm, legal docs and entrypoint permissions retained; redundant CA update removed |
-| Development preview, verification and release boundary | [Project Authority](../agent.md) | Earlier official restoration is deployed; current account-card/email/proxy-source adjustments remain uncommitted and undeployed; user-owned 3001 preview remains |
+| Development preview, verification and release boundary | [Project Authority](../agent.md) | Account-card/email/proxy-source adjustments are committed as `27a0dc7b1` and deployed to OCI; user-owned 3001 preview remains |
 
 # Verification
 
@@ -27,13 +27,13 @@ head_commit: 62608ac87
 - Embedded frontend assets contain no Apple touch/192/512 PNG icons or manifest. HTML contains no PWA metadata; ordinary site title and safe favicon injection still pass. Header, monitor grid, index HTML and web middleware match the official baseline; ordinary custom site/entity logos remain supported.
 - The user-owned 3001 preview remains running: `/home` and proxied public settings return HTTP 200; HTML has the official SVG favicon and no PWA metadata. This is code/HTTP evidence, not authenticated production/browser verification.
 - Earlier 82-file/203-test/16-error and 343-file/2627-test counts are superseded intermediate or prior-tree evidence, not the current result.
-- Release rechecks: 53 targeted frontend tests passed. OCI Docker frontend/i18n and embedded backend builds passed. Candidate/running `-version` match the published source commit; entrypoint is 755, app health is green and PostgreSQL/Redis identities/start times/mounts are unchanged.
-- Local/public health and representative routes are 200. Public JS/CSS contain official presentation and retained Pixel/account quota features; PWA metadata and legacy theme field are absent. Provider/brand/menu and 37 existing account credential fingerprints are unchanged. This is HTTP/static/runtime evidence, not authenticated browser/provider verification.
-- Clean archive transfer excludes AppleDouble/DS_Store; database dump and app data are backed up, migration files match the prior source. Three rollback tags remain after removing five old tags. Other projects, formal volumes and shared caches are untouched.
+- Release rechecks: 53 targeted frontend tests passed. OCI Docker frontend/i18n and embedded backend builds passed. Candidate/running `-version` match `27a0dc7b1`; entrypoint is 755, app health is green, the rollback image and database/app-data backups are recorded, and PostgreSQL/Redis identities/start times/mounts are unchanged.
+- Local/public health and representative routes are 200 after the account-card deployment. Public JS/CSS contain official presentation and retained Pixel/account quota features; PWA metadata and legacy theme field are absent. Provider/brand/menu and 37 existing account credential fingerprints are unchanged. This is HTTP/static/runtime evidence, not authenticated browser/provider verification.
+- Clean archive transfer excludes AppleDouble/DS_Store; database dump and app data are backed up, migration files match the prior source. The new account-card rollback tag and prior rollback tags remain. This release did not remove images or caches; other projects and formal volumes are untouched.
 
 # Documentation Lint
 
-- 13 Wiki pages and all 10 articles remain reachable within two clicks. The appendix matches 187 current paths/statuses, including one untracked regression test; ignored local preview configuration is intentionally excluded.
-- Categories: Frontend 42, Backend 67, Tests 33, Generated Ent 18, Documentation 21, Assets 2, Engineering 4.
+- 13 Wiki pages and all 10 articles remain reachable within two clicks. The appendix matches 189 current paths/statuses; ignored local preview configuration is intentionally excluded.
+- Categories: Frontend 42, Backend 67, Tests 35, Generated Ent 18, Documentation 21, Assets 2, Engineering 4.
 - The authority symlink remains valid and points to the canonical Obsidian dev document. User-requested feature removal supersedes historical PWA/theme/frontend presentation notes; human README/visual examples remain historical references.
 - Git diff whitespace validation passes. Durable configuration, credentials, historical migrations and runtime volumes were preserved; no temporary scripts, binaries or raw test logs are included in the Wiki.

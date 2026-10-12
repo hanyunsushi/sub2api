@@ -7,7 +7,7 @@ updated: 2026-10-12
 
 This is the current development working-tree comparison against the already merged local `upstream/main` (`42bc7f6cffe24bcb471608e48e66b4a0afa1f882`). It accounts for the committed restoration source, working-tree changes and current documentation updates; ignored local preview configuration is excluded. Production release evidence belongs to the Project Authority; this is not a new upstream fetch.
 
-Total: **187 paths** (68 A, 119 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
+Total: **189 paths** (68 A, 121 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
 
 | Classification | Files |
 | --- | ---: |
@@ -187,6 +187,8 @@ Total: **187 paths** (68 A, 119 M). A path delta is not a product feature; histo
 | M | [frontend/src/views/admin/__tests__/GroupsView.duplicate.spec.ts](../../frontend/src/views/admin/__tests__/GroupsView.duplicate.spec.ts) |
 | M | [frontend/src/views/admin/__tests__/MonitorFormDialog.accountSelector.spec.ts](../../frontend/src/views/admin/__tests__/MonitorFormDialog.accountSelector.spec.ts) |
 | M | [frontend/src/views/admin/__tests__/SettingsView.spec.ts](../../frontend/src/views/admin/__tests__/SettingsView.spec.ts) |
+| M | [frontend/src/components/common/__tests__/DataTable.spec.ts](../../frontend/src/components/common/__tests__/DataTable.spec.ts) |
+| M | [frontend/src/composables/__tests__/useSwipeSelect.spec.ts](../../frontend/src/composables/__tests__/useSwipeSelect.spec.ts) |
 | M | [frontend/src/views/user/__tests__/KeysView.spec.ts](../../frontend/src/views/user/__tests__/KeysView.spec.ts) |
 
 ## Frontend code/config
@@ -207,6 +209,7 @@ Total: **187 paths** (68 A, 119 M). A path delta is not a product feature; histo
 | A | [frontend/src/components/common/CustomMenuIconPicker.vue](../../frontend/src/components/common/CustomMenuIconPicker.vue) |
 | M | [frontend/src/components/common/DataTable.vue](../../frontend/src/components/common/DataTable.vue) |
 | M | [frontend/src/components/common/GroupBadge.vue](../../frontend/src/components/common/GroupBadge.vue) |
+| M | [frontend/src/composables/useSwipeSelect.ts](../../frontend/src/composables/useSwipeSelect.ts) |
 | M | [frontend/src/components/common/GroupOptionItem.vue](../../frontend/src/components/common/GroupOptionItem.vue) |
 | M | [frontend/src/components/common/GroupSelector.vue](../../frontend/src/components/common/GroupSelector.vue) |
 | A | [frontend/src/components/common/LogoPicker.vue](../../frontend/src/components/common/LogoPicker.vue) |
@@ -234,7 +237,6 @@ Total: **187 paths** (68 A, 119 M). A path delta is not a product feature; histo
 | M | [frontend/src/views/admin/ops/components/OpsAlertEventsCard.vue](../../frontend/src/views/admin/ops/components/OpsAlertEventsCard.vue) |
 | M | [frontend/src/views/user/CustomPageView.vue](../../frontend/src/views/user/CustomPageView.vue) |
 | M | [frontend/src/views/user/KeysView.vue](../../frontend/src/views/user/KeysView.vue) |
-| M | [frontend/vite.config.ts](../../frontend/vite.config.ts) |
 
 ## Assets
 

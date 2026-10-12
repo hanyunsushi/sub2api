@@ -21,7 +21,7 @@ sources:
 
 The user decision is official frontend presentation and behavior, with existing functional extensions retained. The official baseline is the already merged local `upstream/main` commit `42bc7f6cffe24bcb471608e48e66b4a0afa1f882`. The restoration is committed on `codex/cpa-management` and deployed to OCI. The protection branch is `backup/frontend-before-official-restore-20261011`; exact commits, runtime evidence and rollback state are owned by the Project Authority.
 
-The [file appendix](customization-files.md) accounts for 187 current paths, including working-tree changes, tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
+The [file appendix](customization-files.md) accounts for 189 current paths, including working-tree changes, tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
 
 ## Retained Functional Extensions
 
@@ -73,7 +73,7 @@ CPA/Codex management, dedicated global pricing, schedule locks, monitor-driven m
 
 ## Verification Boundary
 
-Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has received the earlier frontend restoration; the account-card source change is uncommitted and not deployed. Vite defaults to `http://localhost:8080`; the ignored local `frontend/.env.local` keeps the user-owned 3001 preview pointed at production API `https://ai.kreeper.cc`. This proxy setting does not deploy code.
+Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has received the `27a0dc7b1` deployment, including the account-card source change. Vite defaults to `http://localhost:8080`; the ignored local `frontend/.env.local` keeps the user-owned 3001 preview pointed at production API `https://ai.kreeper.cc`. This proxy setting does not deploy code.
 
 ## See Also
 

@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-10-11
+updated: 2026-10-12
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
