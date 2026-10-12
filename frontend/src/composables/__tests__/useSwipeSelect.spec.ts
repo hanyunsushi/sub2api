@@ -1,6 +1,36 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { ref } from 'vue'
 
-import { findRowIndexByDomPosition } from '../useSwipeSelect'
+import { findRowIndexByDomPosition, useSwipeSelect } from '../useSwipeSelect'
+
+it('starts a horizontal card drag on the card under the pointer', () => {
+  const selected = new Set<number>()
+  const width = vi.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(1200)
+  const height = vi.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(900)
+  const wrapper = mount({
+    setup() {
+      const container = ref<HTMLElement | null>(null)
+      useSwipeSelect(container, {
+        isSelected: id => selected.has(id),
+        select: id => { selected.add(id) },
+        deselect: id => { selected.delete(id) },
+      }, undefined, { layout: 'cards' })
+      return { container }
+    },
+    template: '<div ref="container"><div data-row-id="1"></div><div data-row-id="2"></div></div>',
+  }, { attachTo: document.body })
+  wrapper.findAll('[data-row-id]').forEach((card, index) => {
+    vi.spyOn(card.element, 'getBoundingClientRect').mockReturnValue({ left: index * 320, right: index * 320 + 300, top: 100, bottom: 300 } as DOMRect)
+  })
+  wrapper.get('[data-row-id="2"]').element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 400, clientY: 150 }))
+  document.dispatchEvent(new MouseEvent('mousemove', { clientX: 410, clientY: 150 }))
+  expect([...selected]).toEqual([2])
+  document.dispatchEvent(new MouseEvent('mouseup'))
+  wrapper.unmount()
+  width.mockRestore()
+  height.mockRestore()
+})
 
 /**
  * Build a fake scroll element whose `tbody tr[data-index]` rows expose stubbed

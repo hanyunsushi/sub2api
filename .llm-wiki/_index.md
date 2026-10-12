@@ -1,6 +1,6 @@
 ---
 title: Sub2API Wiki
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 [Project Authority](../agent.md)

@@ -21,7 +21,7 @@ sources:
 
 The user decision is official frontend presentation and behavior, with existing functional extensions retained. The official baseline is the already merged local `upstream/main` commit `42bc7f6cffe24bcb471608e48e66b4a0afa1f882`. The restoration is committed on `codex/cpa-management` and deployed to OCI. The protection branch is `backup/frontend-before-official-restore-20261011`; exact commits, runtime evidence and rollback state are owned by the Project Authority.
 
-The [file appendix](customization-files.md) accounts for 186 current paths, including tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
+The [file appendix](customization-files.md) accounts for 187 current paths, including working-tree changes, tests, generated code and historical migrations. The earlier 746-path audit described the pre-restoration tree and is not the current inventory. CodeGraph is unavailable in this tool session; evidence comes from Git, source/API wiring, Vue/TypeScript parsing and tests.
 
 ## Retained Functional Extensions
 
@@ -39,7 +39,7 @@ The editor uses official shared components and gray/primary/dark utilities. Head
 
 ### Account external quota bars
 
-`AccountsView` keeps provider matching, external balances/expiry and the quota-bar settings action on the official table. `externalSubscriptionMatch.ts`, `externalSubscriptionQuotaProgress.ts`, `useAccountExternalQuotaProgressSettings.ts` and `ExternalQuotaProgressSettingsModal.vue` support `status_total`, `custom_total` and `token_total`, with custom totals and token reset dates. Backend account-list token statistics and settings persistence remain active. Save failures keep the dialog available and report an error.
+`AccountsView` uses a responsive card grid at all viewport widths, while retaining provider matching, external balances/expiry, quota-bar settings, bulk selection/actions and sorting. `DataTable` renders its existing mobile-card cells in the grid, and swipe selection resolves cards by both pointer coordinates. `externalSubscriptionMatch.ts`, `externalSubscriptionQuotaProgress.ts`, `useAccountExternalQuotaProgressSettings.ts` and `ExternalQuotaProgressSettingsModal.vue` support `status_total`, `custom_total` and `token_total`, with custom totals and token reset dates. Backend account-list token statistics and settings persistence remain active. Save failures keep the dialog available and report an error.
 
 ### Entity logos and shared libraries
 
@@ -59,21 +59,21 @@ Bootstrap, light/dark theme, Tailwind/base CSS, Home/auth/recovery pages, naviga
 
 Removed: Anthropic/Kreeperai global theme and repair/text-action CSS, forced-light lifecycle, custom fonts, landing WebGL/OGL and decorative assets, local route-shell/hover/card/mobile contracts, legacy locale override trees, custom chunk-recovery logic, local frontend-index script and Anthropic ast-grep theme rules. Official tests are restored; obsolete local visual-contract tests are removed, while functional tests are retained or replaced by mount/API tests.
 
-Account card/grace decoration and priority +/- table shortcuts are not retained as separate product extensions; priority remains available through official account edit/bulk-edit flows. User page-size behavior and monitor availability semantics follow official code.
+The earlier branded card/grace decoration and priority +/- shortcuts are not restored; the account card layout uses the official shared components and utilities. Priority remains available through official account edit/bulk-edit flows. User page-size behavior and monitor availability semantics follow official code.
 
 Human README/layout/auth guides and `frontend-rules/README.md` are retained as historical documents, not active design authority. Their theme examples do not authorize reintroducing removed code. The authority and current Wiki supersede them.
 
 ## Backend Compatibility and Retirement
 
-The retired `appearance_theme_default` constant, DTO fields, defaults, parser, update method, route and tests are removed. Historical stored values are neither queried nor returned; this source cleanup does not mutate a production database. Neutral notification-email verification HTML remains a behavioral/presentation delta from official mail, with escaped values and the shared verification TTL.
+The retired `appearance_theme_default` constant, DTO fields, defaults, parser, update method, route and tests are removed. Historical stored values are neither queried nor returned; this source cleanup does not mutate a production database. Notification-email verification retains the official bilingual HTML and footer; site name and code are escaped, and both displayed expiry values derive from the shared verification TTL.
 
-The account-handler constructor uses the official typed signature; account external quota configuration remains attached through its dedicated setter and Wire provider. The dormant foreign-key error helper and unused Go dependencies/checksums are removed. Supporting fixes retain the frontend auth-source-default fallback, pinned Docker pnpm/CA/entrypoint permissions, legal-document build-context handling and the Vite development proxy. `openai_gateway_count_tokens.go`, `instructions_gpt5_2.txt`, Stripe SVG, several controls and DTO field rearrangements differ only in whitespace/formatting or declaration order; they are not additional custom runtime features. General Responses token accounting is therefore not listed as a retained local behavior against this baseline.
+The account-handler constructor uses the official typed signature; account external quota configuration remains attached through its dedicated setter and Wire provider. The dormant foreign-key error helper and unused Go dependencies/checksums are removed. Supporting fixes retain the frontend auth-source-default fallback, pinned Docker pnpm version, entrypoint read/execute permissions, legal-document build-context handling and the Vite development proxy. The extra `update-ca-certificates` command was removed because no custom CA is copied into the image. The notification-email template keeps official markup while escaping interpolated values and using the actual TTL. `openai_gateway_count_tokens.go`, `instructions_gpt5_2.txt`, Stripe SVG, several controls and DTO field rearrangements differ only in whitespace/formatting or declaration order; they are not additional custom runtime features. General Responses token accounting is therefore not listed as a retained local behavior against this baseline.
 
 CPA/Codex management, dedicated global pricing, schedule locks, monitor-driven multi-account auto-scheduling, Cloudflare AI Search, Creepee SSO, the old custom email template and bracket/rollback CSS remain retired. Historical migrations 108/151/152 are kept with removal migrations 231/241; they are not active UI or service entrypoints.
 
 ## Verification Boundary
 
-Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has received this restoration; its exact release state is recorded in the authority. The existing 3001 preview retains its production API proxy as development configuration; it does not deploy code.
+Current test/build results and deployment status belong to the [Project Authority](../../agent.md). Tests prove source contracts, not authenticated production rendering or live provider credentials. Production has received the earlier frontend restoration; the account-card source change is uncommitted and not deployed. Vite defaults to `http://localhost:8080`; the ignored local `frontend/.env.local` keeps the user-owned 3001 preview pointed at production API `https://ai.kreeper.cc`. This proxy setting does not deploy code.
 
 ## See Also
 

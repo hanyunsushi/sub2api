@@ -8,6 +8,10 @@ import misc from './misc'
 
 export default {
   customization: {
+    sortBy: '排序',
+    ascending: '升序',
+    descending: '降序',
+    selectAccount: '选择账号',
     externalSubscriptions: '外部订阅',
     openMode: '打开方式',
     iframe: '内嵌页面',

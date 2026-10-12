@@ -125,8 +125,6 @@ RUN apk add --no-cache \
     libedit \
     && rm -rf /var/cache/apk/*
 
-RUN update-ca-certificates
-
 # Copy pg_dump and psql from the same postgres image used in docker-compose
 # This ensures version consistency between backup tools and the database server
 COPY --from=pg-client /usr/local/bin/pg_dump /usr/local/bin/pg_dump

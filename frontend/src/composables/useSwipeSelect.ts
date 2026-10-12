@@ -76,7 +76,8 @@ export function findRowIndexByDomPosition(scrollEl: Element, clientY: number): n
 export function useSwipeSelect(
   containerRef: Ref<HTMLElement | null>,
   adapter: SwipeSelectAdapter,
-  virtualContext?: SwipeSelectVirtualContext
+  virtualContext?: SwipeSelectVirtualContext,
+  options: { layout?: 'rows' | 'cards' } = {}
 ) {
   const isDragging = ref(false)
 
@@ -86,6 +87,8 @@ export function useSwipeSelect(
   let startY = 0
   let lastMouseY = 0
   let pendingStartY = 0
+  let lastMouseX = 0
+  let pendingStartX = 0
   let initialSelectedSnapshot = new Map<number, boolean>()
   let cachedRows: HTMLElement[] = []
   let marqueeEl: HTMLDivElement | null = null
@@ -104,7 +107,7 @@ export function useSwipeSelect(
   function getDataRows(): HTMLElement[] {
     const container = containerRef.value
     if (!container) return []
-    return Array.from(container.querySelectorAll('tbody tr[data-row-id]'))
+    return Array.from(container.querySelectorAll(options.layout === 'cards' ? '[data-row-id]' : 'tbody tr[data-row-id]'))
   }
 
   function getRowId(el: HTMLElement): number | null {
@@ -118,6 +121,23 @@ export function useSwipeSelect(
   function findRowIndexAtY(clientY: number): number {
     const len = cachedRows.length
     if (len === 0) return -1
+
+    // Cards share a Y range; use both coordinates to locate the nearest card.
+    if (options.layout === 'cards') {
+      let nearest = 0
+      let distance = Infinity
+      cachedRows.forEach((card, index) => {
+        const rect = card.getBoundingClientRect()
+        const dx = Math.max(rect.left - lastMouseX, 0, lastMouseX - rect.right)
+        const dy = Math.max(rect.top - clientY, 0, clientY - rect.bottom)
+        const nextDistance = dx * dx + dy * dy
+        if (nextDistance < distance) {
+          distance = nextDistance
+          nearest = index
+        }
+      })
+      return nearest
+    }
 
     // Boundary checks
     const firstRect = cachedRows[0].getBoundingClientRect()
@@ -324,6 +344,9 @@ export function useSwipeSelect(
    * prefer the browser's native text selection so users can copy text normally.
    */
   function shouldPreferNativeTextSelection(target: HTMLElement): boolean {
+    if (options.layout === 'cards') {
+      return !!target.closest('[data-field]') && !target.closest('[data-swipe-select-handle]')
+    }
     const row = target.closest('tbody tr[data-row-id]')
     if (!row) return false
 
@@ -343,7 +366,7 @@ export function useSwipeSelect(
     const activationRoot = getActivationRoot()
     if (!activationRoot) return false
     if (!activationRoot.contains(target)) return false
-    if (target.closest('tbody tr[data-row-id]')) return false
+    if (target.closest(options.layout === 'cards' ? '[data-row-id]' : 'tbody tr[data-row-id]')) return false
 
     return hasDirectTextContent(target)
   }
@@ -376,6 +399,7 @@ export function useSwipeSelect(
     }
 
     pendingStartY = e.clientY
+    pendingStartX = lastMouseX = e.clientX
     // Prevent text selection as soon as the mouse is down,
     // before the drag threshold is reached (Phase 1).
     // Without this, the browser starts selecting text during
@@ -386,7 +410,10 @@ export function useSwipeSelect(
   }
 
   function onThresholdMove(e: MouseEvent) {
-    if (Math.abs(e.clientY - pendingStartY) < DRAG_THRESHOLD) return
+    const movement = options.layout === 'cards'
+      ? Math.hypot(e.clientX - pendingStartX, e.clientY - pendingStartY)
+      : Math.abs(e.clientY - pendingStartY)
+    if (movement < DRAG_THRESHOLD) return
     // Threshold exceeded — begin actual drag
     document.removeEventListener('mousemove', onThresholdMove)
     document.removeEventListener('mouseup', onThresholdUp)
@@ -398,6 +425,7 @@ export function useSwipeSelect(
     }
 
     // Process the move that crossed the threshold
+    lastMouseX = e.clientX
     lastMouseY = e.clientY
     updateMarquee(e.clientY)
     const findIdx = virtualContext ? findRowIndexAtYVirtual : findRowIndexAtY
@@ -485,6 +513,7 @@ export function useSwipeSelect(
 
   function onMouseMove(e: MouseEvent) {
     if (!isDragging.value) return
+    lastMouseX = e.clientX
     lastMouseY = e.clientY
     const findIdx = virtualContext ? findRowIndexAtYVirtual : findRowIndexAtY
     const apply = virtualContext ? applyRangeVirtual : applyRange

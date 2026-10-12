@@ -5,9 +5,9 @@ updated: 2026-10-12
 
 # Customization Files
 
-This is the current development working-tree comparison against the already merged local `upstream/main` (`42bc7f6cffe24bcb471608e48e66b4a0afa1f882`). It accounts for the committed restoration source and current documentation updates. Production release evidence belongs to the Project Authority; this is not a new upstream fetch.
+This is the current development working-tree comparison against the already merged local `upstream/main` (`42bc7f6cffe24bcb471608e48e66b4a0afa1f882`). It accounts for the committed restoration source, working-tree changes and current documentation updates; ignored local preview configuration is excluded. Production release evidence belongs to the Project Authority; this is not a new upstream fetch.
 
-Total: **186 paths** (67 A, 119 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
+Total: **187 paths** (68 A, 119 M). A path delta is not a product feature; historical migrations, tests, whitespace and documentation are included. The former 746-path snapshot is superseded and remains available through Git.
 
 | Classification | Files |
 | --- | ---: |
@@ -15,7 +15,7 @@ Total: **186 paths** (67 A, 119 M). A path delta is not a product feature; histo
 | Documentation | 21 |
 | Backend code/config | 67 |
 | Generated Ent | 18 |
-| Tests | 32 |
+| Tests | 33 |
 | Frontend code/config | 42 |
 | Assets | 2 |
 
@@ -155,6 +155,7 @@ Total: **186 paths** (67 A, 119 M). A path delta is not a product feature; histo
 
 | Status | Path |
 | --- | --- |
+| A | [backend/internal/service/user_service_notify_email_test.go](../../backend/internal/service/user_service_notify_email_test.go) |
 | M | [backend/internal/handler/admin/account_handler_grok_refresh_test.go](../../backend/internal/handler/admin/account_handler_grok_refresh_test.go) |
 | M | [backend/internal/handler/admin/account_handler_list_test.go](../../backend/internal/handler/admin/account_handler_list_test.go) |
 | M | [backend/internal/handler/admin/admin_service_stub_test.go](../../backend/internal/handler/admin/admin_service_stub_test.go) |

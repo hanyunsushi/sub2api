@@ -47,6 +47,33 @@ describe('DataTable', () => {
     localStorage.clear()
   })
 
+  it('renders desktop cards with field slots, actions and stable selection keys', async () => {
+    const wrapper = mount(DataTable, {
+      props: {
+        cardLayout: true,
+        selectable: true,
+        selectedKeys: [99],
+        virtualizeThreshold: 1,
+        columns: [{ key: 'name', label: 'Name' }, { key: 'usage', label: 'Usage' }, { key: 'actions', label: 'Actions' }],
+        data: [{ id: 1, name: 'Alpha' }, { id: 2, name: 'Beta' }],
+      },
+      slots: {
+        'header-usage': '<span>Usage window hint</span>',
+        'cell-name': '<template #default="{ value }"><strong>{{ value }}</strong></template>',
+        'cell-actions': '<button>Edit</button>',
+      },
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('table').exists()).toBe(false)
+    expect(wrapper.findAll('[data-row-id]')).toHaveLength(2)
+    expect(wrapper.get('[data-row-id="1"] strong').text()).toBe('Alpha')
+    expect(wrapper.get('[data-row-id="1"]').text()).toContain('Usage window hint')
+    expect(wrapper.findAll('button')).toHaveLength(2)
+    await wrapper.get('[data-row-id="2"] input').setValue(true)
+    expect(wrapper.emitted('update:selectedKeys')?.at(-1)).toEqual([[99, 2]])
+    wrapper.unmount()
+  })
+
   it('renders paired sort arrows and highlights the active direction', async () => {
     const wrapper = mount(DataTable, {
       props: {

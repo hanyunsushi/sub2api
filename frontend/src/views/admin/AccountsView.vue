@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <TablePageLayout class="accounts-page">
       <template #filters>
         <div class="flex flex-wrap-reverse items-start justify-between gap-3">
           <AccountTableFilters
@@ -176,6 +176,7 @@
       </template>
       <template #table>
         <AccountBulkActionsBar
+          class="account-bulk-actions"
           :selected-ids="selIds"
           :total-results="pagination.total"
           :selecting-all="selectingAllResults"
@@ -191,9 +192,26 @@
           @select-all-results="handleSelectAllResults"
           @toggle-schedulable="handleBulkToggleSchedulable"
         />
-        <div ref="accountTableRef" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <input type="checkbox" :checked="allVisibleSelected" :disabled="loading || accounts.length === 0" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" data-testid="account-select-page" @change="toggleSelectAllVisible($event)" />
+            {{ t('common.selectAll') }}
+          </label>
+          <div class="flex items-center gap-2">
+            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              {{ t('customization.sortBy') }}
+              <select :value="sortState.sort_by" class="input w-auto py-1.5" data-testid="account-card-sort" @change="handleSort(($event.target as HTMLSelectElement).value, sortState.sort_order)">
+                <option v-for="column in allColumns.filter(column => column.sortable)" :key="column.key" :value="column.key">{{ column.label }}</option>
+              </select>
+            </label>
+            <button class="btn btn-secondary px-3 py-1.5" data-testid="account-card-sort-order" @click="handleSort(sortState.sort_by, sortState.sort_order === 'asc' ? 'desc' : 'asc')">
+              {{ t(sortState.sort_order === 'asc' ? 'customization.ascending' : 'customization.descending') }}
+            </button>
+          </div>
+        </div>
+        <div ref="accountTableRef" class="min-w-0">
         <DataTable
-          ref="dataTableRef"
+          card-layout
           :columns="cols"
           :data="accounts"
           :loading="loading"
@@ -217,14 +235,15 @@
             />
           </template>
           <template #cell-select="{ row }">
-            <input type="checkbox" :checked="isSelected(row.id)" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <input type="checkbox" :checked="isSelected(row.id)" :aria-label="`${t('customization.selectAccount')} ${row.name}`" @change="toggleSel(row.id)" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
           </template>
           <template #cell-id="{ value }">
             <span class="font-mono text-xs text-gray-500 dark:text-gray-400">#{{ value }}</span>
           </template>
           <template #cell-name="{ row, value }">
-            <div class="flex flex-col">
-              <ProviderBrandIcon class="mb-1" :provider="getAccountLogoProvider(row)" :model="row.platform" :logo-url="getAccountCustomLogo(row)" data-testid="account-provider-logo" />
+            <div class="flex min-w-0 flex-col">
+              <div class="flex min-w-0 items-center gap-2">
+              <ProviderBrandIcon class="shrink-0" :provider="getAccountLogoProvider(row)" :model="row.platform" :logo-url="getAccountCustomLogo(row)" data-testid="account-provider-logo" />
               <HelpTooltip
                 v-if="accountHomepageUrl(row)"
                 :content="accountHomepageUrl(row)"
@@ -243,6 +262,7 @@
                 </template>
               </HelpTooltip>
               <span v-else class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              </div>
               <span
                 v-if="accountDisplayEmail(row)"
                 class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
@@ -509,7 +529,7 @@ import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
 import { useTableLoader } from '@/composables/useTableLoader'
-import { useSwipeSelect, type SwipeSelectVirtualContext } from '@/composables/useSwipeSelect'
+import { useSwipeSelect } from '@/composables/useSwipeSelect'
 import { useTableSelection } from '@/composables/useTableSelection'
 import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
@@ -563,7 +583,6 @@ const accountGroupsForRow = (account: Pick<AccountListItem, 'group_ids'>): Admin
   return groupIDs.map(id => groupsByID.value.get(id)).filter((group): group is AdminGroup => Boolean(group))
 }
 const accountTableRef = ref<HTMLElement | null>(null)
-const dataTableRef = ref<InstanceType<typeof DataTable> | null>(null)
 type AccountBulkEditTarget =
   | {
       mode: 'selected'
@@ -1147,18 +1166,12 @@ const selectPage = () => {
   selectCurrentPage()
 }
 
-const swipeVirtualContext: SwipeSelectVirtualContext = {
-  getVirtualizer: () => dataTableRef.value?.virtualizer ?? null,
-  getSortedData: () => dataTableRef.value?.sortedData ?? accounts.value,
-  getRowId: (row: any) => row.id,
-}
-
 useSwipeSelect(accountTableRef, {
   isSelected,
   select,
   deselect,
   batchUpdate
-}, swipeVirtualContext)
+}, undefined, { layout: 'cards' })
 
 const resetAutoRefreshCache = () => {
   autoRefreshETag.value = null
@@ -1331,6 +1344,11 @@ const handlePageSizeChange = (size: number) => {
 const handleSort = (key: string, order: AccountSortOrder) => {
   sortState.sort_by = key
   sortState.sort_order = order
+  try {
+    localStorage.setItem(ACCOUNT_SORT_STORAGE_KEY, JSON.stringify({ key, order }))
+  } catch {
+    // Sorting remains usable when browser storage is unavailable.
+  }
   const requestParams = params as any
   requestParams.sort_by = key
   requestParams.sort_order = order
@@ -2818,6 +2836,63 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
 </script>
 
 <style scoped>
+.accounts-page {
+  height: auto;
+}
+
+.accounts-page :deep(.layout-section-scrollable) {
+  flex: none;
+}
+
+.accounts-page :deep(.table-scroll-container) {
+  height: auto;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.accounts-page :deep(.account-bulk-actions) {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.accounts-page :deep(.account-bulk-actions > div) {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.accounts-page :deep(.account-bulk-actions button) {
+  white-space: nowrap;
+}
+
+.accounts-page :deep([data-field='select']) {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.accounts-page :deep([data-field='name']),
+.accounts-page :deep([data-field='platform_type']),
+.accounts-page :deep([data-field='groups']),
+.accounts-page :deep([data-field='usage']),
+.accounts-page :deep([data-field='scheduler_score']),
+.accounts-page :deep([data-field='proxy']) {
+  grid-column: 1 / -1;
+}
+
+.accounts-page :deep([data-field='name']) {
+  padding-right: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.accounts-page :deep([data-field='name'] > span),
+.accounts-page :deep([data-field='select'] > span),
+.accounts-page :deep([data-field='platform_type'] > span) {
+  display: none;
+}
+
 .account-tools-menu-item {
   @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700;
 }

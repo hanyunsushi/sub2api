@@ -29,7 +29,7 @@ Vue 3/Vite owns route views, client state and API interaction. The maintained pr
 | Menu iframe/redirect mode | Official Settings/CustomPage views with `open_mode` |
 | Site branding | Official site name/logo settings and safe favicon injection |
 
-The [customization inventory](../concepts/customization-inventory.md) defines the complete active/retired boundary and cross-module persistence paths. External subscription management and account quota consumers enforce admin access. Auth-store changes clear external snapshots independently of mounted UI. Header balances, V1 shared capacity and PWA extensions are removed.
+The [customization inventory](../concepts/customization-inventory.md) defines the complete active/retired boundary and cross-module persistence paths. External subscription management and account quota consumers enforce admin access. Auth-store changes clear external snapshots independently of mounted UI. Header balances, V1 shared capacity and PWA extensions are removed. The account management page renders cards at desktop and mobile sizes while preserving selection, bulk actions, sort, and quota display.
 
 ## Official Behavior
 
@@ -39,7 +39,7 @@ User analytics/filter loading, admin rankings, site billing-mode controls, key e
 
 ## Development and Verification
 
-Vite retains `VITE_DEV_PROXY_TARGET` and defaults the existing preview to `https://ai.kreeper.cc`. This development proxy is not a source release. Tests isolate child/API requests; retained functional coverage includes logo editing, menu flags, quota progress, Pixel payloads, quota cache invalidation, session changes and absence of header/monitor balance fetching.
+Vite retains `VITE_DEV_PROXY_TARGET` and defaults to `http://localhost:8080`. The ignored local `frontend/.env.local` overrides the target to `https://ai.kreeper.cc` for the user-owned 3001 preview. This development proxy is not a source release. Tests isolate child/API requests; retained functional coverage includes logo editing, menu flags, quota progress, Pixel payloads, quota cache invalidation, session changes and absence of header/monitor balance fetching.
 
 Exact current checks, protection point and production status are owned by the [Project Authority](../../agent.md). No browser/authenticated production validation is inferred from typecheck/build or mount tests.
 

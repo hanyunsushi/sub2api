@@ -200,11 +200,20 @@ describe('admin AccountsView bulk edit scope', () => {
     const wrapper = shallowMount(AccountsView, { global: { stubs: {
       AppLayout: { template: '<div><slot /></div>' },
       TablePageLayout: { template: '<div><slot name="table" /></div>' },
-      DataTable: { props: ['data'], template: '<div v-for="row in data" :key="row.id"><slot name="cell-name" :row="row" :value="row.name" /><slot name="cell-actions" :row="row" /></div>' },
+      DataTable: false,
       HelpTooltip: { template: '<span><slot /></span>' },
     } } })
     await flushPromises()
+    expect(wrapper.find('table').exists()).toBe(false)
+    expect(wrapper.get('[data-row-id="101"]').exists()).toBe(true)
     expect(wrapper.get('[data-testid="account-external-quota"]').text()).toContain('¥20.00 / ¥30.00')
+    await wrapper.get('[data-testid="account-select-page"]').setValue(true)
+    expect(wrapper.get('[data-row-id="101"] [data-field="select"] input').element).toHaveProperty('checked', true)
+    await wrapper.get('[data-testid="account-card-sort"]').setValue('priority')
+    await wrapper.get('[data-testid="account-card-sort-order"]').trigger('click')
+    await flushPromises()
+    expect(listAccounts).toHaveBeenLastCalledWith(1, 20, expect.objectContaining({ sort_by: 'priority', sort_order: 'desc' }), expect.anything())
+    expect(JSON.parse(localStorage.getItem('account-table-sort') || '{}')).toEqual({ key: 'priority', order: 'desc' })
     await wrapper.get('[data-testid="account-external-quota-progress-action"]').trigger('click')
     const modal = wrapper.findComponent({ name: 'ExternalQuotaProgressSettingsModal' })
     expect(modal.props('show')).toBe(true)
