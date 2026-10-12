@@ -13,8 +13,7 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "index:build": "node scripts/build-frontend-index.mjs"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@airwallex/components-sdk": "^1.30.2",
@@ -28,7 +27,6 @@
     "driver.js": "^1.4.0",
     "file-saver": "^2.0.5",
     "marked": "^17.0.1",
-    "ogl": "^1.0.11",
     "pinia": "^2.1.7",
     "qrcode": "^1.5.4",
     "vue": "^3.4.0",

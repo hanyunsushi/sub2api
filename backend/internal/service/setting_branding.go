@@ -11,15 +11,6 @@ import (
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
 
-func normalizeAppearanceThemeDefault(value string) string {
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "anthropic":
-		return "anthropic"
-	default:
-		return "anthropic"
-	}
-}
-
 func normalizeAILogoCDNBaseURL(value string) string {
 	normalized := strings.TrimRight(normalizeHTTPURL(value), "/")
 	if normalized == "" {
@@ -231,18 +222,4 @@ func (s *SettingService) DeleteCustomMenuSVGIconPreset(ctx context.Context, rawU
 		s.onUpdate()
 	}
 	return next, nil
-}
-
-func (s *SettingService) UpdateAppearanceThemeDefault(ctx context.Context, theme string) (string, error) {
-	normalized := normalizeAppearanceThemeDefault(theme)
-	if normalized != strings.ToLower(strings.TrimSpace(theme)) {
-		return "", infraerrors.BadRequest("INVALID_APPEARANCE_THEME_DEFAULT", "appearance theme default must be anthropic")
-	}
-	if err := s.settingRepo.SetMultiple(ctx, map[string]string{SettingKeyAppearanceThemeDefault: normalized}); err != nil {
-		return "", err
-	}
-	if s.onUpdate != nil {
-		s.onUpdate()
-	}
-	return normalized, nil
 }

@@ -169,7 +169,12 @@ function mountView() {
         GroupCapacityBadge: true,
         GroupRateMultipliersModal: true,
         GroupRPMOverridesModal: true,
-        VueDraggable: true
+        VueDraggable: true,
+        LogoPicker: {
+          props: ['modelValue', 'inputTestId'],
+          emits: ['update:modelValue'],
+          template: '<input :data-testid="inputTestId" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        }
       }
     }
   })
@@ -322,6 +327,23 @@ describe('GroupsView duplicate action', () => {
 
     expect(updateGroup).toHaveBeenCalledTimes(1)
     expect(showError).toHaveBeenCalledWith('group name already exists')
+    wrapper.unmount()
+  })
+
+  it.each([false, true])('preserves custom logo editing in simpleMode=%s', async simpleMode => {
+    authState.isSimpleMode = simpleMode
+    const group = { ...sourceGroup, logo_url: 'https://cdn.example.com/group.png' }
+    listGroups.mockResolvedValue({ items: [group], total: 1, page: 1, page_size: 20, pages: 1 })
+    updateGroup.mockResolvedValue(group)
+    const wrapper = mountView()
+    await flushPromises()
+    await wrapper.findAll('button').find(button => button.text() === 'common.edit')!.trigger('click')
+    await flushPromises()
+    expect((wrapper.get('[data-testid="group-logo-url"]').element as HTMLInputElement).value).toBe(group.logo_url)
+    await wrapper.get('[data-testid="group-logo-url"]').setValue('')
+    await wrapper.get('#edit-group-form').trigger('submit')
+    await flushPromises()
+    expect(updateGroup).toHaveBeenCalledWith(42, expect.objectContaining({ logo_url: '' }))
     wrapper.unmount()
   })
 

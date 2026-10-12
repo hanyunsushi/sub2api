@@ -8,7 +8,7 @@
     <form id="channel-monitor-form" @submit.prevent="handleSubmit" class="space-y-5">
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.name') }} <span class="text-red-500">*</span></label>
-        <input v-model="form.name" type="text" required class="input" data-testid="monitor-form-name" :placeholder="t('admin.channelMonitor.form.namePlaceholder')" />
+        <input v-model="form.name" type="text" required class="input" :placeholder="t('admin.channelMonitor.form.namePlaceholder')" />
       </div>
 
       <!-- 检测模式：probe（探活）/ quota（仅配额）/ quota_probe（探活+配额） -->
@@ -45,17 +45,13 @@
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="selectProvider(opt.value)"
           >
-            <ProviderBrandIcon :provider="opt.value" :model="form.primary_model || opt.value" :logo-url="form.logo_url" :prefer-model-icon="opt.value === PROVIDER_GROK" />
+            <ProviderIcon :provider="opt.value" :size="18" />
             <span>{{ opt.label }}</span>
           </button>
         </div>
       </div>
 
-      <LogoPicker
-        v-model="form.logo_url"
-        input-test-id="channel-monitor-logo-url"
-      />
-
+      <LogoPicker v-model="form.logo_url" label="Logo URL" input-test-id="channel-monitor-logo-url" />
       <!-- 配额模式数据源：关联账号（复用账号侧用量/余额服务） -->
       <div v-if="usesQuotaMode">
         <label class="input-label">
@@ -86,7 +82,7 @@
       <div v-if="form.provider === PROVIDER_OPENAI && usesProbePart" class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
-          <button data-testid="admin-monitor-monitor-form-button-api-mode-opt-value"
+          <button
             v-for="opt in apiModeOptions"
             :key="opt.value"
             type="button"
@@ -105,7 +101,7 @@
         <label class="input-label">{{ t('admin.channelMonitor.form.endpoint') }} <span class="text-red-500">*</span></label>
         <div class="flex gap-2">
           <input v-model="form.endpoint" data-testid="monitor-endpoint" type="text" required class="input flex-1" :placeholder="t('admin.channelMonitor.form.endpointPlaceholder')" />
-          <button type="button" @click="useCurrentDomain" class="btn btn-secondary whitespace-nowrap" data-testid="monitor-form-use-current-domain">
+          <button type="button" @click="useCurrentDomain" class="btn btn-secondary whitespace-nowrap">
             {{ t('admin.channelMonitor.form.useCurrentDomain') }}
           </button>
         </div>
@@ -121,14 +117,13 @@
             type="password"
             :required="!editing"
             class="input flex-1"
-            data-testid="monitor-form-api-key"
             :placeholder="editing ? t('admin.channelMonitor.form.apiKeyEditPlaceholder') : t('admin.channelMonitor.form.apiKeyPlaceholder')"
           />
-          <button type="button" @click="openMyKeyPicker" class="btn btn-secondary whitespace-nowrap" data-testid="monitor-form-use-my-key">
+          <button type="button" @click="openMyKeyPicker" class="btn btn-secondary whitespace-nowrap">
             {{ t('admin.channelMonitor.form.useMyKey') }}
           </button>
         </div>
-        <p v-if="editing && editing.api_key_masked" class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ editing.api_key_masked }}</p>
+        <p v-if="editing && editing.api_key_masked" class="mt-1 text-xs text-gray-400">{{ editing.api_key_masked }}</p>
       </div>
 
       <div v-if="usesProbePart">
@@ -156,19 +151,19 @@
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.groupName') }}</label>
-        <input v-model="form.group_name" type="text" class="input" data-testid="monitor-form-group-name" :placeholder="t('admin.channelMonitor.form.groupNamePlaceholder')" />
+        <input v-model="form.group_name" type="text" class="input" :placeholder="t('admin.channelMonitor.form.groupNamePlaceholder')" />
       </div>
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-red-500">*</span></label>
-        <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" data-testid="monitor-form-interval-seconds" />
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
+        <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" />
+        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
       </div>
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.jitterSeconds') }}</label>
-        <input v-model.number="form.jitter_seconds" type="number" min="0" :max="maxJitterSeconds" class="input" data-testid="monitor-form-jitter-seconds" />
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ t('admin.channelMonitor.form.jitterSecondsHint') }}</p>
+        <input v-model.number="form.jitter_seconds" type="number" min="0" :max="maxJitterSeconds" class="input" />
+        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.jitterSecondsHint') }}</p>
       </div>
 
       <div class="flex items-center justify-between">
@@ -181,7 +176,7 @@
         <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.channelMonitor.advanced.section') }}
         </summary>
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ t('admin.channelMonitor.advanced.sectionHint') }}</p>
+        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.advanced.sectionHint') }}</p>
 
         <div class="mt-4 space-y-4">
           <div>
@@ -191,7 +186,7 @@
               :options="templateOptions"
               :placeholder="t('admin.channelMonitor.templateField.placeholder')"
             />
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)]">{{ t('admin.channelMonitor.templateField.applyHint') }}</p>
+            <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.templateField.applyHint') }}</p>
           </div>
 
           <MonitorAdvancedRequestConfig
@@ -210,7 +205,7 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button @click="$emit('close')" type="button" class="btn btn-secondary" data-testid="monitor-form-cancel">
+        <button @click="$emit('close')" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
         <button
@@ -218,7 +213,6 @@
           form="channel-monitor-form"
           :disabled="submitting"
           class="btn btn-primary"
-          data-testid="monitor-form-submit"
         >
           {{ submitting
             ? t('common.submitting')
@@ -240,6 +234,7 @@
 </template>
 
 <script setup lang="ts">
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
@@ -261,12 +256,11 @@ import type { ApiKey } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Toggle from '@/components/common/Toggle.vue'
 import Select from '@/components/common/Select.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
-import LogoPicker from '@/components/common/LogoPicker.vue'
 import ModelTagInput from '@/components/admin/channel/ModelTagInput.vue'
 import { getPlatformTextClass } from '@/components/admin/channel/types'
 import MonitorKeyPickerDialog from '@/components/admin/monitor/MonitorKeyPickerDialog.vue'
 import MonitorAdvancedRequestConfig from '@/components/admin/monitor/MonitorAdvancedRequestConfig.vue'
+import ProviderIcon from '@/components/user/monitor/ProviderIcon.vue'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 import {
   PROVIDER_OPENAI,
@@ -453,9 +447,9 @@ function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
 function apiModeButtonClass(mode: APIMode): string {
   const active = form.api_mode === mode
   if (active) {
-    return 'border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] text-[var(--anthropic-fg)] shadow-none dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+    return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
   }
-  return 'border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] text-[var(--anthropic-muted)] hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+  return 'border-blue-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
 }
 
 function templateOptionLabel(tpl: ChannelMonitorTemplate): string {
@@ -828,7 +822,7 @@ function pickMyKey(k: ApiKey) {
 }
 
 function buildPayload(): CreateParams {
-  const payload: CreateParams = {
+  return {
     name: form.name.trim(),
     logo_url: form.logo_url.trim(),
     provider: form.provider,
@@ -848,7 +842,6 @@ function buildPayload(): CreateParams {
     body_override_mode: form.body_override_mode,
     body_override: form.body_override,
   }
-  return payload
 }
 
 async function handleSubmit() {
@@ -897,34 +890,3 @@ async function handleSubmit() {
   }
 }
 </script>
-
-<style scoped>
-.channel-monitor-account-binding-list {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-}
-
-.channel-monitor-account-binding-option {
-  align-items: center;
-  background: var(--atelier-ui-surface, #ffffff);
-  border: 1px solid var(--atelier-line, rgba(17, 24, 39, 0.12));
-  border-radius: 0.5rem;
-  color: var(--atelier-muted, #4b5563);
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
-  min-height: 2.5rem;
-  min-width: 0;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
-}
-
-.channel-monitor-account-binding-option:hover,
-.channel-monitor-account-binding-option--active {
-  background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 8%, transparent);
-  border-color: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 45%, transparent);
-  color: var(--atelier-ink, #111827);
-}
-</style>

@@ -959,9 +959,6 @@ export interface OpsErrorDetail extends OpsErrorLog {
 
   // Bound (non-deleted) key prefix, snapshotted at error time
   api_key_prefix?: string | null
-  attempted_key_prefix?: string | null
-  deleted_key_owner_email?: string | null
-  deleted_key_name?: string | null
 }
 
 export type OpsErrorLogsResponse = PaginatedResponse<OpsErrorLog>

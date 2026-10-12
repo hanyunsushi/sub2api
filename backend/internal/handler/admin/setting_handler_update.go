@@ -162,7 +162,6 @@ type UpdateSettingsRequest struct {
 	HomeContent                 string                `json:"home_content"`
 	CompactHomeEnabled          bool                  `json:"compact_home_enabled"`
 	HideCcsImportButton         bool                  `json:"hide_ccs_import_button"`
-	AppearanceThemeDefault      string                `json:"appearance_theme_default"`
 	AILogoCDNBaseURL            string                `json:"ai_logo_cdn_base_url"`
 	CustomAILogoPresets         []string              `json:"custom_ai_logo_presets"`
 	CustomMenuSVGIconPresets    []string              `json:"custom_menu_svg_icon_presets"`
@@ -391,10 +390,6 @@ type UpdateSettingsRequest struct {
 	AuthSourceDingTalkPlatformQuotas map[string]*service.DefaultPlatformQuotaSetting `json:"auth_source_default_dingtalk_platform_quotas"`
 
 	AllowUserViewErrorRequests *bool `json:"allow_user_view_error_requests"`
-}
-
-type updateAppearanceThemeDefaultRequest struct {
-	AppearanceThemeDefault string `json:"appearance_theme_default" binding:"required"`
 }
 
 // UpdateSettings 更新系统设置
@@ -1653,7 +1648,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HomeContent:                            req.HomeContent,
 		CompactHomeEnabled:                     req.CompactHomeEnabled,
 		HideCcsImportButton:                    req.HideCcsImportButton,
-		AppearanceThemeDefault:                 req.AppearanceThemeDefault,
 		AILogoCDNBaseURL:                       req.AILogoCDNBaseURL,
 		CustomAILogoPresets:                    req.CustomAILogoPresets,
 		CustomMenuSVGIconPresets:               req.CustomMenuSVGIconPresets,
@@ -2318,7 +2312,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		HomeContent:                                            updatedSettings.HomeContent,
 		CompactHomeEnabled:                                     updatedSettings.CompactHomeEnabled,
 		HideCcsImportButton:                                    updatedSettings.HideCcsImportButton,
-		AppearanceThemeDefault:                                 updatedSettings.AppearanceThemeDefault,
 		AILogoCDNBaseURL:                                       updatedSettings.AILogoCDNBaseURL,
 		CustomAILogoPresets:                                    updatedSettings.CustomAILogoPresets,
 		CustomMenuSVGIconPresets:                               updatedSettings.CustomMenuSVGIconPresets,
@@ -2477,26 +2470,6 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		payload.DefaultPlatformQuotas = platformQuotas
 	}
 	response.Success(c, systemSettingsResponseData(payload, updatedAuthSourceDefaults))
-}
-
-// UpdateAppearanceThemeDefault updates the public default console theme only.
-// PUT /api/v1/admin/settings/appearance-theme-default
-func (h *SettingHandler) UpdateAppearanceThemeDefault(c *gin.Context) {
-	var req updateAppearanceThemeDefaultRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "Invalid request: "+err.Error())
-		return
-	}
-
-	theme, err := h.settingService.UpdateAppearanceThemeDefault(c.Request.Context(), req.AppearanceThemeDefault)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-
-	response.Success(c, gin.H{
-		"appearance_theme_default": theme,
-	})
 }
 
 // hasPaymentFields returns true if any payment-related field was explicitly provided.

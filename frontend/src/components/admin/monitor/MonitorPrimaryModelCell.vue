@@ -2,8 +2,7 @@
   <div class="flex flex-col gap-0.5">
     <div class="flex items-center gap-2">
       <!-- 纯配额模式主模型是占位符 "quota"（数据源是账号不是模型），展示层替换为本地化标签 -->
-      <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
-      <span class="monitor-model-token text-sm text-gray-900 dark:text-gray-100">{{ formatMonitorModel(row.primary_model) }}</span>
+      <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatMonitorModel(row.primary_model) }}</span>
       <HelpTooltip>
       <template #trigger>
         <span
@@ -27,12 +26,12 @@
           {{ t('monitorCommon.extraModelsEmpty') }}
         </div>
         <div v-else class="space-y-1">
-          <div class="text-[11px] font-semibold uppercase tracking-wide text-[var(--anthropic-muted)]">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
             {{ t('monitorCommon.extraModelsHeader') }}
           </div>
           <table class="w-full text-left text-[11px]">
             <thead>
-              <tr class="text-[var(--anthropic-muted)]">
+              <tr class="text-gray-400">
                 <th class="py-0.5 pr-2 font-medium">{{ t('admin.channelMonitor.columns.primaryModel') }}</th>
                 <th class="py-0.5 pr-2 font-medium">{{ t('admin.channelMonitor.columns.actions') }}</th>
                 <th class="py-0.5 font-medium">{{ t('admin.channelMonitor.columns.latency') }}</th>
@@ -67,7 +66,6 @@ import { useI18n } from 'vue-i18n'
 import type { ChannelMonitor } from '@/api/admin/channelMonitor'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
 import MonitorQuotaView from '@/components/common/MonitorQuotaView.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 
 defineProps<{

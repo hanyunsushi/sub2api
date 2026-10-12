@@ -1,7 +1,6 @@
 <template>
   <div class="relative" ref="containerRef">
-    <button data-testid="common-proxy-selector-button-toggle"
-      ref="triggerRef"
+    <button
       type="button"
       @click="toggle"
       :disabled="disabled"
@@ -23,17 +22,13 @@
       </span>
     </button>
 
-    <FloatingDropdown
-      :show="isOpen"
-      :trigger-el="triggerRef"
-      :match-width="true"
-      panel-class="w-full overflow-hidden rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none shadow-black/10 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:shadow-black/30"
-    >
+    <Transition name="select-dropdown">
+      <div v-if="isOpen" class="select-dropdown">
         <!-- Search and Batch Test Header -->
         <div class="select-header">
           <div class="select-search">
-            <Icon name="search" size="sm" class="text-[var(--anthropic-muted)]" />
-            <input data-testid="common-proxy-selector-input-search-query"
+            <Icon name="search" size="sm" class="text-gray-400" />
+            <input
               ref="searchInputRef"
               v-model="searchQuery"
               type="text"
@@ -42,7 +37,7 @@
               @click.stop
             />
           </div>
-          <button data-testid="common-proxy-selector-button-handle-batch-test"
+          <button
             v-if="proxies.length > 0"
             type="button"
             @click.stop="handleBatchTest"
@@ -72,16 +67,16 @@
         <!-- Options list -->
         <div class="select-options">
           <!-- No Proxy option -->
-          <div data-testid="common-proxy-selector-div-select-option-null"
+          <div
             @click="selectOption(null)"
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
             <span class="select-option-label">{{ t('admin.accounts.noProxy') }}</span>
-            <Icon v-if="modelValue === null" name="check" size="sm" class="text-[var(--anthropic-fg)]" />
+            <Icon v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
           </div>
 
           <!-- Proxy options -->
-          <div data-testid="common-proxy-selector-div-select-option-proxy-id"
+          <div
             v-for="proxy in filteredProxies"
             :key="proxy.id"
             @click="selectOption(proxy.id)"
@@ -93,7 +88,7 @@
                 <!-- Account count badge -->
                 <span
                   v-if="proxy.account_count !== undefined"
-                  class="inline-flex flex-shrink-0 items-center rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+                  class="inline-flex flex-shrink-0 items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-dark-600 dark:text-gray-400"
                 >
                   {{ proxy.account_count }}
                 </span>
@@ -118,13 +113,13 @@
                   </span>
                 </template>
               </div>
-              <div class="truncate text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <div class="truncate text-xs text-gray-500 dark:text-gray-400">
                 {{ proxy.protocol }}://{{ proxy.host }}:{{ proxy.port }}
               </div>
             </div>
 
             <!-- Individual test button -->
-            <button data-testid="common-proxy-selector-button-handle-test-proxy-proxy"
+            <button
               type="button"
               @click.stop="handleTestProxy(proxy)"
               :disabled="testingProxyIds.has(proxy.id)"
@@ -158,7 +153,7 @@
               v-if="modelValue === proxy.id"
               name="check"
               size="sm"
-              class="flex-shrink-0 text-[var(--anthropic-fg)]"
+              class="flex-shrink-0 text-primary-500"
             />
           </div>
 
@@ -167,7 +162,8 @@
             {{ t('common.noOptionsFound') }}
           </div>
         </div>
-    </FloatingDropdown>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -175,7 +171,6 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api/admin'
-import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import type { Proxy } from '@/types'
 
@@ -208,7 +203,6 @@ const emit = defineEmits<{
 const isOpen = ref(false)
 const searchQuery = ref('')
 const containerRef = ref<HTMLElement | null>(null)
-const triggerRef = ref<HTMLElement | null>(null)
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
 // Test state
@@ -314,18 +308,18 @@ onUnmounted(() => {
 <style scoped>
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
-  @apply rounded-lg px-4 py-2.5 text-sm;
-  background: var(--atelier-paper);
-  border: 1px solid var(--atelier-line-strong);
-  color: var(--atelier-ink);
+  @apply rounded-xl px-4 py-2.5 text-sm;
+  @apply bg-white dark:bg-dark-800;
+  @apply border border-gray-200 dark:border-dark-600;
+  @apply text-gray-900 dark:text-gray-100;
   @apply transition-all duration-200;
-  @apply focus:border-[var(--atelier-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)];
+  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
+  @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  border-color: var(--atelier-focus);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--atelier-focus) 20%, transparent);
+  @apply border-primary-500 ring-2 ring-primary-500/30;
 }
 
 .select-trigger-disabled {
@@ -342,10 +336,10 @@ onUnmounted(() => {
 
 .select-dropdown {
   @apply absolute z-[100] mt-2 w-full;
-  background: var(--atelier-paper);
-  border: 1px solid var(--atelier-line-strong);
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgb(0 0 0 / 0.05);
+  @apply bg-white dark:bg-dark-800;
+  @apply rounded-xl;
+  @apply border border-gray-200 dark:border-dark-700;
+  @apply shadow-lg shadow-black/10 dark:shadow-black/30;
   @apply overflow-hidden;
 }
 

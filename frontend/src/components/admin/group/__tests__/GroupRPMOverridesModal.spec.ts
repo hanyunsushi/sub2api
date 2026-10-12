@@ -30,10 +30,7 @@ async function selectUser() {
   await wrapper.get('input[type="text"]').setValue('user')
   await vi.advanceTimersByTimeAsync(300)
   await flushPromises()
-  const userButton = Array.from(document.body.querySelectorAll('button')).find((button) => button.textContent?.includes('user@example.com'))
-  expect(userButton).toBeDefined()
-  userButton!.click()
-  await wrapper.vm.$nextTick()
+  await wrapper.findAll('button').find(b => b.text().includes('user@example.com'))!.trigger('click')
   return wrapper
 }
 

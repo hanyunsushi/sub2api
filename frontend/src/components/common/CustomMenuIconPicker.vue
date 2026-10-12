@@ -193,122 +193,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.custom-menu-icon-picker {
-  align-items: flex-start;
-  display: flex;
-  gap: 0.75rem;
-}
-
-.custom-menu-icon-picker-preview {
-  align-items: center;
-  background: rgba(255, 250, 240, 0.72);
-  border: 1px solid rgba(23, 21, 18, 0.16);
-  border-radius: 0.375rem;
-  display: inline-flex;
-  flex: 0 0 3.5rem;
-  height: 3.5rem;
-  justify-content: center;
-  overflow: hidden;
-  width: 3.5rem;
-}
-
-.custom-menu-icon-picker-preview-image {
-  display: block;
-  height: 1.75rem;
-  object-fit: contain;
-  width: 1.75rem;
-}
-
-.custom-menu-icon-picker-preview-svg {
-  color: currentColor;
-  display: block;
-  height: 1.75rem;
-  width: 1.75rem;
-}
-
-.custom-menu-icon-picker-preview-svg :deep(svg) {
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-
-.custom-menu-icon-picker-body {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.custom-menu-icon-picker-url {
-  min-width: 0;
-}
-
-.custom-menu-icon-picker-presets {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-}
-
-.custom-menu-icon-picker-preset-frame {
-  aspect-ratio: 1;
-  position: relative;
-}
-
-.custom-menu-icon-picker-presets-label {
-  grid-column: 1 / -1;
-  font-size: 0.6875rem;
-  color: rgb(107 114 128);
-}
-
-.custom-menu-icon-picker-preset {
-  align-items: center;
-  aspect-ratio: 1;
-  background: white;
-  border: 1px solid rgb(229 231 235);
-  border-radius: 0.375rem;
-  display: flex;
-  justify-content: center;
-  padding: 0.375rem;
-  height: 100%;
-  width: 100%;
-}
-
-.custom-menu-icon-picker-preset:hover,
-.custom-menu-icon-picker-preset-active {
-  border-color: var(--atelier-line-strong);
-  background: var(--atelier-ui-hover-surface, var(--atelier-paper-2));
-}
-
-.custom-menu-icon-picker-preset img {
-  display: block;
-  height: 100%;
-  object-fit: contain;
-  width: 100%;
-}
-
-.custom-menu-icon-picker-preset-delete {
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid rgb(209 213 219);
-  border-radius: 999px;
-  color: rgb(107 114 128);
-  display: flex;
-  font-size: 11px;
-  font-weight: 700;
-  height: 1rem;
-  justify-content: center;
-  line-height: 1;
-  position: absolute;
-  right: -0.25rem;
-  top: -0.25rem;
-  transition:
-    border-color 0.16s ease,
-    color 0.16s ease;
-  width: 1rem;
-}
-
-.custom-menu-icon-picker-preset-delete:hover {
-  border-color: rgb(252 165 165);
-  color: rgb(220 38 38);
-}
+.custom-menu-icon-picker { @apply flex items-start gap-3; }
+.custom-menu-icon-picker-preview { @apply inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-gray-50 dark:border-dark-600 dark:bg-dark-800; }
+.custom-menu-icon-picker-preview-image { @apply block h-7 w-7 object-contain; }
+.custom-menu-icon-picker-preview-svg { @apply block h-7 w-7; color: currentColor; }
+.custom-menu-icon-picker-preview-svg :deep(svg) { @apply block h-full w-full; }
+.custom-menu-icon-picker-body { @apply grid min-w-0 flex-1 gap-3; }
+.custom-menu-icon-picker-url { @apply min-w-0; }
+.custom-menu-icon-picker-presets { @apply grid grid-cols-[repeat(auto-fill,minmax(2rem,1fr))] gap-2; }
+.custom-menu-icon-picker-preset-frame { @apply relative aspect-square; }
+.custom-menu-icon-picker-presets-label { @apply col-span-full text-xs text-gray-500 dark:text-dark-400; }
+.custom-menu-icon-picker-preset { @apply flex aspect-square h-full w-full items-center justify-center rounded-md border border-gray-200 bg-white p-1.5 dark:border-dark-600 dark:bg-dark-800; }
+.custom-menu-icon-picker-preset:hover, .custom-menu-icon-picker-preset-active { @apply border-primary-500 bg-primary-50 dark:border-primary-400 dark:bg-primary-900/20; }
+.custom-menu-icon-picker-preset img { @apply block h-full w-full object-contain; }
+.custom-menu-icon-picker-preset-delete { @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white text-[11px] font-bold leading-none text-gray-500 transition-colors hover:border-red-300 hover:text-red-600 dark:border-dark-500 dark:bg-dark-700 dark:text-dark-300; }
 </style>

@@ -1,10 +1,10 @@
 <template>
   <AppLayout>
-    <div :class="['custom-page-layout', { 'custom-page-layout--embed': isValidUrl && !isMarkdownMode }]">
+    <div class="custom-page-layout">
       <div class="card flex-1 min-h-0 overflow-hidden">
         <div v-if="loading" class="flex h-full items-center justify-center py-12">
           <div
-            class="h-8 w-8 animate-spin rounded-full border-2 border-[var(--anthropic-fg)] border-t-transparent"
+            class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"
           ></div>
         </div>
 
@@ -14,34 +14,34 @@
         >
           <div class="max-w-md">
             <div
-              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"
+              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
             >
-              <Icon name="link" size="lg" class="text-[var(--anthropic-muted)]" />
+              <Icon name="link" size="lg" class="text-gray-400" />
             </div>
-            <h3 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('customPage.notFoundTitle') }}
             </h3>
-            <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+            <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
               {{ t('customPage.notFoundDesc') }}
             </p>
           </div>
         </div>
 
         <!-- Markdown mode with TOC -->
-        <div v-else-if="isMarkdownMode" class="custom-markdown-shell flex h-full overflow-hidden">
+        <div v-else-if="isMarkdownMode" class="flex h-full overflow-hidden">
           <!-- TOC Sidebar -->
           <aside
             v-show="tocVisible"
             class="toc-sidebar"
           >
             <div class="toc-header">
-              <span class="toc-title">目录</span>
-              <button data-testid="user-custom-page-button-toc-visible-off" class="toc-close-btn" @click="tocVisible = false">
+              <span class="toc-title">{{ t('customPage.tableOfContents') }}</span>
+              <button class="toc-close-btn" @click="tocVisible = false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
             </div>
             <nav class="toc-nav">
-              <a data-testid="user-custom-page-link-scroll-to-heading-item-id"
+              <a
                 v-for="item in tocItems"
                 :key="item.id"
                 :href="'#' + item.id"
@@ -58,13 +58,13 @@
           </aside>
 
           <!-- TOC Toggle Button (when collapsed) -->
-          <button data-testid="user-custom-page-button-toc-visible-on"
+          <button
             v-show="!tocVisible && tocItems.length > 0"
             class="toc-toggle-btn"
             @click="tocVisible = true"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            <span class="ml-1 text-xs">目录</span>
+            <span class="ml-1 text-xs">{{ t('customPage.tableOfContents') }}</span>
           </button>
 
           <!-- Content -->
@@ -80,33 +80,35 @@
         <div v-else-if="!isValidUrl" class="flex h-full items-center justify-center p-10 text-center">
           <div class="max-w-md">
             <div
-              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"
+              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
             >
-              <Icon name="link" size="lg" class="text-[var(--anthropic-muted)]" />
+              <Icon name="link" size="lg" class="text-gray-400" />
             </div>
-            <h3 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ t('customPage.notConfiguredTitle') }}
             </h3>
-            <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+            <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
               {{ t('customPage.notConfiguredDesc') }}
             </p>
           </div>
         </div>
 
         <!-- Iframe embed mode -->
-        <div v-else class="custom-embed-shell" ref="customEmbedShell">
-          <a v-if="!menuItem.hide_open_button" data-testid="user-custom-page-link-a"
-            ref="customOpenButton"
+        <div v-else ref="embedShell" class="custom-embed-shell">
+          <a
+            v-if="!menuItem?.hide_open_button"
+            ref="openButton"
             :href="embeddedUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-secondary btn-sm custom-open-fab"
-            :style="customOpenButtonStyle"
-            @pointerdown="startOpenButtonDrag"
-            @pointermove="moveOpenButtonDrag"
-            @pointerup="finishOpenButtonDrag"
-            @pointercancel="cancelOpenButtonDrag"
-            @lostpointercapture="cancelOpenButtonDrag"
+            :style="openButtonPosition ? { left: `${openButtonPosition.x}px`, top: `${openButtonPosition.y}px`, right: 'auto' } : undefined"
+            @pointerdown="startButtonDrag"
+            @pointermove="moveButtonDrag"
+            @pointerup="endButtonDrag"
+            @pointercancel="endButtonDrag"
+            @lostpointercapture="endButtonDrag"
+            @dragstart.prevent
             @click="handleOpenButtonClick"
           >
             <Icon name="externalLink" size="sm" class="mr-1.5" :stroke-width="2" />
@@ -126,12 +128,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useResizeObserver } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import { useAuthStore } from '@/stores/auth'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { buildApiUrl } from '@/api/client'
 import { buildEmbeddedUrl, detectTheme } from '@/utils/embedded-url'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -155,16 +159,64 @@ const markdownContainer = ref<HTMLElement | null>(null)
 const tocItems = ref<TocItem[]>([])
 const tocVisible = ref(typeof window !== 'undefined' ? window.innerWidth > 768 : true)
 const activeHeadingId = ref('')
-const customEmbedShell = ref<HTMLElement | null>(null)
-const customOpenButton = ref<HTMLElement | null>(null)
-const customOpenButtonPosition = ref<{ left: number; top: number } | null>(null)
-const customOpenButtonStyle = computed(() => customOpenButtonPosition.value
-  ? { left: `${customOpenButtonPosition.value.left}px`, top: `${customOpenButtonPosition.value.top}px`, right: 'auto' }
-  : undefined)
-let openButtonDrag: { pointerId: number; startX: number; startY: number; left: number; top: number; moved: boolean } | null = null
-let suppressOpenButtonClick = false
-let embedResizeObserver: ResizeObserver | null = null
 let themeObserver: MutationObserver | null = null
+
+const embedShell = ref<HTMLElement | null>(null)
+const openButton = ref<HTMLAnchorElement | null>(null)
+const openButtonPosition = ref<{ x: number; y: number } | null>(null)
+let buttonDrag: { pointerId: number; startX: number; startY: number; x: number; y: number } | null = null
+let suppressButtonClick = false
+
+function setOpenButtonPosition(x: number, y: number) {
+  const shell = embedShell.value
+  const button = openButton.value
+  if (!shell || !button) return
+  openButtonPosition.value = {
+    x: Math.max(0, Math.min(x, shell.clientWidth - button.offsetWidth)),
+    y: Math.max(0, Math.min(y, shell.clientHeight - button.offsetHeight)),
+  }
+}
+
+function startButtonDrag(event: PointerEvent) {
+  if (event.button !== 0 || !event.isPrimary || !openButton.value) return
+  const button = openButton.value
+  suppressButtonClick = false
+  buttonDrag = {
+    pointerId: event.pointerId, startX: event.clientX, startY: event.clientY,
+    x: button.offsetLeft, y: button.offsetTop,
+  }
+  // Capture keeps receiving moves when the pointer crosses the embedded iframe.
+  button.setPointerCapture(event.pointerId)
+}
+
+function moveButtonDrag(event: PointerEvent) {
+  if (!buttonDrag || event.pointerId !== buttonDrag.pointerId) return
+  const dx = event.clientX - buttonDrag.startX
+  const dy = event.clientY - buttonDrag.startY
+  if (!suppressButtonClick && Math.hypot(dx, dy) < 4) return
+  suppressButtonClick = true
+  setOpenButtonPosition(buttonDrag.x + dx, buttonDrag.y + dy)
+  event.preventDefault()
+}
+
+function endButtonDrag(event: PointerEvent) {
+  if (!buttonDrag || event.pointerId !== buttonDrag.pointerId) return
+  buttonDrag = null
+  if (openButton.value?.hasPointerCapture(event.pointerId)) {
+    openButton.value.releasePointerCapture(event.pointerId)
+  }
+}
+
+function handleOpenButtonClick(event: MouseEvent) {
+  if (suppressButtonClick && event.detail !== 0) event.preventDefault()
+  suppressButtonClick = false
+}
+
+useResizeObserver([embedShell, openButton], () => {
+  if (openButtonPosition.value) {
+    setOpenButtonPosition(openButtonPosition.value.x, openButtonPosition.value.y)
+  }
+})
 
 const menuItemId = computed(() => route.params.id as string)
 
@@ -234,7 +286,7 @@ function buildPageImageUrl(slug: string, src: string): string {
     .filter((part) => part && part !== '.')
     .map((part) => encodeURIComponent(part))
     .join('/')
-  return `/api/v1/pages/${encodeURIComponent(slug)}/images/${encodedPath}${suffix}`
+  return buildApiUrl(`/pages/${encodeURIComponent(slug)}/images/${encodedPath}${suffix}`)
 }
 
 async function fetchAndRenderMarkdown(slug: string) {
@@ -242,7 +294,7 @@ async function fetchAndRenderMarkdown(slug: string) {
   tocItems.value = []
   activeHeadingId.value = ''
   try {
-    const resp = await fetch(`/api/v1/pages/${encodeURIComponent(slug)}`, {
+    const resp = await fetch(buildApiUrl(`/pages/${encodeURIComponent(slug)}`), {
       headers: authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {},
     })
     if (!resp.ok) {
@@ -333,16 +385,16 @@ function injectCopyButtons() {
     if (pre.querySelector('.copy-btn')) return
     const btn = document.createElement('button')
     btn.className = 'copy-btn'
-    btn.textContent = '复制'
+    btn.textContent = t('customPage.copyCode')
     btn.addEventListener('click', async () => {
       const code = pre.querySelector('code')?.textContent ?? pre.textContent ?? ''
       try {
         await navigator.clipboard.writeText(code)
-        btn.textContent = '已复制 ✓'
-        setTimeout(() => { btn.textContent = '复制' }, 2000)
+        btn.textContent = t('customPage.copiedCode')
+        setTimeout(() => { btn.textContent = t('customPage.copyCode') }, 2000)
       } catch {
-        btn.textContent = '失败'
-        setTimeout(() => { btn.textContent = '复制' }, 2000)
+        btn.textContent = t('customPage.copyCodeFailed')
+        setTimeout(() => { btn.textContent = t('customPage.copyCode') }, 2000)
       }
     })
     pre.style.position = 'relative'
@@ -350,59 +402,9 @@ function injectCopyButtons() {
   })
 }
 
-function clampOpenButtonPosition(left: number, top: number) {
-  const shell = customEmbedShell.value
-  const button = customOpenButton.value
-  if (!shell || !button) return { left: 0, top: 0 }
-  return {
-    left: Math.max(0, Math.min(left, shell.clientWidth - button.offsetWidth)),
-    top: Math.max(0, Math.min(top, shell.clientHeight - button.offsetHeight)),
-  }
-}
-
-function startOpenButtonDrag(event: PointerEvent) {
-  if (event.button !== 0 || !customOpenButton.value) return
-  const rect = customOpenButton.value.getBoundingClientRect()
-  openButtonDrag = {
-    pointerId: event.pointerId,
-    startX: event.clientX,
-    startY: event.clientY,
-    left: customOpenButtonPosition.value?.left ?? customOpenButton.value.offsetLeft ?? (rect.left - (customEmbedShell.value?.getBoundingClientRect().left ?? 0)),
-    top: customOpenButtonPosition.value?.top ?? customOpenButton.value.offsetTop ?? (rect.top - (customEmbedShell.value?.getBoundingClientRect().top ?? 0)),
-    moved: false,
-  }
-  customOpenButton.value.setPointerCapture(event.pointerId)
-}
-
-function moveOpenButtonDrag(event: PointerEvent) {
-  if (!openButtonDrag || event.pointerId !== openButtonDrag.pointerId) return
-  const dx = event.clientX - openButtonDrag.startX
-  const dy = event.clientY - openButtonDrag.startY
-  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) openButtonDrag.moved = true
-  if (openButtonDrag.moved) {
-    customOpenButtonPosition.value = clampOpenButtonPosition(openButtonDrag.left + dx, openButtonDrag.top + dy)
-  }
-}
-
-function finishOpenButtonDrag(event: PointerEvent) {
-  if (!openButtonDrag || event.pointerId !== openButtonDrag.pointerId) return
-  suppressOpenButtonClick = openButtonDrag.moved
-  if (customOpenButton.value?.hasPointerCapture(event.pointerId)) {
-    customOpenButton.value.releasePointerCapture(event.pointerId)
-  }
-  openButtonDrag = null
-}
-
-function cancelOpenButtonDrag() {
-  openButtonDrag = null
-}
-
-function handleOpenButtonClick(event: MouseEvent) {
-  if (suppressOpenButtonClick) {
-    if (event.detail !== 0) event.preventDefault()
-    suppressOpenButtonClick = false
-  }
-}
+watch([() => menuItem.value?.open_mode, embeddedUrl], ([mode, url]) => {
+  if (mode === 'redirect' && typeof url === 'string' && /^https?:\/\//i.test(url)) window.location.assign(url)
+}, { immediate: true })
 
 watch(markdownSlug, (slug) => {
   if (slug) {
@@ -435,45 +437,18 @@ onMounted(async () => {
   }
 })
 
-watch(customOpenButton, (button) => {
-  embedResizeObserver?.disconnect()
-  embedResizeObserver = null
-  if (!button || !customEmbedShell.value) return
-  embedResizeObserver = new ResizeObserver(() => {
-    if (customOpenButtonPosition.value) {
-      customOpenButtonPosition.value = clampOpenButtonPosition(
-        customOpenButtonPosition.value.left,
-        customOpenButtonPosition.value.top,
-      )
-    }
-  })
-  embedResizeObserver.observe(customEmbedShell.value)
-})
-
 onUnmounted(() => {
-  if (scrollRafId) {
-    cancelAnimationFrame(scrollRafId)
-    scrollRafId = 0
-  }
   if (themeObserver) {
     themeObserver.disconnect()
     themeObserver = null
   }
-  embedResizeObserver?.disconnect()
-  embedResizeObserver = null
 })
 </script>
 
 <style scoped>
 .custom-page-layout {
   @apply flex flex-col;
-  height: calc(100dvh - 64px - 4rem);
-  min-height: min(720px, calc(100dvh - 64px - 4rem));
-}
-
-.custom-page-layout--embed > .card {
-  display: flex;
-  min-height: 0;
+  height: calc(100vh - 64px - 4rem);
 }
 
 .toc-sidebar {
@@ -485,39 +460,6 @@ onUnmounted(() => {
 }
 
 @media (max-width: 640px) {
-  .custom-page-layout {
-    height: auto;
-    min-height: 0;
-  }
-
-  .custom-page-layout > .card {
-    overflow: visible;
-  }
-
-  .custom-page-layout--embed {
-    height: max(28rem, calc(100dvh - 64px - 2rem));
-    min-height: max(28rem, calc(100dvh - 64px - 2rem));
-  }
-
-  .custom-page-layout--embed > .card,
-  .custom-page-layout--embed .custom-embed-shell,
-  .custom-page-layout--embed .custom-embed-frame {
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .custom-markdown-shell {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-  }
-
-  .markdown-page-content {
-    height: auto;
-    overflow: visible;
-  }
-
   .toc-sidebar {
     position: absolute;
     left: 0;
@@ -562,37 +504,21 @@ onUnmounted(() => {
 
 .toc-toggle-btn {
   @apply absolute left-2 top-2 z-10 flex items-center px-2 py-1.5 rounded-md text-sm;
-  @apply border;
-  background: var(--atelier-paper);
-  border-color: var(--atelier-line-strong);
-  color: var(--atelier-muted);
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 0.22em;
-}
-
-.toc-toggle-btn:hover,
-.toc-toggle-btn:focus-visible {
-  background: var(--atelier-surface-muted);
-  color: var(--atelier-ink);
-  text-decoration-color: currentColor;
-}
-
-.toc-toggle-btn {
-  @apply shadow-none transition-colors cursor-pointer;
+  @apply bg-white dark:bg-dark-700 border border-gray-200 dark:border-dark-500;
+  @apply text-gray-600 dark:text-dark-300 hover:bg-gray-100 dark:hover:bg-dark-600;
+  @apply shadow-sm transition-colors cursor-pointer;
 }
 
 .custom-embed-shell {
   @apply relative;
-  @apply h-full w-full overflow-hidden rounded-lg;
-  background: var(--atelier-paper-2);
-  border: 1px solid var(--atelier-line-strong);
+  @apply h-full w-full overflow-hidden rounded-2xl;
+  @apply bg-gradient-to-b from-gray-50 to-white dark:from-dark-900 dark:to-dark-950;
   @apply p-0;
 }
 
 .custom-open-fab {
-  @apply absolute right-3 top-3 z-10;
-  @apply shadow-none;
+  @apply absolute right-3 top-3 z-10 w-max max-w-full touch-none select-none transition-colors;
+  @apply shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-dark-800/80;
 }
 
 .custom-embed-frame {
@@ -600,7 +526,6 @@ onUnmounted(() => {
   margin: 0;
   width: 100%;
   height: 100%;
-  min-height: inherit;
   border: 0;
   border-radius: 0;
   box-shadow: none;

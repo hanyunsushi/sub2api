@@ -4,31 +4,13 @@
     class="px-0.5"
   >
     <div class="flex items-start gap-2">
-      <span class="auth-agreement-checkbox filter-checkbox">
-        <input
-          id="login-agreement-consent"
-          data-testid="auth-login-agreement-prompt-input-login-agreement-consent"
-          type="checkbox"
-          :checked="accepted"
-          class="auth-agreement-checkbox__input"
-          @change="handleCheckboxChange"
-        />
-        <span
-          class="filter-checkbox__box auth-agreement-checkbox__box"
-          aria-hidden="true"
-        >
-          <svg viewBox="0 0 11 8" fill="none">
-            <path
-              d="M1 4L4 7L10 1"
-              stroke="currentColor"
-              vector-effect="non-scaling-stroke"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </span>
-      </span>
+      <input
+        id="login-agreement-consent"
+        type="checkbox"
+        :checked="accepted"
+        class="mt-[2px] h-4 w-4 flex-shrink-0 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-900"
+        @change="handleCheckboxChange"
+      />
       <div class="min-w-0 flex-1">
         <p class="text-[13px] leading-5 text-gray-600 dark:text-dark-300">
           <label
@@ -42,7 +24,7 @@
               :to="documentRoute(doc)"
               target="_blank"
               rel="noopener noreferrer"
-              class="font-medium text-[var(--anthropic-fg)] underline-offset-4 transition hover:text-[var(--anthropic-fg)] hover:underline dark:text-primary-300 dark:hover:text-primary-200"
+              class="font-medium text-primary-600 underline-offset-4 transition hover:text-primary-700 hover:underline dark:text-primary-300 dark:hover:text-primary-200"
             >
               {{ doc.title }}
             </RouterLink>
@@ -55,19 +37,19 @@
 
   <div
     v-else-if="!accepted && documents.length > 0"
-    class="rounded-lg border border-primary-100 bg-primary-50/70 p-3 text-sm text-primary-900 dark:border-primary-500/20 dark:bg-[var(--anthropic-fg)]/10 dark:text-primary-100"
+    class="rounded-lg border border-primary-100 bg-primary-50/70 p-3 text-sm text-primary-900 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-100"
   >
     <div class="flex items-start gap-3">
-      <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-[var(--anthropic-fg)] dark:text-primary-300" />
+      <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-primary-600 dark:text-primary-300" />
       <div class="min-w-0 flex-1">
         <p class="font-medium">{{ t('legal.loginAgreementPrompt.noticeTitle') }}</p>
-        <p class="mt-1 text-[var(--anthropic-fg)] dark:text-primary-200/80">
+        <p class="mt-1 text-primary-700 dark:text-primary-200/80">
           {{ t('legal.loginAgreementPrompt.noticeDescription') }}
         </p>
       </div>
       <button
         type="button"
-        class="flex-shrink-0 rounded-md bg-[var(--anthropic-fg)] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[var(--anthropic-fg-hover)]"
+        class="flex-shrink-0 rounded-md bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-700"
         @click="emit('open')"
       >
         {{ t('legal.loginAgreementPrompt.viewTerms') }}
@@ -84,7 +66,7 @@
         <div class="w-full max-w-[600px] overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 dark:bg-dark-900 dark:ring-white/10">
           <div class="border-b border-gray-100 bg-white px-6 py-6 dark:border-dark-800 dark:bg-dark-900">
             <div class="flex items-start gap-4">
-              <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-50 text-[var(--anthropic-fg)] ring-1 ring-primary-100 dark:bg-[var(--anthropic-fg)]/10 dark:text-primary-300 dark:ring-primary-500/20">
+              <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700 ring-1 ring-primary-100 dark:bg-primary-500/10 dark:text-primary-300 dark:ring-primary-500/20">
                 <Icon name="shield" size="md" />
               </span>
               <div class="min-w-0 flex-1">
@@ -123,13 +105,13 @@
                 rel="noopener noreferrer"
                 class="group flex min-h-[72px] w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-primary-200 hover:bg-white hover:shadow-sm dark:border-dark-700 dark:bg-dark-800/70 dark:hover:border-primary-500/30 dark:hover:bg-dark-800"
               >
-                <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white text-gray-700 ring-1 ring-gray-200 transition group-hover:bg-primary-50 group-hover:text-[var(--anthropic-fg)] group-hover:ring-primary-100 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-700 dark:group-hover:bg-[var(--anthropic-fg)]/10 dark:group-hover:text-primary-200 dark:group-hover:ring-primary-500/20">
+                <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white text-gray-700 ring-1 ring-gray-200 transition group-hover:bg-primary-50 group-hover:text-primary-700 group-hover:ring-primary-100 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-700 dark:group-hover:bg-primary-500/10 dark:group-hover:text-primary-200 dark:group-hover:ring-primary-500/20">
                   <Icon :name="documentIcon(index, doc.title)" size="sm" />
                 </span>
                 <span class="min-w-0 flex-1">
                   <span class="block truncate text-sm font-semibold text-gray-950 dark:text-white">{{ doc.title }}</span>
                 </span>
-                <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition group-hover:bg-primary-50 group-hover:text-[var(--anthropic-fg)] dark:group-hover:bg-[var(--anthropic-fg)]/10 dark:group-hover:text-primary-300">
+                <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition group-hover:bg-primary-50 group-hover:text-primary-600 dark:group-hover:bg-primary-500/10 dark:group-hover:text-primary-300">
                   <Icon name="externalLink" size="sm" />
                 </span>
               </RouterLink>
@@ -147,7 +129,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-xl bg-[var(--anthropic-fg)] px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-none transition hover:bg-[var(--anthropic-fg-hover)]"
+                class="rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm shadow-primary-600/20 transition hover:bg-primary-700"
                 @click="emit('accept')"
               >
                 {{ t('legal.loginAgreementPrompt.accept') }}
@@ -253,63 +235,5 @@ function documentIcon(index: number, title: string): 'document' | 'shield' | 'gl
 .agreement-fade-leave-to > div {
   opacity: 0;
   transform: translateY(8px) scale(0.98);
-}
-
-.auth-agreement-checkbox {
-  position: relative;
-  display: inline-flex;
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: 0 0 1.25rem;
-  margin-top: 0.125rem;
-  color: var(--anthropic-fg);
-}
-
-.auth-agreement-checkbox__input {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  cursor: pointer;
-  opacity: 0;
-}
-
-.auth-agreement-checkbox__box {
-  display: grid;
-  width: 1.25rem;
-  height: 1.25rem;
-  place-items: center;
-  border: 1px solid var(--anthropic-border-hover);
-  border-radius: 4px;
-  background: var(--anthropic-page);
-  color: var(--anthropic-fg);
-  transition: border-color 0.18s ease, background-color 0.18s ease;
-}
-
-.auth-agreement-checkbox__box svg {
-  width: 63%;
-  color: var(--anthropic-page);
-  opacity: 0;
-  transition: opacity 0.16s ease;
-}
-
-.auth-agreement-checkbox:hover .auth-agreement-checkbox__box {
-  border-color: var(--anthropic-fg);
-}
-
-.auth-agreement-checkbox__input:checked + .auth-agreement-checkbox__box {
-  border-color: currentColor;
-  background: currentColor;
-}
-
-.auth-agreement-checkbox__input:checked + .auth-agreement-checkbox__box svg {
-  opacity: 1;
-}
-
-.auth-agreement-checkbox__input:focus-visible + .auth-agreement-checkbox__box {
-  outline: 2px solid var(--anthropic-focus);
-  outline-offset: 2px;
 }
 </style>

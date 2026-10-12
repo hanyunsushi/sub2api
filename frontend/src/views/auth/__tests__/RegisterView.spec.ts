@@ -19,8 +19,7 @@ const {
     cachedPublicSettings: null as { promo_code_enabled?: boolean } | null,
     showError: (...args: unknown[]) => showErrorMock(...args),
     showSuccess: vi.fn(),
-    showWarning: vi.fn(),
-    fetchPublicSettings: () => getPublicSettingsMock()
+    showWarning: vi.fn()
   }
 }))
 

@@ -1,7 +1,7 @@
 <template>
   <section class="mx-auto w-full max-w-6xl space-y-5 px-1 py-2 sm:px-2">
     <header
-      class="page-header mb-0 flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-[var(--anthropic-page)] p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-[var(--anthropic-page)] dark:ring-dark-700 sm:p-6"
+      class="page-header mb-0 flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700 sm:p-6"
     >
       <div class="min-w-0">
         <h2 class="page-title flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
@@ -145,7 +145,7 @@
             >
               <input
                 type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500/40"
                 :checked="draft.group_ids.includes(group.id)"
                 @change="toggleGroup(group.id)"
               />
@@ -173,7 +173,7 @@
             >
               <input
                 type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500/40"
                 :checked="isCategoryIgnored(category)"
                 @change="toggleIgnoredCategory(category)"
               />

@@ -234,17 +234,17 @@ onBeforeUnmount(() => {
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
   @apply rounded-xl px-4 py-2.5 text-sm;
-  background: var(--anthropic-page) !important;
+  @apply bg-white dark:bg-dark-800;
   @apply border border-gray-200 dark:border-dark-600;
   @apply text-gray-900 dark:text-gray-100;
   @apply transition-all duration-200;
-  @apply focus:border-[var(--anthropic-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)];
+  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
   @apply hover:border-gray-300 dark:hover:border-dark-500;
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  @apply border-[var(--anthropic-focus)] ring-2 ring-[var(--anthropic-focus)];
+  @apply border-primary-500 ring-2 ring-primary-500/30;
 }
 
 .filter-menu summary::-webkit-details-marker {
@@ -252,8 +252,7 @@ onBeforeUnmount(() => {
 }
 
 .filter-dropdown {
-  @apply w-max min-w-[200px] max-h-[min(50vh,360px)] overflow-y-auto rounded-xl border border-gray-200 shadow-lg dark:border-dark-600;
-  background: var(--anthropic-page) !important;
+  @apply w-max min-w-[200px] max-h-[min(50vh,360px)] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800;
 }
 
 .dropdown-item {

@@ -57,8 +57,7 @@ vi.mock('@/stores', () => ({
   useAppStore: () => ({
     showError: vi.fn(),
     showSuccess: vi.fn(),
-    showWarning: vi.fn(),
-    fetchPublicSettings: () => getPublicSettingsMock()
+    showWarning: vi.fn()
   })
 }))
 

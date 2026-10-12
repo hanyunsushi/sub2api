@@ -13,11 +13,7 @@ type BackupHandler struct {
 	imageStorage  *service.ImageStorageSettingService
 }
 
-func NewBackupHandler(
-	backupService *service.BackupService,
-	userService *service.UserService,
-	imageStorage *service.ImageStorageSettingService,
-) *BackupHandler {
+func NewBackupHandler(backupService *service.BackupService, userService *service.UserService, imageStorage *service.ImageStorageSettingService) *BackupHandler {
 	return &BackupHandler{
 		backupService: backupService,
 		userService:   userService,

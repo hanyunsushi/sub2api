@@ -4,6 +4,7 @@ import {
   aiLogoPresets,
   aiLogoUrlForProvider,
   getMergedAILogoPresets,
+  getCustomAILogoPresets,
   providerBrandInfo,
   providerBrandModel,
   rememberCustomAILogoPreset,
@@ -124,6 +125,12 @@ describe('provider brand icon resolution', () => {
     expect(aiLogoUrlForProvider('anthropic', 'claude-sonnet-4-5')).toBe(
       'https://img.example.com/lobe/light/claude-color.png'
     )
+  })
+
+  it('retains all 64 custom logos supported by the backend', () => {
+    const urls = Array.from({ length: 65 }, (_, index) => `https://cdn.example.com/logo-${index}.png`)
+    setAILogoRuntimeConfig({ custom_ai_logo_presets: urls })
+    expect(getCustomAILogoPresets().map(preset => preset.url)).toEqual(urls.slice(0, 64))
   })
 
   it('keeps remembered custom logo URLs in runtime memory only after server confirmation', () => {

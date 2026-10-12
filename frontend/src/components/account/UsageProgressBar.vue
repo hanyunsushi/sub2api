@@ -1,23 +1,23 @@
 <template>
-  <div class="usage-progress-bar">
+  <div>
     <!-- Window stats row (above progress bar) -->
     <div
       v-if="windowStats && (windowStats.requests > 0 || windowStats.tokens > 0)"
-      class="usage-progress-window-stats mb-0.5 flex items-center"
+      class="mb-0.5 flex items-center"
     >
-      <div class="usage-progress-stats-row flex items-center gap-1.5 text-[9px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-        <span class="usage-progress-stat rounded px-1.5 py-0.5">
+      <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
+        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
           {{ formatRequests }} req
         </span>
-        <span class="usage-progress-stat rounded px-1.5 py-0.5">
+        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
           {{ formatTokens }}
         </span>
-        <span class="usage-progress-stat rounded px-1.5 py-0.5" :title="t('usage.accountBilled')">
+        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
           A ${{ formatAccountCost }}
         </span>
         <span
           v-if="windowStats?.user_cost != null"
-          class="usage-progress-stat rounded px-1.5 py-0.5"
+          class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
           :title="t('usage.userBilled')"
         >
           U ${{ formatUserCost }}
@@ -34,27 +34,27 @@
     </div>
 
     <!-- Progress bar row -->
-    <div class="usage-progress-row flex items-center gap-1">
-      <!-- Label badge (fixed width for alignment; auto mode is used by compact monitor rows) -->
-      <span :class="['usage-progress-label', labelSizeClass, labelClass]">
+    <div class="flex items-center gap-1">
+      <!-- Label badge (label-width: fixed = 定宽居中, auto = 限宽截断左对齐) -->
+      <span :class="[labelSizeClass, labelClass]">
         {{ label }}
       </span>
 
       <!-- Progress bar container -->
-      <div class="usage-progress-track h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+      <div class="h-1.5 w-8 shrink-0 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
         <div
-          :class="['usage-progress-fill h-full transition-all duration-300', barClass]"
+          :class="['h-full transition-all duration-300', barClass]"
           :style="{ width: barWidth }"
         ></div>
       </div>
 
       <!-- Percentage -->
-      <span :class="['usage-progress-percent w-[32px] shrink-0 text-right text-[10px] font-medium', textClass]">
+      <span :class="['w-[32px] shrink-0 text-right text-[10px] font-medium', textClass]">
         {{ displayPercent }}
       </span>
 
       <!-- Reset time -->
-      <span v-if="shouldShowResetTime" class="usage-progress-reset shrink-0 text-[10px] text-[var(--anthropic-muted)]">
+      <span v-if="shouldShowResetTime" class="shrink-0 text-[10px] text-gray-400">
         {{ formatResetTime }}
       </span>
     </div>
@@ -73,7 +73,7 @@ const props = withDefaults(
     label: string
     utilization: number // Percentage (0-100+)
     resetsAt?: string | null
-    color: 'neutral' | 'success' | 'warning' | 'indigo' | 'emerald' | 'purple' | 'amber'
+    color: 'indigo' | 'emerald' | 'purple' | 'amber'
     windowStats?: WindowStats | null
     estimatedTotalCost?: number | null
     showNowWhenIdle?: boolean
@@ -112,13 +112,10 @@ watch(
 // Label background colors
 const labelClass = computed(() => {
   const colors = {
-    neutral: 'border border-[var(--anthropic-border-subtle)] bg-transparent text-[var(--anthropic-muted)]',
-    success: 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]',
-    warning: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]',
-    indigo: 'border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] bg-transparent text-[var(--anthropic-info)]',
-    emerald: 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]',
-    purple: 'border border-[color-mix(in_srgb,var(--anthropic-neutral)_42%,transparent)] bg-transparent text-[var(--anthropic-muted)]',
-    amber: 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
+    indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+    purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
   }
   return colors[props.color]
 })
@@ -135,18 +132,18 @@ const labelSizeClass = computed(() =>
 const barClass = computed(() => {
   if (props.remainingCapacity) {
     if (props.utilization <= 20) {
-      return 'usage-progress-fill--danger bg-red-500'
+      return 'bg-red-500'
     } else if (props.utilization <= 50) {
-      return 'usage-progress-fill--warning bg-amber-500'
+      return 'bg-amber-500'
     }
-    return 'usage-progress-fill--safe bg-green-500'
+    return 'bg-green-500'
   }
   if (props.utilization >= 90) {
-    return 'usage-progress-fill--danger bg-red-500'
+    return 'bg-red-500'
   } else if (props.utilization >= 75) {
-    return 'usage-progress-fill--warning bg-amber-500'
+    return 'bg-amber-500'
   } else {
-    return 'usage-progress-fill--safe bg-green-500'
+    return 'bg-green-500'
   }
 })
 
@@ -165,7 +162,7 @@ const textClass = computed(() => {
   } else if (props.utilization >= 75) {
     return 'text-amber-600 dark:text-amber-400'
   } else {
-    return 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+    return 'text-gray-600 dark:text-gray-400'
   }
 })
 

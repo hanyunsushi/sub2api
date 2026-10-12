@@ -1,7 +1,7 @@
 <template>
-  <div class="card model-distribution-card p-4">
+  <div class="card p-4">
     <div class="mb-4 flex items-center justify-between gap-3">
-      <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
         {{ !enableRankingView || activeView === 'model_distribution'
           ? t('admin.dashboard.modelDistribution')
           : t('admin.dashboard.spendingRankingTitle') }}
@@ -9,54 +9,34 @@
       <div class="flex flex-wrap items-center justify-end gap-2">
         <div
           v-if="showSourceToggle"
-          ref="sourceTabsRef"
-          class="route-tabs model-distribution-control-group model-distribution-route-tabs inline-flex"
-          data-route-tabs="model-distribution-source"
-          role="tablist"
-          @mouseleave="moveSourceIndicatorToSelected"
-          @focusout="handleSourceTabsFocusout"
+          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
         >
-          <button data-testid="charts-model-distribution-chart-button-emit-update-source-requested"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="requested"
-            :aria-selected="source === 'requested'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'requested'
-              ? 'model-distribution-toggle-active'
-              : 'model-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'requested')"
           >
             {{ t('usage.requestedModel') }}
           </button>
-          <button data-testid="charts-model-distribution-chart-button-emit-update-source-upstream"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="upstream"
-            :aria-selected="source === 'upstream'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'upstream'
-              ? 'model-distribution-toggle-active'
-              : 'model-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'upstream')"
           >
             {{ t('usage.upstreamModel') }}
           </button>
-          <button data-testid="charts-model-distribution-chart-button-emit-update-source-mapping"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="mapping"
-            :aria-selected="source === 'mapping'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'mapping'
-              ? 'model-distribution-toggle-active'
-              : 'model-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'mapping')"
           >
             {{ t('usage.mapping') }}
@@ -64,84 +44,51 @@
         </div>
         <div
           v-if="showMetricToggle"
-          ref="metricTabsRef"
-          class="route-tabs model-distribution-control-group model-distribution-route-tabs inline-flex"
-          data-route-tabs="model-distribution-metric"
-          role="tablist"
-          @mouseleave="moveMetricIndicatorToSelected"
-          @focusout="handleMetricTabsFocusout"
+          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
         >
-          <button data-testid="charts-model-distribution-chart-button-emit-update-metric-tokens"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="tokens"
-            :aria-selected="metric === 'tokens'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'tokens'
-              ? 'model-distribution-toggle-active'
-              : 'model-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:metric', 'tokens')"
           >
             {{ t('admin.dashboard.metricTokens') }}
           </button>
-          <button data-testid="charts-model-distribution-chart-button-emit-update-metric-actual-cost"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="actual_cost"
-            :aria-selected="metric === 'actual_cost'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'actual_cost'
-              ? 'model-distribution-toggle-active'
-              : 'model-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:metric', 'actual_cost')"
           >
             {{ t('admin.dashboard.metricActualCost') }}
           </button>
         </div>
-        <div
-          v-if="enableRankingView"
-          ref="rankingTabsRef"
-          class="route-tabs model-distribution-control-group model-distribution-route-tabs inline-flex"
-          data-route-tabs="model-distribution"
-          role="tablist"
-          @mouseleave="moveRankingIndicatorToSelected"
-          @focusout="handleRankingTabsFocusout"
-        >
-          <button data-testid="charts-model-distribution-chart-button-active-view-model-distribution"
+        <div v-if="enableRankingView" class="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-dark-800">
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="model_distribution"
-            :aria-selected="activeView === 'model_distribution'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="
               activeView === 'model_distribution'
-                ? 'model-distribution-toggle-active'
-                : 'model-distribution-toggle-idle'
+                ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
             "
-            @mouseenter="moveRankingIndicatorFromEvent"
-            @focus="moveRankingIndicatorFromEvent"
-            @click="setActiveView('model_distribution')"
+            @click="activeView = 'model_distribution'"
           >
             {{ t('admin.dashboard.viewModelDistribution') }}
           </button>
-          <button data-testid="charts-model-distribution-chart-button-active-view-spending-ranking"
+          <button
             type="button"
-            class="model-distribution-toggle"
-            role="tab"
-            data-route-id="spending_ranking"
-            :aria-selected="activeView === 'spending_ranking'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="
               activeView === 'spending_ranking'
-                ? 'model-distribution-toggle-active'
-                : 'model-distribution-toggle-idle'
+                ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
             "
-            @mouseenter="moveRankingIndicatorFromEvent"
-            @focus="moveRankingIndicatorFromEvent"
-            @click="setActiveView('spending_ranking')"
+            @click="activeView = 'spending_ranking'"
           >
             {{ t('admin.dashboard.viewSpendingRanking') }}
           </button>
@@ -156,58 +103,61 @@
       v-else-if="activeView === 'model_distribution' && displayModelStats.length > 0 && chartData"
       class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
     >
-      <div class="model-distribution-visual h-48 w-48">
+      <div class="h-48 w-48 shrink-0">
         <Doughnut :data="chartData" :options="doughnutOptions" />
       </div>
-      <div class="model-distribution-table-wrap max-h-48 flex-1 overflow-y-auto">
+      <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
           <thead>
-            <tr class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <tr class="text-gray-500 dark:text-gray-400">
               <th class="pb-2 text-left">{{ t('admin.dashboard.model') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.requests') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.tokens') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.actual') }}</th>
-              <th v-if="props.showAccountCost" class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
+              <th v-if="showAccountCost" class="pb-2 text-right">{{ t('admin.dashboard.accountCost') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.standard') }}</th>
             </tr>
           </thead>
           <tbody>
             <template v-for="model in displayModelStats" :key="model.model">
-              <tr data-testid="charts-model-distribution-chart-tr-toggle-breakdown-model-model-model"
-                class="model-distribution-row model-distribution-row-clickable border-t border-[var(--anthropic-border)] cursor-pointer transition-colors dark:border-[var(--anthropic-border)]"
-                @click="toggleBreakdown('model', model.model)"
+              <tr
+                class="border-t border-gray-100 transition-colors dark:border-dark-700"
+                :class="enableBreakdown ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/40' : ''"
+                @click="enableBreakdown && toggleBreakdown('model', model.model)"
               >
                 <td
-                  class="max-w-[100px] truncate py-1.5 font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                  class="max-w-[100px] truncate py-1.5 font-medium"
+                  :class="enableBreakdown ? 'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300' : 'text-gray-900 dark:text-white'"
                   :title="model.model"
                 >
                   <span class="inline-flex items-center gap-1">
-                    <svg v-if="expandedKey === `model-${model.model}`" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    <svg v-else class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg v-if="enableBreakdown && expandedKey === `model-${model.model}`" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg v-else-if="enableBreakdown" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     {{ model.model }}
                   </span>
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatNumber(model.requests) }}
                 </td>
-                <td v-if="props.showAccountCost" class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatTokens(model.total_tokens) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-green-600 dark:text-green-400">
                   ${{ formatCost(model.actual_cost) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                  ${{ formatCost(model.account_cost ?? 0) }}
+                <td v-if="showAccountCost" class="py-1.5 text-right text-orange-500 dark:text-orange-400">
+                  ${{ formatCost(model.account_cost) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-400 dark:text-gray-500">
                   ${{ formatCost(model.cost) }}
                 </td>
               </tr>
               <tr v-if="expandedKey === `model-${model.model}`">
-                <td :colspan="props.showAccountCost ? 6 : 5" class="p-0">
+                <td :colspan="distributionColspan" class="p-0">
                   <UserBreakdownSubTable
                     :items="breakdownItems"
                     :loading="breakdownLoading"
+                    :show-account-cost="showAccountCost"
                   />
                 </td>
               </tr>
@@ -218,7 +168,7 @@
     </div>
     <div
       v-else-if="activeView === 'model_distribution'"
-      class="flex h-48 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+      class="flex h-48 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
     >
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
@@ -228,18 +178,18 @@
     </div>
     <div
       v-else-if="rankingError"
-      class="flex h-48 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+      class="flex h-48 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
     >
       {{ t('admin.dashboard.failedToLoad') }}
     </div>
-    <div v-else-if="rankingDisplayItems.length > 0 && rankingChartData" class="flex items-center gap-6">
-      <div class="model-distribution-visual h-48 w-48">
+    <div v-else-if="rankingDisplayItems.length > 0 && rankingChartData" class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+      <div class="h-48 w-48 shrink-0">
         <Doughnut :data="rankingChartData" :options="rankingDoughnutOptions" />
       </div>
-      <div class="model-distribution-table-wrap max-h-48 flex-1 overflow-y-auto">
+      <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
           <thead>
-            <tr class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <tr class="text-gray-500 dark:text-gray-400">
               <th class="pb-2 text-left">{{ t('admin.dashboard.spendingRankingUser') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.spendingRankingRequests') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.spendingRankingTokens') }}</th>
@@ -247,35 +197,35 @@
             </tr>
           </thead>
           <tbody>
-            <tr data-testid="charts-model-distribution-chart-tr-tr"
+            <tr
               v-for="(item, index) in rankingDisplayItems"
               :key="item.isOther ? 'others' : `${item.user_id}-${index}`"
-              class="model-distribution-row border-t border-[var(--anthropic-border)] transition-colors dark:border-[var(--anthropic-border)]"
+              class="border-t border-gray-100 transition-colors dark:border-dark-700"
               :class="item.isOther
-                ? 'bg-[var(--anthropic-page)] dark:bg-[var(--anthropic-page)]'
-                : 'cursor-pointer'"
+                ? 'bg-gray-50/70 dark:bg-dark-700/20'
+                : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/40'"
               @click="item.isOther ? undefined : emit('ranking-click', item)"
             >
               <td class="py-1.5">
                 <div class="flex min-w-0 items-center gap-2">
-                  <span class="shrink-0 text-[11px] font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <span class="shrink-0 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
                     {{ item.isOther ? 'Σ' : `#${index + 1}` }}
                   </span>
                   <span
-                    class="block max-w-[140px] truncate font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+                    class="block max-w-[140px] truncate font-medium text-gray-900 dark:text-white"
                     :title="getRankingRowLabel(item)"
                   >
                     {{ getRankingRowLabel(item) }}
                   </span>
                 </div>
               </td>
-              <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                 {{ formatNumber(item.requests) }}
               </td>
-              <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                 {{ formatTokens(item.tokens) }}
               </td>
-              <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="py-1.5 text-right text-green-600 dark:text-green-400">
                 ${{ formatCost(item.actual_cost) }}
               </td>
             </tr>
@@ -285,7 +235,7 @@
     </div>
     <div
       v-else
-      class="flex h-48 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+      class="flex h-48 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
     >
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
@@ -293,7 +243,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
@@ -301,7 +251,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserBreakdownSubTable from './UserBreakdownSubTable.vue'
 import type { ModelStat, UserSpendingRankingItem, UserBreakdownItem } from '@/types'
 import { getUserBreakdown } from '@/api/admin/dashboard'
-import { chartNeutralColor, getChartColors } from '@/utils/chartColors'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -324,6 +273,7 @@ const props = withDefaults(defineProps<{
   metric?: DistributionMetric
   showSourceToggle?: boolean
   showMetricToggle?: boolean
+  enableBreakdown?: boolean
   showAccountCost?: boolean
   rankingLoading?: boolean
   rankingError?: boolean
@@ -343,6 +293,7 @@ const props = withDefaults(defineProps<{
   metric: 'tokens',
   showSourceToggle: false,
   showMetricToggle: false,
+  enableBreakdown: true,
   showAccountCost: true,
   rankingLoading: false,
   rankingError: false
@@ -384,100 +335,24 @@ const emit = defineEmits<{
 }>()
 
 const enableRankingView = computed(() => props.enableRankingView)
+const showAccountCost = computed(() => props.showAccountCost)
+const distributionColspan = computed(() => showAccountCost.value ? 6 : 5)
 const activeView = ref<'model_distribution' | 'spending_ranking'>('model_distribution')
-const rankingTabsRef = ref<HTMLElement | null>(null)
-const sourceTabsRef = ref<HTMLElement | null>(null)
-const metricTabsRef = ref<HTMLElement | null>(null)
 
-const setActiveView = (view: 'model_distribution' | 'spending_ranking') => {
-  activeView.value = view
-  void nextTick(moveRankingIndicatorToSelected)
-}
-
-function moveRankingIndicator(button: HTMLElement | null) {
-  moveIndicator(rankingTabsRef.value, button)
-}
-
-function moveIndicator(tabs: HTMLElement | null, button: HTMLElement | null) {
-  if (!tabs || !button) return
-
-  const tabsRect = tabs.getBoundingClientRect()
-  const buttonRect = button.getBoundingClientRect()
-  tabs.style.setProperty('--route-indicator-x', `${buttonRect.left - tabsRect.left}px`)
-  tabs.style.setProperty('--route-indicator-w', `${buttonRect.width}px`)
-}
-
-function selectedRankingTabButton() {
-  return rankingTabsRef.value?.querySelector<HTMLElement>(
-    `button[data-route-id="${activeView.value}"]`
-  ) ?? null
-}
-
-function selectedRouteButton(tabs: HTMLElement | null, routeId: string) {
-  return tabs?.querySelector<HTMLElement>(`button[data-route-id="${routeId}"]`) ?? null
-}
-
-function moveRankingIndicatorToSelected() {
-  moveRankingIndicator(selectedRankingTabButton())
-}
-
-function moveSourceIndicatorToSelected() {
-  moveIndicator(sourceTabsRef.value, selectedRouteButton(sourceTabsRef.value, props.source))
-}
-
-function moveMetricIndicatorToSelected() {
-  moveIndicator(metricTabsRef.value, selectedRouteButton(metricTabsRef.value, props.metric))
-}
-
-function moveRankingIndicatorFromEvent(event: Event) {
-  moveRankingIndicator(event.currentTarget as HTMLElement | null)
-}
-
-function moveIndicatorFromEvent(event: Event) {
-  const button = event.currentTarget as HTMLElement | null
-  moveIndicator(button?.closest<HTMLElement>('[data-route-tabs]') ?? null, button)
-}
-
-function handleRankingTabsFocusout(event: FocusEvent) {
-  const nextTarget = event.relatedTarget
-  if (!(nextTarget instanceof Node) || !rankingTabsRef.value?.contains(nextTarget)) {
-    moveRankingIndicatorToSelected()
-  }
-}
-
-function handleRouteTabsFocusout(event: FocusEvent, tabs: HTMLElement | null, moveToSelected: () => void) {
-  const nextTarget = event.relatedTarget
-  if (!(nextTarget instanceof Node) || !tabs?.contains(nextTarget)) {
-    moveToSelected()
-  }
-}
-
-function handleSourceTabsFocusout(event: FocusEvent) {
-  handleRouteTabsFocusout(event, sourceTabsRef.value, moveSourceIndicatorToSelected)
-}
-
-function handleMetricTabsFocusout(event: FocusEvent) {
-  handleRouteTabsFocusout(event, metricTabsRef.value, moveMetricIndicatorToSelected)
-}
-
-function moveAllIndicatorsToSelected() {
-  moveRankingIndicatorToSelected()
-  moveSourceIndicatorToSelected()
-  moveMetricIndicatorToSelected()
-}
-
-onMounted(() => {
-  void nextTick(moveAllIndicatorsToSelected)
-  window.addEventListener('resize', moveAllIndicatorsToSelected)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', moveAllIndicatorsToSelected)
-})
-
-watch(() => [props.source, props.metric, props.showSourceToggle, props.showMetricToggle, activeView.value], () => {
-  void nextTick(moveAllIndicatorsToSelected)
-})
+const chartColors = [
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#6366f1',
+  '#84cc16',
+  '#06b6d4',
+  '#a855f7'
+]
 
 const displayModelStats = computed(() => {
   const sourceStats = props.source === 'upstream'
@@ -488,7 +363,7 @@ const displayModelStats = computed(() => {
   if (!sourceStats?.length) return []
 
   const metricKey = props.metric === 'actual_cost' ? 'actual_cost' : 'total_tokens'
-  return [...sourceStats].sort((a, b) => b[metricKey] - a[metricKey])
+  return [...sourceStats].sort((a, b) => toFiniteNumber(b[metricKey]) - toFiniteNumber(a[metricKey]))
 })
 
 const chartData = computed(() => {
@@ -498,8 +373,8 @@ const chartData = computed(() => {
     labels: displayModelStats.value.map((m) => m.model),
     datasets: [
       {
-        data: displayModelStats.value.map((m) => props.metric === 'actual_cost' ? m.actual_cost : m.total_tokens),
-        backgroundColor: getChartColors(displayModelStats.value.length),
+        data: displayModelStats.value.map((m) => toFiniteNumber(props.metric === 'actual_cost' ? m.actual_cost : m.total_tokens)),
+        backgroundColor: chartColors.slice(0, displayModelStats.value.length),
         borderWidth: 0
       }
     ]
@@ -510,13 +385,13 @@ const rankingChartData = computed(() => {
   if (!props.rankingItems?.length) return null
 
   const labels = props.rankingItems.map((item, index) => `#${index + 1} ${getRankingUserLabel(item)}`)
-  const data = props.rankingItems.map((item) => item.actual_cost)
-  const backgroundColor = getChartColors(props.rankingItems.length)
+  const data = props.rankingItems.map((item) => toFiniteNumber(item.actual_cost))
+  const backgroundColor = chartColors.slice(0, props.rankingItems.length)
 
   if (otherRankingItem.value) {
     labels.push(t('admin.dashboard.spendingRankingOther'))
     data.push(otherRankingItem.value.actual_cost)
-    backgroundColor.push(chartNeutralColor)
+    backgroundColor.push('#94a3b8')
   }
 
   return {
@@ -534,9 +409,9 @@ const rankingChartData = computed(() => {
 const otherRankingItem = computed<RankingDisplayItem | null>(() => {
   if (!props.rankingItems?.length) return null
 
-  const rankedActualCost = props.rankingItems.reduce((sum, item) => sum + item.actual_cost, 0)
-  const rankedRequests = props.rankingItems.reduce((sum, item) => sum + item.requests, 0)
-  const rankedTokens = props.rankingItems.reduce((sum, item) => sum + item.tokens, 0)
+  const rankedActualCost = props.rankingItems.reduce((sum, item) => sum + toFiniteNumber(item.actual_cost), 0)
+  const rankedRequests = props.rankingItems.reduce((sum, item) => sum + toFiniteNumber(item.requests), 0)
+  const rankedTokens = props.rankingItems.reduce((sum, item) => sum + toFiniteNumber(item.tokens), 0)
 
   const otherActualCost = Math.max((props.rankingTotalActualCost || 0) - rankedActualCost, 0)
   const otherRequests = Math.max((props.rankingTotalRequests || 0) - rankedRequests, 0)
@@ -617,7 +492,7 @@ const formatTokens = (value: number): string => {
 }
 
 const formatNumber = (value: number): string => {
-  return value.toLocaleString()
+  return toFiniteNumber(value).toLocaleString()
 }
 
 const getRankingUserLabel = (item: UserSpendingRankingItem): string => {
@@ -631,140 +506,20 @@ const getRankingRowLabel = (item: RankingDisplayItem): string => {
   return getRankingUserLabel(item)
 }
 
-const formatCost = (value: number): string => {
-  if (value >= 1000) {
-    return (value / 1000).toFixed(2) + 'K'
-  } else if (value >= 1) {
-    return value.toFixed(2)
-  } else if (value >= 0.01) {
-    return value.toFixed(3)
+const toFiniteNumber = (value: unknown): number => {
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) ? numberValue : 0
+}
+
+const formatCost = (value: number | null | undefined): string => {
+  const safeValue = toFiniteNumber(value)
+  if (safeValue >= 1000) {
+    return (safeValue / 1000).toFixed(2) + 'K'
+  } else if (safeValue >= 1) {
+    return safeValue.toFixed(2)
+  } else if (safeValue >= 0.01) {
+    return safeValue.toFixed(3)
   }
-  return value.toFixed(4)
+  return safeValue.toFixed(4)
 }
 </script>
-
-<style scoped>
-.model-distribution-card {
-  background: var(--anthropic-page) !important;
-  border-color: var(--anthropic-cookbook-border) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.model-distribution-card :where(.model-distribution-control-group, .model-distribution-table-wrap) {
-  background: var(--anthropic-page) !important;
-  border: 1px solid var(--anthropic-cookbook-border);
-  box-shadow: none;
-}
-
-.model-distribution-control-group {
-  --route-indicator-x: 0.25rem;
-  --route-indicator-w: 0px;
-  position: relative;
-  isolation: isolate;
-  min-height: 3rem;
-  align-items: center;
-  gap: 0;
-  padding: 0.25rem !important;
-  border: 0 !important;
-  border-radius: 16px !important;
-  background: var(--anthropic-raised) !important;
-  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
-  width: fit-content;
-}
-
-.model-distribution-route-tabs::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 0.25rem;
-  bottom: 0.25rem;
-  left: 0;
-  width: var(--route-indicator-w);
-  border-radius: 12px;
-  background: var(--anthropic-page);
-  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
-  transform: translateX(var(--route-indicator-x));
-  transition:
-    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
-    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  pointer-events: none;
-}
-
-.model-distribution-toggle {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--anthropic-muted);
-  box-shadow: none;
-  font-family: var(--atelier-font-sans);
-  font-size: var(--anthropic-control-font-size, 0.8125rem);
-  font-weight: var(--anthropic-control-font-weight, 500);
-  line-height: var(--anthropic-control-line-height, 1.25rem);
-  letter-spacing: 0;
-  text-decoration-line: none;
-  white-space: nowrap;
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.1s ease-in-out,
-    box-shadow 0.2s ease-in-out;
-}
-
-.model-distribution-toggle:hover,
-.model-distribution-toggle:focus-visible {
-  color: var(--anthropic-fg);
-  background: transparent;
-  box-shadow: none;
-}
-
-.model-distribution-toggle-active {
-  background: transparent !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: none !important;
-}
-
-.model-distribution-toggle-idle {
-  color: var(--anthropic-muted) !important;
-}
-
-.model-distribution-visual,
-.model-distribution-table-wrap {
-  border-radius: 8px;
-}
-
-.model-distribution-visual {
-  padding: 0;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-.model-distribution-table-wrap {
-  padding: 0.5rem 0.75rem;
-}
-
-.model-distribution-table-wrap :where(table, thead, tbody, tr, th, td) {
-  background: var(--anthropic-page) !important;
-}
-
-.model-distribution-table-wrap th {
-  color: var(--anthropic-muted) !important;
-}
-
-.model-distribution-row {
-  border-color: var(--anthropic-cookbook-border) !important;
-}
-
-.model-distribution-row-clickable:hover {
-  background: var(--anthropic-section) !important;
-}
-</style>

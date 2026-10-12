@@ -9,19 +9,19 @@
       <!-- Account Info Card -->
       <div
         v-if="account"
-        class="anthropic-panel flex items-center justify-between"
+        class="flex items-center justify-between rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-3 dark:border-dark-500 dark:from-dark-700 dark:to-dark-600"
       >
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--atelier-ink)]"
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600"
           >
             <Icon name="play" size="md" class="text-white" :stroke-width="2" />
           </div>
           <div>
-            <div class="font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ account.name }}</div>
-            <div class="flex items-center gap-1.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="font-semibold text-gray-900 dark:text-gray-100">{{ account.name }}</div>
+            <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
               <span
-                class="rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 text-[10px] font-medium uppercase dark:bg-dark-500"
+                class="rounded bg-gray-200 px-1.5 py-0.5 text-[10px] font-medium uppercase dark:bg-dark-500"
               >
                 {{ account.type }}
               </span>
@@ -34,7 +34,7 @@
             'rounded-full px-2.5 py-1 text-xs font-semibold',
             account.status === 'active'
               ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-              : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
           ]"
         >
           {{ account.status }}
@@ -42,7 +42,7 @@
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.accounts.selectTestModel') }}
         </label>
         <Select
@@ -56,7 +56,7 @@
       </div>
 
       <div v-if="isOpenAIAccount" class="space-y-1.5">
-        <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.accounts.openai.testMode') }}
         </label>
         <Select
@@ -81,10 +81,10 @@
       <div class="group relative">
         <div
           ref="terminalRef"
-          class="max-h-[240px] min-h-[120px] overflow-y-auto rounded-xl border border-gray-700 bg-gray-900 p-4 font-mono text-sm dark:border-[var(--anthropic-border)] dark:bg-black"
+          class="max-h-[240px] min-h-[120px] overflow-y-auto rounded-xl border border-gray-700 bg-gray-900 p-4 font-mono text-sm dark:border-gray-800 dark:bg-black"
         >
           <!-- Status Line -->
-          <div v-if="status === 'idle'" class="flex items-center gap-2 text-[var(--anthropic-muted)]">
+          <div v-if="status === 'idle'" class="flex items-center gap-2 text-gray-500">
             <Icon name="play" size="sm" :stroke-width="2" />
             <span>{{ t('admin.accounts.readyToTest') }}</span>
           </div>
@@ -121,10 +121,10 @@
         </div>
 
         <!-- Copy Button -->
-        <button data-testid="account-account-test-button-copy-output"
+        <button
           v-if="outputLines.length > 0"
           @click="copyOutput"
-          class="absolute right-2 top-2 rounded-lg bg-gray-800/80 p-1.5 text-[var(--anthropic-muted)] opacity-0 transition-all hover:bg-gray-700 hover:text-white group-hover:opacity-100"
+          class="absolute right-2 top-2 rounded-lg bg-gray-800/80 p-1.5 text-gray-400 opacity-0 transition-all hover:bg-gray-700 hover:text-white group-hover:opacity-100"
           :title="t('admin.accounts.copyOutput')"
         >
           <Icon name="link" size="sm" :stroke-width="2" />
@@ -132,21 +132,21 @@
       </div>
 
       <div v-if="generatedImages.length > 0" class="space-y-2">
-        <div class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <div class="text-xs font-medium text-gray-600 dark:text-gray-300">
           {{ t('admin.accounts.imagePreview') }}
         </div>
         <div class="flex flex-wrap justify-center gap-3">
-          <div data-testid="account-account-test-div-preview-image-url-image-url"
+          <div
             v-for="(image, index) in generatedImages"
             :key="`${image.url}-${index}`"
-            class="anthropic-image-card group/img relative cursor-pointer transition"
+            class="group/img relative cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-primary-300 hover:shadow-md dark:border-dark-500 dark:bg-dark-700"
             @click="previewImageUrl = image.url"
           >
             <img :src="image.url" :alt="`test-image-${index + 1}`" class="max-h-[360px] w-full object-contain" />
             <div class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover/img:bg-black/20">
-              <Icon name="eye" size="lg" class="text-white opacity-0 drop-shadow-none transition-opacity group-hover/img:opacity-100" :stroke-width="2" />
+              <Icon name="eye" size="lg" class="text-white opacity-0 drop-shadow-lg transition-opacity group-hover/img:opacity-100" :stroke-width="2" />
             </div>
-            <div class="border-t border-[var(--anthropic-border)] px-3 py-1.5 text-xs text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
+            <div class="border-t border-gray-100 px-3 py-1.5 text-xs text-gray-500 dark:border-dark-500 dark:text-gray-300">
               {{ image.mimeType || 'image/*' }}
             </div>
           </div>
@@ -156,12 +156,12 @@
       <!-- Image Lightbox -->
       <Teleport to="body">
         <Transition name="fade">
-          <div data-testid="account-account-test-div-preview-image-url"
+          <div
             v-if="previewImageUrl"
             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
             @click.self="previewImageUrl = ''"
           >
-            <button data-testid="account-account-test-button-preview-image-url"
+            <button
               class="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
               @click="previewImageUrl = ''"
             >
@@ -170,14 +170,14 @@
             <img
               :src="previewImageUrl"
               alt="preview"
-              class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-none"
+              class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
             />
           </div>
         </Transition>
       </Teleport>
 
       <!-- Test Info -->
-      <div class="flex items-center justify-between px-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div class="flex items-center justify-between px-1 text-xs text-gray-500 dark:text-gray-400">
         <div class="flex items-center gap-3">
           <span class="flex items-center gap-1">
             <Icon name="grid" size="sm" :stroke-width="2" />
@@ -197,24 +197,24 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="account-account-test-button-handle-close"
+        <button
           @click="handleClose"
-          class="btn btn-secondary"
+          class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-dark-500"
         >
           {{ t('common.close') }}
         </button>
-        <button data-testid="account-account-test-button-start-test"
+        <button
           @click="startTest"
           :disabled="status === 'connecting' || !selectedModelId"
           :class="[
-            'btn flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+            'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all',
             status === 'connecting' || !selectedModelId
-              ? 'cursor-not-allowed opacity-50'
+              ? 'cursor-not-allowed bg-primary-400 text-white'
               : status === 'success'
-                ? 'btn-success'
+                ? 'bg-green-500 text-white hover:bg-green-600'
                 : status === 'error'
-                  ? 'btn-warning'
-                  : 'btn-primary'
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'bg-primary-500 text-white hover:bg-primary-600'
           ]"
         >
           <Icon
@@ -409,8 +409,8 @@ const startTest = async () => {
 
   resetState()
   status.value = 'connecting'
-  addLine(t('admin.accounts.startingTestForAccount', { name: props.account.name }), 'text-[var(--anthropic-info)]')
-  addLine(t('admin.accounts.testAccountTypeLabel', { type: props.account.type }), 'text-[var(--anthropic-muted)]')
+  addLine(t('admin.accounts.startingTestForAccount', { name: props.account.name }), 'text-blue-400')
+  addLine(t('admin.accounts.testAccountTypeLabel', { type: props.account.type }), 'text-gray-400')
   addLine('', 'text-gray-300')
 
   abortStream()
@@ -501,7 +501,7 @@ const handleEvent = (event: {
         supportsImageTest.value
             ? t('admin.accounts.sendingImageRequest')
             : t('admin.accounts.sendingTestMessage'),
-        'text-[var(--anthropic-muted)]'
+        'text-gray-400'
       )
       addLine('', 'text-gray-300')
       addLine(t('admin.accounts.response'), 'text-yellow-400')
@@ -526,7 +526,7 @@ const handleEvent = (event: {
           url: event.image_url,
           mimeType: event.mime_type
         })
-        addLine(t('admin.accounts.imageReceived', { count: generatedImages.value.length }), 'text-accent-300')
+        addLine(t('admin.accounts.imageReceived', { count: generatedImages.value.length }), 'text-purple-300')
       }
       break
 

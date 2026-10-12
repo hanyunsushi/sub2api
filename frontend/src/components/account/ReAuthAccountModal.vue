@@ -8,17 +8,28 @@
     <div v-if="account" class="space-y-4">
       <!-- Account Info -->
       <div
-        class="anthropic-panel"
+        class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-700"
       >
         <div class="flex items-center gap-3">
-          <div class="anthropic-icon-tile anthropic-icon-tile-active h-10 w-10">
-            <Icon name="sparkles" size="md" />
+          <div
+            :class="[
+              'flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br',
+              isOpenAILike
+                ? 'from-green-500 to-green-600'
+                : isGemini
+                  ? 'from-blue-500 to-blue-600'
+                  : isAntigravity
+                    ? 'from-purple-500 to-purple-600'
+                    : 'from-orange-500 to-orange-600'
+            ]"
+          >
+            <Icon name="sparkles" size="md" class="text-white" />
           </div>
           <div>
-            <span class="block font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+            <span class="block font-semibold text-gray-900 dark:text-white">{{
               account.name
             }}</span>
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-sm text-gray-500 dark:text-gray-400">
               {{
                 isOpenAI
                   ? t('admin.accounts.openaiAccount')
@@ -38,24 +49,24 @@
         <legend class="input-label">{{ t('admin.accounts.oauth.authMethod') }}</legend>
         <div class="mt-2 flex gap-4">
           <label class="flex cursor-pointer items-center">
-            <input data-testid="account-re-auth-account-input-add-method"
+            <input
               v-model="addMethod"
               type="radio"
               value="oauth"
-              class="anthropic-radio mr-2"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
+            <span class="text-sm text-gray-700 dark:text-gray-300">{{
               t('admin.accounts.types.oauth')
             }}</span>
           </label>
           <label class="flex cursor-pointer items-center">
-            <input data-testid="account-re-auth-account-input-add-method-2"
+            <input
               v-model="addMethod"
               type="radio"
               value="setup-token"
-              class="anthropic-radio mr-2"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
+            <span class="text-sm text-gray-700 dark:text-gray-300">{{
               t('admin.accounts.setupTokenLongLived')
             }}</span>
           </label>
@@ -63,19 +74,19 @@
       </fieldset>
 
       <!-- Gemini OAuth Type Display (read-only) -->
-      <div v-if="isGemini" class="anthropic-panel">
-        <div class="mb-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div v-if="isGemini" class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-700">
+        <div class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.accounts.oauth.gemini.oauthTypeLabel') }}
         </div>
         <div class="flex items-center gap-3">
           <div
             :class="[
-              'anthropic-icon-tile h-8 w-8',
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
               geminiOAuthType === 'google_one'
-                ? 'anthropic-icon-tile-active'
+                ? 'bg-purple-500 text-white'
                 : geminiOAuthType === 'code_assist'
-                  ? 'anthropic-stat-icon-info'
-                  : 'anthropic-stat-icon-warning'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-amber-500 text-white'
             ]"
           >
             <Icon v-if="geminiOAuthType === 'google_one'" name="user" size="sm" />
@@ -83,7 +94,7 @@
             <Icon v-else name="sparkles" size="sm" />
           </div>
           <div>
-            <span class="block text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <span class="block text-sm font-medium text-gray-900 dark:text-white">
               {{
                 geminiOAuthType === 'google_one'
                   ? 'Google One'
@@ -92,7 +103,7 @@
                     : t('admin.accounts.gemini.oauthType.customTitle')
               }}
             </span>
-            <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-xs text-gray-500 dark:text-gray-400">
               {{
                 geminiOAuthType === 'google_one'
                   ? t('admin.accounts.gemini.oauthType.googleOneDesc')
@@ -127,10 +138,10 @@
 
     <template #footer>
       <div v-if="account" class="flex justify-between gap-3">
-        <button data-testid="account-re-auth-account-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
+        <button type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="account-re-auth-account-button-handle-exchange-code"
+        <button
           v-if="isManualInputMethod"
           type="button"
           :disabled="!canExchangeCode"

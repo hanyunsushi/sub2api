@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div data-testid="common-base-div-handle-close"
+      <div
         v-if="show"
         class="modal-overlay"
         :style="zIndexStyle"
@@ -11,16 +11,16 @@
         @click.self="handleClose"
       >
         <!-- Modal panel -->
-        <div data-testid="common-base-div-div" ref="dialogRef" :class="['modal-content', widthClasses]" @click.stop>
+        <div ref="dialogRef" :class="['modal-content', widthClasses]" @click.stop>
           <!-- Header -->
           <div class="modal-header">
             <h3 :id="dialogId" class="modal-title">
               {{ title }}
             </h3>
-            <button data-testid="common-base-button-emit-close"
+            <button
               v-if="showCloseButton"
               @click="emit('close')"
-              class="-mr-2 rounded-lg p-2 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-muted)] dark:text-dark-500 dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-dark-300"
+              class="-mr-2 rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 focus-visible:ring-offset-2 dark:text-dark-500 dark:hover:bg-dark-700 dark:hover:text-dark-300 dark:focus-visible:ring-offset-dark-900"
               aria-label="Close modal"
             >
               <Icon name="x" size="md" />

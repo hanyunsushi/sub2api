@@ -1,18 +1,24 @@
 <template>
-  <div class="legal-page min-h-screen">
-    <header class="legal-header border-b">
+  <div class="min-h-screen bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-white">
+    <header class="border-b border-gray-200 bg-white/95 dark:border-dark-800 dark:bg-dark-900/95">
       <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <RouterLink to="/home" class="flex min-w-0 items-center gap-3">
-          <span class="legal-logo flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg">
-            <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
-          </span>
-          <span class="truncate text-base font-semibold">
-            {{ siteName }}
-          </span>
+          <template v-if="settings">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-700">
+              <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+            </span>
+            <span class="truncate text-base font-semibold text-gray-950 dark:text-white">
+              {{ siteName }}
+            </span>
+          </template>
+          <template v-else>
+            <span class="h-10 w-10 flex-shrink-0 animate-pulse rounded-xl bg-gray-200 dark:bg-dark-700" aria-hidden="true"></span>
+            <span class="h-5 w-28 animate-pulse rounded bg-gray-200 dark:bg-dark-700" aria-hidden="true"></span>
+          </template>
         </RouterLink>
         <RouterLink
           to="/login"
-          class="legal-login-button inline-flex flex-shrink-0 items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition"
+          class="inline-flex flex-shrink-0 items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary-600/20 transition hover:bg-primary-700"
         >
           {{ t('home.login') }}
         </RouterLink>
@@ -21,7 +27,7 @@
 
     <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:py-10">
       <div v-if="loading" class="flex min-h-[320px] items-center justify-center">
-        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--anthropic-fg)]"></div>
+        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
       </div>
 
       <section
@@ -34,15 +40,15 @@
 
       <section
         v-else-if="!currentDocument"
-        class="legal-panel rounded-lg border p-6"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-dark-700 dark:bg-dark-900"
       >
         <div class="flex items-start gap-3">
-          <span class="legal-small-icon flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md">
+          <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-600 dark:bg-dark-800 dark:text-dark-300">
             <Icon name="document" size="sm" />
           </span>
           <div>
-            <h1 class="text-lg font-semibold">{{ t('legal.notFound') }}</h1>
-            <p class="legal-muted mt-2 text-sm leading-6">
+            <h1 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('legal.notFound') }}</h1>
+            <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-dark-300">
               {{ t('legal.notFoundDescription') }}
             </p>
           </div>
@@ -50,17 +56,17 @@
       </section>
 
       <article v-else>
-        <div class="legal-article-head mb-8 border-b pb-6">
+        <div class="mb-8 border-b border-gray-200 pb-6 dark:border-dark-700">
           <div class="flex items-start gap-4">
-            <span class="legal-small-icon flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md">
+            <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300">
               <Icon :name="documentIcon" size="md" />
             </span>
             <div class="min-w-0">
-              <p class="legal-kicker text-sm font-medium">{{ documentTypeLabel }}</p>
-              <h1 class="mt-2 break-words text-2xl font-bold tracking-normal sm:text-3xl">
+              <p class="text-sm font-medium text-primary-700 dark:text-primary-300">{{ documentTypeLabel }}</p>
+              <h1 class="mt-2 break-words text-2xl font-bold tracking-normal text-gray-950 dark:text-white sm:text-3xl">
                 {{ currentDocument.title }}
               </h1>
-              <p v-if="updatedAt" class="legal-muted mt-3 text-sm">
+              <p v-if="updatedAt" class="mt-3 text-sm text-gray-500 dark:text-dark-400">
                 {{ t('legal.updatedAt', { date: updatedAt }) }}
               </p>
             </div>
@@ -74,7 +80,7 @@
         ></div>
         <div
           v-else
-          class="legal-panel rounded-lg border border-dashed px-6 py-14 text-center text-sm"
+          class="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center text-sm text-gray-500 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-400"
         >
           {{ t('legal.empty') }}
         </div>
@@ -114,7 +120,7 @@ marked.setOptions({
 const documentId = computed(() => String(route.params.documentId || ''))
 const isAdminComplianceDocument = computed(() => documentId.value === 'admin-compliance')
 const documents = computed(() => settings.value?.login_agreement_documents ?? [])
-const siteName = computed(() => settings.value?.site_name || 'Kreepai')
+const siteName = computed(() => settings.value?.site_name || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(settings.value?.site_logo || '', {
   allowRelative: true,
   allowDataUrl: true,
@@ -183,59 +189,8 @@ onMounted(async () => {
   color: inherit;
 }
 
-.legal-page {
-  color: var(--atelier-ink);
-  background:
-    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--atelier-surface-muted) 56%, transparent), transparent 30rem),
-    radial-gradient(circle at 78% 6%, color-mix(in srgb, var(--atelier-butter) 10%, transparent), transparent 24rem),
-    var(--atelier-canvas);
-}
-
-.legal-header,
-.legal-panel {
-  border-color: var(--atelier-material-edge);
-  background: var(--atelier-material-1);
-}
-
-.legal-header {
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
-}
-
-.legal-logo,
-.legal-small-icon {
-  border: 1px solid var(--atelier-material-edge);
-  background: var(--atelier-material-dust);
-  color: var(--atelier-blue);
-  box-shadow: 0 10px 24px -22px rgba(17, 24, 39, 0.36);
-}
-
-.legal-login-button {
-  border: 1px solid var(--atelier-ink);
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
-  box-shadow: none;
-}
-
-.legal-login-button:hover {
-  background: var(--atelier-blue-dark);
-}
-
-.legal-article-head {
-  border-color: var(--atelier-material-edge);
-}
-
-.legal-kicker,
-.legal-document-content :deep(a) {
-  color: var(--atelier-blue);
-}
-
-.legal-muted {
-  color: var(--atelier-muted);
-}
-
 .legal-document-content :deep(h1) {
-  @apply mb-4 mt-8 border-b pb-3 text-3xl font-bold;
-  border-color: var(--atelier-material-edge);
+  @apply mb-4 mt-8 border-b border-gray-200 pb-3 text-3xl font-bold dark:border-dark-700;
 }
 
 .legal-document-content :deep(h2) {
@@ -251,12 +206,11 @@ onMounted(async () => {
 }
 
 .legal-document-content :deep(p) {
-  @apply mb-4;
-  color: var(--atelier-ink);
+  @apply mb-4 text-gray-700 dark:text-dark-200;
 }
 
 .legal-document-content :deep(a) {
-  @apply underline underline-offset-4;
+  @apply text-primary-600 underline underline-offset-4 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200;
 }
 
 .legal-document-content :deep(ul) {
@@ -268,20 +222,15 @@ onMounted(async () => {
 }
 
 .legal-document-content :deep(li) {
-  @apply mb-1;
-  color: var(--atelier-ink);
+  @apply mb-1 text-gray-700 dark:text-dark-200;
 }
 
 .legal-document-content :deep(blockquote) {
-  @apply my-5 border-l-4 pl-4;
-  border-color: var(--atelier-dust);
-  color: var(--atelier-muted);
+  @apply my-5 border-l-4 border-gray-300 pl-4 text-gray-600 dark:border-dark-600 dark:text-dark-300;
 }
 
 .legal-document-content :deep(code) {
-  @apply rounded px-1.5 py-0.5 font-mono text-sm;
-  background: var(--atelier-material-dust);
-  color: var(--atelier-ink);
+  @apply rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm dark:bg-dark-800;
 }
 
 .legal-document-content :deep(pre) {
@@ -297,14 +246,11 @@ onMounted(async () => {
 }
 
 .legal-document-content :deep(th) {
-  @apply border px-3 py-2 text-left font-semibold;
-  border-color: var(--atelier-material-edge);
-  background: var(--atelier-material-dust);
+  @apply border border-gray-300 bg-gray-50 px-3 py-2 text-left font-semibold dark:border-dark-600 dark:bg-dark-800;
 }
 
 .legal-document-content :deep(td) {
-  @apply border px-3 py-2;
-  border-color: var(--atelier-material-edge);
+  @apply border border-gray-300 px-3 py-2 dark:border-dark-600;
 }
 
 .legal-document-content :deep(img) {
@@ -312,30 +258,6 @@ onMounted(async () => {
 }
 
 .legal-document-content :deep(hr) {
-  @apply my-7;
-  border-color: var(--atelier-material-edge);
-}
-
-:global(.dark) .legal-page {
-  color: #f8fbff;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(250, 249, 245, 0.08), transparent 34%),
-    linear-gradient(180deg, #050505, #0a0a0a);
-}
-
-:global(.dark) .legal-header,
-:global(.dark) .legal-panel {
-  border-color: rgba(248, 251, 255, 0.16);
-  background: #111827;
-}
-
-:global(.dark) .legal-muted,
-:global(.dark) .legal-document-content :deep(blockquote) {
-  color: #94a3b8;
-}
-
-:global(.dark) .legal-document-content :deep(p),
-:global(.dark) .legal-document-content :deep(li) {
-  color: #f8fbff;
+  @apply my-7 border-gray-200 dark:border-dark-700;
 }
 </style>

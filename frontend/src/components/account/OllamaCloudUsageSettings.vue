@@ -55,7 +55,7 @@
 
       <div>
         <label class="input-label" for="ollama-cloud-session">{{ t('admin.accounts.ollamaCloud.sessionLabel') }}</label>
-        <textarea data-testid="merge-ollama-cloud-usage-settings-ollama-cloud-session-1"
+        <textarea
           id="ollama-cloud-session"
           v-model="session"
           rows="3"

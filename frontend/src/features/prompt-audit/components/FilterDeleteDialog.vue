@@ -11,7 +11,7 @@
             :key="option.id"
             class="cursor-pointer"
           >
-            <input data-testid="merge-filter-delete-dialog-preset-1" v-model="preset" type="radio" name="prompt-delete-range" :value="option.id" class="peer sr-only" :data-test="`range-preset-${option.id}`" @change="criteriaChanged" />
+            <input v-model="preset" type="radio" name="prompt-delete-range" :value="option.id" class="peer sr-only" :data-test="`range-preset-${option.id}`" @change="criteriaChanged" />
             <span class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 peer-focus-visible:ring-2 peer-focus-visible:ring-red-500/30 dark:border-dark-600 dark:text-dark-300 dark:peer-checked:border-red-500 dark:peer-checked:bg-red-950/40 dark:peer-checked:text-red-300">
               {{ t(`admin.promptAudit.events.timePresets.${option.id}`) }}
             </span>
@@ -21,11 +21,11 @@
         <div v-if="preset === 'custom'" class="mt-3 grid gap-3 sm:grid-cols-2" data-test="custom-range">
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.startAt') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-start-at-2" v-model="local.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="criteriaChanged" />
+            <input v-model="local.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="criteriaChanged" />
           </label>
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.endAt') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-end-at-3" v-model="local.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="criteriaChanged" />
+            <input v-model="local.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="criteriaChanged" />
           </label>
           <p v-if="!canPreview" class="text-xs text-red-600 dark:text-red-400 sm:col-span-2">{{ t('admin.promptAudit.events.customRangeInvalid') }}</p>
         </div>
@@ -34,7 +34,7 @@
       <div class="grid gap-3 sm:grid-cols-2">
         <label class="text-xs text-gray-600 dark:text-dark-200">
           <span>{{ t('admin.promptAudit.events.decision') }}</span>
-          <select data-testid="merge-filter-delete-dialog-local-decision-4" v-model="local.decision" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.decision')" data-test="delete-decision" @change="criteriaChanged">
+          <select v-model="local.decision" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.decision')" data-test="delete-decision" @change="criteriaChanged">
             <option value="">{{ t('common.all') }}</option>
             <option value="pass">{{ t('admin.promptAudit.decisions.pass') }}</option>
             <option value="flag">{{ t('admin.promptAudit.decisions.flag') }}</option>
@@ -43,7 +43,7 @@
         </label>
         <label class="text-xs text-gray-600 dark:text-dark-200">
           <span>{{ t('admin.promptAudit.events.risk') }}</span>
-          <select data-testid="merge-filter-delete-dialog-local-risk-level-5" v-model="local.risk_level" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.risk')" data-test="delete-risk" @change="criteriaChanged">
+          <select v-model="local.risk_level" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.risk')" data-test="delete-risk" @change="criteriaChanged">
             <option value="">{{ t('common.all') }}</option>
             <option value="low">{{ t('admin.promptAudit.riskLevels.low') }}</option>
             <option value="medium">{{ t('admin.promptAudit.riskLevels.medium') }}</option>
@@ -58,19 +58,19 @@
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.endpoint') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-endpoint-6" v-model="local.endpoint" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endpoint')" @input="criteriaChanged" />
+            <input v-model="local.endpoint" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endpoint')" @input="criteriaChanged" />
           </label>
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.keyword') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-keyword-7" v-model="local.keyword" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.keyword')" @input="criteriaChanged" />
+            <input v-model="local.keyword" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.keyword')" @input="criteriaChanged" />
           </label>
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.groupId') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-group-id-8" v-model="local.group_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.groupId')" @input="criteriaChanged" />
+            <input v-model="local.group_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.groupId')" @input="criteriaChanged" />
           </label>
           <label class="text-xs text-gray-600 dark:text-dark-200">
             <span>{{ t('admin.promptAudit.events.userId') }}</span>
-            <input data-testid="merge-filter-delete-dialog-local-user-id-9" v-model="local.user_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.userId')" @input="criteriaChanged" />
+            <input v-model="local.user_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.userId')" @input="criteriaChanged" />
           </label>
         </div>
       </details>
@@ -97,11 +97,11 @@
         <p v-if="confirmDisabledReason" class="mr-auto text-xs text-gray-500 dark:text-dark-400" data-test="confirm-disabled-reason">
           {{ t(confirmDisabledReason) }}
         </p>
-        <button data-testid="merge-filter-delete-dialog-emit-10" type="button" class="btn btn-secondary" @click="$emit('close')">{{ t('common.cancel') }}</button>
-        <button data-testid="merge-filter-delete-dialog-request-preview-11" type="button" class="btn btn-secondary" :disabled="!canPreview || previewing || deleting" data-test="run-delete-preview" @click="requestPreview">
+        <button type="button" class="btn btn-secondary" @click="$emit('close')">{{ t('common.cancel') }}</button>
+        <button type="button" class="btn btn-secondary" :disabled="!canPreview || previewing || deleting" data-test="run-delete-preview" @click="requestPreview">
           {{ previewing ? t('admin.promptAudit.events.filterDeletePreviewing') : t('admin.promptAudit.events.filterDeletePreviewAction') }}
         </button>
-        <button data-testid="merge-filter-delete-dialog-request-confirm-12"
+        <button
           type="button"
           class="btn btn-danger"
           :disabled="confirmDisabled"

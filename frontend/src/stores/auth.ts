@@ -4,8 +4,9 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, watch } from 'vue'
 import { authAPI, isTotp2FARequired, passkeyAPI, type LoginResponse } from '@/api'
+import { clearStoredDisplayStatusesCache } from '@/api/admin/externalSubscriptions'
 import type {
   User,
   LoginRequest,
@@ -98,6 +99,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isSimpleMode = computed(() => runMode.value === 'simple')
   const hasPendingAuthSession = computed(() => pendingAuthSession.value !== null)
+
+  // External quota snapshots belong to one admin session, independent of mounted UI.
+  watch(() => [isAdmin.value, user.value?.id] as const, ([admin, userId], previous) => {
+    if (!admin || userId !== previous[1]) clearStoredDisplayStatusesCache()
+  }, { flush: 'sync' })
 
   // ==================== Actions ====================
 

@@ -1,7 +1,7 @@
 <template>
-  <a data-testid="common-proxy-ad-banner-link-a"
-    class="inline-flex max-w-full shrink-0 items-center gap-1 truncate text-xs font-normal text-[var(--anthropic-fg)] transition-colors hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2 dark:text-[var(--anthropic-fg)] dark:focus:ring-offset-dark-800"
-    href="https://bestproxy.com/?keyword=a2e8iuol"
+  <a
+    class="inline-flex max-w-full shrink-0 items-center gap-1 truncate text-xs font-normal text-primary-600 transition-colors hover:underline focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-dark-800"
+    href="https://sub2api.io/proxyip"
     target="_blank"
     rel="noopener noreferrer"
   >

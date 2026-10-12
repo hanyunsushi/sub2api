@@ -2,38 +2,36 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell announcements-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+        <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
-            <div class="table-filter-search flex-1 sm:max-w-64">
-              <input data-testid="admin-announcements-input-search-query"
-                v-model="searchQuery"
-                type="text"
-                :placeholder="t('admin.announcements.searchAnnouncements')"
-                class="input"
-                @input="handleSearch"
-              />
-            </div>
-            <Select
-              variant="text-control"
-              v-model="filters.status"
-              :options="statusFilterOptions"
-              class="w-40"
-              @change="handleStatusChange"
+          <div class="flex-1 sm:max-w-64">
+            <input
+              v-model="searchQuery"
+              type="text"
+              :placeholder="t('admin.announcements.searchAnnouncements')"
+              class="input"
+              @input="handleSearch"
             />
           </div>
+          <Select
+            v-model="filters.status"
+            :options="statusFilterOptions"
+            class="w-40"
+            @change="handleStatusChange"
+          />
 
           <!-- Right: Action buttons -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button data-testid="admin-announcements-button-load-announcements"
+          <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
+            <button
               @click="loadAnnouncements"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button announcements-refresh-button"
+              class="btn btn-secondary"
               :title="t('common.refresh')"
             >
-              {{ t("common.refresh") }}
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button data-testid="admin-announcements-button-open-create-dialog" @click="openCreateDialog" class="btn btn-primary announcements-create-button">
+            <button @click="openCreateDialog" class="btn btn-primary">
+              <Icon name="plus" size="md" class="mr-1" />
               {{ t('admin.announcements.createAnnouncement') }}
             </button>
           </div>
@@ -53,9 +51,9 @@
           <template #cell-title="{ value, row }">
             <div class="min-w-0">
               <div class="flex items-center gap-2">
-                <span class="truncate font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+                <span class="truncate font-medium text-gray-900 dark:text-white">{{ value }}</span>
               </div>
-              <div class="mt-1 flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+              <div class="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-dark-400">
                 <span>#{{ row.id }}</span>
                 <span class="text-gray-300 dark:text-dark-700">·</span>
                 <span>{{ formatDateTime(row.created_at) }}</span>
@@ -65,7 +63,14 @@
 
           <template #cell-status="{ value }">
             <span
-              :class="announcementStatusBadgeClass(value)"
+              :class="[
+                'badge',
+                value === 'active'
+                  ? 'badge-success'
+                  : value === 'draft'
+                    ? 'badge-gray'
+                    : 'badge-warning'
+              ]"
             >
               {{ statusLabel(value) }}
             </span>
@@ -73,20 +78,25 @@
 
           <template #cell-notify_mode="{ row }">
             <span
-              :class="announcementNotifyBadgeClass(row.notify_mode)"
+              :class="[
+                'badge',
+                row.notify_mode === 'popup'
+                  ? 'badge-warning'
+                  : 'badge-gray'
+              ]"
             >
               {{ row.notify_mode === 'popup' ? t('admin.announcements.notifyModeLabels.popup') : t('admin.announcements.notifyModeLabels.silent') }}
             </span>
           </template>
 
           <template #cell-targeting="{ row }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-sm text-gray-600 dark:text-gray-300">
               {{ targetingSummary(row.targeting) }}
             </span>
           </template>
 
           <template #cell-timeRange="{ row }">
-            <div class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="text-sm text-gray-600 dark:text-gray-300">
               <div>
                 <span class="font-medium">{{ t('admin.announcements.form.startsAt') }}:</span>
                 <span class="ml-1">{{ row.starts_at ? formatDateTime(row.starts_at) : t('admin.announcements.timeImmediate') }}</span>
@@ -99,35 +109,35 @@
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
+            <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
           </template>
 
           <template #cell-actions="{ row }">
             <div class="flex items-center space-x-1">
-              <button data-testid="admin-announcements-button-open-preview-row"
+              <button
                 @click="openPreview(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                 :title="t('admin.announcements.preview')"
               >
                 <Icon name="eye" size="sm" />
               </button>
-              <button data-testid="admin-announcements-button-open-read-status-row"
+              <button
                 @click="openReadStatus(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                 :title="t('admin.announcements.readStatus')"
               >
                 <Icon name="chartBar" size="sm" />
               </button>
-              <button data-testid="admin-announcements-button-open-edit-dialog-row"
+              <button
                 @click="openEditDialog(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-300"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-600 dark:hover:text-gray-300"
                 :title="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
               </button>
-              <button data-testid="admin-announcements-button-handle-delete-row"
+              <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -168,12 +178,12 @@
       <form id="announcement-form" @submit.prevent="handleSave" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.announcements.form.title') }}</label>
-          <input data-testid="admin-announcements-input-form-title" v-model="form.title" type="text" class="input" required />
+          <input v-model="form.title" type="text" class="input" required />
         </div>
 
         <div>
           <label class="input-label">{{ t('admin.announcements.form.content') }}</label>
-          <textarea data-testid="admin-announcements-textarea-form-content" v-model="form.content" rows="6" class="input" required></textarea>
+          <textarea v-model="form.content" rows="6" class="input" required></textarea>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -191,12 +201,12 @@
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label class="input-label">{{ t('admin.announcements.form.startsAt') }}</label>
-            <input data-testid="admin-announcements-input-form-starts-at-str" v-model="form.starts_at_str" type="datetime-local" class="input" />
+            <input v-model="form.starts_at_str" type="datetime-local" max="9999-12-31T23:59" class="input" />
             <p class="input-hint">{{ t('admin.announcements.form.startsAtHint') }}</p>
           </div>
           <div>
             <label class="input-label">{{ t('admin.announcements.form.endsAt') }}</label>
-            <input data-testid="admin-announcements-input-form-ends-at-str" v-model="form.ends_at_str" type="datetime-local" class="input" />
+            <input v-model="form.ends_at_str" type="datetime-local" max="9999-12-31T23:59" class="input" />
             <p class="input-hint">{{ t('admin.announcements.form.endsAtHint') }}</p>
           </div>
         </div>
@@ -209,10 +219,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="admin-announcements-button-close-edit" type="button" @click="closeEdit" class="btn btn-secondary">
+          <button type="button" @click="closeEdit" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="admin-announcements-button-submit" type="submit" form="announcement-form" :disabled="saving" class="btn btn-primary">
+          <button type="submit" form="announcement-form" :disabled="saving" class="btn btn-primary">
             {{ saving ? t('common.saving') : t('common.save') }}
           </button>
         </div>
@@ -327,20 +337,6 @@ const statusLabel = (status: string) => {
   if (status === 'archived') return t('admin.announcements.statusLabels.archived')
   return status
 }
-
-const announcementStatusBadgeClass = (status: string) => [
-  'badge',
-  status === 'active'
-    ? 'badge-success'
-    : status === 'archived'
-      ? 'badge-gray'
-      : 'badge-warning'
-]
-
-const announcementNotifyBadgeClass = (notifyMode: string) => [
-  'badge',
-  notifyMode === 'popup' ? 'badge-warning' : 'badge-gray'
-]
 
 const targetingSummary = (targeting: AnnouncementTargeting) => {
   const anyOf = targeting?.any_of ?? []

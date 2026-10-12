@@ -189,7 +189,6 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyHomeContent,
 		SettingKeyCompactHomeEnabled,
 		SettingKeyHideCcsImportButton,
-		SettingKeyAppearanceThemeDefault,
 		SettingKeyPurchaseSubscriptionEnabled,
 		SettingKeyPurchaseSubscriptionURL,
 		SettingKeyTableDefaultPageSize,
@@ -343,6 +342,9 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		TablePageSizeOptions:                tablePageSizeOptions,
 		CustomMenuItems:                     settings[SettingKeyCustomMenuItems],
 		CustomEndpoints:                     settings[SettingKeyCustomEndpoints],
+		AILogoCDNBaseURL:                    normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
+		CustomAILogoPresets:                 parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
+		CustomMenuSVGIconPresets:            parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		LinuxDoOAuthEnabled:                 linuxDoEnabled,
 		DingTalkOAuthEnabled:                dingTalkEnabled,
 		WeChatOAuthEnabled:                  weChatEnabled,
@@ -602,6 +604,9 @@ type PublicSettingsInjectionPayload struct {
 	TablePageSizeOptions                []int                    `json:"table_page_size_options"`
 	CustomMenuItems                     json.RawMessage          `json:"custom_menu_items"`
 	CustomEndpoints                     json.RawMessage          `json:"custom_endpoints"`
+	AILogoCDNBaseURL                    string                   `json:"ai_logo_cdn_base_url"`
+	CustomAILogoPresets                 []string                 `json:"custom_ai_logo_presets"`
+	CustomMenuSVGIconPresets            []string                 `json:"custom_menu_svg_icon_presets"`
 	LinuxDoOAuthEnabled                 bool                     `json:"linuxdo_oauth_enabled"`
 	DingTalkOAuthEnabled                bool                     `json:"dingtalk_oauth_enabled"`
 	WeChatOAuthEnabled                  bool                     `json:"wechat_oauth_enabled"`
@@ -696,6 +701,9 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		TablePageSizeOptions:                settings.TablePageSizeOptions,
 		CustomMenuItems:                     filterUserVisibleMenuItems(settings.CustomMenuItems),
 		CustomEndpoints:                     safeRawJSONArray(settings.CustomEndpoints),
+		AILogoCDNBaseURL:                    settings.AILogoCDNBaseURL,
+		CustomAILogoPresets:                 settings.CustomAILogoPresets,
+		CustomMenuSVGIconPresets:            settings.CustomMenuSVGIconPresets,
 		LinuxDoOAuthEnabled:                 settings.LinuxDoOAuthEnabled,
 		DingTalkOAuthEnabled:                settings.DingTalkOAuthEnabled,
 		WeChatOAuthEnabled:                  settings.WeChatOAuthEnabled,
@@ -732,20 +740,6 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		RiskControlEnabled:                   settings.RiskControlEnabled,
 		AllowUserViewErrorRequests:           settings.AllowUserViewErrorRequests,
 	}, nil
-}
-
-// GetWebAppIconSettings returns the minimal branding fields needed for
-// server-rendered manifest and web-app icon responses.
-func (s *SettingService) GetWebAppIconSettings(ctx context.Context) (siteName string, siteLogo string, err error) {
-	settings, err := s.settingRepo.GetMultiple(ctx, []string{
-		SettingKeySiteName,
-		SettingKeySiteLogo,
-	})
-	if err != nil {
-		return "", "", err
-	}
-
-	return s.getStringOrDefault(settings, SettingKeySiteName, "Sub2API"), settings[SettingKeySiteLogo], nil
 }
 
 // filterUserVisibleMenuItems filters out admin-only menu items from a raw JSON

@@ -1,34 +1,27 @@
 <template>
   <AuthLayout>
-    <div class="auth-form-stack">
+    <div class="space-y-6">
       <!-- Title -->
-      <div class="auth-view-header">
-        <span class="auth-kicker">{{ t('auth.welcomeBack') }}</span>
-        <h2 class="auth-title">
-          {{ t('auth.signIn') }}
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          {{ t('auth.welcomeBack') }}
         </h2>
-        <p class="auth-sub">
+        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
           {{ t('auth.signInToAccount') }}
         </p>
       </div>
       <!-- Login Form -->
-      <form @submit.prevent="handleLogin" class="auth-fields">
+      <form @submit.prevent="handleLogin" class="space-y-5">
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
             {{ t('auth.emailLabel') }}
           </label>
-          <div
-            class="relative"
-            :class="{ 'auth-agreement-locked-field': agreementInputLocked }"
-            :data-agreement-hint="agreementInputLocked ? agreementInputHint : undefined"
-            :tabindex="agreementInputLocked ? 0 : undefined"
-            :title="agreementInputLocked ? agreementInputHint : undefined"
-          >
+          <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="mail" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
+              <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input data-testid="auth-login-input-form-data-email"
+            <input
               id="email"
               v-model="formData.email"
               type="email"
@@ -48,17 +41,11 @@
           <label for="password" class="input-label">
             {{ t('auth.passwordLabel') }}
           </label>
-          <div
-            class="relative"
-            :class="{ 'auth-agreement-locked-field': agreementInputLocked }"
-            :data-agreement-hint="agreementInputLocked ? agreementInputHint : undefined"
-            :tabindex="agreementInputLocked ? 0 : undefined"
-            :title="agreementInputLocked ? agreementInputHint : undefined"
-          >
+          <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="lock" size="md" class="text-[var(--anthropic-muted)] dark:text-dark-500" />
+              <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
             </div>
-            <input data-testid="auth-login-input-form-data-password"
+            <input
               id="password"
               v-model="formData.password"
               :type="showPassword ? 'text' : 'password'"
@@ -69,11 +56,11 @@
               :class="{ 'input-error': errors.password }"
               :placeholder="t('auth.passwordPlaceholder')"
             />
-            <button data-testid="auth-login-button-show-password-show-password"
+            <button
               type="button"
               @click="showPassword = !showPassword"
               :disabled="authActionDisabled"
-              class="auth-password-toggle"
+              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-dark-300"
             >
               <Icon v-if="showPassword" name="eyeOff" size="md" />
               <Icon v-else name="eye" size="md" />
@@ -84,7 +71,7 @@
             <router-link
               v-if="passwordResetEnabled && !backendModeEnabled"
               to="/forgot-password"
-              class="auth-inline-link"
+              class="text-sm font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
             >
               {{ t('auth.forgotPassword') }}
             </router-link>
@@ -110,23 +97,11 @@
           />
         </div>
 
-        <LoginAgreementPrompt
-          v-if="loginAgreementEnabled"
-          :accepted="agreementAccepted"
-          :documents="loginAgreementDocuments"
-          :mode="loginAgreementMode"
-          :updated-at="loginAgreementUpdatedAt"
-          :visible="showAgreementModal"
-          @accept="acceptLoginAgreement"
-          @reject="rejectLoginAgreement"
-          @open="showAgreementModal = true"
-        />
-
         <!-- Submit Button -->
-        <button data-testid="auth-login-button-submit"
+        <button
           type="submit"
-          :disabled="authActionDisabled || turnstileChallengeRequired"
-          class="btn btn-primary auth-submit-button w-full"
+          :disabled="authActionDisabled || (turnstileEnabled && !turnstileToken)"
+          class="btn btn-primary w-full"
         >
           <svg
             v-if="isLoading"
@@ -152,16 +127,28 @@
           {{ isLoading ? t('auth.signingIn') : t('auth.signIn') }}
         </button>
 
-        <div v-if="showOAuthLogin" class="space-y-3 pt-1">
-          <div class="auth-divider">
-            <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-            <span>
+        <LoginAgreementPrompt
+          v-if="loginAgreementEnabled"
+          :accepted="agreementAccepted"
+          :documents="loginAgreementDocuments"
+          :mode="loginAgreementMode"
+          :updated-at="loginAgreementUpdatedAt"
+          :visible="showAgreementModal"
+          @accept="acceptLoginAgreement"
+          @reject="rejectLoginAgreement"
+          @open="showAgreementModal = true"
+        />
+
+        <div v-if="showPasskeyLogin || showOAuthLogin" class="space-y-3 pt-1">
+          <div class="flex items-center gap-3">
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+            <span class="text-xs text-gray-500 dark:text-dark-400">
               {{ t('auth.oauthOrContinue') }}
             </span>
-            <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
           </div>
 
-          <button data-testid="merge-login-view-handle-passkey-login-1"
+          <button
             v-if="showPasskeyLogin"
             type="button"
             class="btn btn-secondary w-full"
@@ -211,11 +198,11 @@
 
     <!-- Footer -->
     <template v-if="!backendModeEnabled && publicSettingsLoaded && registrationEnabled" #footer>
-      <p class="auth-footer-copy">
+      <p class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
         <router-link
           to="/register"
-          class="auth-footer-link-strong font-medium underline-offset-4 transition-colors hover:underline"
+          class="font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
         >
           {{ t('auth.signUp') }}
         </router-link>
@@ -281,9 +268,9 @@ const passkeyLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 const publicSettingsLoaded = ref<boolean>(false)
-const registrationEnabled = ref<boolean>(false)
 
 // Public settings
+const registrationEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
 const tencentCaptchaEnabled = ref<boolean>(false)
@@ -357,24 +344,12 @@ const agreementGateActive = computed(
   () => loginAgreementEnabled.value && !agreementAccepted.value
 )
 
-const agreementInputLocked = computed(
-  () => agreementGateActive.value && loginAgreementMode.value === 'checkbox'
-)
-
-const agreementInputHint = computed(
-  () => '请先勾选下方使用协议后再输入。'
-)
-
 const authActionDisabled = computed(
   () => isLoading.value || passkeyLoading.value || !publicSettingsLoaded.value || agreementGateActive.value
 )
 
 const showPasskeyLogin = computed(
   () => passkeyEnabled.value && typeof window.PublicKeyCredential !== 'undefined'
-)
-
-const turnstileChallengeRequired = computed(
-  () => turnstileEnabled.value && Boolean(turnstileSiteKey.value) && !turnstileToken.value
 )
 
 const showOAuthLogin = computed(
@@ -406,11 +381,7 @@ onMounted(async () => {
   }
 
   try {
-    const settings = appStore.cachedPublicSettings ||
-      (typeof appStore.fetchPublicSettings === 'function'
-        ? (await appStore.fetchPublicSettings()) ||
-          (await getPublicSettings())
-        : await getPublicSettings())
+    const settings = await getPublicSettings()
     registrationEnabled.value = settings.registration_enabled === true
     turnstileEnabled.value = settings.turnstile_enabled
     turnstileSiteKey.value = settings.turnstile_site_key || ''
@@ -442,11 +413,6 @@ onMounted(async () => {
   }
 })
 
-if (appStore.cachedPublicSettings) {
-  applyPublicSettings(appStore.cachedPublicSettings)
-  publicSettingsLoaded.value = true
-}
-
 // ==================== Login Agreement ====================
 
 function applyLoginAgreementSettings(settings: {
@@ -470,30 +436,6 @@ function applyLoginAgreementSettings(settings: {
   agreementAccepted.value = !loginAgreementEnabled.value || hasAcceptedLoginAgreement(loginAgreementRevision.value)
   showAgreementModal.value =
     loginAgreementEnabled.value && !agreementAccepted.value && loginAgreementMode.value !== 'checkbox'
-}
-
-function applyPublicSettings(settings: Awaited<ReturnType<typeof getPublicSettings>>): void {
-  registrationEnabled.value = settings.registration_enabled === true
-  turnstileEnabled.value = settings.turnstile_enabled
-  turnstileSiteKey.value = settings.turnstile_site_key || ''
-  tencentCaptchaEnabled.value = settings.tencent_captcha_enabled === true
-  tencentCaptchaAppId.value = settings.tencent_captcha_app_id || ''
-  tencentCaptchaRegion.value = settings.tencent_captcha_region || 'cn'
-  aliyunCaptchaEnabled.value = settings.aliyun_captcha_enabled === true
-  aliyunCaptchaSceneId.value = settings.aliyun_captcha_scene_id || ''
-  aliyunCaptchaPrefix.value = settings.aliyun_captcha_prefix || ''
-  aliyunCaptchaRegion.value = settings.aliyun_captcha_region || 'cn'
-  linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
-  dingtalkOAuthEnabled.value = settings.dingtalk_oauth_enabled ?? false
-  wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
-  backendModeEnabled.value = settings.backend_mode_enabled
-  oidcOAuthEnabled.value = settings.oidc_oauth_enabled
-  oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
-  githubOAuthEnabled.value = settings.github_oauth_enabled
-  googleOAuthEnabled.value = settings.google_oauth_enabled
-  passwordResetEnabled.value = settings.password_reset_enabled
-  passkeyEnabled.value = settings.passkey_enabled === true
-  applyLoginAgreementSettings(settings)
 }
 
 function hasAcceptedLoginAgreement(revision: string): boolean {
@@ -608,7 +550,7 @@ function validateForm(): boolean {
   }
 
   // Turnstile validation
-  if (turnstileChallengeRequired.value) {
+  if (turnstileEnabled.value && !turnstileToken.value) {
     errors.turnstile = t('auth.completeVerification')
     isValid = false
   }
@@ -660,7 +602,9 @@ async function handleLogin(): Promise<void> {
     clearAllAffiliateReferralCodes()
     appStore.showSuccess(t('auth.loginSuccess'))
 
-    await router.push(resolvePostLoginRedirect())
+    // Redirect to dashboard or intended route
+    const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
+    await router.push(redirectTo)
   } catch (error: unknown) {
     errorMessage.value = extractI18nErrorMessage(error, t, 'auth.errors', t('auth.loginFailed'))
 
@@ -768,7 +712,9 @@ async function handle2FAVerify(code: string): Promise<void> {
     clearAllAffiliateReferralCodes()
     appStore.showSuccess(t('auth.loginSuccess'))
 
-    await router.push(resolvePostLoginRedirect())
+    // Redirect to dashboard or intended route
+    const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
+    await router.push(redirectTo)
   } catch (error: unknown) {
     const err = error as { message?: string; response?: { data?: { message?: string } } }
     const message = err.response?.data?.message || err.message || t('profile.totp.loginFailed')
@@ -778,14 +724,6 @@ async function handle2FAVerify(code: string): Promise<void> {
       totpModalRef.value.setVerifying(false)
     }
   }
-}
-
-function resolvePostLoginRedirect(): string {
-  const redirect = router.currentRoute.value.query.redirect
-  if (typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')) {
-    return redirect
-  }
-  return authStore.isAdmin ? '/admin/dashboard' : '/dashboard'
 }
 
 function handle2FACancel(): void {

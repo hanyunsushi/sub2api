@@ -50,11 +50,11 @@
       <!-- Deduct Balance -->
       <div>
         <div class="flex items-center gap-2">
-          <input data-testid="admin-payment-admin-refund-input-form-deduct-balance"
+          <input
             id="deduct-balance"
             v-model="form.deduct_balance"
             type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
           <label for="deduct-balance" class="text-sm text-gray-700 dark:text-gray-300">
             {{ t('payment.admin.deductBalance') }}
@@ -96,7 +96,7 @@
         <label class="input-label">{{ t('payment.admin.refundAmount') }}</label>
         <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{{ creditedAmountSymbol }}</span>
-          <input data-testid="admin-payment-admin-refund-input-form-amount"
+          <input
             v-model.number="form.amount"
             type="number"
             step="0.01"
@@ -114,7 +114,7 @@
       <!-- Reason -->
       <div>
         <label class="input-label">{{ t('payment.admin.refundReason') }}</label>
-        <textarea data-testid="admin-payment-admin-refund-textarea-form-reason"
+        <textarea
           v-model="form.reason"
           rows="3"
           class="input"
@@ -133,7 +133,7 @@
 
       <!-- Force Refund -->
       <div v-if="requireForce" class="flex items-center gap-2">
-        <input data-testid="admin-payment-admin-refund-input-form-force"
+        <input
           id="force-refund"
           v-model="form.force"
           type="checkbox"
@@ -147,10 +147,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="admin-payment-admin-refund-button-emit-cancel" type="button" @click="emit('cancel')" class="btn btn-secondary">
+        <button type="button" @click="emit('cancel')" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="admin-payment-admin-refund-button-submit"
+        <button
           type="submit"
           form="refund-form"
           :disabled="submitting || form.amount <= 0 || (requireForce && !form.force)"

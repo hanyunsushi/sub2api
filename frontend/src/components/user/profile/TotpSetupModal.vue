@@ -1,15 +1,15 @@
 <template>
-  <div data-testid="user-profile-totp-setup-div-emit-close" class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
+  <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div data-testid="user-profile-totp-setup-div-emit-close-2" class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
+      <div class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
 
-      <div class="relative w-full max-w-md transform rounded-lg border border-[var(--atelier-line)] bg-[var(--atelier-paper)] p-6 shadow-none transition-all dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+      <div class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800">
         <!-- Header -->
         <div class="mb-6 text-center">
-          <h3 class="text-xl font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
             {{ t('profile.totp.setupTitle') }}
           </h3>
-          <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
             {{ stepDescription }}
           </p>
         </div>
@@ -18,7 +18,7 @@
         <div v-if="step === 0" class="space-y-6">
           <!-- Loading verification method -->
           <div v-if="methodLoading" class="flex items-center justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--anthropic-fg)]"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
           </div>
 
           <template v-else>
@@ -27,7 +27,7 @@
               <div>
                 <label class="input-label">{{ t('profile.totp.emailCode') }}</label>
                 <div class="flex gap-2">
-                  <input data-testid="user-profile-totp-setup-input-verify-form-email-code"
+                  <input
                     v-model="verifyForm.emailCode"
                     type="text"
                     maxlength="6"
@@ -35,7 +35,7 @@
                     class="input flex-1"
                     :placeholder="t('profile.totp.enterEmailCode')"
                   />
-                  <button data-testid="user-profile-totp-setup-button-handle-send-code"
+                  <button
                     type="button"
                     class="btn btn-secondary whitespace-nowrap"
                     :disabled="sendingCode || codeCooldown > 0"
@@ -51,7 +51,7 @@
             <div v-else class="space-y-4">
               <div>
                 <label class="input-label">{{ t('profile.currentPassword') }}</label>
-                <input data-testid="user-profile-totp-setup-input-verify-form-password"
+                <input
                   v-model="verifyForm.password"
                   type="password"
                   autocomplete="current-password"
@@ -62,10 +62,10 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-              <button data-testid="user-profile-totp-setup-button-emit-close" type="button" class="btn btn-secondary" @click="$emit('close')">
+              <button type="button" class="btn btn-secondary" @click="$emit('close')">
                 {{ t('common.cancel') }}
               </button>
-              <button data-testid="user-profile-totp-setup-button-handle-verify-and-setup"
+              <button
                 type="button"
                 class="btn btn-primary"
                 :disabled="!canProceedFromVerify || setupLoading"
@@ -82,22 +82,22 @@
           <!-- QR Code and Secret -->
           <template v-if="setupData">
             <div class="flex justify-center">
-              <div class="rounded-lg border border-[var(--atelier-line)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)]">
+              <div class="rounded-lg border border-gray-200 p-4 bg-white dark:border-dark-600 dark:bg-white">
                 <img :src="qrCodeDataUrl" alt="QR Code" class="h-48 w-48" />
               </div>
             </div>
 
             <div class="text-center">
-              <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] mb-2">
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
                 {{ t('profile.totp.manualEntry') }}
               </p>
               <div class="flex items-center justify-center gap-2">
-                <code class="rounded bg-[var(--anthropic-raised)] px-3 py-2 font-mono text-sm dark:bg-[var(--anthropic-section)]">
+                <code class="rounded bg-gray-100 px-3 py-2 font-mono text-sm dark:bg-dark-700">
                   {{ setupData.secret }}
                 </code>
-                <button data-testid="user-profile-totp-setup-button-copy-secret"
+                <button
                   type="button"
-                  class="rounded p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+                  class="rounded p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-700"
                   @click="copySecret"
                 >
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -109,10 +109,10 @@
           </template>
 
           <div class="flex justify-end gap-3 pt-4">
-            <button data-testid="user-profile-totp-setup-button-emit-close-2" type="button" class="btn btn-secondary" @click="$emit('close')">
+            <button type="button" class="btn btn-secondary" @click="$emit('close')">
               {{ t('common.cancel') }}
             </button>
-            <button data-testid="user-profile-totp-setup-button-step-2"
+            <button
               type="button"
               class="btn btn-primary"
               :disabled="!setupData"
@@ -131,7 +131,7 @@
                 {{ t('profile.totp.enterCode') }}
               </label>
               <div class="flex justify-center gap-2">
-                <input data-testid="user-profile-totp-setup-input-text"
+                <input
                   v-for="(_, index) in 6"
                   :key="index"
                   :ref="(el) => setInputRef(el, index)"
@@ -140,7 +140,7 @@
                   maxlength="1"
                   inputmode="numeric"
                   pattern="[0-9]"
-                  class="h-12 w-10 rounded-lg border border-[var(--anthropic-border)] text-center text-lg font-semibold focus:border-[var(--atelier-focus)] focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                  class="h-12 w-10 rounded-lg border border-gray-300 text-center text-lg font-semibold focus:border-primary-500 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
                   @input="handleCodeInput($event, index)"
                   @keydown="handleKeydown($event, index)"
                   @paste="handlePaste"
@@ -149,10 +149,10 @@
             </div>
 
             <div class="flex justify-end gap-3">
-              <button data-testid="user-profile-totp-setup-button-step-1" type="button" class="btn btn-secondary" @click="step = 1">
+              <button type="button" class="btn btn-secondary" @click="step = 1">
                 {{ t('common.back') }}
               </button>
-              <button data-testid="user-profile-totp-setup-button-submit"
+              <button
                 type="submit"
                 class="btn btn-primary"
                 :disabled="verifying || code.join('').length !== 6"

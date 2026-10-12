@@ -1,9 +1,9 @@
 <template>
   <AppLayout>
-    <TablePageLayout class="user-keys-atelier">
+    <TablePageLayout>
       <template #filters>
-        <div class="keys-filter-shell table-filter-shell">
-          <div class="keys-filter-left flex flex-wrap items-center gap-3">
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-wrap items-center gap-3">
             <SearchInput
               v-model="filterSearch"
               :placeholder="t('keys.searchPlaceholder')"
@@ -23,15 +23,13 @@
               @update:model-value="onStatusFilterChange"
             />
           </div>
-          <div class="keys-filter-actions">
-            <EndpointPopover
-              v-if="publicSettings?.api_base_url || (publicSettings?.custom_endpoints?.length ?? 0) > 0"
-              :api-base-url="publicSettings?.api_base_url || ''"
-              :custom-endpoints="publicSettings?.custom_endpoints || []"
-            />
-          </div>
+          <EndpointPopover
+            v-if="publicSettings?.api_base_url || (publicSettings?.custom_endpoints?.length ?? 0) > 0"
+            :api-base-url="publicSettings?.api_base_url || ''"
+            :custom-endpoints="publicSettings?.custom_endpoints || []"
+          />
           <div v-if="selectedIds.length" class="flex flex-wrap items-center gap-3 text-sm">
-            <span class="text-[var(--anthropic-muted)]">
+            <span class="text-gray-600 dark:text-gray-300">
               {{ t('keys.bulkEdit.selectedCount', { count: selectedIds.length }) }}
             </span>
             <button
@@ -50,53 +48,49 @@
       </template>
 
       <template #actions>
-        <div class="keys-page-actions flex justify-end gap-3">
-          <div class="relative">
-            <button data-testid="merge-keys-view-show-column-settings-show-column-settings-1"
-              type="button"
-              class="filter-menu-button"
+        <div class="flex justify-end gap-3">
+          <button
+            @click="loadApiKeys"
+            :disabled="loading"
+            class="btn btn-secondary"
+            :title="t('common.refresh')"
+          >
+            <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <div class="relative" ref="columnDropdownRef">
+            <button
+              @click="showColumnDropdown = !showColumnDropdown"
+              class="btn btn-secondary px-2 md:px-3"
               :title="t('keys.columnSettings')"
-              @click="showColumnSettings = !showColumnSettings"
             >
-              {{ t('keys.columnSettings') }}
+              <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
+              </svg>
+              <span class="hidden md:inline">{{ t('keys.columnSettings') }}</span>
             </button>
             <div
-              v-if="showColumnSettings"
-              class="absolute right-0 top-full z-20 mt-2 min-w-48 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] py-1 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              v-if="showColumnDropdown"
+              class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
             >
-              <button data-testid="merge-keys-view-toggle-column-column-key-2"
-                v-for="column in toggleableColumns"
-                :key="column.key"
-                type="button"
-                class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
-                @click="toggleColumn(column.key)"
+              <button
+                v-for="col in toggleableColumns"
+                :key="col.key"
+                @click="toggleColumn(col.key)"
+                class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
-                <span>{{ column.label }}</span>
+                <span>{{ col.label }}</span>
                 <Icon
-                  v-if="isColumnVisible(column.key)"
+                  v-if="isColumnVisible(col.key)"
                   name="check"
                   size="sm"
+                  class="text-primary-500"
                   :stroke-width="2"
-                  class="text-[var(--anthropic-fg)]"
                 />
               </button>
             </div>
           </div>
-          <button
-            data-testid="user-keys-button-load-api-keys"
-            @click="loadApiKeys"
-            :disabled="loading"
-            class="btn btn-primary anthropic-refresh-action-button keys-refresh-button"
-            :title="t('common.refresh')"
-          >
-            {{ t("common.refresh") }}
-          </button>
-          <button
-            data-testid="user-keys-button-show-create-modal-on"
-            @click="showCreateModal = true"
-            class="btn btn-primary keys-create-button"
-            data-tour="keys-create-btn"
-          >
+          <button @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
+            <Icon name="plus" size="md" class="mr-2" />
             {{ t('keys.createKey') }}
           </button>
         </div>
@@ -126,13 +120,13 @@
               <code class="code text-xs">
                 {{ maskApiKey(value) }}
               </code>
-              <button data-testid="user-keys-button-copy-to-clipboard-value-row-id"
+              <button
                 @click="copyToClipboard(value, row.id)"
-                class="rounded-lg p-1 transition-colors hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+                class="rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
                 :class="
                   copiedKeyId === row.id
                     ? 'text-green-500'
-                    : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
+                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 "
                 :title="copiedKeyId === row.id ? t('keys.copied') : t('keys.copyToClipboard')"
               >
@@ -148,21 +142,14 @@
           </template>
 
           <template #cell-name="{ value, row }">
-            <div class="entity-name-with-logo">
-              <span
-                v-if="row.logo_url"
-                class="entity-logo-shell"
-                :title="row.name"
-              >
-                <ProviderBrandIcon :provider="row.name" :model="row.name" :logo-url="row.logo_url" />
-              </span>
-              <Icon v-else name="key" size="sm" class="entity-logo-fallback" />
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+            <ProviderBrandIcon v-if="row.logo_url" :provider="row.name" :logo-url="row.logo_url" class="mr-2" />
+            <div class="flex items-center gap-1.5">
+              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <Icon
                 v-if="row.ip_whitelist?.length > 0 || row.ip_blacklist?.length > 0"
                 name="shield"
                 size="sm"
-                class="text-[var(--anthropic-info)]"
+                class="text-blue-500"
                 :title="t('keys.ipRestrictionEnabled')"
               />
             </div>
@@ -170,26 +157,31 @@
 
           <template #cell-group="{ row }">
             <div class="group/dropdown relative">
-              <button data-testid="user-keys-button-open-group-selector-row"
+              <button
                 :ref="(el) => setGroupButtonRef(row.id, el)"
                 @click="openGroupSelector(row)"
-                class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+                class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-dark-700"
                 :title="t('keys.clickToChangeGroup')"
               >
                 <GroupBadge
                   v-if="row.group"
                   :name="row.group.name"
                   :platform="row.group.platform"
+                  :logo-url="row.group.logo_url"
                   :subscription-type="row.group.subscription_type"
                   :rate-multiplier="row.group.rate_multiplier"
                   :user-rate-multiplier="userGroupRates[row.group.id]"
+                  :peak-rate-enabled="row.group.peak_rate_enabled"
+                  :peak-start="row.group.peak_start"
+                  :peak-end="row.group.peak_end"
+                  :peak-rate-multiplier="row.group.peak_rate_multiplier"
                 />
-                <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">{{
+                <span v-else class="text-sm text-gray-400 dark:text-dark-500">{{
                   t('keys.noGroup')
                 }}</span>
-                <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('keys.selectGroup') }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('keys.selectGroup') }}</span>
                 <svg
-                  class="h-3.5 w-3.5 text-[var(--anthropic-muted)] opacity-60 transition-opacity group-hover/dropdown:opacity-100"
+                  class="h-3.5 w-3.5 text-gray-400 opacity-60 transition-opacity group-hover/dropdown:opacity-100"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -203,10 +195,6 @@
                 </svg>
               </button>
             </div>
-          </template>
-
-          <template #cell-last_used_ip="{ value }">
-            <span>{{ value || '-' }}</span>
           </template>
 
           <template #cell-current_concurrency="{ value }">
@@ -225,37 +213,37 @@
           <template #cell-usage="{ row }">
             <div class="text-sm">
               <div class="flex items-center gap-1.5">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('keys.today') }}:</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
               <div class="mt-0.5 flex items-center gap-1.5">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('keys.total') }}:</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
               <!-- Quota progress (if quota is set) -->
               <div v-if="row.quota > 0" class="mt-1.5">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('keys.quota') }}:</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{ t('keys.quota') }}:</span>
                   <span :class="[
                     'font-medium',
                     row.quota_used >= row.quota ? 'text-red-500' :
                     row.quota_used >= row.quota * 0.8 ? 'text-yellow-500' :
-                    'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                    'text-gray-900 dark:text-white'
                   ]">
                     ${{ row.quota_used?.toFixed(2) || '0.00' }} / ${{ row.quota?.toFixed(2) }}
                   </span>
                 </div>
-                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
                       row.quota_used >= row.quota ? 'bg-red-500' :
                       row.quota_used >= row.quota * 0.8 ? 'bg-yellow-500' :
-                      'bg-[var(--anthropic-fg)]'
+                      'bg-primary-500'
                     ]"
                     :style="{ width: Math.min((row.quota_used / row.quota) * 100, 100) + '%' }"
                   />
@@ -269,17 +257,17 @@
               <!-- 5h window -->
               <div v-if="row.rate_limit_5h > 0">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">5h</span>
+                  <span class="text-gray-500 dark:text-gray-400">5h</span>
                   <span :class="[
                     'font-medium tabular-nums',
                     row.usage_5h >= row.rate_limit_5h ? 'text-red-500' :
                     row.usage_5h >= row.rate_limit_5h * 0.8 ? 'text-yellow-500' :
-                    'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+                    'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_5h?.toFixed(2) || '0.00' }}/${{ row.rate_limit_5h?.toFixed(2) }}
                   </span>
                 </div>
-                <div class="h-1 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -290,24 +278,24 @@
                     :style="{ width: Math.min((row.usage_5h / row.rate_limit_5h) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_5h_at && formatResetTime(row.reset_5h_at)" class="text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] tabular-nums">
+                <div v-if="row.reset_5h_at && formatResetTime(row.reset_5h_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_5h_at) }}
                 </div>
               </div>
               <!-- 1d window -->
               <div v-if="row.rate_limit_1d > 0">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">1d</span>
+                  <span class="text-gray-500 dark:text-gray-400">1d</span>
                   <span :class="[
                     'font-medium tabular-nums',
                     row.usage_1d >= row.rate_limit_1d ? 'text-red-500' :
                     row.usage_1d >= row.rate_limit_1d * 0.8 ? 'text-yellow-500' :
-                    'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+                    'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_1d?.toFixed(2) || '0.00' }}/${{ row.rate_limit_1d?.toFixed(2) }}
                   </span>
                 </div>
-                <div class="h-1 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -318,24 +306,24 @@
                     :style="{ width: Math.min((row.usage_1d / row.rate_limit_1d) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_1d_at && formatResetTime(row.reset_1d_at)" class="text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] tabular-nums">
+                <div v-if="row.reset_1d_at && formatResetTime(row.reset_1d_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_1d_at) }}
                 </div>
               </div>
               <!-- 7d window -->
               <div v-if="row.rate_limit_7d > 0">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">7d</span>
+                  <span class="text-gray-500 dark:text-gray-400">7d</span>
                   <span :class="[
                     'font-medium tabular-nums',
                     row.usage_7d >= row.rate_limit_7d ? 'text-red-500' :
                     row.usage_7d >= row.rate_limit_7d * 0.8 ? 'text-yellow-500' :
-                    'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'
+                    'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_7d?.toFixed(2) || '0.00' }}/${{ row.rate_limit_7d?.toFixed(2) }}
                   </span>
                 </div>
-                <div class="h-1 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -346,38 +334,37 @@
                     :style="{ width: Math.min((row.usage_7d / row.rate_limit_7d) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_7d_at && formatResetTime(row.reset_7d_at)" class="text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] tabular-nums">
+                <div v-if="row.reset_7d_at && formatResetTime(row.reset_7d_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_7d_at) }}
                 </div>
               </div>
               <!-- Reset button -->
-              <button data-testid="user-keys-button-confirm-reset-rate-limit-from-table-row"
+              <button
                 v-if="row.usage_5h > 0 || row.usage_1d > 0 || row.usage_7d > 0"
                 @click.stop="confirmResetRateLimitFromTable(row)"
-                class="mt-0.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
+                class="mt-0.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
                 :title="t('keys.resetRateLimitUsage')"
               >
                 <Icon name="refresh" size="xs" />
                 {{ t('keys.resetUsage') }}
               </button>
             </div>
-            <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
 
           <template #cell-expires_at="{ value }">
             <span v-if="value" :class="[
               'text-sm',
-              new Date(value) < new Date() ? 'text-red-500 dark:text-red-400' : 'text-[var(--anthropic-muted)] dark:text-dark-400'
+              new Date(value) < new Date() ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-dark-400'
             ]">
               {{ formatDateTime(value) }}
             </span>
-            <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">{{ t('keys.noExpiration') }}</span>
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">{{ t('keys.noExpiration') }}</span>
           </template>
 
           <template #cell-status="{ value }">
             <span :class="[
               'badge',
-              'api-key-status-badge',
               value === 'active' ? 'badge-success' :
               value === 'quota_exhausted' ? 'badge-warning' :
               value === 'expired' ? 'badge-danger' :
@@ -388,43 +375,50 @@
           </template>
 
           <template #cell-last_used_at="{ value }">
-            <span v-if="value" class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+            <span v-if="value" class="text-sm text-gray-500 dark:text-dark-400">
               {{ formatDateTime(value) }}
             </span>
-            <span v-else class="text-sm text-[var(--anthropic-muted)] dark:text-dark-500">-</span>
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+          </template>
+
+          <template #cell-last_used_ip="{ value }">
+            <span v-if="value" class="text-sm text-gray-500 dark:text-dark-400">
+              {{ value }}
+            </span>
+            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">{{ formatDateTime(value) }}</span>
+            <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
           </template>
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
               <!-- Use Key Button -->
-              <button data-testid="user-keys-button-open-use-key-modal-row"
+              <button
                 @click="openUseKeyModal(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
               >
                 <Icon name="terminal" size="sm" />
                 <span class="text-xs">{{ t('keys.useKey') }}</span>
               </button>
               <!-- Import to CC Switch Button -->
-              <button data-testid="user-keys-button-import-to-ccswitch-row"
+              <button
                 v-if="!publicSettings?.hide_ccs_import_button"
                 @click="importToCcswitch(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
               >
                 <Icon name="upload" size="sm" />
                 <span class="text-xs">{{ t('keys.importToCcSwitch') }}</span>
               </button>
               <!-- Toggle Status Button -->
-              <button data-testid="user-keys-button-toggle-key-status-row"
+              <button
                 @click="toggleKeyStatus(row)"
                 :class="[
                   'flex flex-col items-center gap-0.5 rounded-lg p-1.5 transition-colors',
                   row.status === 'active'
-                    ? 'text-[var(--anthropic-muted)] hover:bg-yellow-50 hover:text-yellow-600 dark:hover:bg-yellow-900/20 dark:hover:text-yellow-400'
-                    : 'text-[var(--anthropic-muted)] hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400'
+                    ? 'text-gray-500 hover:bg-yellow-50 hover:text-yellow-600 dark:hover:bg-yellow-900/20 dark:hover:text-yellow-400'
+                    : 'text-gray-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400'
                 ]"
               >
                 <Icon v-if="row.status === 'active'" name="ban" size="sm" />
@@ -432,17 +426,17 @@
                 <span class="text-xs">{{ row.status === 'active' ? t('keys.disable') : t('keys.enable') }}</span>
               </button>
               <!-- Edit Button -->
-              <button data-testid="user-keys-button-edit-key-row"
+              <button
                 @click="editKey(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
               <!-- Delete Button -->
-              <button data-testid="user-keys-button-confirm-delete-row"
+              <button
                 @click="confirmDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete') }}</span>
@@ -481,9 +475,10 @@
       @close="closeModals"
     >
       <form id="key-form" @submit.prevent="handleSubmit" class="space-y-5">
+        <LogoPicker v-model="formData.logo_url" label="Logo URL" input-test-id="key-logo-url" />
         <div>
           <label class="input-label">{{ t('keys.nameLabel') }}</label>
-          <input data-testid="user-keys-input-form-data-name"
+          <input
             v-model="formData.name"
             type="text"
             required
@@ -512,8 +507,8 @@
                 @change="selectCreateProvider(provider.value)"
               />
               <span
-                class="flex h-full flex-col items-center gap-2 rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-3 text-center transition-colors peer-checked:border-[var(--anthropic-fg)] peer-checked:bg-[var(--anthropic-section)] peer-checked:ring-1 peer-checked:ring-[var(--anthropic-fg)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--anthropic-focus)] peer-disabled:opacity-40"
-                :class="provider.count > 0 && 'hover:border-[var(--anthropic-fg)]'"
+                class="flex h-full flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white px-2 py-3 text-center transition-colors peer-checked:border-primary-500 peer-checked:bg-primary-50/60 peer-checked:ring-1 peer-checked:ring-primary-500 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary-500 peer-disabled:opacity-40 dark:border-dark-600 dark:bg-dark-800 dark:peer-checked:border-primary-500 dark:peer-checked:bg-primary-500/10"
+                :class="provider.count > 0 && 'hover:border-primary-300 dark:hover:border-primary-700'"
               >
                 <span class="flex h-8 items-center justify-center gap-1.5" aria-hidden="true">
                   <span
@@ -525,34 +520,32 @@
                     <PlatformIcon :platform="platform" size="lg" />
                   </span>
                 </span>
-                <span class="text-sm font-semibold text-[var(--anthropic-fg)]">{{ provider.label }}</span>
+                <span class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ provider.label }}</span>
               </span>
               <span
                 v-if="createProvider === provider.value"
-                class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]"
+                class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-500 text-white"
                 aria-hidden="true"
               >
                 <Icon name="check" size="xs" :stroke-width="3" />
               </span>
             </label>
           </div>
-          <p class="mt-2 text-xs leading-5 text-[var(--anthropic-muted)]" aria-live="polite">
+          <p class="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400" aria-live="polite">
             {{ groups.length === 0 ? t('common.noGroupsAvailable') : t(`keys.providerHints.${createProvider}`) }}
           </p>
         </fieldset>
 
-        <LogoPicker
-          v-model="formData.logo_url"
-          :label="t('keys.logoUrlLabel', 'Logo URL')"
-          :hint="t('keys.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则显示默认密钥图标。')"
-        />
-
         <div>
-          <label class="input-label">{{ t('keys.groupLabel') }}</label>
+          <label class="input-label" for="key-form-group">{{ t('keys.groupLabel') }}</label>
           <Select
+            :key="showEditModal ? 'edit' : createProvider"
+            id="key-form-group"
+            :aria-label="t('keys.groupLabel')"
             v-model="formData.group_id"
             :options="formGroupOptions"
             :placeholder="t('keys.selectGroup')"
+            :empty-text="t('common.noGroupsAvailable')"
             :searchable="true"
             :search-placeholder="t('keys.searchGroup')"
             data-tour="key-form-group"
@@ -562,19 +555,29 @@
                 v-if="option"
                 :name="(option as unknown as GroupOption).label"
                 :platform="(option as unknown as GroupOption).platform"
+                :logo-url="(option as unknown as GroupOption).logoUrl"
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
                 :rate-multiplier="(option as unknown as GroupOption).rate"
                 :user-rate-multiplier="(option as unknown as GroupOption).userRate"
+                :peak-rate-enabled="(option as unknown as GroupOption).peakRateEnabled"
+                :peak-start="(option as unknown as GroupOption).peakStart"
+                :peak-end="(option as unknown as GroupOption).peakEnd"
+                :peak-rate-multiplier="(option as unknown as GroupOption).peakRateMultiplier"
               />
-              <span v-else class="text-[var(--anthropic-muted)]">{{ t('keys.selectGroup') }}</span>
+              <span v-else class="text-gray-400">{{ t('keys.selectGroup') }}</span>
             </template>
             <template #option="{ option, selected }">
               <GroupOptionItem
                 :name="(option as unknown as GroupOption).label"
                 :platform="(option as unknown as GroupOption).platform"
+                :logo-url="(option as unknown as GroupOption).logoUrl"
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
                 :rate-multiplier="(option as unknown as GroupOption).rate"
                 :user-rate-multiplier="(option as unknown as GroupOption).userRate"
+                :peak-rate-enabled="(option as unknown as GroupOption).peakRateEnabled"
+                :peak-start="(option as unknown as GroupOption).peakStart"
+                :peak-end="(option as unknown as GroupOption).peakEnd"
+                :peak-rate-multiplier="(option as unknown as GroupOption).peakRateMultiplier"
                 :description="(option as unknown as GroupOption).description"
                 :selected="selected"
               />
@@ -586,24 +589,24 @@
         <div v-if="!showEditModal" class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.customKeyLabel') }}</label>
-            <button data-testid="user-keys-button-use-custom-key-form-data-use-custom-key"
+            <button
               type="button"
               @click="formData.use_custom_key = !formData.use_custom_key"
               :class="[
                 'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                formData.use_custom_key ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+                formData.use_custom_key ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
                 :class="[
-                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   formData.use_custom_key ? 'translate-x-4' : 'translate-x-0'
                 ]"
               />
             </button>
           </div>
           <div v-if="formData.use_custom_key">
-            <input data-testid="user-keys-input-form-data-custom-key"
+            <input
               v-model="formData.custom_key"
               type="text"
               class="input font-mono"
@@ -628,17 +631,17 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.ipRestriction') }}</label>
-            <button data-testid="user-keys-button-enable-ip-restriction-form-data-enable-ip-restriction"
+            <button
               type="button"
               @click="formData.enable_ip_restriction = !formData.enable_ip_restriction"
               :class="[
                 'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                formData.enable_ip_restriction ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+                formData.enable_ip_restriction ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
                 :class="[
-                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   formData.enable_ip_restriction ? 'translate-x-4' : 'translate-x-0'
                 ]"
               />
@@ -648,7 +651,7 @@
           <div v-if="formData.enable_ip_restriction" class="space-y-4 pt-2">
             <div>
               <label class="input-label">{{ t('keys.ipWhitelist') }}</label>
-              <textarea data-testid="user-keys-textarea-form-data-ip-whitelist"
+              <textarea
                 v-model="formData.ip_whitelist"
                 rows="3"
                 class="input font-mono text-sm"
@@ -659,7 +662,7 @@
 
             <div>
               <label class="input-label">{{ t('keys.ipBlacklist') }}</label>
-              <textarea data-testid="user-keys-textarea-form-data-ip-blacklist"
+              <textarea
                 v-model="formData.ip_blacklist"
                 rows="3"
                 class="input font-mono text-sm"
@@ -681,12 +684,12 @@
               @click="formData.enable_quota = !formData.enable_quota"
               :class="[
                 'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                formData.enable_quota ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+                formData.enable_quota ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
                 :class="[
-                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   formData.enable_quota ? 'translate-x-4' : 'translate-x-0'
                 ]"
               />
@@ -697,8 +700,8 @@
           <div class="space-y-4">
             <div>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">$</span>
-                <input data-testid="user-keys-input-form-data-quota"
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
                   v-model.number="formData.quota"
                   type="number"
                   step="0.01"
@@ -714,16 +717,16 @@
             <div v-if="showEditModal && selectedKey && selectedKey.quota > 0">
               <label class="input-label">{{ t('keys.quotaUsed') }}</label>
               <div class="flex items-center gap-2">
-                <div class="flex-1 rounded-lg bg-[var(--anthropic-raised)] px-3 py-2 dark:bg-[var(--anthropic-section)]">
-                  <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700">
+                  <span class="font-medium text-gray-900 dark:text-white">
                     ${{ selectedKey.quota_used?.toFixed(4) || '0.0000' }}
                   </span>
-                  <span class="mx-2 text-[var(--anthropic-muted)]">/</span>
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <span class="mx-2 text-gray-400">/</span>
+                  <span class="text-gray-500 dark:text-gray-400">
                     ${{ selectedKey.quota?.toFixed(2) || '0.00' }}
                   </span>
                 </div>
-                <button data-testid="user-keys-button-confirm-reset-quota"
+                <button
                   type="button"
                   @click="confirmResetQuota"
                   class="btn btn-secondary text-sm"
@@ -740,17 +743,17 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.rateLimitSection') }}</label>
-            <button data-testid="user-keys-button-enable-rate-limit-form-data-enable-rate-limit"
+            <button
               type="button"
               @click="formData.enable_rate_limit = !formData.enable_rate_limit"
               :class="[
                 'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                formData.enable_rate_limit ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+                formData.enable_rate_limit ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
                 :class="[
-                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   formData.enable_rate_limit ? 'translate-x-4' : 'translate-x-0'
                 ]"
               />
@@ -763,8 +766,8 @@
             <div>
               <label class="input-label">{{ t('keys.rateLimit5h') }}</label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">$</span>
-                <input data-testid="user-keys-input-form-data-rate-limit-5h"
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
                   v-model.number="formData.rate_limit_5h"
                   type="number"
                   step="0.01"
@@ -776,22 +779,22 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_5h > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded-lg bg-[var(--anthropic-raised)] px-3 py-2 dark:bg-[var(--anthropic-section)] text-sm">
+                  <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_5h >= selectedKey.rate_limit_5h ? 'text-red-500' :
                       selectedKey.usage_5h >= selectedKey.rate_limit_5h * 0.8 ? 'text-yellow-500' :
-                      'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                      'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_5h?.toFixed(4) || '0.0000' }}
                     </span>
-                    <span class="mx-2 text-[var(--anthropic-muted)]">/</span>
-                    <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <span class="mx-2 text-gray-400">/</span>
+                    <span class="text-gray-500 dark:text-gray-400">
                       ${{ selectedKey.rate_limit_5h?.toFixed(2) || '0.00' }}
                     </span>
                   </div>
                 </div>
-                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -809,8 +812,8 @@
             <div>
               <label class="input-label">{{ t('keys.rateLimit1d') }}</label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">$</span>
-                <input data-testid="user-keys-input-form-data-rate-limit-1d"
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
                   v-model.number="formData.rate_limit_1d"
                   type="number"
                   step="0.01"
@@ -822,22 +825,22 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_1d > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded-lg bg-[var(--anthropic-raised)] px-3 py-2 dark:bg-[var(--anthropic-section)] text-sm">
+                  <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_1d >= selectedKey.rate_limit_1d ? 'text-red-500' :
                       selectedKey.usage_1d >= selectedKey.rate_limit_1d * 0.8 ? 'text-yellow-500' :
-                      'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                      'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_1d?.toFixed(4) || '0.0000' }}
                     </span>
-                    <span class="mx-2 text-[var(--anthropic-muted)]">/</span>
-                    <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <span class="mx-2 text-gray-400">/</span>
+                    <span class="text-gray-500 dark:text-gray-400">
                       ${{ selectedKey.rate_limit_1d?.toFixed(2) || '0.00' }}
                     </span>
                   </div>
                 </div>
-                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -855,8 +858,8 @@
             <div>
               <label class="input-label">{{ t('keys.rateLimit7d') }}</label>
               <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]">$</span>
-                <input data-testid="user-keys-input-form-data-rate-limit-7d"
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <input
                   v-model.number="formData.rate_limit_7d"
                   type="number"
                   step="0.01"
@@ -868,22 +871,22 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_7d > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded-lg bg-[var(--anthropic-raised)] px-3 py-2 dark:bg-[var(--anthropic-section)] text-sm">
+                  <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_7d >= selectedKey.rate_limit_7d ? 'text-red-500' :
                       selectedKey.usage_7d >= selectedKey.rate_limit_7d * 0.8 ? 'text-yellow-500' :
-                      'text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+                      'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_7d?.toFixed(4) || '0.0000' }}
                     </span>
-                    <span class="mx-2 text-[var(--anthropic-muted)]">/</span>
-                    <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                    <span class="mx-2 text-gray-400">/</span>
+                    <span class="text-gray-500 dark:text-gray-400">
                       ${{ selectedKey.rate_limit_7d?.toFixed(2) || '0.00' }}
                     </span>
                   </div>
                 </div>
-                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
                   <div
                     :class="[
                       'h-full rounded-full transition-all',
@@ -899,7 +902,7 @@
 
             <!-- Reset Rate Limit button (edit mode only) -->
             <div v-if="showEditModal && selectedKey && (selectedKey.rate_limit_5h > 0 || selectedKey.rate_limit_1d > 0 || selectedKey.rate_limit_7d > 0)">
-              <button data-testid="user-keys-button-confirm-reset-rate-limit"
+              <button
                 type="button"
                 @click="confirmResetRateLimit"
                 class="btn btn-secondary text-sm"
@@ -914,17 +917,17 @@
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <label class="input-label mb-0">{{ t('keys.expiration') }}</label>
-            <button data-testid="user-keys-button-enable-expiration-form-data-enable-expiration"
+            <button
               type="button"
               @click="formData.enable_expiration = !formData.enable_expiration"
               :class="[
                 'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                formData.enable_expiration ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+                formData.enable_expiration ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
                 :class="[
-                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                   formData.enable_expiration ? 'translate-x-4' : 'translate-x-0'
                 ]"
               />
@@ -934,7 +937,7 @@
           <div v-if="formData.enable_expiration" class="space-y-4 pt-2">
             <!-- Quick select buttons (for both create and edit mode) -->
             <div class="flex flex-wrap gap-2">
-              <button data-testid="user-keys-button-set-expiration-days-parse-int-days"
+              <button
                 v-for="days in ['7', '30', '90']"
                 :key="days"
                 type="button"
@@ -942,20 +945,20 @@
                 :class="[
                   'rounded-lg px-3 py-1.5 text-sm transition-colors',
                   formData.expiration_preset === days
-                    ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                    : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600'
                 ]"
               >
                 {{ showEditModal ? t('keys.extendDays', { days }) : t('keys.expiresInDays', { days }) }}
               </button>
-              <button data-testid="user-keys-button-expiration-preset-custom"
+              <button
                 type="button"
                 @click="formData.expiration_preset = 'custom'"
                 :class="[
                   'rounded-lg px-3 py-1.5 text-sm transition-colors',
                   formData.expiration_preset === 'custom'
-                    ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-                    : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600'
                 ]"
               >
                 {{ t('keys.customDate') }}
@@ -965,7 +968,7 @@
             <!-- Date picker (always show for precise adjustment) -->
             <div>
               <label class="input-label">{{ t('keys.expirationDate') }}</label>
-              <input data-testid="user-keys-input-form-data-expiration-date"
+              <input
                 v-model="formData.expiration_date"
                 type="datetime-local"
                 class="input"
@@ -975,8 +978,8 @@
 
             <!-- Current expiration display (only in edit mode) -->
             <div v-if="showEditModal && selectedKey?.expires_at" class="text-sm">
-              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('keys.currentExpiration') }}: </span>
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <span class="text-gray-500 dark:text-gray-400">{{ t('keys.currentExpiration') }}: </span>
+              <span class="font-medium text-gray-900 dark:text-white">
                 {{ formatDateTime(selectedKey.expires_at) }}
               </span>
             </div>
@@ -985,10 +988,10 @@
       </form>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="user-keys-button-close-modals" @click="closeModals" type="button" class="btn btn-secondary">
+          <button @click="closeModals" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="user-keys-button-submit"
+          <button
             form="key-form"
             type="submit"
             :disabled="submitting"
@@ -1090,31 +1093,31 @@
       @close="closeCcsClientSelect"
     >
       <div class="space-y-4">
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           {{ t('keys.ccsClientSelect.description') }}
 	        </p>
 	        <div class="grid grid-cols-2 gap-3">
-	          <button data-testid="user-keys-button-handle-ccs-client-select-claude"
+	          <button
 	            @click="handleCcsClientSelect('claude')"
-	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] hover:border-[var(--anthropic-fg)] dark:hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)] transition-all"
+	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-gray-200 dark:border-dark-600 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
 	          >
-	            <Icon name="terminal" size="xl" class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" />
-	            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+	            <Icon name="terminal" size="xl" class="text-gray-600 dark:text-gray-400" />
+	            <span class="font-medium text-gray-900 dark:text-white">{{
 	              t('keys.ccsClientSelect.claudeCode')
 	            }}</span>
-	            <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
+	            <span class="text-xs text-gray-500 dark:text-gray-400">{{
 	              t('keys.ccsClientSelect.claudeCodeDesc')
 	            }}</span>
 	          </button>
-	          <button data-testid="user-keys-button-handle-ccs-client-select-gemini"
+	          <button
 	            @click="handleCcsClientSelect('gemini')"
-	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] hover:border-[var(--anthropic-fg)] dark:hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)] transition-all"
+	            class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-gray-200 dark:border-dark-600 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
 	          >
-	            <Icon name="sparkles" size="xl" class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" />
-	            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{
+	            <Icon name="sparkles" size="xl" class="text-gray-600 dark:text-gray-400" />
+	            <span class="font-medium text-gray-900 dark:text-white">{{
 	              t('keys.ccsClientSelect.geminiCli')
 	            }}</span>
-	            <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{
+	            <span class="text-xs text-gray-500 dark:text-gray-400">{{
 	              t('keys.ccsClientSelect.geminiCliDesc')
 	            }}</span>
 	          </button>
@@ -1122,7 +1125,7 @@
 	      </div>
       <template #footer>
         <div class="flex justify-end">
-          <button data-testid="user-keys-button-close-ccs-client-select" @click="closeCcsClientSelect" class="btn btn-secondary">
+          <button @click="closeCcsClientSelect" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
         </div>
@@ -1134,7 +1137,7 @@
       <div
         v-if="groupSelectorKeyId !== null && dropdownPosition"
         ref="dropdownRef"
-        class="animate-in fade-in slide-in-from-top-2 fixed z-[100000020] w-max min-w-[380px] overflow-hidden rounded-xl bg-[var(--anthropic-page)] shadow-none ring-1 ring-[var(--anthropic-border-subtle)] duration-200 dark:bg-[var(--anthropic-section)] dark:ring-[var(--anthropic-border-subtle)]"
+        class="animate-in fade-in slide-in-from-top-2 fixed z-[100000020] w-max max-w-[calc(100vw-16px)] overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 duration-200 sm:min-w-[380px] dark:bg-dark-800 dark:ring-white/10"
         style="pointer-events: auto !important;"
         :style="{
           top: dropdownPosition.top !== undefined ? dropdownPosition.top + 'px' : undefined,
@@ -1143,15 +1146,15 @@
         }"
       >
         <!-- Search box -->
-        <div class="border-b border-[var(--anthropic-border)] p-2 dark:border-[var(--anthropic-border)]">
+        <div class="border-b border-gray-100 p-2 dark:border-dark-700">
           <div class="relative">
-            <svg class="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--anthropic-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <svg class="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input data-testid="user-keys-input-group-search-query"
+            <input
               v-model="groupSearchQuery"
               type="text"
-              class="w-full rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] py-1.5 pl-8 pr-3 text-sm text-[var(--anthropic-fg)] placeholder-gray-400 outline-none focus:border-[var(--anthropic-border)] focus:ring-0 focus-visible:border-[var(--atelier-focus)] focus-visible:ring-2 focus-visible:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)] dark:placeholder-gray-500 dark:focus:border-[var(--anthropic-border)] dark:focus:ring-0 dark:focus-visible:border-[var(--atelier-focus)] dark:focus-visible:ring-[var(--atelier-focus)]"
+              class="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-8 pr-3 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 dark:border-dark-600 dark:bg-dark-700 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-600 dark:focus:ring-primary-600"
               :placeholder="t('keys.searchGroup')"
               @click.stop
             />
@@ -1159,26 +1162,31 @@
         </div>
         <!-- Group list -->
         <div class="max-h-80 overflow-y-auto p-1.5">
-          <button data-testid="user-keys-button-change-group-selected-key-for-group-option-value"
+          <button
             v-for="option in filteredGroupOptions"
             :key="option.value ?? 'null'"
             @click="changeGroup(selectedKeyForGroup!, option.value)"
             :class="[
               'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors',
-              'border-b border-[var(--anthropic-border)] last:border-0 dark:border-[var(--anthropic-border)]',
+              'border-b border-gray-100 last:border-0 dark:border-dark-700',
               selectedKeyForGroup?.group_id === option.value ||
               (!selectedKeyForGroup?.group_id && option.value === null)
-                ? 'bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]'
-                : 'hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]'
+                ? 'bg-primary-50 dark:bg-primary-900/20'
+                : 'hover:bg-gray-100 dark:hover:bg-dark-700'
             ]"
             :title="option.description || undefined"
           >
             <GroupOptionItem
               :name="option.label"
               :platform="option.platform"
+              :logo-url="option.logoUrl"
               :subscription-type="option.subscriptionType"
               :rate-multiplier="option.rate"
               :user-rate-multiplier="option.userRate"
+              :peak-rate-enabled="option.peakRateEnabled"
+              :peak-start="option.peakStart"
+              :peak-end="option.peakEnd"
+              :peak-rate-multiplier="option.peakRateMultiplier"
               :description="option.description"
               :selected="
                 selectedKeyForGroup?.group_id === option.value ||
@@ -1187,7 +1195,7 @@
             />
           </button>
           <!-- Empty state when search has no results -->
-          <div v-if="filteredGroupOptions.length === 0" class="py-4 text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <div v-if="filteredGroupOptions.length === 0" class="py-4 text-center text-sm text-gray-400 dark:text-gray-500">
             {{ t('keys.noGroupFound') }}
           </div>
         </div>
@@ -1197,6 +1205,8 @@
 </template>
 
 <script setup lang="ts">
+import LogoPicker from '@/components/common/LogoPicker.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 	import { ref, reactive, computed, watch, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
 	import { useI18n } from 'vue-i18n'
 	import { useAppStore } from '@/stores/app'
@@ -1216,26 +1226,24 @@ import BulkEditKeysModal from '@/components/keys/BulkEditKeysModal.vue'
 	import EmptyState from '@/components/common/EmptyState.vue'
 	import Select from '@/components/common/Select.vue'
 	import SearchInput from '@/components/common/SearchInput.vue'
-	import LogoPicker from '@/components/common/LogoPicker.vue'
-	import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
-	import PlatformIcon from '@/components/common/PlatformIcon.vue'
 	import Icon from '@/components/icons/Icon.vue'
 	import UseKeyModal from '@/components/keys/UseKeyModal.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
 	import GroupBadge from '@/components/common/GroupBadge.vue'
 	import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
-import type { ApiKey, Group, PublicSettings, SubscriptionType, GroupPlatform } from '@/types'
+	import type { ApiKey, Group, PublicSettings, SubscriptionType, GroupPlatform, UpdateApiKeyRequest } from '@/types'
 import type { Column } from '@/components/common/types'
 import type { BatchApiKeyUsageStats } from '@/api/usage'
 import { formatDateTime } from '@/utils/format'
 import { maskApiKey } from '@/utils/maskApiKey'
+import PlatformIcon from '@/components/common/PlatformIcon.vue'
+import { platformBadgeLightClass } from '@/utils/platformColors'
+import { KEY_GROUP_PROVIDERS, KEY_GROUP_PROVIDER_ICONS, getKeyGroupProvider, type KeyGroupProvider } from '@/utils/keyGroupProviders'
 import {
   CC_SWITCH_USAGE_SCRIPT,
   buildCcSwitchImportDeeplink,
   type CcSwitchClientType
 } from '@/utils/ccswitchImport'
-import { platformBadgeLightClass } from '@/utils/platformColors'
-import { KEY_GROUP_PROVIDERS, KEY_GROUP_PROVIDER_ICONS, getKeyGroupProvider, type KeyGroupProvider } from '@/utils/keyGroupProviders'
 
 // Helper to format date for datetime-local input
 const formatDateTimeLocal = (isoDate: string): string => {
@@ -1245,11 +1253,16 @@ const formatDateTimeLocal = (isoDate: string): string => {
 }
 
 interface GroupOption {
+  logoUrl?: string | null
   value: number
   label: string
   description: string | null
   rate: number
   userRate: number | null
+  peakRateEnabled: boolean
+  peakStart: string
+  peakEnd: string
+  peakRateMultiplier: number
   subscriptionType: SubscriptionType
   platform: GroupPlatform
 }
@@ -1284,12 +1297,11 @@ const VERSION_NEW_HIDDEN_COLUMNS: Record<number, string[]> = {
   3: ['id']
 }
 
-const hiddenColumns = reactive<Set<string>>(new Set())
-const showColumnSettings = ref(false)
-
 const toggleableColumns = computed(() =>
-  allColumns.value.filter((column) => !ALWAYS_VISIBLE_COLUMNS.has(column.key))
+  allColumns.value.filter((col) => !ALWAYS_VISIBLE_COLUMNS.has(col.key))
 )
+
+const hiddenColumns = reactive<Set<string>>(new Set())
 
 const saveColumnsToStorage = () => {
   try {
@@ -1304,9 +1316,9 @@ const loadSavedColumns = () => {
   hiddenColumns.clear()
   try {
     const saved = localStorage.getItem(HIDDEN_COLUMNS_KEY)
-    const validColumnKeys = new Set(allColumns.value.map((column) => column.key))
     if (saved) {
       const parsed = JSON.parse(saved) as string[]
+      const validColumnKeys = new Set(allColumns.value.map((col) => col.key))
       parsed
         .filter((key) =>
           typeof key === 'string' &&
@@ -1316,8 +1328,8 @@ const loadSavedColumns = () => {
         .forEach((key) => hiddenColumns.add(key))
       const storedVersion = Number(localStorage.getItem(COLUMN_SETTINGS_VERSION_KEY) ?? '1')
       if (storedVersion < COLUMN_SETTINGS_VERSION) {
-        for (let version = storedVersion + 1; version <= COLUMN_SETTINGS_VERSION; version += 1) {
-          for (const key of VERSION_NEW_HIDDEN_COLUMNS[version] ?? []) {
+        for (let v = storedVersion + 1; v <= COLUMN_SETTINGS_VERSION; v++) {
+          for (const key of VERSION_NEW_HIDDEN_COLUMNS[v] ?? []) {
             if (validColumnKeys.has(key) && !ALWAYS_VISIBLE_COLUMNS.has(key)) {
               hiddenColumns.add(key)
             }
@@ -1327,17 +1339,13 @@ const loadSavedColumns = () => {
       } else {
         localStorage.setItem(COLUMN_SETTINGS_VERSION_KEY, String(COLUMN_SETTINGS_VERSION))
       }
-      return
+    } else {
+      DEFAULT_HIDDEN_COLUMNS.forEach((key) => hiddenColumns.add(key))
+      localStorage.setItem(COLUMN_SETTINGS_VERSION_KEY, String(COLUMN_SETTINGS_VERSION))
     }
   } catch (error) {
     console.error('Failed to load API key table columns:', error)
-  }
-
-  DEFAULT_HIDDEN_COLUMNS.forEach((key) => hiddenColumns.add(key))
-  try {
-    localStorage.setItem(COLUMN_SETTINGS_VERSION_KEY, String(COLUMN_SETTINGS_VERSION))
-  } catch {
-    // Ignore localStorage write failures and keep in-memory defaults.
+    DEFAULT_HIDDEN_COLUMNS.forEach((key) => hiddenColumns.add(key))
   }
 }
 
@@ -1354,13 +1362,25 @@ const toggleColumn = (key: string) => {
 const isColumnVisible = (key: string) => !hiddenColumns.has(key)
 
 const columns = computed<Column[]>(() =>
-  allColumns.value.filter((column) => ALWAYS_VISIBLE_COLUMNS.has(column.key) || !hiddenColumns.has(column.key))
+  allColumns.value.filter((col) => ALWAYS_VISIBLE_COLUMNS.has(col.key) || !hiddenColumns.has(col.key))
 )
 
 const apiKeys = ref<ApiKey[]>([])
 const selectedIds = ref<number[]>([])
 const showBulkEditModal = ref(false)
 const selectedApiKeys = computed(() => apiKeys.value.filter((key) => selectedIds.value.includes(key.id)))
+
+const handleSelectionChange = (ids: Array<string | number>) => {
+  const visibleIds = new Set(apiKeys.value.map((key) => key.id))
+  selectedIds.value = [...new Set(ids.map(Number))].filter((id) => visibleIds.has(id))
+}
+
+const handleBulkUpdated = (succeededIds: number[]) => {
+  const succeeded = new Set(succeededIds)
+  selectedIds.value = selectedIds.value.filter((id) => !succeeded.has(id))
+  loadApiKeys()
+}
+
 const groups = ref<Group[]>([])
 const loading = ref(false)
 const submitting = ref(false)
@@ -1385,17 +1405,6 @@ const filterSearch = ref('')
 const filterStatus = ref('')
 const filterGroupId = ref<string | number>('')
 
-const handleSelectionChange = (ids: Array<string | number>) => {
-  const visibleIds = new Set(apiKeys.value.map((key) => key.id))
-  selectedIds.value = [...new Set(ids.map(Number))].filter((id) => visibleIds.has(id))
-}
-
-const handleBulkUpdated = (succeededIds: number[]) => {
-  const succeeded = new Set(succeededIds)
-  selectedIds.value = selectedIds.value.filter((id) => !succeeded.has(id))
-  loadApiKeys()
-}
-
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const showDeleteDialog = ref(false)
@@ -1403,12 +1412,14 @@ const showResetQuotaDialog = ref(false)
 const showResetRateLimitDialog = ref(false)
 const showUseKeyModal = ref(false)
 const showCcsClientSelect = ref(false)
+const showColumnDropdown = ref(false)
 const pendingCcsRow = ref<ApiKey | null>(null)
 const selectedKey = ref<ApiKey | null>(null)
 const copiedKeyId = ref<number | null>(null)
 const groupSelectorKeyId = ref<number | null>(null)
 const publicSettings = ref<PublicSettings | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
+const columnDropdownRef = ref<HTMLElement | null>(null)
 const dropdownPosition = ref<{ top?: number; bottom?: number; left: number } | null>(null)
 const groupButtonRefs = ref<Map<number, HTMLElement>>(new Map())
 let abortController: AbortController | null = null
@@ -1471,6 +1482,13 @@ const statusOptions = computed(() => [
   { value: 'inactive', label: t('common.inactive') }
 ])
 
+const shouldSubmitEditStatus = (key: ApiKey, status: 'active' | 'inactive') => {
+  if (key.status === 'quota_exhausted' || key.status === 'expired') {
+    return status === 'active'
+  }
+  return true
+}
+
 // Filter dropdown options
 const groupFilterOptions = computed(() => [
   { value: '', label: t('keys.allGroups') },
@@ -1507,9 +1525,14 @@ const groupOptions = computed(() =>
   groups.value.map((group) => ({
     value: group.id,
     label: group.name,
+    logoUrl: group.logo_url,
     description: group.description,
     rate: group.rate_multiplier,
     userRate: userGroupRates.value[group.id] ?? null,
+    peakRateEnabled: group.peak_rate_enabled,
+    peakStart: group.peak_start,
+    peakEnd: group.peak_end,
+    peakRateMultiplier: group.peak_rate_multiplier,
     subscriptionType: group.subscription_type,
     platform: group.platform
   }))
@@ -1533,6 +1556,7 @@ const selectCreateProvider = (provider: KeyGroupProvider) => {
   formData.value.group_id = null
 }
 
+// Also handles groups arriving after the create dialog has already opened.
 watch([showCreateModal, createProviderOptions], ([isOpen, providers], [wasOpen]) => {
   if (!isOpen) return
   if (!wasOpen || !providers.some((provider) => provider.value === createProvider.value && provider.count > 0)) {
@@ -1775,6 +1799,9 @@ const closeGroupSelector = (event: MouseEvent) => {
     groupSelectorKeyId.value = null
     dropdownPosition.value = null
   }
+  if (columnDropdownRef.value && !columnDropdownRef.value.contains(target)) {
+    showColumnDropdown.value = false
+  }
 }
 
 const confirmDelete = (key: ApiKey) => {
@@ -1839,11 +1866,10 @@ const handleSubmit = async () => {
   submitting.value = true
   try {
     if (showEditModal.value && selectedKey.value) {
-      await keysAPI.update(selectedKey.value.id, {
+      const updates: UpdateApiKeyRequest = {
         name: formData.value.name,
         logo_url: formData.value.logo_url.trim(),
         group_id: formData.value.group_id,
-        status: formData.value.status,
         ip_whitelist: ipWhitelist,
         ip_blacklist: ipBlacklist,
         quota: quota,
@@ -1851,7 +1877,11 @@ const handleSubmit = async () => {
         rate_limit_5h: rateLimitData.rate_limit_5h,
         rate_limit_1d: rateLimitData.rate_limit_1d,
         rate_limit_7d: rateLimitData.rate_limit_7d,
-      })
+      }
+      if (shouldSubmitEditStatus(selectedKey.value, formData.value.status)) {
+        updates.status = formData.value.status
+      }
+      await keysAPI.update(selectedKey.value.id, updates)
       appStore.showSuccess(t('keys.keyUpdatedSuccess'))
     } else {
       const customKey = formData.value.use_custom_key ? formData.value.custom_key : undefined
@@ -2013,7 +2043,7 @@ const executeCcsImport = (row: ApiKey, clientType: CcSwitchClientType) => {
   const platform = row.group?.platform || 'anthropic'
 
   const usageScript = CC_SWITCH_USAGE_SCRIPT
-  const providerName = (publicSettings.value?.site_name || 'Kreepai').trim() || 'Kreepai'
+  const providerName = (publicSettings.value?.site_name || 'sub2api').trim() || 'sub2api'
   const deeplink = buildCcSwitchImportDeeplink({
     baseUrl,
     platform,

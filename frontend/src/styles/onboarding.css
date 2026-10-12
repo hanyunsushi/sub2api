@@ -22,7 +22,7 @@
 .driver-active-element {
   position: relative !important;
   z-index: 99999999 !important;
-  outline: 4px solid color-mix(in srgb, var(--atelier-blue) 20%, transparent) !important;
+  outline: 4px solid rgba(20, 184, 166, 0.2) !important;
   border-radius: 4px !important;
 }
 
@@ -30,22 +30,21 @@
 .driver-popover.theme-tour-popover {
   position: fixed !important;
   z-index: 100000000 !important;
-  background: var(--atelier-paper-2) !important;
-  border: 1px solid var(--atelier-material-edge) !important;
-  box-shadow: 0 18px 38px -30px rgba(17, 24, 39, 0.58) !important;
-  border-radius: 8px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px !important;
   padding: 0 !important;
-  width: min(440px, calc(100vw - 32px)) !important;
-  max-width: min(440px, calc(100vw - 32px)) !important;
-  color: var(--atelier-ink) !important;
-  font-family: var(--atelier-font-sans) !important;
+  max-width: min(440px, 90vw) !important; /* Responsive on small screens */
+  color: #1f2937 !important;
+  font-family: ui-sans-serif, system-ui, sans-serif !important;
   overflow: hidden !important;
 }
 
 .dark .driver-popover.theme-tour-popover {
-  background: var(--atelier-paper-2) !important;
-  border-color: var(--atelier-material-edge) !important;
-  color: var(--atelier-ink) !important;
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f3f4f6 !important;
 }
 
 /* 3. Header Area */
@@ -61,47 +60,42 @@
 .driver-popover-title-text {
   font-size: 18px !important;
   font-weight: 700 !important;
-  color: var(--atelier-ink) !important;
+  color: #111827 !important;
   line-height: 1.3 !important;
-  padding-right: 44px !important;
-  overflow-wrap: anywhere !important;
-  white-space: normal !important;
+  padding-right: 100px !important; /* Ensure title doesn't overlap Skip/Close */
 }
-.dark .driver-popover-title-text { color: #f8fbff !important; }
+.dark .driver-popover-title-text { color: #ffffff !important; }
 
 /* Close Button */
 .theme-tour-popover .driver-popover-close-btn {
   position: absolute !important;
-  top: 14px !important;
-  right: 16px !important;
-  width: 40px !important;
-  height: 40px !important;
+  top: 18px !important;
+  right: 20px !important;
+  width: 28px !important;
+  height: 28px !important;
   padding: 0 !important;
-  color: var(--atelier-muted) !important;
+  color: #9ca3af !important;
   background-color: transparent !important;
   border: none !important;
   z-index: 20 !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  touch-action: manipulation !important;
 }
-.theme-tour-popover .driver-popover-close-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
-.dark .theme-tour-popover .driver-popover-close-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
+.theme-tour-popover .driver-popover-close-btn:hover { background-color: #f3f4f6 !important; color: #4b5563 !important; }
+.dark .theme-tour-popover .driver-popover-close-btn:hover { background-color: #334155 !important; }
 
 /* 4. Body Content */
 .theme-tour-popover .driver-popover-description {
   display: block !important;
   font-size: 14px !important;
   font-weight: 400 !important;
-  color: var(--atelier-muted) !important;
+  color: #4b5563 !important;
   padding: 0 24px 24px 24px !important;
   margin: 0 !important;
   line-height: 1.6 !important;
   background-color: transparent !important;
-  overflow-wrap: anywhere !important;
-  white-space: normal !important;
 }
 .dark .theme-tour-popover .driver-popover-description { color: #cbd5e1 !important; }
 
@@ -111,13 +105,13 @@
   align-items: center !important;
   justify-content: space-between !important; /* Push Left and Right apart */
   padding: 16px 24px !important;
-  background-color: var(--atelier-surface-muted) !important;
-  border-top: 1px solid var(--atelier-material-edge) !important;
+  background-color: #f9fafb !important;
+  border-top: 1px solid #f3f4f6 !important;
   margin: 0 !important;
 }
 .dark .theme-tour-popover .driver-popover-footer {
-  background-color: rgba(248, 251, 255, 0.08) !important;
-  border-top-color: rgba(248, 251, 255, 0.14) !important;
+  background-color: #0f172a !important;
+  border-top-color: #1e293b !important;
 }
 
 /* Left Container: Progress + Shortcuts */
@@ -137,12 +131,12 @@
 /* Progress */
 .theme-tour-popover .driver-popover-progress-text {
   font-size: 13px !important;
-  color: var(--atelier-muted) !important;
+  color: #6b7280 !important;
   margin: 0 !important;
   font-weight: 500 !important;
   white-space: nowrap !important;
 }
-.dark .theme-tour-popover .driver-popover-progress-text { color: #94a3b8 !important; }
+.dark .theme-tour-popover .driver-popover-progress-text { color: #9ca3af !important; }
 
 /* Shortcuts (Divider + Keys) */
 .footer-shortcuts {
@@ -150,39 +144,39 @@
   align-items: center !important;
   gap: 12px !important;
   padding-left: 16px !important;
-  border-left: 1px solid var(--atelier-material-edge) !important;
+  border-left: 1px solid #e5e7eb !important;
   height: 20px !important;
 }
-.dark .footer-shortcuts { border-left-color: rgba(248, 251, 255, 0.14) !important; }
+.dark .footer-shortcuts { border-left-color: #334155 !important; }
 
 .shortcut-item {
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
   font-size: 12px !important;
-  color: var(--atelier-muted) !important;
+  color: #6b7280 !important;
   white-space: nowrap !important;
 }
 .dark .shortcut-item { color: #94a3b8 !important; }
 
 .shortcut-item kbd {
-  font-family: var(--atelier-font-mono) !important;
-  background-color: var(--atelier-paper-2) !important;
-  border: 1px solid var(--atelier-material-edge) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
   border-radius: 4px !important;
   padding: 1px 6px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  color: var(--atelier-ink) !important;
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.05) !important;
+  color: #4b5563 !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05) !important;
   min-width: 20px !important;
   text-align: center !important;
   display: inline-block !important;
 }
 .dark .shortcut-item kbd {
-  background-color: var(--atelier-paper-2) !important;
-  border-color: var(--atelier-material-edge) !important;
-  color: var(--atelier-ink) !important;
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #cbd5e1 !important;
 }
 
 /* Nav Buttons */
@@ -193,7 +187,8 @@
   padding: 8px 16px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  border-radius: 8px !important;
+  text-shadow: none !important;
+  border-radius: 6px !important;
   cursor: pointer !important;
   transition: all 0.2s !important;
   border: 1px solid transparent !important;
@@ -201,102 +196,34 @@
   white-space: nowrap !important; /* Force no wrap */
 }
 
-@media (max-width: 640px) {
-  .driver-popover.theme-tour-popover {
-    width: calc(100vw - 24px) !important;
-    max-width: calc(100vw - 24px) !important;
-  }
-
-  .theme-tour-popover .driver-popover-title {
-    padding: 18px 58px 10px 18px !important;
-  }
-
-  .driver-popover-title-text {
-    padding-right: 0 !important;
-    font-size: 16px !important;
-    line-height: 1.35 !important;
-  }
-
-  .theme-tour-popover .driver-popover-close-btn {
-    top: 8px !important;
-    right: 10px !important;
-    width: 44px !important;
-    height: 44px !important;
-    touch-action: manipulation !important;
-  }
-
-  .theme-tour-popover .driver-popover-close-btn::before {
-    content: "";
-    position: absolute;
-    inset: -8px;
-  }
-
-  .theme-tour-popover .driver-popover-description {
-    padding: 0 18px 18px 18px !important;
-    font-size: 13px !important;
-    line-height: 1.58 !important;
-  }
-
-  .theme-tour-popover .driver-popover-footer {
-    align-items: stretch !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    padding: 14px 18px !important;
-  }
-
-  .footer-left,
-  .footer-right {
-    width: 100% !important;
-  }
-
-  .footer-left {
-    align-items: flex-start !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-
-  .footer-right {
-    justify-content: flex-end !important;
-  }
-
-  .footer-shortcuts {
-    display: none !important;
-  }
-
-  .theme-tour-popover button {
-    min-height: 42px !important;
-    padding: 10px 16px !important;
-  }
-}
-
 .theme-tour-popover .driver-popover-next-btn {
-  background-color: var(--atelier-ink) !important;
-  color: var(--atelier-paper) !important;
-  box-shadow: none !important;
+  background-color: #14b8a6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
-.theme-tour-popover .driver-popover-next-btn:hover { background-color: var(--atelier-dark) !important; }
+.theme-tour-popover .driver-popover-next-btn:hover { background-color: #0d9488 !important; }
 
 .theme-tour-popover .driver-popover-prev-btn {
-  background-color: var(--atelier-paper-2) !important;
-  color: var(--atelier-ink) !important;
-  border: 1px solid var(--atelier-material-edge) !important;
-  box-shadow: 0 8px 18px -18px rgba(17, 24, 39, 0.32) !important;
+  background-color: white !important;
+  color: #6b7280 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
-.theme-tour-popover .driver-popover-prev-btn:hover { background-color: var(--atelier-ui-hover-surface) !important; color: var(--atelier-ink) !important; }
+.theme-tour-popover .driver-popover-prev-btn:hover { background-color: #f9fafb !important; color: #374151 !important; }
 .dark .theme-tour-popover .driver-popover-prev-btn {
-  background-color: var(--atelier-paper-2) !important;
-  border-color: var(--atelier-material-edge) !important;
-  color: var(--atelier-ink) !important;
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #9ca3af !important;
 }
 
 /* Arrows */
 .driver-popover-arrow { z-index: 100000001 !important; }
-.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--atelier-paper-2) !important; }
-.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--atelier-paper-2) !important; }
-.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--atelier-paper-2) !important; }
-.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--atelier-paper-2) !important; }
+.driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: #ffffff !important; }
+.driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: #ffffff !important; }
+.driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #ffffff !important; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #ffffff !important; }
 
-.dark .driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: var(--atelier-paper-2) !important; }
-.dark .driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: var(--atelier-paper-2) !important; }
-.dark .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: var(--atelier-paper-2) !important; }
-.dark .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--atelier-paper-2) !important; }
+.dark .driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: #1e293b !important; }
+.dark .driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: #1e293b !important; }
+.dark .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: #1e293b !important; }
+.dark .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: #1e293b !important; }

@@ -4,10 +4,6 @@ import { createPinia, setActivePinia } from 'pinia'
 
 import type { DashboardStats } from '@/types'
 import DashboardView from '../DashboardView.vue'
-import dashboardSource from '../DashboardView.vue?raw'
-
-const blockedBackdropFilter = ['backdrop', 'filter'].join('-')
-const blockedWebkitBackdropFilter = ['-webkit', blockedBackdropFilter].join('-')
 
 const { getSnapshotV2, getUserUsageTrend, getUserSpendingRanking } = vi.hoisted(() => ({
   getSnapshotV2: vi.fn(),
@@ -33,12 +29,6 @@ vi.mock('@/stores/app', () => ({
   useAppStore: () => ({
     showError: vi.fn()
   })
-}))
-
-vi.mock('@/components/layout/AppLayout.vue', () => ({
-  default: {
-    template: '<div><slot /></div>'
-  }
 }))
 
 vi.mock('vue-router', () => ({
@@ -180,36 +170,5 @@ describe('admin DashboardView', () => {
       end_date: formatLocalDate(now),
       granularity: 'hour'
     }))
-  })
-
-  it('keeps dashboard cards static and uses document-level refresh/button surfaces', () => {
-    expect(dashboardSource).toContain('admin-dashboard-atelier')
-    expect(dashboardSource).toContain('grid grid-cols-2 gap-4 lg:grid-cols-4')
-    expect(dashboardSource).toContain('card dashboard-filter-card')
-    expect(dashboardSource).toContain('dashboard-paper-control')
-    expect(dashboardSource).toContain('dashboard-granularity-control')
-    expect(dashboardSource).toContain('class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"')
-
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card) {')
-    expect(dashboardSource).toContain('.admin-dashboard-atelier :deep(.card:hover)')
-    expect(dashboardSource).toContain('border-color: var(--anthropic-cookbook-border) !important;')
-    expect(dashboardSource).toContain('background: var(--anthropic-page) !important;')
-    expect(dashboardSource).toContain('box-shadow: none !important;')
-    expect(dashboardSource).not.toContain('--dashboard-control-surface')
-    expect(dashboardSource).not.toContain('--dashboard-control-edge')
-    expect(dashboardSource).not.toContain('--dashboard-card-surface')
-    expect(dashboardSource).not.toContain('--dashboard-hover-surface')
-    expect(dashboardSource).not.toContain('background: var(--dashboard-hover-surface) !important;')
-    expect(dashboardSource).not.toContain('var(--atelier-material-shadow-hover) !important;')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card:hover)')
-    expect(dashboardSource).not.toContain('.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh)::after')
-    expect(dashboardSource).not.toContain(blockedBackdropFilter)
-    expect(dashboardSource).not.toContain(blockedWebkitBackdropFilter)
-
-    expect(dashboardSource).toContain('handleDashboardFilterPointerDown')
-    expect(dashboardSource).toContain('dashboard-filter-menu-open')
-    expect(dashboardSource).toContain('.dashboard-stat-icon :deep(svg *)')
-    expect(dashboardSource).toContain('fill: none !important;')
-    expect(dashboardSource).toContain('stroke: currentColor !important;')
   })
 })

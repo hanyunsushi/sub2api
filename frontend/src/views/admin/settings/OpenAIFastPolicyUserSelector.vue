@@ -4,22 +4,21 @@
       <span
         v-for="userId in selectedUserIds"
         :key="userId"
-        class="inline-flex max-w-full items-center gap-1.5 rounded-md border border-[var(--anthropic-border-subtle)] bg-[var(--anthropic-raised)] px-2.5 py-1.5 text-xs text-[var(--anthropic-fg)]"
+        class="inline-flex max-w-full items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1.5 text-xs text-gray-700 dark:bg-dark-600 dark:text-gray-200"
       >
         <span class="max-w-64 truncate font-medium" :title="selectedUserLabel(userId)">
           {{ selectedUserLabel(userId) }}
         </span>
-        <span class="shrink-0 text-[var(--anthropic-muted)]">#{{ userId }}</span>
+        <span class="shrink-0 text-gray-400">#{{ userId }}</span>
         <span
           v-if="selectedUsers[userId]?.deleted"
-          class="shrink-0 text-[var(--anthropic-muted)]"
+          class="shrink-0 text-gray-400"
         >
           {{ t("admin.settings.openaiFastPolicy.userDeleted") }}
         </span>
         <button
-          data-testid="openai-fast-policy-remove-user"
           type="button"
-          class="shrink-0 rounded text-[var(--anthropic-muted)] hover:text-red-600 dark:hover:text-red-400"
+          class="shrink-0 rounded text-gray-400 hover:text-red-600 dark:hover:text-red-400"
           :aria-label="t('admin.settings.openaiFastPolicy.removeUser')"
           :title="t('admin.settings.openaiFastPolicy.removeUser')"
           @click="removeUser(userId)"
@@ -33,10 +32,9 @@
       <Icon
         name="search"
         size="sm"
-        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)]"
+        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
       />
       <input
-        data-testid="openai-fast-policy-user-search"
         v-model="searchQuery"
         type="text"
         autocomplete="off"
@@ -49,33 +47,32 @@
 
     <div
       v-if="showDropdown && searchQuery.trim()"
-      class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:bg-[var(--anthropic-section)]"
+      class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-700"
     >
-      <div v-if="searchLoading" class="px-4 py-3 text-sm text-[var(--anthropic-muted)]">
+      <div v-if="searchLoading" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
         {{ t("common.loading") }}
       </div>
       <div
         v-else-if="availableResults.length === 0"
-        class="px-4 py-3 text-sm text-[var(--anthropic-muted)]"
+        class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
       >
         {{ t("admin.settings.openaiFastPolicy.userSearchEmpty") }}
       </div>
       <template v-else>
         <button
-          data-testid="openai-fast-policy-select-user"
           v-for="user in availableResults"
           :key="user.id"
           type="button"
-          class="flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-[var(--anthropic-section)]"
+          class="flex w-full items-center justify-between gap-3 px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-600"
           @click="selectUser(user)"
         >
-          <span class="min-w-0 truncate font-medium text-[var(--anthropic-fg)]">
+          <span class="min-w-0 truncate font-medium text-gray-900 dark:text-white">
             {{ user.email }}
-            <span v-if="user.deleted" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
+            <span v-if="user.deleted" class="ml-1 text-xs font-normal text-gray-400">
               {{ t("admin.settings.openaiFastPolicy.userDeleted") }}
             </span>
           </span>
-          <span class="shrink-0 text-xs text-[var(--anthropic-muted)]">#{{ user.id }}</span>
+          <span class="shrink-0 text-xs text-gray-400">#{{ user.id }}</span>
         </button>
       </template>
     </div>

@@ -1,6 +1,6 @@
 ---
 title: Sub2API Wiki
-updated: 2026-09-04
+updated: 2026-10-11
 ---
 
 [Project Authority](../agent.md)
@@ -15,6 +15,11 @@ updated: 2026-09-04
 
 - [Frontend](modules/frontend.md) - Vue application boundaries
 - [Backend](modules/backend.md) - Go service boundaries
+
+# Concepts
+
+- [Customization Inventory](concepts/customization-inventory.md) - Official frontend, retained functional extensions, persistence and retired boundaries
+- [Customization Files](concepts/customization-files.md) - Complete baseline diff with file categories and Git status
 
 # Guides
 

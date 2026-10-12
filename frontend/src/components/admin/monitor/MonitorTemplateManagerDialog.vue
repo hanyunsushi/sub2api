@@ -6,23 +6,22 @@
     @close="$emit('close')"
   >
     <!-- provider tabs -->
-    <div class="mb-4 border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+    <div class="mb-4 border-b border-gray-200 dark:border-dark-700">
       <div role="tablist" class="flex flex-wrap gap-1">
-        <button data-testid="admin-monitor-monitor-template-manager-button-active-provider-tab-value"
+        <button
           v-for="tab in providerTabs"
           :key="tab.value"
           type="button"
           role="tab"
           :aria-selected="activeProvider === tab.value"
-          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors"
+          class="px-4 py-2 text-sm font-medium transition-colors"
           :class="tabClass(tab.value)"
           @click="activeProvider = tab.value"
         >
-          <ProviderBrandIcon :provider="tab.value" :model="tab.value" />
           {{ tab.label }}
           <span
             v-if="countByProvider[tab.value] > 0"
-            class="ml-1.5 rounded-full bg-[var(--anthropic-raised)] px-2 py-0.5 text-xs dark:bg-[var(--anthropic-section)]"
+            class="ml-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-dark-700"
           >
             {{ countByProvider[tab.value] }}
           </span>
@@ -33,19 +32,19 @@
     <!-- active provider list -->
     <div v-if="!editing" class="space-y-2">
       <div class="flex justify-end">
-        <button data-testid="admin-monitor-monitor-template-manager-button-open-create-form" class="btn btn-primary btn-sm" @click="openCreateForm">
+        <button class="btn btn-primary btn-sm" @click="openCreateForm">
           <Icon name="plus" size="sm" class="mr-1" />
           {{ t('admin.channelMonitor.template.createButton') }}
         </button>
       </div>
 
-      <div v-if="loading" class="py-8 text-center text-sm text-[var(--anthropic-muted)]">
+      <div v-if="loading" class="py-8 text-center text-sm text-gray-400">
         {{ t('common.loading') }}
       </div>
 
       <div
         v-else-if="templatesForActiveProvider.length === 0"
-        class="py-8 text-center text-sm text-[var(--anthropic-muted)]"
+        class="py-8 text-center text-sm text-gray-400"
       >
         {{ t('admin.channelMonitor.template.emptyState') }}
       </div>
@@ -54,12 +53,12 @@
         v-for="tpl in templatesForActiveProvider"
         v-else
         :key="tpl.id"
-        class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ tpl.name }}</span>
+              <span class="font-medium text-gray-900 dark:text-white">{{ tpl.name }}</span>
               <span
                 class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs"
                 :class="modeBadgeClass(tpl.body_override_mode)"
@@ -75,22 +74,22 @@
               </span>
               <span
                 v-if="tpl.associated_monitors > 0"
-                class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="text-xs text-gray-500 dark:text-gray-400"
               >
                 {{ t('admin.channelMonitor.template.associatedCount', { n: tpl.associated_monitors }) }}
               </span>
             </div>
-            <p v-if="tpl.description" class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p v-if="tpl.description" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
               {{ tpl.description }}
             </p>
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-400">
               {{ t('admin.channelMonitor.template.headersSummary', {
                 n: Object.keys(tpl.extra_headers || {}).length,
               }) }}
             </p>
           </div>
           <div class="flex flex-shrink-0 gap-2">
-            <button data-testid="admin-monitor-monitor-template-manager-button-confirm-apply-tpl"
+            <button
               class="btn btn-secondary btn-sm"
               :disabled="tpl.associated_monitors === 0"
               :title="t('admin.channelMonitor.template.applyTooltip')"
@@ -99,10 +98,10 @@
               <Icon name="refresh" size="sm" class="mr-1" />
               {{ t('admin.channelMonitor.template.applyButton') }}
             </button>
-            <button data-testid="admin-monitor-monitor-template-manager-button-open-edit-form-tpl" class="btn btn-secondary btn-sm" @click="openEditForm(tpl)">
+            <button class="btn btn-secondary btn-sm" @click="openEditForm(tpl)">
               {{ t('common.edit') }}
             </button>
-            <button data-testid="admin-monitor-monitor-template-manager-button-handle-delete-tpl" class="btn btn-secondary btn-sm text-red-600" @click="handleDelete(tpl)">
+            <button class="btn btn-secondary btn-sm text-red-600" @click="handleDelete(tpl)">
               {{ t('common.delete') }}
             </button>
           </div>
@@ -117,7 +116,7 @@
           {{ t('admin.channelMonitor.template.form.name') }}
           <span class="text-red-500">*</span>
         </label>
-        <input data-testid="admin-monitor-monitor-template-manager-input-form-name"
+        <input
           v-model="form.name"
           type="text"
           required
@@ -132,24 +131,23 @@
           <span class="text-red-500">*</span>
         </label>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <button data-testid="admin-monitor-monitor-template-manager-button-provider-opt-value"
+          <button
             v-for="opt in providerTabs"
             :key="opt.value"
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
+            class="rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="form.provider = opt.value"
           >
-            <ProviderBrandIcon :provider="opt.value" :model="opt.value" />
             {{ opt.label }}
           </button>
         </div>
       </div>
 
-      <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] p-3 dark:border-[var(--anthropic-info-border)] dark:bg-[var(--anthropic-info)]">
+      <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
-          <button data-testid="admin-monitor-monitor-template-manager-button-api-mode-opt-value"
+          <button
             v-for="opt in apiModeOptions"
             :key="opt.value"
             type="button"
@@ -167,7 +165,7 @@
         <label class="input-label">
           {{ t('admin.channelMonitor.template.form.description') }}
         </label>
-        <input data-testid="admin-monitor-monitor-template-manager-input-form-description"
+        <input
           v-model="form.description"
           type="text"
           class="input"
@@ -191,16 +189,16 @@
       <div class="flex w-full items-center justify-between">
         <!-- Left: back to list / nothing -->
         <div>
-          <button data-testid="admin-monitor-monitor-template-manager-button-back-to-list" v-if="editing" class="btn btn-secondary" @click="backToList">
+          <button v-if="editing" class="btn btn-secondary" @click="backToList">
             {{ t('common.back') }}
           </button>
         </div>
         <!-- Right: save or close -->
         <div class="flex gap-2">
-          <button data-testid="admin-monitor-monitor-template-manager-button-emit-close" class="btn btn-secondary" @click="$emit('close')">
+          <button class="btn btn-secondary" @click="$emit('close')">
             {{ t('common.close') }}
           </button>
-          <button data-testid="admin-monitor-monitor-template-manager-button-handle-submit" v-if="editing" class="btn btn-primary" :disabled="submitting" @click="handleSubmit">
+          <button v-if="editing" class="btn btn-primary" :disabled="submitting" @click="handleSubmit">
             {{ submitting ? t('common.submitting') : editing === 'new' ? t('common.create') : t('common.update') }}
           </button>
         </div>
@@ -242,7 +240,6 @@ import type {
 import type { ChannelMonitorTemplate } from '@/api/admin/channelMonitorTemplate'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import MonitorAdvancedRequestConfig from '@/components/admin/monitor/MonitorAdvancedRequestConfig.vue'
 import MonitorTemplateApplyPickerDialog from '@/components/admin/monitor/MonitorTemplateApplyPickerDialog.vue'
@@ -474,8 +471,8 @@ async function doDelete() {
 // --- misc ---
 function tabClass(value: Provider): string {
   return activeProvider.value === value
-    ? 'border-b-2 border-[var(--anthropic-fg)] text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
-    : 'border-b-2 border-transparent text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] dark:hover:text-gray-200'
+    ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
+    : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
 }
 
 function modeBadgeClass(mode: BodyOverrideMode): string {
@@ -483,9 +480,9 @@ function modeBadgeClass(mode: BodyOverrideMode): string {
     case 'merge':
       return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
     case 'replace':
-      return 'bg-accent-200 text-accent-700 dark:bg-accent-800/15 dark:text-accent-300'
+      return 'bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300'
     default:
-      return 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+      return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
 }
 
@@ -519,9 +516,9 @@ function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
 function apiModeButtonClass(mode: APIMode): string {
   const active = form.api_mode === mode
   if (active) {
-    return 'border-[var(--anthropic-fg)] bg-[var(--anthropic-page)] text-[var(--anthropic-fg)] shadow-none dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
+    return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
   }
-  return 'border-[var(--anthropic-info-border)] bg-[var(--anthropic-page)] text-[var(--anthropic-muted)] hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+  return 'border-blue-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
 }
 
 function apiModeLabel(mode: APIMode): string {
@@ -532,7 +529,7 @@ function apiModeLabel(mode: APIMode): string {
 
 function apiModeBadgeClass(mode: APIMode): string {
   if (normalizeAPIMode(mode) === API_MODE_RESPONSES) {
-    return 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]'
+    return 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
   }
   return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
 }

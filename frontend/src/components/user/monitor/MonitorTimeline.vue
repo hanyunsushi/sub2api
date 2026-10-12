@@ -1,7 +1,7 @@
 <template>
-  <div class="mt-4 pt-3 border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+  <div class="mt-4 pt-3 border-t border-gray-100 dark:border-dark-700/60">
     <div
-      class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-[var(--anthropic-muted)] mb-2"
+      class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-2"
     >
       <span>{{ t('monitorCommon.history60pts', { n: length }) }}</span>
       <span class="tabular-nums">{{ t('monitorCommon.nextUpdateIn', { n: countdownSeconds }) }}</span>
@@ -9,15 +9,15 @@
 
     <div
       v-if="maintenance"
-      class="flex h-5 w-full items-center justify-center rounded border border-dashed border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] text-[10px] uppercase tracking-widest text-[var(--anthropic-muted)]"
+      class="flex h-5 w-full items-center justify-center rounded border border-dashed border-gray-300 dark:border-dark-600 text-[10px] uppercase tracking-widest text-gray-400"
     >
       {{ t('monitorCommon.maintenancePaused') }}
     </div>
-    <div v-else class="monitor-timeline-bars flex items-end gap-[2px] h-5 w-full">
+    <div v-else class="flex items-end gap-[2px] h-5 w-full">
       <div
         v-for="(bar, idx) in displayBars"
         :key="idx"
-        class="monitor-timeline-bar rounded-sm"
+        class="flex-1 min-w-0 rounded-sm"
         :class="bar.colorClass"
         :style="{ height: bar.heightPct + '%' }"
         :title="bar.title"
@@ -25,7 +25,7 @@
     </div>
 
     <div
-      class="mt-1 flex justify-between text-[9px] uppercase tracking-widest text-[var(--anthropic-muted)]"
+      class="mt-1 flex justify-between text-[9px] uppercase tracking-widest text-gray-400"
     >
       <span>{{ t('monitorCommon.past') }}</span>
       <span>{{ t('monitorCommon.now') }}</span>
@@ -70,11 +70,11 @@ const STATUS_HEIGHT: Record<string, number> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  operational: 'monitor-timeline-bar--operational',
-  degraded: 'monitor-timeline-bar--degraded',
-  failed: 'monitor-timeline-bar--failed',
-  error: 'monitor-timeline-bar--error',
-  empty: 'monitor-timeline-bar--empty',
+  operational: 'bg-emerald-500',
+  degraded: 'bg-amber-500',
+  failed: 'bg-red-500',
+  error: 'bg-red-500',
+  empty: 'bg-gray-300 dark:bg-dark-600',
 }
 
 const displayBars = computed<Bar[]>(() => {
@@ -113,15 +113,3 @@ const displayBars = computed<Bar[]>(() => {
   return bars
 })
 </script>
-
-<style scoped>
-.monitor-timeline-bars {
-  min-width: 0;
-  overflow: hidden;
-}
-
-.monitor-timeline-bar {
-  flex: 1 1 0;
-  min-width: 0;
-}
-</style>

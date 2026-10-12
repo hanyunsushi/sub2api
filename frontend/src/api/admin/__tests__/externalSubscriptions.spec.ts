@@ -662,4 +662,22 @@ describe('admin external subscriptions api', () => {
 
     expect(apiClient.delete).toHaveBeenCalledWith('/admin/external-subscriptions/custom-provider')
   })
+
+  it.each([false, true])('does not repopulate cleared session data from a pending request (background=%s)', async background => {
+    let resolveRequest!: (value: { data: unknown[] }) => void
+    vi.mocked(apiClient.get).mockReturnValueOnce(new Promise(resolve => { resolveRequest = resolve }))
+    const listener = vi.fn()
+    const unsubscribe = externalSubscriptionsAPI.subscribeDisplayStatuses(listener)
+    const pending = background
+      ? externalSubscriptionsAPI.refreshDisplayStatusesInBackground()
+      : externalSubscriptionsAPI.getDisplayStatuses()
+    externalSubscriptionsAPI.clearStoredDisplayStatusesCache()
+    resolveRequest({ data: [{ provider: 'old-admin', match_keywords: [], subscriptions: [] }] })
+    if (pending) expect(await pending).toEqual([])
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(listener).not.toHaveBeenCalled()
+    expect(localStorage.getItem('sub2api.externalSubscriptionDisplayStatuses.v2')).toBeNull()
+    unsubscribe()
+  })
 })

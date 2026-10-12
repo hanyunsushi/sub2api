@@ -1,6 +1,6 @@
 <template>
   <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
       {{ t('payment.admin.dailyRevenue') }}
     </h3>
     <div class="h-64">
@@ -10,7 +10,7 @@
       <Line v-else-if="chartData" :data="chartData" :options="chartOptions" />
       <div
         v-else
-        class="flex h-full items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+        class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
       >
         {{ t('payment.admin.noData') }}
       </div>
@@ -34,7 +34,6 @@ import {
 import { Line } from 'vue-chartjs'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { DailyPaymentStats } from '@/types/payment'
-import { chartCategoricalColors, withChartAlpha } from '@/utils/chartColors'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler)
 
@@ -45,7 +44,12 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const colors = chartCategoricalColors.map((color) => [color, withChartAlpha(color, 0.1)])
+const colors = [
+  ['rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.1)'],
+  ['rgb(168, 85, 247)', 'rgba(168, 85, 247, 0.1)'],
+  ['rgb(245, 158, 11)', 'rgba(245, 158, 11, 0.1)'],
+  ['rgb(239, 68, 68)', 'rgba(239, 68, 68, 0.1)'],
+]
 
 const chartData = computed(() => {
   if (!props.data || props.data.length === 0) return null

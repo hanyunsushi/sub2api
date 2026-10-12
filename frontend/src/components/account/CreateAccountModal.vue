@@ -12,7 +12,7 @@
           <div
             :class="[
               'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
-              step >= 1 ? 'bg-[var(--anthropic-fg)] text-white' : 'bg-gray-200 text-gray-500 dark:bg-dark-600'
+              step >= 1 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-500 dark:bg-dark-600'
             ]"
           >
             1
@@ -26,7 +26,7 @@
           <div
             :class="[
               'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',
-              step >= 2 ? 'bg-[var(--anthropic-fg)] text-white' : 'bg-gray-200 text-gray-500 dark:bg-dark-600'
+              step >= 2 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-500 dark:bg-dark-600'
             ]"
           >
             2
@@ -47,7 +47,7 @@
     >
       <div>
         <label class="input-label">{{ t('admin.accounts.accountName') }}</label>
-        <input data-testid="account-create-account-input-form-name"
+        <input
           v-model="form.name"
           type="text"
           :required="!isGrokSSOInputMethod"
@@ -58,7 +58,7 @@
       </div>
       <div>
         <label class="input-label">{{ t('admin.accounts.notes') }}</label>
-        <textarea data-testid="account-create-account-textarea-form-notes"
+        <textarea
           v-model="form.notes"
           rows="3"
           class="input"
@@ -71,20 +71,20 @@
       <div>
         <label class="input-label">{{ t('admin.accounts.platform') }}</label>
         <div class="mt-2 flex flex-wrap rounded-lg bg-gray-100 p-1 dark:bg-dark-700" data-tour="account-form-platform">
-          <button data-testid="account-create-account-button-platform-anthropic"
+          <button
             type="button"
             @click="form.platform = 'anthropic'"
             :class="[
               'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
               form.platform === 'anthropic'
-                ? 'bg-white text-[var(--anthropic-accent)] shadow-sm dark:bg-dark-600 dark:text-[var(--anthropic-accent)]'
+                ? 'bg-white text-orange-600 shadow-sm dark:bg-dark-600 dark:text-orange-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             ]"
           >
             <Icon name="sparkles" size="sm" />
             Anthropic
           </button>
-          <button data-testid="account-create-account-button-platform-openai"
+          <button
             type="button"
             @click="form.platform = 'openai'"
             :class="[
@@ -109,7 +109,7 @@
             </svg>
             OpenAI
           </button>
-          <button data-testid="account-create-account-button-platform-gemini"
+          <button
             type="button"
             @click="form.platform = 'gemini'"
             :class="[
@@ -134,7 +134,7 @@
             </svg>
             Gemini
           </button>
-          <button data-testid="account-create-account-button-platform-antigravity"
+          <button
             type="button"
             @click="form.platform = 'antigravity'"
             :class="[
@@ -147,7 +147,7 @@
             <Icon name="cloud" size="sm" />
             Antigravity
           </button>
-          <button data-testid="account-create-account-button-platform-grok"
+          <button
             type="button"
             @click="form.platform = 'grok'"
             :class="[
@@ -235,21 +235,21 @@
       <div v-if="form.platform === 'anthropic'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4" data-tour="account-form-type">
-          <button data-testid="account-create-account-button-account-category-anthropic-oauth"
+          <button
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
-                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
+                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-gray-200 hover:border-orange-300 dark:border-dark-600 dark:hover:border-orange-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
+                  ? 'bg-orange-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -265,21 +265,21 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-account-category-anthropic-apikey"
+          <button
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'apikey'
-                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
-                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
+                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                : 'border-gray-200 hover:border-purple-300 dark:border-dark-600 dark:hover:border-purple-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'apikey'
-                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
+                  ? 'bg-purple-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -295,21 +295,21 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-account-category-anthropic-bedrock"
+          <button
             type="button"
             @click="accountCategory = 'bedrock'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'bedrock'
-                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
-                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
+                ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                : 'border-gray-200 hover:border-amber-300 dark:border-dark-600 dark:hover:border-amber-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'bedrock'
-                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
+                  ? 'bg-amber-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -325,21 +325,21 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-account-category-anthropic-service-account"
+          <button
             type="button"
             @click="accountCategory = 'service_account'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'service_account'
-                ? 'border-[var(--anthropic-accent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_18%,var(--anthropic-section))]'
-                : 'border-gray-200 hover:border-[var(--anthropic-accent)] dark:border-dark-600 dark:hover:border-[var(--anthropic-accent)]'
+                ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20'
+                : 'border-gray-200 hover:border-sky-300 dark:border-dark-600 dark:hover:border-sky-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'service_account'
-                  ? 'bg-[var(--anthropic-accent)] text-[var(--anthropic-page)]'
+                  ? 'bg-sky-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -355,7 +355,7 @@
 
         <div
           v-if="accountCategory === 'service_account'"
-          class="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--anthropic-accent)_32%,transparent)] bg-[color-mix(in_srgb,var(--anthropic-accent)_10%,var(--anthropic-page))] px-3 py-2 text-xs text-[var(--anthropic-accent)] dark:bg-[color-mix(in_srgb,var(--anthropic-accent)_16%,var(--anthropic-section))]"
+          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-200"
         >
           <p>{{ t('admin.accounts.vertexAnthropicHint') }}</p>
         </div>
@@ -365,7 +365,7 @@
       <div v-if="form.platform === 'openai'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3" data-tour="account-form-type">
-          <button data-testid="account-create-account-button-account-category-openai-oauth"
+          <button
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
@@ -391,7 +391,7 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-account-category-openai-apikey"
+          <button
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
@@ -424,7 +424,7 @@
       <div v-if="form.platform === 'grok'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2" data-tour="account-form-type">
-          <button data-testid="account-create-account-button-account-category-grok-oauth"
+          <button
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
@@ -660,10 +660,10 @@
       <div v-if="form.platform === 'gemini'">
         <div class="flex items-center justify-between">
           <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
-          <button data-testid="account-create-account-button-show-gemini-help-dialog"
+          <button
             type="button"
             @click="showGeminiHelpDialog = true"
-            class="flex items-center gap-1 rounded px-2 py-1 text-xs text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-section)]"
+            class="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
           >
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -672,21 +672,21 @@
           </button>
         </div>
         <div class="mt-2 grid grid-cols-3 gap-3" data-tour="account-form-type">
-          <button data-testid="account-create-account-button-account-category-gemini-oauth"
+          <button
             type="button"
             @click="accountCategory = 'oauth-based'"
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]'
-                : 'border-gray-200 hover:border-[var(--anthropic-border-hover)] dark:border-dark-600 dark:hover:border-[var(--anthropic-border-hover)]'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-200 hover:border-blue-300 dark:border-dark-600 dark:hover:border-blue-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -702,7 +702,7 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-account-category-gemini-apikey"
+          <button
             type="button"
             @click="accountCategory = 'apikey'"
             :class="[
@@ -744,7 +744,7 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-handle-select-gemini-o-auth-type-google-one"
+          <button
             type="button"
             @click="accountCategory = 'service_account'"
             :class="[
@@ -781,7 +781,7 @@
         >
           <p>{{ t('admin.accounts.gemini.accountType.apiKeyNote') }}</p>
           <div class="mt-2 flex flex-wrap gap-2">
-            <a data-testid="account-create-account-a-gemini-help-links-api-key"
+            <a
               :href="geminiHelpLinks.apiKey"
               class="font-medium text-blue-600 hover:underline dark:text-blue-400"
               target="_blank"
@@ -804,7 +804,7 @@
           <label class="input-label">{{ t('admin.accounts.oauth.gemini.oauthTypeLabel') }}</label>
           <div class="mt-2 grid grid-cols-2 gap-3">
             <!-- Google One OAuth -->
-            <button data-testid="account-create-account-button-handle-select-gemini-oauth-type"
+            <button
               type="button"
               @click="handleSelectGeminiOAuthType('google_one')"
               :class="[
@@ -847,21 +847,21 @@
             </button>
 
             <!-- GCP Code Assist OAuth -->
-            <button data-testid="account-create-account-button-show-advanced-o-auth-show-advanced-o-auth"
+            <button
               type="button"
               @click="handleSelectGeminiOAuthType('code_assist')"
               :class="[
                 'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
                 geminiOAuthType === 'code_assist'
-                  ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]'
-                  : 'border-gray-200 hover:border-[var(--anthropic-border-hover)] dark:border-dark-600 dark:hover:border-[var(--anthropic-border-hover)]'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  : 'border-gray-200 hover:border-blue-300 dark:border-dark-600 dark:hover:border-blue-700'
               ]"
             >
               <div
                 :class="[
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                   geminiOAuthType === 'code_assist'
-                    ? 'bg-[var(--anthropic-fg)] text-[var(--anthropic-page)]'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
                 ]"
               >
@@ -876,7 +876,7 @@
                 </span>
                 <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t('admin.accounts.gemini.oauthType.codeAssistRequirement') }}
-                  <a data-testid="account-create-account-a-gemini-help-links-gcp-project"
+                  <a
                     :href="geminiHelpLinks.gcpProject"
                     class="ml-1 text-blue-600 hover:underline dark:text-blue-400"
                     target="_blank"
@@ -903,7 +903,7 @@
 
           <!-- Advanced Options Toggle -->
           <div class="mt-3">
-            <button data-testid="account-create-account-button-show-advanced-oauth-show-advanced-oauth"
+            <button
               type="button"
               @click="showAdvancedOAuth = !showAdvancedOAuth"
               class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
@@ -929,7 +929,7 @@
 
           <!-- Custom OAuth Client (Advanced) -->
           <div v-if="showAdvancedOAuth" class="mt-3 group relative">
-            <button data-testid="account-create-account-button-handle-select-gemini-oauth-type-2"
+            <button
               type="button"
               :disabled="!geminiAIStudioOAuthEnabled"
               @click="handleSelectGeminiOAuthType('ai_studio')"
@@ -1007,7 +1007,7 @@
         <div v-if="accountCategory !== 'service_account'" class="mt-4">
           <label class="input-label">{{ t('admin.accounts.gemini.tier.label') }}</label>
           <div class="mt-2">
-            <select data-testid="account-create-account-select-gemini-tier-ai-studio"
+            <select
               v-if="geminiOAuthType === 'google_one'"
               v-model="geminiTierGoogleOne"
               class="input"
@@ -1017,7 +1017,7 @@
               <option value="google_ai_ultra">{{ t('admin.accounts.gemini.tier.googleOne.ultra') }}</option>
             </select>
 
-            <select data-testid="account-create-account-select-gemini-tier-gcp"
+            <select
               v-else-if="geminiOAuthType === 'code_assist'"
               v-model="geminiTierGcp"
               class="input"
@@ -1026,7 +1026,7 @@
               <option value="gcp_enterprise">{{ t('admin.accounts.gemini.tier.gcp.enterprise') }}</option>
             </select>
 
-            <select data-testid="account-create-account-select-gemini-tier-aistudio"
+            <select
               v-else
               v-model="geminiTierAIStudio"
               class="input"
@@ -1043,7 +1043,7 @@
       <div v-if="form.platform === 'antigravity'">
         <label class="input-label">{{ t('admin.accounts.accountType') }}</label>
         <div class="mt-2 grid grid-cols-2 gap-3">
-          <button data-testid="account-create-account-button-antigravity-account-type-oauth"
+          <button
             type="button"
             @click="antigravityAccountType = 'oauth'"
             :class="[
@@ -1069,7 +1069,7 @@
             </div>
           </button>
 
-          <button data-testid="account-create-account-button-antigravity-account-type-upstream"
+          <button
             type="button"
             @click="antigravityAccountType = 'upstream'"
             :class="[
@@ -1113,7 +1113,7 @@
       <div v-if="form.platform === 'antigravity' && antigravityAccountType === 'upstream'" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.baseUrl') }}</label>
-          <input data-testid="account-create-account-input-upstream-base-url"
+          <input
             v-model="upstreamBaseUrl"
             type="text"
             required
@@ -1124,7 +1124,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.accounts.upstream.apiKey') }}</label>
-          <input data-testid="account-create-account-input-upstream-api-key"
+          <input
             v-model="upstreamApiKey"
             type="password"
             required
@@ -1153,7 +1153,7 @@
       <div v-if="(form.platform === 'gemini' || form.platform === 'anthropic') && accountCategory === 'service_account'" class="space-y-4">
         <div>
           <label class="input-label">Service Account JSON</label>
-          <input data-testid="account-create-account-input-file"
+          <input
             ref="vertexServiceAccountFileInput"
             type="file"
             accept="application/json,.json"
@@ -1182,7 +1182,7 @@
                   {{ vertexClientEmail ? t('admin.accounts.vertexSaJsonKeyHidden') : t('admin.accounts.vertexSaJsonDropHint') }}
                 </p>
               </div>
-              <button data-testid="account-create-account-button-vertex-service-account-file-input-click"
+              <button
                 type="button"
                 class="btn btn-secondary shrink-0"
                 @click="vertexServiceAccountFileInput?.click()"
@@ -1205,7 +1205,7 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="input-label">Project ID</label>
-            <input data-testid="account-create-account-input-vertex-project-id"
+            <input
               v-model="vertexProjectId"
               type="text"
               class="input font-mono"
@@ -1215,7 +1215,7 @@
           </div>
           <div>
             <label class="input-label">Location</label>
-            <select data-testid="account-create-account-select-vertex-location"
+            <select
               v-model="vertexLocation"
               required
               class="input font-mono"
@@ -1259,7 +1259,7 @@
               class="space-y-1"
             >
               <div class="flex items-center gap-2">
-                <input data-testid="account-create-account-input-antigravity-mapping-from"
+                <input
                   v-model="mapping.from"
                   type="text"
                   :class="[
@@ -1271,7 +1271,7 @@
                 <svg class="h-4 w-4 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
-                <input data-testid="account-create-account-input-antigravity-mapping-to"
+                <input
                   v-model="mapping.to"
                   type="text"
                   :class="[
@@ -1280,7 +1280,7 @@
                   ]"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button data-testid="account-create-account-button-remove-antigravity-model-mapping"
+                <button
                   type="button"
                   @click="removeAntigravityModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1305,7 +1305,7 @@
             </div>
           </div>
 
-          <button data-testid="account-create-account-button-add-antigravity-model-mapping"
+          <button
             type="button"
             @click="addAntigravityModelMapping"
             class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1317,7 +1317,7 @@
           </button>
 
           <div class="flex flex-wrap gap-2">
-            <button data-testid="account-create-account-button-add-antigravity-preset-mapping"
+            <button
               v-for="preset in antigravityPresetMappings"
               :key="preset.label"
               type="button"
@@ -1335,20 +1335,20 @@
         <label class="input-label">{{ t('admin.accounts.addMethod') }}</label>
         <div class="mt-2 flex gap-4">
           <label class="flex cursor-pointer items-center">
-            <input data-testid="account-create-account-input-add-method-oauth"
+            <input
               v-model="addMethod"
               type="radio"
               value="oauth"
-              class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.types.oauth') }}</span>
           </label>
           <label class="flex cursor-pointer items-center">
-            <input data-testid="account-create-account-input-add-method"
+            <input
               v-model="addMethod"
               type="radio"
               value="setup-token"
-              class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">{{
               t('admin.accounts.setupTokenLongLived')
@@ -1361,7 +1361,7 @@
       <div v-if="form.type === 'apikey' && form.platform !== 'antigravity'" class="space-y-4">
         <div v-if="!isMultiProtocolPlatform || apiProtocol !== 'adaptive'">
           <label class="input-label">{{ t('admin.accounts.baseUrl') }}</label>
-          <input data-testid="account-create-account-input-api-key-base-url"
+          <input
             v-model="apiKeyBaseUrl"
             type="text"
             class="input"
@@ -1409,7 +1409,7 @@
         />
         <div>
           <label class="input-label">{{ t('admin.accounts.apiKeyRequired') }}</label>
-          <input data-testid="account-create-account-input-api-key-value"
+          <input
             v-model="apiKeyValue"
             type="password"
             required
@@ -1439,7 +1439,7 @@
         <!-- Gemini API Key tier selection -->
         <div v-if="form.platform === 'gemini'">
           <label class="input-label">{{ t('admin.accounts.gemini.tier.label') }}</label>
-          <select data-testid="account-create-account-select-gemini-tier-aistudio-2" v-model="geminiTierAIStudio" class="input">
+          <select v-model="geminiTierAIStudio" class="input">
             <option value="aistudio_free">{{ t('admin.accounts.gemini.tier.aiStudio.free') }}</option>
             <option value="aistudio_paid">{{ t('admin.accounts.gemini.tier.aiStudio.paid') }}</option>
           </select>
@@ -1462,13 +1462,13 @@
           <template v-else>
             <!-- Mode Toggle -->
             <div class="mb-4 flex gap-2">
-              <button data-testid="account-create-account-button-model-restriction-mode-whitelist-apikey"
+              <button
                 type="button"
                 @click="modelRestrictionMode = 'whitelist'"
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                   modelRestrictionMode === 'whitelist'
-                    ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                 ]"
               >
@@ -1487,7 +1487,7 @@
                 </svg>
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
-              <button data-testid="account-create-account-button-model-restriction-mode-mapping-apikey"
+              <button
                 type="button"
                 @click="modelRestrictionMode = 'mapping'"
                 :class="[
@@ -1559,7 +1559,7 @@
                 :key="getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input data-testid="account-create-account-input-apikey-mapping-from"
+                <input
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -1578,13 +1578,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input data-testid="account-create-account-input-apikey-mapping-to"
+                <input
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button data-testid="account-create-account-button-remove-apikey-model-mapping"
+                <button
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -1601,7 +1601,7 @@
               </div>
             </div>
 
-            <button data-testid="account-create-account-button-add-apikey-model-mapping"
+            <button
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -1624,7 +1624,7 @@
 
               <!-- Quick Add Buttons -->
               <div class="flex flex-wrap gap-2">
-                <button data-testid="account-create-account-button-add-apikey-preset-mapping"
+                <button
                   v-for="preset in presetMappings"
                   :key="preset.label"
                   type="button"
@@ -1651,8 +1651,8 @@
               type="button"
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                poolModeEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                poolModeEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1715,8 +1715,8 @@
               type="button"
               @click="customErrorCodesEnabled = !customErrorCodesEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                customErrorCodesEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                customErrorCodesEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1816,8 +1816,8 @@
               type="button"
               @click="headerOverrideEnabled = !headerOverrideEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                headerOverrideEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1857,7 +1857,7 @@
                 v-model="bedrockAuthMode"
                 type="radio"
                 value="sigv4"
-                class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                class="mr-2 text-primary-600 focus:ring-primary-500"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.bedrockAuthModeSigv4') }}</span>
             </label>
@@ -1866,7 +1866,7 @@
                 v-model="bedrockAuthMode"
                 type="radio"
                 value="apikey"
-                class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                class="mr-2 text-primary-600 focus:ring-primary-500"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.bedrockAuthModeApikey') }}</span>
             </label>
@@ -1877,7 +1877,7 @@
         <template v-if="bedrockAuthMode === 'sigv4'">
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockAccessKeyId') }}</label>
-            <input data-testid="account-create-account-input-bedrock-access-key-id"
+            <input
               v-model="bedrockAccessKeyId"
               type="text"
               required
@@ -1887,7 +1887,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSecretAccessKey') }}</label>
-            <input data-testid="account-create-account-input-bedrock-secret-access-key"
+            <input
               v-model="bedrockSecretAccessKey"
               type="password"
               required
@@ -1896,7 +1896,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.accounts.bedrockSessionToken') }}</label>
-            <input data-testid="account-create-account-input-mapping-from-4"
+            <input
               v-model="bedrockSessionToken"
               type="password"
               class="input font-mono"
@@ -1963,7 +1963,7 @@
             <input
               v-model="bedrockForceGlobal"
               type="checkbox"
-              class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-500"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-500"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.accounts.bedrockForceGlobal') }}</span>
           </label>
@@ -1982,7 +1982,7 @@
               :class="[
                 'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                 modelRestrictionMode === 'whitelist'
-                  ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
             >
@@ -2058,8 +2058,8 @@
               type="button"
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                poolModeEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                poolModeEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2231,8 +2231,8 @@
             data-testid="grok-custom-base-url-toggle"
             @click="grokOAuthCustomBaseUrlEnabled = !grokOAuthCustomBaseUrlEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              grokOAuthCustomBaseUrlEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              grokOAuthCustomBaseUrlEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -2271,8 +2271,8 @@
             type="button"
             @click="headerOverrideEnabled = !headerOverrideEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              headerOverrideEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -2318,19 +2318,19 @@
         <template v-else>
           <!-- Mode Toggle -->
           <div class="mb-4 flex gap-2">
-            <button data-testid="account-create-account-button-model-restriction-mode-whitelist-oauth"
+            <button
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
               :class="[
                 'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                 modelRestrictionMode === 'whitelist'
-                  ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
-              <button data-testid="account-create-account-button-model-restriction-mode-mapping-oauth"
+            <button
               type="button"
               @click="modelRestrictionMode = 'mapping'"
               :class="[
@@ -2375,7 +2375,7 @@
                 :key="'oauth-' + getModelMappingKey(mapping)"
                 class="flex items-center gap-2"
               >
-                <input data-testid="account-create-account-input-oauth-mapping-from"
+                <input
                   v-model="mapping.from"
                   type="text"
                   class="input flex-1"
@@ -2394,13 +2394,13 @@
                     d="M14 5l7 7m0 0l-7 7m7-7H3"
                   />
                 </svg>
-                <input data-testid="account-create-account-input-oauth-mapping-to"
+                <input
                   v-model="mapping.to"
                   type="text"
                   class="input flex-1"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
-                <button data-testid="account-create-account-button-remove-oauth-model-mapping"
+                <button
                   type="button"
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
@@ -2417,7 +2417,7 @@
               </div>
             </div>
 
-            <button data-testid="account-create-account-button-add-oauth-model-mapping"
+            <button
               type="button"
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
@@ -2427,7 +2427,7 @@
 
             <!-- Quick Add Buttons -->
             <div class="flex flex-wrap gap-2">
-              <button data-testid="account-create-account-button-add-oauth-preset-mapping"
+              <button
                 v-for="preset in presetMappings"
                 :key="'oauth-' + preset.label"
                 type="button"
@@ -2454,8 +2454,8 @@
             type="button"
             @click="tempUnschedEnabled = !tempUnschedEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              tempUnschedEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              tempUnschedEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -2607,8 +2607,8 @@
             type="button"
             @click="interceptWarmupRequests = !interceptWarmupRequests"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              interceptWarmupRequests ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              interceptWarmupRequests ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -2646,8 +2646,8 @@
               type="button"
               @click="windowCostEnabled = !windowCostEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                windowCostEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                windowCostEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2706,8 +2706,8 @@
               type="button"
               @click="sessionLimitEnabled = !sessionLimitEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                sessionLimitEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                sessionLimitEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2763,8 +2763,8 @@
               type="button"
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                rpmLimitEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                rpmLimitEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2800,7 +2800,7 @@
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     rpmStrategy === 'tiered'
-                      ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
@@ -2815,7 +2815,7 @@
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     rpmStrategy === 'sticky_exempt'
-                      ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
@@ -2854,7 +2854,7 @@
                 :class="[
                   'px-3 py-1.5 text-sm rounded-md border transition-colors',
                   userMsgQueueMode === opt.value
-                    ? 'bg-[var(--anthropic-fg)] text-white border-[var(--anthropic-fg)]'
+                    ? 'bg-primary-600 text-white border-primary-600'
                     : 'bg-white dark:bg-dark-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-dark-500 hover:bg-gray-50 dark:hover:bg-dark-600'
                 ]">
                 {{ opt.label }}
@@ -2876,8 +2876,8 @@
               type="button"
               @click="tlsFingerprintEnabled = !tlsFingerprintEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                tlsFingerprintEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                tlsFingerprintEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2911,8 +2911,8 @@
               type="button"
               @click="sessionIdMaskingEnabled = !sessionIdMaskingEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                sessionIdMaskingEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                sessionIdMaskingEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2938,8 +2938,8 @@
               type="button"
               @click="cacheTTLOverrideEnabled = !cacheTTLOverrideEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                cacheTTLOverrideEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                cacheTTLOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -2954,7 +2954,7 @@
             <label class="input-label text-xs">{{ t('admin.accounts.quotaControl.cacheTTLOverride.target') }}</label>
             <select
               v-model="cacheTTLOverrideTarget"
-              class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[var(--anthropic-focus)] focus:outline-none focus:ring-1 focus:ring-[var(--anthropic-focus)] dark:border-dark-500 dark:bg-dark-700 dark:text-white"
+              class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-dark-500 dark:bg-dark-700 dark:text-white"
             >
               <option value="5m">5m</option>
               <option value="1h">1h</option>
@@ -2978,8 +2978,8 @@
               type="button"
               @click="customBaseUrlEnabled = !customBaseUrlEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                customBaseUrlEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                customBaseUrlEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -3078,8 +3078,8 @@
             type="button"
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openaiPassthroughEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openaiPassthroughEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3109,8 +3109,8 @@
             data-testid="create-openai-flatten-namespaces-toggle"
             @click="openaiFlattenNamespacesEnabled = !openaiFlattenNamespacesEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openaiFlattenNamespacesEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openaiFlattenNamespacesEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3161,8 +3161,8 @@
             type="button"
             @click="anthropicPassthroughEnabled = !anthropicPassthroughEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              anthropicPassthroughEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              anthropicPassthroughEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3232,8 +3232,8 @@
             :aria-checked="openAILongContextBillingEnabled"
             @click="toggleOpenAILongContextBilling"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openAILongContextBillingEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openAILongContextBillingEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3261,8 +3261,8 @@
             type="button"
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              codexCLIOnlyEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3287,8 +3287,8 @@
             type="button"
             @click="codexCLIOnlyAppServerEnabled = !codexCLIOnlyAppServerEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              codexCLIOnlyAppServerEnabled ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyAppServerEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3396,7 +3396,7 @@
             >
               <input
                 type="checkbox"
-                class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-500"
+                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-500"
                 :data-testid="`openai-endpoint-capability-${option.value}`"
                 :checked="openAIEndpointCapabilities.includes(option.value)"
                 @change="toggleOpenAIEndpointCapability(option.value, $event)"
@@ -3426,8 +3426,8 @@
           :aria-checked="openAIImagesUrlToB64JsonEnabled"
           @click="openAIImagesUrlToB64JsonEnabled = !openAIImagesUrlToB64JsonEnabled"
           :class="[
-            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-            openAIImagesUrlToB64JsonEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+            openAIImagesUrlToB64JsonEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
           ]"
         >
           <span
@@ -3453,8 +3453,8 @@
             type="button"
             @click="autoPauseOnExpired = !autoPauseOnExpired"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              autoPauseOnExpired ? 'bg-[var(--anthropic-fg)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              autoPauseOnExpired ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
@@ -3474,7 +3474,7 @@
             <input
               type="checkbox"
               v-model="mixedScheduling"
-              class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-500"
+              class="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500 dark:border-dark-500"
             />
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ t('admin.accounts.mixedScheduling') }}
@@ -3502,7 +3502,7 @@
             <input
               type="checkbox"
               v-model="allowOverages"
-              class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-500"
+              class="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500 dark:border-dark-500"
             />
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ t('admin.accounts.allowOverages') }}
@@ -3578,10 +3578,10 @@
 
     <template #footer>
       <div v-if="step === 1" class="flex justify-end gap-3">
-        <button data-testid="account-create-account-button-cancel" @click="handleClose" type="button" class="btn btn-secondary">
+        <button @click="handleClose" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="account-create-account-button-submit"
+        <button
           type="submit"
           form="create-account-form"
           :disabled="submitting"
@@ -3618,10 +3618,10 @@
         </button>
       </div>
       <div v-else class="flex justify-between gap-3">
-        <button data-testid="account-create-account-button-go-back-to-basic-info" type="button" class="btn btn-secondary" @click="goBackToBasicInfo">
+        <button type="button" class="btn btn-secondary" @click="goBackToBasicInfo">
           {{ t('common.back') }}
         </button>
-        <button data-testid="account-create-account-button-exchange-code"
+        <button
           v-if="isManualInputMethod"
           type="button"
           :disabled="!canExchangeCode"
@@ -3868,7 +3868,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="account-create-account-button-show-gemini-help-dialog-false" @click="showGeminiHelpDialog = false" type="button" class="btn btn-primary">
+        <button @click="showGeminiHelpDialog = false" type="button" class="btn btn-primary">
           {{ t('common.close') }}
         </button>
       </div>
@@ -4232,7 +4232,7 @@ const cnAccentActiveClass = computed(() => {
     case 'opencode_go':
       return 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
     default:
-      return 'border-[var(--anthropic-focus)] bg-[color-mix(in_srgb,var(--anthropic-focus)_12%,var(--anthropic-page))] dark:bg-[color-mix(in_srgb,var(--anthropic-focus)_18%,var(--anthropic-section))]'
+      return 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
   }
 })
 const cnAccentIconClass = computed(() => {
@@ -4248,7 +4248,7 @@ const cnAccentIconClass = computed(() => {
     case 'opencode_go':
       return 'bg-amber-500 text-white'
     default:
-      return 'bg-[var(--anthropic-focus)] text-white'
+      return 'bg-primary-500 text-white'
   }
 })
 // 切换国产供应商平台：强制 apikey 类型，deepseek 无 coding 套餐故锁定 payg，

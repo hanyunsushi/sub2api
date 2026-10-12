@@ -1,14 +1,14 @@
 <template>
-  <div class="table-filter-shell monitor-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+  <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
     <!-- Left: Search + Filters -->
-    <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+    <div class="flex flex-1 flex-wrap items-center gap-3">
       <div class="relative w-full sm:w-64">
         <Icon
           name="search"
           size="md"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
         />
-        <input data-testid="admin-monitor-monitor-filters-bar-input-search"
+        <input
           v-model="search"
           type="text"
           :placeholder="t('admin.channelMonitor.searchPlaceholder')"
@@ -18,47 +18,14 @@
       </div>
 
       <Select
-        variant="text-control"
         v-model="provider"
         :options="providerFilterOptions"
         :placeholder="t('admin.channelMonitor.allProviders')"
-        class="w-44 monitor-provider-select"
+        class="w-44"
         @change="$emit('reload')"
-      >
-        <template #selected="{ option }">
-          <span class="flex min-w-0 items-center gap-2">
-            <ProviderBrandIcon
-              v-if="option?.value"
-              :provider="String(option.value)"
-              :model="String(option.value)"
-              class="!h-5 !w-5 !rounded"
-            />
-            <span class="truncate">{{ option?.label ?? t('admin.channelMonitor.allProviders') }}</span>
-          </span>
-        </template>
-        <template #option="{ option }">
-          <span class="flex min-w-0 items-center gap-2">
-            <ProviderBrandIcon
-              v-if="option.value"
-              :provider="String(option.value)"
-              :model="String(option.value)"
-              class="!h-5 !w-5 !rounded"
-            />
-            <span
-              :class="[
-                'select-option-label',
-                'text-action-label',
-                { 'monitor-provider-option-all': !option.value },
-              ]"
-            >
-              {{ option.label }}
-            </span>
-          </span>
-        </template>
-      </Select>
+      />
 
       <Select
-        variant="text-control"
         v-model="enabled"
         :options="enabledFilterOptions"
         :placeholder="t('admin.channelMonitor.enabledFilter')"
@@ -68,23 +35,25 @@
     </div>
 
     <!-- Right: Actions -->
-    <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-      <button data-testid="admin-monitor-monitor-filters-bar-button-emit-reload"
+    <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+      <button
         @click="$emit('reload')"
         :disabled="loading"
-        class="btn btn-primary anthropic-refresh-action-button monitor-refresh-button"
+        class="btn btn-secondary"
         :title="t('common.refresh')"
       >
-        {{ t("common.refresh") }}
+        <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
       </button>
-      <button data-testid="admin-monitor-monitor-filters-bar-button-emit-manage-templates"
+      <button
         @click="$emit('manage-templates')"
-        class="filter-menu-button"
+        class="btn btn-secondary"
         :title="t('admin.channelMonitor.template.manageButton')"
       >
+        <Icon name="cog" size="md" class="mr-2" />
         {{ t('admin.channelMonitor.template.manageButton') }}
       </button>
-      <button data-testid="admin-monitor-monitor-filters-bar-button-emit-create" @click="$emit('create')" class="btn btn-primary monitor-create-button">
+      <button @click="$emit('create')" class="btn btn-primary">
+        <Icon name="plus" size="md" class="mr-2" />
         {{ t('admin.channelMonitor.createButton') }}
       </button>
     </div>
@@ -96,7 +65,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Provider } from '@/api/admin/channelMonitor'
 import Select from '@/components/common/Select.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import {
   PROVIDER_OPENAI,

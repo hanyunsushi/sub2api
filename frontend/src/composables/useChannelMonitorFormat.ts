@@ -33,12 +33,12 @@ import {
   CHECK_MODE_QUOTA_PROBE,
 } from '@/constants/channelMonitor'
 
-const NEUTRAL_BADGE = 'border border-[var(--anthropic-border-subtle)] bg-transparent text-[var(--anthropic-muted)]'
-const SUCCESS_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-success)_32%,transparent)] bg-transparent text-[var(--anthropic-success)]'
-const INFO_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-info)_32%,transparent)] bg-transparent text-[var(--anthropic-info)]'
-const WARNING_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-warning)_32%,transparent)] bg-transparent text-[var(--anthropic-warning)]'
-const DANGER_BADGE = 'border border-[color-mix(in_srgb,var(--anthropic-error)_32%,transparent)] bg-transparent text-[var(--anthropic-error)]'
-const PICKER_BASE = 'border bg-transparent text-[var(--anthropic-muted)]'
+const NEUTRAL_BADGE = 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-300'
+
+/** Availability HSL hue multiplier: 0%=red(0) / 50%=yellow(60) / 100%=green(120). */
+const HSL_HUE_PER_PERCENT = 1.2
+const HSL_SATURATION = 72
+const HSL_LIGHTNESS = 42
 
 export interface AvailabilityRow {
   primary_status: MonitorStatus | ''
@@ -56,12 +56,12 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return SUCCESS_BADGE
+        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
       case STATUS_DEGRADED:
-        return WARNING_BADGE
+        return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
       case STATUS_FAILED:
+        return 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
       case STATUS_ERROR:
-        return DANGER_BADGE
       default:
         return NEUTRAL_BADGE
     }
@@ -99,19 +99,27 @@ export function useChannelMonitorFormat() {
   function providerBadgeClass(p: Provider | string): string {
     switch (p) {
       case PROVIDER_OPENAI:
-      case PROVIDER_DEEPSEEK:
-        return SUCCESS_BADGE
+        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
       case PROVIDER_ANTHROPIC:
-      case PROVIDER_MINIMAX:
-      case PROVIDER_OPENCODE_GO:
-        return WARNING_BADGE
+        return 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
       case PROVIDER_GEMINI:
-      case PROVIDER_ANTIGRAVITY:
-      case PROVIDER_KIMI:
-      case PROVIDER_ZHIPU:
-        return INFO_BADGE
+        return 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
       case PROVIDER_GROK:
-        return NEUTRAL_BADGE
+        return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-500/15 dark:text-zinc-300'
+      // 配色与 utils/platformColors.ts 的平台色对齐：antigravity=purple /
+      // kimi=pink / zhipu=indigo / deepseek=teal。
+      case PROVIDER_ANTIGRAVITY:
+        return 'bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300'
+      case PROVIDER_KIMI:
+        return 'bg-pink-100 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300'
+      case PROVIDER_ZHIPU:
+        return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300'
+      case PROVIDER_DEEPSEEK:
+        return 'bg-teal-100 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300'
+      case PROVIDER_MINIMAX:
+        return 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+      case PROVIDER_OPENCODE_GO:
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300'
       default:
         return NEUTRAL_BADGE
     }
@@ -126,7 +134,7 @@ export function useChannelMonitorFormat() {
     switch (m) {
       case CHECK_MODE_QUOTA:
       case CHECK_MODE_QUOTA_PROBE:
-        return INFO_BADGE
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
       case CHECK_MODE_PROBE:
       default:
         return NEUTRAL_BADGE
@@ -135,13 +143,56 @@ export function useChannelMonitorFormat() {
 
   /**
    * Tailwind class for a provider radio-button-style picker (active/inactive state).
-   * Uses the shared Anthropic semantic set with transparent surfaces.
+   * Reuses the same emerald/orange/sky palette as providerBadgeClass to keep
+   * visual semantics consistent across badges and pickers.
    */
   function providerPickerClass(p: Provider | string, active: boolean): string {
-    if (!active) {
-      return `${PICKER_BASE} border-[var(--anthropic-border-subtle)] hover:border-[var(--anthropic-border-hover)]`
+    switch (p) {
+      case PROVIDER_OPENAI:
+        return active
+          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-emerald-300 hover:text-emerald-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-emerald-500/50'
+      case PROVIDER_ANTHROPIC:
+        return active
+          ? 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-orange-500/50'
+      case PROVIDER_GEMINI:
+        return active
+          ? 'border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-sky-500/50'
+      case PROVIDER_GROK:
+        return active
+          ? 'border-zinc-500 bg-zinc-50 text-zinc-800 dark:bg-zinc-500/15 dark:text-zinc-200 dark:border-zinc-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-zinc-500/50'
+      case PROVIDER_ANTIGRAVITY:
+        return active
+          ? 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 dark:border-purple-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-purple-300 hover:text-purple-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-purple-500/50'
+      case PROVIDER_KIMI:
+        return active
+          ? 'border-pink-500 bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 dark:border-pink-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-pink-300 hover:text-pink-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-pink-500/50'
+      case PROVIDER_ZHIPU:
+        return active
+          ? 'border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 dark:border-indigo-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-indigo-500/50'
+      case PROVIDER_DEEPSEEK:
+        return active
+          ? 'border-teal-500 bg-teal-50 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300 dark:border-teal-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-teal-300 hover:text-teal-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-teal-500/50'
+      case PROVIDER_MINIMAX:
+        return active
+          ? 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-rose-300 hover:text-rose-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-rose-500/50'
+      case PROVIDER_OPENCODE_GO:
+        return active
+          ? 'border-amber-500 bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-amber-300 hover:text-amber-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-amber-500/50'
+      default:
+        return active
+          ? 'border-gray-400 bg-gray-50 text-gray-700 dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
     }
-    return `${PICKER_BASE} ${providerBadgeClass(p)}`
   }
 
   function formatLatency(ms: number | null | undefined): string {
@@ -190,42 +241,42 @@ export function useChannelMonitorFormat() {
 }
 
 /**
- * Map availability percent to an Anthropic semantic colour.
+ * Map availability percent to an HSL colour (red -> yellow -> green).
  * Returns undefined for null/NaN so callers can fall back to a neutral colour.
  */
 export function hslForPct(pct: number | null | undefined): string | undefined {
   if (pct === null || pct === undefined || Number.isNaN(pct)) return undefined
-  if (pct >= 99) return 'var(--anthropic-success)'
-  if (pct >= 95) return 'var(--anthropic-warning)'
-  return 'var(--anthropic-error)'
+  const clamped = Math.max(0, Math.min(100, pct))
+  const hue = clamped * HSL_HUE_PER_PERCENT
+  return `hsl(${hue} ${HSL_SATURATION}% ${HSL_LIGHTNESS}%)`
 }
 
 /**
- * Tailwind surface class for the provider icon tile background.
+ * Tailwind gradient class for the provider icon tile background.
  */
 export function providerGradient(provider: string): string {
   switch (provider) {
     case PROVIDER_OPENAI:
-      return 'anthropic-stat-icon-success'
+      return 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-500/10 dark:to-emerald-500/20'
     case PROVIDER_ANTHROPIC:
-      return 'anthropic-stat-icon-warning'
+      return 'bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-500/10 dark:to-amber-500/20'
     case PROVIDER_GEMINI:
-      return 'anthropic-stat-icon-info'
+      return 'bg-gradient-to-br from-sky-50 to-indigo-100 dark:from-sky-500/10 dark:to-indigo-500/20'
     case PROVIDER_GROK:
-      return 'anthropic-icon-tile'
+      return 'bg-gradient-to-br from-zinc-50 to-neutral-200 dark:from-zinc-500/10 dark:to-neutral-500/20'
     case PROVIDER_ANTIGRAVITY:
-      return 'anthropic-stat-icon-info'
+      return 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-500/10 dark:to-purple-500/20'
     case PROVIDER_KIMI:
-      return 'anthropic-stat-icon-info'
+      return 'bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-500/10 dark:to-pink-500/20'
     case PROVIDER_ZHIPU:
-      return 'anthropic-stat-icon-info'
+      return 'bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-500/10 dark:to-indigo-500/20'
     case PROVIDER_DEEPSEEK:
-      return 'anthropic-stat-icon-success'
+      return 'bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-500/10 dark:to-teal-500/20'
     case PROVIDER_MINIMAX:
-      return 'anthropic-stat-icon-warning'
+      return 'bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-500/10 dark:to-rose-500/20'
     case PROVIDER_OPENCODE_GO:
-      return 'anthropic-stat-icon-warning'
+      return 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-500/10 dark:to-amber-500/20'
     default:
-      return 'anthropic-icon-tile'
+      return 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600'
   }
 }

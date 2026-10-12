@@ -2,16 +2,16 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell channels-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+        <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+          <div class="flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-64">
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
-              <input data-testid="admin-channels-input-search-query"
+              <input
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('admin.channels.searchChannels', 'Search channels...')"
@@ -30,16 +30,17 @@
           </div>
 
           <!-- Right: Actions -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button data-testid="admin-channels-button-load-channels"
+          <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+            <button
               @click="loadChannels"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button channels-refresh-button"
+              class="btn btn-secondary"
               :title="t('common.refresh', 'Refresh')"
             >
-              {{ t("common.refresh", "Refresh") }}
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button data-testid="admin-channels-button-open-create-dialog" @click="openCreateDialog" class="btn btn-primary channels-create-button">
+            <button @click="openCreateDialog" class="btn btn-primary">
+              <Icon name="plus" size="md" class="mr-2" />
               {{ t('admin.channels.createChannel', 'Create Channel') }}
             </button>
           </div>
@@ -56,22 +57,13 @@
           default-sort-order="desc"
           @sort="handleSort"
         >
-          <template #cell-name="{ row, value }">
-            <span class="entity-name-with-logo">
-              <span
-                v-if="row.logo_url"
-                class="entity-logo-shell"
-                :title="row.name"
-              >
-                <ProviderBrandIcon :provider="row.name" :model="row.name" :logo-url="row.logo_url" />
-              </span>
-              <Icon v-else name="globe" size="sm" class="entity-logo-fallback" />
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
-            </span>
+          <template #cell-name="{ value, row }">
+            <ProviderBrandIcon v-if="row.logo_url" :provider="row.name" :logo-url="row.logo_url" class="mr-2" />
+            <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
           </template>
 
           <template #cell-description="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ value || '-' }}</span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ value || '-' }}</span>
           </template>
 
           <template #cell-status="{ row }">
@@ -83,7 +75,7 @@
 
           <template #cell-group_count="{ row }">
             <span
-              class="inline-flex items-center rounded bg-[var(--anthropic-raised)] px-2 py-0.5 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+              class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
             >
               {{ (row.group_ids || []).length }}
               {{ t('admin.channels.groupsUnit', 'groups') }}
@@ -92,7 +84,7 @@
 
           <template #cell-pricing_count="{ row }">
             <span
-              class="inline-flex items-center rounded bg-[var(--anthropic-raised)] px-2 py-0.5 text-xs font-medium text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+              class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
             >
               {{ (row.model_pricing || []).length }}
               {{ t('admin.channels.pricingUnit', 'pricing rules') }}
@@ -100,23 +92,23 @@
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-sm text-gray-600 dark:text-gray-400">
               {{ formatDate(value) }}
             </span>
           </template>
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
-              <button data-testid="admin-channels-button-open-edit-dialog-row"
+              <button
                 @click="openEditDialog(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t('common.edit', 'Edit') }}</span>
               </button>
-              <button data-testid="admin-channels-button-handle-delete-row"
+              <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete', 'Delete') }}</span>
@@ -156,18 +148,18 @@
     >
       <div class="channel-dialog-body">
         <!-- Tab Bar -->
-        <div class="flex items-center border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] flex-shrink-0 -mx-4 sm:-mx-6 px-4 sm:px-6 -mt-3 sm:-mt-4">
+        <div class="flex items-center border-b border-gray-200 dark:border-dark-700 flex-shrink-0 -mx-4 sm:-mx-6 px-4 sm:px-6 -mt-3 sm:-mt-4">
           <!-- Basic Settings Tab -->
-          <button data-testid="admin-channels-button-active-tab-basic"
+          <button
             type="button"
             @click="activeTab = 'basic'"
             class="channel-tab"
             :class="activeTab === 'basic' ? 'channel-tab-active' : 'channel-tab-inactive'"
           >
-            {{ t('admin.channels.form.basicSettings', '基础设置') }}
+            {{ t('admin.channels.form.basicSettings') }}
           </button>
           <!-- Platform Tabs (only enabled) -->
-          <button data-testid="admin-channels-button-active-tab-section-platform"
+          <button
             v-for="section in form.platforms.filter(s => s.enabled)"
             :key="section.platform"
             type="button"
@@ -187,7 +179,7 @@
             <!-- Name -->
             <div>
               <label class="input-label">{{ t('admin.channels.form.name', 'Name') }} <span class="text-red-500">*</span></label>
-              <input data-testid="admin-channels-input-form-name"
+              <input
                 v-model="form.name"
                 type="text"
                 required
@@ -196,17 +188,11 @@
               />
             </div>
 
-            <!-- Description -->
-            <LogoPicker
-              v-model="form.logo_url"
-              :label="t('admin.channels.form.logoUrl', 'Logo URL')"
-              :hint="t('admin.channels.form.logoUrlHint', '可填 Lobe Icons、Simple Icons 或自有图床地址；留空则只显示默认图标。')"
-            />
-
+            <LogoPicker v-model="form.logo_url" label="Logo URL" input-test-id="channel-logo-url" />
             <!-- Description -->
             <div>
               <label class="input-label">{{ t('admin.channels.form.description', 'Description') }}</label>
-              <textarea data-testid="admin-channels-textarea-form-description"
+              <textarea
                 v-model="form.description"
                 rows="2"
                 class="input"
@@ -223,14 +209,14 @@
             <!-- Model Restriction -->
             <div>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input data-testid="admin-channels-input-form-restrict-models"
+                <input
                   type="checkbox"
                   v-model="form.restrict_models"
-                  class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span class="input-label mb-0">{{ t('admin.channels.form.restrictModels', 'Restrict Models') }}</span>
               </label>
-              <p class="mt-1 ml-6 text-xs text-[var(--anthropic-muted)]">
+              <p class="mt-1 ml-6 text-xs text-gray-400">
                 {{ t('admin.channels.form.restrictModelsHint', 'When enabled, only models in the pricing list are allowed. Others will be rejected.') }}
               </p>
             </div>
@@ -239,27 +225,27 @@
             <div>
               <label class="input-label">{{ t('admin.channels.form.billingModelSource', 'Billing Basis') }}</label>
               <Select v-model="form.billing_model_source" :options="billingModelSourceOptions" />
-              <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+              <p class="mt-1 text-xs text-gray-400">
                 {{ t('admin.channels.form.billingModelSourceHint', 'Controls which model name is used for pricing lookup') }}
               </p>
             </div>
 
             <!-- Platform Management -->
             <div class="space-y-3">
-              <label class="input-label mb-0">{{ t('admin.channels.form.platformConfig', '平台配置') }}</label>
+              <label class="input-label mb-0">{{ t('admin.channels.form.platformConfig') }}</label>
               <div class="flex flex-wrap gap-2">
                 <label
                   v-for="p in platformOrder"
                   :key="p"
                   class="inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-colors"
                   :class="activePlatforms.includes(p)
-                    ? 'bg-[var(--anthropic-section)] border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)]'
-                    : 'border-[var(--anthropic-border)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:hover:bg-[var(--anthropic-raised)]'"
+                    ? 'bg-primary-50 border-primary-300 dark:bg-primary-900/20 dark:border-primary-700'
+                    : 'border-gray-200 hover:bg-gray-50 dark:border-dark-600 dark:hover:bg-dark-700'"
                 >
-                  <input data-testid="admin-channels-input-checkbox"
+                  <input
                     type="checkbox"
                     :checked="activePlatforms.includes(p)"
-                    class="h-3.5 w-3.5 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+                    class="h-3.5 w-3.5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     @change="togglePlatform(p)"
                   />
                   <PlatformIcon :platform="p" size="xs" :class="platformTextClass(p)" />
@@ -269,13 +255,13 @@
             </div>
 
             <!-- Apply Pricing to Account Stats (toggle only in basic settings) -->
-            <div class="border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+            <div class="border-t border-gray-200 pt-4 dark:border-dark-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.applyPricingToAccountStats') }}
                   </label>
-                  <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                     {{ t('admin.channels.form.applyPricingToAccountStatsDesc') }}
                   </p>
                 </div>
@@ -298,42 +284,42 @@
             <div>
               <label class="input-label text-xs">
                 {{ t('admin.channels.form.groups', 'Associated Groups') }} <span class="text-red-500">*</span>
-                <span v-if="section.group_ids.length > 0" class="ml-1 font-normal text-[var(--anthropic-muted)]">
-                  ({{ t('admin.channels.form.selectedCount', { count: section.group_ids.length }, `已选 ${section.group_ids.length} 个`) }})
+                <span v-if="section.group_ids.length > 0" class="ml-1 font-normal text-gray-400">
+                  ({{ t('admin.channels.form.selectedCount', { count: section.group_ids.length }) }})
                 </span>
               </label>
-              <div class="max-h-40 overflow-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-                <div v-if="groupsLoading" class="py-2 text-center text-xs text-[var(--anthropic-muted)]">
+              <div class="max-h-40 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-2 dark:border-dark-600 dark:bg-dark-900">
+                <div v-if="groupsLoading" class="py-2 text-center text-xs text-gray-500">
                   {{ t('common.loading', 'Loading...') }}
                 </div>
-                <div v-else-if="getGroupsForPlatform(section.platform).length === 0" class="py-2 text-center text-xs text-[var(--anthropic-muted)]">
+                <div v-else-if="getGroupsForPlatform(section.platform).length === 0" class="py-2 text-center text-xs text-gray-500">
                   {{ t('admin.channels.form.noGroupsAvailable', 'No groups available') }}
                 </div>
                 <div v-else class="flex flex-wrap gap-1">
                   <label
                     v-for="group in getGroupsForPlatform(section.platform)"
                     :key="group.id"
-                    class="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--anthropic-border)] px-2 py-1 text-xs transition-colors hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:hover:bg-[var(--anthropic-raised)]"
+                    class="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 px-2 py-1 text-xs transition-colors hover:bg-gray-50 dark:border-dark-600 dark:hover:bg-dark-700"
                     :class="[
-                      section.group_ids.includes(group.id) ? 'bg-[var(--anthropic-section)] border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)]' : '',
+                      section.group_ids.includes(group.id) ? 'bg-primary-50 border-primary-300 dark:bg-primary-900/20 dark:border-primary-700' : '',
                       isGroupInOtherChannel(group.id, section.platform) ? 'opacity-40' : ''
                     ]"
                   >
-                    <input data-testid="admin-channels-input-checkbox-2"
+                    <input
                       type="checkbox"
                       :checked="section.group_ids.includes(group.id)"
                       :disabled="isGroupInOtherChannel(group.id, section.platform)"
-                      class="h-3 w-3 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+                      class="h-3 w-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       @change="toggleGroupInSection(sIdx, group.id)"
                     />
                     <span :class="['font-medium', platformTextClass(group.platform)]">{{ group.name }}</span>
                     <span
-                      :class="['rounded-full border px-1 py-0 text-[10px]', platformBadgeLightClass(group.platform)]"
+                      :class="['rounded-full px-1 py-0 text-[10px]', platformBadgeLightClass(group.platform)]"
                     >{{ group.rate_multiplier }}x</span>
-                    <span class="text-[10px] text-[var(--anthropic-muted)]">{{ group.account_count || 0 }}</span>
+                    <span class="text-[10px] text-gray-400">{{ group.account_count || 0 }}</span>
                     <span
                       v-if="isGroupInOtherChannel(group.id, section.platform)"
-                      class="text-[10px] text-[var(--anthropic-muted)]"
+                      class="text-[10px] text-gray-400"
                     >{{ getGroupInOtherChannelLabel(group.id) }}</span>
                   </label>
                 </div>
@@ -341,10 +327,10 @@
             </div>
 
             <!-- Web Search Emulation (Anthropic only, hidden when global disabled) -->
-            <div v-if="section.platform === 'anthropic' && webSearchGlobalEnabled" class="border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
+            <div v-if="section.platform === 'anthropic' && webSearchGlobalEnabled" class="border-t border-gray-200 pt-3 dark:border-dark-600">
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.webSearchEmulation') }}
                   </label>
                   <p class="mt-0.5 text-[11px] text-red-500 dark:text-red-400">
@@ -356,10 +342,10 @@
             </div>
 
             <!-- Codex Image Generation Bridge (OpenAI only) -->
-            <div v-if="section.platform === 'openai'" class="border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
+            <div v-if="section.platform === 'openai'" class="border-t border-gray-200 pt-3 dark:border-dark-600">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <label class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.codexImageGenerationBridge') }}
                   </label>
                   <p class="mt-0.5 text-[11px] text-amber-600 dark:text-amber-400">
@@ -371,10 +357,10 @@
             </div>
 
             <!-- Bedrock CC Compatibility (Anthropic only) -->
-            <div v-if="section.platform === 'anthropic'" class="border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
+            <div v-if="section.platform === 'anthropic'" class="border-t border-gray-200 pt-3 dark:border-dark-600">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <label class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.bedrockCCCompat') }}
                   </label>
                   <p class="mt-0.5 text-[11px] text-amber-600 dark:text-amber-400">
@@ -389,13 +375,13 @@
             <div>
               <div class="mb-1 flex items-center justify-between">
                 <label class="input-label text-xs mb-0">{{ t('admin.channels.form.modelMapping', 'Model Mapping') }}</label>
-                <button data-testid="admin-channels-button-add-mapping-entry-s-idx" type="button" @click="addMappingEntry(sIdx)" class="text-xs text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]">
+                <button type="button" @click="addMappingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
                   + {{ t('common.add', 'Add') }}
                 </button>
               </div>
               <div
                 v-if="Object.keys(section.model_mapping).length === 0"
-                class="rounded border border-dashed border-[var(--anthropic-border)] p-2 text-center text-xs text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)]"
+                class="rounded border border-dashed border-gray-300 p-2 text-center text-xs text-gray-400 dark:border-dark-500"
               >
                 {{ t('admin.channels.form.noMappingRules', 'No mapping rules. Click "Add" to create one.') }}
               </div>
@@ -405,7 +391,7 @@
                   :key="srcModel"
                   class="flex items-center gap-2"
                 >
-                  <input data-testid="admin-channels-input-text"
+                  <input
                     :value="srcModel"
                     type="text"
                     class="input flex-1 text-xs"
@@ -413,8 +399,8 @@
                     :placeholder="t('admin.channels.form.mappingSource', 'Source model')"
                     @change="renameMappingKey(sIdx, srcModel, ($event.target as HTMLInputElement).value)"
                   />
-                  <span class="text-[var(--anthropic-muted)] text-xs">→</span>
-                  <input data-testid="admin-channels-input-text-2"
+                  <span class="text-gray-400 text-xs">→</span>
+                  <input
                     :value="section.model_mapping[srcModel]"
                     type="text"
                     class="input flex-1 text-xs"
@@ -422,10 +408,10 @@
                     :placeholder="t('admin.channels.form.mappingTarget', 'Target model')"
                     @input="section.model_mapping[srcModel] = ($event.target as HTMLInputElement).value"
                   />
-                  <button data-testid="admin-channels-button-remove-mapping-entry-s-idx-src-model"
+                  <button
                     type="button"
                     @click="removeMappingEntry(sIdx, srcModel)"
-                    class="rounded p-0.5 text-[var(--anthropic-muted)] hover:text-red-500"
+                    class="rounded p-0.5 text-gray-400 hover:text-red-500"
                   >
                     <Icon name="trash" size="sm" />
                   </button>
@@ -438,22 +424,22 @@
               <div class="mb-1 flex items-center justify-between">
                 <label class="input-label text-xs mb-0">{{ t('admin.channels.form.modelPricing', 'Model Pricing') }}</label>
                 <div class="flex items-center gap-2">
-                  <button data-testid="admin-channels-button-sync-latest-models-s-idx"
+                  <button
                     type="button"
                     @click="syncLatestModels(sIdx)"
                     :disabled="syncingPlatform === section.platform"
-                    class="text-xs text-[var(--anthropic-muted)] hover:text-[var(--anthropic-fg)] disabled:opacity-50"
+                    class="text-xs text-gray-500 hover:text-primary-600 disabled:opacity-50"
                   >
                     {{ syncingPlatform === section.platform ? t('admin.channels.form.syncingModels') : t('admin.channels.form.syncLatestModels') }}
                   </button>
-                  <button data-testid="admin-channels-button-add-pricing-entry-s-idx" type="button" @click="addPricingEntry(sIdx)" class="text-xs text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]">
+                  <button type="button" @click="addPricingEntry(sIdx)" class="text-xs text-primary-600 hover:text-primary-700">
                     + {{ t('common.add', 'Add') }}
                   </button>
                 </div>
               </div>
               <div
                 v-if="section.model_pricing.length === 0"
-                class="rounded border border-dashed border-[var(--anthropic-border)] p-2 text-center text-xs text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)]"
+                class="rounded border border-dashed border-gray-300 p-2 text-center text-xs text-gray-400 dark:border-dark-500"
               >
                 {{ t('admin.channels.form.noPricingRules', 'No pricing rules yet. Click "Add" to create one.') }}
               </div>
@@ -472,15 +458,15 @@
             </div>
 
             <!-- Account Stats Pricing Rules (per-platform, always visible) -->
-            <div class="mt-4 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)] space-y-3">
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-dark-700 space-y-3">
               <div class="flex items-center justify-between">
-                <h4 class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.channels.form.accountStatsPricingRules') }}
                 </h4>
-                <button data-testid="admin-channels-button-add-account-stats-rule-s-idx"
+                <button
                   type="button"
                   @click="addAccountStatsRule(sIdx)"
-                  class="rounded-lg border border-[var(--anthropic-fg)] px-3 py-1 text-xs font-medium text-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)]"
+                  class="rounded-lg border border-primary-300 px-3 py-1 text-xs font-medium text-primary-600 hover:bg-primary-50 dark:border-primary-600 dark:text-primary-400 dark:hover:bg-primary-900/20"
                 >
                   + {{ t('admin.channels.form.addRule') }}
                 </button>
@@ -489,7 +475,7 @@
               <!-- Filter rules for this platform's groups -->
               <p
                 v-if="section.account_stats_pricing_rules.length === 0"
-                class="text-xs italic text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="text-xs italic text-gray-400 dark:text-gray-500"
               >
                 {{ t('admin.channels.form.noRulesConfigured') }}
               </p>
@@ -497,58 +483,57 @@
               <div
                 v-for="(rule, ruleIndex) in section.account_stats_pricing_rules"
                 :key="ruleIndex"
-                class="space-y-3 rounded-lg border border-[var(--anthropic-border)] p-4 dark:border-[var(--anthropic-border)]"
+                class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
                 <div class="flex items-center justify-between">
-                  <input data-testid="admin-channels-input-rule-name"
+                  <input
                     v-model="rule.name"
                     :placeholder="t('admin.channels.form.ruleName')"
-                    class="bg-transparent text-sm font-medium text-[var(--anthropic-muted)] placeholder-gray-400 outline-none dark:text-[var(--anthropic-muted)]"
+                    class="bg-transparent text-sm font-medium text-gray-700 placeholder-gray-400 outline-none dark:text-gray-300"
                   />
-                  <button data-testid="admin-channels-button-remove-account-stats-rule-s-idx-rule-index" type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-red-500 hover:text-red-700">
+                  <button type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-red-500 hover:text-red-700">
                     {{ t('common.delete') }}
                   </button>
                 </div>
 
                 <div>
-                  <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.channels.form.ruleGroups') }}</label>
+                  <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.channels.form.ruleGroups') }}</label>
                   <div class="mt-1 flex flex-wrap gap-1">
                     <label
                       v-for="gid in section.group_ids"
                       :key="gid"
                       class="inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors"
                       :class="rule.group_ids.includes(gid)
-                        ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]'
-                        : 'border-[var(--anthropic-border)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:hover:bg-[var(--anthropic-raised)]'"
+                        ? 'border-primary-300 bg-primary-50 dark:border-primary-700 dark:bg-primary-900/20'
+                        : 'border-gray-200 hover:bg-gray-50 dark:border-dark-600 dark:hover:bg-dark-700'"
                     >
-                      <input data-testid="admin-channels-input-checkbox-3" type="checkbox" :checked="rule.group_ids.includes(gid)" class="h-3 w-3 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]" @change="rule.group_ids.includes(gid) ? rule.group_ids.splice(rule.group_ids.indexOf(gid), 1) : rule.group_ids.push(gid)" />
+                      <input type="checkbox" :checked="rule.group_ids.includes(gid)" class="h-3 w-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500" @change="rule.group_ids.includes(gid) ? rule.group_ids.splice(rule.group_ids.indexOf(gid), 1) : rule.group_ids.push(gid)" />
                       <span :class="['font-medium', platformTextClass(section.platform)]">{{ getGroupNameById(gid) }}</span>
                     </label>
                   </div>
-                  <p v-if="section.group_ids.length === 0" class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                  <p v-if="section.group_ids.length === 0" class="mt-1 text-xs text-gray-400">
                     {{ t('admin.channels.form.noGroupsInChannel') }}
                   </p>
                 </div>
 
                 <div>
-                  <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.channels.form.ruleAccounts') }}</label>
+                  <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.channels.form.ruleAccounts') }}</label>
                   <!-- Selected account chips -->
                   <div class="mt-1 flex flex-wrap gap-1">
                     <span
                       v-for="accountId in rule.account_ids"
                       :key="accountId"
-                      class="inline-flex items-center gap-1 rounded-md border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-2 py-0.5 text-xs dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]"
+                      class="inline-flex items-center gap-1 rounded-md border border-primary-300 bg-primary-50 px-2 py-0.5 text-xs dark:border-primary-700 dark:bg-primary-900/20"
                     >
                       <span :class="['font-medium', platformTextClass(section.platform)]">{{ getRuleAccountLabel(accountId) }}</span>
-                      <button data-testid="admin-channels-button-remove-rule-account-rule-account-id" type="button" @click="removeRuleAccount(rule, accountId)" class="text-[var(--anthropic-muted)] hover:text-red-500">
+                      <button type="button" @click="removeRuleAccount(rule, accountId)" class="text-gray-400 hover:text-red-500">
                         <Icon name="x" size="xs" />
                       </button>
                     </span>
                   </div>
                   <!-- Account search input -->
                   <div class="relative mt-1 rule-account-search-container">
-                    <input data-testid="admin-channels-input-rule-account-search-keyword-section-platform-rule-index"
-                      :ref="el => setRuleAccountSearchInputRef(section.platform, ruleIndex, el)"
+                    <input
                       v-model="ruleAccountSearchKeyword[`${section.platform}-${ruleIndex}`]"
                       type="text"
                       class="input text-sm"
@@ -557,39 +542,37 @@
                       @focus="onRuleAccountSearchFocus(section.platform, ruleIndex)"
                     />
                     <!-- Search results dropdown -->
-                    <FloatingDropdown
-                      :show="showRuleAccountDropdown[`${section.platform}-${ruleIndex}`] && (ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]?.length ?? 0) > 0"
-                      :trigger-el="getRuleAccountSearchInputRef(section.platform, ruleIndex)"
-                      :match-width="true"
-                      panel-class="max-h-48 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                    <div
+                      v-if="showRuleAccountDropdown[`${section.platform}-${ruleIndex}`] && (ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]?.length ?? 0) > 0"
+                      class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                     >
-                      <button data-testid="admin-channels-button-select-rule-account-rule-account"
+                      <button
                         v-for="account in ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]"
                         :key="account.id"
                         type="button"
                         @click="selectRuleAccount(rule, account, section.platform, ruleIndex)"
-                        class="w-full px-3 py-2 text-left text-sm hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+                        class="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
                         :class="{ 'opacity-50': rule.account_ids.includes(account.id) }"
                         :disabled="rule.account_ids.includes(account.id)"
                       >
                         <span :class="platformTextClass(account.platform)">{{ account.name }}</span>
-                        <span class="ml-2 text-xs text-[var(--anthropic-muted)]">#{{ account.id }}</span>
+                        <span class="ml-2 text-xs text-gray-400">#{{ account.id }}</span>
                       </button>
-                    </FloatingDropdown>
+                    </div>
                   </div>
-                  <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+                  <p class="mt-1 text-xs text-gray-400">
                     {{ t('admin.channels.form.ruleAccountsHint') }}
                   </p>
                 </div>
 
                 <div>
                   <div class="mb-1 flex items-center justify-between">
-                    <label class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.channels.form.ruleModelPricing') }}</label>
-                    <button data-testid="admin-channels-button-add-rule-pricing-entry-s-idx-rule-index" type="button" @click="addRulePricingEntry(sIdx, ruleIndex)" class="text-xs text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)]">
+                    <label class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.channels.form.ruleModelPricing') }}</label>
+                    <button type="button" @click="addRulePricingEntry(sIdx, ruleIndex)" class="text-xs text-primary-600 hover:text-primary-700">
                       + {{ t('common.add') }}
                     </button>
                   </div>
-                  <div v-if="rule.pricing.length === 0" class="rounded border border-dashed border-[var(--anthropic-border)] p-2 text-center text-xs text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)]">
+                  <div v-if="rule.pricing.length === 0" class="rounded border border-dashed border-gray-300 p-2 text-center text-xs text-gray-400 dark:border-dark-500">
                     {{ t('admin.channels.form.noPricingRules') }}
                   </div>
                   <div v-else class="space-y-2">
@@ -611,10 +594,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="admin-channels-button-close-dialog" @click="closeDialog" type="button" class="btn btn-secondary">
+          <button @click="closeDialog" type="button" class="btn btn-secondary">
             {{ t('common.cancel', 'Cancel') }}
           </button>
-          <button data-testid="admin-channels-button-submit"
+          <button
             type="submit"
             form="channel-form"
             :disabled="submitting"
@@ -646,8 +629,9 @@
 </template>
 
 <script setup lang="ts">
+import LogoPicker from '@/components/common/LogoPicker.vue'
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
@@ -666,9 +650,6 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
-import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
-import LogoPicker from '@/components/common/LogoPicker.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import Toggle from '@/components/common/Toggle.vue'
@@ -1025,22 +1006,8 @@ interface SimpleAccount { id: number; name: string; platform: string }
 const ruleAccountSearchKeyword = ref<Record<string, string>>({})
 const ruleAccountSearchResults = ref<Record<string, SimpleAccount[]>>({})
 const showRuleAccountDropdown = ref<Record<string, boolean>>({})
-const ruleAccountSearchInputRefs = ref<Record<string, HTMLElement>>({})
 // Cache: account ID → name, populated when search results are selected
 const ruleAccountNameCache = ref<Record<number, string>>({})
-
-function setRuleAccountSearchInputRef(platform: string, ruleIndex: number, el: Element | ComponentPublicInstance | null) {
-  const key = `${platform}-${ruleIndex}`
-  if (el instanceof HTMLElement) {
-    ruleAccountSearchInputRefs.value[key] = el
-  } else {
-    delete ruleAccountSearchInputRefs.value[key]
-  }
-}
-
-function getRuleAccountSearchInputRef(platform: string, ruleIndex: number): HTMLElement | null {
-  return ruleAccountSearchInputRefs.value[`${platform}-${ruleIndex}`] ?? null
-}
 
 const ruleAccountSearchRunner = useKeyedDebouncedSearch<SimpleAccount[]>({
   delay: 300,
@@ -1525,14 +1492,14 @@ async function handleSubmit() {
   for (const section of form.platforms.filter(s => s.enabled)) {
     if (section.group_ids.length === 0) {
       const platformLabel = t('admin.groups.platforms.' + section.platform, section.platform)
-      appStore.showError(t('admin.channels.noGroupsSelected', { platform: platformLabel }, `${platformLabel} 平台未选择分组，请至少选择一个分组或禁用该平台`))
+      appStore.showError(t('admin.channels.noGroupsSelected', { platform: platformLabel }))
       activeTab.value = section.platform
       return
     }
     for (const entry of section.model_pricing) {
       if (entry.models.length === 0) {
         const platformLabel = t('admin.groups.platforms.' + section.platform, section.platform)
-        appStore.showError(t('admin.channels.emptyModelsInPricing', { platform: platformLabel }, `${platformLabel} 平台下有定价条目未添加模型，请添加模型或删除该条目`))
+        appStore.showError(t('admin.channels.emptyModelsInPricing', { platform: platformLabel }))
         activeTab.value = section.platform
         return
       }
@@ -1550,8 +1517,7 @@ async function handleSubmit() {
     if (pricingConflict) {
       appStore.showError(
         t('admin.channels.modelConflict',
-          { model1: pricingConflict[0], model2: pricingConflict[1] },
-          `模型模式 '${pricingConflict[0]}' 和 '${pricingConflict[1]}' 冲突：匹配范围重叠`)
+          { model1: pricingConflict[0], model2: pricingConflict[1] })
       )
       activeTab.value = section.platform
       return
@@ -1563,8 +1529,7 @@ async function handleSubmit() {
       if (mappingConflict) {
         appStore.showError(
           t('admin.channels.mappingConflict',
-            { model1: mappingConflict[0], model2: mappingConflict[1] },
-            `模型映射源 '${mappingConflict[0]}' 和 '${mappingConflict[1]}' 冲突：匹配范围重叠`)
+            { model1: mappingConflict[0], model2: mappingConflict[1] })
         )
         activeTab.value = section.platform
         return
@@ -1579,7 +1544,7 @@ async function handleSubmit() {
       if ((entry.billing_mode === 'per_request' || entry.billing_mode === 'image') &&
           (entry.per_request_price == null || entry.per_request_price === '') &&
           (!entry.intervals || entry.intervals.length === 0)) {
-        appStore.showError(t('admin.channels.form.perRequestPriceRequired', '按次/图片计费模式必须设置默认价格或至少一个计费层级'))
+        appStore.showError(t('admin.channels.form.perRequestPriceRequired'))
         return
       }
     }
@@ -1663,7 +1628,7 @@ async function handleSubmit() {
     } else {
       const req: CreateChannelRequest = {
         name: form.name.trim(),
-        logo_url: form.logo_url.trim() || undefined,
+        logo_url: form.logo_url.trim(),
         description: form.description.trim() || undefined,
         group_ids,
         model_pricing,

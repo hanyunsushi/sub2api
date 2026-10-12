@@ -1,11 +1,10 @@
 <template>
   <div class="relative w-full">
     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-      <Icon name="search" size="md" class="text-[var(--anthropic-muted)]" />
+      <Icon name="search" size="md" class="text-gray-400" />
     </div>
     <input
       v-model="searchValue"
-      data-testid="common-search-input-input-text"
       type="text"
       class="input pl-10"
       :placeholder="placeholder"

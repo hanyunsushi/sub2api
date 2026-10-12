@@ -1,6 +1,6 @@
 ---
 title: Data Flow
-updated: 2026-09-14
+updated: 2026-10-11
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -17,7 +17,7 @@ Browser -> Tunnel/proxy -> Gin route -> auth/middleware -> service/repository
                                                     <- response
 ```
 
-The frontend bootstraps injected settings, initializes Pinia and i18n, waits for router readiness, then mounts. After mount it checks setup status and loads public settings. Authentication changes drive subscription polling and announcement loading; logout clears those stores.
+The frontend bootstraps injected settings, initializes Pinia and i18n, waits for router readiness, then mounts. After mount it checks setup status and loads public settings. Authentication changes drive subscription polling and announcement loading; logout clears those stores. Admin identity or permission changes synchronously clear external-quota snapshots; request generations prevent pending responses from restoring cleared browser storage. External statuses are loaded by admin subscription management and account quota consumers; the header and monitor grid have no external balance/capacity dependency.
 
 Security headers are applied before the embedded frontend middleware. The only
 cross-origin document exception is `GET`/`HEAD /admin/dashboard`, whose

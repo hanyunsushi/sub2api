@@ -17,10 +17,7 @@ async function chooseDraft() {
     },
   })
   await wrapper.get('.date-picker-trigger').trigger('click')
-  const preset = [...document.body.querySelectorAll<HTMLButtonElement>('.date-picker-preset')]
-    .find(node => node.textContent === 'dates.last7Days')
-  if (!preset) throw new Error('last7Days preset not rendered')
-  preset.click()
+  await wrapper.findAll('.date-picker-preset').find(node => node.text() === 'dates.last7Days')!.trigger('click')
 }
 
 describe('DateRangePicker unapplied changes', () => {
@@ -28,23 +25,23 @@ describe('DateRangePicker unapplied changes', () => {
     await chooseDraft()
     if (method === 'outside') document.body.click()
     else if (method === 'escape') document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    else document.body.click()
+    else await wrapper.get('.date-picker-trigger').trigger('click')
     await nextTick()
     expect(wrapper.emitted('change')).toBeUndefined()
     expect(wrapper.get('.date-picker-trigger').text()).toContain('dates.today')
     await wrapper.get('.date-picker-trigger').trigger('click')
-    expect([...document.body.querySelectorAll<HTMLInputElement>('.date-picker-input')].map(input => input.value))
+    expect(wrapper.findAll<HTMLInputElement>('input[type="date"]').map(input => input.element.value))
       .toEqual(['2026-09-13', '2026-09-13'])
   })
 
   it('retains a newly applied range after the parent accepts both updates', async () => {
     await chooseDraft()
-    document.body.querySelector<HTMLButtonElement>('.date-picker-apply')?.click()
+    await wrapper.get('.date-picker-apply').trigger('click')
     await nextTick()
     expect(wrapper.emitted('change')).toEqual([[{ startDate: '2026-09-07', endDate: '2026-09-13', preset: '7days' }]])
     expect(wrapper.get('.date-picker-trigger').text()).toContain('dates.last7Days')
     await wrapper.get('.date-picker-trigger').trigger('click')
-    expect([...document.body.querySelectorAll<HTMLInputElement>('.date-picker-input')].map(input => input.value))
+    expect(wrapper.findAll<HTMLInputElement>('input[type="date"]').map(input => input.element.value))
       .toEqual(['2026-09-07', '2026-09-13'])
   })
 })

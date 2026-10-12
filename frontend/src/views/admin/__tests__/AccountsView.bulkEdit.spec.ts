@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, shallowMount } from '@vue/test-utils'
 
 import AccountsView from '../AccountsView.vue'
 
@@ -13,6 +13,9 @@ const {
   getAllGroups,
   probeUpstreamBilling,
   probeUpstreamBillingBatch,
+  externalStatuses,
+  saveQuotaPreference,
+  authState,
   showError,
   showSuccess
 } = vi.hoisted(() => ({
@@ -25,6 +28,9 @@ const {
   getAllGroups: vi.fn(),
   probeUpstreamBilling: vi.fn(),
   probeUpstreamBillingBatch: vi.fn(),
+  externalStatuses: vi.fn(),
+  saveQuotaPreference: vi.fn(),
+  authState: { token: 'test-token', isAdmin: false, user: { id: 1 } },
   showError: vi.fn(),
   showSuccess: vi.fn()
 }))
@@ -62,9 +68,20 @@ vi.mock('@/stores/app', () => ({
 }))
 
 vi.mock('@/stores/auth', () => ({
-  useAuthStore: () => ({
-    token: 'test-token'
-  })
+  useAuthStore: () => authState
+}))
+
+vi.mock('@/api/admin/externalSubscriptions', () => ({ default: {
+  getDisplayStatuses: externalStatuses,
+  subscribeDisplayStatuses: () => () => {},
+} }))
+vi.mock('@/composables/useAccountExternalQuotaProgressSettings', () => ({
+  buildAccountExternalQuotaProgressPreferenceKey: () => '101:pixel',
+  useAccountExternalQuotaProgressSettings: () => ({
+    loadAccountExternalQuotaProgressSettings: async () => ({}),
+    getAccountExternalQuotaProgressPreference: () => ({ enabled: true, mode: 'status_total' }),
+    setAccountExternalQuotaProgressPreference: saveQuotaPreference,
+  }),
 }))
 
 vi.mock('vue-i18n', async () => {
@@ -83,7 +100,7 @@ const DataTableStub = {
     <div data-test="data-table">
       <span v-for="column in columns" :key="column.key" data-test="column-key">{{ column.key }}</span>
       <div v-for="row in data" :key="row.id">
-        <slot name="cell-select" :value="row.select" :row="row" />
+        <div data-test="select-row"><slot name="cell-select" :row="row" /></div>
         <slot name="cell-created_at" :value="row.created_at" :row="row" />
         <div data-test="account-rate"><slot name="cell-rate_multiplier" :row="row" /></div>
       </div>
@@ -95,9 +112,8 @@ const ProbeDataTableStub = {
   props: ['data'],
   template: `
     <div>
-    <div v-for="row in data" :key="row.id">
-      <slot name="cell-select" :row="row" />
-      <div data-test="account-rate"><slot name="cell-rate_multiplier" :row="row" /></div>
+      <div v-for="row in data" :key="row.id">
+        <div data-test="account-rate"><slot name="cell-rate_multiplier" :row="row" /></div>
         <slot name="cell-upstream_billing_rate" :row="row" />
       </div>
     </div>
@@ -128,6 +144,9 @@ const BulkEditAccountModalStub = {
 describe('admin AccountsView bulk edit scope', () => {
   beforeEach(() => {
     localStorage.clear()
+    authState.isAdmin = false
+    externalStatuses.mockReset().mockResolvedValue([])
+    saveQuotaPreference.mockReset().mockResolvedValue(undefined)
 
     listAccounts.mockReset()
     listWithEtag.mockReset()
@@ -164,6 +183,39 @@ describe('admin AccountsView bulk edit scope', () => {
     getAllGroups.mockResolvedValue([])
     probeUpstreamBilling.mockResolvedValue({})
     probeUpstreamBillingBatch.mockResolvedValue([])
+  })
+
+  it.each([false, true])('keeps external quota matching and the settings action usable (saveFails=%s)', async saveFails => {
+    authState.isAdmin = true
+    const account = { id: 101, name: 'Pixel Key', platform: 'openai', type: 'apikey', credentials: {}, extra: {}, status: 'active' }
+    const status = {
+      provider: 'pixel', name: 'Pixel', template: 'pixel_access_token', balance_strategy: 'pixel_user_quota',
+      enabled: true, configured: true, match_keywords: ['pixel'], sort_order: 0, currency: 'CNY',
+      site_url: 'https://example.com', total_limit_usd: 30, used_usd: 10, remaining_usd: 20,
+      subscriptions: [], active_count: 0,
+    }
+    externalStatuses.mockResolvedValue([status])
+    listAccounts.mockResolvedValue({ items: [account], total: 1, page: 1, page_size: 20, pages: 1 })
+    if (saveFails) saveQuotaPreference.mockRejectedValue(new Error('failed to save'))
+    const wrapper = shallowMount(AccountsView, { global: { stubs: {
+      AppLayout: { template: '<div><slot /></div>' },
+      TablePageLayout: { template: '<div><slot name="table" /></div>' },
+      DataTable: { props: ['data'], template: '<div v-for="row in data" :key="row.id"><slot name="cell-name" :row="row" :value="row.name" /><slot name="cell-actions" :row="row" /></div>' },
+      HelpTooltip: { template: '<span><slot /></span>' },
+    } } })
+    await flushPromises()
+    expect(wrapper.get('[data-testid="account-external-quota"]').text()).toContain('¥20.00 / ¥30.00')
+    await wrapper.get('[data-testid="account-external-quota-progress-action"]').trigger('click')
+    const modal = wrapper.findComponent({ name: 'ExternalQuotaProgressSettingsModal' })
+    expect(modal.props('show')).toBe(true)
+    expect(modal.props('subscription')).toMatchObject({ provider: 'pixel' })
+    const preference = { enabled: true, mode: 'custom_total', customTotal: 50 }
+    modal.vm.$emit('save', preference)
+    await flushPromises()
+    expect(saveQuotaPreference).toHaveBeenCalledWith(expect.objectContaining({ id: 101 }), expect.objectContaining({ provider: 'pixel' }), preference)
+    expect(modal.props('show')).toBe(saveFails)
+    if (saveFails) expect(showError).toHaveBeenCalled()
+    wrapper.unmount()
   })
 
   it('opens bulk edit in filtered-results mode from the bulk actions dropdown', async () => {
@@ -280,19 +332,18 @@ describe('admin AccountsView bulk edit scope', () => {
     })
   })
 
-  it('shows account priority beside the card selection checkbox', async () => {
+  it('passes the loaded global probe state to every upstream billing cell', async () => {
     listAccounts.mockResolvedValue({
       items: [
         {
-          id: 7,
-          name: 'priority-account',
-          platform: 'anthropic',
-          type: 'oauth',
-          priority: 8,
+          id: 1,
+          name: 'upstream',
+          platform: 'openai',
+          type: 'apikey',
           status: 'active',
           schedulable: true,
-          created_at: '2026-03-07T10:00:00Z',
-          updated_at: '2026-03-07T10:00:00Z'
+          created_at: '2026-07-13T00:00:00Z',
+          updated_at: '2026-07-13T00:00:00Z'
         }
       ],
       total: 1,
@@ -300,19 +351,81 @@ describe('admin AccountsView bulk edit scope', () => {
       page_size: 20,
       pages: 1
     })
+    getUpstreamBillingProbeSettings.mockResolvedValue({ enabled: false, interval_minutes: 30 })
 
     const wrapper = mount(AccountsView, {
       global: {
         stubs: {
           AppLayout: { template: '<div><slot /></div>' },
-          TablePageLayout: {
-            template: '<div><slot name="filters" /><slot name="table" /><slot name="pagination" /></div>'
+          TablePageLayout: { template: '<div><slot name="table" /></div>' },
+          DataTable: {
+            props: ['data'],
+            template: '<div><div v-for="row in data" :key="row.id"><slot name="cell-upstream_billing_rate" :row="row" /></div></div>'
           },
-          DataTable: DataTableStub,
+          UpstreamBillingRateCell: {
+            props: ['globalProbeEnabled'],
+            template: '<span data-test="upstream-billing-cell" :data-global-enabled="String(globalProbeEnabled)"></span>'
+          },
           Pagination: true,
           ConfirmDialog: true,
-          AccountTableActions: { template: '<div><slot name="beforeCreate" /><slot name="after" /></div>' },
-          AccountTableFilters: { template: '<div></div>' },
+          AccountTableActions: true,
+          AccountTableFilters: true,
+          AccountBulkActionsBar: true,
+          AccountActionMenu: true,
+          ImportDataModal: true,
+          ReAuthAccountModal: true,
+          AccountTestModal: true,
+          AccountStatsModal: true,
+          ScheduledTestsPanel: true,
+          SyncFromCrsModal: true,
+          TempUnschedStatusModal: true,
+          ErrorPassthroughRulesModal: true,
+          TLSFingerprintProfilesModal: true,
+          CreateAccountModal: true,
+          EditAccountModal: true,
+          BulkEditAccountModal: true,
+          PlatformTypeBadge: true,
+          AccountCapacityCell: true,
+          AccountStatusIndicator: true,
+          AccountTodayStatsCell: true,
+          AccountGroupsCell: true,
+          AccountUsageCell: true,
+          Icon: true
+        }
+      }
+    })
+
+    await flushPromises()
+
+    expect(getUpstreamBillingProbeSettings).toHaveBeenCalledTimes(1)
+    expect(wrapper.get('[data-test="upstream-billing-cell"]').attributes('data-global-enabled')).toBe('false')
+  })
+
+  it('submits selected account IDs from every page for backend eligibility checks', async () => {
+    const account = (id: number) => ({
+      id,
+      name: `account-${id}`,
+      platform: 'openai',
+      type: 'apikey',
+      status: 'active',
+      schedulable: true,
+      created_at: '2026-07-13T00:00:00Z',
+      updated_at: '2026-07-13T00:00:00Z'
+    })
+    listAccounts
+      .mockResolvedValueOnce({ items: [account(7)], total: 2, page: 1, page_size: 1, pages: 2 })
+      .mockResolvedValueOnce({ items: [account(11)], total: 2, page: 2, page_size: 1, pages: 2 })
+
+    const wrapper = mount(AccountsView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          TablePageLayout: { template: '<div><slot name="table" /><slot name="pagination" /></div>' },
+          DataTable: DataTableStub,
+          Pagination: PaginationStub,
+          ConfirmDialog: true,
+          AccountTableActions: true,
+          AccountTableFilters: true,
           AccountBulkActionsBar: AccountBulkActionsBarStub,
           AccountActionMenu: true,
           ImportDataModal: true,
@@ -339,9 +452,14 @@ describe('admin AccountsView bulk edit scope', () => {
     })
 
     await flushPromises()
+    await wrapper.get('[data-test="select-row"] input').trigger('change')
+    await wrapper.get('[data-test="next-page"]').trigger('click')
+    await flushPromises()
+    await wrapper.get('[data-test="select-row"] input').trigger('change')
+    await wrapper.get('[data-test="probe-upstream-billing"]').trigger('click')
+    await flushPromises()
 
-    expect(wrapper.get('[data-testid="account-card-priority"]').text()).toContain('P8')
-    expect(probeUpstreamBillingBatch).not.toHaveBeenCalled()
+    expect(probeUpstreamBillingBatch).toHaveBeenCalledWith([7, 11])
   })
 
   it('updates the current page locally after a batch probe', async () => {
@@ -411,7 +529,7 @@ describe('admin AccountsView bulk edit scope', () => {
     await flushPromises()
     await wrapper.get('[data-test="next-page"]').trigger('click')
     await flushPromises()
-    await wrapper.get('[data-test="select-row"]').trigger('change')
+    await wrapper.get('[data-test="select-row"] input').trigger('change')
     await wrapper.get('[data-test="probe-upstream-billing"]').trigger('click')
     await flushPromises()
 
@@ -483,7 +601,7 @@ describe('admin AccountsView bulk edit scope', () => {
     })
 
     await flushPromises()
-    await wrapper.get('[data-test="select-row"]').trigger('change')
+    await wrapper.get('[data-test="select-row"] input').trigger('change')
     await wrapper.get('[data-test="probe-upstream-billing"]').trigger('click')
     await flushPromises()
 

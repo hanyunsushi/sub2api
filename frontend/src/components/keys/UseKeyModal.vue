@@ -24,14 +24,14 @@
       <!-- Platform-specific content -->
       <template v-else>
         <!-- Description -->
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           {{ platformDescription }}
         </p>
 
         <!-- Client Tabs -->
-        <div v-if="clientTabs.length" class="overflow-x-auto border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-          <nav class="-mb-px flex min-w-max space-x-6" aria-label="Client">
-            <button data-testid="keys-use-key-button-active-client-tab-tab-id"
+        <div v-if="clientTabs.length" class="overflow-x-auto border-b border-gray-200 dark:border-dark-700">
+          <nav class="-mb-px flex min-w-max gap-4 sm:gap-6" aria-label="Client">
+            <button
               v-for="tab in clientTabs"
               :key="tab.id"
               type="button"
@@ -39,8 +39,8 @@
               :class="[
                 'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-sm transition-colors',
                 activeClientTab === tab.id
-                  ? 'border-[var(--anthropic-fg)] text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
-                  : 'border-transparent text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] hover:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               ]"
             >
               <span class="flex items-center gap-2">
@@ -111,9 +111,9 @@
         </div>
 
         <!-- OS/Shell Tabs -->
-        <div v-if="showShellTabs" class="border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-          <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-            <button data-testid="keys-use-key-button-active-tab-tab-id"
+        <div v-if="showShellTabs" class="overflow-x-auto border-b border-gray-200 dark:border-dark-700">
+          <nav class="-mb-px flex min-w-max gap-4" aria-label="Tabs">
+            <button
               v-for="tab in currentTabs"
               :key="tab.id"
               type="button"
@@ -121,8 +121,8 @@
               :class="[
                 'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-sm transition-colors',
                 activeTab === tab.id
-                  ? 'border-[var(--anthropic-fg)] text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]'
-                  : 'border-transparent text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] hover:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
               ]"
             >
               <span class="flex items-center gap-2">
@@ -145,11 +145,12 @@
               <Icon name="exclamationCircle" size="sm" class="flex-shrink-0" />
               {{ file.hint }}
             </p>
-            <div class="bg-gray-900 dark:bg-[var(--anthropic-section)] rounded-xl overflow-hidden">
+            <div class="bg-gray-900 dark:bg-dark-900 rounded-xl overflow-hidden">
               <!-- Code Header -->
-              <div class="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-[var(--anthropic-section)] border-b border-gray-700 dark:border-[var(--anthropic-border)]">
-                <span class="text-xs text-[var(--anthropic-muted)] font-mono">{{ file.path }}</span>
-                <button data-testid="keys-use-key-button-copy-content-file-content-index"
+              <div class="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-dark-800 border-b border-gray-700 dark:border-dark-700">
+                <span class="min-w-0 truncate text-xs text-gray-400 font-mono">{{ file.path }}</span>
+                <button
+                  type="button"
                   @click="copyContent(file.content, index)"
                   class="flex flex-shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-colors"
                   :class="copiedIndex === index
@@ -243,9 +244,9 @@
         </section>
 
         <!-- Usage Note -->
-        <div v-if="showPlatformNote" class="flex items-start gap-3 p-3 rounded-lg bg-[var(--anthropic-info-bg)] dark:bg-[var(--anthropic-info-bg)] border border-[var(--anthropic-info-border)] dark:border-[var(--anthropic-info-border)]">
-          <Icon name="infoCircle" size="md" class="text-[var(--anthropic-info)] flex-shrink-0 mt-0.5" />
-          <p class="text-sm text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">
+        <div v-if="showPlatformNote" class="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+          <Icon name="infoCircle" size="md" class="text-blue-500 flex-shrink-0 mt-0.5" />
+          <p class="text-sm text-blue-700 dark:text-blue-300">
             {{ platformNote }}
           </p>
         </div>
@@ -254,7 +255,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="keys-use-key-button-emit-close"
+        <button
           @click="emit('close')"
           class="btn btn-secondary"
         >
@@ -717,7 +718,7 @@ const wrapToken = (className: string, value: string) =>
   `<span class="${className}">${escapeHtml(value)}</span>`
 
 const keyword = (value: string) => wrapToken('text-emerald-300', value)
-const variable = (value: string) => wrapToken('text-[var(--anthropic-info)]', value)
+const variable = (value: string) => wrapToken('text-sky-200', value)
 const operator = (value: string) => wrapToken('text-slate-400', value)
 const string = (value: string) => wrapToken('text-amber-200', value)
 const comment = (value: string) => wrapToken('text-slate-500', value)

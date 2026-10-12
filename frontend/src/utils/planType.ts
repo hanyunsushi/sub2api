@@ -1,4 +1,4 @@
-/** OpenAI subscription SKU identity and the current local Codex display names. Other providers use their own labels. */
+/** OpenAI subscription SKU identity and Codex display names. Other providers use their own labels. */
 export function normalizePlanType(value?: string | null): string {
   return (value || '').trim().toLowerCase().replace(/[\s_-]+/g, '')
 }
@@ -17,16 +17,16 @@ export const openAIPlanTypes = [
   'edu', 'edu_plus', 'edu_pro', 'unknown'
 ] as const
 
-/** Keep official SKU coverage while preserving the current local labels for existing tiers. */
+/** Keep Status SKU names distinct from the account families used in analytics. */
 export function openAIPlanTypeLabel(value?: string | null, display: 'status' | 'analytics' = 'status'): string {
   switch (openAIPlanTypeKey(value)) {
     case 'free': return 'Free'
     case 'go': return 'Go'
     case 'plus': return 'Plus'
-    case 'prolite': return 'Pro 5x'
-    case 'pro': return 'Pro 20x'
+    case 'prolite': return 'Pro 100'
+    case 'pro': return 'Pro 200'
     case 'promax': return 'Pro 500'
-    case 'team': return 'Business Standard'
+    case 'team':
     case 'selfservebusinessusagebased': return 'Business'
     case 'business': return display === 'status' ? 'Enterprise' : 'Business'
     case 'selfservebusinessprolite': return display === 'status' ? 'Business Premium' : 'Business'

@@ -8,10 +8,10 @@
     <div class="space-y-4">
       <!-- Header -->
       <div class="flex items-center justify-between">
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('admin.tlsFingerprintProfiles.description') }}
         </p>
-        <button data-testid="admin-tls-fingerprint-profiles-button-show-create-modal-on" @click="showCreateModal = true" class="btn btn-primary btn-sm">
+        <button @click="showCreateModal = true" class="btn btn-primary btn-sm">
           <Icon name="plus" size="sm" class="mr-1" />
           {{ t('admin.tlsFingerprintProfiles.createProfile') }}
         </button>
@@ -19,58 +19,58 @@
 
       <!-- Profiles Table -->
       <div v-if="loading" class="flex items-center justify-center py-8">
-        <Icon name="refresh" size="lg" class="animate-spin text-[var(--anthropic-muted)]" />
+        <Icon name="refresh" size="lg" class="animate-spin text-gray-400" />
       </div>
 
       <div v-else-if="profiles.length === 0" class="py-8 text-center">
-        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
-          <Icon name="shield" size="lg" class="text-[var(--anthropic-muted)]" />
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700">
+          <Icon name="shield" size="lg" class="text-gray-400" />
         </div>
-        <h4 class="mb-1 text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h4 class="mb-1 text-sm font-medium text-gray-900 dark:text-white">
           {{ t('admin.tlsFingerprintProfiles.noProfiles') }}
         </h4>
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('admin.tlsFingerprintProfiles.createFirstProfile') }}
         </p>
       </div>
 
-      <div v-else class="max-h-96 overflow-auto rounded-lg border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+      <div v-else class="max-h-96 overflow-auto rounded-lg border border-gray-200 dark:border-dark-600">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-          <thead class="sticky top-0 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
+          <thead class="sticky top-0 bg-gray-50 dark:bg-dark-700">
             <tr>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
                 {{ t('admin.tlsFingerprintProfiles.columns.name') }}
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
                 {{ t('admin.tlsFingerprintProfiles.columns.description') }}
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
                 {{ t('admin.tlsFingerprintProfiles.columns.grease') }}
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
                 {{ t('admin.tlsFingerprintProfiles.columns.alpn') }}
               </th>
-              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-3 py-2 text-left text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
                 {{ t('admin.tlsFingerprintProfiles.columns.actions') }}
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 bg-[var(--anthropic-page)] dark:divide-dark-700 dark:bg-[var(--anthropic-section)]">
-            <tr v-for="profile in profiles" :key="profile.id" class="hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]">
+          <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-800">
+            <tr v-for="profile in profiles" :key="profile.id" class="hover:bg-gray-50 dark:hover:bg-dark-700">
               <td class="px-3 py-2">
-                <div class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] text-sm">{{ profile.name }}</div>
+                <div class="font-medium text-gray-900 dark:text-white text-sm">{{ profile.name }}</div>
               </td>
               <td class="px-3 py-2">
-                <div v-if="profile.description" class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] max-w-xs truncate">
+                <div v-if="profile.description" class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
                   {{ profile.description }}
                 </div>
-                <div v-else class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">—</div>
+                <div v-else class="text-xs text-gray-400 dark:text-gray-600">—</div>
               </td>
               <td class="px-3 py-2">
                 <Icon
                   :name="profile.enable_grease ? 'check' : 'lock'"
                   size="sm"
-                  :class="profile.enable_grease ? 'text-green-500' : 'text-[var(--anthropic-muted)]'"
+                  :class="profile.enable_grease ? 'text-green-500' : 'text-gray-400'"
                 />
               </td>
               <td class="px-3 py-2">
@@ -82,24 +82,24 @@
                   >
                     {{ proto }}
                   </span>
-                  <span v-if="profile.alpn_protocols.length > 3" class="text-xs text-[var(--anthropic-muted)]">
+                  <span v-if="profile.alpn_protocols.length > 3" class="text-xs text-gray-500">
                     +{{ profile.alpn_protocols.length - 3 }}
                   </span>
                 </div>
-                <div v-else class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">—</div>
+                <div v-else class="text-xs text-gray-400 dark:text-gray-600">—</div>
               </td>
               <td class="px-3 py-2">
                 <div class="flex items-center gap-1">
-                  <button data-testid="admin-tls-fingerprint-profiles-button-handle-edit-profile"
+                  <button
                     @click="handleEdit(profile)"
-                    class="p-1 text-[var(--anthropic-muted)] hover:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+                    class="p-1 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400"
                     :title="t('common.edit')"
                   >
                     <Icon name="edit" size="sm" />
                   </button>
-                  <button data-testid="admin-tls-fingerprint-profiles-button-handle-delete-profile"
+                  <button
                     @click="handleDelete(profile)"
-                    class="p-1 text-[var(--anthropic-muted)] hover:text-red-600 dark:hover:text-red-400"
+                    class="p-1 text-gray-500 hover:text-red-600 dark:hover:text-red-400"
                     :title="t('common.delete')"
                   >
                     <Icon name="trash" size="sm" />
@@ -114,7 +114,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="admin-tls-fingerprint-profiles-button-emit-close" @click="$emit('close')" class="btn btn-secondary">
+        <button @click="$emit('close')" class="btn btn-secondary">
           {{ t('common.close') }}
         </button>
       </div>
@@ -132,7 +132,7 @@
         <!-- Paste YAML -->
         <div>
           <label class="input-label">{{ t('admin.tlsFingerprintProfiles.form.pasteYaml') }}</label>
-          <textarea data-testid="admin-tls-fingerprint-profiles-textarea-yaml-input"
+          <textarea
             v-model="yamlInput"
             rows="4"
             class="input font-mono text-xs"
@@ -140,23 +140,23 @@
             @paste="handleYamlPaste"
           />
           <div class="mt-1 flex items-center gap-2">
-            <button data-testid="admin-tls-fingerprint-profiles-button-parse-yaml-input" type="button" @click="parseYamlInput" class="btn btn-secondary btn-sm">
+            <button type="button" @click="parseYamlInput" class="btn btn-secondary btn-sm">
               {{ t('admin.tlsFingerprintProfiles.form.parseYaml') }}
             </button>
-            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.tlsFingerprintProfiles.form.pasteYamlHint') }}
-              <a data-testid="admin-tls-fingerprint-profiles-link-a" href="https://tls.sub2api.org" target="_blank" rel="noopener noreferrer" class="text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)] underline">{{ t('admin.tlsFingerprintProfiles.form.openCollector') }}</a>
+              <a href="https://tls.sub2api.org" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline">{{ t('admin.tlsFingerprintProfiles.form.openCollector') }}</a>
             </p>
           </div>
         </div>
 
-        <hr class="border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]" />
+        <hr class="border-gray-200 dark:border-dark-600" />
 
         <!-- Basic Info -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="input-label">{{ t('admin.tlsFingerprintProfiles.form.name') }}</label>
-            <input data-testid="admin-tls-fingerprint-profiles-input-form-name"
+            <input
               v-model="form.name"
               type="text"
               required
@@ -166,7 +166,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('admin.tlsFingerprintProfiles.form.description') }}</label>
-            <input data-testid="admin-tls-fingerprint-profiles-input-form-description"
+            <input
               v-model="form.description"
               type="text"
               class="input"
@@ -177,26 +177,26 @@
 
         <!-- GREASE Toggle -->
         <div class="flex items-center gap-3">
-          <button data-testid="admin-tls-fingerprint-profiles-button-enable-grease-form-enable-grease"
+          <button
             type="button"
             @click="form.enable_grease = !form.enable_grease"
             :class="[
-              'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--atelier-focus)] focus:ring-offset-2',
-              form.enable_grease ? 'bg-[var(--anthropic-focus)]' : 'bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]'
+              'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              form.enable_grease ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
           >
             <span
               :class="[
-                'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-[var(--anthropic-page)] shadow ring-0 transition duration-200 ease-in-out',
+                'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                 form.enable_grease ? 'translate-x-4' : 'translate-x-0'
               ]"
             />
           </button>
           <div>
-            <span class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ t('admin.tlsFingerprintProfiles.form.enableGrease') }}
             </span>
-            <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.tlsFingerprintProfiles.form.enableGreaseHint') }}
             </p>
           </div>
@@ -206,7 +206,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.cipherSuites') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-cipher-suites"
+            <textarea
               v-model="fieldInputs.cipher_suites"
               rows="2"
               class="input font-mono text-xs"
@@ -217,7 +217,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.curves') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-curves"
+            <textarea
               v-model="fieldInputs.curves"
               rows="2"
               class="input font-mono text-xs"
@@ -228,7 +228,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.signatureAlgorithms') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-signature-algorithms"
+            <textarea
               v-model="fieldInputs.signature_algorithms"
               rows="2"
               class="input font-mono text-xs"
@@ -238,7 +238,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.supportedVersions') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-supported-versions"
+            <textarea
               v-model="fieldInputs.supported_versions"
               rows="2"
               class="input font-mono text-xs"
@@ -248,7 +248,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.keyShareGroups') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-key-share-groups"
+            <textarea
               v-model="fieldInputs.key_share_groups"
               rows="2"
               class="input font-mono text-xs"
@@ -258,7 +258,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.extensions') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-extensions"
+            <textarea
               v-model="fieldInputs.extensions"
               rows="2"
               class="input font-mono text-xs"
@@ -268,7 +268,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.pointFormats') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-point-formats"
+            <textarea
               v-model="fieldInputs.point_formats"
               rows="2"
               class="input font-mono text-xs"
@@ -278,7 +278,7 @@
 
           <div>
             <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.pskModes') }}</label>
-            <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-psk-modes"
+            <textarea
               v-model="fieldInputs.psk_modes"
               rows="2"
               class="input font-mono text-xs"
@@ -290,7 +290,7 @@
         <!-- ALPN Protocols - full width -->
         <div>
           <label class="input-label text-xs">{{ t('admin.tlsFingerprintProfiles.form.alpnProtocols') }}</label>
-          <textarea data-testid="admin-tls-fingerprint-profiles-textarea-field-inputs-alpn-protocols"
+          <textarea
             v-model="fieldInputs.alpn_protocols"
             rows="2"
             class="input font-mono text-xs"
@@ -301,10 +301,10 @@
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="admin-tls-fingerprint-profiles-button-close-form-modal" @click="closeFormModal" type="button" class="btn btn-secondary">
+          <button @click="closeFormModal" type="button" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="admin-tls-fingerprint-profiles-button-handle-submit" @click="handleSubmit" :disabled="submitting" class="btn btn-primary">
+          <button @click="handleSubmit" :disabled="submitting" class="btn btn-primary">
             <Icon v-if="submitting" name="refresh" size="sm" class="mr-1 animate-spin" />
             {{ showEditModal ? t('common.update') : t('common.create') }}
           </button>

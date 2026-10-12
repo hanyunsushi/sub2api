@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -61,12 +62,18 @@ func (s *settingPublicRepoStub) Delete(ctx context.Context, key string) error {
 	panic("unexpected Delete call")
 }
 
-func TestSettingService_InitializeDefaultSettings_UsesAnthropicTheme(t *testing.T) {
+func TestSettingService_DoesNotInitializeOrExposeRetiredTheme(t *testing.T) {
 	repo := &settingPublicRepoStub{values: map[string]string{}}
 	svc := NewSettingService(repo, &config.Config{})
-
 	require.NoError(t, svc.InitializeDefaultSettings(context.Background()))
-	require.Equal(t, "anthropic", repo.values[SettingKeyAppearanceThemeDefault])
+	require.NotContains(t, repo.values, "appearance_theme_default")
+	// Old stored values must not leak into the official frontend config.
+	repo.values["appearance_theme_default"] = "anthropic"
+	settings, err := svc.GetPublicSettingsForInjection(context.Background())
+	require.NoError(t, err)
+	payload, err := json.Marshal(settings)
+	require.NoError(t, err)
+	require.NotContains(t, string(payload), "appearance_theme_default")
 }
 
 func TestSettingService_GetPublicSettings_ExposesRegistrationEmailSuffixWhitelist(t *testing.T) {
@@ -184,19 +191,6 @@ func TestSettingService_GetPublicSettings_ExposesForceEmailOnThirdPartySignup(t 
 	require.True(t, settings.ForceEmailOnThirdPartySignup)
 }
 
-func TestSettingService_GetPublicSettings_NormalizesRemovedCloudflareTheme(t *testing.T) {
-	repo := &settingPublicRepoStub{
-		values: map[string]string{
-			SettingKeyAppearanceThemeDefault: "cloudflare",
-		},
-	}
-	svc := NewSettingService(repo, &config.Config{})
-
-	settings, err := svc.GetPublicSettings(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "anthropic", settings.AppearanceThemeDefault)
-}
-
 func TestSettingService_GetPublicSettings_ExposesAllowUserViewErrorRequests(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{
@@ -216,7 +210,6 @@ func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 			SettingKeyAILogoCDNBaseURL:         "https://img.example.com/lobe/light/",
 			SettingKeyCustomAILogoPresets:      `["https://img.example.com/custom/a.png","javascript:alert(1)","https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`,
 			SettingKeyCustomMenuSVGIconPresets: `["https://img.example.com/menu/a.svg","javascript:alert(1)","https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`,
-			SettingKeyAppearanceThemeDefault:   "cloudflare",
 		},
 	}
 	svc := NewSettingService(repo, &config.Config{})
@@ -232,6 +225,13 @@ func TestSettingService_GetPublicSettings_ExposesAILogoSettings(t *testing.T) {
 		"https://img.example.com/menu/a.svg",
 		"https://img.example.com/menu/b.svg",
 	}, settings.CustomMenuSVGIconPresets)
+	injected, err := svc.GetPublicSettingsForInjection(context.Background())
+	require.NoError(t, err)
+	payload, err := json.Marshal(injected)
+	require.NoError(t, err)
+	require.Contains(t, string(payload), `"ai_logo_cdn_base_url":"https://img.example.com/lobe/light"`)
+	require.Contains(t, string(payload), `"custom_ai_logo_presets":["https://img.example.com/custom/a.png","https://img.example.com/custom/b.svg"]`)
+	require.Contains(t, string(payload), `"custom_menu_svg_icon_presets":["https://img.example.com/menu/a.svg","https://img.example.com/menu/b.svg"]`)
 }
 
 func TestSettingService_AppendCustomAILogoPreset_NormalizesDedupesAndPersists(t *testing.T) {
@@ -324,19 +324,6 @@ func TestSettingService_DeleteCustomMenuSVGIconPreset_RemovesServerSideLibraryIt
 	require.Error(t, err)
 }
 
-func TestSettingService_GetPublicSettings_NormalizesInvalidAppearanceThemeDefault(t *testing.T) {
-	repo := &settingPublicRepoStub{
-		values: map[string]string{
-			SettingKeyAppearanceThemeDefault: "unknown",
-		},
-	}
-	svc := NewSettingService(repo, &config.Config{})
-
-	settings, err := svc.GetPublicSettings(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "anthropic", settings.AppearanceThemeDefault)
-}
-
 func TestSettingService_GetPublicSettings_ExposesWeChatOAuthModeCapabilities(t *testing.T) {
 	svc := NewSettingService(&settingPublicRepoStub{
 		values: map[string]string{
@@ -377,29 +364,6 @@ func TestSettingService_GetPublicSettings_DoesNotExposeMobileOnlyWeChatAsWebOAut
 	require.False(t, settings.WeChatOAuthOpenEnabled)
 	require.False(t, settings.WeChatOAuthMPEnabled)
 	require.True(t, settings.WeChatOAuthMobileEnabled)
-}
-
-func TestSettingService_GetWebAppIconSettings_ReturnsBrandingFields(t *testing.T) {
-	svc := NewSettingService(&settingPublicRepoStub{
-		values: map[string]string{
-			SettingKeySiteName: "Example Gateway",
-			SettingKeySiteLogo: "https://img.example.com/logo.png",
-		},
-	}, &config.Config{})
-
-	siteName, siteLogo, err := svc.GetWebAppIconSettings(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "Example Gateway", siteName)
-	require.Equal(t, "https://img.example.com/logo.png", siteLogo)
-}
-
-func TestSettingService_GetWebAppIconSettings_FallsBackToDefaultName(t *testing.T) {
-	svc := NewSettingService(&settingPublicRepoStub{values: map[string]string{}}, &config.Config{})
-
-	siteName, siteLogo, err := svc.GetWebAppIconSettings(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, "Sub2API", siteName)
-	require.Empty(t, siteLogo)
 }
 
 func TestSettingService_GetPublicSettings_FallsBackToConfigForWeChatOAuthCapabilities(t *testing.T) {

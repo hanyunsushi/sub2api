@@ -64,7 +64,7 @@
     <p v-if="emailVerifyEnabled && sendCodeSuccess" class="text-sm text-green-600 dark:text-green-400">
       {{ t('auth.codeSentSuccess') }}
     </p>
-    <p v-else-if="emailVerifyEnabled" class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+    <p v-else-if="emailVerifyEnabled" class="text-xs text-gray-500 dark:text-dark-400">
       {{ t('auth.verificationCodeHint') }}
     </p>
     <input
@@ -85,7 +85,7 @@
     >
       {{ isSubmitting ? t('common.processing') : t('auth.createAccount') }}
     </button>
-    <button data-testid="auth-pending-o-auth-create-account-form-button-emit-switch-to-bind"
+    <button
       type="button"
       class="btn btn-secondary w-full"
       :disabled="isSubmitting"

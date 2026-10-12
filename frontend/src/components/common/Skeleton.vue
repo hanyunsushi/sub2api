@@ -1,8 +1,8 @@
 <template>
   <div
     :class="[
-      'skeleton loading-line',
-      variant === 'circle' ? 'skeleton-circle' : variant === 'text' ? 'skeleton-text' : 'skeleton-rect',
+      'animate-pulse bg-gray-200 dark:bg-dark-700',
+      variant === 'circle' ? 'rounded-full' : 'rounded-lg',
       customClass
     ]"
     :style="style"
@@ -44,31 +44,3 @@ const style = computed(() => {
   return s
 })
 </script>
-
-<style scoped>
-.skeleton {
-  display: block;
-  background: linear-gradient(90deg, var(--anthropic-section), var(--anthropic-raised), var(--anthropic-section));
-  background-size: 220% 100%;
-  animation: anthropic-loading-sweep 1.2s ease-in-out infinite;
-}
-
-.skeleton-circle {
-  border-radius: 999px;
-}
-
-.skeleton-text {
-  border-radius: 999px;
-}
-
-.skeleton-rect {
-  border-radius: 8px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
-    background: var(--anthropic-section);
-  }
-}
-</style>

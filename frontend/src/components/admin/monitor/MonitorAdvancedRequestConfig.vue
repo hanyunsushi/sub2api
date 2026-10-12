@@ -9,7 +9,7 @@
           :key="i"
           class="flex items-center gap-2"
         >
-          <input data-testid="admin-monitor-monitor-advanced-request-config-input-row-name"
+          <input
             v-model="row.name"
             type="text"
             spellcheck="false"
@@ -17,7 +17,7 @@
             class="input w-52 flex-none font-mono text-xs"
             @blur="commitHeaders"
           />
-          <input data-testid="admin-monitor-monitor-advanced-request-config-input-row-value"
+          <input
             v-model="row.value"
             type="text"
             spellcheck="false"
@@ -25,9 +25,9 @@
             class="input flex-1 font-mono text-xs"
             @blur="commitHeaders"
           />
-          <button data-testid="admin-monitor-monitor-advanced-request-config-button-remove-row-i"
+          <button
             type="button"
-            class="flex-none rounded p-1 text-[var(--anthropic-muted)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+            class="flex-none rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
             :title="t('common.delete')"
             @click="removeRow(i)"
           >
@@ -36,9 +36,9 @@
             </svg>
           </button>
         </div>
-        <button data-testid="admin-monitor-monitor-advanced-request-config-button-add-row"
+        <button
           type="button"
-          class="inline-flex items-center gap-1 rounded border border-dashed border-[var(--anthropic-border)] px-2 py-1 text-xs text-[var(--anthropic-muted)] hover:border-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)] dark:hover:border-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+          class="inline-flex items-center gap-1 rounded border border-dashed border-gray-300 px-2 py-1 text-xs text-gray-500 hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
           @click="addRow"
         >
           <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
         </button>
       </div>
       <p v-if="headersError" class="mt-1 text-xs text-red-500">{{ headersError }}</p>
-      <p v-else class="mt-1 text-xs text-[var(--anthropic-muted)]">
+      <p v-else class="mt-1 text-xs text-gray-400">
         {{ t('admin.channelMonitor.advanced.headersHint') }}
       </p>
     </div>
@@ -57,7 +57,7 @@
     <div>
       <label class="input-label">{{ t('admin.channelMonitor.advanced.bodyMode') }}</label>
       <div class="grid grid-cols-3 gap-3">
-        <button data-testid="admin-monitor-monitor-advanced-request-config-button-update-body-mode-opt-value"
+        <button
           v-for="opt in bodyModeOptions"
           :key="opt.value"
           type="button"
@@ -68,7 +68,7 @@
           {{ opt.label }}
         </button>
       </div>
-      <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+      <p class="mt-1 text-xs text-gray-400">
         {{ bodyModeHint }}
       </p>
     </div>
@@ -77,16 +77,16 @@
     <div v-if="bodyOverrideMode !== 'off'">
       <div class="mb-1 flex items-center justify-between">
         <label class="input-label !mb-0">{{ t('admin.channelMonitor.advanced.bodyJson') }}</label>
-        <button data-testid="admin-monitor-monitor-advanced-request-config-button-format-body"
+        <button
           type="button"
-          class="text-xs text-[var(--anthropic-fg)] hover:underline disabled:cursor-not-allowed disabled:text-[var(--anthropic-muted)] disabled:no-underline dark:text-[var(--anthropic-fg)]"
+          class="text-xs text-primary-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline dark:text-primary-400"
           :disabled="!bodyText.trim()"
           @click="formatBody"
         >
           {{ t('admin.channelMonitor.advanced.bodyJsonFormat') }}
         </button>
       </div>
-      <textarea data-testid="admin-monitor-monitor-advanced-request-config-textarea-body-text"
+      <textarea
         v-model="bodyText"
         rows="10"
         :placeholder="bodyPlaceholder"
@@ -96,7 +96,7 @@
         @blur="commitBody"
       />
       <p v-if="bodyError" class="mt-1 text-xs text-red-500">{{ bodyError }}</p>
-      <p v-else class="mt-1 text-xs text-[var(--anthropic-muted)]">
+      <p v-else class="mt-1 text-xs text-gray-400">
         {{ t('admin.channelMonitor.advanced.bodyJsonHint') }}
       </p>
     </div>
@@ -284,9 +284,9 @@ const bodyModeOptions = computed<{ value: BodyOverrideMode; label: string }[]>((
 function bodyModeButtonClass(mode: BodyOverrideMode): string {
   const active = props.bodyOverrideMode === mode
   if (active) {
-    return 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:border-[var(--anthropic-fg)]'
+    return 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300 dark:border-primary-400'
   }
-  return 'border-[var(--anthropic-border)] bg-[var(--anthropic-page)] text-[var(--anthropic-muted)] hover:border-[var(--anthropic-fg)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+  return 'border-gray-200 bg-white text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
 }
 
 const bodyModeHint = computed(() => {

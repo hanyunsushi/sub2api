@@ -2,16 +2,16 @@
   <div :class="props.embedded ? 'space-y-4' : 'card'">
     <div
       v-if="!props.embedded"
-      class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+      class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
     >
-      <h2 class="text-lg font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">
         {{ t('profile.changePassword') }}
       </h2>
     </div>
     <div :class="props.embedded ? '' : 'px-6 py-6'">
       <form @submit.prevent="handleChangePassword" class="space-y-4">
         <div v-if="props.embedded">
-          <p class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ t('profile.changePassword') }}
           </p>
         </div>
@@ -19,7 +19,7 @@
           <label for="old_password" class="input-label">
             {{ t('profile.currentPassword') }}
           </label>
-          <input data-testid="user-profile-profile-password-form-input-form-old-password"
+          <input
             id="old_password"
             v-model="form.old_password"
             type="password"
@@ -33,7 +33,7 @@
           <label for="new_password" class="input-label">
             {{ t('profile.newPassword') }}
           </label>
-          <input data-testid="user-profile-profile-password-form-input-form-new-password"
+          <input
             id="new_password"
             v-model="form.new_password"
             type="password"
@@ -50,7 +50,7 @@
           <label for="confirm_password" class="input-label">
             {{ t('profile.confirmNewPassword') }}
           </label>
-          <input data-testid="user-profile-profile-password-form-input-form-confirm-password"
+          <input
             id="confirm_password"
             v-model="form.confirm_password"
             type="password"
@@ -61,7 +61,7 @@
         </div>
 
         <div class="flex justify-end pt-4">
-          <button data-testid="user-profile-profile-password-form-button-submit" type="submit" :disabled="loading" class="btn btn-primary">
+          <button type="submit" :disabled="loading" class="btn btn-primary">
             {{ loading ? t('profile.changingPassword') : t('profile.changePasswordButton') }}
           </button>
         </div>

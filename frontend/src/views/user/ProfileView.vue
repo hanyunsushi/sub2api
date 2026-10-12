@@ -13,20 +13,18 @@
         :wechat-enabled="wechatOAuthEnabled"
         :wechat-open-enabled="wechatOAuthOpenEnabled"
         :wechat-mp-enabled="wechatOAuthMPEnabled"
-        :github-enabled="githubOAuthEnabled"
-        :google-enabled="googleOAuthEnabled"
       />
 
       <div
         v-if="contactInfo"
-        class="card border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] p-6 dark:bg-[var(--anthropic-section)]"
+        class="card border-primary-200 bg-primary-50 p-6 dark:bg-primary-900/20"
       >
         <div class="flex items-center gap-4">
-          <div class="rounded-xl bg-[var(--anthropic-section)] p-3 text-[var(--anthropic-fg)]">
+          <div class="rounded-xl bg-primary-100 p-3 text-primary-600">
             <Icon name="chat" size="lg" />
           </div>
           <div>
-            <h3 class="font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <h3 class="font-semibold text-primary-800 dark:text-primary-200">
               {{ t('common.contactSupport') }}
             </h3>
             <p class="text-sm font-medium">{{ contactInfo }}</p>
@@ -80,8 +78,6 @@ const wechatOAuthOpenEnabled = ref<boolean | undefined>(undefined)
 const wechatOAuthMPEnabled = ref<boolean | undefined>(undefined)
 const oidcOAuthEnabled = ref(false)
 const oidcOAuthProviderName = ref('OIDC')
-const githubOAuthEnabled = ref(false)
-const googleOAuthEnabled = ref(false)
 const passkeyEnabled = ref(false)
 
 onMounted(async () => {
@@ -108,8 +104,6 @@ onMounted(async () => {
         : undefined
       oidcOAuthEnabled.value = settings.oidc_oauth_enabled ?? false
       oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
-      githubOAuthEnabled.value = settings.github_oauth_enabled ?? false
-      googleOAuthEnabled.value = settings.google_oauth_enabled ?? false
       passkeyEnabled.value = settings.passkey_enabled === true
     })
     .catch((error) => {

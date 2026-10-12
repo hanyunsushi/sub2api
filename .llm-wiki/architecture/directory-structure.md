@@ -1,6 +1,6 @@
 ---
 title: Directory Structure
-updated: 2026-09-03
+updated: 2026-10-11
 sources:
   - backend/
   - frontend/src/
@@ -22,10 +22,10 @@ sources:
 | `frontend/src/views/` | Route-level pages |
 | `frontend/src/stores/` | Pinia state and polling lifecycles |
 | `frontend/src/router/` | Route definitions and title resolution |
-| `frontend/src/styles/` | Global and targeted visual rules |
+| `frontend/src/style.css`, `frontend/src/styles/` | Official base and onboarding styles; no local repair/text-action layer |
 | `deploy/` | Compose files and deployment helpers |
 
-Generated frontend locator/index data is validation support and is not a source-of-truth document.
+The local frontend locator generator and theme-specific ast-grep rules are retired. CodeGraph metadata is structural support, not application behavior.
 
 ## See Also
 

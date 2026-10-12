@@ -54,7 +54,7 @@
             id="bulk-edit-openai-passthrough-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-passthrough-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -67,8 +67,8 @@
             id="bulk-edit-openai-passthrough-toggle"
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openaiPassthroughEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openaiPassthroughEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
           >
@@ -105,7 +105,7 @@
             id="bulk-edit-openai-flatten-namespaces-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-flatten-namespaces-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -118,8 +118,8 @@
             id="bulk-edit-openai-flatten-namespaces-toggle"
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openaiFlattenNamespacesEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openaiFlattenNamespacesEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="openaiFlattenNamespacesEnabled = !openaiFlattenNamespacesEnabled"
           >
@@ -156,7 +156,7 @@
             id="bulk-edit-openai-long-context-billing-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-long-context-billing-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -172,8 +172,8 @@
             :disabled="!enableOpenAILongContextBilling"
             :aria-checked="openAILongContextBillingEnabled"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              openAILongContextBillingEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              openAILongContextBillingEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="openAILongContextBillingEnabled = !openAILongContextBillingEnabled"
           >
@@ -208,7 +208,7 @@
             id="bulk-edit-base-url-enabled"
             type="checkbox"
             aria-controls="bulk-edit-base-url"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <input
@@ -246,7 +246,7 @@
             id="bulk-edit-model-restriction-enabled"
             type="checkbox"
             aria-controls="bulk-edit-model-restriction-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -273,7 +273,7 @@
                 :class="[
                   'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
                   modelRestrictionMode === 'whitelist'
-                    ? 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                 ]"
                 @click="modelRestrictionMode = 'whitelist'"
@@ -483,7 +483,7 @@
             id="bulk-edit-custom-error-codes-enabled"
             type="checkbox"
             aria-controls="bulk-edit-custom-error-codes-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -581,15 +581,15 @@
             id="bulk-edit-intercept-warmup-enabled"
             type="checkbox"
             aria-controls="bulk-edit-intercept-warmup-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div v-if="enableInterceptWarmup" id="bulk-edit-intercept-warmup-body" class="mt-3">
           <button
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              interceptWarmupRequests ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              interceptWarmupRequests ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="interceptWarmupRequests = !interceptWarmupRequests"
           >
@@ -623,15 +623,15 @@
             id="bulk-edit-header-override-enabled"
             type="checkbox"
             aria-controls="bulk-edit-header-override-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div v-if="enableHeaderOverride" id="bulk-edit-header-override-body" class="mt-3 space-y-3">
           <button
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              headerOverrideEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              headerOverrideEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="headerOverrideEnabled = !headerOverrideEnabled"
           >
@@ -681,7 +681,7 @@
             id="bulk-edit-proxy-enabled"
             type="checkbox"
             aria-controls="bulk-edit-proxy-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-proxy-body" :class="!enableProxy && 'pointer-events-none opacity-50'">
@@ -709,7 +709,7 @@
               id="bulk-edit-concurrency-enabled"
               type="checkbox"
               aria-controls="bulk-edit-concurrency"
-              class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
           <input
@@ -738,7 +738,7 @@
               id="bulk-edit-load-factor-enabled"
               type="checkbox"
               aria-controls="bulk-edit-load-factor"
-              class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
           <input
@@ -768,7 +768,7 @@
               id="bulk-edit-priority-enabled"
               type="checkbox"
               aria-controls="bulk-edit-priority"
-              class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
           <input
@@ -796,7 +796,7 @@
               id="bulk-edit-rate-multiplier-enabled"
               type="checkbox"
               aria-controls="bulk-edit-rate-multiplier"
-              class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
           </div>
           <input
@@ -837,7 +837,7 @@
             id="bulk-edit-status-enabled"
             type="checkbox"
             aria-controls="bulk-edit-status"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-status" :class="!enableStatus && 'pointer-events-none opacity-50'">
@@ -864,7 +864,7 @@
             id="bulk-edit-openai-ws-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-ws-mode"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -901,7 +901,7 @@
             id="bulk-edit-openai-codex-cli-only-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-codex-cli-only"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -915,8 +915,8 @@
             id="bulk-edit-openai-codex-cli-only-toggle"
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              codexCLIOnlyEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
           >
@@ -945,7 +945,7 @@
             id="bulk-edit-openai-codex-app-server-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-codex-app-server"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -959,8 +959,8 @@
             id="bulk-edit-openai-codex-app-server-toggle"
             type="button"
             :class="[
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-              codexCLIOnlyAppServerEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              codexCLIOnlyAppServerEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
             ]"
             @click="codexCLIOnlyAppServerEnabled = !codexCLIOnlyAppServerEnabled"
           >
@@ -982,7 +982,7 @@
             id="bulk-edit-openai-codex-fingerprint-mode-enabled"
             v-model="enableCodexFingerprintMode"
             type="checkbox"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div :class="!enableCodexFingerprintMode && 'pointer-events-none opacity-50'">
@@ -1013,7 +1013,7 @@
             id="bulk-edit-upstream-billing-auto-probe-enabled"
             type="checkbox"
             aria-controls="bulk-edit-upstream-billing-auto-probe"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1052,7 +1052,7 @@
             id="bulk-edit-openai-endpoint-capabilities-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-endpoint-capabilities-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1070,7 +1070,7 @@
               <input
                 type="checkbox"
                 :disabled="!enableOpenAIEndpointCapabilities"
-                class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-500"
+                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-500"
                 :data-testid="`bulk-edit-openai-endpoint-capability-${option.value}`"
                 :checked="openAIEndpointCapabilities.includes(option.value)"
                 @change="toggleOpenAIEndpointCapability(option.value, $event)"
@@ -1101,7 +1101,7 @@
             id="bulk-edit-openai-responses-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-responses-mode-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1142,7 +1142,7 @@
             id="bulk-edit-openai-apikey-ws-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-apikey-ws-mode"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1184,7 +1184,7 @@
             id="bulk-edit-openai-compact-mode-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-compact-mode"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1220,7 +1220,7 @@
             id="bulk-edit-openai-compact-model-mapping-enabled"
             type="checkbox"
             aria-controls="bulk-edit-openai-compact-model-mapping"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div
@@ -1283,7 +1283,7 @@
             id="bulk-edit-rpm-limit-enabled"
             type="checkbox"
             aria-controls="bulk-edit-rpm-limit-body"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -1299,8 +1299,8 @@
               type="button"
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] focus:ring-offset-2',
-                rpmLimitEnabled ? 'bg-[var(--anthropic-focus)]' : 'bg-gray-200 dark:bg-dark-600'
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                rpmLimitEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1336,7 +1336,7 @@
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     bulkRpmStrategy === 'tiered'
-                      ? 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
@@ -1348,7 +1348,7 @@
                   :class="[
                     'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                     bulkRpmStrategy === 'sticky_exempt'
-                      ? 'bg-[var(--anthropic-info-bg)] text-[var(--anthropic-info)] dark:bg-[var(--anthropic-info-bg)] dark:text-[var(--anthropic-info)]'
+                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                   ]"
                 >
@@ -1385,7 +1385,7 @@
               :class="[
                 'px-3 py-1.5 text-sm rounded-md border transition-colors',
                 userMsgQueueMode === opt.value
-                  ? 'bg-[var(--anthropic-focus)] text-white border-[var(--anthropic-focus)]'
+                  ? 'bg-primary-600 text-white border-primary-600'
                   : 'bg-white dark:bg-dark-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-dark-500 hover:bg-gray-50 dark:hover:bg-dark-600'
               ]">
               {{ opt.label }}
@@ -1409,7 +1409,7 @@
             id="bulk-edit-groups-enabled"
             type="checkbox"
             aria-controls="bulk-edit-groups"
-            class="rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
         <div id="bulk-edit-groups" :class="!enableGroups && 'pointer-events-none opacity-50'">

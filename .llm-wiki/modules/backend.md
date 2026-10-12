@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-10-10
+updated: 2026-10-11
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -15,7 +15,7 @@ sources:
 
 ## Merge `upstream/main` and OCI release (2026-09-30)
 
-The development branch merged `upstream/main` at `42bc7f6cffe24bcb471608e48e66b4a0afa1f882` into local cleanup commit `55de1f980` as `88cb179b63d185b8e79f6a89a720eaa3b3e60c49`. Official Claude reset credits, dashboard trend metrics, OpenAI plan/model mappings, CC Switch usage handling and batch image gateway wiring were retained; local Anthropic/Kreeperai behavior and retired custom contracts remained scoped as documented below. Ent and Wire code was regenerated.
+The development branch merged `upstream/main` at `42bc7f6cffe24bcb471608e48e66b4a0afa1f882` into local cleanup commit `55de1f980` as `88cb179b63d185b8e79f6a89a720eaa3b3e60c49`. Official Claude reset credits, dashboard trend metrics, OpenAI plan/model mappings, CC Switch usage handling and batch image gateway wiring were retained; the historical local presentation policy was preserved at that merge and is superseded by the official-frontend restoration documented in the customization inventory. Ent and Wire code was regenerated.
 
 Current image, release commit, rollback and runtime verification belong to the [Project Authority](../../agent.md), not this module page.
 
@@ -56,9 +56,10 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 - The `v0.2.7` upstream merge is represented by development commit `48d61795e` and includes model-allowlist/group repair, new provider migrations, subscription bulk operations, Seedance and provider media paths, plugin KV/runtime changes, and the regenerated Ent/Wire artifacts. Local external-subscription quota statistics and rate-multiplier table/bulk management remain available; the retired schedule-lock compatibility and channel-monitor auto-scheduling bindings were removed by the current cleanup.
 - Channel monitoring keeps normal probes and quota monitoring with one `account_id`. Multi-account monitor bindings and monitor-driven account auto-scheduling are retired. Migration `241_remove_channel_monitor_account_auto_schedule.sql` removes the retired columns; historical migrations `151` and `152` remain unchanged.
 
-The local Kreepai/Anthropic route-shell, external-subscription services, account scheduling/brand fields and provider logo handling remain part of the development customization boundary while upstream behavior is integrated around them.
+Local external-subscription services, account usage-window integration, entity branding and provider logo handling remain part of the development customization boundary. Normal account scheduling is official; the retired schedule lock and monitor-driven auto-scheduling must not be classified as active local behavior. The frontend is restored to official presentation with functional extensions. The custom-menu DTO preserves both `open_mode` and `hide_open_button`; official title and safe favicon injection retain site branding. Dynamic PWA icons/manifests and the obsolete appearance-theme API, fields and defaults are removed. Logo CDN/shared preset settings are returned by public/admin DTOs and HTML injection. Account construction uses the official typed signature; the dedicated external-quota setter remains. The current boundary is catalogued in the customization inventory.
 
 ## See Also
 
+- [Customization Inventory](../concepts/customization-inventory.md)
 - [System Architecture](../architecture/overview.md)
 - [Data Flow](../architecture/data-flow.md)

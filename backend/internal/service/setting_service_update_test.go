@@ -266,48 +266,6 @@ func TestSettingService_UpdateSettings_DefaultSubscriptions_ValidGroup(t *testin
 	}, got)
 }
 
-func TestSettingService_UpdateSettings_AppearanceThemeDefault(t *testing.T) {
-	repo := &settingUpdateRepoStub{}
-	svc := NewSettingService(repo, &config.Config{})
-
-	err := svc.UpdateSettings(context.Background(), &SystemSettings{
-		AppearanceThemeDefault: "anthropic",
-	})
-	require.NoError(t, err)
-	require.Equal(t, "anthropic", repo.updates[SettingKeyAppearanceThemeDefault])
-}
-
-func TestSettingService_UpdateAppearanceThemeDefault_AcceptsAnthropic(t *testing.T) {
-	repo := &settingUpdateRepoStub{}
-	svc := NewSettingService(repo, &config.Config{})
-
-	theme, err := svc.UpdateAppearanceThemeDefault(context.Background(), "anthropic")
-	require.NoError(t, err)
-	require.Equal(t, "anthropic", theme)
-	require.Equal(t, "anthropic", repo.updates[SettingKeyAppearanceThemeDefault])
-}
-
-func TestSettingService_UpdateAppearanceThemeDefault_RejectsRemovedCloudflareTheme(t *testing.T) {
-	repo := &settingUpdateRepoStub{}
-	svc := NewSettingService(repo, &config.Config{})
-
-	_, err := svc.UpdateAppearanceThemeDefault(context.Background(), "cloudflare")
-	require.Error(t, err)
-	require.True(t, infraerrors.IsBadRequest(err))
-	require.Empty(t, repo.updates)
-}
-
-func TestSettingService_UpdateSettings_RejectsInvalidAppearanceThemeDefault(t *testing.T) {
-	repo := &settingUpdateRepoStub{}
-	svc := NewSettingService(repo, &config.Config{})
-
-	err := svc.UpdateSettings(context.Background(), &SystemSettings{
-		AppearanceThemeDefault: "purple",
-	})
-	require.Error(t, err)
-	require.True(t, infraerrors.IsBadRequest(err))
-}
-
 func TestSettingService_UpdateSettings_DefaultSubscriptions_RejectsNonSubscriptionGroup(t *testing.T) {
 	repo := &settingUpdateRepoStub{}
 	groupReader := &defaultSubGroupReaderStub{

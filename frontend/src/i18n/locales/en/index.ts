@@ -7,6 +7,15 @@ import admin from './admin'
 import misc from './misc'
 
 export default {
+  customization: {
+    externalSubscriptions: 'External Subscriptions',
+    openMode: 'Open mode',
+    iframe: 'Embedded page',
+    redirect: 'Redirect',
+    logoCdn: 'Logo CDN URL',
+    logoPresets: 'Custom logo URLs',
+    quotaBar: 'Quota bar'
+  },
   ...landing,
   ...common,
   ...dashboard,

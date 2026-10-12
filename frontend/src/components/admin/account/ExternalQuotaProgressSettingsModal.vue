@@ -7,18 +7,18 @@
     @close="emit('close')"
   >
     <form id="external-quota-progress-settings-form" class="space-y-5" @submit.prevent="handleSubmit">
-      <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-        <div class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <div class="rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-dark-600 dark:bg-dark-800">
+        <div class="truncate text-sm font-semibold text-gray-900 dark:text-white">
           {{ account?.name || '-' }}
         </div>
-        <div class="mt-1 flex items-center justify-between gap-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <div class="mt-1 flex items-center justify-between gap-3 text-xs text-gray-500 dark:text-dark-400">
           <span class="truncate">{{ subscriptionLabel }}</span>
           <span class="font-mono">{{ balanceText }}</span>
         </div>
       </div>
 
-      <label class="flex items-center justify-between gap-3 rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
-        <span class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <label class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600">
+        <span class="text-sm font-medium text-gray-500 dark:text-dark-400">
           {{ localText('启用额度条', 'Enable quota bar') }}
         </span>
         <Toggle v-model="form.enabled" />
@@ -119,8 +119,8 @@
         </div>
       </div>
 
-      <div class="external-quota-preview rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
-        <div class="mb-2 flex items-center justify-between gap-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div class="external-quota-preview rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600">
+        <div class="mb-2 flex items-center justify-between gap-3 text-xs text-gray-500 dark:text-dark-400">
           <span>{{ localText('预览', 'Preview') }}</span>
           <span class="font-mono">{{ previewAmountText }}</span>
         </div>
@@ -128,10 +128,10 @@
           v-if="previewMeta"
           label="EXT"
           :utilization="previewMeta.percent"
-          color="success"
+          color="emerald"
           :show-now-when-idle="false"
         />
-        <div v-else class="h-6 rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+        <div v-else class="h-6 rounded bg-gray-100 dark:bg-dark-800"></div>
       </div>
     </form>
 
@@ -318,41 +318,8 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
-.external-quota-mode-option {
-  display: grid;
-  gap: 0.25rem;
-  min-height: 4.5rem;
-  cursor: pointer;
-  border: 1px solid var(--atelier-material-edge, rgba(17, 24, 39, 0.12));
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: var(--atelier-text, #4b5563);
-  background: color-mix(in srgb, var(--atelier-paper-2, #ffffff) 94%, transparent);
-  transition:
-    border-color 0.18s ease,
-    background-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.external-quota-mode-option--active {
-  border-color: var(--atelier-terracotta-action, #c96442);
-  color: var(--atelier-ink, #171512);
-  background: color-mix(in srgb, var(--atelier-terracotta-action, #c96442) 9%, var(--atelier-paper-2, #ffffff));
-}
-
-.external-quota-mode-option--disabled {
-  cursor: not-allowed;
-  opacity: 0.52;
-}
-
-.external-quota-token-window {
-  align-items: center;
-  border: 1px solid var(--atelier-material-edge, rgba(17, 24, 39, 0.12));
-  border-radius: 8px;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
-  min-height: 2.5rem;
-  padding: 0.375rem 0.375rem 0.375rem 0.75rem;
-}
+.external-quota-mode-option { @apply grid min-h-[4.5rem] cursor-pointer gap-1 rounded-lg border border-gray-200 bg-white p-3 text-gray-600 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300; }
+.external-quota-mode-option--active { @apply border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300; }
+.external-quota-mode-option--disabled { @apply cursor-not-allowed opacity-50; }
+.external-quota-token-window { @apply flex min-h-10 items-center justify-between gap-2 rounded-lg border border-gray-200 p-1.5 dark:border-dark-600; }
 </style>

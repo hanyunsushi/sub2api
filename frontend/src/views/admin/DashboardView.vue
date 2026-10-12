@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="admin-dashboard-atelier space-y-6">
+    <div class="space-y-6">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <LoadingSpinner />
@@ -12,17 +12,17 @@
           <!-- Total API Keys -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="key" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
+                <Icon name="key" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.apiKeys') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.total_api_keys }}
                 </p>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs text-green-600 dark:text-green-400">
                   {{ stats.active_api_keys }} {{ t('common.active') }}
                 </p>
               </div>
@@ -32,21 +32,21 @@
           <!-- Service Accounts -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="server" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
+                <Icon name="server" size="md" class="text-purple-600 dark:text-purple-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.accounts') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.total_accounts }}
                 </p>
                 <p class="text-xs">
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  <span class="text-green-600 dark:text-green-400"
                     >{{ stats.normal_accounts }} {{ t('common.active') }}</span
                   >
-                  <span v-if="stats.error_accounts > 0" class="ml-1 text-[var(--anthropic-error)]"
+                  <span v-if="stats.error_accounts > 0" class="ml-1 text-red-500"
                     >{{ stats.error_accounts }} {{ t('common.error') }}</span
                   >
                 </p>
@@ -57,17 +57,17 @@
           <!-- Today Requests -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="chart" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
+                <Icon name="chart" size="md" class="text-green-600 dark:text-green-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.todayRequests') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.today_requests }}
                 </p>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                   {{ t('common.total') }}: {{ formatNumber(stats.total_requests) }}
                 </p>
               </div>
@@ -77,17 +77,17 @@
           <!-- New Users Today -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="userPlus" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-emerald-100 p-2 dark:bg-emerald-900/30">
+                <Icon name="userPlus" size="md" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.users') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                   +{{ stats.today_new_users }}
                 </p>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                   {{ t('common.total') }}: {{ formatNumber(stats.total_users) }}
                 </p>
               </div>
@@ -100,31 +100,31 @@
           <!-- Today Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="cube" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
+                <Icon name="cube" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.todayTokens') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.today_tokens) }}
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-green-600 dark:text-green-400"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.today_actual_cost) }}</span
                   >
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
+                  <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-orange-500 dark:text-orange-400"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.today_account_cost) }}</span
                   >
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
+                  <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-gray-400 dark:text-gray-500"
                     :title="t('admin.dashboard.standard')"
                     >${{ formatCost(stats.today_cost) }}</span
                   >
@@ -136,31 +136,31 @@
           <!-- Total Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="database" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-indigo-100 p-2 dark:bg-indigo-900/30">
+                <Icon name="database" size="md" class="text-indigo-600 dark:text-indigo-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.totalTokens') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.total_tokens) }}
                 </p>
                 <p class="text-xs">
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-green-600 dark:text-green-400"
                     :title="t('admin.dashboard.actual')"
                     >${{ formatCost(stats.total_actual_cost) }}</span
                   >
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
+                  <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-orange-500 dark:text-orange-400"
                     :title="t('admin.dashboard.accountCost')"
                     >${{ formatCost(stats.total_account_cost) }}</span
                   >
-                  <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"> / </span>
+                  <span class="text-gray-400 dark:text-gray-500"> / </span>
                   <span
-                    class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                    class="text-gray-400 dark:text-gray-500"
                     :title="t('admin.dashboard.standard')"
                     >${{ formatCost(stats.total_cost) }}</span
                   >
@@ -172,24 +172,24 @@
           <!-- Performance (RPM/TPM) -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="bolt" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-violet-100 p-2 dark:bg-violet-900/30">
+                <Icon name="bolt" size="md" class="text-violet-600 dark:text-violet-400" :stroke-width="2" />
               </div>
               <div class="flex-1">
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.performance') }}
                 </p>
                 <div class="flex items-baseline gap-2">
-                  <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <p class="text-xl font-bold text-gray-900 dark:text-white">
                     {{ formatTokens(stats.rpm) }}
                   </p>
-                  <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">RPM</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">RPM</span>
                 </div>
                 <div class="flex items-baseline gap-2">
-                  <p class="numeric text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                  <p class="text-sm font-semibold text-violet-600 dark:text-violet-400">
                     {{ formatTokens(stats.tpm) }}
                   </p>
-                  <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">TPM</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">TPM</span>
                 </div>
               </div>
             </div>
@@ -198,17 +198,17 @@
           <!-- Avg Response Time -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="dashboard-stat-icon">
-                <Icon name="clock" size="md" :stroke-width="2" />
+              <div class="rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
+                <Icon name="clock" size="md" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
               </div>
               <div>
-                <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.avgResponse') }}
                 </p>
-                <p class="numeric text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatDuration(stats.average_duration_ms) }}
                 </p>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                   {{ stats.active_users }} {{ t('admin.dashboard.activeUsers') }}
                 </p>
               </div>
@@ -224,7 +224,7 @@
             </h2>
           </div>
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <button data-testid="admin-dashboard-button-open-batch-image"
+            <button
               v-if="canUseBatchImage"
               type="button"
               class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-sky-50 dark:bg-dark-800/50 dark:hover:bg-sky-900/20"
@@ -243,7 +243,7 @@
               </span>
               <Icon name="chevronRight" size="sm" class="text-gray-400 group-hover:text-sky-500" />
             </button>
-            <button data-testid="admin-dashboard-view-button-router-push"
+            <button
               type="button"
               class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-emerald-50 dark:bg-dark-800/50 dark:hover:bg-emerald-900/20"
               @click="router.push('/admin/groups')"
@@ -267,33 +267,27 @@
         <!-- Charts Section -->
         <div class="space-y-6">
           <!-- Date Range Filter -->
-          <div class="card dashboard-filter-card p-4">
-            <div class="dashboard-filter-shell flex flex-wrap items-center gap-3">
-              <div class="dashboard-filter-range flex items-center gap-1.5">
-                <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+          <div class="card p-4">
+            <div class="flex flex-wrap items-center gap-4">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t('admin.dashboard.timeRange') }}:</span
                 >
                 <DateRangePicker
-                  variant="text-control"
                   v-model:start-date="startDate"
                   v-model:end-date="endDate"
                   @change="onDateRangeChange"
                 />
               </div>
-              <button data-testid="admin-dashboard-button-load-dashboard-stats"
-                @click="loadDashboardStats"
-                :disabled="chartsLoading"
-                class="btn btn-tertiary btn-tiny dashboard-paper-control dashboard-filter-refresh anthropic-refresh-action-button"
-              >
+              <button @click="loadDashboardStats" :disabled="chartsLoading" class="btn btn-secondary">
                 {{ t('common.refresh') }}
               </button>
-              <div class="dashboard-filter-granularity flex items-center gap-1.5">
-                <span class="filter-label text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+              <div class="ml-auto flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t('admin.dashboard.granularity') }}:</span
                 >
-                <div class="dashboard-granularity-control w-28">
+                <div class="w-28">
                   <Select
-                    variant="text-control"
                     v-model="granularity"
                     :options="granularityOptions"
                     @change="loadChartData"
@@ -325,10 +319,10 @@
           <!-- User Usage Trend (Full Width) -->
           <div class="card p-4">
             <div class="mb-4 flex items-center justify-between gap-3">
-              <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('admin.dashboard.recentUsage') }} (Top 12)</h3>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('admin.dashboard.recentUsage') }} (Top 12)</h3>
               <div class="flex gap-1" role="group" :aria-label="t('admin.dashboard.recentUsage')">
                 <button v-for="metric in (['tokens', 'actual_cost'] as const)" :key="metric" type="button"
-                  class="rounded px-2 py-1 text-xs" :class="userTrendMetric === metric ? 'bg-[var(--anthropic-accent)] text-white' : 'text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]'"
+                  class="rounded px-2 py-1 text-xs" :class="userTrendMetric === metric ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300'"
                   :aria-pressed="userTrendMetric === metric" @click="setUserTrendMetric(metric)">
                   {{ t(metric === 'tokens' ? 'admin.dashboard.tokens' : 'admin.dashboard.actualSpending') }}
                 </button>
@@ -341,7 +335,7 @@
               <Line v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
               <div
                 v-else
-                class="flex h-full items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
               >
                 {{ t('admin.dashboard.noDataAvailable') }}
               </div>
@@ -354,7 +348,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -375,7 +369,6 @@ import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Select from '@/components/common/Select.vue'
 import ModelDistributionChart from '@/components/charts/ModelDistributionChart.vue'
 import TokenUsageTrend from '@/components/charts/TokenUsageTrend.vue'
-import { getChartColor, withChartAlpha } from '@/utils/chartColors'
 import { useBatchImageAccess } from '@/composables/useBatchImageAccess'
 
 import {
@@ -555,11 +548,26 @@ const userTrendChartData = computed(() => {
   })
 
   const sortedDates = Array.from(allDates).sort()
+  const colors = [
+    '#3b82f6',
+    '#10b981',
+    '#f59e0b',
+    '#ef4444',
+    '#8b5cf6',
+    '#ec4899',
+    '#14b8a6',
+    '#f97316',
+    '#6366f1',
+    '#84cc16',
+    '#06b6d4',
+    '#a855f7'
+  ]
+
   const datasets = Array.from(userGroups.values()).map((group, idx) => ({
     label: group.name,
     data: sortedDates.map((date) => group.data.get(date) || 0),
-    borderColor: getChartColor(idx),
-    backgroundColor: withChartAlpha(getChartColor(idx)),
+    borderColor: colors[idx % colors.length],
+    backgroundColor: `${colors[idx % colors.length]}20`,
     fill: false,
     tension: 0.3
   }))
@@ -586,20 +594,25 @@ const formatTokens = (value: number | undefined): string => {
   return value.toLocaleString()
 }
 
-const formatNumber = (value: number): string => {
-  return value.toLocaleString()
+const toFiniteNumber = (value: unknown): number => {
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) ? numberValue : 0
+}
+
+const formatNumber = (value: number | null | undefined): string => {
+  return toFiniteNumber(value).toLocaleString()
 }
 
 const formatCost = (value: number | null | undefined): string => {
-  if (value === undefined || value === null) return '0.0000'
-  if (value >= 1000) {
-    return (value / 1000).toFixed(2) + 'K'
-  } else if (value >= 1) {
-    return value.toFixed(2)
-  } else if (value >= 0.01) {
-    return value.toFixed(3)
+  const safeValue = toFiniteNumber(value)
+  if (safeValue >= 1000) {
+    return (safeValue / 1000).toFixed(2) + 'K'
+  } else if (safeValue >= 1) {
+    return safeValue.toFixed(2)
+  } else if (safeValue >= 0.01) {
+    return safeValue.toFixed(3)
   }
-  return value.toFixed(4)
+  return safeValue.toFixed(4)
 }
 
 const formatDuration = (ms: number): string => {
@@ -754,246 +767,11 @@ const loadChartData = async () => {
   ])
 }
 
-const handleDashboardFilterPointerDown = (event: PointerEvent) => {
-  const target = event.target as Element | null
-  if (!target?.closest('.dashboard-filter-card')) return
-  document.body.classList.add('dashboard-filter-menu-open')
-}
-
-const handleDashboardFilterBodyClick = (event: MouseEvent) => {
-  const target = event.target as Element | null
-  if (target?.closest('.dashboard-filter-card, .date-picker-dropdown-portal, .select-dropdown-portal')) return
-  document.body.classList.remove('dashboard-filter-menu-open')
-}
-
 onMounted(() => {
-  document.addEventListener('pointerdown', handleDashboardFilterPointerDown, true)
-  document.addEventListener('click', handleDashboardFilterBodyClick, true)
   void refreshBatchImageAccess()
   loadDashboardStats()
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('pointerdown', handleDashboardFilterPointerDown, true)
-  document.removeEventListener('click', handleDashboardFilterBodyClick, true)
-  document.body.classList.remove('dashboard-filter-menu-open')
 })
 </script>
 
 <style scoped>
-.admin-dashboard-atelier {
-  font-family: var(--atelier-font-sans);
-}
-
-.admin-dashboard-atelier :deep(.card) {
-  position: relative;
-  overflow: hidden;
-  border-color: var(--anthropic-cookbook-border) !important;
-  border-radius: 8px;
-  background: var(--anthropic-page) !important;
-  box-shadow: none !important;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.admin-dashboard-atelier :deep(.card)::after,
-.admin-dashboard-atelier :deep(.card)::before {
-  content: none;
-  display: none;
-}
-
-.admin-dashboard-atelier :deep(.card:hover),
-.admin-dashboard-atelier :deep(.card:focus-within) {
-  transform: none !important;
-  border-color: var(--anthropic-cookbook-border) !important;
-  background: var(--anthropic-page) !important;
-  box-shadow: none !important;
-  color: var(--atelier-ink) !important;
-}
-
-.admin-dashboard-atelier :deep(.card .text-xl),
-.admin-dashboard-atelier :deep(.card .text-sm.font-semibold) {
-  color: var(--atelier-ink) !important;
-}
-
-.admin-dashboard-atelier :deep(.card .text-xl) {
-  font-family: var(--atelier-font-mono);
-  font-style: normal;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.admin-dashboard-atelier :deep(.card .text-xs) {
-  font-family: var(--atelier-font-sans);
-  font-size: 0.625rem;
-  letter-spacing: 0.08em;
-  color: var(--atelier-muted) !important;
-}
-
-.admin-dashboard-atelier :deep(.card h3) {
-  color: var(--atelier-ink) !important;
-}
-
-.admin-dashboard-atelier :deep(.card canvas) {
-  filter: saturate(0.92);
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card) {
-  border: 1px solid var(--anthropic-cookbook-border) !important;
-  border-radius: 8px;
-  background: var(--anthropic-page) !important;
-  color: var(--atelier-slab-text);
-  box-shadow: none !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card)::before,
-.admin-dashboard-atelier :deep(.dashboard-filter-card)::after {
-  content: none;
-  display: none;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div) {
-  min-height: 3rem;
-  align-items: center;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range) {
-  margin: 0;
-  padding: 0;
-  align-items: center;
-  align-self: center;
-  position: relative;
-  border-right: 0;
-  background: transparent;
-  color: var(--atelier-slab-text);
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range)::after {
-  content: none;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-refresh) {
-  align-self: center;
-  margin: 0;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range)) {
-  color: var(--atelier-slab-text);
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .flex:not(.dashboard-filter-range) > span) {
-  color: var(--atelier-slab-text) !important;
-  font-family: var(--atelier-font-sans);
-  font-size: var(--anthropic-control-font-size, 0.8125rem);
-  font-weight: var(--anthropic-control-font-weight, 500);
-  line-height: var(--anthropic-control-line-height, 1.25rem);
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range > span) {
-  color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-slab-text) !important;
-  font-family: var(--atelier-font-sans);
-  font-size: var(--anthropic-control-font-size, 0.8125rem);
-  font-weight: var(--anthropic-control-font-weight, 500);
-  line-height: var(--anthropic-control-line-height, 1.25rem);
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-range:hover > span) {
-  color: var(--atelier-slab-text) !important;
-  -webkit-text-fill-color: var(--atelier-slab-text) !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card > div > .dashboard-filter-granularity) {
-  align-self: center;
-  background: transparent !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control),
-.admin-dashboard-atelier :deep(.date-picker-trigger),
-.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--atelier-slab-text) !important;
-  font-family: var(--atelier-font-sans);
-  box-shadow: none !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control) {
-  position: relative;
-  overflow: visible;
-}
-
-.admin-dashboard-atelier :deep(.date-picker-trigger *),
-.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger *) {
-  color: var(--atelier-slab-text) !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-paper-control:hover),
-.admin-dashboard-atelier :deep(.date-picker-trigger:hover),
-.admin-dashboard-atelier :deep(.dashboard-granularity-control .select-trigger:hover) {
-  border-color: transparent !important;
-  background: transparent !important;
-  color: var(--atelier-slab-text) !important;
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control) {
-  --button-bg: transparent;
-  --button-border: var(--anthropic-cookbook-border);
-  --button-border-hover: var(--anthropic-cookbook-border-hover);
-  min-height: var(--anthropic-control-height, 2rem);
-  padding: 0.375rem 0.625rem;
-  border-color: var(--button-border) !important;
-  border-radius: 8px;
-  background: transparent !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: var(--anthropic-button-ring) !important;
-  font-size: var(--anthropic-control-font-size, 0.8125rem);
-  font-weight: var(--anthropic-control-font-weight, 500);
-  line-height: var(--anthropic-control-line-height, 1.25rem);
-}
-
-.admin-dashboard-atelier :deep(.dashboard-filter-card .dashboard-filter-refresh.btn.btn-tertiary.btn-tiny.dashboard-paper-control:hover) {
-  background: transparent !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: var(--anthropic-button-ring-hover) !important;
-}
-
-.admin-dashboard-atelier:where(.dark *) {
-  --anthropic-cookbook-border: rgba(20, 19, 19, 0.08);
-  --anthropic-cookbook-border-hover: rgba(20, 19, 19, 0.16);
-}
-
-.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card),
-.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-filter-card .dashboard-paper-control),
-.admin-dashboard-atelier:where(.dark *) :deep(.date-picker-trigger),
-.admin-dashboard-atelier:where(.dark *) :deep(.dashboard-granularity-control .select-trigger) {
-  border-color: transparent;
-  background: transparent;
-}
-
-.dashboard-stat-icon {
-  background: transparent;
-  border: 1px solid var(--anthropic-cookbook-border);
-  color: var(--atelier-muted);
-  box-shadow: none;
-}
-
-.dashboard-stat-icon :deep(svg),
-.dashboard-stat-icon :deep(svg *),
-.dashboard-stat-icon :deep(path) {
-  color: currentColor !important;
-  fill: none !important;
-  stroke: currentColor !important;
-}
-
-.dashboard-stat-icon:where(.dark *) {
-  color: var(--atelier-ink);
-}
-
 </style>

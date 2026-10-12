@@ -1,75 +1,80 @@
 <template>
-  <main class="auth-ascii-shell auth-split-shell">
-    <section class="auth-aside" aria-hidden="true">
-      <div class="auth-aside-inner">
-        <span class="auth-kicker">{{ t('auth.layout.kicker') }}</span>
-        <h1 class="auth-quote">
-          {{ t('auth.layout.quoteLineOne') }}<br />{{ t('auth.layout.quoteLineTwo') }}
-        </h1>
-        <p>
-          {{ siteSubtitle }}
-        </p>
-        <div class="auth-points">
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+    <!-- Background -->
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+    ></div>
+
+    <!-- Decorative Elements -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <!-- Gradient Orbs -->
+      <div
+        class="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-400/20 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary-500/15 blur-3xl"
+      ></div>
+      <div
+        class="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-300/10 blur-3xl"
+      ></div>
+
+      <!-- Grid Pattern -->
+      <div
+        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
+      ></div>
+    </div>
+
+    <!-- Content Container -->
+    <div class="relative z-10 w-full max-w-md">
+      <!-- Logo/Brand -->
+      <div class="mb-8 text-center">
+        <!-- Custom Logo or Default Logo -->
+        <template v-if="settingsLoaded">
           <div
-            v-for="point in authPoints"
-            :key="point.numeric"
-            class="auth-point"
+            class="mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-primary-500/30"
           >
-            <span class="numeric">{{ point.numeric }}</span>
-            <span>{{ point.text }}</span>
+            <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-        </div>
+          <h1 class="text-gradient mb-2 text-3xl font-bold">
+            {{ siteName }}
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-dark-400">
+            {{ siteSubtitle }}
+          </p>
+        </template>
       </div>
-    </section>
 
-    <section class="auth-main">
-      <div class="auth-main-inner">
-        <router-link to="/home" class="auth-page-brand" :aria-label="t('auth.layout.backToHome')">
-          <span class="auth-logo">
-            <img :src="siteLogo || '/logo.png'" alt="" />
-          </span>
-          <span class="auth-page-brand-copy">
-            <span class="auth-brand-title">{{ siteName }}</span>
-            <span class="auth-brand-subtitle">{{ siteSubtitle }}</span>
-          </span>
-        </router-link>
-
-        <div class="auth-card">
+      <!-- Card Container -->
+      <div class="card-glass rounded-2xl p-8 shadow-glass">
         <slot />
-        </div>
-
-        <div class="auth-footer-link">
-          <slot name="footer" />
-        </div>
-
-        <div class="auth-copyright">
-          {{ t('auth.layout.copyright', { year: currentYear, siteName }) }}
-        </div>
       </div>
-    </section>
-  </main>
+
+      <!-- Footer Links -->
+      <div class="mt-6 text-center text-sm">
+        <slot name="footer" />
+      </div>
+
+      <!-- Copyright -->
+      <div class="mt-8 text-center text-xs text-gray-400 dark:text-dark-500">
+        &copy; {{ currentYear }} {{ siteName }}. All rights reserved.
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import { sanitizeUrl } from '@/utils/url'
 
-const { t } = useI18n()
 const appStore = useAppStore()
 
-const siteName = computed(() => appStore.siteName || 'Kreepai')
+const siteName = computed(() => appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const siteSubtitle = computed(() =>
-  appStore.cachedPublicSettings?.site_subtitle || t('auth.layout.defaultSubtitle')
-)
+const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'Subscription to API Conversion Platform')
+const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
+
 const currentYear = computed(() => new Date().getFullYear())
-const authPoints = computed(() => [
-  { numeric: '01', text: t('auth.layout.points.accounts') },
-  { numeric: '02', text: t('auth.layout.points.usage') },
-  { numeric: '03', text: t('auth.layout.points.console') }
-])
 
 onMounted(() => {
   appStore.fetchPublicSettings()
@@ -77,33 +82,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.auth-main-inner {
-  --auth-flow-gap: 20px;
-}
-
-.auth-footer-link :deep(.auth-footer-copy),
-.auth-copyright {
-  color: var(--anthropic-muted, var(--atelier-muted));
-  font-size: 13px;
-  line-height: 20px;
-}
-
-.auth-footer-link,
-.auth-copyright {
-  margin-top: var(--auth-flow-gap);
-}
-
-.auth-footer-link:empty {
-  display: none;
-}
-
-.auth-footer-link :deep(.auth-footer-link-strong) {
-  color: var(--anthropic-fg, var(--atelier-ink));
-  text-decoration-color: transparent;
-}
-
-.auth-footer-link :deep(.auth-footer-link-strong:hover) {
-  color: var(--anthropic-fg, var(--atelier-ink));
-  text-decoration-color: currentColor;
+.text-gradient {
+  @apply bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent;
 }
 </style>

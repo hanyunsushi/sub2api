@@ -4,12 +4,7 @@ vi.mock('@/api/admin/accounts', () => ({
   getAntigravityDefaultModelMapping: vi.fn()
 }))
 
-import {
-  buildModelMappingObject,
-  getModelsByPlatform,
-  getPresetMappingsByPlatform,
-  splitModelMappingObject,
-} from '../useModelWhitelist'
+import { buildModelMappingObject, getModelsByPlatform, getPresetMappingsByPlatform, splitModelMappingObject } from '../useModelWhitelist'
 
 describe('useModelWhitelist', () => {
   it('openai 模型列表包含 GPT-5.4 官方快照', () => {
@@ -67,24 +62,6 @@ describe('useModelWhitelist', () => {
     expect(getModelsByPlatform('antigravity')).toContain('claude-opus-4-8')
   })
 
-  it('Claude / Anthropic 预设映射统一使用赤陶芯片色', () => {
-    const terracottaChipNeedle = 'var(--anthropic-accent)'
-    const claudePresetGroups = [
-      getPresetMappingsByPlatform('claude'),
-      getPresetMappingsByPlatform('bedrock'),
-      getPresetMappingsByPlatform('antigravity').filter((item) => (
-        item.from.includes('claude') ||
-        item.to.includes('claude') ||
-        item.to.includes('anthropic.')
-      )),
-      getPresetMappingsByPlatform('openai').filter((item) => item.from.includes('claude')),
-    ]
-    expect(claudePresetGroups.flat().length).toBeGreaterThan(0)
-    for (const mapping of claudePresetGroups.flat()) {
-      expect(mapping.color).toContain(terracottaChipNeedle)
-    }
-  })
-
   it('Claude Sonnet 5.5 预设使用各平台的官方模型 ID', () => {
     expect(getPresetMappingsByPlatform('claude')).toEqual(expect.arrayContaining([
       expect.objectContaining({ label: 'Sonnet 5.5', from: 'claude-sonnet-5-5', to: 'claude-sonnet-5-5' })
@@ -96,6 +73,7 @@ describe('useModelWhitelist', () => {
 
   it('xAI 模型列表包含 Grok 4.5 官方模型和别名', () => {
     const models = getModelsByPlatform('grok')
+
     expect(models).toContain('grok-4.6')
     expect(models).toContain('grok-4.6-latest')
     expect(models).toContain('grok-4.5')

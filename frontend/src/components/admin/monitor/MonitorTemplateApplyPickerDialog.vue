@@ -4,36 +4,36 @@
     :title="t('admin.channelMonitor.template.applyPickerTitle', { name: templateName })"
     @close="$emit('close')"
   >
-    <p class="mb-3 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+    <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
       {{ t('admin.channelMonitor.template.applyPickerHint') }}
     </p>
 
-    <div v-if="loading" class="py-6 text-center text-sm text-[var(--anthropic-muted)]">
+    <div v-if="loading" class="py-6 text-center text-sm text-gray-400">
       {{ t('common.loading') }}
     </div>
 
-    <div v-else-if="monitors.length === 0" class="py-6 text-center text-sm text-[var(--anthropic-muted)]">
+    <div v-else-if="monitors.length === 0" class="py-6 text-center text-sm text-gray-400">
       {{ t('admin.channelMonitor.template.applyPickerEmpty') }}
     </div>
 
     <div v-else>
       <!-- 全选/全不选 -->
       <div class="mb-2 flex items-center gap-3 text-xs">
-        <button data-testid="admin-monitor-monitor-template-apply-picker-button-select-all"
+        <button
           type="button"
-          class="text-[var(--anthropic-fg)] hover:underline dark:text-[var(--anthropic-fg)]"
+          class="text-primary-600 hover:underline dark:text-primary-400"
           @click="selectAll"
         >
           {{ t('common.selectAll') }}
         </button>
-        <button data-testid="admin-monitor-monitor-template-apply-picker-button-select-none"
+        <button
           type="button"
-          class="text-[var(--anthropic-muted)] hover:underline dark:text-[var(--anthropic-muted)]"
+          class="text-gray-500 hover:underline dark:text-gray-400"
           @click="selectNone"
         >
           {{ t('admin.channelMonitor.template.selectNone') }}
         </button>
-        <span class="ml-auto text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="ml-auto text-gray-500 dark:text-gray-400">
           {{ t('admin.channelMonitor.template.selectedCount', {
             n: selectedIds.length,
             total: monitors.length,
@@ -41,26 +41,25 @@
         </span>
       </div>
 
-      <ul class="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] dark:divide-dark-700 dark:border-[var(--anthropic-border)]">
-        <li data-testid="admin-monitor-monitor-template-apply-picker-li-toggle-m-id"
+      <ul class="max-h-80 divide-y divide-gray-100 overflow-y-auto rounded-lg border border-gray-200 dark:divide-dark-700 dark:border-dark-700">
+        <li
           v-for="m in monitors"
           :key="m.id"
-          class="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
+          class="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-dark-800"
           @click="toggle(m.id)"
         >
-          <input data-testid="admin-monitor-monitor-template-apply-picker-input-checkbox"
+          <input
             type="checkbox"
             :checked="selectedSet.has(m.id)"
-            class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)] focus:ring-[var(--atelier-focus)]"
+            class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             @click.stop="toggle(m.id)"
           />
-          <ProviderBrandIcon :provider="m.provider" :model="m.provider" />
-          <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ m.name }}</span>
-          <span class="text-xs text-[var(--anthropic-muted)]">{{ m.provider }}</span>
-          <span v-if="m.provider === 'openai'" class="text-xs text-[var(--anthropic-muted)]">{{ m.api_mode }}</span>
+          <span class="font-medium text-gray-900 dark:text-white">{{ m.name }}</span>
+          <span class="text-xs text-gray-400">{{ m.provider }}</span>
+          <span v-if="m.provider === 'openai'" class="text-xs text-gray-400">{{ m.api_mode }}</span>
           <span
             v-if="!m.enabled"
-            class="ml-auto rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]"
+            class="ml-auto rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500 dark:bg-dark-700 dark:text-gray-400"
           >
             {{ t('admin.channelMonitor.onlyDisabled').replace(/^仅|^Only /, '') }}
           </span>
@@ -70,10 +69,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-2">
-        <button data-testid="admin-monitor-monitor-template-apply-picker-button-emit-close" class="btn btn-secondary" @click="$emit('close')">
+        <button class="btn btn-secondary" @click="$emit('close')">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="admin-monitor-monitor-template-apply-picker-button-handle-apply"
+        <button
           class="btn btn-primary"
           :disabled="submitting || selectedIds.length === 0"
           @click="handleApply"
@@ -95,7 +94,6 @@ import { extractApiErrorMessage } from '@/utils/apiError'
 import { adminAPI } from '@/api/admin'
 import type { AssociatedMonitorBrief } from '@/api/admin/channelMonitorTemplate'
 import BaseDialog from '@/components/common/BaseDialog.vue'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 
 const props = defineProps<{
   show: boolean

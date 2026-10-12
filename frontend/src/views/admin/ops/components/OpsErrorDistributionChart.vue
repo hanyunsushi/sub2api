@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getOpsChartColors } from '@/utils/chartColors'
 import { Chart as ChartJS, ArcElement, Legend, Tooltip } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
 import type { OpsErrorDistributionResponse } from '@/api/admin/ops'
@@ -24,11 +23,11 @@ const { t } = useI18n()
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
-  upstreamError: getOpsChartColors().upstreamError,
-  warning: getOpsChartColors().warning,
-  critical: getOpsChartColors().critical,
-  neutral: getOpsChartColors().neutral,
-  text: isDarkMode.value ? '#fffaf0' : '#70685c'
+  blue: '#3b82f6',
+  red: '#ef4444',
+  orange: '#f59e0b',
+  gray: '#9ca3af',
+  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
 }))
 
 const totalSlaErrors = computed(() =>
@@ -69,10 +68,10 @@ const categories = computed<ErrorCategory[]>(() => {
   }
 
   const out: ErrorCategory[] = []
-  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.warning })
-  if (client > 0) out.push({ label: t('admin.ops.client'), count: client, color: colors.value.upstreamError })
-  if (system > 0) out.push({ label: t('admin.ops.system'), count: system, color: colors.value.critical })
-  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.neutral })
+  if (upstream > 0) out.push({ label: t('admin.ops.upstream'), count: upstream, color: colors.value.orange })
+  if (client > 0) out.push({ label: t('admin.ops.client'), count: client, color: colors.value.blue })
+  if (system > 0) out.push({ label: t('admin.ops.system'), count: system, color: colors.value.red })
+  if (other > 0) out.push({ label: t('admin.ops.other'), count: other, color: colors.value.gray })
   return out
 })
 
@@ -101,19 +100,19 @@ const options = computed(() => ({
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: isDarkMode.value ? '#171512' : '#fbf8f0',
-      titleColor: isDarkMode.value ? '#fffaf0' : '#171512',
-      bodyColor: isDarkMode.value ? '#fffaf0' : '#70685c'
+      backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
+      titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
+      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563'
     }
   }
 }))
 </script>
 
 <template>
-  <div class="ops-monitor-panel ops-chart-card ops-error-distribution-card flex h-full flex-col anthropic-card-shell p-6">
+  <div class="flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex items-center justify-between">
-      <h3 class="flex items-center gap-2 text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-        <svg class="ops-icon-butter ops-error-icon h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+        <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -124,9 +123,9 @@ const options = computed(() => ({
         {{ t('admin.ops.errorDistribution') }}
         <HelpTooltip :content="t('admin.ops.tooltips.errorDistribution')" />
       </h3>
-      <button data-testid="admin-ops-components-ops-error-distribution-chart-button-emit-open-details"
+      <button
         type="button"
-        class="inline-flex items-center rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-section)] disabled:opacity-50 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+        class="inline-flex items-center rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-300 dark:hover:bg-dark-800"
         :disabled="state !== 'ready'"
         :title="t('admin.ops.errorTrend')"
         @click="emit('openDetails')"
@@ -141,7 +140,7 @@ const options = computed(() => ({
           <Doughnut :data="chartData" :options="{ ...options, cutout: '65%' }" />
         </div>
         <div class="mt-4 flex flex-col items-center gap-2">
-          <div v-if="topReason" class="text-xs font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <div v-if="topReason" class="text-xs font-bold text-gray-900 dark:text-white">
             {{ t('admin.ops.top') }}: <span :style="{ color: topReason.color }">{{ topReason.label }}</span>
           </div>
           <div class="flex flex-wrap justify-center gap-3">
@@ -154,7 +153,7 @@ const options = computed(() => ({
       </div>
 
       <div v-else class="flex h-full items-center justify-center">
-        <div v-if="state === 'loading'" class="animate-pulse text-sm text-[var(--anthropic-muted)]">{{ t('common.loading') }}</div>
+        <div v-if="state === 'loading'" class="animate-pulse text-sm text-gray-400">{{ t('common.loading') }}</div>
         <EmptyState v-else :title="t('common.noData')" :description="t('admin.ops.charts.emptyError')" />
       </div>
     </div>

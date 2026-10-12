@@ -4,11 +4,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { ref } from 'vue'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import NavigationProgress from '../../common/NavigationProgress.vue'
-
-const source = readFileSync(resolve(__dirname, '../NavigationProgress.vue'), 'utf8')
 
 // Mock useNavigationLoadingState
 const mockIsLoading = ref(false)
@@ -83,11 +79,5 @@ describe('NavigationProgress', () => {
 
     // 清理
     wrapper2.unmount()
-  })
-
-  it('uses the terracotta theme color instead of the blue primary gradient', () => {
-    expect(source).toContain('--atelier-terracotta-action')
-    expect(source).toContain('--atelier-terracotta-action-hover')
-    expect(source).not.toContain("theme('colors.primary")
   })
 })

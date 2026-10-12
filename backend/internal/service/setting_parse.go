@@ -69,7 +69,6 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		settingKeyForwardedClientIPModeV2:                   "true",
 		SettingKeySiteName:                                  "Sub2API",
 		SettingKeySiteLogo:                                  "",
-		SettingKeyAppearanceThemeDefault:                    "anthropic",
 		SettingKeyPurchaseSubscriptionEnabled:               "false",
 		SettingKeyPurchaseSubscriptionURL:                   "",
 		SettingKeyTableDefaultPageSize:                      "20",
@@ -372,11 +371,13 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		HomeContent:                            settings[SettingKeyHomeContent],
 		CompactHomeEnabled:                     settings[SettingKeyCompactHomeEnabled] == "true",
 		HideCcsImportButton:                    settings[SettingKeyHideCcsImportButton] == "true",
-		AppearanceThemeDefault:                 normalizeAppearanceThemeDefault(settings[SettingKeyAppearanceThemeDefault]),
 		PurchaseSubscriptionEnabled:            settings[SettingKeyPurchaseSubscriptionEnabled] == "true",
 		PurchaseSubscriptionURL:                strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
 		CustomMenuItems:                        settings[SettingKeyCustomMenuItems],
 		CustomEndpoints:                        settings[SettingKeyCustomEndpoints],
+		AILogoCDNBaseURL:                       normalizeAILogoCDNBaseURL(settings[SettingKeyAILogoCDNBaseURL]),
+		CustomAILogoPresets:                    parseCustomAILogoPresetURLs(settings[SettingKeyCustomAILogoPresets]),
+		CustomMenuSVGIconPresets:               parseCustomMenuSVGIconPresetURLs(settings[SettingKeyCustomMenuSVGIconPresets]),
 		BackendModeEnabled:                     settings[SettingKeyBackendModeEnabled] == "true",
 	}
 	result.TableDefaultPageSize, result.TablePageSizeOptions = parseTablePreferences(

@@ -9,28 +9,28 @@
           <div class="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
             <Icon name="check" size="lg" class="text-green-500" />
           </div>
-          <p class="text-lg font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ props.orderType === 'subscription' ? t('payment.result.subscriptionSuccess') : t('payment.result.success') }}</p>
-          <div v-if="paidOrder" class="w-full rounded-xl bg-[var(--anthropic-section)] p-4 dark:bg-[var(--anthropic-section)]">
+          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ props.orderType === 'subscription' ? t('payment.result.subscriptionSuccess') : t('payment.result.success') }}</p>
+          <div v-if="paidOrder" class="w-full rounded-xl bg-gray-50 p-4 dark:bg-dark-800">
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderId') }}</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">#{{ paidOrder.id }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">#{{ paidOrder.id }}</span>
               </div>
               <div v-if="paidOrder.out_trade_no" class="flex justify-between">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.orderNo') }}</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ paidOrder.out_trade_no }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">{{ paidOrder.out_trade_no }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.amount') }}</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ paidOrder.order_type === 'balance' ? '$' + paidOrder.amount.toFixed(2) : formatGatewayAmount(paidOrder.amount) }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ paidOrder.amount.toFixed(2) }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.orders.payAmount') }}</span>
-                <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatGatewayAmount(paidOrder.pay_amount) }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
+                <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(paidOrder.pay_amount, paidOrder.currency) }}</span>
               </div>
             </div>
           </div>
-          <button data-testid="payment-payment-status-panel-button-handle-done" class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
@@ -39,14 +39,14 @@
     <template v-else-if="outcome === 'cancelled'">
       <div class="card p-6">
         <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
-            <svg class="h-8 w-8 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700">
+            <svg class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <p class="text-lg font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('payment.qr.cancelled') }}</p>
-          <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.cancelledDesc') }}</p>
-          <button data-testid="payment-payment-status-panel-button-handle-done-2" class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.qr.cancelled') }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.cancelledDesc') }}</p>
+          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
@@ -60,9 +60,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p class="text-lg font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('payment.qr.expired') }}</p>
-          <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.expiredDesc') }}</p>
-          <button data-testid="payment-payment-status-panel-button-handle-done-3" class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.qr.expired') }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.expiredDesc') }}</p>
+          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
@@ -88,7 +88,7 @@
               {{ deepLinkState === 'backgrounded' ? t('payment.qr.alipayContinueInApp') : t('payment.qr.alipayOpening') }}
             </p>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.alipayWaitingHint') }}</p>
-            <button data-testid="merge-payment-status-panel-reopen-alipay-1"
+            <button
               v-if="deepLinkState === 'backgrounded'"
               data-test="reopen-alipay"
               class="btn btn-alipay inline-flex items-center gap-2 text-sm"
@@ -140,7 +140,7 @@
               {{ t('payment.qr.alipaySaveAndScanHint') }}
             </p>
             <div class="grid w-full gap-2 sm:grid-cols-2">
-              <button data-testid="merge-payment-status-panel-reopen-alipay-2"
+              <button
                 data-test="reopen-alipay"
                 class="btn btn-alipay inline-flex items-center justify-center gap-2"
                 @click="reopenAlipay"
@@ -148,7 +148,7 @@
                 <Icon name="externalLink" size="sm" />
                 {{ t('payment.qr.reopenAlipay') }}
               </button>
-              <button data-testid="merge-payment-status-panel-save-qrcode-3"
+              <button
                 data-test="save-alipay-qr"
                 class="btn btn-secondary inline-flex items-center justify-center gap-2"
                 @click="saveQRCode"
@@ -157,7 +157,7 @@
                 {{ t('payment.qr.saveQRCode') }}
               </button>
             </div>
-            <button data-testid="merge-payment-status-panel-handle-done-4" class="btn btn-secondary w-full" @click="handleDone">
+            <button class="btn btn-secondary w-full" @click="handleDone">
               {{ t('payment.result.backToRecharge') }}
             </button>
           </div>
@@ -169,7 +169,7 @@
     <template v-else-if="showQRCode">
       <div class="card p-6">
         <div class="flex flex-col items-center space-y-4">
-          <p class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ scanTitle }}</p>
+          <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ scanTitle }}</p>
           <div :class="['relative rounded-lg border-2 p-4', qrBorderClass]">
             <canvas ref="qrCanvas" class="mx-auto"></canvas>
             <!-- Brand logo overlay -->
@@ -179,18 +179,18 @@
               </span>
             </div>
           </div>
-          <p v-if="scanHint" class="text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ scanHint }}</p>
-          <button data-testid="payment-payment-status-panel-button-reopen-popup" v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
+          <p v-if="scanHint" class="text-center text-sm text-gray-500 dark:text-gray-400">{{ scanHint }}</p>
+          <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
           </button>
         </div>
       </div>
       <div class="card p-4 text-center">
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.expiresIn') }}</p>
-        <p class="mt-1 text-2xl font-bold tabular-nums text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.waitingPayment') }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.expiresIn') }}</p>
+        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
+        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
       </div>
-      <button data-testid="payment-payment-status-panel-button-handle-cancel" class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
+      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
         {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
       </button>
     </template>
@@ -199,18 +199,18 @@
     <template v-else>
       <div class="card p-6">
         <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="h-10 w-10 animate-spin rounded-full border-4 border-[var(--anthropic-muted)] border-t-transparent"></div>
-          <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.payInNewWindowHint') }}</p>
-          <button data-testid="payment-payment-status-panel-button-reopen-popup-2" v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
+          <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.payInNewWindowHint') }}</p>
+          <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
           </button>
         </div>
       </div>
       <div class="card p-4 text-center">
-        <p class="mt-1 text-2xl font-bold tabular-nums text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.qr.waitingPayment') }}</p>
+        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
+        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
       </div>
-      <button data-testid="payment-payment-status-panel-button-handle-cancel-2" class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
+      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
         {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
       </button>
     </template>
@@ -225,7 +225,7 @@ import { useAppStore } from '@/stores'
 import { paymentAPI } from '@/api/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import { getPaymentPopupFeatures, isBuiltInAlipayMethod, isBuiltInWxpayMethod } from '@/components/payment/providerConfig'
-import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
+import { currencySymbol, formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import type { PaymentOrder } from '@/types/payment'
 import Icon from '@/components/icons/Icon.vue'
 import QRCode from 'qrcode'
@@ -269,6 +269,7 @@ const paidOrder = ref<PaymentOrder | null>(null)
 const deepLinkState = ref<AlipayDeepLinkState>('idle')
 const deepLinkFallbackVisible = ref(false)
 const paymentCurrency = computed(() => normalizePaymentCurrency(props.currency))
+const creditedAmountSymbol = currencySymbol('USD')
 const localeCode = computed(() => {
   const raw = i18n.locale as unknown
   if (typeof raw === 'string') return raw
@@ -296,9 +297,9 @@ const isMobileAlipayDeepLink = computed(() => props.mobileAlipayDeepLink === tru
 const showQRCode = computed(() => !!qrUrl.value && (!isMobileAlipayDeepLink.value || deepLinkFallbackVisible.value))
 
 const qrBorderClass = computed(() => {
-  if (isAlipay.value) return 'border-[#00AEEF] bg-[var(--anthropic-info-bg)] dark:border-[#00AEEF]/70 dark:bg-[var(--anthropic-info-bg)]'
+  if (isAlipay.value) return 'border-[#00AEEF] bg-blue-50 dark:border-[#00AEEF]/70 dark:bg-blue-950/20'
   if (isWxpay.value) return 'border-[#2BB741] bg-green-50 dark:border-[#2BB741]/70 dark:bg-green-950/20'
-  return 'border-[var(--anthropic-border)] bg-[var(--anthropic-page)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]'
+  return 'border-gray-200 bg-white dark:border-dark-600 dark:bg-dark-800'
 })
 
 const qrLogoBgClass = computed(() => {

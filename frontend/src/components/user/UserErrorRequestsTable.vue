@@ -15,24 +15,24 @@
         @rowClick="(row) => openDetail(row.id)"
       >
         <template #cell-model="{ row }">
-          <span v-if="row.model" class="text-sm font-medium text-[var(--anthropic-fg)]">{{ row.model }}</span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+          <span v-if="row.model" class="text-sm font-medium text-gray-900 dark:text-white">{{ row.model }}</span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <template #cell-key_name="{ row }">
           <div class="text-sm">
-            <span class="text-[var(--anthropic-fg)]">{{ row.key_name || '-' }}</span>
+            <span class="text-gray-900 dark:text-white">{{ row.key_name || '-' }}</span>
             <span
               v-if="row.key_deleted"
-              class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] ring-1 ring-inset ring-[var(--anthropic-border)]"
+              class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-rose-100 text-rose-600 ring-1 ring-inset ring-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:ring-rose-500/30"
             >{{ t('usage.errors.keyDeleted') }}</span>
           </div>
         </template>
 
         <template #cell-endpoint="{ row }">
           <div class="max-w-[320px] text-xs">
-            <div class="break-all text-[var(--anthropic-muted)]">
-              <span class="font-medium text-[var(--anthropic-muted)]">{{ t('usage.inbound') }}:</span>
+            <div class="break-all text-gray-700 dark:text-gray-300">
+              <span class="font-medium text-gray-500 dark:text-gray-400">{{ t('usage.inbound') }}:</span>
               <span class="ml-1">{{ row.inbound_endpoint?.trim() || '-' }}</span>
             </div>
           </div>
@@ -45,24 +45,24 @@
         </template>
 
         <template #cell-category="{ row }">
-          <span class="text-sm text-[var(--anthropic-fg)]">{{ t('usage.errors.categories.' + row.category) }}</span>
+          <span class="text-sm text-gray-900 dark:text-white">{{ t('usage.errors.categories.' + row.category) }}</span>
         </template>
 
         <template #cell-message="{ row }">
           <span
             v-if="row.message"
-            class="block max-w-[280px] truncate text-sm text-[var(--anthropic-muted)]"
+            class="block max-w-[280px] truncate text-sm text-gray-600 dark:text-gray-400"
             :title="row.message"
           >{{ row.message }}</span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <template #cell-group="{ row }">
           <span
             v-if="row.group_name"
-            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-[var(--anthropic-raised)] text-[var(--anthropic-fg)] ring-1 ring-inset ring-[var(--anthropic-border)]"
+            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200"
           >{{ row.group_name }}</span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <template #cell-type="{ row }">
@@ -71,34 +71,34 @@
             class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
             :class="requestTypeBadge(row)!.className"
           >{{ requestTypeBadge(row)!.label }}</span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <template #cell-platform="{ row }">
-          <span class="text-sm text-[var(--anthropic-fg)]">{{ row.platform || '-' }}</span>
+          <span class="text-sm text-gray-900 dark:text-white">{{ row.platform || '-' }}</span>
         </template>
 
         <template #cell-client_ip="{ row }">
-          <div data-testid="user-user-error-requests-table-div-1" @click.stop>
+          <div @click.stop>
             <div v-if="row.client_ip">
-              <span class="font-mono text-sm text-[var(--anthropic-muted)]">{{ row.client_ip }}</span>
+              <span class="text-sm font-mono text-gray-600 dark:text-gray-400">{{ row.client_ip }}</span>
               <IpGeoCell :ip="row.client_ip" />
             </div>
-            <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+            <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
           </div>
         </template>
 
         <template #cell-created_at="{ row }">
-          <span class="text-sm text-[var(--anthropic-muted)]">{{ formatDateTime(row.created_at) }}</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400">{{ formatDateTime(row.created_at) }}</span>
         </template>
 
         <template #cell-user_agent="{ row }">
           <span
             v-if="row.user_agent"
-            class="block max-w-[320px] truncate text-sm text-[var(--anthropic-muted)]"
+            class="block max-w-[320px] truncate text-sm text-gray-600 dark:text-gray-400"
             :title="row.user_agent"
           >{{ row.user_agent }}</span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">-</span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <template #empty><EmptyState :message="t('usage.errors.empty')" /></template>
@@ -146,7 +146,7 @@ const props = defineProps<{
   loading: boolean
   page: number
   pageSize: number
-  /** Column settings: only these keys are visible; defaults to all columns. */
+  /** 列设置:仅显示这些 key 的列;不传则全显(key 须与 allColumns 一致) */
   visibleColumnKeys?: string[]
 }>()
 
@@ -163,6 +163,8 @@ function onSort(key: string, order: 'asc' | 'desc') {
 
 const { t } = useI18n()
 
+// 列序对齐用户端用量明细:Key → 模型 → 端点 → IP → 分组 → 类型 → 平台 → 分类
+// → 结果(状态→消息)→ 时间 → UA(用量明细 UA 同在时间之后的尾部)
 const allColumns = computed<Column[]>(() => [
   { key: 'key_name', label: t('usage.errors.keyName') },
   { key: 'model', label: t('usage.errors.model'), sortable: true },

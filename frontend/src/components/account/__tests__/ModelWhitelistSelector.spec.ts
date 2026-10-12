@@ -62,11 +62,7 @@ function mountSelector(props: Record<string, unknown> = {}) {
     },
     global: {
       stubs: {
-        ModelIcon: true,
-        FloatingDropdown: {
-          props: ['show'],
-          template: '<div v-if="show"><slot /></div>'
-        }
+        ModelIcon: true
       }
     }
   })

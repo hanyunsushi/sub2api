@@ -43,9 +43,9 @@
             {{ t("admin.groups.form.reasoningEffortMappingsHint") }}
           </p>
         </div>
-        <button data-testid="merge-reasoning-effort-policy-fields-add-mapping-1"
+        <button
           type="button"
-          class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-[var(--anthropic-focus)] transition-colors hover:bg-[color-mix(in_srgb,var(--anthropic-focus)_10%,transparent)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] dark:text-[var(--anthropic-focus)]"
+          class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:text-primary-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-300"
           @click="addGroup"
         >
           <Icon name="plus" size="sm" />
@@ -181,7 +181,7 @@
               </p>
             </div>
 
-            <button data-testid="merge-reasoning-effort-policy-fields-remove-mapping-row-id-2"
+            <button
               type="button"
               class="flex h-11 w-11 items-center justify-center self-end rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/30 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               :title="t('admin.groups.form.removeReasoningEffortPair')"
@@ -194,7 +194,7 @@
 
           <button
             type="button"
-            class="inline-flex min-h-9 items-center gap-1.5 text-sm font-medium text-[var(--anthropic-focus)] transition-colors hover:text-[var(--anthropic-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--anthropic-focus)] dark:text-[var(--anthropic-focus)]"
+            class="inline-flex min-h-9 items-center gap-1.5 text-sm font-medium text-primary-600 transition-colors hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:text-primary-400 dark:hover:text-primary-300"
             @click="addPair(group.id)"
           >
             <Icon name="plus" size="sm" />

@@ -2,29 +2,28 @@
   <BaseDialog :show="show" :title="t('admin.groups.rateMultipliersTitle')" width="wide" @close="handleClose">
     <div v-if="group" class="space-y-4">
       <!-- 分组信息 -->
-      <div class="flex flex-wrap items-center gap-3 rounded-lg bg-[var(--anthropic-section)] px-4 py-2.5 text-sm dark:bg-[var(--anthropic-section)]">
+      <div class="flex flex-wrap items-center gap-3 rounded-lg bg-gray-50 px-4 py-2.5 text-sm dark:bg-dark-700">
         <span class="inline-flex items-center gap-1.5" :class="platformColorClass">
           <PlatformIcon :platform="group.platform" size="sm" />
           {{ t('admin.groups.platforms.' + group.platform) }}
         </span>
-        <span class="text-[var(--anthropic-muted)]">|</span>
-        <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ group.name }}</span>
-        <span class="text-[var(--anthropic-muted)]">|</span>
-        <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="text-gray-400">|</span>
+        <span class="font-medium text-gray-900 dark:text-white">{{ group.name }}</span>
+        <span class="text-gray-400">|</span>
+        <span class="text-gray-600 dark:text-gray-400">
           {{ t('admin.groups.columns.rateMultiplier') }}: {{ group.rate_multiplier }}x
         </span>
       </div>
 
       <!-- 操作区 -->
-      <div class="rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]">
+      <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
         <!-- 添加用户 -->
-        <h4 class="mb-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <h4 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.groups.addUserRate') }}
         </h4>
         <div class="flex items-end gap-2">
           <div class="relative flex-1">
-            <input data-testid="admin-group-group-rate-multipliers-input-search-query"
-              ref="searchInputRef"
+            <input
               v-model="searchQuery"
               type="text"
               autocomplete="off"
@@ -33,27 +32,25 @@
               @input="handleSearchUsers"
               @focus="showDropdown = true"
             />
-            <FloatingDropdown
-              :show="showDropdown && searchResults.length > 0"
-              :trigger-el="searchInputRef"
-              :match-width="true"
-              panel-class="max-h-48 overflow-y-auto rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+            <div
+              v-if="showDropdown && searchResults.length > 0"
+              class="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-500 dark:bg-dark-700"
             >
-              <button data-testid="admin-group-group-rate-multipliers-button-select-user-user"
+              <button
                 v-for="user in searchResults"
                 :key="user.id"
                 type="button"
-                class="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
+                class="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-gray-50 dark:hover:bg-dark-600"
                 @click="selectUser(user)"
               >
-                <span class="text-[var(--anthropic-muted)]">#{{ user.id }}</span>
-                <span class="text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ user.username || user.email }}</span>
-                <span v-if="user.username" class="text-xs text-[var(--anthropic-muted)]">{{ user.email }}</span>
+                <span class="text-gray-400">#{{ user.id }}</span>
+                <span class="text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
+                <span v-if="user.username" class="text-xs text-gray-400">{{ user.email }}</span>
               </button>
-            </FloatingDropdown>
+            </div>
           </div>
           <div class="w-24">
-            <input data-testid="admin-group-group-rate-multipliers-input-new-rate"
+            <input
               v-model.number="newRate"
               type="number"
               step="0.001"
@@ -63,7 +60,7 @@
               placeholder="1.0"
             />
           </div>
-          <button data-testid="admin-group-group-rate-multipliers-button-handle-add-local"
+          <button
             type="button"
             class="btn btn-primary shrink-0"
             :disabled="!selectedUser || newRate == null || newRate <= 0"
@@ -74,20 +71,20 @@
         </div>
 
         <!-- 批量调整 + 全部清空 -->
-        <div v-if="localEntries.length > 0" class="mt-3 flex items-center gap-3 border-t border-[var(--anthropic-border)] pt-3 dark:border-[var(--anthropic-border)]">
-          <span class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.batchAdjust') }}</span>
+        <div v-if="localEntries.length > 0" class="mt-3 flex items-center gap-3 border-t border-gray-100 pt-3 dark:border-dark-600">
+          <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.batchAdjust') }}</span>
           <div class="flex items-center gap-1.5">
-            <span class="text-xs text-[var(--anthropic-muted)]">×</span>
-            <input data-testid="admin-group-group-rate-multipliers-input-batch-factor"
+            <span class="text-xs text-gray-400">×</span>
+            <input
               v-model.number="batchFactor"
               type="number"
               step="0.1"
               min="0"
               autocomplete="off"
-              class="hide-spinner w-20 rounded border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-center text-sm transition-colors focus:border-[var(--atelier-focus)] focus:outline-none focus:ring-1 focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:focus:border-[var(--atelier-focus)]"
+              class="hide-spinner w-20 rounded border border-gray-200 bg-white px-2 py-1 text-center text-sm transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/20 dark:border-dark-500 dark:bg-dark-700 dark:focus:border-primary-500"
               placeholder="0.5"
             />
-            <button data-testid="admin-group-group-rate-multipliers-button-apply-batch-factor"
+            <button
               type="button"
               class="btn btn-primary btn-sm shrink-0 px-2.5 py-1 text-xs"
               :disabled="!batchFactor || batchFactor <= 0"
@@ -97,7 +94,7 @@
             </button>
           </div>
           <div class="ml-auto">
-            <button data-testid="admin-group-group-rate-multipliers-button-clear-all-local"
+            <button
               type="button"
               class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
               @click="clearAllLocal"
@@ -110,7 +107,7 @@
 
       <!-- 加载状态 -->
       <div v-if="loading" class="flex justify-center py-6">
-        <svg class="h-6 w-6 animate-spin text-[var(--anthropic-fg)]" fill="none" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -118,28 +115,28 @@
 
       <!-- 已设置的用户列表 -->
       <div v-else>
-        <h4 class="mb-2 text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <h4 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ t('admin.groups.rateMultipliers') }} ({{ localEntries.length }})
         </h4>
 
-        <div v-if="localEntries.length === 0" class="py-6 text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <div v-if="localEntries.length === 0" class="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
           {{ t('admin.groups.noRateMultipliers') }}
         </div>
 
         <div v-else>
           <!-- 表格 -->
-          <div class="overflow-hidden rounded-lg border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-            <div class="max-h-[420px] overflow-y-auto">
-              <table class="w-full text-sm">
+          <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-dark-600">
+            <div class="max-h-[420px] overflow-auto">
+              <table class="w-full min-w-max text-sm">
                 <thead class="sticky top-0 z-[1]">
-                  <tr class="border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.columns.userEmail') }}</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">ID</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.columns.userName') }}</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.columns.userNotes') }}</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.columns.userStatus') }}</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.groups.columns.rateMultiplier') }}</th>
-                    <th v-if="showFinalRate" class="px-3 py-2 text-left text-xs font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('admin.groups.finalRate') }}</th>
+                  <tr class="border-b border-gray-200 bg-gray-50 dark:border-dark-600 dark:bg-dark-700">
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.columns.userEmail') }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">ID</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.columns.userName') }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.columns.userNotes') }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.columns.userStatus') }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('admin.groups.columns.rateMultiplier') }}</th>
+                    <th v-if="showFinalRate" class="px-3 py-2 text-left text-xs font-medium text-primary-600 dark:text-primary-400">{{ t('admin.groups.finalRate') }}</th>
                     <th class="w-10 px-2 py-2"></th>
                   </tr>
                 </thead>
@@ -147,43 +144,43 @@
                   <tr
                     v-for="entry in paginatedLocalEntries"
                     :key="entry.user_id"
-                    class="hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]/50"
+                    class="hover:bg-gray-50 dark:hover:bg-dark-700/50"
                   >
-                    <td class="px-3 py-2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ entry.user_email }}</td>
-                    <td class="whitespace-nowrap px-3 py-2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ entry.user_id }}</td>
-                    <td class="whitespace-nowrap px-3 py-2 text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ entry.user_name || '-' }}</td>
-                    <td class="max-w-[160px] truncate px-3 py-2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" :title="entry.user_notes">{{ entry.user_notes || '-' }}</td>
+                    <td class="px-3 py-2 text-gray-600 dark:text-gray-400">{{ entry.user_email }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-gray-400 dark:text-gray-500">{{ entry.user_id }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-gray-900 dark:text-white">{{ entry.user_name || '-' }}</td>
+                    <td class="max-w-[160px] truncate px-3 py-2 text-gray-500 dark:text-gray-400" :title="entry.user_notes">{{ entry.user_notes || '-' }}</td>
                     <td class="whitespace-nowrap px-3 py-2">
                       <span
                         :class="[
                           'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
                           entry.user_status === 'active'
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]'
+                            : 'bg-gray-100 text-gray-600 dark:bg-dark-600 dark:text-gray-400'
                         ]"
                       >
                         {{ entry.user_status }}
                       </span>
                     </td>
                     <td class="whitespace-nowrap px-3 py-2">
-                      <input data-testid="admin-group-group-rate-multipliers-input-number"
+                      <input
                         type="number"
                         step="0.001"
                         min="0.001"
                         autocomplete="off"
                         :value="entry.rate_multiplier ?? ''"
                         :placeholder="String(props.group?.rate_multiplier ?? 1)"
-                        class="hide-spinner w-20 rounded border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] px-2 py-1 text-center text-sm font-medium transition-colors focus:border-[var(--atelier-focus)] focus:outline-none focus:ring-1 focus:ring-[var(--atelier-focus)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:focus:border-[var(--atelier-focus)]"
+                        class="hide-spinner w-20 rounded border border-gray-200 bg-white px-2 py-1 text-center text-sm font-medium transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/20 dark:border-dark-500 dark:bg-dark-700 dark:focus:border-primary-500"
                         @change="updateLocalRate(entry.user_id, ($event.target as HTMLInputElement).value)"
                       />
                     </td>
-                    <td v-if="showFinalRate" class="whitespace-nowrap px-3 py-2 font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                    <td v-if="showFinalRate" class="whitespace-nowrap px-3 py-2 font-medium text-primary-600 dark:text-primary-400">
                       {{ computeFinalRate(entry.rate_multiplier) }}
                     </td>
                     <td class="px-2 py-2">
-                      <button data-testid="admin-group-group-rate-multipliers-button-remove-local-entry-user-id"
+                      <button
                         type="button"
-                        class="rounded p-1 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                         @click="removeLocal(entry.user_id)"
                       >
                         <Icon name="trash" size="sm" />
@@ -207,13 +204,13 @@
       </div>
 
       <!-- 底部操作栏 -->
-      <div class="flex items-center gap-3 border-t border-[var(--anthropic-border)] pt-4 dark:border-[var(--anthropic-border)]">
+      <div class="flex items-center gap-3 border-t border-gray-200 pt-4 dark:border-dark-600">
         <!-- 左侧：未保存提示 + 撤销 -->
         <template v-if="isDirty">
           <span class="text-xs text-amber-600 dark:text-amber-400">{{ t('admin.groups.unsavedChanges') }}</span>
-          <button data-testid="admin-group-group-rate-multipliers-button-handle-cancel"
+          <button
             type="button"
-            class="text-xs font-medium text-[var(--anthropic-fg)] hover:text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+            class="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             @click="handleCancel"
           >
             {{ t('admin.groups.revertChanges') }}
@@ -221,10 +218,10 @@
         </template>
         <!-- 右侧：关闭 / 保存 -->
         <div class="ml-auto flex items-center gap-3">
-          <button data-testid="admin-group-group-rate-multipliers-button-handle-close" type="button" class="btn btn-sm px-4 py-1.5" @click="handleClose">
+          <button type="button" class="btn btn-sm px-4 py-1.5" @click="handleClose">
             {{ t('common.close') }}
           </button>
-          <button data-testid="admin-group-group-rate-multipliers-button-handle-save"
+          <button
             v-if="isDirty"
             type="button"
             class="btn btn-primary btn-sm px-4 py-1.5"
@@ -250,7 +247,6 @@ import type { GroupRateMultiplierEntry } from '@/api/admin/groups'
 import type { AdminGroup, AdminUser } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Pagination from '@/components/common/Pagination.vue'
-import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 
@@ -276,7 +272,6 @@ const localEntries = ref<LocalEntry[]>([])
 const searchQuery = ref('')
 const searchResults = ref<AdminUser[]>([])
 const showDropdown = ref(false)
-const searchInputRef = ref<HTMLElement | null>(null)
 const selectedUser = ref<AdminUser | null>(null)
 const newRate = ref<number | null>(null)
 const currentPage = ref(1)
@@ -289,8 +284,8 @@ const platformColorClass = computed(() => {
   switch (props.group?.platform) {
     case 'anthropic': return 'text-orange-700 dark:text-orange-400'
     case 'openai': return 'text-emerald-700 dark:text-emerald-400'
-    case 'antigravity': return 'text-accent-700 dark:text-accent-500'
-    default: return 'text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]'
+    case 'antigravity': return 'text-purple-700 dark:text-purple-400'
+    default: return 'text-blue-700 dark:text-blue-400'
   }
 })
 

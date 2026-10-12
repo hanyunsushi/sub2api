@@ -9,7 +9,7 @@
           {{ t('profile.passkey.description') }}
         </p>
       </div>
-      <button data-testid="merge-profile-passkey-card-show-add-form-true-1"
+      <button
         v-if="enabled && supported && !showAddForm"
         type="button"
         class="btn btn-primary"
@@ -36,7 +36,7 @@
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
               <label for="passkey-name" class="input-label">{{ t('profile.passkey.name') }}</label>
-              <input data-testid="merge-profile-passkey-card-passkey-name-2"
+              <input
                 id="passkey-name"
                 v-model="newName"
                 class="input"
@@ -49,7 +49,7 @@
               <label for="passkey-add-password" class="input-label">{{
                 t('profile.currentPassword')
               }}</label>
-              <input data-testid="merge-profile-passkey-card-passkey-add-password-3"
+              <input
                 id="passkey-add-password"
                 v-model="newPassword"
                 type="password"
@@ -60,10 +60,10 @@
             </div>
           </div>
           <div class="flex justify-end gap-2">
-            <button data-testid="merge-profile-passkey-card-cancel-add-4" type="button" class="btn btn-secondary" :disabled="busy" @click="cancelAdd">
+            <button type="button" class="btn btn-secondary" :disabled="busy" @click="cancelAdd">
               {{ t('common.cancel') }}
             </button>
-            <button data-testid="merge-profile-passkey-card-submit-5" type="submit" class="btn btn-primary" :disabled="busy || newPassword.length === 0">
+            <button type="submit" class="btn btn-primary" :disabled="busy || newPassword.length === 0">
               {{ busy ? t('common.processing') : t('profile.passkey.continue') }}
             </button>
           </div>
@@ -134,7 +134,7 @@
       <div class="flex min-h-full items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/50 transition-opacity" @click="closeDeleteDialog"></div>
         <div
-          class="relative w-full max-w-md transform rounded-xl bg-[var(--anthropic-page)] p-6 shadow-[var(--anthropic-dropdown-shadow)] transition-all dark:bg-dark-800"
+          class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800"
         >
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
             {{ t('profile.passkey.deleteTitle') }}

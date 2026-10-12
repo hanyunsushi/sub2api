@@ -2,10 +2,10 @@
   <AuthLayout>
     <div class="space-y-6">
       <div class="text-center">
-        <h2 class="text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
           {{ t('auth.oidc.callbackTitle', { providerName }) }}
         </h2>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
           {{
             isProcessing
               ? t('auth.oidc.callbackProcessing', { providerName })
@@ -28,28 +28,28 @@
         >
           <div
             v-if="adoptionRequired && (suggestedDisplayName || suggestedAvatarUrl)"
-            class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-800/60"
           >
             <div class="space-y-3">
               <div class="space-y-1">
-                <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
                   {{ t('auth.oauthFlow.profileDetailsTitle', { providerName }) }}
                 </p>
-                <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                <p class="text-xs text-gray-500 dark:text-dark-400">
                   {{ t('auth.oauthFlow.profileDetailsDescription', { providerName }) }}
                 </p>
               </div>
 
               <label
                 v-if="suggestedDisplayName"
-                class="flex items-start gap-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-3 text-sm dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                class="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm dark:border-dark-600 dark:bg-dark-900/50"
               >
-                <input data-testid="auth-wechat-callback-input-adopt-display-name" v-model="adoptDisplayName" type="checkbox" class="mt-1 h-4 w-4" />
+                <input v-model="adoptDisplayName" type="checkbox" class="mt-1 h-4 w-4" />
                 <span class="space-y-1">
-                  <span class="block font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <span class="block font-medium text-gray-900 dark:text-white">
                     {{ t('auth.oauthFlow.useDisplayName') }}
                   </span>
-                  <span class="block text-[var(--anthropic-muted)] dark:text-dark-400">
+                  <span class="block text-gray-500 dark:text-dark-400">
                     {{ suggestedDisplayName }}
                   </span>
                 </span>
@@ -57,19 +57,19 @@
 
               <label
                 v-if="suggestedAvatarUrl"
-                class="flex items-start gap-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-3 text-sm dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+                class="flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm dark:border-dark-600 dark:bg-dark-900/50"
               >
-                <input data-testid="auth-wechat-callback-input-adopt-avatar" v-model="adoptAvatar" type="checkbox" class="mt-1 h-4 w-4" />
+                <input v-model="adoptAvatar" type="checkbox" class="mt-1 h-4 w-4" />
                 <img
                   :src="suggestedAvatarUrl"
                   :alt="t('auth.oauthFlow.avatarAlt', { providerName })"
-                  class="h-10 w-10 rounded-full border border-[var(--anthropic-border)] object-cover dark:border-[var(--anthropic-border)]"
+                  class="h-10 w-10 rounded-full border border-gray-200 object-cover dark:border-dark-600"
                 />
                 <span class="space-y-1">
-                  <span class="block font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <span class="block font-medium text-gray-900 dark:text-white">
                     {{ t('auth.oauthFlow.useAvatar') }}
                   </span>
-                  <span class="block break-all text-[var(--anthropic-muted)] dark:text-dark-400">
+                  <span class="block break-all text-gray-500 dark:text-dark-400">
                     {{ suggestedAvatarUrl }}
                   </span>
                 </span>
@@ -78,11 +78,11 @@
           </div>
 
           <template v-if="needsInvitation">
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('auth.oidc.invitationRequired', { providerName }) }}
             </p>
             <div>
-              <input data-testid="auth-wechat-callback-input-invitation-code"
+              <input
                 v-model="invitationCode"
                 type="text"
                 class="input w-full"
@@ -91,7 +91,7 @@
                 @keyup.enter="handleSubmitInvitation"
               />
             </div>
-            <button data-testid="auth-wechat-callback-button-handle-submit-invitation"
+            <button
               class="btn btn-primary w-full"
               :disabled="isSubmitting || !invitationCode.trim()"
               @click="handleSubmitInvitation"
@@ -104,14 +104,14 @@
             </button>
 
             <div
-              class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-800/60"
             >
               <div class="space-y-3">
                 <div class="space-y-1">
-                  <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ t('auth.alreadyHaveAccount') }}
                   </p>
-                  <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                  <p class="text-xs text-gray-500 dark:text-dark-400">
                     {{
                       hasCurrentAuthToken
                         ? t('auth.oauthFlow.bindCurrentAccountDescription', { providerName })
@@ -145,14 +145,14 @@
 
           <template v-else-if="needsChooser">
             <div
-              class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-800/60"
             >
               <div class="space-y-4">
                 <div class="space-y-1">
-                  <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ t('auth.oauthFlow.chooseHowToContinue') }}
                   </p>
-                  <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                  <p class="text-xs text-gray-500 dark:text-dark-400">
                     {{ t('auth.oauthFlow.chooseAccountActionHint') }}
                   </p>
                 </div>
@@ -181,16 +181,16 @@
           </template>
 
           <template v-else-if="needsAdoptionConfirmation">
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('auth.oauthFlow.reviewProfileBeforeContinue', { providerName }) }}
             </p>
-            <button data-testid="auth-wechat-callback-button-handle-continue-login" class="btn btn-primary w-full" :disabled="isSubmitting" @click="handleContinueLogin">
+            <button class="btn btn-primary w-full" :disabled="isSubmitting" @click="handleContinueLogin">
               {{ isSubmitting ? t('common.processing') : t('auth.continue') }}
             </button>
           </template>
 
           <template v-else-if="needsCreateAccount">
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('auth.oauthFlow.createAccountHint') }}
             </p>
             <PendingOAuthCreateAccountForm
@@ -201,7 +201,7 @@
               @submit="handleCreateAccount"
               @switch-to-bind="switchToBindLoginMode"
             />
-            <button data-testid="auth-wechat-callback-button-switch-to-create-account-mode"
+            <button
               v-if="showBackToChooser"
               class="btn btn-secondary w-full"
               :disabled="isSubmitting"
@@ -212,19 +212,19 @@
           </template>
 
           <template v-else-if="needsBindLogin">
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('auth.oauthFlow.bindSignInToExistingAccount', { providerName }) }}
             </p>
             <div
               v-if="hasCurrentAuthToken"
-              class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+              class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-600 dark:bg-dark-800/60"
             >
               <div class="space-y-3">
                 <div class="space-y-1">
-                  <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ t('auth.oauthFlow.bindCurrentAccountTitle') }}
                   </p>
-                  <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+                  <p class="text-xs text-gray-500 dark:text-dark-400">
                     {{ t('auth.oauthFlow.bindCurrentAccountDescription', { providerName }) }}
                   </p>
                 </div>
@@ -268,7 +268,7 @@
                 {{ isSubmitting ? t('common.processing') : t('auth.oauthFlow.logInAndBind') }}
               </button>
             </div>
-            <button data-testid="auth-wechat-callback-button-switch-to-create-account-mode-2"
+            <button
               v-if="showBackToChooser"
               class="btn btn-secondary w-full"
               :disabled="isSubmitting"
@@ -279,7 +279,7 @@
           </template>
 
           <template v-else-if="needsTotpChallenge">
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
               {{
                 t('auth.oauthFlow.totpHint', {
                   providerName,

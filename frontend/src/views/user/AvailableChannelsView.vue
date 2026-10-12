@@ -2,15 +2,15 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell available-channels-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
+        <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+          <div class="flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-80">
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
-              <input data-testid="user-available-channels-input-search-query"
+              <input
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t('availableChannels.searchPlaceholder')"
@@ -19,14 +19,14 @@
             </div>
           </div>
 
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button data-testid="user-available-channels-button-load-channels"
+          <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+            <button
               @click="loadChannels"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button available-channels-refresh-button"
+              class="btn btn-secondary"
               :title="t('common.refresh', 'Refresh')"
             >
-              {{ t("common.refresh", "Refresh") }}
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
           </div>
         </div>

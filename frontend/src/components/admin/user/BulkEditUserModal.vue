@@ -22,7 +22,7 @@
               data-test="enable-concurrency"
             />
           </div>
-          <input data-testid="merge-bulk-edit-user-modal-bulk-concurrency-1"
+          <input
             v-if="enableConcurrency"
             id="bulk-concurrency"
             v-model="concurrencyValue"
@@ -46,7 +46,7 @@
             />
           </div>
           <div v-if="enableRPMLimit">
-            <input data-testid="merge-bulk-edit-user-modal-bulk-rpm-limit-2"
+            <input
               id="bulk-rpm-limit"
               v-model="rpmLimitValue"
               type="number"
@@ -72,10 +72,10 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="merge-bulk-edit-user-modal-emit-3" type="button" class="btn btn-secondary" @click="emit('close')">
+        <button type="button" class="btn btn-secondary" @click="emit('close')">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="merge-bulk-edit-user-modal-submit-4"
+        <button
           type="submit"
           form="bulk-edit-user-limits-form"
           class="btn btn-primary"

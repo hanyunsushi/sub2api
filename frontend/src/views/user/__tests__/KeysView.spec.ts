@@ -242,6 +242,11 @@ const mountView = async () => {
         EndpointPopover: true,
         GroupBadge: true,
         GroupOptionItem: true,
+        LogoPicker: {
+          props: ['modelValue', 'inputTestId'],
+          emits: ['update:modelValue'],
+          template: '<input :data-testid="inputTestId" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
         Teleport: true,
       },
     },
@@ -330,6 +335,21 @@ describe('user KeysView column settings', () => {
     await wrapper.get('#key-form').trigger('submit')
     await flushPromises()
     expect(updateKey).toHaveBeenNthCalledWith(2, key.id, expect.objectContaining({ name: 'Unsaved name', status: formStatus }))
+    wrapper.unmount()
+  })
+
+  it('preserves and clears a custom logo without reactivating an exhausted key', async () => {
+    const key = { ...createApiKey(), group_id: 1, status: 'quota_exhausted' as const, logo_url: 'https://cdn.example.com/key.png' }
+    listKeys.mockResolvedValue({ items: [key], total: 1, page: 1, page_size: 20, pages: 1 })
+    const wrapper = await mountView()
+    await getButtonByText(wrapper, 'common.edit').trigger('click')
+    expect((wrapper.get('[data-testid="key-logo-url"]').element as HTMLInputElement).value).toBe(key.logo_url)
+    await wrapper.get('[data-testid="key-logo-url"]').setValue('')
+    await wrapper.get('#key-form').trigger('submit')
+    await flushPromises()
+    const payload = updateKey.mock.calls[0][1]
+    expect(payload.logo_url).toBe('')
+    expect(payload).not.toHaveProperty('status')
     wrapper.unmount()
   })
 

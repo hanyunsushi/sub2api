@@ -1,28 +1,28 @@
 <template>
-  <div class="auth-standalone-shell min-h-screen bg-[var(--anthropic-section)] px-4 py-10 dark:bg-[var(--anthropic-section)]">
+  <div class="min-h-screen bg-gray-50 px-4 py-10 dark:bg-dark-900">
     <div class="mx-auto max-w-2xl">
       <div v-if="isProcessing" class="card p-6 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[var(--anthropic-fg)] border-t-transparent"></div>
-        <h1 class="mt-4 text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
+        <h1 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
           {{ t('auth.oauth.callbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ t('auth.oauth.callbackHint') }}
         </p>
       </div>
 
       <div v-else-if="needsRegistrationCompletion" class="card p-6">
-        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ t('auth.oidc.callbackTitle', { providerName }) }}
         </h1>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ registrationHint }}
         </p>
 
         <div class="mt-6 space-y-4">
           <div>
             <label class="input-label">{{ t('auth.emailLabel') }}</label>
-            <input data-testid="auth-o-auth-callback-input-email"
+            <input
               class="input w-full"
               type="email"
               :value="registrationEmail"
@@ -32,7 +32,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('auth.passwordLabel') }}</label>
-            <input data-testid="auth-o-auth-callback-input-password"
+            <input
               v-model="password"
               type="password"
               class="input w-full"
@@ -44,7 +44,7 @@
           </div>
           <div>
             <label class="input-label">{{ t('auth.confirmPassword') }}</label>
-            <input data-testid="auth-o-auth-callback-input-confirm-password"
+            <input
               v-model="confirmPassword"
               type="password"
               class="input w-full"
@@ -56,7 +56,7 @@
           </div>
           <div v-if="invitationRequired">
             <label class="input-label">{{ t('auth.invitationCodeLabel') }}</label>
-            <input data-testid="auth-o-auth-callback-input-invitation-code"
+            <input
               v-model="invitationCode"
               type="text"
               class="input w-full"
@@ -68,7 +68,7 @@
           <p v-if="registrationError" class="text-sm text-red-600 dark:text-red-400">
             {{ registrationError }}
           </p>
-          <button data-testid="auth-o-auth-callback-button-handle-submit-registration"
+          <button
             class="btn btn-primary w-full"
             type="button"
             :disabled="isSubmitting || !canSubmitRegistration"
@@ -80,22 +80,22 @@
       </div>
 
       <div v-else-if="invalidCallback" class="card p-6 text-center">
-        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ t('auth.oauth.invalidCallbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ t('auth.oauth.invalidCallbackHint') }}
         </p>
-        <button data-testid="auth-o-auth-callback-button-replace-login" class="btn btn-primary mt-6" type="button" @click="router.replace('/login')">
+        <button class="btn btn-primary mt-6" type="button" @click="router.replace('/login')">
           {{ t('auth.backToLogin') }}
         </button>
       </div>
 
       <div v-else class="card p-6">
-        <h1 class="text-lg font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ t('auth.oauth.callbackTitle') }}
         </h1>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ t('auth.oauth.callbackHint') }}
         </p>
 
@@ -103,8 +103,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.code') }}</label>
             <div class="flex gap-2">
-              <input data-testid="auth-o-auth-callback-input-input" class="input flex-1 font-mono text-sm" :value="code" readonly />
-              <button data-testid="auth-o-auth-callback-button-copy-code" class="btn btn-secondary" type="button" :disabled="!code" @click="copy(code)">
+              <input class="input flex-1 font-mono text-sm" :value="code" readonly />
+              <button class="btn btn-secondary" type="button" :disabled="!code" @click="copy(code)">
                 {{ t('common.copy') }}
               </button>
             </div>
@@ -113,8 +113,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.state') }}</label>
             <div class="flex gap-2">
-              <input data-testid="auth-o-auth-callback-input-input-2" class="input flex-1 font-mono text-sm" :value="state" readonly />
-              <button data-testid="auth-o-auth-callback-button-copy-state"
+              <input class="input flex-1 font-mono text-sm" :value="state" readonly />
+              <button
                 class="btn btn-secondary"
                 type="button"
                 :disabled="!state"
@@ -128,8 +128,8 @@
           <div>
             <label class="input-label">{{ t('auth.oauth.fullUrl') }}</label>
             <div class="flex gap-2">
-              <input data-testid="auth-o-auth-callback-input-input-3" class="input flex-1 font-mono text-xs" :value="fullUrl" readonly />
-              <button data-testid="auth-o-auth-callback-button-copy-full-url"
+              <input class="input flex-1 font-mono text-xs" :value="fullUrl" readonly />
+              <button
                 class="btn btn-secondary"
                 type="button"
                 :disabled="!fullUrl"

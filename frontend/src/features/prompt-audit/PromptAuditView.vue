@@ -15,13 +15,13 @@
 
       <div v-if="loadErrors.config && !draft" role="alert" class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-900 dark:bg-red-950/30">
         <p class="text-sm text-red-700 dark:text-red-300">{{ loadErrors.config }}</p>
-        <button data-testid="merge-prompt-audit-view-load-config-1" type="button" class="btn btn-secondary btn-sm mt-3" @click="loadConfig">{{ t('admin.promptAudit.actions.retry') }}</button>
+        <button type="button" class="btn btn-secondary btn-sm mt-3" @click="loadConfig">{{ t('admin.promptAudit.actions.retry') }}</button>
       </div>
 
       <template v-else>
         <div class="mb-4" role="tablist" :aria-label="t('admin.promptAudit.title')">
           <div class="tabs inline-flex">
-            <button data-testid="merge-prompt-audit-view-active-tab-tab-id-2"
+            <button
               v-for="tab in pageTabs"
               :key="tab.id"
               type="button"

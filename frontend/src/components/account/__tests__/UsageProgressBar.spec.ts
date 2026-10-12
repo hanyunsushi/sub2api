@@ -29,7 +29,7 @@ describe('UsageProgressBar', () => {
         utilization: 0,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: true,
-        color: 'neutral'
+        color: 'indigo'
       }
     })
 
@@ -44,7 +44,7 @@ describe('UsageProgressBar', () => {
         utilization: 12,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: true,
-        color: 'success'
+        color: 'emerald'
       }
     })
 
@@ -60,7 +60,7 @@ describe('UsageProgressBar', () => {
         utilization: 0,
         resetsAt: '2026-03-17T02:30:00Z',
         showNowWhenIdle: false,
-        color: 'neutral'
+        color: 'indigo'
       }
     })
 
@@ -75,7 +75,7 @@ describe('UsageProgressBar', () => {
         utilization: 53,
         // 早于 fake system time 2026-03-17T00:00:00Z
         resetsAt: '2026-03-16T22:00:00Z',
-        color: 'neutral'
+        color: 'indigo'
       }
     })
 
@@ -89,43 +89,12 @@ describe('UsageProgressBar', () => {
         label: '5h',
         utilization: 0,
         resetsAt: '2026-03-16T22:00:00Z',
-        color: 'neutral'
+        color: 'indigo'
       }
     })
 
     expect(wrapper.text()).toContain('usage.resetNow')
     expect(wrapper.text()).not.toContain('usage.resetPending')
-  })
-
-  it('uses semantic threshold classes for quota utilization', () => {
-    const safe = mount(UsageProgressBar, {
-      props: {
-        label: 'EXT',
-        utilization: 69,
-        color: 'success',
-      },
-    })
-    const warning = mount(UsageProgressBar, {
-      props: {
-        label: 'EXT',
-        utilization: 75,
-        color: 'success',
-      },
-    })
-    const danger = mount(UsageProgressBar, {
-      props: {
-        label: 'EXT',
-        utilization: 90,
-        color: 'success',
-      },
-    })
-
-    expect(safe.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--safe')
-    expect(safe.find('.usage-progress-fill').classes()).toContain('bg-green-500')
-    expect(warning.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--warning')
-    expect(warning.find('.usage-progress-fill').classes()).toContain('bg-amber-500')
-    expect(danger.find('.usage-progress-fill').classes()).toContain('usage-progress-fill--danger')
-    expect(danger.find('.usage-progress-fill').classes()).toContain('bg-red-500')
   })
 
   it('剩余容量模式在 100% 时显示满格绿色', () => {
@@ -191,7 +160,7 @@ describe('UsageProgressBar', () => {
     expect(mountAt(90).get('.h-1\\.5 > div').classes()).toContain('bg-red-500')
 
     // 百分比文本同步分级
-    expect(mountAt(74).get('.h-1\\.5 + span').classes()).toContain('text-[var(--anthropic-muted)]')
+    expect(mountAt(74).get('.h-1\\.5 + span').classes()).toContain('text-gray-600')
     expect(mountAt(75).get('.h-1\\.5 + span').classes()).toContain('text-amber-600')
     expect(mountAt(89).get('.h-1\\.5 + span').classes()).toContain('text-amber-600')
     expect(mountAt(90).get('.h-1\\.5 + span').classes()).toContain('text-red-600')

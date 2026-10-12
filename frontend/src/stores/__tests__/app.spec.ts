@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAppStore } from '@/stores/app'
 import { getPublicSettings } from '@/api/auth'
-import { useAppearanceTheme } from '@/composables/useAppearanceTheme'
 import type { PublicSettings } from '@/types'
 
 function createDeferred<T>() {
@@ -233,17 +232,6 @@ describe('useAppStore', () => {
       store.toggleMobileSidebar()
       expect(store.mobileOpen).toBe(false)
     })
-
-    it('在路由切换导致侧边栏组件重建时保留导航滚动位置', () => {
-      const store = useAppStore()
-      expect(store.sidebarNavScrollTop).toBe(0)
-
-      store.setSidebarNavScrollTop(480)
-      expect(store.sidebarNavScrollTop).toBe(480)
-
-      store.setSidebarNavScrollTop(-20)
-      expect(store.sidebarNavScrollTop).toBe(0)
-    })
   })
 
   // --- Loading 状态 ---
@@ -325,14 +313,12 @@ describe('useAppStore', () => {
       const store = useAppStore()
 
       store.setSidebarCollapsed(true)
-      store.setSidebarNavScrollTop(360)
       store.setLoading(true)
       store.showSuccess('消息')
 
       store.reset()
 
       expect(store.sidebarCollapsed).toBe(false)
-      expect(store.sidebarNavScrollTop).toBe(0)
       expect(store.loading).toBe(false)
       expect(store.toasts).toHaveLength(0)
     })
@@ -419,7 +405,6 @@ describe('useAppStore', () => {
         contact_info: 'test@test.com',
         api_base_url: 'https://api.test.com',
         doc_url: 'https://docs.test.com',
-        appearance_theme_default: 'cloudflare',
       }
 
       const store = useAppStore()
@@ -430,7 +415,6 @@ describe('useAppStore', () => {
       expect(store.siteLogo).toBe('/logo.png')
       expect(store.siteVersion).toBe('1.0.0')
       expect(store.publicSettingsLoaded).toBe(true)
-      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
     })
 
     it('无注入配置时返回 false', () => {
@@ -482,9 +466,6 @@ describe('useAppStore', () => {
         custom_endpoints: [],
         linuxdo_oauth_enabled: false,
         backend_mode_enabled: false,
-        appearance_theme_default: 'anthropic',
-        ai_logo_cdn_base_url: 'https://img.example.com/lobe/light',
-        custom_ai_logo_presets: ['https://img.example.com/custom/a.png'],
         version: '1.0.0'
       })
 
@@ -493,27 +474,8 @@ describe('useAppStore', () => {
 
       expect((window as any).__APP_CONFIG__.table_default_page_size).toBe(1000)
       expect((window as any).__APP_CONFIG__.table_page_size_options).toEqual([20, 100, 1000])
-      expect((window as any).__APP_CONFIG__.appearance_theme_default).toBe('anthropic')
-      expect((window as any).__APP_CONFIG__.ai_logo_cdn_base_url).toBe('https://img.example.com/lobe/light')
-      expect((window as any).__APP_CONFIG__.custom_ai_logo_presets).toEqual(['https://img.example.com/custom/a.png'])
-      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
       expect(localStorage.getItem('table-page-size')).toBeNull()
       expect(localStorage.getItem('table-page-size-source')).toBeNull()
-    })
-
-    it('全站主题强制使用管理员公开设置并清理旧本地覆盖', () => {
-      localStorage.setItem('appearance_theme', 'newspaper')
-      const windowAny = window as any
-      windowAny.__APP_CONFIG__ = {
-        site_name: 'TestSite',
-        appearance_theme_default: 'cloudflare',
-      }
-
-      const store = useAppStore()
-      store.initFromInjectedConfig()
-
-      expect(useAppearanceTheme().currentTheme.value).toBe('anthropic')
-      expect(localStorage.getItem('appearance_theme')).toBeNull()
     })
   })
 })

@@ -1,60 +1,40 @@
 <template>
-  <div class="card endpoint-distribution-card p-4">
+  <div class="card p-4">
     <div class="mb-4 flex items-center justify-between gap-3">
-      <h3 class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
         {{ title || t('usage.endpointDistribution') }}
       </h3>
       <div class="flex flex-wrap items-center justify-end gap-2">
         <div
           v-if="showSourceToggle"
-          ref="sourceTabsRef"
-          class="route-tabs endpoint-distribution-control-group endpoint-distribution-route-tabs inline-flex"
-          data-route-tabs="endpoint-distribution-source"
-          role="tablist"
-          @mouseleave="moveSourceIndicatorToSelected"
-          @focusout="handleSourceTabsFocusout"
+          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
         >
-          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-inbound"
+          <button
             type="button"
-            class="endpoint-distribution-toggle"
-            role="tab"
-            data-route-id="inbound"
-            :aria-selected="source === 'inbound'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'inbound'
-              ? 'endpoint-distribution-toggle-active'
-              : 'endpoint-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'inbound')"
           >
             {{ t('usage.inbound') }}
           </button>
-          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-upstream"
+          <button
             type="button"
-            class="endpoint-distribution-toggle"
-            role="tab"
-            data-route-id="upstream"
-            :aria-selected="source === 'upstream'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'upstream'
-              ? 'endpoint-distribution-toggle-active'
-              : 'endpoint-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'upstream')"
           >
             {{ t('usage.upstream') }}
           </button>
-          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-source-path"
+          <button
             type="button"
-            class="endpoint-distribution-toggle"
-            role="tab"
-            data-route-id="path"
-            :aria-selected="source === 'path'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="source === 'path'
-              ? 'endpoint-distribution-toggle-active'
-              : 'endpoint-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:source', 'path')"
           >
             {{ t('usage.path') }}
@@ -63,39 +43,24 @@
 
         <div
           v-if="showMetricToggle"
-          ref="metricTabsRef"
-          class="route-tabs endpoint-distribution-control-group endpoint-distribution-route-tabs inline-flex"
-          data-route-tabs="endpoint-distribution-metric"
-          role="tablist"
-          @mouseleave="moveMetricIndicatorToSelected"
-          @focusout="handleMetricTabsFocusout"
+          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
         >
-          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-metric-tokens"
+          <button
             type="button"
-            class="endpoint-distribution-toggle"
-            role="tab"
-            data-route-id="tokens"
-            :aria-selected="metric === 'tokens'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'tokens'
-              ? 'endpoint-distribution-toggle-active'
-              : 'endpoint-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:metric', 'tokens')"
           >
             {{ t('admin.dashboard.metricTokens') }}
           </button>
-          <button data-testid="charts-endpoint-distribution-chart-button-emit-update-metric-actual-cost"
+          <button
             type="button"
-            class="endpoint-distribution-toggle"
-            role="tab"
-            data-route-id="actual_cost"
-            :aria-selected="metric === 'actual_cost'"
+            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
             :class="metric === 'actual_cost'
-              ? 'endpoint-distribution-toggle-active'
-              : 'endpoint-distribution-toggle-idle'"
-            @mouseenter="moveIndicatorFromEvent"
-            @focus="moveIndicatorFromEvent"
+              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
             @click="emit('update:metric', 'actual_cost')"
           >
             {{ t('admin.dashboard.metricActualCost') }}
@@ -110,10 +75,10 @@
       <div class="h-48 w-48 shrink-0">
         <Doughnut :data="chartData" :options="doughnutOptions" />
       </div>
-      <div class="endpoint-distribution-table-wrap max-h-48 flex-1 overflow-y-auto">
+      <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
           <thead>
-            <tr class="endpoint-distribution-header-row text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <tr class="text-gray-500 dark:text-gray-400">
               <th class="pb-2 text-left">{{ t('usage.endpoint') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.requests') }}</th>
               <th class="pb-2 text-right">{{ t('admin.dashboard.tokens') }}</th>
@@ -123,27 +88,28 @@
           </thead>
           <tbody>
             <template v-for="item in displayEndpointStats" :key="item.endpoint">
-              <tr data-testid="charts-endpoint-distribution-chart-tr-toggle-breakdown-item-endpoint"
-                class="border-t border-[var(--anthropic-border)] cursor-pointer transition-colors dark:border-[var(--anthropic-border)]"
-                @click="toggleBreakdown(item.endpoint)"
+              <tr
+                class="border-t border-gray-100 transition-colors dark:border-dark-700"
+                :class="enableBreakdown ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/40' : ''"
+                @click="enableBreakdown && toggleBreakdown(item.endpoint)"
               >
-                <td class="max-w-[180px] truncate py-1.5 font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="item.endpoint">
+                <td class="max-w-[180px] truncate py-1.5 font-medium" :class="enableBreakdown ? 'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300' : 'text-gray-900 dark:text-white'" :title="item.endpoint">
                   <span class="inline-flex items-center gap-1">
-                    <svg v-if="expandedKey === item.endpoint" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    <svg v-else class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg v-if="enableBreakdown && expandedKey === item.endpoint" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg v-else-if="enableBreakdown" class="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     {{ item.endpoint }}
                   </span>
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatNumber(item.requests) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">
                   {{ formatTokens(item.total_tokens) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-green-600 dark:text-green-400">
                   ${{ formatCost(item.actual_cost) }}
                 </td>
-                <td class="py-1.5 text-right text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <td class="py-1.5 text-right text-gray-400 dark:text-gray-500">
                   ${{ formatCost(item.cost) }}
                 </td>
               </tr>
@@ -160,14 +126,14 @@
         </table>
       </div>
     </div>
-    <div v-else class="flex h-48 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+    <div v-else class="flex h-48 items-center justify-center text-sm text-gray-500 dark:text-gray-400">
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
@@ -175,7 +141,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserBreakdownSubTable from './UserBreakdownSubTable.vue'
 import type { EndpointStat, UserBreakdownItem } from '@/types'
 import { getUserBreakdown } from '@/api/admin/dashboard'
-import { getChartColors } from '@/utils/chartColors'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -195,6 +160,7 @@ const props = withDefaults(
     source?: EndpointSource
     showMetricToggle?: boolean
     showSourceToggle?: boolean
+    enableBreakdown?: boolean
     startDate?: string
     endDate?: string
     filters?: Record<string, any>
@@ -207,7 +173,8 @@ const props = withDefaults(
     metric: 'tokens',
     source: 'inbound',
     showMetricToggle: false,
-    showSourceToggle: false
+    showSourceToggle: false,
+    enableBreakdown: true
   }
 )
 
@@ -219,57 +186,6 @@ const emit = defineEmits<{
 const expandedKey = ref<string | null>(null)
 const breakdownItems = ref<UserBreakdownItem[]>([])
 const breakdownLoading = ref(false)
-const sourceTabsRef = ref<HTMLElement | null>(null)
-const metricTabsRef = ref<HTMLElement | null>(null)
-
-function moveIndicator(tabs: HTMLElement | null, button: HTMLElement | null) {
-  if (!tabs || !button) return
-
-  const tabsRect = tabs.getBoundingClientRect()
-  const buttonRect = button.getBoundingClientRect()
-  tabs.style.setProperty('--route-indicator-x', `${buttonRect.left - tabsRect.left}px`)
-  tabs.style.setProperty('--route-indicator-w', `${buttonRect.width}px`)
-}
-
-function selectedRouteButton(
-  tabs: HTMLElement | null,
-  routeId: string
-) {
-  return tabs?.querySelector<HTMLElement>(`button[data-route-id="${routeId}"]`) ?? null
-}
-
-function moveSourceIndicatorToSelected() {
-  moveIndicator(sourceTabsRef.value, selectedRouteButton(sourceTabsRef.value, props.source))
-}
-
-function moveMetricIndicatorToSelected() {
-  moveIndicator(metricTabsRef.value, selectedRouteButton(metricTabsRef.value, props.metric))
-}
-
-function moveIndicatorFromEvent(event: Event) {
-  const button = event.currentTarget as HTMLElement | null
-  moveIndicator(button?.closest<HTMLElement>('[data-route-tabs]') ?? null, button)
-}
-
-function handleRouteTabsFocusout(event: FocusEvent, tabs: HTMLElement | null, moveToSelected: () => void) {
-  const nextTarget = event.relatedTarget
-  if (!(nextTarget instanceof Node) || !tabs?.contains(nextTarget)) {
-    moveToSelected()
-  }
-}
-
-function handleSourceTabsFocusout(event: FocusEvent) {
-  handleRouteTabsFocusout(event, sourceTabsRef.value, moveSourceIndicatorToSelected)
-}
-
-function handleMetricTabsFocusout(event: FocusEvent) {
-  handleRouteTabsFocusout(event, metricTabsRef.value, moveMetricIndicatorToSelected)
-}
-
-function moveAllIndicatorsToSelected() {
-  moveSourceIndicatorToSelected()
-  moveMetricIndicatorToSelected()
-}
 
 const toggleBreakdown = async (endpoint: string) => {
   if (expandedKey.value === endpoint) {
@@ -295,6 +211,21 @@ const toggleBreakdown = async (endpoint: string) => {
   }
 }
 
+const chartColors = [
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#6366f1',
+  '#84cc16',
+  '#06b6d4',
+  '#a855f7'
+]
+
 const displayEndpointStats = computed(() => {
   const sourceStats = props.source === 'upstream'
     ? props.upstreamEndpointStats
@@ -317,7 +248,7 @@ const chartData = computed(() => {
         data: displayEndpointStats.value.map((item) =>
           props.metric === 'actual_cost' ? item.actual_cost : item.total_tokens
         ),
-        backgroundColor: getChartColors(displayEndpointStats.value.length),
+        backgroundColor: chartColors.slice(0, displayEndpointStats.value.length),
         borderWidth: 0
       }
     ]
@@ -372,133 +303,4 @@ const formatCost = (value: number): string => {
   }
   return value.toFixed(4)
 }
-
-onMounted(() => {
-  void nextTick(moveAllIndicatorsToSelected)
-  window.addEventListener('resize', moveAllIndicatorsToSelected)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', moveAllIndicatorsToSelected)
-})
-
-watch(() => [props.source, props.metric, props.showSourceToggle, props.showMetricToggle], () => {
-  void nextTick(moveAllIndicatorsToSelected)
-})
 </script>
-
-<style scoped>
-.endpoint-distribution-card {
-  background: var(--anthropic-page) !important;
-  border-color: var(--anthropic-cookbook-border) !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-.endpoint-distribution-card :where(.endpoint-distribution-control-group, .endpoint-distribution-table-wrap) {
-  background: var(--anthropic-page) !important;
-  border: 1px solid var(--anthropic-cookbook-border);
-  box-shadow: none;
-}
-
-.endpoint-distribution-control-group {
-  --route-indicator-x: 0.25rem;
-  --route-indicator-w: 0px;
-  position: relative;
-  isolation: isolate;
-  min-height: 3rem;
-  align-items: center;
-  gap: 0;
-  padding: 0.25rem !important;
-  border: 0 !important;
-  border-radius: 16px !important;
-  background: var(--anthropic-raised) !important;
-  box-shadow: inset 0 0 0 1px var(--anthropic-border-soft);
-  width: fit-content;
-}
-
-.endpoint-distribution-route-tabs::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 0.25rem;
-  bottom: 0.25rem;
-  left: 0;
-  width: var(--route-indicator-w);
-  border-radius: 12px;
-  background: var(--anthropic-page);
-  box-shadow: 0 0 0 1px var(--anthropic-border-soft);
-  transform: translateX(var(--route-indicator-x));
-  transition:
-    transform 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
-    width 0.24s var(--anthropic-ease-out, cubic-bezier(0.215, 0.61, 0.355, 1)),
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  pointer-events: none;
-}
-
-.endpoint-distribution-toggle {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--anthropic-muted);
-  box-shadow: none;
-  font-family: var(--atelier-font-sans);
-  font-size: var(--anthropic-control-font-size, 0.8125rem);
-  font-weight: var(--anthropic-control-font-weight, 500);
-  line-height: var(--anthropic-control-line-height, 1.25rem);
-  letter-spacing: 0;
-  text-decoration-line: none;
-  white-space: nowrap;
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.1s ease-in-out,
-    box-shadow 0.2s ease-in-out;
-}
-
-.endpoint-distribution-toggle:hover,
-.endpoint-distribution-toggle:focus-visible {
-  color: var(--anthropic-fg);
-  background: transparent;
-  box-shadow: none;
-}
-
-.endpoint-distribution-toggle-active {
-  background: transparent !important;
-  color: var(--anthropic-fg) !important;
-  box-shadow: none !important;
-}
-
-.endpoint-distribution-toggle-idle {
-  color: var(--anthropic-muted) !important;
-}
-
-.endpoint-distribution-table-wrap {
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-}
-
-.endpoint-distribution-table-wrap :where(table, thead, tbody, tr, th, td) {
-  background: var(--anthropic-page) !important;
-}
-
-.endpoint-distribution-header-row :where(th) {
-  background: var(--anthropic-page) !important;
-  color: var(--anthropic-muted) !important;
-}
-
-.endpoint-distribution-table-wrap tbody tr {
-  border-color: var(--anthropic-cookbook-border) !important;
-}
-
-.endpoint-distribution-table-wrap tbody tr:hover {
-  background: var(--anthropic-section) !important;
-}
-</style>

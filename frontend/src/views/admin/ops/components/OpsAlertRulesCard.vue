@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import BaseDialog from '@/components/common/BaseDialog.vue'
@@ -13,6 +14,9 @@ import { formatDateTime } from '../utils/opsFormatters'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+
+// 与 DataTable 一致：< 768px 切换为卡片视图，避免宽表在移动端被截断。
+const isDesktopViewport = useMediaQuery('(min-width: 768px)')
 
 const loading = ref(false)
 const rules = ref<AlertRule[]>([])
@@ -387,19 +391,19 @@ function cancelDelete() {
 </script>
 
 <template>
-  <div class="anthropic-card-shell p-6">
-    <div class="mb-4 flex items-start justify-between gap-4">
+  <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+    <div class="mb-4 flex flex-wrap items-start justify-between gap-3 sm:gap-4">
       <div>
-        <h3 class="text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ t('admin.ops.alertRules.title') }}</h3>
-        <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertRules.description') }}</p>
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertRules.title') }}</h3>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertRules.description') }}</p>
       </div>
 
       <div class="flex items-center gap-2">
-        <button data-testid="admin-ops-components-ops-alert-rules-card-button-open-create" class="btn btn-sm btn-primary" :disabled="loading" @click="openCreate">
+        <button class="btn btn-sm btn-primary" :disabled="loading" @click="openCreate">
           {{ t('admin.ops.alertRules.create') }}
         </button>
-        <button data-testid="admin-ops-components-ops-alert-rules-card-button-load"
-          class="flex items-center gap-1.5 rounded-lg bg-[var(--anthropic-raised)] px-3 py-1.5 text-xs font-bold text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+        <button
+          class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :disabled="loading"
           @click="load"
         >
@@ -411,61 +415,91 @@ function cancelDelete() {
       </div>
     </div>
 
-    <div v-if="loading" class="py-10 text-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+    <div v-if="loading" class="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
       {{ t('admin.ops.alertRules.loading') }}
     </div>
 
-    <div v-else-if="sortedRules.length === 0" class="rounded-xl border border-dashed border-[var(--anthropic-border)] p-8 text-center text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
+    <div v-else-if="sortedRules.length === 0" class="rounded-xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
       {{ t('admin.ops.alertRules.empty') }}
     </div>
 
-    <div v-else class="max-h-[520px] overflow-hidden rounded-xl border border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
+    <div v-else class="max-h-[520px] overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
       <div class="max-h-[520px] overflow-y-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-          <thead class="sticky top-0 z-10 bg-[var(--anthropic-section)] dark:bg-[var(--anthropic-section)]">
+        <div v-if="!isDesktopViewport" class="divide-y divide-gray-100 dark:divide-dark-800">
+          <div v-for="row in sortedRules" :key="row.id" class="space-y-2 p-4">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-xs font-bold text-gray-900 dark:text-white">{{ row.name }}</div>
+                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
+                  {{ row.description }}
+                </div>
+              </div>
+              <span class="shrink-0 text-xs font-bold text-gray-700 dark:text-gray-200">{{ row.severity }}</span>
+            </div>
+            <div class="text-xs text-gray-700 dark:text-gray-200">
+              <span class="font-mono">{{ row.metric_type }}</span>
+              <span class="mx-1 text-gray-400">{{ row.operator }}</span>
+              <span class="font-mono">{{ row.threshold }}</span>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-gray-700 dark:text-gray-200">
+                {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
+              </span>
+              <div class="flex items-center gap-2">
+                <button class="btn btn-sm btn-secondary" @click="openEdit(row)">{{ t('common.edit') }}</button>
+                <button class="btn btn-sm btn-danger" @click="requestDelete(row)">{{ t('common.delete') }}</button>
+              </div>
+            </div>
+            <div v-if="row.updated_at" class="text-[10px] text-gray-400">
+              {{ formatDateTime(row.updated_at) }}
+            </div>
+          </div>
+        </div>
+        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+          <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-900">
             <tr>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {{ t('admin.ops.alertRules.table.name') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {{ t('admin.ops.alertRules.table.metric') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {{ t('admin.ops.alertRules.table.severity') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {{ t('admin.ops.alertRules.table.enabled') }}
               </th>
-              <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 {{ t('admin.ops.alertRules.table.actions') }}
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 bg-[var(--anthropic-page)] dark:divide-dark-700 dark:bg-[var(--anthropic-section)]">
-            <tr v-for="row in sortedRules" :key="row.id" class="hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]/50">
+          <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-800">
+            <tr v-for="row in sortedRules" :key="row.id" class="hover:bg-gray-50 dark:hover:bg-dark-700/50">
               <td class="px-4 py-3">
-                <div class="text-xs font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ row.name }}</div>
-                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+                <div class="text-xs font-bold text-gray-900 dark:text-white">{{ row.name }}</div>
+                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
                   {{ row.description }}
                 </div>
-                <div v-if="row.updated_at" class="mt-1 text-[10px] text-[var(--anthropic-muted)]">
+                <div v-if="row.updated_at" class="mt-1 text-[10px] text-gray-400">
                   {{ formatDateTime(row.updated_at) }}
                 </div>
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-700 dark:text-gray-200">
                 <span class="font-mono">{{ row.metric_type }}</span>
-                <span class="mx-1 text-[var(--anthropic-muted)]">{{ row.operator }}</span>
+                <span class="mx-1 text-gray-400">{{ row.operator }}</span>
                 <span class="font-mono">{{ row.threshold }}</span>
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs font-bold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="whitespace-nowrap px-4 py-3 text-xs font-bold text-gray-700 dark:text-gray-200">
                 {{ row.severity }}
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-700 dark:text-gray-200">
                 {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
               </td>
               <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
-                <button data-testid="admin-ops-components-ops-alert-rules-card-button-open-edit-row" class="btn btn-sm btn-secondary" @click="openEdit(row)">{{ t('common.edit') }}</button>
-                <button data-testid="admin-ops-components-ops-alert-rules-card-button-request-delete-row" class="ml-2 btn btn-sm btn-danger" @click="requestDelete(row)">{{ t('common.delete') }}</button>
+                <button class="btn btn-sm btn-secondary" @click="openEdit(row)">{{ t('common.edit') }}</button>
+                <button class="ml-2 btn btn-sm btn-danger" @click="requestDelete(row)">{{ t('common.delete') }}</button>
               </td>
             </tr>
           </tbody>
@@ -490,18 +524,18 @@ function cancelDelete() {
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="md:col-span-2">
             <label class="input-label">{{ t('admin.ops.alertRules.form.name') }}</label>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-name" v-model="draft!.name" class="input" type="text" />
+            <input v-model="draft!.name" class="input" type="text" />
           </div>
 
           <div class="md:col-span-2">
             <label class="input-label">{{ t('admin.ops.alertRules.form.description') }}</label>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-description" v-model="draft!.description" class="input" type="text" />
+            <input v-model="draft!.description" class="input" type="text" />
           </div>
 
           <div>
             <label class="input-label">{{ t('admin.ops.alertRules.form.metric') }}</label>
             <Select v-model="draft!.metric_type" :options="metricOptions" />
-            <div v-if="selectedMetricDefinition" class="mt-1 space-y-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div v-if="selectedMetricDefinition" class="mt-1 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
               <p>{{ selectedMetricDefinition.description }}</p>
               <p>
                 {{
@@ -532,14 +566,14 @@ function cancelDelete() {
               :placeholder="t('admin.ops.alertRules.form.groupPlaceholder')"
               :error="isGroupMetricSelected && !draftGroupId"
             />
-            <p class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ isGroupMetricSelected ? t('admin.ops.alertRules.hints.groupRequired') : t('admin.ops.alertRules.hints.groupOptional') }}
             </p>
           </div>
 
           <div>
             <label class="input-label">{{ t('admin.ops.alertRules.form.threshold') }}</label>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-threshold" v-model.number="draft!.threshold" class="input" type="number" />
+            <input v-model.number="draft!.threshold" class="input" type="number" />
           </div>
 
           <div>
@@ -554,32 +588,32 @@ function cancelDelete() {
 
           <div>
             <label class="input-label">{{ t('admin.ops.alertRules.form.sustained') }}</label>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-sustained-minutes" v-model.number="draft!.sustained_minutes" class="input" type="number" min="1" max="1440" />
+            <input v-model.number="draft!.sustained_minutes" class="input" type="number" min="1" max="1440" />
           </div>
 
           <div>
             <label class="input-label">{{ t('admin.ops.alertRules.form.cooldown') }}</label>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-cooldown-minutes" v-model.number="draft!.cooldown_minutes" class="input" type="number" min="0" max="1440" />
+            <input v-model.number="draft!.cooldown_minutes" class="input" type="number" min="0" max="1440" />
           </div>
 
-          <div class="flex items-center justify-between rounded-xl bg-[var(--anthropic-section)] px-4 py-3 dark:bg-[var(--anthropic-section)] md:col-span-2">
-            <span class="text-xs font-bold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertRules.form.enabled') }}</span>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-enabled" v-model="draft!.enabled" type="checkbox" class="anthropic-checkbox h-4 w-4 rounded" />
+          <div class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-dark-800/50 md:col-span-2">
+            <span class="text-xs font-bold text-gray-700 dark:text-gray-200">{{ t('admin.ops.alertRules.form.enabled') }}</span>
+            <input v-model="draft!.enabled" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
           </div>
 
-          <div class="flex items-center justify-between rounded-xl bg-[var(--anthropic-section)] px-4 py-3 dark:bg-[var(--anthropic-section)] md:col-span-2">
-            <span class="text-xs font-bold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.ops.alertRules.form.notifyEmail') }}</span>
-            <input data-testid="admin-ops-components-ops-alert-rules-card-input-draft-notify-email" v-model="draft!.notify_email" type="checkbox" class="anthropic-checkbox h-4 w-4 rounded" />
+          <div class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-dark-800/50 md:col-span-2">
+            <span class="text-xs font-bold text-gray-700 dark:text-gray-200">{{ t('admin.ops.alertRules.form.notifyEmail') }}</span>
+            <input v-model="draft!.notify_email" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
           </div>
         </div>
       </div>
 
       <template #footer>
         <div class="flex items-center justify-end gap-2">
-          <button data-testid="admin-ops-components-ops-alert-rules-card-button-show-editor-off" class="btn btn-secondary" :disabled="saving" @click="showEditor = false">
+          <button class="btn btn-secondary" :disabled="saving" @click="showEditor = false">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="admin-ops-components-ops-alert-rules-card-button-save" class="btn btn-primary" :disabled="saving" @click="save">
+          <button class="btn btn-primary" :disabled="saving" @click="save">
             {{ saving ? t('common.saving') : t('common.save') }}
           </button>
         </div>

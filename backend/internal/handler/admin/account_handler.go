@@ -89,41 +89,38 @@ func (h *AccountHandler) SetOpenCodeGoUsageService(usage *service.OpenCodeGoUsag
 }
 
 // NewAccountHandler creates a new admin account handler
-func NewAccountHandler(adminService service.AdminService, args ...any) *AccountHandler {
-	h := &AccountHandler{adminService: adminService}
-	for _, arg := range args {
-		switch v := arg.(type) {
-		case *service.OAuthService:
-			h.oauthService = v
-		case *service.OpenAIOAuthService:
-			h.openaiOAuthService = v
-		case *service.GeminiOAuthService:
-			h.geminiOAuthService = v
-		case *service.AntigravityOAuthService:
-			h.antigravityOAuthService = v
-		case service.GrokOAuthTokenService:
-			h.grokOAuthService = v
-		case *service.RateLimitService:
-			h.rateLimitService = v
-		case *service.AccountUsageService:
-			h.accountUsageService = v
-		case *service.AccountTestService:
-			h.accountTestService = v
-		case *service.ConcurrencyService:
-			h.concurrencyService = v
-		case *service.CRSSyncService:
-			h.crsSyncService = v
-		case service.SessionLimitCache:
-			h.sessionLimitCache = v
-		case service.RPMCache:
-			h.rpmCache = v
-		case service.TokenCacheInvalidator:
-			h.tokenCacheInvalidator = v
-		case *service.ExternalSubscriptionConfigService:
-			h.externalSubscriptionConfigService = v
-		}
+func NewAccountHandler(
+	adminService service.AdminService,
+	oauthService *service.OAuthService,
+	openaiOAuthService *service.OpenAIOAuthService,
+	geminiOAuthService *service.GeminiOAuthService,
+	antigravityOAuthService *service.AntigravityOAuthService,
+	grokOAuthService service.GrokOAuthTokenService,
+	rateLimitService *service.RateLimitService,
+	accountUsageService *service.AccountUsageService,
+	accountTestService *service.AccountTestService,
+	concurrencyService *service.ConcurrencyService,
+	crsSyncService *service.CRSSyncService,
+	sessionLimitCache service.SessionLimitCache,
+	rpmCache service.RPMCache,
+	tokenCacheInvalidator service.TokenCacheInvalidator,
+) *AccountHandler {
+	return &AccountHandler{
+		adminService:            adminService,
+		oauthService:            oauthService,
+		openaiOAuthService:      openaiOAuthService,
+		geminiOAuthService:      geminiOAuthService,
+		antigravityOAuthService: antigravityOAuthService,
+		grokOAuthService:        grokOAuthService,
+		rateLimitService:        rateLimitService,
+		accountUsageService:     accountUsageService,
+		accountTestService:      accountTestService,
+		concurrencyService:      concurrencyService,
+		crsSyncService:          crsSyncService,
+		sessionLimitCache:       sessionLimitCache,
+		rpmCache:                rpmCache,
+		tokenCacheInvalidator:   tokenCacheInvalidator,
 	}
-	return h
 }
 
 // CreateAccountRequest represents create account request

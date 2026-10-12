@@ -7,7 +7,7 @@
       <span v-if="pendingIpCount > 0" class="text-xs text-gray-500 dark:text-gray-400">
         {{ t('usage.ipGeo.pending', { count: pendingIpCount }) }}
       </span>
-      <button data-testid="admin-usage-usage-table-button-emit-user-click-row-user-id"
+      <button
         type="button"
         class="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-primary-400 dark:hover:bg-primary-900/30"
         :disabled="ipGeoBatchLoading || pendingIpCount === 0"
@@ -21,7 +21,6 @@
         :columns="columns"
         :data="data"
         :loading="loading"
-        mobile-table-layout
         :server-side-sort="serverSideSort"
         :default-sort-key="defaultSortKey"
         :default-sort-order="defaultSortOrder"
@@ -29,7 +28,7 @@
       >
         <template #cell-user="{ row }">
           <div class="text-sm">
-            <button data-testid="usage-usage-table-button-emit"
+            <button
               v-if="row.user?.email"
               class="font-medium text-primary-600 underline decoration-dashed underline-offset-2 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
               @click="$emit('userClick', row.user_id, row.user?.email)"

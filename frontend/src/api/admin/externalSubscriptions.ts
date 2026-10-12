@@ -112,6 +112,7 @@ let displayStatusesCache: {
 } | null = null
 let displayStatusesRequest: Promise<ExternalSubscriptionStatus[]> | null = null
 let displayStatusesForceRefreshNext = false
+let displayStatusesGeneration = 0
 const displayStatusesListeners = new Set<(statuses: ExternalSubscriptionStatus[]) => void>()
 
 function cloneStatuses(statuses: ExternalSubscriptionStatus[]) {
@@ -188,8 +189,10 @@ function hydrateDisplayStatusesCache(now = Date.now()) {
 }
 
 async function hydrateDisplayStatusesFromBackendSnapshot(now = Date.now()) {
+  const generation = displayStatusesGeneration
   try {
     const statuses = await getDisplayStatusesSnapshot()
+    if (generation !== displayStatusesGeneration) return null
     if (statuses.length === 0) return null
     displayStatusesCache = {
       expiresAt: now + DISPLAY_STATUSES_CACHE_TTL_MS,
@@ -214,6 +217,7 @@ function emitDisplayStatuses(statuses: ExternalSubscriptionStatus[]) {
 }
 
 export function clearDisplayStatusesCache() {
+  displayStatusesGeneration += 1
   displayStatusesCache = null
   displayStatusesRequest = null
 }
@@ -300,38 +304,48 @@ export async function getDisplayStatuses(options: { refresh?: boolean } = {}): P
     return hydrated
   }
   if (displayStatusesRequest) {
-    return cloneStatuses(await displayStatusesRequest)
+    const generation = displayStatusesGeneration
+    const statuses = await displayStatusesRequest
+    return generation === displayStatusesGeneration ? cloneStatuses(statuses) : []
   }
   displayStatusesForceRefreshNext = false
-  displayStatusesRequest = loadDisplayStatuses(forceRefresh)
+  const generation = displayStatusesGeneration
+  const request = loadDisplayStatuses(forceRefresh)
+  displayStatusesRequest = request
   try {
-    const statuses = await displayStatusesRequest
+    const statuses = await request
+    if (generation !== displayStatusesGeneration) return []
     if (statuses.length === 0 && !forceRefresh) {
       const stale = staleDisplayStatuses() || hydrated || await hydrateDisplayStatusesFromBackendSnapshot(now)
       if (stale) return stale
     }
+    if (generation !== displayStatusesGeneration) return []
     rememberDisplayStatuses(statuses, now)
     return cloneStatuses(statuses)
   } catch (error) {
+    if (generation !== displayStatusesGeneration) return []
     if (!forceRefresh) {
       const stale = staleDisplayStatuses() || hydrated || await hydrateDisplayStatusesFromBackendSnapshot(now)
       if (stale) return stale
     }
     throw error
   } finally {
-    displayStatusesRequest = null
+    if (displayStatusesRequest === request) displayStatusesRequest = null
   }
 }
 
 export function refreshDisplayStatusesInBackground(options: { force?: boolean } = {}): void {
   if (displayStatusesRequest) return
-  displayStatusesRequest = loadDisplayStatuses(Boolean(options.force))
-  void displayStatusesRequest.then((statuses) => {
+  const generation = displayStatusesGeneration
+  const request = loadDisplayStatuses(Boolean(options.force))
+  displayStatusesRequest = request
+  void request.then((statuses) => {
+    if (generation !== displayStatusesGeneration) return
     rememberDisplayStatuses(statuses)
   }).catch(() => {
     // Callers already have stale data; keep background refresh quiet.
   }).finally(() => {
-    displayStatusesRequest = null
+    if (displayStatusesRequest === request) displayStatusesRequest = null
   })
 }
 

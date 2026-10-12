@@ -2,7 +2,6 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { opsAPI, type OpsAccountAvailabilityStatsResponse, type OpsConcurrencyStatsResponse, type OpsUserConcurrencyStatsResponse } from '@/api/admin/ops'
-import { semanticBadgeClass, semanticBadgeTextClass } from '@/utils/semanticBadge'
 
 interface Props {
   platformFilter?: string
@@ -303,9 +302,10 @@ watch(
 )
 
 function getLoadBarClass(loadPct: number): string {
-  if (loadPct >= 90) return 'bg-[var(--anthropic-error)]'
-  if (loadPct >= 50) return 'bg-[var(--anthropic-warning)]'
-  return 'bg-[var(--anthropic-success)]'
+  if (loadPct >= 90) return 'bg-red-500 dark:bg-red-600'
+  if (loadPct >= 70) return 'bg-orange-500 dark:bg-orange-600'
+  if (loadPct >= 50) return 'bg-yellow-500 dark:bg-yellow-600'
+  return 'bg-green-500 dark:bg-green-600'
 }
 
 function getLoadBarStyle(loadPct: number): string {
@@ -313,18 +313,11 @@ function getLoadBarStyle(loadPct: number): string {
 }
 
 function getLoadTextClass(loadPct: number): string {
-  if (loadPct >= 90) return semanticBadgeTextClass('error')
-  if (loadPct >= 50) return semanticBadgeTextClass('warning')
-  return semanticBadgeTextClass('success')
+  if (loadPct >= 90) return 'text-red-600 dark:text-red-400'
+  if (loadPct >= 70) return 'text-orange-600 dark:text-orange-400'
+  if (loadPct >= 50) return 'text-yellow-600 dark:text-yellow-400'
+  return 'text-green-600 dark:text-green-400'
 }
-
-const queuedBadgeClass = computed(() => `rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${semanticBadgeClass('warning')}`)
-const rateLimitedBadgeClass = computed(() => `rounded-full px-1.5 py-0.5 font-semibold ${semanticBadgeClass('warning')}`)
-const errorBadgeClass = computed(() => `rounded-full px-1.5 py-0.5 font-semibold ${semanticBadgeClass('error')}`)
-const availableBadgeClass = computed(() => `inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${semanticBadgeClass('success')}`)
-const warningStatusBadgeClass = computed(() => `inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${semanticBadgeClass('warning')}`)
-const errorStatusBadgeClass = computed(() => `inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${semanticBadgeClass('error')}`)
-const neutralStatusBadgeClass = computed(() => `inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${semanticBadgeClass('neutral')}`)
 
 function formatDuration(seconds: number): string {
   if (seconds <= 0) return '0s'
@@ -348,22 +341,22 @@ watch(
 </script>
 
 <template>
-  <div class="ops-monitor-panel ops-concurrency-card flex h-full flex-col anthropic-card-shell p-6">
+  <div class="flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <!-- 头部 -->
     <div class="mb-4 flex shrink-0 items-center justify-between gap-3">
-      <h3 class="flex items-center gap-2 text-sm font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
-        <svg class="h-4 w-4 text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
         {{ t('admin.ops.concurrency.title') }}
       </h3>
       <div class="flex items-center gap-2">
         <!-- 用户视图切换按钮 -->
-        <button data-testid="admin-ops-components-ops-concurrency-card-button-show-by-user-show-by-user"
+        <button
           class="flex items-center justify-center rounded-lg px-2 py-1 transition-colors"
           :class="showByUser
-            ? 'bg-[var(--anthropic-section)] text-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-fg)]'
-            : 'bg-[var(--anthropic-raised)] text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-300'"
+            ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+            : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600 dark:hover:text-gray-300'"
           :title="showByUser ? t('admin.ops.concurrency.switchToPlatform') : t('admin.ops.concurrency.switchToUser')"
           @click="showByUser = !showByUser"
         >
@@ -372,8 +365,8 @@ watch(
           </svg>
         </button>
         <!-- 刷新按钮 -->
-        <button data-testid="admin-ops-components-ops-concurrency-card-button-load-data"
-          class="flex items-center gap-1 rounded-lg bg-[var(--anthropic-raised)] px-2 py-1 text-[11px] font-semibold text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)]"
+        <button
+          class="flex items-center gap-1 rounded-lg bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :disabled="loading"
           :title="t('common.refresh')"
           @click="loadData"
@@ -386,62 +379,62 @@ watch(
     </div>
 
     <!-- 错误提示 -->
-    <div v-if="errorMessage" class="mb-3 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--anthropic-error)_32%,transparent)] bg-transparent p-2.5 text-xs text-[var(--anthropic-error)]">
+    <div v-if="errorMessage" class="mb-3 shrink-0 rounded-xl bg-red-50 p-2.5 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">
       {{ errorMessage }}
     </div>
 
     <!-- 禁用状态 -->
     <div
       v-if="!realtimeEnabled"
-      class="flex flex-1 items-center justify-center rounded-xl border border-dashed border-[var(--anthropic-border)] text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]"
+      class="flex flex-1 items-center justify-center rounded-xl border border-dashed border-gray-200 text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400"
     >
       {{ t('admin.ops.concurrency.disabledHint') }}
     </div>
 
     <!-- 数据展示区域 -->
-    <div v-else class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-[var(--anthropic-border)] bg-transparent dark:border-[var(--anthropic-border)]">
+    <div v-else class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
       <!-- 维度标题栏 -->
-      <div class="flex shrink-0 items-center justify-between border-b border-[var(--anthropic-border)] bg-transparent px-3 py-2 dark:border-[var(--anthropic-border)] dark:bg-transparent">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           {{ displayTitle }}
         </span>
-        <span class="text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <span class="text-[10px] text-gray-500 dark:text-gray-400">
           {{ t('admin.ops.concurrency.totalRows', { count: displayRows.length }) }}
         </span>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="displayRows.length === 0" class="flex flex-1 items-center justify-center text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div v-if="displayRows.length === 0" class="flex flex-1 items-center justify-center text-sm text-gray-500 dark:text-gray-400">
         {{ t('admin.ops.concurrency.empty') }}
       </div>
 
       <!-- 用户视图 -->
       <div v-else-if="displayDimension === 'user'" class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as UserRow[])" :key="row.key" class="rounded-lg bg-[var(--anthropic-section)] p-2.5 dark:bg-[var(--anthropic-section)]">
+        <div v-for="row in (displayRows as UserRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-2.5 dark:bg-dark-900">
           <!-- 用户信息和并发 -->
           <div class="mb-1.5 flex items-center justify-between gap-2">
             <div class="flex min-w-0 flex-1 items-center gap-1.5">
-              <span class="truncate text-[11px] font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="row.username || row.user_email">
+              <span class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.username || row.user_email">
                 {{ row.username || row.user_email }}
               </span>
-              <span v-if="row.username" class="shrink-0 truncate text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]" :title="row.user_email">
+              <span v-if="row.username" class="shrink-0 truncate text-[10px] text-gray-400 dark:text-gray-500" :title="row.user_email">
                 {{ row.user_email }}
               </span>
             </div>
             <div class="flex shrink-0 items-center gap-2 text-[10px]">
-              <span class="font-mono font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
+              <span class="font-mono font-bold text-gray-900 dark:text-white"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
               <span :class="['font-bold', getLoadTextClass(row.load_percentage)]"> {{ Math.round(row.load_percentage) }}% </span>
             </div>
           </div>
 
           <!-- 进度条 -->
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
             <div class="h-full rounded-full transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
           </div>
 
           <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span :class="queuedBadgeClass">
+            <span class="rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
           </div>
@@ -450,25 +443,25 @@ watch(
 
       <!-- 汇总视图（平台/分组） -->
       <div v-else-if="displayDimension === 'platform' || displayDimension === 'group'" class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as SummaryRow[])" :key="row.key" class="rounded-lg bg-[var(--anthropic-section)] p-3 dark:bg-[var(--anthropic-section)]">
+        <div v-for="row in (displayRows as SummaryRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-3 dark:bg-dark-900">
           <!-- 标题行 -->
           <div class="mb-2 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <div class="truncate text-[11px] font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="row.name">
+              <div class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.name">
                 {{ row.name }}
               </div>
-              <span v-if="displayDimension === 'group' && row.platform" class="text-[10px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <span v-if="displayDimension === 'group' && row.platform" class="text-[10px] text-gray-400 dark:text-gray-500">
                 {{ row.platform.toUpperCase() }}
               </span>
             </div>
             <div class="flex shrink-0 items-center gap-2 text-[10px]">
-              <span class="font-mono font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"> {{ row.used_concurrency }}/{{ row.total_concurrency }} </span>
+              <span class="font-mono font-bold text-gray-900 dark:text-white"> {{ row.used_concurrency }}/{{ row.total_concurrency }} </span>
               <span :class="['font-bold', getLoadTextClass(row.concurrency_percentage)]"> {{ row.concurrency_percentage }}% </span>
             </div>
           </div>
 
           <!-- 进度条 -->
-          <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+          <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
             <div
               class="h-full rounded-full transition-all duration-300"
               :class="getLoadBarClass(row.concurrency_percentage)"
@@ -480,7 +473,7 @@ watch(
           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px]">
             <!-- 账号统计 -->
             <div class="flex items-center gap-1">
-              <svg class="h-3 w-3 text-[var(--anthropic-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -488,17 +481,17 @@ watch(
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-                <span class="font-bold text-[var(--anthropic-success)]">{{ row.available_accounts }}</span
+              <span class="text-gray-600 dark:text-gray-300">
+                <span class="font-bold text-green-600 dark:text-green-400">{{ row.available_accounts }}</span
                 >/{{ row.total_accounts }}
               </span>
-              <span class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ row.availability_percentage }}%</span>
+              <span class="text-gray-400 dark:text-gray-500">{{ row.availability_percentage }}%</span>
             </div>
 
             <!-- 限流账号 -->
             <span
               v-if="row.rate_limited_accounts > 0"
-              :class="rateLimitedBadgeClass"
+              class="rounded-full bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
             >
               {{ t('admin.ops.concurrency.rateLimited', { count: row.rate_limited_accounts }) }}
             </span>
@@ -506,7 +499,7 @@ watch(
             <!-- 异常账号 -->
             <span
               v-if="row.error_accounts > 0"
-              :class="errorBadgeClass"
+              class="rounded-full bg-red-100 px-1.5 py-0.5 font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400"
             >
               {{ t('admin.ops.concurrency.errorAccounts', { count: row.error_accounts }) }}
             </span>
@@ -514,7 +507,7 @@ watch(
             <!-- 等待队列 -->
             <span
               v-if="row.waiting_in_queue > 0"
-              :class="queuedBadgeClass"
+              class="rounded-full bg-purple-100 px-1.5 py-0.5 font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
             >
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
@@ -524,24 +517,24 @@ watch(
 
       <!-- 账号详细视图 -->
       <div v-else class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as AccountRow[])" :key="row.key" class="rounded-lg bg-[var(--anthropic-section)] p-2.5 dark:bg-[var(--anthropic-section)]">
+        <div v-for="row in (displayRows as AccountRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-2.5 dark:bg-dark-900">
           <!-- 账号名称和并发 -->
           <div class="mb-1.5 flex items-center justify-between gap-2">
             <div class="min-w-0 flex-1">
-              <div class="truncate text-[11px] font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]" :title="row.name">
+              <div class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.name">
                 {{ row.name }}
               </div>
-              <div class="mt-0.5 text-[9px] text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <div class="mt-0.5 text-[9px] text-gray-400 dark:text-gray-500">
                 {{ row.group_name }}
               </div>
             </div>
             <div class="flex shrink-0 items-center gap-2">
               <!-- 并发使用 -->
-              <span class="font-mono text-[11px] font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
+              <span class="font-mono text-[11px] font-bold text-gray-900 dark:text-white"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
               <!-- 状态徽章 -->
               <span
                 v-if="row.is_available"
-                :class="availableBadgeClass"
+                class="inline-flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400"
               >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -550,7 +543,7 @@ watch(
               </span>
               <span
                 v-else-if="row.is_rate_limited"
-                :class="warningStatusBadgeClass"
+                class="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
               >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -559,7 +552,7 @@ watch(
               </span>
               <span
                 v-else-if="row.is_overloaded"
-                :class="errorStatusBadgeClass"
+                class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
               >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -573,7 +566,7 @@ watch(
               </span>
               <span
                 v-else-if="row.has_error"
-                :class="errorStatusBadgeClass"
+                class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
               >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -582,7 +575,7 @@ watch(
               </span>
               <span
                 v-else
-                :class="neutralStatusBadgeClass"
+                class="inline-flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 {{ t('admin.ops.accountAvailability.unavailable') }}
               </span>
@@ -590,13 +583,13 @@ watch(
           </div>
 
           <!-- 进度条 -->
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]">
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
             <div class="h-full rounded-full transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
           </div>
 
           <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span :class="queuedBadgeClass">
+            <span class="rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
           </div>

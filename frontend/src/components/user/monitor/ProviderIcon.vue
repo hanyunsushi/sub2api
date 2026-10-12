@@ -1,7 +1,6 @@
 <template>
   <svg
     v-if="iconInfo"
-    :class="providerIconClasses"
     :width="size"
     :height="size"
     viewBox="0 0 24 24"
@@ -18,7 +17,7 @@
   </svg>
   <span
     v-else
-    :class="['inline-flex items-center justify-center font-bold text-[var(--anthropic-muted)]', providerIconClasses]"
+    class="inline-flex items-center justify-center font-bold text-gray-500"
     :style="{ width: `${size}px`, height: `${size}px`, fontSize: `${Math.round(size * 0.5)}px` }"
   >
     {{ fallbackText }}
@@ -106,22 +105,4 @@ const iconInfo = computed<IconData | null>(() => {
 const fallbackText = computed(() =>
   (props.provider || '?').charAt(0).toUpperCase()
 )
-
-const providerIconClass = computed(() => {
-  switch (props.provider) {
-    case 'openai':
-      return 'platform-icon--openai'
-    case 'anthropic':
-      return 'platform-icon--anthropic'
-    case 'gemini':
-      return 'platform-icon--gemini'
-    default:
-      return 'platform-icon--default'
-  }
-})
-
-const providerIconClasses = computed(() => [
-  'platform-icon',
-  providerIconClass.value,
-])
 </script>

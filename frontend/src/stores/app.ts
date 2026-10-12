@@ -13,7 +13,6 @@ import {
   type ReleaseInfo
 } from '@/api/admin/system'
 import { getPublicSettings as fetchPublicSettingsAPI } from '@/api/auth'
-import { updateAppearanceThemeDefault } from '@/composables/useAppearanceTheme'
 import { setAILogoRuntimeConfig } from '@/utils/providerBrandIcon'
 import { setCustomMenuIconRuntimeConfig } from '@/utils/customMenuIconPresets'
 
@@ -22,20 +21,14 @@ export const useAppStore = defineStore('app', () => {
 
   const sidebarCollapsed = ref<boolean>(false)
   const mobileOpen = ref<boolean>(false)
-  const sidebarNavScrollTop = ref<number>(0)
-  const sidebarScrollTop = computed({
-    get: () => sidebarNavScrollTop.value,
-    set: (value: number) => {
-      sidebarNavScrollTop.value = Math.max(0, Math.round(value ?? 0))
-    }
-  })
+  const sidebarScrollTop = ref<number>(0)
   const loading = ref<boolean>(false)
   const toasts = ref<Toast[]>([])
 
   // Public settings cache state
   const publicSettingsLoaded = ref<boolean>(false)
   const publicSettingsLoading = ref<boolean>(false)
-  const siteName = ref<string>('Kreepai')
+  const siteName = ref<string>('Sub2API')
   const siteLogo = ref<string>('')
   const siteVersion = ref<string>('')
   const contactInfo = ref<string>('')
@@ -93,13 +86,6 @@ export const useAppStore = defineStore('app', () => {
    */
   function setMobileOpen(open: boolean): void {
     mobileOpen.value = open
-  }
-
-  /**
-   * Persist sidebar nav scroll across route-level AppLayout remounts.
-   */
-  function setSidebarNavScrollTop(scrollTop: number): void {
-    sidebarNavScrollTop.value = Math.max(0, Math.round(scrollTop))
   }
 
   /**
@@ -245,7 +231,6 @@ export const useAppStore = defineStore('app', () => {
    */
   function reset(): void {
     sidebarCollapsed.value = false
-    sidebarNavScrollTop.value = 0
     loading.value = false
     loadingCount.value = 0
     toasts.value = []
@@ -307,24 +292,18 @@ export const useAppStore = defineStore('app', () => {
    * Apply settings to store state (internal helper to avoid code duplication)
    */
   function applySettings(config: PublicSettings): void {
-    const configuredSiteName = typeof config.site_name === 'string' ? config.site_name.trim() : ''
-    const normalizedConfig =
-      !configuredSiteName || ['Sub2API', 'Kreeper & AI', 'Kreeper & Co'].includes(configuredSiteName)
-        ? { ...config, site_name: 'Kreepai' }
-        : config
+    setAILogoRuntimeConfig(config)
+    setCustomMenuIconRuntimeConfig(config)
     if (typeof window !== 'undefined') {
-      window.__APP_CONFIG__ = { ...normalizedConfig }
+      window.__APP_CONFIG__ = { ...config }
     }
-    cachedPublicSettings.value = normalizedConfig
-    siteName.value = normalizedConfig.site_name || 'Kreepai'
-    siteLogo.value = normalizedConfig.site_logo || ''
-    siteVersion.value = normalizedConfig.version || ''
-    contactInfo.value = normalizedConfig.contact_info || ''
-    apiBaseUrl.value = normalizedConfig.api_base_url || ''
-    docUrl.value = normalizedConfig.doc_url || ''
-    updateAppearanceThemeDefault('anthropic')
-    setAILogoRuntimeConfig(normalizedConfig)
-    setCustomMenuIconRuntimeConfig(normalizedConfig)
+    cachedPublicSettings.value = config
+    siteName.value = config.site_name || 'Sub2API'
+    siteLogo.value = config.site_logo || ''
+    siteVersion.value = config.version || ''
+    contactInfo.value = config.contact_info || ''
+    apiBaseUrl.value = config.api_base_url || ''
+    docUrl.value = config.doc_url || ''
     publicSettingsLoaded.value = true
   }
 
@@ -404,10 +383,6 @@ export const useAppStore = defineStore('app', () => {
         risk_control_enabled: false,
         service_quota_enabled: false,
         affiliate_enabled: false,
-        appearance_theme_default: 'anthropic',
-        ai_logo_cdn_base_url: '',
-        custom_ai_logo_presets: [],
-        custom_menu_svg_icon_presets: [],
         allow_user_view_error_requests: false,
       })
     }
@@ -469,7 +444,6 @@ export const useAppStore = defineStore('app', () => {
     // State
     sidebarCollapsed,
     mobileOpen,
-    sidebarNavScrollTop,
     sidebarScrollTop,
     loading,
     toasts,
@@ -502,7 +476,6 @@ export const useAppStore = defineStore('app', () => {
     setSidebarCollapsed,
     toggleMobileSidebar,
     setMobileOpen,
-    setSidebarNavScrollTop,
     setLoading,
     showToast,
     showSuccess,

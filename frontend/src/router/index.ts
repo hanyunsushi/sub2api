@@ -13,12 +13,17 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { resolveRouteDocumentTitle } from './title'
-import { isChunkLoadError, reloadAfterChunkLoadError } from '@/utils/chunkLoadRecovery'
 
 /**
  * Route definitions with lazy loading
  */
 const routes: RouteRecordRaw[] = [
+  {
+    path: '/admin/settings/external-subscriptions',
+    name: 'AdminExternalSubscriptions',
+    component: () => import('@/views/admin/ExternalSubscriptionsView.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true, title: 'External Subscriptions' }
+  },
   // ==================== Setup Routes ====================
   {
     path: '/setup',
@@ -593,21 +598,9 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       requiresAdmin: true,
-      title: 'General Settings',
+      title: 'System Settings',
       titleKey: 'admin.settings.title',
       descriptionKey: 'admin.settings.description'
-    }
-  },
-  {
-    path: '/admin/settings/external-subscriptions',
-    name: 'AdminExternalSubscriptions',
-    component: () => import('@/views/admin/ExternalSubscriptionsView.vue'),
-    meta: {
-      requiresAuth: true,
-      requiresAdmin: true,
-      title: 'External Subscriptions',
-      titleKey: 'admin.externalSubscriptions.title',
-      descriptionKey: 'admin.externalSubscriptions.description'
     }
   },
   {
@@ -688,6 +681,8 @@ const routes: RouteRecordRaw[] = [
       descriptionKey: 'admin.affiliates.transfersDescription'
     }
   },
+
+
   // ==================== Payment Admin Routes ====================
   {
     path: '/admin/orders/dashboard',
@@ -1010,12 +1005,27 @@ router.afterEach((to) => {
  * Handles dynamic import failures caused by deployment updates
  */
 router.onError((error) => {
-  navigationLoading.endNavigation()
   console.error('Router error:', error)
 
-  if (isChunkLoadError(error)) {
-    console.warn('Chunk load error detected, reloading page to fetch latest version...')
-    if (!reloadAfterChunkLoadError()) {
+  // Check if this is a dynamic import failure (chunk loading error)
+  const isChunkLoadError =
+    error.message?.includes('Failed to fetch dynamically imported module') ||
+    error.message?.includes('Loading chunk') ||
+    error.message?.includes('Loading CSS chunk') ||
+    error.name === 'ChunkLoadError'
+
+  if (isChunkLoadError) {
+    // Avoid infinite reload loop by checking sessionStorage
+    const reloadKey = 'chunk_reload_attempted'
+    const lastReload = sessionStorage.getItem(reloadKey)
+    const now = Date.now()
+
+    // Allow reload if never attempted or more than 10 seconds ago
+    if (!lastReload || now - parseInt(lastReload) > 10000) {
+      sessionStorage.setItem(reloadKey, now.toString())
+      console.warn('Chunk load error detected, reloading page to fetch latest version...')
+      window.location.reload()
+    } else {
       console.error('Chunk load error persists after reload. Please clear browser cache.')
     }
   }

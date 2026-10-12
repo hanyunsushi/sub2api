@@ -3,13 +3,13 @@
     <!-- Preview Box -->
     <div class="flex-shrink-0">
       <div
-        class="flex items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-[var(--anthropic-border)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+        class="flex items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 dark:border-dark-600 dark:bg-dark-800"
         :class="[previewSizeClass, { 'border-solid': !!modelValue }]"
       >
         <!-- SVG mode: render inline -->
         <span
           v-if="mode === 'svg' && modelValue"
-          class="text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)] [&>svg]:h-full [&>svg]:w-full"
+          class="text-gray-600 dark:text-gray-300 [&>svg]:h-full [&>svg]:w-full"
           :class="innerSizeClass"
           v-html="sanitizedValue"
         ></span>
@@ -23,7 +23,7 @@
         <!-- Empty placeholder -->
         <svg
           v-else
-          class="text-[var(--anthropic-muted)] dark:text-dark-500"
+          class="text-gray-400 dark:text-dark-500"
           :class="placeholderSizeClass"
           fill="none"
           viewBox="0 0 24 24"
@@ -43,7 +43,7 @@
     <div class="flex-1 space-y-2">
       <div class="flex items-center gap-2">
         <label class="btn btn-secondary btn-sm cursor-pointer">
-          <input data-testid="common-image-upload-input-file"
+          <input
             type="file"
             :accept="acceptTypes"
             class="hidden"
@@ -52,7 +52,7 @@
           <Icon name="upload" size="sm" class="mr-1.5" :stroke-width="2" />
           {{ resolvedUploadLabel }}
         </label>
-        <button data-testid="common-image-upload-button-emit-update-model-value"
+        <button
           v-if="modelValue"
           type="button"
           class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
@@ -62,7 +62,7 @@
           {{ resolvedRemoveLabel }}
         </button>
       </div>
-      <p v-if="hint" class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ hint }}</p>
+      <p v-if="hint" class="text-xs text-gray-500 dark:text-gray-400">{{ hint }}</p>
       <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
     </div>
   </div>
@@ -83,7 +83,7 @@ const props = withDefaults(defineProps<{
   uploadLabel?: string
   removeLabel?: string
   hint?: string
-  maxSize?: number | null // bytes; null disables the client-side size cap
+  maxSize?: number // bytes
 }>(), {
   mode: 'image',
   size: 'md',
@@ -128,7 +128,7 @@ function handleUpload(event: Event) {
   if (!file) return
   reader?.abort()
 
-  if (typeof props.maxSize === 'number' && props.maxSize > 0 && file.size > props.maxSize) {
+  if (props.maxSize && file.size > props.maxSize) {
     error.value = t('common.fileTooLargeKb', {
       size: (file.size / 1024).toFixed(1),
       max: (props.maxSize / 1024).toFixed(0)

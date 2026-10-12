@@ -14,16 +14,10 @@ async function openSelector() {
     props: { modelValue: null, proxies: [1, 2].map(id => ({
       id, name: `Proxy ${id}`, host: 'localhost', port: 8080, protocol: 'http'
     } as Proxy)) },
-    global: { stubs: { Icon: true }, attachTo: document.body }
+    global: { stubs: { Icon: true } }
   })
   await wrapper.get('.select-trigger').trigger('click')
   return wrapper
-}
-
-function portalButton(selector: string) {
-  const element = document.body.querySelector<HTMLButtonElement>(selector)
-  if (!element) throw new Error(`Missing portal button: ${selector}`)
-  return element
 }
 
 describe('proxy connection tests', () => {
@@ -33,15 +27,15 @@ describe('proxy connection tests', () => {
       ? new Promise(resolve => { finish = resolve })
       : Promise.resolve({ success: true, country: 'GB' }))
     const wrapper = await openSelector()
-    portalButton('[data-testid="common-proxy-selector-button-handle-test-proxy-proxy"]').click()
-    portalButton('[data-testid="common-proxy-selector-button-handle-batch-test"]').click()
+    await wrapper.findAll('.test-btn')[0].trigger('click')
+    await wrapper.get('.batch-test-btn').trigger('click')
     await flushPromises()
     expect(testProxy.mock.calls.map(([id]) => id)).toEqual([1, 2])
-    expect(portalButton('[data-testid="common-proxy-selector-button-handle-test-proxy-proxy"]').disabled).toBe(true)
+    expect(wrapper.findAll('.test-btn')[0].attributes('disabled')).toBeDefined()
     finish({ success: true, country: 'US' })
     await flushPromises()
-    expect(document.body.textContent).toContain('US')
-    expect(portalButton('[data-testid="common-proxy-selector-button-handle-test-proxy-proxy"]').disabled).toBe(false)
+    expect(wrapper.text()).toContain('US')
+    expect(wrapper.findAll('.test-btn')[0].attributes('disabled')).toBeUndefined()
   })
 
   it('shows per-proxy outcomes and allows another batch after a failure', async () => {
@@ -49,13 +43,13 @@ describe('proxy connection tests', () => {
       ? Promise.reject(new Error('offline'))
       : Promise.resolve({ success: true, country: 'GB' }))
     const wrapper = await openSelector()
-    portalButton('[data-testid="common-proxy-selector-button-handle-batch-test"]').click()
+    await wrapper.get('.batch-test-btn').trigger('click')
     await flushPromises()
     expect(testProxy).toHaveBeenCalledTimes(2)
-    expect(document.body.textContent).toContain('admin.proxies.testFailed')
-    expect(document.body.textContent).toContain('GB')
-    expect(portalButton('[data-testid="common-proxy-selector-button-handle-batch-test"]').disabled).toBe(false)
-    portalButton('[data-testid="common-proxy-selector-button-handle-batch-test"]').click()
+    expect(wrapper.text()).toContain('admin.proxies.testFailed')
+    expect(wrapper.text()).toContain('GB')
+    expect(wrapper.get('.batch-test-btn').attributes('disabled')).toBeUndefined()
+    await wrapper.get('.batch-test-btn').trigger('click')
     await flushPromises()
     expect(testProxy).toHaveBeenCalledTimes(4)
   })

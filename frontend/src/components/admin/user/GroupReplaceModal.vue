@@ -2,20 +2,20 @@
   <BaseDialog :show="show" :title="t('admin.users.replaceGroupTitle')" width="narrow" @close="$emit('close')">
     <div v-if="oldGroup" class="space-y-4">
       <!-- 提示信息 -->
-      <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
         {{ t('admin.users.replaceGroupHint', { old: oldGroup.name }) }}
       </p>
 
       <!-- 当前分组 -->
-      <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+      <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-dark-600 dark:bg-dark-800">
         <div class="flex items-center gap-2">
-          <Icon name="shield" size="sm" class="text-accent-600" />
-          <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ oldGroup.name }}</span>
-          <Icon name="arrowRight" size="sm" class="ml-auto text-[var(--anthropic-muted)]" />
-          <span v-if="selectedGroupId" class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <Icon name="shield" size="sm" class="text-purple-500" />
+          <span class="font-medium text-gray-900 dark:text-white">{{ oldGroup.name }}</span>
+          <Icon name="arrowRight" size="sm" class="ml-auto text-gray-400" />
+          <span v-if="selectedGroupId" class="font-medium text-primary-600 dark:text-primary-400">
             {{ availableGroups.find(g => g.id === selectedGroupId)?.name }}
           </span>
-          <span v-else class="text-sm text-[var(--anthropic-muted)]">?</span>
+          <span v-else class="text-sm text-gray-400">?</span>
         </div>
       </div>
 
@@ -26,10 +26,10 @@
           :key="group.id"
           class="flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all"
           :class="selectedGroupId === group.id
-            ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)]'
-            : 'border-[var(--anthropic-border)] hover:border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)] dark:hover:border-dark-500'"
+            ? 'border-primary-400 bg-primary-50/50 dark:border-primary-500 dark:bg-primary-900/20'
+            : 'border-gray-200 hover:border-gray-300 dark:border-dark-600 dark:hover:border-dark-500'"
         >
-          <input data-testid="admin-user-group-replace-input-selected-group-id"
+          <input
             type="radio"
             :value="group.id"
             v-model="selectedGroupId"
@@ -38,28 +38,28 @@
           <div
             class="flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all"
             :class="selectedGroupId === group.id
-              ? 'border-[var(--anthropic-fg)] bg-[var(--anthropic-fg)]'
-              : 'border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]'"
+              ? 'border-primary-500 bg-primary-500'
+              : 'border-gray-300 dark:border-dark-500'"
           >
-            <div v-if="selectedGroupId === group.id" class="h-2 w-2 rounded-full bg-[var(--anthropic-page)]"></div>
+            <div v-if="selectedGroupId === group.id" class="h-2 w-2 rounded-full bg-white"></div>
           </div>
           <div class="flex-1">
-            <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ group.name }}</span>
-            <span class="ml-2 text-xs text-[var(--anthropic-muted)]">{{ group.platform }}</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ group.name }}</span>
+            <span class="ml-2 text-xs text-gray-400">{{ group.platform }}</span>
           </div>
         </label>
       </div>
 
       <!-- 无可选分组 -->
-      <div v-else class="py-6 text-center text-sm text-[var(--anthropic-muted)]">
+      <div v-else class="py-6 text-center text-sm text-gray-400">
         {{ t('admin.users.noOtherGroups') }}
       </div>
     </div>
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="admin-user-group-replace-button-emit-close" @click="$emit('close')" class="btn btn-secondary px-5">{{ t('common.cancel') }}</button>
-        <button data-testid="admin-user-group-replace-button-handle-replace"
+        <button @click="$emit('close')" class="btn btn-secondary px-5">{{ t('common.cancel') }}</button>
+        <button
           @click="handleReplace"
           :disabled="!selectedGroupId || submitting"
           class="btn btn-primary px-6"

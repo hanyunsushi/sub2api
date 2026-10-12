@@ -141,40 +141,6 @@ const GroupSelectorStub = defineComponent({
   `
 })
 
-const LogoPickerStub = defineComponent({
-  name: 'LogoPicker',
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    inputTestId: {
-      type: String,
-      default: undefined
-    },
-    label: {
-      type: String,
-      default: ''
-    },
-    hint: {
-      type: String,
-      default: ''
-    }
-  },
-  emits: ['update:modelValue'],
-  template: `
-    <label>
-      <span data-testid="logo-picker-label">{{ label }}</span>
-      <input
-        :data-testid="inputTestId"
-        :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
-      />
-      <span data-testid="logo-picker-hint">{{ hint }}</span>
-    </label>
-  `
-})
-
 function buildAccount() {
   return {
     id: 1,
@@ -350,7 +316,6 @@ function mountModal(account = buildAccount(), renderGroupSelector = false) {
         BaseDialog: BaseDialogStub,
         Select: SelectStub,
         Icon: true,
-        LogoPicker: LogoPickerStub,
         ProxySelector: true,
         GroupSelector: renderGroupSelector ? false : GroupSelectorStub,
         ModelWhitelistSelector: ModelWhitelistSelectorStub

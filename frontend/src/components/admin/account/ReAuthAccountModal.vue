@@ -53,22 +53,22 @@
         <legend class="input-label">{{ t('admin.accounts.oauth.authMethod') }}</legend>
         <div class="mt-2 flex gap-4">
           <label class="flex cursor-pointer items-center">
-            <input data-testid="admin-account-re-auth-account-input-add-method"
+            <input
               v-model="addMethod"
               type="radio"
               value="oauth"
-              class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">{{
               t('admin.accounts.types.oauth')
             }}</span>
           </label>
           <label class="flex cursor-pointer items-center">
-            <input data-testid="admin-account-re-auth-account-input-add-method-2"
+            <input
               v-model="addMethod"
               type="radio"
               value="setup-token"
-              class="mr-2 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+              class="mr-2 text-primary-600 focus:ring-primary-500"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">{{
               t('admin.accounts.setupTokenLongLived')
@@ -148,10 +148,10 @@
 
     <template #footer>
       <div v-if="account" class="flex justify-between gap-3">
-        <button data-testid="admin-account-re-auth-account-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">
+        <button type="button" class="btn btn-secondary" @click="handleClose">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="admin-account-re-auth-account-button-handle-exchange-code"
+        <button
           v-if="isManualInputMethod"
           type="button"
           :disabled="!canExchangeCode"

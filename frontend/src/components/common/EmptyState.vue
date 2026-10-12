@@ -2,7 +2,7 @@
   <div class="empty-state">
     <!-- Icon -->
     <div
-      class="mb-5 flex h-20 w-20 items-center justify-center rounded-lg bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"
+      class="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-100 dark:bg-dark-800"
     >
       <slot name="icon">
         <component v-if="icon" :is="icon" class="empty-state-icon h-10 w-10" aria-hidden="true" />
@@ -36,7 +36,7 @@
     <!-- Action -->
     <div v-if="actionText || $slots.action" class="mt-6">
       <slot name="action">
-        <component data-testid="common-empty-state-component-component"
+        <component
           :is="actionTo ? 'RouterLink' : 'button'"
           v-if="actionText"
           :to="actionTo"

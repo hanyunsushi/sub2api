@@ -1,16 +1,16 @@
 <template>
   <AppLayout>
-    <TablePageLayout class="groups-table-page">
+    <TablePageLayout>
       <template #filters>
         <div
-          class="groups-filter-shell flex flex-col justify-between gap-4 lg:flex-row lg:items-start"
+          class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start"
         >
           <!-- Left: fuzzy search + filters (can wrap to multiple lines) -->
           <div class="flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-64">
               <Icon
                 name="search"
-                size="sm"
+                size="md"
                 class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
               <input
@@ -52,19 +52,17 @@
             <button
               @click="loadGroups"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button groups-refresh-button"
+              class="btn btn-secondary"
               :title="t('common.refresh')"
             >
               <Icon
                 name="refresh"
-                size="sm"
+                size="md"
                 :class="loading ? 'animate-spin' : ''"
               />
-              {{ t("common.refresh") }}
             </button>
             <div class="relative" ref="columnDropdownRef">
               <button
-                ref="columnDropdownButtonRef"
                 @click="showColumnDropdown = !showColumnDropdown"
                 class="btn btn-secondary"
                 :title="t('admin.groups.columnSettings')"
@@ -74,13 +72,9 @@
                   t("admin.groups.columnSettings")
                 }}</span>
               </button>
-              <FloatingDropdown
-                :show="showColumnDropdown"
-                :trigger-el="columnDropdownButtonRef"
-                :portal="false"
-                placement="bottom-end"
-                panel-class="max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-[var(--anthropic-page)] py-1 shadow-[var(--anthropic-dropdown-shadow)] dark:border-dark-600 dark:bg-dark-800"
-                @close="showColumnDropdown = false"
+              <div
+                v-if="showColumnDropdown"
+                class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
               >
                 <button
                   v-for="col in toggleableColumns"
@@ -97,12 +91,12 @@
                     :stroke-width="2"
                   />
                 </button>
-              </FloatingDropdown>
+              </div>
             </div>
             <button
               v-if="!authStore.isSimpleMode"
               @click="openSortModal"
-              class="btn btn-secondary groups-sort-button"
+              class="btn btn-secondary"
               :title="t('admin.groups.sortOrder')"
             >
               <Icon name="arrowsUpDown" size="md" class="mr-2" />
@@ -110,7 +104,7 @@
             </button>
             <button
               @click="openCreateModal"
-              class="btn btn-primary groups-create-button"
+              class="btn btn-primary"
               data-tour="groups-create-btn"
             >
               <Icon name="plus" size="md" class="mr-2" />
@@ -122,7 +116,6 @@
 
       <template #table>
         <DataTable
-          class="mobile-table-layout"
           :columns="columns"
           :data="groups"
           :loading="loading"
@@ -132,10 +125,10 @@
           @sort="handleSort"
         >
           <template #cell-name="{ value, row }">
-            <span class="inline-flex items-center gap-2 font-medium text-gray-900 dark:text-white">
-              <ProviderBrandIcon :provider="row.platform" :model="row.name" :logo-url="row.logo_url" />
-              {{ value }}
-            </span>
+            <ProviderBrandIcon v-if="row.logo_url" :provider="row.platform" :logo-url="row.logo_url" class="mr-2" />
+            <span class="font-medium text-gray-900 dark:text-white">{{
+              value
+            }}</span>
           </template>
 
           <template #cell-id="{ value }">
@@ -179,10 +172,6 @@
               <!-- Type Badge -->
               <span
                 :class="[
-                  'group-billing-badge',
-                  row.subscription_type === 'subscription'
-                    ? 'group-billing-badge--subscription'
-                    : 'group-billing-badge--standard',
                   'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
                   row.subscription_type === 'subscription'
                     ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
@@ -510,6 +499,7 @@
             data-tour="group-form-name"
           />
         </div>
+        <LogoPicker v-model="createForm.logo_url" label="Logo URL" input-test-id="group-logo-url" />
         <div>
           <label class="input-label">{{
             t("admin.groups.form.description")
@@ -845,7 +835,7 @@
                 <input
                   v-model="item.selected"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
                   {{ item.id }}
@@ -880,7 +870,7 @@
                   v-model="createAllowlistCustomEntry"
                   type="text"
                   :placeholder="t('admin.groups.modelAllowlist.customPlaceholder')"
-                  class="min-w-0 flex-1 rounded border border-gray-300 bg-[var(--anthropic-page)] px-2 py-1.5 text-sm text-gray-700 focus:border-[var(--anthropic-focus)] focus:outline-none dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200"
+                  class="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200"
                   @keydown.enter.prevent="submitCreateAllowlistCustomEntry"
                 />
                 <button
@@ -1317,7 +1307,7 @@
                 type="checkbox"
                 :checked="createForm.supported_model_scopes.includes('claude')"
                 @change="toggleCreateScope('claude')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.claude")
@@ -1330,7 +1320,7 @@
                   createForm.supported_model_scopes.includes('gemini_text')
                 "
                 @change="toggleCreateScope('gemini_text')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.geminiText")
@@ -1343,7 +1333,7 @@
                   createForm.supported_model_scopes.includes('gemini_image')
                 "
                 @change="toggleCreateScope('gemini_image')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.geminiImage")
@@ -2007,7 +1997,6 @@
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
                       <input
-                        :ref="(element) => setAccountSearchTrigger(getCreateRuleSearchKey(rule), element)"
                         v-model="
                           accountSearchKeyword[getCreateRuleSearchKey(rule)]
                         "
@@ -2022,15 +2011,13 @@
                         @focus="onAccountSearchFocus(rule)"
                       />
                       <!-- 搜索结果下拉框 -->
-                      <FloatingDropdown
-                        :show="Boolean(
+                      <div
+                        v-if="
                           showAccountDropdown[getCreateRuleSearchKey(rule)] &&
-                          accountSearchResults[getCreateRuleSearchKey(rule)]?.length
-                        )"
-                        :trigger-el="accountSearchTriggers[getCreateRuleSearchKey(rule)] || null"
-                        placement="bottom-start"
-                        panel-class="group-account-search-dropdown max-h-48 w-80 max-w-[calc(100vw-2rem)] overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-[var(--anthropic-dropdown-shadow)] dark:border-dark-600 dark:bg-dark-800"
-                        @close="showAccountDropdown[getCreateRuleSearchKey(rule)] = false"
+                          accountSearchResults[getCreateRuleSearchKey(rule)]
+                            ?.length > 0
+                        "
+                        class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
                         <button
                           v-for="account in accountSearchResults[
@@ -2054,7 +2041,7 @@
                             >#{{ account.id }}</span
                           >
                         </button>
-                      </FloatingDropdown>
+                      </div>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
@@ -2151,6 +2138,7 @@
             data-tour="edit-group-form-name"
           />
         </div>
+        <LogoPicker v-model="editForm.logo_url" label="Logo URL" input-test-id="group-logo-url" />
         <div>
           <label class="input-label">{{
             t("admin.groups.form.description")
@@ -2488,7 +2476,7 @@
                 <input
                   v-model="item.selected"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)]"
+                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span class="min-w-0 flex-1 break-all text-sm text-gray-700 dark:text-gray-300">
                   {{ item.id }}
@@ -2523,7 +2511,7 @@
                   v-model="editAllowlistCustomEntry"
                   type="text"
                   :placeholder="t('admin.groups.modelAllowlist.customPlaceholder')"
-                  class="min-w-0 flex-1 rounded border border-gray-300 bg-[var(--anthropic-page)] px-2 py-1.5 text-sm text-gray-700 focus:border-[var(--anthropic-focus)] focus:outline-none dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200"
+                  class="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200"
                   @keydown.enter.prevent="submitEditAllowlistCustomEntry"
                 />
                 <button
@@ -2960,7 +2948,7 @@
                 type="checkbox"
                 :checked="editForm.supported_model_scopes.includes('claude')"
                 @change="toggleEditScope('claude')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.claude")
@@ -2973,7 +2961,7 @@
                   editForm.supported_model_scopes.includes('gemini_text')
                 "
                 @change="toggleEditScope('gemini_text')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.geminiText")
@@ -2986,7 +2974,7 @@
                   editForm.supported_model_scopes.includes('gemini_image')
                 "
                 @change="toggleEditScope('gemini_image')"
-                class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
               />
               <span class="text-sm text-gray-700 dark:text-gray-300">{{
                 t("admin.groups.supportedScopes.geminiImage")
@@ -3659,7 +3647,6 @@
                     <!-- 账号搜索输入框 -->
                     <div class="relative account-search-container">
                       <input
-                        :ref="(element) => setAccountSearchTrigger(getEditRuleSearchKey(rule), element)"
                         v-model="
                           accountSearchKeyword[getEditRuleSearchKey(rule)]
                         "
@@ -3674,15 +3661,13 @@
                         @focus="onAccountSearchFocus(rule, true)"
                       />
                       <!-- 搜索结果下拉框 -->
-                      <FloatingDropdown
-                        :show="Boolean(
+                      <div
+                        v-if="
                           showAccountDropdown[getEditRuleSearchKey(rule)] &&
-                          accountSearchResults[getEditRuleSearchKey(rule)]?.length
-                        )"
-                        :trigger-el="accountSearchTriggers[getEditRuleSearchKey(rule)] || null"
-                        placement="bottom-start"
-                        panel-class="group-account-search-dropdown max-h-48 w-80 max-w-[calc(100vw-2rem)] overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-[var(--anthropic-dropdown-shadow)] dark:border-dark-600 dark:bg-dark-800"
-                        @close="showAccountDropdown[getEditRuleSearchKey(rule)] = false"
+                          accountSearchResults[getEditRuleSearchKey(rule)]
+                            ?.length > 0
+                        "
+                        class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                       >
                         <button
                           v-for="account in accountSearchResults[
@@ -3706,7 +3691,7 @@
                             >#{{ account.id }}</span
                           >
                         </button>
-                      </FloatingDropdown>
+                      </div>
                     </div>
                     <p class="text-xs text-gray-400 mt-1">
                       {{ t("admin.groups.modelRouting.accountsHint") }}
@@ -4147,7 +4132,7 @@
                 <input
                   v-model="compositeRouteForm.enabled"
                   type="checkbox"
-                        class="h-4 w-4 rounded border-gray-300 text-[var(--anthropic-fg)] focus:ring-[var(--anthropic-focus)] dark:border-dark-600 dark:bg-dark-700"
+                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
                 />
                 {{ t("admin.groups.compositeRoutes.enabled") }}
               </label>
@@ -4283,6 +4268,8 @@
 </template>
 
 <script setup lang="ts">
+import LogoPicker from '@/components/common/LogoPicker.vue';
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue';
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAppStore } from "@/stores/app";
@@ -4314,8 +4301,6 @@ import BaseDialog from "@/components/common/BaseDialog.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import Select from "@/components/common/Select.vue";
-import FloatingDropdown from "@/components/common/FloatingDropdown.vue";
-import ProviderBrandIcon from "@/components/common/ProviderBrandIcon.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
 import Icon from "@/components/icons/Icon.vue";
 import GroupRateMultipliersModal from "@/components/admin/group/GroupRateMultipliersModal.vue";
@@ -4512,7 +4497,6 @@ const toggleableColumns = computed(() =>
 const hiddenColumns = reactive<Set<string>>(new Set());
 const showColumnDropdown = ref(false);
 const columnDropdownRef = ref<HTMLElement | null>(null);
-const columnDropdownButtonRef = ref<HTMLElement | null>(null);
 
 const getValidHiddenColumnKeys = () =>
   new Set(toggleableColumns.value.map((col) => col.key));
@@ -4960,6 +4944,7 @@ const submitEditAllowlistCustomEntry = () => {
 
 const createForm = reactive({
   name: "",
+  logo_url: "",
   description: "",
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
@@ -5087,24 +5072,17 @@ const getRuleSearchKey = (rule: ModelRoutingRule, isEdit: boolean = false) => {
 const accountSearchKeyword = ref<Record<string, string>>({});
 const accountSearchResults = ref<Record<string, SimpleAccount[]>>({});
 const showAccountDropdown = ref<Record<string, boolean>>({});
-const accountSearchTriggers = ref<Record<string, HTMLElement | null>>({});
-
-const setAccountSearchTrigger = (key: string, element: unknown) => {
-  accountSearchTriggers.value[key] = element instanceof HTMLElement ? element : null;
-};
 
 const clearAccountSearchStateByKey = (key: string) => {
   delete accountSearchKeyword.value[key];
   delete accountSearchResults.value[key];
   delete showAccountDropdown.value[key];
-  delete accountSearchTriggers.value[key];
 };
 
 const clearAllAccountSearchState = () => {
   accountSearchKeyword.value = {};
   accountSearchResults.value = {};
   showAccountDropdown.value = {};
-  accountSearchTriggers.value = {};
 };
 
 const accountSearchRunner = useKeyedDebouncedSearch<SimpleAccount[]>({
@@ -5331,6 +5309,7 @@ const convertApiFormatToRoutingRules = async (
 
 const editForm = reactive({
   name: "",
+  logo_url: "",
   description: "",
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
@@ -5794,6 +5773,7 @@ const closeCreateModal = () => {
   });
   clearAllAccountSearchState();
   createForm.name = "";
+  createForm.logo_url = "";
   createForm.description = "";
   createForm.platform = "anthropic";
   createForm.rate_multiplier = 1.0;
@@ -5941,6 +5921,7 @@ const handleCreateGroup = async () => {
     // 构建请求数据，包含模型路由配置
     const requestData = {
       ...createGroupForm,
+      logo_url: createForm.logo_url.trim(),
       force_openai_fast: normalizeGroupOpenAIFast(
         createForm.platform,
         createForm.force_openai_fast,
@@ -6049,6 +6030,7 @@ const handleCreateGroup = async () => {
     const payload = authStore.isSimpleMode
       ? {
           name: createForm.name,
+          logo_url: createForm.logo_url.trim(),
           description: createForm.description,
           platform: createForm.platform,
         }
@@ -6075,6 +6057,7 @@ const handleCreateGroup = async () => {
 const handleEdit = async (group: AdminGroup) => {
   editingGroup.value = group;
   editForm.name = group.name;
+  editForm.logo_url = group.logo_url || "";
   editForm.description = group.description || "";
   editForm.platform = group.platform;
   editForm.rate_multiplier = group.rate_multiplier;
@@ -6277,6 +6260,7 @@ const handleUpdateGroup = async () => {
     // 转换 fallback_group_id: null -> 0 (后端使用 0 表示清除)
     const payload = {
       ...editForm,
+      logo_url: editForm.logo_url.trim(),
       force_openai_fast: normalizeGroupOpenAIFast(
         editForm.platform,
         editForm.force_openai_fast,
@@ -6400,6 +6384,7 @@ const handleUpdateGroup = async () => {
     const requestData = authStore.isSimpleMode
       ? {
           name: editForm.name,
+          logo_url: editForm.logo_url.trim(),
           description: editForm.description,
         }
       : payload;

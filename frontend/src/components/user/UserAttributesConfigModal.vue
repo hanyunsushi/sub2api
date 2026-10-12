@@ -3,10 +3,10 @@
     <div class="space-y-4">
       <!-- Header with Add Button -->
       <div class="flex items-center justify-between">
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="text-sm text-gray-500 dark:text-dark-400">
           {{ t('admin.users.attributes.description') }}
         </p>
-        <button data-testid="user-user-attributes-config-button-open-create-modal" @click="openCreateModal" class="btn btn-primary btn-sm">
+        <button @click="openCreateModal" class="btn btn-primary btn-sm">
           <Icon name="plus" size="sm" class="mr-1.5" :stroke-width="2" />
           {{ t('admin.users.attributes.addAttribute') }}
         </button>
@@ -14,7 +14,7 @@
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
-        <svg class="h-8 w-8 animate-spin text-[var(--anthropic-fg)]" fill="none" viewBox="0 0 24 24">
+        <svg class="h-8 w-8 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
         </svg>
@@ -22,14 +22,14 @@
 
       <!-- Empty State -->
       <div v-else-if="attributes.length === 0" class="py-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-[var(--anthropic-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
         </svg>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
           {{ t('admin.users.attributes.noAttributes') }}
         </p>
-        <p class="text-xs text-[var(--anthropic-muted)] dark:text-dark-500">
+        <p class="text-xs text-gray-400 dark:text-dark-500">
           {{ t('admin.users.attributes.noAttributesHint') }}
         </p>
       </div>
@@ -39,18 +39,18 @@
         <div
           v-for="attr in attributes"
           :key="attr.id"
-          class="flex items-center gap-3 rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+          class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-dark-600 dark:bg-dark-800"
         >
           <!-- Drag Handle -->
-          <div class="cursor-move text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300" :title="t('admin.users.attributes.dragToReorder')">
+          <div class="cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" :title="t('admin.users.attributes.dragToReorder')">
             <Icon name="menu" size="md" />
           </div>
 
           <!-- Attribute Info -->
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ attr.name }}</span>
-              <span class="rounded bg-[var(--anthropic-raised)] px-1.5 py-0.5 font-mono text-xs text-[var(--anthropic-muted)] dark:bg-[var(--anthropic-section)] dark:text-dark-400">
+              <span class="font-medium text-gray-900 dark:text-white">{{ attr.name }}</span>
+              <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-500 dark:bg-dark-700 dark:text-dark-400">
                 {{ attr.key }}
               </span>
               <span v-if="attr.required" class="badge badge-danger text-xs">
@@ -60,7 +60,7 @@
                 {{ t('common.disabled') }}
               </span>
             </div>
-            <div class="mt-0.5 flex items-center gap-2 text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+            <div class="mt-0.5 flex items-center gap-2 text-xs text-gray-500 dark:text-dark-400">
               <span class="badge badge-gray">{{ t(`admin.users.attributes.types.${attr.type}`) }}</span>
               <span v-if="attr.description" class="truncate">{{ attr.description }}</span>
             </div>
@@ -68,16 +68,16 @@
 
           <!-- Actions -->
           <div class="flex items-center gap-1">
-            <button data-testid="user-user-attributes-config-button-open-edit-modal-attr"
+            <button
               @click="openEditModal(attr)"
-              class="rounded-lg p-1.5 text-[var(--anthropic-muted)] hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-fg)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-[var(--anthropic-fg)]"
+              class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
               :title="t('common.edit')"
             >
               <Icon name="edit" size="sm" />
             </button>
-            <button data-testid="user-user-attributes-config-button-confirm-delete-attr"
+            <button
               @click="confirmDelete(attr)"
-              class="rounded-lg p-1.5 text-[var(--anthropic-muted)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+              class="rounded-lg p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               :title="t('common.delete')"
             >
               <Icon name="trash" size="sm" />
@@ -89,7 +89,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="user-user-attributes-config-button-emit-close" @click="emit('close')" class="btn btn-secondary">
+        <button @click="emit('close')" class="btn btn-secondary">
           {{ t('common.close') }}
         </button>
       </div>
@@ -107,7 +107,7 @@
       <!-- Key -->
       <div>
         <label class="input-label">{{ t('admin.users.attributes.key') }}</label>
-        <input data-testid="user-user-attributes-config-input-form-key"
+        <input
           v-model="form.key"
           type="text"
           required
@@ -122,7 +122,7 @@
       <!-- Name -->
       <div>
         <label class="input-label">{{ t('admin.users.attributes.name') }}</label>
-        <input data-testid="user-user-attributes-config-input-form-name"
+        <input
           v-model="form.name"
           type="text"
           required
@@ -144,29 +144,29 @@
       <div v-if="form.type === 'select' || form.type === 'multi_select'" class="space-y-2">
         <label class="input-label">{{ t('admin.users.attributes.options') }}</label>
         <div v-for="(option, index) in form.options" :key="getOptionKey(option)" class="flex items-center gap-2">
-          <input data-testid="user-user-attributes-config-input-option-value"
+          <input
             v-model="option.value"
             type="text"
             class="input flex-1 font-mono text-sm"
             :placeholder="t('admin.users.attributes.optionValue')"
             required
           />
-          <input data-testid="user-user-attributes-config-input-option-label"
+          <input
             v-model="option.label"
             type="text"
             class="input flex-1 text-sm"
             :placeholder="t('admin.users.attributes.optionLabel')"
             required
           />
-          <button data-testid="user-user-attributes-config-button-remove-option-index"
+          <button
             type="button"
             @click="removeOption(index)"
-            class="rounded-lg p-1.5 text-[var(--anthropic-muted)] hover:bg-red-50 hover:text-red-600"
+            class="rounded-lg p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600"
           >
             <Icon name="x" size="sm" :stroke-width="2" />
           </button>
         </div>
-        <button data-testid="user-user-attributes-config-button-add-option" type="button" @click="addOption" class="btn btn-secondary btn-sm">
+        <button type="button" @click="addOption" class="btn btn-secondary btn-sm">
           <Icon name="plus" size="sm" class="mr-1" :stroke-width="2" />
           {{ t('admin.users.attributes.addOption') }}
         </button>
@@ -175,7 +175,7 @@
       <!-- Description -->
       <div>
         <label class="input-label">{{ t('admin.users.attributes.fieldDescription') }}</label>
-        <input data-testid="user-user-attributes-config-input-form-description"
+        <input
           v-model="form.description"
           type="text"
           class="input"
@@ -186,7 +186,7 @@
       <!-- Placeholder -->
       <div>
         <label class="input-label">{{ t('admin.users.attributes.placeholder') }}</label>
-        <input data-testid="user-user-attributes-config-input-form-placeholder"
+        <input
           v-model="form.placeholder"
           type="text"
           class="input"
@@ -197,22 +197,22 @@
       <!-- Required & Enabled -->
       <div class="flex items-center gap-6">
         <label class="flex items-center gap-2">
-          <input data-testid="user-user-attributes-config-input-form-required" v-model="form.required" type="checkbox" class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)]" />
-          <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.users.attributes.required') }}</span>
+          <input v-model="form.required" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600" />
+          <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.users.attributes.required') }}</span>
         </label>
         <label class="flex items-center gap-2">
-          <input data-testid="user-user-attributes-config-input-form-enabled" v-model="form.enabled" type="checkbox" class="h-4 w-4 rounded border-[var(--anthropic-border)] text-[var(--anthropic-fg)]" />
-          <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('admin.users.attributes.enabled') }}</span>
+          <input v-model="form.enabled" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600" />
+          <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('admin.users.attributes.enabled') }}</span>
         </label>
       </div>
     </form>
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="user-user-attributes-config-button-close-edit-modal" @click="closeEditModal" type="button" class="btn btn-secondary">
+        <button @click="closeEditModal" type="button" class="btn btn-secondary">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="user-user-attributes-config-button-submit" type="submit" form="attribute-form" :disabled="saving" class="btn btn-primary">
+        <button type="submit" form="attribute-form" :disabled="saving" class="btn btn-primary">
           <svg v-if="saving" class="-ml-1 mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />

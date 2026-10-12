@@ -168,7 +168,7 @@ function normalizeCustomAILogoPresetURLs(urls?: Array<string | null | undefined>
     if (!url || seen.has(url)) continue
     seen.add(url)
     result.push(url)
-    if (result.length >= 48) break
+    if (result.length >= 64) break
   }
   return result
 }
@@ -226,10 +226,10 @@ export function systemAILogoPresetIDFromURL(rawURL?: string | null): string {
 
 const fallbackPalettes = [
   { background: '#f1f8e8', color: '#6ea100', border: '#c9dfaa' },
-  { background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+  { background: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
   { background: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
   { background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
-  { background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+  { background: '#f3f4f6', color: '#111827', border: '#e5e7eb' },
   { background: '#F0FDFA', color: '#0F766E', border: '#99F6E4' },
   { background: '#FEFCE8', color: '#A16207', border: '#FEF08A' },
   { background: '#F8FAFC', color: '#475569', border: '#CBD5E1' },
@@ -245,18 +245,18 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
     {
       iconModel: 'claude',
       label: 'CL',
-      background: 'color-mix(in srgb, var(--anthropic-accent) 10%, var(--anthropic-page))',
-      color: 'var(--anthropic-clay-interactive)',
-      border: 'color-mix(in srgb, var(--anthropic-accent) 32%, transparent)',
+      background: 'color-mix(in srgb, #6366f1 10%, #ffffff)',
+      color: '#6366f1',
+      border: 'color-mix(in srgb, #6366f1 32%, transparent)',
     },
   ],
   [
     ['gemini', 'google-ai-studio'],
-    { iconModel: 'gemini', label: 'G', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+    { iconModel: 'gemini', label: 'G', background: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
   ],
   [
     ['antigravity'],
-    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+    { iconModel: null, iconUrl: officialAntigravityLogoURL, label: 'AG', background: '#f3f4f6', color: '#111827', border: '#e5e7eb' },
   ],
   [
     ['deepseek'],
@@ -276,7 +276,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['qlhazycoder', 'qlhazy'],
-    { iconModel: null, label: 'QL', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+    { iconModel: null, label: 'QL', background: '#f3f4f6', color: '#111827', border: '#e5e7eb' },
   ],
   [
     ['packycode', 'packyapi', 'packy'],
@@ -360,7 +360,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['midjourney'],
-    { iconModel: 'midjourney', label: 'MJ', background: '#f0eee6', color: '#141413', border: '#d1cfc5' },
+    { iconModel: 'midjourney', label: 'MJ', background: '#f3f4f6', color: '#111827', border: '#e5e7eb' },
   ],
   [
     ['suno'],

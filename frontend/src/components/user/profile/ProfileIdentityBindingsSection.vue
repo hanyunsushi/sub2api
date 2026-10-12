@@ -2,22 +2,22 @@
   <div :class="props.embedded ? 'space-y-4' : 'card overflow-hidden'">
     <div
       v-if="!props.embedded"
-      class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+      class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
     >
-      <h2 class="text-lg font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">
         {{ t('profile.authBindings.title') }}
       </h2>
-      <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
         {{ t('profile.authBindings.description') }}
       </p>
     </div>
 
     <div :class="props.embedded ? 'space-y-4' : 'divide-y divide-gray-100 dark:divide-dark-700'">
       <div v-if="props.embedded">
-        <p class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <p class="text-sm font-semibold text-gray-900 dark:text-white">
           {{ t('profile.authBindings.title') }}
         </p>
-        <p class="mt-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ t('profile.authBindings.description') }}
         </p>
       </div>
@@ -29,14 +29,22 @@
       >
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="flex min-w-0 flex-1 items-start gap-4">
-            <ProviderBindingLogo
-              :provider="item.provider"
-              :label="item.label"
-            />
+            <div
+              :class="providerIconClass(item.provider)"
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-semibold"
+            >
+              <Icon
+                v-if="item.provider === 'email'"
+                name="mail"
+                size="sm"
+                class="text-current"
+              />
+              <span v-else>{{ providerInitial(item.provider) }}</span>
+            </div>
 
             <div class="min-w-0 flex-1 space-y-3">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                <h3 class="font-medium text-gray-900 dark:text-white">
                   {{ item.label }}
                 </h3>
                 <span
@@ -53,18 +61,18 @@
 
               <p
                 v-if="providerSummary(item.provider)"
-                class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="text-sm text-gray-600 dark:text-gray-300"
               >
                 {{ providerSummary(item.provider) }}
               </p>
 
               <div
                 v-if="hasBindingDetails(item.provider, item.details)"
-                class="grid gap-1 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                class="grid gap-1 text-sm text-gray-500 dark:text-gray-400"
               >
                 <p
                   v-if="item.provider !== 'email' && item.details?.display_name"
-                  class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="font-medium text-gray-700 dark:text-gray-200"
                 >
                   {{ item.details.display_name }}
                 </p>
@@ -158,7 +166,7 @@
               v-if="item.canBind"
               :data-testid="`profile-binding-${item.provider}-action`"
               type="button"
-              class="btn btn-secondary btn-sm"
+              class="btn btn-primary btn-sm"
               @click="startBinding(item.provider)"
             >
               {{ t('profile.authBindings.bindAction', { providerName: item.label }) }}
@@ -199,7 +207,7 @@ import {
   startOAuthBinding,
   unbindAuthIdentity,
 } from '@/api/user'
-import ProviderBindingLogo from '@/components/user/profile/ProviderBindingLogo.vue'
+import Icon from '@/components/icons/Icon.vue'
 import { useAppStore, useAuthStore } from '@/stores'
 import type { User, UserAuthBindingStatus, UserAuthProvider } from '@/types'
 
@@ -215,8 +223,6 @@ const props = withDefaults(
     wechatEnabled?: boolean
     wechatOpenEnabled?: boolean
     wechatMpEnabled?: boolean
-    githubEnabled?: boolean
-    googleEnabled?: boolean
     embedded?: boolean
     compact?: boolean
   }>(),
@@ -228,8 +234,6 @@ const props = withDefaults(
     wechatEnabled: false,
     wechatOpenEnabled: undefined,
     wechatMpEnabled: undefined,
-    githubEnabled: false,
-    googleEnabled: false,
     embedded: false,
     compact: false,
   }
@@ -280,8 +284,8 @@ const compact = computed(() => props.compact)
 const rowClass = computed(() =>
   props.embedded
     ? compact.value
-      ? 'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]'
-      : 'rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]'
+      ? 'rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/40'
+      : 'rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-900/30'
     : 'px-6 py-5'
 )
 const emailBound = computed(() => getBindingStatus('email'))
@@ -410,12 +414,6 @@ function isProviderEnabledForBinding(provider: BindableProvider): boolean {
   if (provider === 'oidc') {
     return props.oidcEnabled
   }
-  if (provider === 'github') {
-    return props.githubEnabled
-  }
-  if (provider === 'google') {
-    return props.googleEnabled
-  }
   return resolvedWeChatBinding.value.mode !== null
 }
 
@@ -472,29 +470,39 @@ const providerItems = computed(() => [
     canUnbind: Boolean(getBindingStatus('wechat') && getBindingDetails('wechat')?.can_unbind),
     details: getBindingDetails('wechat'),
   },
-  {
-    provider: 'github' as const,
-    label: t('profile.authBindings.providers.github'),
-    bound: getBindingStatus('github'),
-    canBind:
-      !getBindingStatus('github') &&
-      isProviderEnabledForBinding('github') &&
-      (getBindingDetails('github')?.can_bind ?? true),
-    canUnbind: Boolean(getBindingStatus('github') && getBindingDetails('github')?.can_unbind),
-    details: getBindingDetails('github'),
-  },
-  {
-    provider: 'google' as const,
-    label: t('profile.authBindings.providers.google'),
-    bound: getBindingStatus('google'),
-    canBind:
-      !getBindingStatus('google') &&
-      isProviderEnabledForBinding('google') &&
-      (getBindingDetails('google')?.can_bind ?? true),
-    canUnbind: Boolean(getBindingStatus('google') && getBindingDetails('google')?.can_unbind),
-    details: getBindingDetails('google'),
-  },
 ])
+
+function providerInitial(provider: UserAuthProvider): string {
+  if (provider === 'linuxdo') {
+    return 'L'
+  }
+  if (provider === 'dingtalk') {
+    return 'D'
+  }
+  if (provider === 'wechat') {
+    return 'W'
+  }
+  if (provider === 'oidc') {
+    return 'O'
+  }
+  return 'E'
+}
+
+function providerIconClass(provider: UserAuthProvider): string {
+  if (provider === 'linuxdo') {
+    return 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-300'
+  }
+  if (provider === 'dingtalk') {
+    return 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-300'
+  }
+  if (provider === 'wechat') {
+    return 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-300'
+  }
+  if (provider === 'oidc') {
+    return 'bg-sky-100 text-sky-600 dark:bg-sky-900/20 dark:text-sky-300'
+  }
+  return 'bg-primary-100 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300'
+}
 
 function providerSummary(provider: UserAuthProvider): string {
   if (provider === 'email') {

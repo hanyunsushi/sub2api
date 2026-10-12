@@ -7,7 +7,7 @@
       class="!hidden w-full table-fixed border-collapse text-sm lg:!table"
     >
       <thead>
-        <tr class="border-b border-[var(--anthropic-border)] bg-[var(--anthropic-section)] text-xs font-medium uppercase tracking-wide text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:text-[var(--anthropic-muted)]">
+        <tr class="border-b border-gray-100 bg-gray-50/50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-dark-700 dark:bg-dark-800/50 dark:text-gray-400">
           <th class="w-[180px] px-4 py-3 text-center">{{ columns.name }}</th>
           <th class="w-[200px] px-4 py-3 text-left">{{ columns.description }}</th>
           <th class="w-[140px] px-4 py-3 text-left">{{ columns.platform }}</th>
@@ -18,15 +18,15 @@
       <tbody v-if="loading">
         <tr>
           <td colspan="5" class="py-10 text-center">
-            <Icon name="refresh" size="lg" class="inline-block animate-spin text-[var(--anthropic-muted)]" />
+            <Icon name="refresh" size="lg" class="inline-block animate-spin text-gray-400" />
           </td>
         </tr>
       </tbody>
       <tbody v-else-if="rows.length === 0">
         <tr>
           <td colspan="5" class="py-12 text-center">
-            <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-[var(--anthropic-muted)]" />
-            <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ emptyLabel }}</p>
+            <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ emptyLabel }}</p>
           </td>
         </tr>
       </tbody>
@@ -36,19 +36,19 @@
         v-else
         v-for="(channel, chIdx) in rows"
         :key="`${channel.name}-${chIdx}`"
-        class="border-b-2 border-[var(--anthropic-border)] last:border-b-0 dark:border-[var(--anthropic-border)]"
+        class="border-b-2 border-gray-200 last:border-b-0 dark:border-dark-600"
       >
         <tr
           v-for="(section, secIdx) in channel.platforms"
           :key="`${channel.name}-${section.platform}`"
-          class="transition-colors hover:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]/40"
-          :class="{ 'border-t border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]': secIdx > 0 }"
+          class="transition-colors hover:bg-gray-50/40 dark:hover:bg-dark-800/40"
+          :class="{ 'border-t border-gray-100/70 dark:border-dark-700/50': secIdx > 0 }"
         >
           <!-- 渠道名：只在第一行渲染并用 rowspan 纵向合并 -->
           <td
             v-if="secIdx === 0"
             :rowspan="channel.platforms.length"
-            class="px-4 py-3 text-center align-middle font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]"
+            class="px-4 py-3 text-center align-middle font-medium text-gray-900 dark:text-white"
           >
             {{ channel.name }}
           </td>
@@ -57,10 +57,10 @@
           <td
             v-if="secIdx === 0"
             :rowspan="channel.platforms.length"
-            class="px-4 py-3 align-middle text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+            class="px-4 py-3 align-middle text-xs text-gray-500 dark:text-gray-400"
           >
             <template v-if="channel.description">{{ channel.description }}</template>
-            <span v-else class="text-[var(--anthropic-muted)]">-</span>
+            <span v-else class="text-gray-400">-</span>
           </td>
 
           <!-- 平台徽章 -->
@@ -84,7 +84,7 @@
                 class="flex flex-wrap items-center gap-1.5"
               >
                 <span
-                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-accent-600 dark:text-accent-500"
+                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-purple-600 dark:text-purple-400"
                   :title="t('availableChannels.exclusiveTooltip')"
                 >
                   <Icon name="shield" size="xs" class="h-3 w-3" />
@@ -118,7 +118,7 @@
                 class="flex flex-wrap items-center gap-1.5"
               >
                 <span
-                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]"
+                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-gray-500 dark:text-gray-400"
                   :title="t('availableChannels.publicTooltip')"
                 >
                   <Icon name="globe" size="xs" class="h-3 w-3" />
@@ -147,7 +147,7 @@
                   </span>
                 </div>
               </div>
-              <span v-if="section.groups.length === 0" class="text-xs text-[var(--anthropic-muted)]">-</span>
+              <span v-if="section.groups.length === 0" class="text-xs text-gray-400">-</span>
             </div>
           </td>
 
@@ -163,7 +163,7 @@
                 :show-platform="false"
                 :platform-hint="section.platform"
               />
-              <span v-if="section.supported_models.length === 0" class="text-xs text-[var(--anthropic-muted)]">
+              <span v-if="section.supported_models.length === 0" class="text-xs text-gray-400">
                 {{ noModelsLabel }}
               </span>
             </div>

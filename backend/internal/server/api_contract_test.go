@@ -515,13 +515,26 @@ func TestAPIContracts(t *testing.T) {
 						"id": "pixel",
 						"name": "Pixel",
 						"enabled": false,
-						"template": "active_subscriptions",
-						"balance_strategy": "auth_me_balance",
-						"api_base_url": "https://ai-pixel.online",
+						"template": "pixel_access_token",
+						"balance_strategy": "pixel_user_quota",
+						"api_base_url": "https://api.ai-pixel.online",
 						"api_token_configured": false,
 						"refresh_token_configured": false,
 						"match_keywords": ["ai-pixel.online", "pixel"],
 						"sort_order": 40
+					},
+					{
+						"id": "a6api",
+						"name": "A6API",
+						"enabled": false,
+						"template": "newapi_console",
+						"balance_strategy": "newapi_user_quota",
+						"api_base_url": "https://a6api.com",
+						"logo_url": "https://a6api.com/brand/a6-logo-large-transparent-512.png",
+						"api_token_configured": false,
+						"refresh_token_configured": false,
+						"match_keywords": ["a6api.com", "a6api"],
+						"sort_order": 45
 					},
 					{
 						"id": "liust",
@@ -969,7 +982,6 @@ func TestAPIContracts(t *testing.T) {
 						"site_subtitle": "Subtitle",
 						"api_base_url": "https://api.example.com",
 						"api_key_acl_trust_forwarded_ip": false,
-						"appearance_theme_default": "cloudflare",
 						"ai_logo_cdn_base_url": "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light",
 						"custom_ai_logo_presets": [],
 					"contact_info": "support",
@@ -1011,6 +1023,7 @@ func TestAPIContracts(t *testing.T) {
 					"auth_source_default_dingtalk_grant_on_first_bind": false,
 					"force_email_on_third_party_signup": false,
 					"default_concurrency": 5,
+					"forwarded_client_ip_headers": [],
 					"default_balance": 1.25,
 					"default_platform_quotas": {"anthropic":{"daily":null,"weekly":null,"monthly":null},"antigravity":{"daily":null,"weekly":null,"monthly":null},"deepseek":{"daily":null,"weekly":null,"monthly":null},"gemini":{"daily":null,"weekly":null,"monthly":null},"grok":{"daily":null,"weekly":null,"monthly":null},"kimi":{"daily":null,"weekly":null,"monthly":null},"minimax":{"daily":null,"weekly":null,"monthly":null},"openai":{"daily":null,"weekly":null,"monthly":null},"opencode_go":{"daily":null,"weekly":null,"monthly":null},"zhipu":{"daily":null,"weekly":null,"monthly":null}},
 					"auth_source_default_email_platform_quotas": null,
@@ -1324,7 +1337,6 @@ func TestAPIContracts(t *testing.T) {
 					"site_subtitle": "Subscription to API Conversion Platform",
 					"api_base_url": "",
 					"api_key_acl_trust_forwarded_ip": false,
-					"appearance_theme_default": "cloudflare",
 					"ai_logo_cdn_base_url": "https://unpkg.com/@lobehub/icons-static-png@1.91.0/light",
 					"custom_ai_logo_presets": [],
 					"contact_info": "",
@@ -1532,24 +1544,8 @@ func TestAPIContracts(t *testing.T) {
 					"auth_source_default_dingtalk_grant_on_signup": false,
 					"auth_source_default_dingtalk_grant_on_first_bind": false,
 					"force_email_on_third_party_signup": false,
-					"allow_user_view_error_requests": false
-				}
-			}`,
-		},
-		{
-			name:   "PUT /api/v1/admin/settings/appearance-theme-default",
-			method: http.MethodPut,
-			path:   "/api/v1/admin/settings/appearance-theme-default",
-			body:   `{"appearance_theme_default":"anthropic"}`,
-			headers: map[string]string{
-				"Content-Type": "application/json",
-			},
-			wantStatus: http.StatusOK,
-			wantJSON: `{
-				"code": 0,
-				"message": "success",
-				"data": {
-					"appearance_theme_default": "anthropic"
+					"allow_user_view_error_requests": false,
+					"forwarded_client_ip_headers": []
 				}
 			}`,
 		},
@@ -1713,7 +1709,6 @@ func newContractDeps(t *testing.T) *contractDeps {
 	v1Admin := v1.Group("/admin")
 	v1Admin.Use(adminAuth)
 	v1Admin.GET("/settings", adminSettingHandler.GetSettings)
-	v1Admin.PUT("/settings/appearance-theme-default", adminSettingHandler.UpdateAppearanceThemeDefault)
 	v1Admin.POST("/accounts/bulk-update", adminAccountHandler.BulkUpdate)
 	v1Admin.GET("/external-subscriptions", adminExternalSubscriptionHandler.ListProviders)
 

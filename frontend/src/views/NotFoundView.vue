@@ -1,26 +1,30 @@
 <template>
   <div
-    class="not-found-atelier relative flex min-h-screen items-center justify-center overflow-hidden px-4"
+    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 px-4 dark:bg-dark-950"
   >
     <!-- Background Decoration -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div class="not-found-plate not-found-plate-blue"></div>
-      <div class="not-found-plate not-found-plate-dust"></div>
+      <div
+        class="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-400/10 blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary-500/10 blur-3xl"
+      ></div>
     </div>
 
     <div class="relative z-10 w-full max-w-md text-center">
       <!-- 404 Display -->
       <div class="mb-8">
         <div class="relative inline-block">
-          <span class="not-found-code text-[12rem] font-bold leading-none"
+          <span class="text-[12rem] font-bold leading-none text-gray-100 dark:text-dark-800"
             >404</span
           >
           <div class="absolute inset-0 flex items-center justify-center">
             <div
-              class="not-found-icon flex h-24 w-24 items-center justify-center rounded-lg"
+              class="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
             >
               <svg
-                class="h-12 w-12"
+                class="h-12 w-12 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -39,17 +43,17 @@
 
       <!-- Text Content -->
       <div class="mb-8">
-        <h1 class="mb-3 text-2xl font-bold">
+        <h1 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
           {{ t('errors.pageNotFound') }}
         </h1>
-        <p class="not-found-copy">
+        <p class="text-gray-500 dark:text-dark-400">
           The page you are looking for doesn't exist or has been moved.
         </p>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex flex-col justify-center gap-3 sm:flex-row">
-        <button data-testid="not-found-button-go-back" @click="goBack" class="btn btn-secondary">
+        <button @click="goBack" class="btn btn-secondary">
           <Icon name="arrowLeft" size="md" class="mr-2" />
           Go Back
         </button>
@@ -60,11 +64,11 @@
       </div>
 
       <!-- Help Link -->
-      <p class="not-found-copy mt-8 text-sm">
+      <p class="mt-8 text-sm text-gray-400 dark:text-dark-500">
         Need help?
-        <a data-testid="not-found-link-a"
+        <a
           href="#"
-          class="not-found-link transition-colors"
+          class="text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
         >
           Contact support
         </a>
@@ -85,74 +89,3 @@ function goBack(): void {
   router.back()
 }
 </script>
-
-<style scoped>
-.not-found-atelier {
-  color: var(--atelier-ink);
-  background:
-    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--atelier-surface-muted) 56%, transparent), transparent 30rem),
-    radial-gradient(circle at 78% 6%, color-mix(in srgb, var(--atelier-butter) 10%, transparent), transparent 24rem),
-    var(--atelier-canvas);
-}
-
-.not-found-plate {
-  position: absolute;
-  border: 1px solid rgba(17, 24, 39, 0.18);
-  border-radius: 8px;
-  opacity: 0.9;
-}
-
-.not-found-plate-blue {
-  right: -6rem;
-  top: -5rem;
-  width: 22rem;
-  height: 18rem;
-  background: var(--atelier-blue);
-}
-
-.not-found-plate-dust {
-  left: -5rem;
-  bottom: -4rem;
-  width: 18rem;
-  height: 16rem;
-  background: var(--atelier-dust-soft);
-}
-
-.not-found-code {
-  color: color-mix(in srgb, var(--atelier-surface-dust) 72%, var(--atelier-white));
-}
-
-.not-found-icon {
-  border: 1px solid var(--atelier-ink);
-  background: var(--atelier-blue);
-  color: var(--atelier-white);
-  box-shadow: none;
-}
-
-.not-found-copy {
-  color: var(--atelier-muted);
-}
-
-.not-found-link {
-  color: var(--atelier-blue);
-}
-
-.not-found-link:hover {
-  color: var(--atelier-blue-dark);
-}
-
-:global(.dark) .not-found-atelier {
-  color: #f8fbff;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(250, 249, 245, 0.08), transparent 34%),
-    linear-gradient(180deg, #050505, #0a0a0a);
-}
-
-:global(.dark) .not-found-code {
-  color: rgba(248, 251, 255, 0.1);
-}
-
-:global(.dark) .not-found-copy {
-  color: #94a3b8;
-}
-</style>

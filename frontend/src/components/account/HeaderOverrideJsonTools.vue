@@ -1,12 +1,12 @@
 <template>
-  <button data-testid="merge-header-override-json-tools-toggle-import-panel-1"
+  <button
     type="button"
     class="rounded-lg bg-primary-50 px-3 py-1 text-xs text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
     @click="toggleImportPanel"
   >
     {{ t('admin.accounts.headerOverride.importJson') }}
   </button>
-  <button data-testid="merge-header-override-json-tools-copy-as-json-2"
+  <button
     type="button"
     class="rounded-lg bg-primary-50 px-3 py-1 text-xs text-primary-700 transition-colors hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-primary-900/30 dark:text-primary-400 dark:hover:bg-primary-900/50"
     :disabled="!hasNamedRows"
@@ -16,7 +16,7 @@
   </button>
 
   <div v-if="showImportPanel" ref="importPanelRef" class="w-full space-y-2">
-    <textarea data-testid="merge-header-override-json-tools-import-text-3"
+    <textarea
       ref="importTextareaRef"
       v-model="importText"
       rows="5"
@@ -24,14 +24,14 @@
       :placeholder="IMPORT_JSON_PLACEHOLDER"
     ></textarea>
     <div class="flex gap-2">
-      <button data-testid="merge-header-override-json-tools-apply-import-4"
+      <button
         type="button"
         class="rounded-lg bg-primary-600 px-3 py-1 text-xs text-white transition-colors hover:bg-primary-700"
         @click="applyImport"
       >
         {{ t('admin.accounts.headerOverride.importJsonApply') }}
       </button>
-      <button data-testid="merge-header-override-json-tools-close-import-panel-5"
+      <button
         type="button"
         class="rounded-lg bg-gray-100 px-3 py-1 text-xs text-gray-600 transition-colors hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500"
         @click="closeImportPanel"

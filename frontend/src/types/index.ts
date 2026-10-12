@@ -242,7 +242,6 @@ export interface PublicSettings {
   home_content: string
   compact_home_enabled: boolean
   hide_ccs_import_button: boolean
-  appearance_theme_default?: 'anthropic'
   ai_logo_cdn_base_url?: string
   custom_ai_logo_presets?: string[]
   custom_menu_svg_icon_presets?: string[]
@@ -796,6 +795,7 @@ export interface UpdateApiKeyRequest {
 }
 
 export interface CreateGroupRequest {
+  logo_url?: string
   name: string
   description?: string | null
   platform?: GroupPlatform
@@ -861,6 +861,7 @@ export interface CreateGroupRequest {
 }
 
 export interface UpdateGroupRequest {
+  logo_url?: string | null
   name?: string
   description?: string | null
   platform?: GroupPlatform

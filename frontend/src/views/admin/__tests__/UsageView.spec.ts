@@ -1,14 +1,8 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, ref } from 'vue'
 
 import UsageView from '../UsageView.vue'
-
-const styleSource = readFileSync(resolve(__dirname, '../../../style.css'), 'utf8')
-const targetedRepairSource = readFileSync(resolve(__dirname, '../../../styles/targeted-visual-repair.css'), 'utf8')
 
 const { list, exportList, getStats, getSnapshotV2, getById, getModelStats, listErrorLogs, routeQuery, aoaToSheet, sheetAddAoa, saveAs, xlsxWrite } = vi.hoisted(() => {
   vi.stubGlobal('localStorage', {
@@ -53,23 +47,6 @@ const formatLocalDate = (date: Date): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
-}
-
-const cssBlock = (source: string, selector: string): string => {
-  const start = source.indexOf(selector)
-  expect(start, `Expected CSS selector ${selector}`).toBeGreaterThanOrEqual(0)
-  const open = source.indexOf('{', start)
-  expect(open, `Expected CSS selector ${selector} to open`).toBeGreaterThan(start)
-  let depth = 0
-  for (let index = open; index < source.length; index += 1) {
-    const char = source[index]
-    if (char === '{') depth += 1
-    if (char === '}') {
-      depth -= 1
-      if (depth === 0) return source.slice(open + 1, index)
-    }
-  }
-  throw new Error(`CSS block not closed for ${selector}`)
 }
 
 vi.mock('@/api/admin', () => ({
@@ -161,6 +138,10 @@ const UsageTableStub = {
   props: ['columns'],
   emits: ['userClick'],
   template: '<div data-test="usage-table"><button class="user-click" @click="$emit(\'userClick\', 2)">user</button></div>',
+}
+const UserTokenRankingStub = {
+  emits: ['select-user'],
+  template: '<div data-test="ranking"><button class="pick-user" @click="$emit(\'select-user\', 5, \'rank@test.com\')">pick</button></div>',
 }
 const ModelDistributionChartStub = {
   props: ['metric'],
@@ -403,7 +384,7 @@ describe('admin UsageView distribution metric toggles', () => {
         UserBalanceHistoryModal: true, AuditLogModal: true, Pagination: true, Select: true,
         DateRangePicker: true, Icon: true, TokenUsageTrend: true,
         ModelDistributionChart: ModelDistributionChartStub, GroupDistributionChart: GroupDistributionChartStub,
-        EndpointDistributionChart: true,
+        EndpointDistributionChart: true, UserTokenRanking: true,
       } },
     })
     vi.advanceTimersByTime(120)
@@ -441,6 +422,7 @@ describe('admin UsageView distribution metric toggles', () => {
           TokenUsageTrend: true,
           ModelDistributionChart: ModelDistributionChartStub,
           GroupDistributionChart: GroupDistributionChartStub,
+          UserTokenRanking: true,
         },
       },
     })
@@ -529,10 +511,9 @@ describe('admin UsageView request ID column visibility', () => {
     )
 
     await wrapper.get('button[title="admin.users.columnSettings"]').trigger('click')
-    const requestIdToggle = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === 'Request ID')
+    const requestIdToggle = wrapper.findAll('button').find((button) => button.text() === 'Request ID')
     expect(requestIdToggle).toBeDefined()
-    requestIdToggle!.click()
-    await wrapper.vm.$nextTick()
+    await requestIdToggle!.trigger('click')
 
     expect(usageTable.props('columns')).toEqual(
       expect.arrayContaining([expect.objectContaining({ key: 'request_id', label: 'Request ID' })]),
@@ -575,10 +556,9 @@ describe('admin UsageView request ID column visibility', () => {
     )
 
     await wrapper.get('button[title="admin.users.columnSettings"]').trigger('click')
-    const upstreamToggle = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((button) => button.textContent === 'Upstream ID')
+    const upstreamToggle = wrapper.findAll('button').find((button) => button.text() === 'Upstream ID')
     expect(upstreamToggle).toBeDefined()
-    upstreamToggle!.click()
-    await wrapper.vm.$nextTick()
+    await upstreamToggle!.trigger('click')
 
     expect(usageTable.props('columns')).toEqual(
       expect.arrayContaining([expect.objectContaining({ key: 'upstream_request_id', label: 'Upstream ID' })]),
@@ -628,6 +608,7 @@ describe('admin UsageView handleUserClick', () => {
           ModelDistributionChart: true,
           GroupDistributionChart: true,
           EndpointDistributionChart: true,
+          UserTokenRanking: true,
         },
       },
     })
@@ -673,7 +654,7 @@ describe('admin UsageView errors tab filter forwarding', () => {
         UserBalanceHistoryModal: true, AuditLogModal: true, Pagination: true, Select: true,
         DateRangePicker: true, Icon: true, TokenUsageTrend: true,
         ModelDistributionChart: true, GroupDistributionChart: true, EndpointDistributionChart: true,
-        OpsErrorLogTable: true, OpsErrorDetailModal: true,
+        UserTokenRanking: true, OpsErrorLogTable: true, OpsErrorDetailModal: true,
       } },
     })
     vi.advanceTimersByTime(120)
@@ -686,8 +667,8 @@ describe('admin UsageView errors tab filter forwarding', () => {
     vm.filters.group_id = 3
     await flushPromises()
 
-    // 切换到「错误请求」route tab 触发 loadAdminErrors
-    const tabs = wrapper.findAll('[role="tab"]')
+    // 切换到「错误请求」标签（第二个 tab 按钮）触发 loadAdminErrors
+    const tabs = wrapper.findAll('[data-testid="usage-detail-tab"]')
     await tabs[1].trigger('click')
     await flushPromises()
 
@@ -700,93 +681,58 @@ describe('admin UsageView errors tab filter forwarding', () => {
   })
 })
 
-describe('admin UsageView visual source guards', () => {
-  it('uses the Anthropic route-tabs contract for usage detail switching', () => {
-    const source = readFileSync(resolve(__dirname, '../UsageView.vue'), 'utf8')
+describe('admin UsageView ranking tab', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    list.mockReset()
+    getStats.mockReset()
+    getSnapshotV2.mockReset()
+    getModelStats.mockReset()
 
-    expect(source).toContain('class="route-shell usage-detail-route-shell"')
-    expect(source).toContain('class="route-tabs usage-detail-route-tabs"')
-    expect(source).toContain('data-route-tabs="admin-usage-detail"')
-    expect(source).toContain('role="tablist"')
-    expect(source).toContain('role="tab"')
-    expect(source).toContain('data-route-id="usage"')
-    expect(source).toContain('data-route-id="errors"')
-    expect(source).toContain(':aria-selected="activeTab === \'usage\'"')
-    expect(source).toContain(':aria-selected="activeTab === \'errors\'"')
-    expect(source).toContain('class="route-panels usage-detail-route-panels"')
-    expect(source).toContain('class="route-panel usage-detail-route-panel"')
-    expect(source).toContain('data-route-group="admin-usage-detail"')
-    expect(source).toContain('data-route-panel="usage"')
-    expect(source).toContain('data-route-panel="errors"')
-    expect(source).toContain('setUsageTab(\'usage\')')
-    expect(source).toContain("tabs.style.setProperty('--route-indicator-x'")
-    expect(source).toContain("tabs.style.setProperty('--route-indicator-w'")
-    expect(source).toContain('@mouseleave="moveUsageIndicatorToSelected"')
-    expect(source).toContain('@focusout="handleUsageTabsFocusout"')
-    expect(source).not.toContain('class="tab"')
-    expect(source).not.toContain('tab-active')
-
-    const routeTabsBlock = cssBlock(source, '.usage-detail-route-tabs::before')
-    expect(routeTabsBlock).toContain('width: var(--route-indicator-w);')
-    expect(routeTabsBlock).toContain('background: var(--anthropic-page);')
-    expect(routeTabsBlock).toContain('box-shadow: 0 0 0 1px var(--anthropic-border-soft);')
-    expect(routeTabsBlock).toContain('transform: translateX(var(--route-indicator-x));')
-    const panelBlock = cssBlock(source, '.usage-detail-route-panel {')
-    expect(panelBlock).toContain('opacity: 0;')
-    expect(panelBlock).toContain('visibility: hidden;')
-    expect(panelBlock).toContain('transform: translateY(8px);')
-    const activePanelBlock = cssBlock(source, '.usage-detail-route-panel.active')
-    expect(activePanelBlock).toContain('opacity: 1;')
-    expect(activePanelBlock).toContain('visibility: visible;')
-    expect(activePanelBlock).toContain('transform: translateY(0);')
+    list.mockResolvedValue({ items: [], total: 0, pages: 0 })
+    getStats.mockResolvedValue({
+      total_requests: 0, total_input_tokens: 0, total_output_tokens: 0,
+      total_cache_tokens: 0, total_tokens: 0, total_cost: 0, total_actual_cost: 0, average_duration_ms: 0,
+    })
+    getSnapshotV2.mockResolvedValue({ trend: [], models: [], groups: [] })
+    getModelStats.mockResolvedValue({ models: [] })
   })
 
-  it('uses the level-one underline dropdown menu contract for usage filters', () => {
-    const usageSource = readFileSync(resolve(__dirname, '../UsageView.vue'), 'utf8')
-    const underlinePortalBlock = cssBlock(styleSource, '.topbar-underline-menu,')
-    const underlineItemBlock = cssBlock(styleSource, '.topbar-underline-menu :where(.dropdown-item, .balance-row),')
-    const underlineHoverBlock = cssBlock(styleSource, '.topbar-underline-menu :where(.dropdown-item:hover, .dropdown-item:focus-visible, .balance-row:hover, .balance-row:focus-visible),')
-    const underlineSelectedBlock = cssBlock(styleSource, '.filter-underline-menu :where(.select-option-selected, .select-option-selected:hover, .select-option-focused, .date-picker-preset-active, .date-picker-preset-active:hover)')
-
-    expect(usageSource).toContain('<DateRangePicker')
-    expect(usageSource).toContain('variant="text-control"')
-    expect(usageSource).toContain('class="table-filter-shell usage-time-filter-shell')
-    expect(underlinePortalBlock).toContain('padding: 0.75rem;')
-    expect(underlineItemBlock).toContain('background: transparent !important;')
-    expect(underlineItemBlock).toContain('text-decoration-line: underline;')
-    expect(underlineHoverBlock).toContain('background: transparent !important;')
-    expect(underlineHoverBlock).toContain('text-decoration-color: currentColor;')
-    expect(underlineSelectedBlock).toContain('border-radius: 0;')
-    expect(underlineSelectedBlock).toContain('background: transparent !important;')
-    expect(underlineSelectedBlock).toContain('box-shadow: none !important;')
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
-  it('keeps dashboard and usage filter cards single-framed with no stitch pseudo-element', () => {
-    const cardBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.dashboard-filter-card, .usage-time-filter-card, .usage-filter-card, .risk-control-toolbar-actions, .risk-control-record-filters, .codex-list-actions__filters)')
-    const shellBlock = cssBlock(targetedRepairSource, '#app .app-layout-content :where(.table-page-filter-section > .usage-filter-shell, .usage-time-filter-card > .usage-time-filter-shell, .usage-filter-card > .usage-filter-shell)')
+  it('mounts ranking lazily and drill-down sets user filter then jumps back to usage tab', async () => {
+    const wrapper = mount(UsageView, {
+      global: { stubs: {
+        AppLayout: AppLayoutStub, UsageStatsCards: true, UsageFilters: UsageFiltersStub,
+        UsageTable: true, UsageExportProgress: true, UsageCleanupDialog: true,
+        UserBalanceHistoryModal: true, Pagination: true, Select: true,
+        DateRangePicker: true, Icon: true, TokenUsageTrend: true,
+        ModelDistributionChart: true, GroupDistributionChart: true, EndpointDistributionChart: true,
+        UserTokenRanking: UserTokenRankingStub, OpsErrorLogTable: true, OpsErrorDetailModal: true,
+      } },
+    })
+    vi.advanceTimersByTime(120)
+    await flushPromises()
 
-    expect(cardBlock).toContain('border: 1px solid var(--anthropic-cookbook-border) !important;')
-    expect(cardBlock).toContain('background: var(--anthropic-page) !important;')
-    expect(cardBlock).toContain('box-shadow: none !important;')
-    expect(cardBlock).toContain('padding: 0.75rem 1rem !important;')
-    expect(shellBlock).toContain('border: 0 !important;')
-    expect(shellBlock).toContain('background: transparent !important;')
-    expect(targetedRepairSource).not.toContain('.dashboard-filter-card::after')
-    expect(targetedRepairSource).not.toContain('.usage-time-filter-card::after')
+    // 懒挂载:切到排行 tab 前不渲染
+    expect(wrapper.find('[data-test="ranking"]').exists()).toBe(false)
 
-    const adminUsageTimeCardBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-usage-atelier .usage-time-filter-card')
-    const adminUsageTimeShellBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-usage-atelier .usage-time-filter-card > .usage-time-filter-shell')
-    const adminUsageTimeGroupsBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell :where(.usage-time-filter-range, .usage-time-filter-granularity)')
-    const adminUsageTimeLabelBlock = cssBlock(targetedRepairSource, '#app .app-layout-content .admin-usage-atelier .usage-time-filter-shell .filter-label')
+    const tabs = wrapper.findAll('[data-testid="usage-detail-tab"]')
+    expect(tabs).toHaveLength(3)
+    await tabs[2].trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="ranking"]').exists()).toBe(true)
 
-    expect(adminUsageTimeCardBlock).toContain('display: flex !important;')
-    expect(adminUsageTimeCardBlock).toContain('align-items: center !important;')
-    expect(adminUsageTimeCardBlock).toContain('min-height: 4.625rem !important;')
-    expect(adminUsageTimeShellBlock).toContain('min-height: var(--anthropic-control-height) !important;')
-    expect(adminUsageTimeShellBlock).toContain('align-items: center !important;')
-    expect(adminUsageTimeGroupsBlock).toContain('display: inline-flex !important;')
-    expect(adminUsageTimeGroupsBlock).toContain('align-items: center !important;')
-    expect(adminUsageTimeLabelBlock).toContain('align-items: center !important;')
+    // 下钻:设置 user_id、切回用量明细 tab 并按新筛选重新拉取列表
+    list.mockClear()
+    await wrapper.find('[data-test="ranking"] .pick-user').trigger('click')
+    await flushPromises()
+
+    expect((wrapper.vm as any).activeTab).toBe('usage')
+    expect((wrapper.vm as any).filters.user_id).toBe(5)
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({ user_id: 5 }), expect.anything())
   })
 })
 

@@ -2,16 +2,16 @@
   <div :class="props.embedded ? 'space-y-4' : 'card'">
     <div
       v-if="!props.embedded"
-      class="border-b border-[var(--anthropic-border)] px-6 py-4 dark:border-[var(--anthropic-border)]"
+      class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
     >
-      <h2 class="text-lg font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">
         {{ t('profile.editProfile') }}
       </h2>
     </div>
     <div :class="props.embedded ? '' : 'px-6 py-6'">
       <form @submit.prevent="handleUpdateProfile" class="space-y-4">
         <div v-if="props.embedded">
-          <p class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ t('profile.editProfile') }}
           </p>
         </div>
@@ -19,7 +19,7 @@
           <label for="username" class="input-label">
             {{ t('profile.username') }}
           </label>
-          <input data-testid="user-profile-profile-edit-form-input-username"
+          <input
             id="username"
             v-model="username"
             type="text"
@@ -29,7 +29,7 @@
         </div>
 
         <div class="flex justify-end pt-4">
-          <button data-testid="user-profile-profile-edit-form-button-submit" type="submit" :disabled="loading" class="btn btn-primary">
+          <button type="submit" :disabled="loading" class="btn btn-primary">
             {{ loading ? t('profile.updating') : t('profile.updateProfile') }}
           </button>
         </div>

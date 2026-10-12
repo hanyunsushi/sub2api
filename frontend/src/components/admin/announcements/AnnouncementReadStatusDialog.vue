@@ -8,7 +8,7 @@
     <div class="space-y-4">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex-1">
-          <input data-testid="admin-announcements-announcement-read-status-input-search"
+          <input
             v-model="search"
             type="text"
             class="input"
@@ -16,7 +16,7 @@
             @input="handleSearch"
           />
         </div>
-        <button data-testid="admin-announcements-announcement-read-status-button-load" @click="load" :disabled="loading" class="btn btn-secondary anthropic-refresh-action-button" :title="t('common.refresh')">
+        <button @click="load" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
           <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
         </button>
       </div>
@@ -31,11 +31,11 @@
         @sort="handleSort"
       >
         <template #cell-email="{ value }">
-          <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
         </template>
 
         <template #cell-balance="{ value }">
-          <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">${{ Number(value ?? 0).toFixed(2) }}</span>
+          <span class="font-medium text-gray-900 dark:text-white">${{ Number(value ?? 0).toFixed(2) }}</span>
         </template>
 
         <template #cell-eligible="{ value }">
@@ -45,7 +45,7 @@
         </template>
 
         <template #cell-read_at="{ value }">
-          <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+          <span class="text-sm text-gray-500 dark:text-dark-400">
             {{ value ? formatDateTime(value) : t('admin.announcements.unread') }}
           </span>
         </template>
@@ -63,7 +63,7 @@
 
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="admin-announcements-announcement-read-status-button-handle-close" type="button" class="btn btn-secondary" @click="handleClose">{{ t('common.close') }}</button>
+        <button type="button" class="btn btn-secondary" @click="handleClose">{{ t('common.close') }}</button>
       </div>
     </template>
   </BaseDialog>

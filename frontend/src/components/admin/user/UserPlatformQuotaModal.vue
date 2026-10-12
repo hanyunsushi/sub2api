@@ -12,14 +12,14 @@
       >
         {{ t('admin.users.platformQuota.subscriptionWarning') }}
       </div>
-      <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
         {{ t('admin.users.platformQuota.subtitle', { email: user.email }) }}
       </p>
-      <div v-if="loading" class="py-10 text-center text-[var(--anthropic-muted)]">{{ t('common.loading') }}</div>
+      <div v-if="loading" class="py-10 text-center text-gray-500">{{ t('common.loading') }}</div>
       <div v-else class="overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead>
-            <tr class="border-b border-[var(--anthropic-border)] text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-[var(--anthropic-muted)]">
+            <tr class="border-b border-gray-200 text-gray-700 dark:border-dark-700 dark:text-gray-300">
               <th class="px-3 py-2 text-left font-medium">{{ t('admin.users.platformQuota.columns.platform') }}</th>
               <th class="px-3 py-2 text-left font-medium">{{ t('admin.users.platformQuota.columns.daily') }}</th>
               <th class="px-3 py-2 text-left font-medium">{{ t('admin.users.platformQuota.columns.weekly') }}</th>
@@ -28,11 +28,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in quotas" :key="row.platform" class="border-b border-[var(--anthropic-border)] dark:border-[var(--anthropic-border)]">
-              <td class="px-3 py-2 font-mono text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ row.platform }}</td>
+            <tr v-for="row in quotas" :key="row.platform" class="border-b border-gray-100 dark:border-dark-800">
+              <td class="px-3 py-2 font-mono text-gray-900 dark:text-white">{{ row.platform }}</td>
               <td class="px-3 py-2">
                 <div class="flex items-center gap-1">
-                  <input data-testid="admin-user-user-platform-quota-input-row-daily-limit-usd"
+                  <input
                     v-model.number="row.daily_limit_usd"
                     type="number"
                     min="0"
@@ -40,9 +40,9 @@
                     class="input w-24"
                     :placeholder="t('admin.users.platformQuota.placeholder')"
                   />
-                  <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-daily"
+                  <button
                     type="button"
-                    class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
+                    class="text-xs text-gray-400 hover:text-amber-500 disabled:opacity-50"
                     :disabled="!!resetting[`${row.platform}.daily`] || !savedConfigured.has(row.platform)"
                     :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'daily')"
@@ -51,7 +51,7 @@
               </td>
               <td class="px-3 py-2">
                 <div class="flex items-center gap-1">
-                  <input data-testid="admin-user-user-platform-quota-input-row-weekly-limit-usd"
+                  <input
                     v-model.number="row.weekly_limit_usd"
                     type="number"
                     min="0"
@@ -59,9 +59,9 @@
                     class="input w-24"
                     :placeholder="t('admin.users.platformQuota.placeholder')"
                   />
-                  <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-weekly"
+                  <button
                     type="button"
-                    class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
+                    class="text-xs text-gray-400 hover:text-amber-500 disabled:opacity-50"
                     :disabled="!!resetting[`${row.platform}.weekly`] || !savedConfigured.has(row.platform)"
                     :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'weekly')"
@@ -70,7 +70,7 @@
               </td>
               <td class="px-3 py-2">
                 <div class="flex items-center gap-1">
-                  <input data-testid="admin-user-user-platform-quota-input-row-monthly-limit-usd"
+                  <input
                     v-model.number="row.monthly_limit_usd"
                     type="number"
                     min="0"
@@ -78,24 +78,24 @@
                     class="input w-24"
                     :placeholder="t('admin.users.platformQuota.placeholder')"
                   />
-                  <button data-testid="admin-user-user-platform-quota-button-on-reset-row-platform-monthly"
+                  <button
                     type="button"
-                    class="text-xs text-[var(--anthropic-muted)] hover:text-amber-500 disabled:opacity-50"
+                    class="text-xs text-gray-400 hover:text-amber-500 disabled:opacity-50"
                     :disabled="!!resetting[`${row.platform}.monthly`] || !savedConfigured.has(row.platform)"
                     :title="t(savedConfigured.has(row.platform) ? 'admin.users.platformQuota.reset.button' : 'admin.users.platformQuota.reset.unavailable')"
                     @click="onReset(row.platform, 'monthly')"
                   >↻</button>
                 </div>
               </td>
-              <td class="px-3 py-2 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <td class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
                 {{ formatUsage(row.daily_usage_usd) }} / {{ formatUsage(row.weekly_usage_usd) }} / {{ formatUsage(row.monthly_usage_usd) }}
               </td>
             </tr>
           </tbody>
         </table>
-        <p class="mt-3 text-xs text-[var(--anthropic-muted)]">{{ t('admin.users.platformQuota.hint') }}</p>
+        <p class="mt-3 text-xs text-gray-500">{{ t('admin.users.platformQuota.hint') }}</p>
         <div class="mt-3">
-          <button data-testid="admin-user-user-platform-quota-button-on-clear-all" type="button" class="btn btn-secondary text-sm" @click="onClearAll">
+          <button type="button" class="btn btn-secondary text-sm" @click="onClearAll">
             {{ t('admin.users.platformQuota.clearAll') }}
           </button>
         </div>
@@ -103,10 +103,10 @@
     </div>
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button data-testid="admin-user-user-platform-quota-button-emit-close" type="button" class="btn btn-secondary" @click="$emit('close')">
+        <button type="button" class="btn btn-secondary" @click="$emit('close')">
           {{ t('admin.users.platformQuota.cancel') }}
         </button>
-        <button data-testid="admin-user-user-platform-quota-button-on-save" type="button" class="btn btn-primary" :disabled="submitting || loading" @click="onSave">
+        <button type="button" class="btn btn-primary" :disabled="submitting || loading" @click="onSave">
           {{ submitting ? t('admin.users.platformQuota.saving') : t('admin.users.platformQuota.save') }}
         </button>
       </div>
@@ -147,16 +147,17 @@ const loading = ref(false)
 const submitting = ref(false)
 const resetting = reactive<Record<string, boolean>>({})
 const quotas = ref<QuotaRow[]>([])
+// 已保存且至少配置了一档限额的平台。只有这些平台在后端有配额记录，重置用量窗口才有对象。
 const savedConfigured = ref<Set<PlatformQuotaPlatform>>(new Set())
 
 function configuredPlatforms(items: PlatformQuotaItem[]): Set<PlatformQuotaPlatform> {
-  const configured = new Set<PlatformQuotaPlatform>()
-  for (const item of items) {
-    if (item.daily_limit_usd != null || item.weekly_limit_usd != null || item.monthly_limit_usd != null) {
-      configured.add(item.platform)
+  const out = new Set<PlatformQuotaPlatform>()
+  for (const it of items) {
+    if (it.daily_limit_usd != null || it.weekly_limit_usd != null || it.monthly_limit_usd != null) {
+      out.add(it.platform)
     }
   }
-  return configured
+  return out
 }
 
 function emptyRow(p: PlatformQuotaPlatform): QuotaRow {
@@ -229,9 +230,7 @@ function onClearAll() {
 
 async function onSave() {
   if (!props.user) return
-  // 校验所有 input：v-model.number 在用户输入"0."等中间状态时会写回 NaN，
-  // 之前的 normalizeLimit(NaN) 静默返回 null（"无限制"），把"有限额"配置悄悄改成"无限制"。
-  // 这里在 save 前显式检测 NaN，提示用户修正后再提交。
+  // 拒绝非法数值，避免 normalizeLimit 将其静默转换为 null（无限额）。
   const invalid: string[] = []
   for (const row of quotas.value) {
     for (const win of ['daily', 'weekly', 'monthly'] as const) {
@@ -266,7 +265,7 @@ async function onSave() {
 }
 
 // 仅在合法输入下返回数字：null/undefined/NaN/±Inf/负数 → null（视为"无限额"）。
-// 调用方负责在 NaN 路径上做单独的用户提示（见 onSave）。
+// 调用方在保存前拦截非法数值（见 onSave）。
 function normalizeLimit(v: number | null | undefined): number | null {
   if (v === null || v === undefined) return null
   if (typeof v === 'number' && Number.isFinite(v) && v >= 0) return v

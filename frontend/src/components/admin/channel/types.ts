@@ -326,7 +326,11 @@ export function validateIntervals(
   return checkIntervalOverlap(sorted, t)
 }
 
-function intervalValidationMessage(t: TranslateFn, key: string, params: Record<string, unknown>): string {
+function intervalValidationMessage(
+  t: TranslateFn,
+  key: string,
+  params: Record<string, unknown>,
+): string {
   return t(`admin.channels.intervalValidation.${key}`, params)
 }
 
@@ -337,14 +341,26 @@ function intervalPriceLabel(t: TranslateFn, key: string): string {
 function validateSingleInterval(iv: IntervalFormEntry, idx: number, t: TranslateFn): string | null {
   const index = idx + 1
   if (iv.min_tokens < 0) {
-    return intervalValidationMessage(t, 'negativeMin', { index, value: iv.min_tokens })
+    return intervalValidationMessage(
+      t,
+      'negativeMin',
+      { index, value: iv.min_tokens },
+    )
   }
   if (iv.max_tokens != null) {
     if (iv.max_tokens <= 0) {
-      return intervalValidationMessage(t, 'maxPositive', { index, value: iv.max_tokens })
+      return intervalValidationMessage(
+        t,
+        'maxPositive',
+        { index, value: iv.max_tokens },
+      )
     }
     if (iv.max_tokens <= iv.min_tokens) {
-      return intervalValidationMessage(t, 'maxGreaterThanMin', { index, max: iv.max_tokens, min: iv.min_tokens })
+      return intervalValidationMessage(
+        t,
+        'maxGreaterThanMin',
+        { index, max: iv.max_tokens, min: iv.min_tokens },
+      )
     }
   }
   return validateIntervalPrices(iv, idx, t)
@@ -360,9 +376,14 @@ function validateIntervalPrices(iv: IntervalFormEntry, idx: number, t: Translate
     ['cacheReadPrice', iv.cache_read_price],
     ['perRequestPrice', iv.per_request_price],
   ]
-  for (const [name, val] of prices) {
+  for (const [key, val] of prices) {
     if (val != null && val !== '' && Number(val) < 0) {
-      return intervalValidationMessage(t, 'negativePrice', { index, field: intervalPriceLabel(t, name) })
+      const field = intervalPriceLabel(t, key)
+      return intervalValidationMessage(
+        t,
+        'negativePrice',
+        { index, field },
+      )
     }
   }
   const multipliers: [string, number | string | null][] = [
@@ -386,14 +407,22 @@ function checkIntervalOverlap(sorted: IntervalFormEntry[], t: TranslateFn): stri
   for (let i = 0; i < sorted.length; i++) {
     // 无上限区间必须是最后一个
     if (sorted[i].max_tokens == null && i < sorted.length - 1) {
-      return intervalValidationMessage(t, 'unboundedLast', { index: i + 1 })
+      return intervalValidationMessage(
+        t,
+        'unboundedLast',
+        { index: i + 1 },
+      )
     }
     if (i === 0) continue
     const prev = sorted[i - 1]
     // (min, max] 语义：前一个区间上界 > 当前区间下界则重叠
     if (prev.max_tokens == null || prev.max_tokens > sorted[i].min_tokens) {
       const prevMax = prev.max_tokens == null ? '∞' : String(prev.max_tokens)
-      return intervalValidationMessage(t, 'overlap', { previousIndex: i, currentIndex: i + 1, previousMax: prevMax, currentMin: sorted[i].min_tokens })
+      return intervalValidationMessage(
+        t,
+        'overlap',
+        { previousIndex: i, currentIndex: i + 1, previousMax: prevMax, currentMin: sorted[i].min_tokens },
+      )
     }
   }
   return null
@@ -402,27 +431,29 @@ function checkIntervalOverlap(sorted: IntervalFormEntry[], t: TranslateFn): stri
 /** 平台对应的模型 tag 样式（背景+文字） */
 export function getPlatformTagClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'bg-transparent text-[var(--anthropic-warning)]'
-    case 'openai':
-    case 'deepseek': return 'bg-transparent text-[var(--anthropic-success)]'
-    case 'gemini':
-    case 'antigravity':
-    case 'kimi':
-    case 'zhipu': return 'bg-transparent text-[var(--anthropic-info)]'
-    default: return 'bg-transparent text-[var(--anthropic-muted)]'
+    case 'anthropic': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+    case 'openai': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+    case 'gemini': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+    case 'antigravity': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+    case 'grok': return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+    case 'kimi': return 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+    case 'zhipu': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+    case 'deepseek': return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+    default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
   }
 }
 
 /** 平台对应的模型文字色（仅 text-*，用于 input/text 场景）— 与 getPlatformTagClass 同色系 */
 export function getPlatformTextClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'text-[var(--anthropic-warning)]'
-    case 'openai':
-    case 'deepseek': return 'text-[var(--anthropic-success)]'
-    case 'gemini':
-    case 'antigravity':
-    case 'kimi':
-    case 'zhipu': return 'text-[var(--anthropic-info)]'
-    default: return 'text-[var(--anthropic-muted)]'
+    case 'anthropic': return 'text-orange-700 dark:text-orange-400'
+    case 'openai': return 'text-emerald-700 dark:text-emerald-400'
+    case 'gemini': return 'text-blue-700 dark:text-blue-400'
+    case 'antigravity': return 'text-purple-700 dark:text-purple-400'
+    case 'grok': return 'text-slate-700 dark:text-slate-300'
+    case 'kimi': return 'text-pink-700 dark:text-pink-400'
+    case 'zhipu': return 'text-indigo-700 dark:text-indigo-400'
+    case 'deepseek': return 'text-teal-700 dark:text-teal-400'
+    default: return ''
   }
 }

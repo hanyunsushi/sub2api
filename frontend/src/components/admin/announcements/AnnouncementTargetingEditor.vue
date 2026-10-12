@@ -1,18 +1,18 @@
 <template>
-  <div class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-4 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]">
+  <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800/50">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <div class="text-sm font-medium text-gray-900 dark:text-white">
           {{ t('admin.announcements.form.targetingMode') }}
         </div>
-        <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+        <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
           {{ mode === 'all' ? t('admin.announcements.form.targetingAll') : t('admin.announcements.form.targetingCustom') }}
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-          <input data-testid="admin-announcements-announcement-targeting-editor-input-announcement-targeting-mode"
+        <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <input
             type="radio"
             name="announcement-targeting-mode"
             value="all"
@@ -22,8 +22,8 @@
           />
           {{ t('admin.announcements.form.targetingAll') }}
         </label>
-        <label class="flex items-center gap-2 text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
-          <input data-testid="admin-announcements-announcement-targeting-editor-input-announcement-targeting-mode-2"
+        <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <input
             type="radio"
             name="announcement-targeting-mode"
             value="custom"
@@ -38,13 +38,13 @@
 
     <div v-if="mode === 'custom'" class="mt-4 space-y-4">
       <div class="flex items-center justify-between">
-        <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <div class="text-sm font-medium text-gray-900 dark:text-white">
           OR
-          <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)] dark:text-dark-400">
+          <span class="ml-1 text-xs font-normal text-gray-500 dark:text-dark-400">
             ({{ anyOf.length }}/50)
           </span>
         </div>
-        <button data-testid="admin-announcements-announcement-targeting-editor-button-add-or-group"
+        <button
           type="button"
           class="btn btn-secondary"
           :disabled="anyOf.length >= 50"
@@ -55,27 +55,27 @@
         </button>
       </div>
 
-      <div v-if="anyOf.length === 0" class="rounded-xl border border-dashed border-[var(--anthropic-border)] p-4 text-sm text-[var(--anthropic-muted)] dark:border-[var(--anthropic-border)] dark:text-dark-400">
+      <div v-if="anyOf.length === 0" class="rounded-xl border border-dashed border-gray-300 p-4 text-sm text-gray-500 dark:border-dark-600 dark:text-dark-400">
         {{ t('admin.announcements.form.targetingCustom') }}: {{ t('admin.announcements.form.addOrGroup') }}
       </div>
 
       <div
         v-for="(group, groupIndex) in anyOf"
         :key="groupIndex"
-        class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-page)] p-4 shadow-none dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+        class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-800"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <div class="text-sm font-medium text-gray-900 dark:text-white">
               {{ t('admin.announcements.form.targetingCustom') }} #{{ groupIndex + 1 }}
-              <span class="ml-2 text-xs font-normal text-[var(--anthropic-muted)] dark:text-dark-400">AND ({{ (group.all_of?.length || 0) }}/50)</span>
+              <span class="ml-2 text-xs font-normal text-gray-500 dark:text-dark-400">AND ({{ (group.all_of?.length || 0) }}/50)</span>
             </div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ t('admin.announcements.form.addAndCondition') }}
             </div>
           </div>
 
-          <button data-testid="admin-announcements-announcement-targeting-editor-button-remove-or-group-group-index"
+          <button
             type="button"
             class="btn btn-secondary"
             @click="removeOrGroup(groupIndex)"
@@ -89,7 +89,7 @@
           <div
             v-for="(cond, condIndex) in (group.all_of || [])"
             :key="condIndex"
-            class="rounded-xl border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] p-3 dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)]"
+            class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-900/30"
           >
             <div class="flex flex-col gap-3 md:flex-row md:items-end">
               <div class="w-full md:w-52">
@@ -120,7 +120,7 @@
                 </div>
                 <div class="w-full sm:flex-1">
                   <label class="input-label">{{ t('admin.announcements.form.balanceValue') }}</label>
-                  <input data-testid="admin-announcements-announcement-targeting-editor-input-number"
+                  <input
                     :value="String(cond.value ?? '')"
                     type="number"
                     step="any"
@@ -131,7 +131,7 @@
               </div>
 
               <div class="flex justify-end">
-                <button data-testid="admin-announcements-announcement-targeting-editor-button-remove-and-condition-group-index-cond-index"
+                <button
                   type="button"
                   class="btn btn-secondary"
                   @click="removeAndCondition(groupIndex, condIndex)"
@@ -144,7 +144,7 @@
           </div>
 
           <div class="flex justify-end">
-            <button data-testid="admin-announcements-announcement-targeting-editor-button-add-and-condition-group-index"
+            <button
               type="button"
               class="btn btn-secondary"
               :disabled="(group.all_of?.length || 0) >= 50"

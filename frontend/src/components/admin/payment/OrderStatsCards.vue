@@ -7,9 +7,11 @@
           <Icon name="dollar" size="md" class="text-green-600 dark:text-green-400" :stroke-width="2" />
         </div>
         <div>
-          <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.todayRevenue') }}</p>
-          <p v-for="[currency, amount] in sortedAmounts(stats.today_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
-          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.todayRevenue') }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.today_amount)" :key="currency" class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ formatMoney(currency, amount) }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
             {{ stats.today_count }} {{ t('payment.admin.orders') }}
           </p>
         </div>
@@ -19,13 +21,15 @@
     <!-- Total Revenue -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-[var(--anthropic-info-bg)] p-2 dark:bg-[var(--anthropic-info-bg)]">
-          <Icon name="creditCard" size="md" class="text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]" :stroke-width="2" />
+        <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
+          <Icon name="creditCard" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
         </div>
         <div>
-          <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.totalRevenue') }}</p>
-          <p v-for="[currency, amount] in sortedAmounts(stats.total_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
-          <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.totalRevenue') }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.total_amount)" :key="currency" class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ formatMoney(currency, amount) }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
             {{ stats.total_count }} {{ t('payment.admin.orders') }}
           </p>
         </div>
@@ -35,12 +39,12 @@
     <!-- Today Orders -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-accent-200 p-2 dark:bg-accent-900/30">
-          <Icon name="chart" size="md" class="text-accent-600 dark:text-accent-500" :stroke-width="2" />
+        <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
+          <Icon name="chart" size="md" class="text-purple-600 dark:text-purple-400" :stroke-width="2" />
         </div>
         <div>
-          <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.todayOrders') }}</p>
-          <p class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ stats.today_count }}</p>
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.todayOrders') }}</p>
+          <p class="text-xl font-bold text-gray-900 dark:text-white">{{ stats.today_count }}</p>
         </div>
       </div>
     </div>
@@ -52,8 +56,10 @@
           <Icon name="chart" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
         </div>
         <div>
-          <p class="text-xs font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ t('payment.admin.avgAmount') }}</p>
-          <p v-for="[currency, amount] in sortedAmounts(stats.avg_amount)" :key="currency" class="text-xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ formatMoney(currency, amount) }}</p>
+          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.avgAmount') }}</p>
+          <p v-for="[currency, amount] in sortedAmounts(stats.avg_amount)" :key="currency" class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ formatMoney(currency, amount) }}
+          </p>
         </div>
       </div>
     </div>

@@ -3,12 +3,12 @@
     <div class="space-y-6">
       <!-- Title -->
       <div class="text-center">
-        <h2 class="text-2xl font-bold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
           {{ t('auth.verifyYourEmail') }}
         </h2>
-        <p class="mt-2 text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
           {{ t('auth.sendCodeDesc') }}
-          <span class="font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ email }}</span>
+          <span class="font-medium text-gray-700 dark:text-gray-300">{{ email }}</span>
         </p>
       </div>
 
@@ -36,7 +36,6 @@
             {{ t('auth.verificationCode') }}
           </label>
           <input
-            data-testid="auth-email-verify-input-verify-code"
             id="code"
             v-model="verifyCode"
             type="text"
@@ -139,23 +138,21 @@
         <!-- Resend Code -->
         <div class="text-center">
           <button
-            data-testid="auth-email-verify-button-button"
             v-if="countdown > 0"
             type="button"
             disabled
-            class="cursor-not-allowed text-sm text-[var(--anthropic-muted)] dark:text-dark-500"
+            class="cursor-not-allowed text-sm text-gray-400 dark:text-dark-500"
           >
             {{ t('auth.resendCountdown', { countdown }) }}
           </button>
           <button
-            data-testid="auth-email-verify-button-handle-resend-code"
             v-else
             type="button"
             @click="handleResendCode"
             :disabled="
               isSendingCode || (turnstileEnabled && showResendTurnstile && !resendTurnstileToken)
             "
-            class="text-sm text-[var(--anthropic-fg)] transition-colors hover:text-[var(--anthropic-fg)] disabled:cursor-not-allowed disabled:opacity-50 dark:text-[var(--anthropic-fg)] dark:hover:text-[var(--anthropic-fg)]"
+            class="text-sm text-primary-600 transition-colors hover:text-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:text-primary-400 dark:hover:text-primary-300"
           >
             <span v-if="isSendingCode">{{ t('auth.sendingCode') }}</span>
             <span v-else-if="captchaEnabled && !showResendTurnstile">
@@ -170,9 +167,8 @@
     <!-- Footer -->
     <template #footer>
       <button
-        data-testid="auth-email-verify-button-handle-back"
         @click="handleBack"
-        class="flex items-center gap-2 text-[var(--anthropic-muted)] transition-colors hover:text-[var(--anthropic-muted)] dark:text-dark-400 dark:hover:text-gray-300"
+        class="flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-gray-300"
       >
         <Icon name="arrowLeft" size="sm" />
         {{ t('auth.backToRegistration') }}
@@ -274,7 +270,7 @@ const aliyunCaptchaEnabled = ref<boolean>(false)
 const aliyunCaptchaSceneId = ref<string>('')
 const aliyunCaptchaPrefix = ref<string>('')
 const aliyunCaptchaRegion = ref<string>('cn')
-const siteName = ref<string>('Kreepai')
+const siteName = ref<string>('Sub2API')
 const registrationEmailSuffixWhitelist = ref<string[]>([])
 // 域名限量注册开关：开启时非白名单域名可注册 1 个账户（由后端判定），前端不做白名单预检。
 const emailDomainQuotaEnabled = ref<boolean>(false)
@@ -376,7 +372,7 @@ onMounted(async () => {
     aliyunCaptchaSceneId.value = settings.aliyun_captcha_scene_id || ''
     aliyunCaptchaPrefix.value = settings.aliyun_captcha_prefix || ''
     aliyunCaptchaRegion.value = settings.aliyun_captcha_region || 'cn'
-    siteName.value = settings.site_name || 'Kreepai'
+    siteName.value = settings.site_name || 'Sub2API'
     registrationEmailSuffixWhitelist.value = normalizeRegistrationEmailSuffixWhitelist(
       settings.registration_email_suffix_whitelist || []
     )

@@ -1,12 +1,13 @@
 <template>
   <span
     :class="[
-      'group-token inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium',
-      platformClass
+      'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
+      badgeClass
     ]"
   >
     <!-- Platform logo -->
-    <PlatformIcon v-if="platform" :platform="platform" size="sm" />
+    <ProviderBrandIcon v-if="logoUrl" :provider="platform || name" :logo-url="logoUrl" class="!h-4 !w-4" />
+    <PlatformIcon v-else-if="platform" :platform="platform" size="sm" />
     <!-- Group name -->
     <span class="truncate">{{ name }}</span>
     <!-- Right side label -->
@@ -20,6 +21,9 @@
         {{ labelText }}
       </template>
     </span>
+    <span v-if="hasPeakRate" :class="peakRateClass" :title="peakRateTitle">
+      {{ peakRateText }}
+    </span>
   </span>
 </template>
 
@@ -27,14 +31,22 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { SubscriptionType, GroupPlatform } from '@/types'
+import { useAppStore } from '@/stores/app'
+import { formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'
 import PlatformIcon from './PlatformIcon.vue'
+import ProviderBrandIcon from './ProviderBrandIcon.vue'
 
 interface Props {
   name: string
+  logoUrl?: string | null
   platform?: GroupPlatform
   subscriptionType?: SubscriptionType
   rateMultiplier?: number
   userRateMultiplier?: number | null // 用户专属倍率
+  peakRateEnabled?: boolean
+  peakStart?: string
+  peakEnd?: string
+  peakRateMultiplier?: number
   showRate?: boolean
   daysRemaining?: number | null // 剩余天数（订阅类型时使用）
   /**
@@ -50,6 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
   showRate: true,
   daysRemaining: null,
   userRateMultiplier: null,
+  peakRateEnabled: false,
   alwaysShowRate: false
 })
 
@@ -65,6 +78,28 @@ const hasCustomRate = computed(() => {
     props.rateMultiplier !== undefined &&
     props.userRateMultiplier !== props.rateMultiplier
   )
+})
+
+const appStore = useAppStore()
+
+const hasPeakRate = computed(() => {
+  return Boolean(props.showRate && props.peakRateEnabled && props.peakStart && props.peakEnd)
+})
+
+const peakRateText = computed(() => {
+  return formatPeakRateWindow(
+    {
+      peak_rate_enabled: props.peakRateEnabled,
+      peak_start: props.peakStart,
+      peak_end: props.peakEnd,
+      peak_rate_multiplier: props.peakRateMultiplier
+    },
+    serverTimezoneLabel(appStore.cachedPublicSettings?.server_utc_offset)
+  )
+})
+
+const peakRateTitle = computed(() => {
+  return t('common.peakRateTooltip', { window: peakRateText.value })
 })
 
 // 是否显示右侧标签
@@ -95,140 +130,119 @@ const labelText = computed(() => {
 
 // Label style based on type and days remaining
 const labelClass = computed(() => {
+  const base = 'px-1.5 py-0.5 rounded text-[10px] font-semibold'
+
   if (!isSubscription.value) {
-    return 'group-token-label group-token-label--standard'
+    // Standard: subtle background (不再为专属倍率使用不同的背景色)
+    return `${base} bg-black/10 dark:bg-white/10`
   }
 
   // 订阅类型：根据剩余天数显示不同颜色
   if (props.daysRemaining !== null && props.daysRemaining !== undefined) {
     if (props.daysRemaining <= 0 || props.daysRemaining <= 3) {
-      return 'group-token-label group-token-label--error'
+      // 已过期或紧急（<=3天）：红色
+      return `${base} bg-red-200/80 text-red-800 dark:bg-red-800/50 dark:text-red-300`
     }
     if (props.daysRemaining <= 7) {
-      return 'group-token-label group-token-label--warning'
+      // 警告（<=7天）：橙色
+      return `${base} bg-amber-200/80 text-amber-800 dark:bg-amber-800/50 dark:text-amber-300`
     }
   }
 
   // 正常状态或无天数：根据平台显示主题色
   if (props.platform === 'anthropic') {
-    return 'group-token-label group-token-label--anthropic'
+    return `${base} bg-orange-200/60 text-orange-800 dark:bg-orange-800/40 dark:text-orange-300`
   }
   if (props.platform === 'openai') {
-    return 'group-token-label group-token-label--openai'
+    return `${base} bg-emerald-200/60 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300`
   }
   if (props.platform === 'gemini') {
-    return 'group-token-label group-token-label--gemini'
+    return `${base} bg-blue-200/60 text-blue-800 dark:bg-blue-800/40 dark:text-blue-300`
   }
-  return 'group-token-label group-token-label--neutral'
+  if (props.platform === 'antigravity') {
+    return `${base} bg-purple-200/60 text-purple-800 dark:bg-purple-800/40 dark:text-purple-300`
+  }
+  if (props.platform === 'grok') {
+    return `${base} bg-zinc-300/70 text-zinc-800 dark:bg-zinc-700/60 dark:text-zinc-200`
+  }
+  if (props.platform === 'kimi') {
+    return `${base} bg-pink-200/60 text-pink-800 dark:bg-pink-800/40 dark:text-pink-300`
+  }
+  if (props.platform === 'zhipu') {
+    return `${base} bg-indigo-200/60 text-indigo-800 dark:bg-indigo-800/40 dark:text-indigo-300`
+  }
+  if (props.platform === 'deepseek') {
+    return `${base} bg-teal-200/60 text-teal-800 dark:bg-teal-800/40 dark:text-teal-300`
+  }
+  if (props.platform === 'minimax') {
+    return `${base} bg-rose-200/60 text-rose-800 dark:bg-rose-800/40 dark:text-rose-300`
+  }
+  if (props.platform === 'composite') {
+    return `${base} bg-cyan-200/70 text-cyan-900 dark:bg-cyan-900/50 dark:text-cyan-300`
+  }
+  return `${base} bg-violet-200/60 text-violet-800 dark:bg-violet-800/40 dark:text-violet-300`
 })
 
-const platformClass = computed(() => `group-token--${props.platform || 'fallback'}`)
+const peakRateClass = computed(() => {
+  return 'px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+})
 
+// Badge color based on platform and subscription type
+const badgeClass = computed(() => {
+  if (props.platform === 'anthropic') {
+    // Claude: orange theme
+    return isSubscription.value
+      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+      : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+  } else if (props.platform === 'openai') {
+    // OpenAI: green theme
+    return isSubscription.value
+      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+      : 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+  }
+  if (props.platform === 'gemini') {
+    return isSubscription.value
+      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+      : 'bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'
+  }
+  if (props.platform === 'antigravity') {
+    return isSubscription.value
+      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+      : 'bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/20 dark:text-fuchsia-400'
+  }
+  if (props.platform === 'grok') {
+    return isSubscription.value
+      ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
+      : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
+  }
+  if (props.platform === 'kimi') {
+    return isSubscription.value
+      ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+      : 'bg-pink-50 text-pink-700 dark:bg-pink-900/20 dark:text-pink-400'
+  }
+  if (props.platform === 'zhipu') {
+    return isSubscription.value
+      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+      : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400'
+  }
+  if (props.platform === 'deepseek') {
+    return isSubscription.value
+      ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+      : 'bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400'
+  }
+  if (props.platform === 'minimax') {
+    return isSubscription.value
+      ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
+      : 'bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400'
+  }
+  if (props.platform === 'composite') {
+    return isSubscription.value
+      ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300'
+      : 'bg-cyan-50 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-300'
+  }
+  // Fallback: original colors
+  return isSubscription.value
+    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
+    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+})
 </script>
-
-<style scoped>
-.group-token {
-  --group-token-color: var(--anthropic-muted);
-  --group-token-border: transparent;
-  border: 0;
-  background: transparent;
-  color: var(--group-token-color);
-  box-shadow: none;
-  transition: none;
-}
-
-.group-token--anthropic {
-  --group-token-color: var(--anthropic-accent);
-  background: var(--anthropic-warning-bg);
-}
-
-.group-token--openai {
-  --group-token-color: var(--anthropic-success);
-  background: var(--anthropic-success-bg);
-}
-
-.group-token--gemini {
-  --group-token-color: var(--anthropic-info);
-  background: var(--anthropic-info-bg);
-}
-
-.group-token--antigravity {
-  --group-token-color: #7764a8;
-  background: color-mix(in srgb, #7764a8 12%, var(--anthropic-page));
-}
-
-.group-token--grok {
-  --group-token-color: var(--anthropic-fg);
-  background: var(--anthropic-raised);
-}
-
-.group-token--kimi {
-  --group-token-color: #b05273;
-  background: color-mix(in srgb, #b05273 12%, var(--anthropic-page));
-}
-
-.group-token--zhipu {
-  --group-token-color: #536e9c;
-  background: color-mix(in srgb, #536e9c 12%, var(--anthropic-page));
-}
-
-.group-token--deepseek {
-  --group-token-color: #287d78;
-  background: color-mix(in srgb, #287d78 12%, var(--anthropic-page));
-}
-
-.group-token--composite {
-  --group-token-color: #377f9b;
-  background: color-mix(in srgb, #377f9b 12%, var(--anthropic-page));
-}
-
-.group-token--fallback {
-  --group-token-color: var(--anthropic-muted);
-  background: var(--anthropic-section);
-}
-
-.group-token--subscription {
-  border-style: solid;
-}
-
-.group-token--standard {
-  border-style: solid;
-}
-
-.group-token-label {
-  --group-token-label-color: var(--group-token-color);
-  padding: 0.125rem 0.375rem;
-  border: 0;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: var(--group-token-label-color);
-  font-size: 0.625rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.group-token-label--standard,
-.group-token-label--neutral {
-  --group-token-label-color: var(--anthropic-muted);
-}
-
-.group-token-label--anthropic {
-  --group-token-label-color: var(--anthropic-accent);
-}
-
-.group-token-label--openai {
-  --group-token-label-color: var(--anthropic-success);
-}
-
-.group-token-label--gemini {
-  --group-token-label-color: var(--anthropic-info);
-}
-
-.group-token-label--warning {
-  --group-token-label-color: var(--anthropic-warning);
-}
-
-.group-token-label--error {
-  --group-token-label-color: var(--anthropic-error);
-}
-</style>

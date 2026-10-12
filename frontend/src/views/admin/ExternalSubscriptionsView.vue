@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
-    <TablePageLayout :scroll-mode="'page'" class="external-subscriptions-page">
-      <template #filters>
+    <div class="space-y-6">
+      <section aria-label="Filters">
         <div class="table-filter-shell external-subscriptions-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
           <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
             <div class="table-filter-search flex-1 sm:max-w-72">
@@ -29,7 +29,7 @@
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
             <button data-testid="admin-external-subscriptions-button-refresh-all-true"
               type="button"
-              class="btn btn-primary anthropic-refresh-action-button external-subscriptions-refresh-button"
+              class="btn btn-primary external-subscriptions-refresh-button"
               :disabled="loading || statusLoading"
               :title="t('common.refresh')"
               @click="refreshAll(true)"
@@ -41,9 +41,9 @@
             </button>
           </div>
         </div>
-      </template>
+      </section>
 
-      <template #table>
+      <section aria-label="Subscriptions">
         <div class="external-subscription-card-shell">
           <div
             v-if="isInitialLoading"
@@ -54,10 +54,10 @@
               :key="index"
               class="external-subscription-card external-subscription-card-main"
             >
-              <div class="h-10 w-10 animate-pulse rounded-lg bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-              <div class="mt-6 h-12 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+              <div class="h-10 w-10 animate-pulse rounded-lg bg-gray-100 dark:bg-dark-800"></div>
+              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
+              <div class="mt-6 h-12 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
+              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
             </div>
           </div>
 
@@ -85,7 +85,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="min-w-0">
-                      <h3 class="truncate text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+                      <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
                         {{ card.name }}
                       </h3>
                       <div class="external-subscription-status-line">
@@ -173,7 +173,7 @@
                   label="EXT"
                   :utilization="getCardQuotaProgress(card)?.percent ?? 0"
                   :title="formatCardQuotaUsage(card)"
-                  color="success"
+                  color="emerald"
                   :show-now-when-idle="false"
                 />
               </div>
@@ -203,7 +203,7 @@
                 >
                   {{ keyword }}
                 </span>
-                <span v-if="card.matchKeywords.length === 0" class="text-xs text-[var(--anthropic-muted)]">-</span>
+                <span v-if="card.matchKeywords.length === 0" class="text-xs text-gray-500">-</span>
               </div>
             </article>
           </div>
@@ -216,8 +216,8 @@
             @action="openCreateDialog"
           />
         </div>
-      </template>
-    </TablePageLayout>
+      </section>
+    </div>
 
     <BaseDialog
       :show="showDialog"
@@ -229,18 +229,18 @@
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <button data-testid="admin-external-subscriptions-button-apply-preset-pixel-access-token"
             type="button"
-            class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:bg-[var(--anthropic-raised)]"
+            class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-100"
             @click="applyPreset('pixel_access_token')"
           >
             <div class="text-sm font-semibold">Pixel Access Token</div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-console"
             type="button"
-            class="rounded-lg border border-[var(--anthropic-fg)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-fg)] hover:bg-[var(--anthropic-section)] dark:border-[var(--anthropic-fg)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
+            class="rounded-lg border border-gray-900 bg-white px-4 py-3 text-left transition-colors hover:border-gray-900 hover:bg-white dark:border-white dark:bg-dark-800 dark:hover:bg-gray-100"
             @click="applyPreset('newapi_console')"
           >
-            <div class="text-sm font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">NewAPI Console</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">NewAPI Console</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('QL、LIUST、PackyCode 这类控制台余额接口', 'For QL, LIUST, PackyCode style console balance APIs') }}
             </div>
           </button>
@@ -250,27 +250,27 @@
             @click="applyPreset('active_subscriptions')"
           >
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">Active Subscriptions</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-buzz-balance"
             type="button"
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-info-border)] hover:bg-[var(--anthropic-info-bg)] dark:border-[var(--anthropic-info-border)] dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('buzz_balance')"
           >
-            <div class="text-sm font-semibold text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">Buzz Balance</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">Buzz Balance</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-openrouter-credits"
             type="button"
-            class="rounded-lg border border-[var(--anthropic-info-border)] bg-[var(--anthropic-info-bg)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-info-border)] hover:bg-[var(--anthropic-info-bg)] dark:border-[var(--anthropic-info-border)] dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
+            class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('openrouter_credits')"
           >
-            <div class="text-sm font-semibold text-[var(--anthropic-info)] dark:text-[var(--anthropic-info)]">OpenRouter Credits</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">OpenRouter Credits</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
             </div>
           </button>
@@ -280,7 +280,7 @@
             @click="applyPreset('cloudflare_ai_gateway_credits')"
           >
             <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">Cloudflare AI Gateway</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
             </div>
           </button>
@@ -290,17 +290,17 @@
             @click="applyPreset('rawchat_subscriptions')"
           >
             <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">RawChat</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-mimo-token-plan"
             type="button"
-            class="rounded-lg border border-[var(--anthropic-border)] bg-[var(--anthropic-section)] px-4 py-3 text-left transition-colors hover:border-[var(--anthropic-border)] hover:bg-[var(--anthropic-raised)] dark:border-[var(--anthropic-border)] dark:bg-[var(--anthropic-section)] dark:hover:bg-[var(--anthropic-raised)]"
+            class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-200 hover:bg-gray-100 dark:border-dark-600 dark:bg-dark-800 dark:hover:bg-gray-100"
             @click="applyPreset('mimo_token_plan')"
           >
-            <div class="text-sm font-semibold text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">Xiaomi MiMo</div>
-            <div class="mt-1 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <div class="text-sm font-semibold text-gray-500 dark:text-dark-400">Xiaomi MiMo</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('小米 MiMo Token Plan 余额接口', 'Xiaomi MiMo Token Plan balance API') }}
             </div>
           </button>
@@ -357,10 +357,10 @@
             <label class="input-label">{{ localText('余额策略', 'Balance Strategy') }}</label>
             <Select v-model="form.balance_strategy" :options="balanceStrategyOptions" />
           </div>
-          <div class="flex items-center justify-between rounded-lg border border-[var(--anthropic-border)] px-3 py-2 dark:border-[var(--anthropic-border)]">
+          <div class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600">
             <div>
-              <div class="text-sm font-medium text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ localText('启用', 'Enabled') }}</div>
-              <div class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ localText('关闭后不进入余额与账号卡片展示', 'Disabled providers are hidden from balance and account cards') }}</div>
+              <div class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ localText('启用', 'Enabled') }}</div>
+              <div class="text-xs text-gray-500 dark:text-dark-400">{{ localText('关闭后不进入余额与账号卡片展示', 'Disabled providers are hidden from balance and account cards') }}</div>
             </div>
             <Toggle v-model="form.enabled" />
           </div>
@@ -370,7 +370,7 @@
           <div>
             <label class="input-label">
               {{ apiTokenLabel }}
-              <span v-if="editingProvider?.api_token_configured" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
+              <span v-if="editingProvider?.api_token_configured" class="ml-1 text-xs font-normal text-gray-500">
                 leave blank to keep
               </span>
             </label>
@@ -381,7 +381,7 @@
               autocomplete="new-password"
               :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
-            <p v-if="requiresConsoleToken" class="mt-1 text-xs text-[var(--anthropic-muted)]">
+            <p v-if="requiresConsoleToken" class="mt-1 text-xs text-gray-500">
               {{ isA6APIForm
                 ? localText('需填写浏览器登录 Cookie（完整 Cookie 请求头值），模型 API Key 不能读取账户额度。', 'Paste the browser login Cookie value. A model API key cannot read account quota.')
                 : localText('需使用服务商控制台访问 Token，模型 API Key 不能读取账户额度。', 'Use a console access token. A model API key cannot read account quota.') }}
@@ -390,14 +390,14 @@
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
             <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
-            <p v-if="isA6APIForm" class="mt-1 text-xs text-[var(--anthropic-muted)]">
+            <p v-if="isA6APIForm" class="mt-1 text-xs text-gray-500">
               {{ localText('A6API 还要求发送 New-API-User；请填写浏览器请求中的用户 ID。', 'A6API also requires New-API-User; use the user ID from the browser request.') }}
             </p>
           </div>
           <div v-if="requiresRefreshToken">
             <label class="input-label">
               Refresh Token
-              <span v-if="editingProvider?.refresh_token_configured" class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">
+              <span v-if="editingProvider?.refresh_token_configured" class="ml-1 text-xs font-normal text-gray-500">
                 leave blank to keep
               </span>
             </label>
@@ -419,7 +419,7 @@
             class="input font-mono text-sm"
             :placeholder="localText('每行或逗号分隔，例如 packycode, packyapi.com', 'Use one per line or comma separated, e.g. packycode, packyapi.com')"
           ></textarea>
-          <p class="mt-1 text-xs text-[var(--anthropic-muted)]">
+          <p class="mt-1 text-xs text-gray-500">
             {{ localText('会匹配账号名称、备注、平台、类型、base_url、extra.external_provider 等字段。', 'Matches account name, notes, platform, type, base_url, extra.external_provider, and related fields.') }}
           </p>
         </div>
@@ -461,7 +461,6 @@ import externalSubscriptionsAPI, {
   type ExternalSubscriptionTemplate,
 } from '@/api/admin/externalSubscriptions'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -1084,246 +1083,21 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.external-subscriptions-page :deep(.layout-section-scrollable),
-.external-subscriptions-page :deep(.table-scroll-container) {
-  flex: none;
-  min-height: 0;
-  height: auto;
-  overflow: visible;
-}
-
-.external-subscriptions-page :deep(.table-scroll-container) {
-  border-color: transparent;
-  background: transparent;
-  box-shadow: none;
-}
-
-.external-subscriptions-page :deep(.table-scroll-container)::before {
-  display: none;
-}
-
-.external-subscription-card-shell {
-  overflow: visible;
-  padding: 0.125rem;
-}
-
-.external-subscription-card-grid {
-  align-items: stretch;
-}
-
-.external-subscription-card {
-  --external-subscription-card-bg: var(--anthropic-page);
-  --external-subscription-card-hover-bg: var(--external-subscription-card-bg);
-  position: relative;
-  display: flex;
-  min-height: 10.5rem;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--anthropic-border-subtle);
-  border-radius: 8px;
-  background: var(--external-subscription-card-bg);
-  box-shadow: none;
-  padding: 0.875rem;
-  transition:
-    background-color 350ms var(--atelier-ease),
-    border-color 250ms var(--atelier-ease),
-    box-shadow 250ms var(--atelier-ease);
-}
-
-.external-subscription-card:hover {
-  border-color: var(--anthropic-cookbook-border);
-  background: var(--external-subscription-card-hover-bg);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-  transform: none;
-}
-
-.external-subscription-logo {
-  display: inline-flex;
-  height: 2.25rem;
-  width: 2.25rem;
-  flex: 0 0 2.25rem;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--atelier-paper) 78%, transparent);
-}
-
-.external-subscription-logo :deep(.provider-brand-icon) {
-  height: 100% !important;
-  width: 100% !important;
-  border: 0 !important;
-  border-radius: inherit !important;
-  box-shadow: none !important;
-}
-
-.external-subscription-logo :deep(.provider-brand-image-system) {
-  height: 1.25rem !important;
-  width: 1.25rem !important;
-  object-fit: contain !important;
-}
-
-.external-subscription-logo :deep(.provider-brand-image-custom) {
-  height: 100% !important;
-  width: 100% !important;
-  object-fit: cover !important;
-}
-
-.external-subscription-card-link {
-  color: var(--atelier-blue);
-}
-
-.external-subscription-card-link:hover {
-  color: var(--atelier-blue-dark);
-}
-
-.external-subscription-provider-id {
-  color: var(--atelier-muted);
-  font-size: 0.6875rem;
-  line-height: 1rem;
-}
-
-.external-subscription-status-line {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.375rem;
-  margin-top: 0.1875rem;
-}
-
-.external-subscription-status-dot {
-  width: 0.375rem;
-  height: 0.375rem;
-  flex: 0 0 0.375rem;
-  border-radius: 999px;
-  background: var(--atelier-muted);
-}
-
-.external-subscription-status-dot--success {
-  background: var(--atelier-status-success);
-}
-
-.external-subscription-status-dot--warning {
-  background: var(--atelier-status-warning);
-}
-
-.external-subscription-status-dot--danger {
-  background: var(--atelier-status-danger);
-}
-
-.external-subscription-status-dot--neutral {
-  background: var(--atelier-status-neutral);
-}
-
-.external-subscription-status-text {
-  color: var(--atelier-muted);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  line-height: 1rem;
-}
-
-.external-subscription-template-chip {
-  max-width: 9rem;
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--atelier-paper) 76%, transparent);
-  color: var(--atelier-muted);
-  font-size: 0.625rem;
-  line-height: 1rem;
-  padding: 0 0.375rem;
-}
-
-.external-subscription-balance-row {
-  border-top: 1px solid var(--atelier-material-edge);
-  padding-top: 0.7rem;
-}
-
-.external-subscription-card-label {
-  color: var(--atelier-muted);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
-.external-subscription-balance-value {
-  color: var(--atelier-ink);
-  font-size: 1.2rem;
-  font-weight: 650;
-  line-height: 1.55rem;
-  margin-top: 0.125rem;
-}
-
-.external-subscription-card-facts {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  row-gap: 0.25rem;
-}
-
-.external-subscription-fact-value {
-  color: var(--atelier-ink-soft);
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1rem;
-  margin-top: 0.125rem;
-}
-
-.external-subscription-config-meta {
-  display: flex;
-  min-width: 0;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  color: color-mix(in srgb, var(--atelier-muted) 88%, transparent);
-  font-family: var(--atelier-font-mono);
-  font-size: 0.6875rem;
-  line-height: 1rem;
-}
-
-.external-subscription-config-separator {
-  color: color-mix(in srgb, var(--atelier-muted) 58%, transparent);
-}
-
-.external-subscription-config-readonly {
-  color: var(--atelier-blue);
-}
-
-.external-subscription-quota-progress {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.external-subscription-quota-progress-value {
-  color: var(--atelier-ink-soft);
-  font-size: 0.75rem;
-  font-weight: 650;
-}
-
-.external-subscription-keyword {
-  border: 1px solid var(--atelier-material-edge);
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--atelier-paper) 76%, transparent);
-  color: var(--atelier-muted);
-  font-family: var(--atelier-font-mono);
-  font-size: 0.6875rem;
-  line-height: 1rem;
-  padding: 0.125rem 0.375rem;
-}
-
-.dark .external-subscription-card {
-  --external-subscription-card-bg: var(--anthropic-page);
-  --external-subscription-card-hover-bg: var(--external-subscription-card-bg);
-  background: var(--external-subscription-card-bg);
-  box-shadow: none;
-}
-
-.dark .external-subscription-keyword {
-  background: color-mix(in srgb, var(--atelier-butter-soft) 28%, transparent);
-}
-
-@media (max-width: 1023px) {
-  .external-subscription-card-shell {
-    overflow: visible;
-  }
-}
+.external-subscription-card { @apply card flex min-w-0 flex-col p-4; }
+.external-subscription-card-grid { @apply items-stretch; }
+.external-subscription-logo { @apply inline-flex h-9 w-9 shrink-0 items-center justify-center; }
+.external-subscription-status-line { @apply mt-1 flex items-center gap-1.5; }
+.external-subscription-status-dot { @apply h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400; }
+.external-subscription-status-dot--success { @apply bg-green-500; }
+.external-subscription-status-dot--warning { @apply bg-amber-500; }
+.external-subscription-status-dot--danger { @apply bg-red-500; }
+.external-subscription-status-text, .external-subscription-provider-id, .external-subscription-card-label { @apply text-xs text-gray-500 dark:text-dark-400; }
+.external-subscription-template-chip, .external-subscription-keyword { @apply inline-flex rounded-md bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-dark-700 dark:text-dark-300; }
+.external-subscription-card-link { @apply text-primary-600 hover:underline dark:text-primary-400; }
+.external-subscription-balance-row { @apply border-t border-gray-100 pt-2 dark:border-dark-700; }
+.external-subscription-balance-value { @apply mt-1 text-lg font-semibold text-gray-900 dark:text-white; }
+.external-subscription-fact-value { @apply text-xs text-gray-700 dark:text-dark-300; }
+.external-subscription-config-meta { @apply flex flex-wrap items-center gap-1 font-mono text-xs text-gray-500 dark:text-dark-400; }
+.external-subscription-config-readonly { @apply text-primary-600 dark:text-primary-400; }
+.external-subscription-quota-progress-value { @apply text-xs text-gray-600 dark:text-dark-300; }
 </style>

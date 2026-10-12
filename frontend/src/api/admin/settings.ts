@@ -406,8 +406,6 @@ export function deriveWeChatConnectStoredMode(
 /**
  * System settings interface
  */
-export type AppearanceThemeDefault = "anthropic";
-
 export interface SystemSettings {
   // Registration settings
   registration_enabled: boolean;
@@ -496,7 +494,6 @@ export interface SystemSettings {
   home_content: string;
   compact_home_enabled: boolean;
   hide_ccs_import_button: boolean;
-  appearance_theme_default?: AppearanceThemeDefault;
   ai_logo_cdn_base_url?: string;
   custom_ai_logo_presets?: string[];
   custom_menu_svg_icon_presets: string[];
@@ -849,7 +846,6 @@ export interface UpdateSettingsRequest {
   home_content?: string;
   compact_home_enabled?: boolean;
   hide_ccs_import_button?: boolean;
-  appearance_theme_default?: AppearanceThemeDefault;
   ai_logo_cdn_base_url?: string;
   custom_ai_logo_presets?: string[];
   custom_menu_svg_icon_presets?: string[];
@@ -1101,17 +1097,6 @@ export async function updateSettings(
     "/admin/settings",
     settings,
   );
-  return data;
-}
-
-export async function updateAppearanceThemeDefault(
-  appearanceThemeDefault: AppearanceThemeDefault,
-): Promise<{ appearance_theme_default: AppearanceThemeDefault }> {
-  const { data } = await apiClient.put<{
-    appearance_theme_default: AppearanceThemeDefault;
-  }>("/admin/settings/appearance-theme-default", {
-    appearance_theme_default: appearanceThemeDefault,
-  });
   return data;
 }
 
@@ -1608,7 +1593,6 @@ export async function resetWebSearchUsage(payload: {
 export const settingsAPI = {
   getSettings,
   updateSettings,
-  updateAppearanceThemeDefault,
   testSmtpConnection,
   sendTestEmail,
   getEmailTemplates,

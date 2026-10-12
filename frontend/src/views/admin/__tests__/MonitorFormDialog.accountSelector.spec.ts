@@ -119,6 +119,11 @@ function mountDialog(monitor: ChannelMonitor | null = null) {
         ModelTagInput: true,
         MonitorKeyPickerDialog: true,
         MonitorAdvancedRequestConfig: true,
+        LogoPicker: {
+          props: ['modelValue', 'inputTestId'],
+          emits: ['update:modelValue'],
+          template: '<input :data-testid="inputTestId" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
       },
     },
   })
@@ -372,5 +377,16 @@ describe('MonitorFormDialog linked account selector', () => {
       check_mode: 'probe',
       account_id: null,
     }))
+  })
+
+  it('loads and clears the custom monitor logo in update payloads', async () => {
+    const wrapper = mountDialog(makeMonitor({ logo_url: 'https://cdn.example.com/monitor.png' }))
+    await flushPromises()
+    expect((wrapper.get('[data-testid="channel-monitor-logo-url"]').element as HTMLInputElement).value)
+      .toBe('https://cdn.example.com/monitor.png')
+    await wrapper.get('[data-testid="channel-monitor-logo-url"]').setValue('')
+    await wrapper.get('#channel-monitor-form').trigger('submit')
+    await flushPromises()
+    expect(monitorUpdate).toHaveBeenCalledWith(42, expect.objectContaining({ logo_url: '' }))
   })
 })

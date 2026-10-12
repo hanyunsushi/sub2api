@@ -1,55 +1,50 @@
 <template>
-  <div :class="props.flat ? 'p-4 sm:p-6' : 'card p-6 usage-filter-card table-page-filter-section'">
+  <div :class="flat ? 'p-4 sm:p-6' : 'card p-6'">
     <!-- Toolbar: left filters (multi-line) + right actions -->
-    <div class="usage-filter-shell table-filter-shell flex flex-wrap items-end justify-between gap-3">
+    <div class="flex flex-wrap items-end justify-between gap-4">
       <!-- Left: filters (allowed to wrap to multiple rows) -->
-      <div class="usage-filter-left table-filter-left flex flex-1 flex-wrap items-end gap-3">
+      <div class="flex flex-1 flex-wrap items-end gap-4">
         <!-- User Search -->
-        <div ref="userSearchRef" class="usage-filter-dropdown usage-filter-user-field relative w-full sm:w-auto">
+        <div ref="userSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('admin.usage.userFilter') }}</label>
-          <input data-testid="admin-usage-usage-filters-input-user-keyword"
-            ref="userInputRef"
+          <input
             v-model="userKeyword"
             type="text"
             class="input pr-8"
             :placeholder="t('admin.usage.searchUserPlaceholder')"
             @input="debounceUserSearch"
-            @focus="openUserDropdown"
+            @focus="showUserDropdown = true"
           />
-          <button data-testid="admin-usage-usage-filters-button-clear-user"
+          <button
             v-if="filters.user_id"
             type="button"
             @click="clearUser"
-            class="absolute right-2 top-9 text-[var(--anthropic-muted)]"
+            class="absolute right-2 top-9 text-gray-400"
             aria-label="Clear user filter"
           >
             ✕
           </button>
-          <FloatingDropdown
-            :show="showUserDropdown && (userResults.length > 0 || !!userKeyword)"
-            :trigger-el="userInputRef"
-            :match-width="true"
-            panel-class="max-h-60 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:bg-[var(--anthropic-section)]"
-            @close="showUserDropdown = false"
+          <div
+            v-if="showUserDropdown && (userResults.length > 0 || userKeyword)"
+            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-dark-800"
           >
-            <button data-testid="admin-usage-usage-filters-button-select-user-u"
+            <button
               v-for="u in userResults"
               :key="u.id"
               type="button"
               @click="selectUser(u)"
-              class="w-full px-4 py-2 text-left hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+              class="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-700"
             >
-              <span>{{ u.email }}<span v-if="u.deleted" class="ml-1 text-xs text-[var(--anthropic-muted)]">（{{ t('admin.usage.userDeletedBadge') }}）</span></span>
-              <span class="ml-2 text-xs text-[var(--anthropic-muted)]">#{{ u.id }}</span>
+              <span>{{ u.email }}<span v-if="u.deleted" class="ml-1 text-xs text-gray-400">（{{ t('admin.usage.userDeletedBadge') }}）</span></span>
+              <span class="ml-2 text-xs text-gray-400">#{{ u.id }}</span>
             </button>
-          </FloatingDropdown>
+          </div>
         </div>
 
         <!-- API Key Search -->
-        <div ref="apiKeySearchRef" class="usage-filter-dropdown usage-filter-api-key-field relative w-full sm:w-auto">
+        <div ref="apiKeySearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[240px]">
           <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
-          <input data-testid="admin-usage-usage-filters-input-api-key-keyword"
-            ref="apiKeyInputRef"
+          <input
             v-model="apiKeyKeyword"
             type="text"
             class="input pr-8"
@@ -57,86 +52,79 @@
             @input="debounceApiKeySearch"
             @focus="onApiKeyFocus"
           />
-          <button data-testid="admin-usage-usage-filters-button-on-clear-api-key"
+          <button
             v-if="filters.api_key_id"
             type="button"
             @click="onClearApiKey"
-            class="absolute right-2 top-9 text-[var(--anthropic-muted)]"
+            class="absolute right-2 top-9 text-gray-400"
             aria-label="Clear API key filter"
           >
             ✕
           </button>
-          <FloatingDropdown
-            :show="showApiKeyDropdown && apiKeyResults.length > 0"
-            :trigger-el="apiKeyInputRef"
-            :match-width="true"
-            panel-class="max-h-60 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:bg-[var(--anthropic-section)]"
-            @close="showApiKeyDropdown = false"
+          <div
+            v-if="showApiKeyDropdown && apiKeyResults.length > 0"
+            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-dark-800"
           >
-            <button data-testid="admin-usage-usage-filters-button-select-api-key-k"
+            <button
               v-for="k in apiKeyResults"
               :key="k.id"
               type="button"
               @click="selectApiKey(k)"
-              class="w-full px-4 py-2 text-left hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+              class="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-700"
             >
               <span class="truncate">{{ k.name || `#${k.id}` }}</span>
-              <span class="ml-2 text-xs text-[var(--anthropic-muted)]">#{{ k.id }}</span>
+              <span class="ml-2 text-xs text-gray-400">#{{ k.id }}</span>
             </button>
-          </FloatingDropdown>
+          </div>
         </div>
 
         <!-- Model Filter -->
-        <div class="usage-filter-model-field w-full sm:w-auto">
+        <div class="w-full sm:w-auto sm:min-w-[220px]">
           <label class="input-label">{{ t('usage.model') }}</label>
-          <Select variant="text-control" v-model="filters.model" :options="modelOptions" searchable @change="emitChange" />
+          <Select v-model="filters.model" :options="modelOptions" searchable @change="emitChange" />
         </div>
 
         <!-- Account Filter -->
-        <div ref="accountSearchRef" class="usage-filter-dropdown usage-filter-account-field relative w-full sm:w-auto">
+        <div ref="accountSearchRef" class="usage-filter-dropdown relative w-full sm:w-auto sm:min-w-[220px]">
           <label class="input-label">{{ t('admin.usage.account') }}</label>
-          <input data-testid="admin-usage-usage-filters-input-account-keyword"
-            ref="accountInputRef"
+          <input
             v-model="accountKeyword"
             type="text"
             class="input pr-8"
             :placeholder="t('admin.usage.searchAccountPlaceholder')"
             @input="debounceAccountSearch"
-            @focus="openAccountDropdown"
+            @focus="showAccountDropdown = true"
           />
-          <button data-testid="admin-usage-usage-filters-button-clear-account"
+          <button
             v-if="filters.account_id"
             type="button"
             @click="clearAccount"
-            class="absolute right-2 top-9 text-[var(--anthropic-muted)]"
+            class="absolute right-2 top-9 text-gray-400"
             aria-label="Clear account filter"
           >
             ✕
           </button>
-          <FloatingDropdown
-            :show="showAccountDropdown && (accountResults.length > 0 || !!accountKeyword)"
-            :trigger-el="accountInputRef"
-            :match-width="true"
-            panel-class="max-h-60 overflow-auto rounded-lg border bg-[var(--anthropic-page)] shadow-none dark:bg-[var(--anthropic-section)]"
-            @close="showAccountDropdown = false"
+          <div
+            v-if="showAccountDropdown && (accountResults.length > 0 || accountKeyword)"
+            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:bg-dark-800"
           >
-            <button data-testid="admin-usage-usage-filters-button-select-account-a"
+            <button
               v-for="a in accountResults"
               :key="a.id"
               type="button"
               @click="selectAccount(a)"
-              class="w-full px-4 py-2 text-left hover:bg-[var(--anthropic-raised)] dark:hover:bg-[var(--anthropic-raised)]"
+              class="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-dark-700"
             >
               <span class="truncate">{{ a.name }}</span>
-              <span class="ml-2 text-xs text-[var(--anthropic-muted)]">#{{ a.id }}</span>
+              <span class="ml-2 text-xs text-gray-400">#{{ a.id }}</span>
             </button>
-          </FloatingDropdown>
+          </div>
         </div>
 
         <!-- Request Type Filter (usage only) -->
         <div v-if="mode !== 'errors'" class="w-full sm:w-auto sm:min-w-[180px]">
           <label class="input-label">{{ t('usage.type') }}</label>
-          <Select variant="text-control" v-model="filters.request_type" :options="requestTypeOptions" @change="emitChange" />
+          <Select v-model="filters.request_type" :options="requestTypeOptions" @change="emitChange" />
         </div>
 
         <!-- Native compaction is independent of the transport request type. -->
@@ -148,16 +136,16 @@
         <!-- Billing Type Filter (usage only) -->
         <div v-if="mode !== 'errors'" class="w-full sm:w-auto sm:min-w-[200px]">
           <label class="input-label">{{ t('admin.usage.billingType') }}</label>
-          <Select variant="text-control" v-model="filters.billing_type" :options="billingTypeOptions" @change="emitChange" />
+          <Select v-model="filters.billing_type" :options="billingTypeOptions" @change="emitChange" />
         </div>
 
-        <!-- Billing Mode Filter (usage only) -->
-        <div v-if="mode !== 'errors'" class="w-full sm:w-auto sm:min-w-[200px]">
+        <!-- Billing Mode Filter (usage only；用户排行的 user-breakdown 接口不支持该维度) -->
+        <div v-if="mode === 'usage'" class="w-full sm:w-auto sm:min-w-[200px]">
           <label class="input-label">{{ t('admin.usage.billingMode') }}</label>
-          <Select variant="text-control" v-model="filters.billing_mode" :options="billingModeOptions" @change="emitChange" />
+          <Select v-model="filters.billing_mode" :options="billingModeOptions" @change="emitChange" />
         </div>
 
-        <div v-if="mode === 'usage'" class="w-full sm:w-auto">
+        <div v-if="mode === 'usage'" class="w-full sm:w-auto sm:min-w-[220px]">
           <label class="input-label">{{ t('admin.usage.upstreamModelAudit') }}</label>
           <Select v-model="filters.upstream_model_mismatch" :options="upstreamModelMismatchOptions" @change="emitChange" />
         </div>
@@ -183,25 +171,25 @@
         <!-- Group Filter -->
         <div class="w-full sm:w-auto sm:min-w-[200px]">
           <label class="input-label">{{ t('admin.usage.group') }}</label>
-          <Select variant="text-control" v-model="filters.group_id" :options="groupOptions" searchable @change="emitChange" />
+          <Select v-model="filters.group_id" :options="groupOptions" searchable @change="emitChange" />
         </div>
 
       </div>
 
       <!-- Right: actions -->
-      <div v-if="showActions" class="usage-filter-actions table-filter-actions flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
-        <button data-testid="admin-usage-usage-filters-button-emit-refresh" type="button" @click="$emit('refresh')" class="btn btn-primary anthropic-refresh-action-button usage-refresh-button">
-          {{ t("common.refresh") }}
+      <div v-if="showActions" class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
+        <button type="button" @click="$emit('refresh')" class="btn btn-secondary">
+          {{ t('common.refresh') }}
         </button>
-        <button data-testid="admin-usage-usage-filters-button-emit-reset" type="button" @click="$emit('reset')" class="filter-menu-button">
+        <button type="button" @click="$emit('reset')" class="btn btn-secondary">
           {{ t('common.reset') }}
         </button>
         <slot name="after-reset" />
         <template v-if="mode === 'usage'">
-          <button data-testid="admin-usage-usage-filters-button-emit-cleanup" type="button" @click="$emit('cleanup')" class="filter-menu-button filter-menu-button-danger">
+          <button type="button" @click="$emit('cleanup')" class="btn btn-danger">
             {{ t('admin.usage.cleanup.button') }}
           </button>
-          <button data-testid="admin-usage-usage-filters-button-emit-export" type="button" @click="$emit('export')" :disabled="exporting" class="filter-menu-button">
+          <button type="button" @click="$emit('export')" :disabled="exporting" class="btn btn-primary">
             {{ t('usage.exportExcel') }}
           </button>
         </template>
@@ -214,7 +202,6 @@
 import { ref, onMounted, onUnmounted, toRef, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api/admin'
-import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
 import Select, { type SelectOption } from '@/components/common/Select.vue'
 import { COMMON_ERROR_STATUS_CODES } from '@/utils/errorBadges'
 import type { SimpleApiKey, SimpleUser } from '@/api/admin/usage'
@@ -228,8 +215,12 @@ interface Props {
   endDate: string
   showActions?: boolean
   modelOptions?: string[]
-  /** errors 模式:隐藏用量专属字段/按钮,显示错误类型+状态码(错误请求 tab 用) */
-  mode?: 'usage' | 'errors'
+  /**
+   * errors 模式:隐藏用量专属字段/按钮,显示错误类型+状态码(错误请求 tab 用)
+   * ranking 模式:同 usage 但隐藏计费模式筛选与清理/导出按钮(用户排行 tab 用)
+   */
+  mode?: 'usage' | 'errors' | 'ranking'
+  /** 嵌入统一卡片内使用：去掉自身卡片外观 */
   flat?: boolean
 }
 
@@ -253,9 +244,6 @@ const filters = toRef(props, 'modelValue')
 const userSearchRef = ref<HTMLElement | null>(null)
 const apiKeySearchRef = ref<HTMLElement | null>(null)
 const accountSearchRef = ref<HTMLElement | null>(null)
-const userInputRef = ref<HTMLElement | null>(null)
-const apiKeyInputRef = ref<HTMLElement | null>(null)
-const accountInputRef = ref<HTMLElement | null>(null)
 
 const userKeyword = ref('')
 const userResults = ref<SimpleUser[]>([])
@@ -331,7 +319,8 @@ const billingModeOptions = ref<SelectOption[]>([
   { value: null, label: t('admin.usage.allBillingModes') },
   { value: 'token', label: t('admin.usage.billingModeToken') },
   { value: 'per_request', label: t('admin.usage.billingModePerRequest') },
-  { value: 'image', label: t('admin.usage.billingModeImage') }
+  { value: 'image', label: t('admin.usage.billingModeImage') },
+  { value: 'video', label: t('admin.usage.billingModeVideo') }
 ])
 
 const upstreamModelMismatchOptions = ref<SelectOption[]>([
@@ -348,22 +337,6 @@ const clearPendingUserSearch = () => {
     userSearchTimeout = null
   }
   userSearchSequence += 1
-}
-
-const closeSearchDropdowns = (except?: 'user' | 'apiKey' | 'account') => {
-  if (except !== 'user') showUserDropdown.value = false
-  if (except !== 'apiKey') showApiKeyDropdown.value = false
-  if (except !== 'account') showAccountDropdown.value = false
-}
-
-const openUserDropdown = () => {
-  closeSearchDropdowns('user')
-  showUserDropdown.value = true
-}
-
-const openAccountDropdown = () => {
-  closeSearchDropdowns('account')
-  showAccountDropdown.value = true
 }
 
 const debounceUserSearch = () => {
@@ -407,7 +380,7 @@ const debounceApiKeySearch = () => {
 const selectUser = async (u: SimpleUser) => {
   clearPendingUserSearch()
   userKeyword.value = u.email
-  closeSearchDropdowns()
+  showUserDropdown.value = false
   filters.value.user_id = u.id
   clearApiKey()
 
@@ -433,7 +406,7 @@ const clearUser = () => {
 
 const selectApiKey = (k: SimpleApiKey) => {
   apiKeyKeyword.value = k.name || String(k.id)
-  closeSearchDropdowns()
+  showApiKeyDropdown.value = false
   filters.value.api_key_id = k.id
   emitChange()
 }
@@ -468,7 +441,7 @@ const debounceAccountSearch = () => {
 
 const selectAccount = (a: SimpleAccount) => {
   accountKeyword.value = a.name
-  closeSearchDropdowns()
+  showAccountDropdown.value = false
   filters.value.account_id = a.id
   emitChange()
 }
@@ -482,7 +455,6 @@ const clearAccount = () => {
 }
 
 const onApiKeyFocus = () => {
-  closeSearchDropdowns('apiKey')
   showApiKeyDropdown.value = true
   // Trigger search if no results yet
   if (apiKeyResults.value.length === 0) {
@@ -565,6 +537,7 @@ onUnmounted(() => {
   document.removeEventListener('click', onDocumentClick)
 })
 
+// 供外部(如用户排行下钻)在程序化设置 user_id 后回显选中的用户邮箱
 const setUserKeyword = (email: string) => {
   clearPendingUserSearch()
   userKeyword.value = email

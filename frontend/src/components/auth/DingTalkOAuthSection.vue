@@ -1,16 +1,35 @@
 <template>
   <div class="space-y-4">
-    <button data-testid="auth-ding-talk-o-auth-section-button-start-login" type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
-      <ProviderLogoMark provider="dingtalk" class="auth-provider-logo-mark mr-2" />
+    <button type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
+      <svg
+        class="icon mr-2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        aria-hidden="true"
+        style="flex-shrink: 0"
+      >
+        <circle cx="12" cy="12" r="12" fill="#1677FF" />
+        <text
+          x="12"
+          y="17"
+          font-family="sans-serif"
+          font-size="13"
+          font-weight="bold"
+          fill="white"
+          text-anchor="middle"
+        >D</text>
+      </svg>
       {{ t('auth.dingtalk.signIn') }}
     </button>
 
     <div v-if="showDivider" class="flex items-center gap-3">
-      <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
-      <span class="text-xs text-[var(--anthropic-muted)] dark:text-dark-400">
+      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+      <span class="text-xs text-gray-500 dark:text-dark-400">
         {{ t('auth.oauthOrContinue') }}
       </span>
-      <div class="h-px flex-1 bg-[var(--anthropic-raised)] dark:bg-[var(--anthropic-section)]"></div>
+      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
     </div>
   </div>
 </template>

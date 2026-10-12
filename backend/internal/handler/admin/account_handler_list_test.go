@@ -190,7 +190,8 @@ func setupAccountListRouterWithTokenQuotaResetAt(tokenResetAt string) (*gin.Engi
 	}
 	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, nil, nil, nil, service.NewUsageCache(), nil, nil)
 	externalConfigService := service.NewExternalSubscriptionConfigService(service.NewSettingService(settingRepo, &config.Config{}))
-	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
+	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil)
+	handler.SetExternalSubscriptionConfigService(externalConfigService)
 	router.GET("/api/v1/admin/accounts", handler.List)
 	return router, adminSvc, usageRepo
 }
@@ -226,7 +227,8 @@ func setupAccountListRouterWithTokenQuotaSettings(settings string) (*gin.Engine,
 	}
 	accountUsageService := service.NewAccountUsageService(nil, usageRepo, nil, nil, nil, nil, nil, nil, service.NewUsageCache(), nil, nil)
 	externalConfigService := service.NewExternalSubscriptionConfigService(service.NewSettingService(settingRepo, &config.Config{}))
-	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil, externalConfigService)
+	handler := NewAccountHandler(adminSvc, nil, nil, nil, nil, nil, nil, accountUsageService, nil, nil, nil, nil, nil, nil)
+	handler.SetExternalSubscriptionConfigService(externalConfigService)
 	router.GET("/api/v1/admin/accounts", handler.List)
 	return router, usageRepo
 }

@@ -2,38 +2,36 @@
   <AppLayout>
     <TablePageLayout>
       <template #filters>
-        <div class="table-filter-shell promo-filter-shell flex flex-col gap-3 lg:flex-row lg:items-start">
+        <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
-          <div class="table-filter-left flex flex-1 flex-wrap items-center gap-3">
-            <div class="table-filter-search flex-1 sm:max-w-64">
-              <input data-testid="admin-promo-codes-input-search-query"
-                v-model="searchQuery"
-                type="text"
-                :placeholder="t('admin.promo.searchCodes')"
-                class="input"
-                @input="handleSearch"
-              />
-            </div>
-            <Select
-              variant="text-control"
-              v-model="filters.status"
-              :options="filterStatusOptions"
-              class="w-36"
-              @change="loadCodes"
+          <div class="flex-1 sm:max-w-64">
+            <input
+              v-model="searchQuery"
+              type="text"
+              :placeholder="t('admin.promo.searchCodes')"
+              class="input"
+              @input="handleSearch"
             />
           </div>
+          <Select
+            v-model="filters.status"
+            :options="filterStatusOptions"
+            class="w-36"
+            @change="loadCodes"
+          />
 
           <!-- Right: Action buttons -->
-          <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button data-testid="admin-promo-codes-button-load-codes"
+          <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
+            <button
               @click="loadCodes"
               :disabled="loading"
-              class="btn btn-primary anthropic-refresh-action-button promo-refresh-button"
+              class="btn btn-secondary"
               :title="t('common.refresh')"
             >
-              {{ t("common.refresh") }}
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button data-testid="admin-promo-codes-button-show-create-dialog-on" @click="showCreateDialog = true" class="btn btn-primary promo-create-button">
+            <button @click="showCreateDialog = true" class="btn btn-primary">
+              <Icon name="plus" size="md" class="mr-1" />
               {{ t('admin.promo.createCode') }}
             </button>
           </div>
@@ -52,14 +50,14 @@
         >
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
-              <code class="font-mono text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ value }}</code>
-              <button data-testid="admin-promo-codes-button-copy-to-clipboard-value"
+              <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
+              <button
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
                     ? 'text-green-500'
-                    : 'text-[var(--anthropic-muted)] hover:text-[var(--anthropic-muted)] dark:hover:text-gray-300'
+                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
               >
@@ -77,63 +75,66 @@
           </template>
 
           <template #cell-bonus_amount="{ value }">
-            <span class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
               ${{ value.toFixed(2) }}
             </span>
           </template>
 
           <template #cell-usage="{ row }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+            <span class="text-sm text-gray-600 dark:text-gray-300">
               {{ row.used_count }} / {{ row.max_uses === 0 ? '∞' : row.max_uses }}
             </span>
           </template>
 
           <template #cell-status="{ value, row }">
             <span
-              :class="getStatusClass(value, row)"
+              :class="[
+                'badge',
+                getStatusClass(value, row)
+              ]"
             >
               {{ getStatusLabel(value, row) }}
             </span>
           </template>
 
           <template #cell-expires_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+            <span class="text-sm text-gray-500 dark:text-dark-400">
               {{ value ? formatDateTime(value) : t('admin.promo.neverExpires') }}
             </span>
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-[var(--anthropic-muted)] dark:text-dark-400">
+            <span class="text-sm text-gray-500 dark:text-dark-400">
               {{ formatDateTime(value) }}
             </span>
           </template>
 
           <template #cell-actions="{ row }">
             <div class="flex items-center space-x-1">
-              <button data-testid="admin-promo-codes-button-copy-register-link-row"
+              <button
                 @click="copyRegisterLink(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
                 :title="t('admin.promo.copyRegisterLink')"
               >
                 <Icon name="link" size="sm" />
               </button>
-              <button data-testid="admin-promo-codes-button-handle-view-usages-row"
+              <button
                 @click="handleViewUsages(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-info-bg)] hover:text-[var(--anthropic-info)] dark:hover:bg-[var(--anthropic-section)] dark:hover:text-[var(--anthropic-info)]"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                 :title="t('admin.promo.viewUsages')"
               >
                 <Icon name="eye" size="sm" />
               </button>
-              <button data-testid="admin-promo-codes-button-handle-edit-row"
+              <button
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-[var(--anthropic-raised)] hover:text-[var(--anthropic-muted)] dark:hover:bg-[var(--anthropic-raised)] dark:hover:text-gray-300"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-600 dark:hover:text-gray-300"
                 :title="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
               </button>
-              <button data-testid="admin-promo-codes-button-handle-delete-row"
+              <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[var(--anthropic-muted)] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -166,9 +167,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.code') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.autoGenerate') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.autoGenerate') }})</span>
           </label>
-          <input data-testid="admin-promo-codes-input-create-form-code"
+          <input
             v-model="createForm.code"
             type="text"
             class="input font-mono uppercase"
@@ -177,7 +178,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.promo.bonusAmount') }}</label>
-          <input data-testid="admin-promo-codes-input-create-form-bonus-amount"
+          <input
             v-model.number="createForm.bonus_amount"
             type="number"
             step="0.01"
@@ -189,9 +190,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
-          <input data-testid="admin-promo-codes-input-create-form-max-uses"
+          <input
             v-model.number="createForm.max_uses"
             type="number"
             min="0"
@@ -201,9 +202,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
           </label>
-          <input data-testid="admin-promo-codes-input-create-form-expires-at-str"
+          <input
             v-model="createForm.expires_at_str"
             type="datetime-local"
             class="input"
@@ -212,9 +213,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
           </label>
-          <textarea data-testid="admin-promo-codes-textarea-create-form-notes"
+          <textarea
             v-model="createForm.notes"
             rows="2"
             class="input"
@@ -224,10 +225,10 @@
       </form>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="admin-promo-codes-button-show-create-dialog-off" type="button" @click="showCreateDialog = false" class="btn btn-secondary">
+          <button type="button" @click="showCreateDialog = false" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="admin-promo-codes-button-submit" type="submit" form="create-promo-form" :disabled="creating" class="btn btn-primary">
+          <button type="submit" form="create-promo-form" :disabled="creating" class="btn btn-primary">
             {{ creating ? t('common.creating') : t('common.create') }}
           </button>
         </div>
@@ -244,7 +245,7 @@
       <form id="edit-promo-form" @submit.prevent="handleUpdate" class="space-y-4">
         <div>
           <label class="input-label">{{ t('admin.promo.code') }}</label>
-          <input data-testid="admin-promo-codes-input-edit-form-code"
+          <input
             v-model="editForm.code"
             type="text"
             class="input font-mono uppercase"
@@ -252,7 +253,7 @@
         </div>
         <div>
           <label class="input-label">{{ t('admin.promo.bonusAmount') }}</label>
-          <input data-testid="admin-promo-codes-input-edit-form-bonus-amount"
+          <input
             v-model.number="editForm.bonus_amount"
             type="number"
             step="0.01"
@@ -264,9 +265,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
-          <input data-testid="admin-promo-codes-input-edit-form-max-uses"
+          <input
             v-model.number="editForm.max_uses"
             type="number"
             min="0"
@@ -280,9 +281,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
           </label>
-          <input data-testid="admin-promo-codes-input-edit-form-expires-at-str"
+          <input
             v-model="editForm.expires_at_str"
             type="datetime-local"
             class="input"
@@ -291,9 +292,9 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-[var(--anthropic-muted)]">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
           </label>
-          <textarea data-testid="admin-promo-codes-textarea-edit-form-notes"
+          <textarea
             v-model="editForm.notes"
             rows="2"
             class="input"
@@ -302,10 +303,10 @@
       </form>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <button data-testid="admin-promo-codes-button-close-edit-dialog" type="button" @click="closeEditDialog" class="btn btn-secondary">
+          <button type="button" @click="closeEditDialog" class="btn btn-secondary">
             {{ t('common.cancel') }}
           </button>
-          <button data-testid="admin-promo-codes-button-submit-2" type="submit" form="edit-promo-form" :disabled="updating" class="btn btn-primary">
+          <button type="submit" form="edit-promo-form" :disabled="updating" class="btn btn-primary">
             {{ updating ? t('common.saving') : t('common.save') }}
           </button>
         </div>
@@ -320,26 +321,26 @@
       @close="showUsagesDialog = false"
     >
       <div v-if="usagesLoading" class="flex items-center justify-center py-8">
-        <Icon name="refresh" size="lg" class="animate-spin text-[var(--anthropic-muted)]" />
+        <Icon name="refresh" size="lg" class="animate-spin text-gray-400" />
       </div>
-      <div v-else-if="usages.length === 0" class="py-8 text-center text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+      <div v-else-if="usages.length === 0" class="py-8 text-center text-gray-500 dark:text-gray-400">
         {{ t('admin.promo.noUsages') }}
       </div>
       <div v-else class="space-y-3">
         <div
           v-for="usage in usages"
           :key="usage.id"
-          class="flex items-center justify-between rounded-lg border border-[var(--anthropic-border)] p-3 dark:border-[var(--anthropic-border)]"
+          class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-dark-600"
         >
           <div class="flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
               <Icon name="user" size="sm" class="text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p class="text-sm font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ usage.user?.email || t('admin.promo.userPrefix', { id: usage.user_id }) }}
               </p>
-              <p class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+              <p class="text-xs text-gray-500 dark:text-gray-400">
                 {{ formatDateTime(usage.used_at) }}
               </p>
             </div>
@@ -363,7 +364,7 @@
       </div>
       <template #footer>
         <div class="flex justify-end">
-          <button data-testid="admin-promo-codes-button-show-usages-dialog-off" type="button" @click="showUsagesDialog = false" class="btn btn-secondary">
+          <button type="button" @click="showUsagesDialog = false" class="btn btn-secondary">
             {{ t('common.close') }}
           </button>
         </div>
@@ -489,12 +490,12 @@ const columns = computed<Column[]>(() => [
 // Helpers
 const getStatusClass = (status: string, row: PromoCode) => {
   if (row.expires_at && new Date(row.expires_at) < new Date()) {
-    return ['badge', 'badge-danger']
+    return 'badge-danger'
   }
   if (row.max_uses > 0 && row.used_count >= row.max_uses) {
-    return ['badge', 'badge-gray']
+    return 'badge-gray'
   }
-  return ['badge', status === 'active' ? 'badge-success' : 'badge-gray']
+  return status === 'active' ? 'badge-success' : 'badge-gray'
 }
 
 const getStatusLabel = (status: string, row: PromoCode) => {

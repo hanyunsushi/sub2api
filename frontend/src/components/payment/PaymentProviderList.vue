@@ -1,18 +1,18 @@
 <template>
   <div class="card">
     <!-- Header -->
-    <div class="border-b border-[var(--anthropic-border)] px-4 py-3 dark:border-[var(--anthropic-border)]">
+    <div class="border-b border-gray-100 px-4 py-3 dark:border-dark-700">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-base font-semibold text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">
             {{ t('admin.settings.payment.providerManagement') }}
           </h2>
-          <p class="mt-0.5 text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.settings.payment.providerManagementDesc') }}
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <button data-testid="payment-payment-provider-list-button-emit-refresh"
+          <button
             type="button"
             @click="emit('refresh')"
             :disabled="loading"
@@ -21,7 +21,7 @@
           >
             <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
           </button>
-          <button data-testid="payment-payment-provider-list-button-emit-create"
+          <button
             type="button"
             @click="emit('create')"
             :disabled="!canCreate"
@@ -39,7 +39,7 @@
     <div class="p-4">
       <!-- Loading -->
       <div v-if="loading && !providers.length" class="flex items-center justify-center py-6">
-        <div class="h-5 w-5 animate-spin rounded-full border-2 border-[var(--anthropic-muted)] border-t-transparent" />
+        <div class="h-5 w-5 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
 
       <!-- Provider cards (draggable) -->
@@ -52,7 +52,7 @@
         @end="onDragEnd"
       >
         <div v-for="p in localProviders" :key="p.id" class="flex items-start gap-2">
-          <div class="drag-handle mt-3 flex cursor-grab items-center text-gray-300 hover:text-[var(--anthropic-muted)] active:cursor-grabbing dark:text-dark-600 dark:hover:text-dark-400">
+          <div class="drag-handle mt-3 flex cursor-grab items-center text-gray-300 hover:text-gray-500 active:cursor-grabbing dark:text-dark-600 dark:hover:text-dark-400">
             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
             </svg>
@@ -73,12 +73,12 @@
 
       <!-- Empty -->
       <div v-else-if="!loading" class="py-6 text-center">
-        <p class="text-sm text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ canCreate
             ? t('admin.settings.payment.noProviders')
             : t('admin.settings.payment.enableTypesFirst') }}
         </p>
-        <button data-testid="payment-payment-provider-list-button-emit-create-2"
+        <button
           type="button"
           v-if="canCreate"
           @click="emit('create')"

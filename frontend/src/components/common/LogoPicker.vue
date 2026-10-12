@@ -171,61 +171,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.logo-picker-presets {
-  @apply grid grid-cols-[repeat(auto-fill,minmax(2.25rem,1fr))] gap-2 pt-1;
-  flex: 0 0 100%;
-}
-
-.logo-picker-preset-frame {
-  @apply relative aspect-square;
-}
-
-.logo-picker-preset {
-  @apply flex h-full w-full items-center justify-center rounded-md border p-1 transition;
-  border-color: var(--atelier-line-strong);
-  background: var(--atelier-paper);
-}
-
-.logo-picker-preset:hover,
-.logo-picker-preset-active {
-  border-color: var(--atelier-line-strong);
-  background: var(--atelier-ui-hover-surface, var(--atelier-paper-2));
-}
-
-.logo-picker-preset img {
-  @apply h-full w-full object-contain;
-}
-
-.logo-picker-preset-delete {
-  @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border text-[11px] font-semibold leading-none shadow-none transition;
-  border-color: var(--atelier-line-strong);
-  background: var(--atelier-paper);
-  color: var(--atelier-muted);
-}
-
-.logo-picker-preset-delete:hover {
-  border-color: var(--atelier-status-danger);
-  color: var(--atelier-status-danger);
-}
-
-.logo-picker-preview-image {
-  display: block;
-}
-
-.logo-picker-preview-image-system {
-  height: 1.75rem;
-  max-width: 1.75rem;
-  object-fit: contain;
-  width: 1.75rem;
-}
-
-.logo-picker-preview-image-custom {
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
-
-.logo-picker-custom-label {
-  @apply col-span-full text-[11px] text-gray-500 dark:text-gray-400;
-}
+.logo-picker { @apply flex flex-wrap items-start gap-3; }
+.logo-picker-preview { @apply flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 text-gray-400 dark:border-dark-600 dark:bg-dark-800; }
+.logo-picker-field { @apply min-w-0 flex-1; }
+.logo-picker-presets { @apply grid w-full grid-cols-[repeat(auto-fill,minmax(2.25rem,1fr))] gap-2; }
+.logo-picker-preset-frame { @apply relative aspect-square; }
+.logo-picker-preset { @apply flex h-full w-full items-center justify-center rounded-md border border-gray-200 bg-white p-1 transition-colors hover:border-primary-400 dark:border-dark-600 dark:bg-dark-800; }
+.logo-picker-preset-active { @apply border-primary-500 bg-primary-50 dark:border-primary-400 dark:bg-primary-900/20; }
+.logo-picker-preset img { @apply h-full w-full object-contain; }
+.logo-picker-preset-delete { @apply absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 bg-white text-[11px] leading-none text-gray-500 hover:text-red-600 dark:border-dark-500 dark:bg-dark-700 dark:text-dark-300; }
+.logo-picker-preview-image { @apply h-full w-full object-contain; }
+.logo-picker-custom-label { @apply col-span-full text-xs text-gray-500 dark:text-dark-400; }
 </style>

@@ -9,7 +9,7 @@
       <div
         v-for="r in results"
         :key="r.model"
-        class="flex items-center justify-between rounded-lg border border-[var(--anthropic-border)] px-3 py-2 text-sm dark:border-[var(--anthropic-border)]"
+        class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-dark-600"
       >
         <div class="flex flex-col">
           <span class="font-medium text-gray-900 dark:text-white">{{ formatMonitorModel(r.model) }}</span>
@@ -23,13 +23,13 @@
           >
             {{ statusLabel(r.status) }}
           </span>
-          <span class="text-xs text-[var(--anthropic-muted)] dark:text-[var(--anthropic-muted)]">{{ formatLatency(r.latency_ms) }} ms</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatLatency(r.latency_ms) }} ms</span>
         </div>
       </div>
     </div>
     <template #footer>
       <div class="flex justify-end">
-        <button data-testid="admin-monitor-monitor-run-result-button-emit-close" @click="$emit('close')" class="btn btn-primary">
+        <button @click="$emit('close')" class="btn btn-primary">
           {{ t('common.close') }}
         </button>
       </div>

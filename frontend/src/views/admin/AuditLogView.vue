@@ -7,7 +7,7 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <!-- Left: filter fields -->
             <div class="flex flex-1 flex-wrap items-end gap-4">
-              <div class="w-full sm:w-auto">
+              <div class="w-full sm:w-auto sm:min-w-[240px]">
                 <label class="input-label">{{ t('admin.audit.filters.q') }}</label>
                 <div class="relative">
                   <Icon
@@ -15,7 +15,7 @@
                     size="md"
                     class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                   />
-                  <input data-testid="merge-audit-log-view-text-1"
+                  <input
                     v-model.trim="filters.q"
                     type="text"
                     class="input pl-10"
@@ -27,17 +27,17 @@
 
               <div class="w-full sm:w-auto sm:min-w-[200px]">
                 <label class="input-label">{{ t('admin.audit.filters.actorEmail') }}</label>
-                <input data-testid="merge-audit-log-view-text-2" v-model.trim="filters.actor_email" type="text" class="input" @keyup.enter="search" />
+                <input v-model.trim="filters.actor_email" type="text" class="input" @keyup.enter="search" />
               </div>
 
               <div class="w-full sm:w-auto sm:min-w-[180px]">
                 <label class="input-label">{{ t('admin.audit.filters.action') }}</label>
-                <input data-testid="merge-audit-log-view-text-3" v-model.trim="filters.action" type="text" class="input" @keyup.enter="search" />
+                <input v-model.trim="filters.action" type="text" class="input" @keyup.enter="search" />
               </div>
 
               <div class="w-full sm:w-auto sm:min-w-[160px]">
                 <label class="input-label">{{ t('admin.audit.filters.clientIp') }}</label>
-                <input data-testid="merge-audit-log-view-text-4" v-model.trim="filters.client_ip" type="text" class="input" @keyup.enter="search" />
+                <input v-model.trim="filters.client_ip" type="text" class="input" @keyup.enter="search" />
               </div>
 
               <div class="w-full sm:w-auto sm:min-w-[140px]">
@@ -67,13 +67,13 @@
 
             <!-- Right: actions -->
             <div class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
-              <button data-testid="merge-audit-log-view-search-5" type="button" class="btn btn-primary" :disabled="loading" @click="search">
+              <button type="button" class="btn btn-primary" :disabled="loading" @click="search">
                 {{ t('common.search') }}
               </button>
-              <button data-testid="merge-audit-log-view-reset-filters-6" type="button" class="btn btn-secondary" :disabled="loading" @click="resetFilters">
+              <button type="button" class="btn btn-secondary" :disabled="loading" @click="resetFilters">
                 {{ t('common.reset') }}
               </button>
-              <button data-testid="merge-audit-log-view-open-clear-dialog-7" type="button" class="btn btn-danger" @click="openClearDialog">
+              <button type="button" class="btn btn-danger" @click="openClearDialog">
                 <Icon name="trash" size="sm" class="mr-1.5" />
                 {{ t('admin.audit.clearAll') }}
               </button>
@@ -127,7 +127,7 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <button data-testid="merge-audit-log-view-open-detail-row-id-8"
+            <button
               type="button"
               class="inline-flex items-center gap-1 font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
               @click="openDetail(row.id)"
@@ -287,10 +287,10 @@
         </div>
       </div>
       <template #footer>
-        <button data-testid="merge-audit-log-view-handle-custom-time-range-cancel-9" type="button" class="btn btn-secondary" @click="handleCustomTimeRangeCancel">
+        <button type="button" class="btn btn-secondary" @click="handleCustomTimeRangeCancel">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="merge-audit-log-view-handle-custom-time-range-confirm-10"
+        <button
           type="button"
           class="btn btn-primary"
           :disabled="!customStartTimeInput || !customEndTimeInput"
@@ -335,10 +335,10 @@
         />
       </div>
       <template #footer>
-        <button data-testid="merge-audit-log-view-cancel-clear-totp-11" type="button" class="btn btn-secondary" :disabled="clearing" @click="cancelClearTotp">
+        <button type="button" class="btn btn-secondary" :disabled="clearing" @click="cancelClearTotp">
           {{ t('common.cancel') }}
         </button>
-        <button data-testid="merge-audit-log-view-submit-clear-12"
+        <button
           type="button"
           class="btn btn-danger"
           :disabled="clearing || clearTotpCode.length !== 6"

@@ -5,19 +5,19 @@
       :key="getHeaderOverrideRowKey(row)"
       class="flex items-center gap-2"
     >
-      <input data-testid="merge-header-override-editor-row-name-1"
+      <input
         v-model="row.name"
         type="text"
         class="input flex-1"
         :placeholder="t('admin.accounts.headerOverride.namePlaceholder')"
       />
-      <input data-testid="merge-header-override-editor-row-value-2"
+      <input
         v-model="row.value"
         type="text"
         class="input flex-1"
         :placeholder="t('admin.accounts.headerOverride.valuePlaceholder')"
       />
-      <button data-testid="merge-header-override-editor-remove-row-index-3"
+      <button
         type="button"
         class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
         @click="removeRow(index)"
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <button data-testid="merge-header-override-editor-add-row-4"
+  <button
     type="button"
     class="w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
     @click="addRow"

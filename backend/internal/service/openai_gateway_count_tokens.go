@@ -656,6 +656,7 @@ func estimateOpenAIInputTokensForInputItems(codec tokenizer.Codec, items []apico
 		total += n
 		return nil
 	}
+
 	for _, item := range items {
 		total += openAIResponsesInputItemTokenOverhead
 		if err := countText(item.Role); err != nil {

@@ -2,7 +2,7 @@
   <AppLayout>
     <div class="w-full min-w-0 space-y-6 pb-8">
       <header
-        class="page-header mb-0 rounded-3xl bg-[var(--anthropic-page)] p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-[var(--anthropic-page)] dark:ring-dark-700 sm:p-6"
+        class="page-header mb-0 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700 sm:p-6"
       >
         <h1 class="page-title flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
           <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400">
@@ -67,8 +67,8 @@
         <DataTable :columns="columns" :data="monitors" :loading="loading">
           <template #cell-name="{ row, value }">
             <div class="flex items-center gap-1.5">
-              <ProviderBrandIcon :provider="row.provider" :model="row.primary_model" :logo-url="row.logo_url" />
-              <span class="font-medium text-[var(--anthropic-fg)] dark:text-[var(--anthropic-fg)]">{{ value }}</span>
+              <ProviderBrandIcon v-if="row.logo_url" :provider="row.provider" :logo-url="row.logo_url" />
+              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <HelpTooltip v-if="row.api_key_decrypt_failed" :content="t('admin.channelMonitor.apiKeyDecryptFailed')">
                 <Icon name="exclamationTriangle" size="sm" class="text-red-500" />
               </HelpTooltip>
@@ -80,7 +80,7 @@
               {{ providerLabel(row.provider) }}
             </span>
             <!-- 三种检测模式并列展示，quota 系配额数据源与纯探活一眼可分 -->
-            <span class="ml-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="[checkModeBadgeClass(row.check_mode), row.check_mode === 'probe' ? 'bg-gray-100' : 'bg-blue-100']">
+            <span class="ml-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="checkModeBadgeClass(row.check_mode)">
               {{ checkModeLabel(row.check_mode) }}
             </span>
           </template>
@@ -90,11 +90,11 @@
           </template>
 
           <template #cell-availability_7d="{ row }">
-            <span class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ formatAvailability(row) }}</span>
+            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatAvailability(row) }}</span>
           </template>
 
           <template #cell-latency="{ row }">
-            <span class="text-sm text-[var(--anthropic-fg)] dark:text-[var(--anthropic-muted)]">{{ formatLatency(row.primary_latency_ms) }}</span>
+            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatLatency(row.primary_latency_ms) }}</span>
           </template>
 
           <template #cell-enabled="{ row }">
@@ -170,6 +170,7 @@
 </template>
 
 <script setup lang="ts">
+import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
@@ -201,7 +202,6 @@ import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 import MonitorSettingsPanel from '@/features/channel-monitor-v2/MonitorSettingsPanel.vue'
 import { isChannelMonitorV1Mode } from '@/utils/featureFlags'
-import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -237,13 +237,13 @@ let abortController: AbortController | null = null
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 const columns = computed<Column[]>(() => [
-  { key: 'name', label: t('admin.channelMonitor.columns.name'), sortable: false, class: 'w-[14rem] min-w-[14rem] max-w-[14rem]' },
-  { key: 'provider', label: t('admin.channelMonitor.columns.provider'), sortable: false, class: 'w-[9rem] min-w-[9rem] max-w-[9rem]' },
-  { key: 'primary_model', label: t('admin.channelMonitor.columns.primaryModel'), sortable: false, class: 'w-[20rem] min-w-[20rem] max-w-[20rem]' },
-  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false, class: 'w-[8rem] min-w-[8rem] max-w-[8rem]' },
-  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false, class: 'w-[7rem] min-w-[7rem] max-w-[7rem]' },
-  { key: 'enabled', label: t('admin.channelMonitor.columns.enabled'), sortable: false, class: 'w-[6rem] min-w-[6rem] max-w-[6rem]' },
-  { key: 'actions', label: t('admin.channelMonitor.columns.actions'), sortable: false, class: 'w-[9rem] min-w-[9rem] max-w-[9rem]' },
+  { key: 'name', label: t('admin.channelMonitor.columns.name'), sortable: false },
+  { key: 'provider', label: t('admin.channelMonitor.columns.provider'), sortable: false },
+  { key: 'primary_model', label: t('admin.channelMonitor.columns.primaryModel'), sortable: false },
+  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false },
+  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false },
+  { key: 'enabled', label: t('admin.channelMonitor.columns.enabled'), sortable: false },
+  { key: 'actions', label: t('admin.channelMonitor.columns.actions'), sortable: false },
 ])
 
 const deleteConfirmMessage = computed(() => {

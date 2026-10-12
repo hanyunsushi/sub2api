@@ -1,16 +1,7 @@
-import { readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 
 import AccountsView from '../AccountsView.vue'
-
-const source = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../AccountsView.vue'), 'utf8')
-const targetedRepairSource = readFileSync(
-  resolve(dirname(fileURLToPath(import.meta.url)), '../../../styles/targeted-visual-repair.css'),
-  'utf8',
-)
 
 const {
   listAccounts,
@@ -158,7 +149,6 @@ describe('admin AccountsView scheduler score column', () => {
           scheduler_score: {
             base_score: 1.234567,
             sticky_score: 0,
-            sticky_score_infinity: true,
             sticky_weighted_enabled: false
           }
         },
@@ -203,7 +193,7 @@ describe('admin AccountsView scheduler score column', () => {
     getAllGroups.mockResolvedValue([])
   })
 
-  it('falls back to the scheduler score for ungrouped accounts instead of showing a dash', async () => {
+  it('falls back to the base score for ungrouped accounts instead of showing a dash', async () => {
     const wrapper = mountView()
     await flushPromises()
 
@@ -213,8 +203,7 @@ describe('admin AccountsView scheduler score column', () => {
 
     const ungroupedCell = wrapper.find('[data-test="scheduler-score-1"]')
     expect(ungroupedCell.exists()).toBe(true)
-    expect(ungroupedCell.text()).toContain('+∞')
-    expect(ungroupedCell.text()).not.toContain('1.234567')
+    expect(ungroupedCell.text()).toContain('1.234567')
     expect(ungroupedCell.text()).toContain('admin.accounts.schedulerScore.ungrouped')
     expect(ungroupedCell.text()).not.toBe('-')
   })
@@ -226,8 +215,7 @@ describe('admin AccountsView scheduler score column', () => {
     const groupedCell = wrapper.find('[data-test="scheduler-score-2"]')
     expect(groupedCell.exists()).toBe(true)
     expect(groupedCell.text()).toContain('group-five')
-    expect(groupedCell.text()).toContain('3.00')
-    expect(groupedCell.text()).not.toContain('2.00')
+    expect(groupedCell.text()).toContain('2')
   })
 
   it('keeps scheduler score hidden for old saved column settings until the admin opts in again', async () => {
@@ -261,19 +249,5 @@ describe('admin AccountsView scheduler score column', () => {
     const emptyCell = wrapper.find('[data-test="scheduler-score-3"]')
     expect(emptyCell.exists()).toBe(true)
     expect(emptyCell.text()).toBe('-')
-  })
-
-  it('keeps scheduler metadata text natural while aligning account-card rows vertically in source', () => {
-    expect(source).toContain('class="flex min-w-[7rem] flex-col gap-0.5 font-mono text-[11px] leading-4"')
-    expect(source).toContain('class="flex items-center gap-1 whitespace-nowrap text-gray-700 dark:text-gray-300"')
-    expect(source).toContain('class="font-mono text-[11px] leading-4 text-[var(--anthropic-muted)] dark:text-dark-400"')
-    expect(source).not.toContain('items-end gap-0.5 text-right')
-    expect(source).not.toContain('justify-end font-mono text-[11px]')
-    expect(targetedRepairSource).toContain('td[data-column-key="scheduler_score"],')
-    expect(targetedRepairSource).toContain('td[data-column-key="last_used_at"],')
-    expect(targetedRepairSource).toContain('td[data-column-key="created_at"] {')
-    expect(targetedRepairSource).toContain('flex-direction: column;')
-    expect(targetedRepairSource).toContain('td[data-column-key="scheduler_score"]::before')
-    expect(targetedRepairSource).toContain('line-height: 1rem;')
   })
 })

@@ -9,7 +9,7 @@
           {{ t('admin.promptAudit.runtime.description') }}
         </p>
       </div>
-      <button data-testid="merge-runtime-overview-emit-1" type="button" class="btn btn-secondary btn-sm" :disabled="loading" @click="$emit('refresh')">
+      <button type="button" class="btn btn-secondary btn-sm" :disabled="loading" @click="$emit('refresh')">
         {{ t('admin.promptAudit.actions.refresh') }}
       </button>
     </div>

@@ -9,6 +9,10 @@ const mockLogout = vi.fn()
 const mockGetCurrentUser = vi.fn()
 const mockRegister = vi.fn()
 const mockRefreshToken = vi.fn()
+const { clearExternalQuotaCache } = vi.hoisted(() => ({ clearExternalQuotaCache: vi.fn() }))
+vi.mock('@/api/admin/externalSubscriptions', () => ({
+  clearStoredDisplayStatusesCache: clearExternalQuotaCache,
+}))
 
 vi.mock('@/api', () => ({
   authAPI: {
@@ -61,6 +65,34 @@ describe('useAuthStore', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('clears external quota snapshots synchronously when admin identity changes', () => {
+    const store = useAuthStore()
+    store.user = { ...fakeAdminUser }
+    clearExternalQuotaCache.mockClear()
+    store.user = { ...fakeAdminUser, id: 3 }
+    expect(clearExternalQuotaCache).toHaveBeenCalledOnce()
+  })
+
+  it('clears external quota snapshots on logout and loss of admin permission', () => {
+    const store = useAuthStore()
+    store.user = { ...fakeAdminUser }
+    clearExternalQuotaCache.mockClear()
+    store.user = { ...fakeAdminUser, role: 'user' }
+    expect(clearExternalQuotaCache).toHaveBeenCalledOnce()
+    store.user = { ...fakeAdminUser }
+    clearExternalQuotaCache.mockClear()
+    store.user = null
+    expect(clearExternalQuotaCache).toHaveBeenCalledOnce()
+  })
+
+  it('preserves external quota snapshots during same-admin refresh', () => {
+    const store = useAuthStore()
+    store.user = { ...fakeAdminUser }
+    clearExternalQuotaCache.mockClear()
+    store.user = { ...fakeAdminUser, balance: 200 }
+    expect(clearExternalQuotaCache).not.toHaveBeenCalled()
   })
 
   // --- login ---

@@ -520,6 +520,7 @@ func (s *stubAdminService) RecoverDuplicateAccount(ctx context.Context, id int64
 
 func (s *stubAdminService) UpdateAccount(ctx context.Context, id int64, input *service.UpdateAccountInput) (*service.Account, error) {
 	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.updatedAccountIDs = append(s.updatedAccountIDs, id)
 	s.updatedAccounts = append(s.updatedAccounts, input)
 	s.updateAccountCalls++

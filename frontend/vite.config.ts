@@ -65,26 +65,7 @@ function injectPublicSettings(backendUrl: string): Plugin {
             const data = await response.json()
             if (data.code === 0 && data.data) {
               const script = `<script>window.__APP_CONFIG__=${JSON.stringify(data.data)};</script>`
-              let injectedHtml = html.replace('</head>', `${script}\n</head>`)
-              const siteName = typeof data.data.site_name === 'string' ? data.data.site_name.trim() : ''
-              if (siteName) {
-                const escapedSiteName = siteName
-                  .replaceAll('&', '&amp;')
-                  .replaceAll('<', '&lt;')
-                  .replaceAll('>', '&gt;')
-                  .replaceAll('"', '&quot;')
-
-                injectedHtml = injectedHtml
-                  .replace(
-                    /<title>.*?<\/title>/,
-                    `<title>${escapedSiteName} - AI API Gateway</title>`
-                  )
-                  .replace(
-                    /<meta name=\"apple-mobile-web-app-title\" content=\".*?\" \/>/,
-                    `<meta name="apple-mobile-web-app-title" content="${escapedSiteName}" />`
-                  )
-              }
-              return injectedHtml
+              return injectBranding(html, data.data).replace('</head>', `${script}\n</head>`)
             }
           }
         } catch (e) {
@@ -99,8 +80,6 @@ function injectPublicSettings(backendUrl: string): Plugin {
 export default defineConfig(({ mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '')
-  // Local preview follows the active OCI deployment by default. Developers
-  // running a local backend can still override this with VITE_DEV_PROXY_TARGET.
   const backendUrl = env.VITE_DEV_PROXY_TARGET || 'https://ai.kreeper.cc'
   const devPort = Number(env.VITE_DEV_PORT || 3000)
 
@@ -190,7 +169,7 @@ export default defineConfig(({ mode }) => {
         '/setup': {
           target: backendUrl,
           changeOrigin: true
-        },
+        }
       }
     }
   }
