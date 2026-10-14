@@ -41,9 +41,11 @@ describe('Pixel access token form', () => {
     await wrapper.get('#external-subscription-form').trigger('submit')
     await flushPromises()
     expect(api.createProvider).toHaveBeenCalledWith(expect.objectContaining({
-      id: 'pixel', name: 'Pixel', template: 'pixel_access_token', balance_strategy: 'pixel_user_quota',
+      id: 'pixel', name: 'Pixel', scheme: 'pixel_access_token',
       api_base_url: 'https://api.ai-pixel.online', api_token: 'pat-pixel-test', refresh_token: '', user_id: '',
     }))
+    expect(api.createProvider.mock.calls[0][0]).not.toHaveProperty('template')
+    expect(api.createProvider.mock.calls[0][0]).not.toHaveProperty('balance_strategy')
     wrapper.unmount()
   })
 
@@ -71,9 +73,11 @@ describe('Pixel access token form', () => {
     await wrapper.get('#external-subscription-form').trigger('submit')
     await flushPromises()
     expect(api.createProvider).toHaveBeenCalledWith(expect.objectContaining({
-      id: 'modelflare', name: 'ModelFlare', template: 'newapi_console', balance_strategy: 'newapi_user_quota',
+      id: 'modelflare', name: 'ModelFlare', scheme: 'newapi_user_quota',
       api_base_url: 'https://modelflare.dev', api_token: 'session=modelflare-session', user_id: 'mf-user-123', refresh_token: '',
     }))
+    expect(api.createProvider.mock.calls[0][0]).not.toHaveProperty('template')
+    expect(api.createProvider.mock.calls[0][0]).not.toHaveProperty('balance_strategy')
     wrapper.unmount()
   })
 })

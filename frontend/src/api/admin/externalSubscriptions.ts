@@ -1,4 +1,18 @@
 import { apiClient } from '@/api/client'
+export type ExternalSubscriptionScheme =
+  | 'pixel_access_token'
+  | 'newapi_user_quota'
+  | 'newapi_subscription'
+  | 'active_subscriptions'
+  | 'buzz_balance'
+  | 'openrouter_credits'
+  | 'cloudflare_ai_gateway_credits'
+  | 'rawchat_subscriptions'
+  | 'mimo_token_plan'
+  | 'openai_billing'
+  | 'auth_me_balance'
+  | 'active_with_auth_me_balance'
+
 export type ExternalSubscriptionTemplate =
   | 'pixel_access_token'
   | 'newapi_console'
@@ -36,6 +50,7 @@ export interface ExternalSubscriptionProvider {
   id: string
   name: string
   enabled: boolean
+  scheme?: ExternalSubscriptionScheme
   template: ExternalSubscriptionTemplate
   balance_strategy: ExternalSubscriptionBalanceStrategy
   api_base_url: string
@@ -51,8 +66,10 @@ export interface ExternalSubscriptionProviderInput {
   id?: string
   name: string
   enabled: boolean
-  template: ExternalSubscriptionTemplate
-  balance_strategy: ExternalSubscriptionBalanceStrategy
+  /** Canonical user-facing scheme; template/strategy below are legacy compatibility fields. */
+  scheme: ExternalSubscriptionScheme
+  template?: ExternalSubscriptionTemplate
+  balance_strategy?: ExternalSubscriptionBalanceStrategy
   api_base_url: string
   logo_url?: string
   api_token?: string
@@ -65,6 +82,7 @@ export interface ExternalSubscriptionProviderInput {
 export interface ExternalSubscriptionStatus {
   provider: string
   name: string
+  scheme?: ExternalSubscriptionScheme
   template: ExternalSubscriptionTemplate
   balance_strategy: ExternalSubscriptionBalanceStrategy
   enabled: boolean

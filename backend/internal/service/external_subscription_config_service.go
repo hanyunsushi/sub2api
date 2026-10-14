@@ -17,6 +17,22 @@ import (
 )
 
 const (
+	// External subscription schemes are the user-facing contract that binds a
+	// request template to its balance endpoint. Template and strategy remain in
+	// the payload for backward compatibility with older clients and settings.
+	ExternalSubscriptionSchemePixelAccessToken           = "pixel_access_token"
+	ExternalSubscriptionSchemeNewAPIUserQuota            = "newapi_user_quota"
+	ExternalSubscriptionSchemeNewAPISubscription         = "newapi_subscription"
+	ExternalSubscriptionSchemeActiveSubscriptions        = "active_subscriptions"
+	ExternalSubscriptionSchemeBuzzBalance                = "buzz_balance"
+	ExternalSubscriptionSchemeOpenRouterCredits          = "openrouter_credits"
+	ExternalSubscriptionSchemeCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
+	ExternalSubscriptionSchemeRawChatSubscriptions       = "rawchat_subscriptions"
+	ExternalSubscriptionSchemeMimoTokenPlan              = "mimo_token_plan"
+	ExternalSubscriptionSchemeOpenAIBilling              = "openai_billing"
+	ExternalSubscriptionSchemeAuthMeBalance              = "auth_me_balance"
+	ExternalSubscriptionSchemeActiveWithAuthMeBalance    = "active_with_auth_me_balance"
+
 	ExternalSubscriptionTemplateNewAPIConsole              = "newapi_console"
 	ExternalSubscriptionTemplateActiveSubscriptions        = "active_subscriptions"
 	ExternalSubscriptionTemplateBuzzBalance                = "buzz_balance"
@@ -51,6 +67,7 @@ type ExternalSubscriptionProvider struct {
 	ID                     string   `json:"id"`
 	Name                   string   `json:"name"`
 	Enabled                bool     `json:"enabled"`
+	Scheme                 string   `json:"scheme"`
 	Template               string   `json:"template"`
 	BalanceStrategy        string   `json:"balance_strategy"`
 	APIBaseURL             string   `json:"api_base_url"`
@@ -68,6 +85,7 @@ type ExternalSubscriptionProviderInput struct {
 	ID              string   `json:"id"`
 	Name            string   `json:"name"`
 	Enabled         bool     `json:"enabled"`
+	Scheme          string   `json:"scheme"`
 	Template        string   `json:"template"`
 	BalanceStrategy string   `json:"balance_strategy"`
 	APIBaseURL      string   `json:"api_base_url"`
@@ -81,6 +99,7 @@ type ExternalSubscriptionProviderInput struct {
 
 type ExternalSubscriptionProviderStatus struct {
 	Name                   string   `json:"name"`
+	Scheme                 string   `json:"scheme"`
 	Template               string   `json:"template"`
 	BalanceStrategy        string   `json:"balance_strategy"`
 	LogoURL                string   `json:"logo_url,omitempty"`
@@ -95,6 +114,7 @@ type externalSubscriptionStoredProvider struct {
 	ID              string   `json:"id"`
 	Name            string   `json:"name"`
 	Enabled         bool     `json:"enabled"`
+	Scheme          string   `json:"scheme,omitempty"`
 	Template        string   `json:"template"`
 	BalanceStrategy string   `json:"balance_strategy,omitempty"`
 	APIBaseURL      string   `json:"api_base_url"`
@@ -334,6 +354,7 @@ func (s *ExternalSubscriptionConfigService) getStatusesUncached(ctx context.Cont
 		publicProvider := publicExternalSubscriptionProvider(stored[result.index])
 		statuses = append(statuses, ExternalSubscriptionProviderStatus{
 			Name:                       publicProvider.Name,
+			Scheme:                     publicProvider.Scheme,
 			Template:                   publicProvider.Template,
 			BalanceStrategy:            publicProvider.BalanceStrategy,
 			LogoURL:                    publicProvider.LogoURL,
@@ -434,6 +455,7 @@ func (s *ExternalSubscriptionConfigService) mergeCachedStatusesForTransientError
 		}
 		kept := previous
 		kept.Name = status.Name
+		kept.Scheme = status.Scheme
 		kept.Template = status.Template
 		kept.BalanceStrategy = status.BalanceStrategy
 		kept.LogoURL = status.LogoURL
@@ -860,6 +882,7 @@ func normalizeExternalSubscriptionInput(input ExternalSubscriptionProviderInput,
 		ID:              strings.TrimSpace(strings.ToLower(input.ID)),
 		Name:            strings.TrimSpace(input.Name),
 		Enabled:         input.Enabled,
+		Scheme:          strings.TrimSpace(strings.ToLower(input.Scheme)),
 		Template:        strings.TrimSpace(input.Template),
 		BalanceStrategy: strings.TrimSpace(input.BalanceStrategy),
 		APIBaseURL:      normalizeExternalSubscriptionAPIBaseURL(input.APIBaseURL, strings.TrimSpace(input.APIBaseURL)),
@@ -890,6 +913,15 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	provider.Name = strings.TrimSpace(provider.Name)
 	if provider.Name == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_PROVIDER_NAME_REQUIRED", "external subscription provider name is required")
+	}
+	provider.Scheme = strings.TrimSpace(strings.ToLower(provider.Scheme))
+	if provider.Scheme != "" {
+		definition, ok := externalSubscriptionSchemeSpecFor(provider.Scheme)
+		if !ok {
+			return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_SCHEME_INVALID", "external subscription provider scheme is invalid")
+		}
+		provider.Template = definition.template
+		provider.BalanceStrategy = definition.balanceStrategy
 	}
 	provider.Template = strings.TrimSpace(provider.Template)
 	// Migrate only the built-in Pixel console contract, not custom providers.
@@ -927,6 +959,10 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	}
 	if strings.EqualFold(provider.ID, "a6api") && strings.Contains(strings.ToLower(provider.APIBaseURL), "a6api.com") && (provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuto || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyOpenAIBilling) {
 		provider.BalanceStrategy = ExternalSubscriptionBalanceStrategyNewAPIUserQuota
+	}
+	provider.Scheme = externalSubscriptionSchemeForPair(provider.Template, provider.BalanceStrategy)
+	if provider.Scheme == "" {
+		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_SCHEME_INVALID", "external subscription provider template and balance strategy must form a supported scheme")
 	}
 	provider.LogoURL = strings.TrimSpace(provider.LogoURL)
 	provider.APIToken = strings.TrimSpace(provider.APIToken)
@@ -1225,6 +1261,7 @@ func publicExternalSubscriptionProvider(provider externalSubscriptionStoredProvi
 		ID:                     provider.ID,
 		Name:                   provider.Name,
 		Enabled:                provider.Enabled,
+		Scheme:                 externalSubscriptionSchemeForProvider(provider),
 		Template:               provider.Template,
 		BalanceStrategy:        provider.BalanceStrategy,
 		APIBaseURL:             provider.APIBaseURL,

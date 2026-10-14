@@ -118,6 +118,7 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 
 	modelflare := requireExternalSubscriptionProvider(t, providers, "modelflare")
 	require.Equal(t, "ModelFlare", modelflare.Name)
+	require.Equal(t, ExternalSubscriptionSchemeNewAPIUserQuota, modelflare.Scheme)
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, modelflare.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, modelflare.BalanceStrategy)
 	require.Equal(t, "https://modelflare.dev", modelflare.APIBaseURL)
@@ -204,6 +205,29 @@ func TestExternalSubscriptionConfigServiceGetStatusesReadsModelFlareCookieAndUse
 	require.InDelta(t, 200000.0/3333333.3333333335, modelflare.UsedUSD, 0.0000001)
 	require.NotNil(t, modelflare.RemainingUSD)
 	require.InDelta(t, 1000000.0/3333333.3333333335, *modelflare.RemainingUSD, 0.0000001)
+}
+
+func TestExternalSubscriptionConfigServiceNormalizesSchemeAsBoundTemplateAndStrategy(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepo(nil)
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	created, err := svc.CreateProvider(context.Background(), ExternalSubscriptionProviderInput{
+		ID: "scheme-provider", Name: "Scheme Provider", Enabled: true,
+		Scheme:     ExternalSubscriptionSchemeNewAPIUserQuota,
+		APIBaseURL: "https://provider.example", APIToken: "token",
+		MatchKeywords: []string{"provider"}, SortOrder: 1,
+	})
+	require.NoError(t, err)
+	require.Equal(t, ExternalSubscriptionSchemeNewAPIUserQuota, created.Scheme)
+	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, created.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, created.BalanceStrategy)
+
+	var stored []externalSubscriptionStoredProvider
+	require.NoError(t, json.Unmarshal([]byte(repo.values[SettingKeyExternalSubscriptionProviders]), &stored))
+	provider := requireStoredExternalSubscriptionProvider(t, stored, "scheme-provider")
+	require.Equal(t, ExternalSubscriptionSchemeNewAPIUserQuota, provider.Scheme)
+	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, provider.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, provider.BalanceStrategy)
 }
 
 func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {

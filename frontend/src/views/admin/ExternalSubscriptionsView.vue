@@ -14,8 +14,8 @@
             </div>
             <Select
               variant="text-control"
-              v-model="templateFilter"
-              :options="templateFilterOptions"
+              v-model="schemeFilter"
+              :options="schemeFilterOptions"
               class="w-48"
             />
             <Select
@@ -100,7 +100,7 @@
                         {{ card.id }}
                       </span>
                       <span class="external-subscription-template-chip truncate">
-                        {{ cardTemplateLabel(card) }}
+                        {{ cardSchemeLabel(card) }}
                       </span>
                     </div>
                   </div>
@@ -226,22 +226,22 @@
       @close="closeDialog"
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <button data-testid="admin-external-subscriptions-button-apply-preset-pixel-access-token"
             type="button"
             class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-100"
-            @click="applyPreset('pixel_access_token')"
+            @click="applySchemePreset('pixel_access_token')"
           >
             <div class="text-sm font-semibold">Pixel Access Token</div>
           </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-console"
+          <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-user-quota"
             type="button"
             class="rounded-lg border border-gray-900 bg-white px-4 py-3 text-left transition-colors hover:border-gray-900 hover:bg-white dark:border-white dark:bg-dark-800 dark:hover:bg-gray-100"
-            @click="applyPreset('newapi_console')"
+            @click="applySchemePreset('newapi_user_quota')"
           >
             <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ localText('New API 兼容：控制台接口', 'New API-compatible: Console API') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('Bearer Token → 用户额度或套餐接口', 'Bearer token → user quota or subscription API') }}
+              {{ localText('控制台凭据 → /api/user/self 用户额度', 'Console credential → /api/user/self user quota') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-modelflare"
@@ -254,30 +254,10 @@
               {{ localText('浏览器 Cookie → /api/user/self 用户额度', 'Browser Cookie → /api/user/self user quota') }}
             </div>
           </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-active-subscriptions"
-            type="button"
-            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
-            @click="applyPreset('active_subscriptions')"
-          >
-            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">{{ localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('读取 /api/v1/subscriptions/active', 'Reads /api/v1/subscriptions/active') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-buzz-balance"
-            type="button"
-            class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
-            @click="applyPreset('buzz_balance')"
-          >
-            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
-            </div>
-          </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-openrouter-credits"
             type="button"
             class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
-            @click="applyPreset('openrouter_credits')"
+            @click="applySchemePreset('openrouter_credits')"
           >
             <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
@@ -287,31 +267,11 @@
           <button data-testid="admin-external-subscriptions-button-apply-preset-cloudflare-ai-gateway-credits"
             type="button"
             class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left transition-colors hover:border-orange-300 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-900/20 dark:hover:bg-orange-900/30"
-            @click="applyPreset('cloudflare_ai_gateway_credits')"
+            @click="applySchemePreset('cloudflare_ai_gateway_credits')"
           >
             <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">{{ localText('Cloudflare：API Token + Account ID → Credits', 'Cloudflare: API Token + Account ID → Credits') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('读取 AI Gateway credits', 'Reads AI Gateway credits') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-rawchat-subscriptions"
-            type="button"
-            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
-            @click="applyPreset('rawchat_subscriptions')"
-          >
-            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">{{ localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('读取用户中心订阅与额度', 'Reads user-center subscriptions and quota') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-mimo-token-plan"
-            type="button"
-            class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-200 hover:bg-gray-100 dark:border-dark-600 dark:bg-dark-800 dark:hover:bg-gray-100"
-            @click="applyPreset('mimo_token_plan')"
-          >
-            <div class="text-sm font-semibold text-gray-500 dark:text-dark-400">{{ localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('读取 Token Plan 余额', 'Reads Token Plan balance') }}
             </div>
           </button>
         </div>
@@ -358,14 +318,10 @@
           </div>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2">
           <div>
-            <label class="input-label">{{ localText('模板', 'Template') }}</label>
-            <Select v-model="form.template" :options="templateOptions" />
-          </div>
-          <div>
-            <label class="input-label">{{ localText('余额策略', 'Balance Strategy') }}</label>
-            <Select v-model="form.balance_strategy" :options="balanceStrategyOptions" />
+            <label class="input-label">{{ localText('配置方案', 'Configuration Scheme') }}</label>
+            <Select v-model="form.scheme" :options="schemeOptions" />
           </div>
           <div class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600">
             <div>
@@ -465,12 +421,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import externalSubscriptionsAPI, {
   type ExternalSubscriptionBalanceStrategy,
   type ExternalSubscriptionProvider,
   type ExternalSubscriptionProviderInput,
+  type ExternalSubscriptionScheme,
   type ExternalSubscriptionStatus,
   type ExternalSubscriptionTemplate,
 } from '@/api/admin/externalSubscriptions'
@@ -501,7 +458,7 @@ const loading = ref(false)
 const statusLoading = ref(false)
 const submitting = ref(false)
 const searchQuery = ref('')
-const templateFilter = ref<string>('')
+const schemeFilter = ref<string>('')
 const enabledFilter = ref<string>('')
 const showDialog = ref(false)
 const showDeleteDialog = ref(false)
@@ -513,8 +470,7 @@ const form = reactive({
   id: '',
   name: '',
   enabled: true,
-  template: 'newapi_console' as ExternalSubscriptionTemplate,
-  balance_strategy: 'auto' as ExternalSubscriptionBalanceStrategy,
+  scheme: 'newapi_user_quota' as ExternalSubscriptionScheme,
   api_base_url: '',
   logo_url: '',
   api_token: '',
@@ -542,43 +498,128 @@ const isModelFlareForm = computed(() => (
   form.api_base_url.trim().toLowerCase().includes('modelflare.dev')
 ))
 
-const templateOptions = computed(() => [
-  { value: 'pixel_access_token', label: localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota') },
-  { value: 'newapi_console', label: localText('New API 兼容：控制台接口', 'New API-compatible: Console API') },
-  { value: 'active_subscriptions', label: localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions') },
-  { value: 'buzz_balance', label: localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance') },
-  { value: 'openrouter_credits', label: localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits') },
-  { value: 'cloudflare_ai_gateway_credits', label: localText('Cloudflare：Token + Account ID → Credits', 'Cloudflare: Token + Account ID → Credits') },
-  { value: 'rawchat_subscriptions', label: localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions') },
-  { value: 'mimo_token_plan', label: localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan') },
-])
+type ExternalSubscriptionSchemeDefinition = {
+  value: ExternalSubscriptionScheme
+  template: ExternalSubscriptionTemplate
+  balance_strategy: ExternalSubscriptionBalanceStrategy
+  label: (localText: (zh: string, en: string) => string) => string
+}
 
-const balanceStrategyOptions = computed(() => [
-  { value: 'pixel_user_quota', label: localText('Pixel：访问令牌 → /api/user/self 额度', 'Pixel: Access Token → /api/user/self quota') },
-  { value: 'auto', label: localText('按模板默认接口', 'Template default endpoint') },
-  { value: 'openai_billing', label: localText('OpenAI：账单额度（需授权）', 'OpenAI: Billing quota (authorization required)') },
-  { value: 'newapi_user_quota', label: localText('控制台凭据 → /api/user/self 用户额度', 'Console credential → /api/user/self user quota') },
-  { value: 'newapi_subscription', label: localText('控制台凭据 → /api/subscription/self 套餐', 'Console credential → /api/subscription/self plans') },
-  { value: 'active_subscriptions', label: localText('访问令牌 → /api/v1/subscriptions/active', 'Access token → /api/v1/subscriptions/active') },
-  { value: 'auth_me_balance', label: localText('访问令牌 → /api/v1/auth/me 余额', 'Access token → /api/v1/auth/me balance') },
-  { value: 'active_with_auth_me_balance', label: localText('活跃订阅，失败回退 /auth/me', 'Active subscriptions with /auth/me fallback') },
-])
+const activeSchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
+  {
+    value: 'pixel_access_token',
+    template: 'pixel_access_token',
+    balance_strategy: 'pixel_user_quota',
+    label: localText => localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota'),
+  },
+  {
+    value: 'newapi_user_quota',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_user_quota',
+    label: localText => localText('New API 控制台凭据 → /api/user/self 用户额度', 'New API console credential → /api/user/self user quota'),
+  },
+  {
+    value: 'openrouter_credits',
+    template: 'openrouter_credits',
+    balance_strategy: 'auto',
+    label: localText => localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits'),
+  },
+  {
+    value: 'cloudflare_ai_gateway_credits',
+    template: 'cloudflare_ai_gateway_credits',
+    balance_strategy: 'auto',
+    label: localText => localText('Cloudflare：API Token + Account ID → Credits', 'Cloudflare: API Token + Account ID → Credits'),
+  },
+]
 
-const requiresPixelAccessToken = computed(() => form.template === 'pixel_access_token' || form.balance_strategy === 'pixel_user_quota')
+const legacySchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
+  {
+    value: 'newapi_subscription',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_subscription',
+    label: localText => localText('旧方案：控制台凭据 → /api/subscription/self 套餐', 'Legacy: console credential → /api/subscription/self plans'),
+  },
+  {
+    value: 'active_subscriptions',
+    template: 'active_subscriptions',
+    balance_strategy: 'active_subscriptions',
+    label: localText => localText('旧方案：访问令牌 → 活跃订阅', 'Legacy: access token → active subscriptions'),
+  },
+  {
+    value: 'buzz_balance',
+    template: 'buzz_balance',
+    balance_strategy: 'auto',
+    label: localText => localText('旧方案：Buzz API Token → 账单余额', 'Legacy: Buzz API token → billing balance'),
+  },
+  {
+    value: 'rawchat_subscriptions',
+    template: 'rawchat_subscriptions',
+    balance_strategy: 'auto',
+    label: localText => localText('旧方案：RawChat Token → 用户订阅', 'Legacy: RawChat token → user subscriptions'),
+  },
+  {
+    value: 'mimo_token_plan',
+    template: 'mimo_token_plan',
+    balance_strategy: 'auto',
+    label: localText => localText('旧方案：MiMo Token → Token Plan', 'Legacy: MiMo token → Token Plan'),
+  },
+  {
+    value: 'openai_billing',
+    template: 'newapi_console',
+    balance_strategy: 'openai_billing',
+    label: localText => localText('旧方案：OpenAI → 账单额度', 'Legacy: OpenAI → billing quota'),
+  },
+  {
+    value: 'auth_me_balance',
+    template: 'active_subscriptions',
+    balance_strategy: 'auth_me_balance',
+    label: localText => localText('旧方案：访问令牌 → /api/v1/auth/me 余额', 'Legacy: access token → /api/v1/auth/me balance'),
+  },
+  {
+    value: 'active_with_auth_me_balance',
+    template: 'active_subscriptions',
+    balance_strategy: 'active_with_auth_me_balance',
+    label: localText => localText('旧方案：活跃订阅，失败回退 /auth/me', 'Legacy: active subscriptions with /auth/me fallback'),
+  },
+]
+
+function schemeDefinition(scheme: ExternalSubscriptionScheme | string) {
+  return [...activeSchemeDefinitions, ...legacySchemeDefinitions].find(item => item.value === scheme)
+}
+
+function schemeForPair(template: ExternalSubscriptionTemplate, balanceStrategy: ExternalSubscriptionBalanceStrategy) {
+  const match = [...activeSchemeDefinitions, ...legacySchemeDefinitions].find(item => (
+    item.template === template && item.balance_strategy === balanceStrategy
+  ))
+  if (match) return match.value
+  if (balanceStrategy === 'auto') {
+    const fallback = [...activeSchemeDefinitions, ...legacySchemeDefinitions].find(item => item.template === template)
+    if (fallback) return fallback.value
+  }
+  return 'newapi_user_quota' as ExternalSubscriptionScheme
+}
+
+const schemeOptions = computed(() => {
+  const current = editingProvider.value?.scheme || (editingProvider.value
+    ? schemeForPair(editingProvider.value.template, editingProvider.value.balance_strategy)
+    : '')
+  const options = current && !activeSchemeDefinitions.some(item => item.value === current)
+    ? [...activeSchemeDefinitions, ...legacySchemeDefinitions.filter(item => item.value === current)]
+    : activeSchemeDefinitions
+  return options.map(item => ({ value: item.value, label: item.label(localText) }))
+})
+
+const requiresPixelAccessToken = computed(() => form.scheme === 'pixel_access_token')
 const requiresUserId = computed(() => !requiresPixelAccessToken.value && (
   isA6APIForm.value ||
   isModelFlareForm.value ||
-  (form.template === 'newapi_console' && !['openai_billing', 'newapi_user_quota'].includes(form.balance_strategy)) ||
-  form.template === 'cloudflare_ai_gateway_credits'
+  form.scheme === 'newapi_subscription' ||
+  form.scheme === 'cloudflare_ai_gateway_credits'
 ))
-const requiresRefreshToken = computed(() => form.template === 'active_subscriptions' && !requiresPixelAccessToken.value)
-
-watch(() => form.template, template => {
-  if (template === 'pixel_access_token') form.balance_strategy = 'pixel_user_quota'
-})
+const requiresRefreshToken = computed(() => form.scheme === 'active_subscriptions' && !requiresPixelAccessToken.value)
 
 const userIdLabel = computed(() => (
-  form.template === 'cloudflare_ai_gateway_credits'
+  form.scheme === 'cloudflare_ai_gateway_credits'
     ? 'Account ID'
     : isModelFlareForm.value
       ? localText('ModelFlare User ID', 'ModelFlare User ID')
@@ -586,7 +627,7 @@ const userIdLabel = computed(() => (
 ))
 
 const userIdPlaceholder = computed(() => (
-  form.template === 'cloudflare_ai_gateway_credits'
+  form.scheme === 'cloudflare_ai_gateway_credits'
     ? 'Cloudflare account id'
     : isModelFlareForm.value ? 'ModelFlare user id' : '707'
 ))
@@ -595,16 +636,13 @@ const apiTokenPlaceholder = computed(() => {
   if (requiresPixelAccessToken.value) return 'Pixel Access Token'
   if (isA6APIForm.value || isModelFlareForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
-  if (form.template === 'buzz_balance') return 'Buzz API Token'
-  if (form.template === 'openrouter_credits') return 'sk-or-...'
-  if (form.template === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
-  if (form.template === 'rawchat_subscriptions') return 'RawChat token'
-  if (form.template === 'mimo_token_plan') return 'tp-xxxxx'
+  if (form.scheme === 'openrouter_credits') return 'sk-or-...'
+  if (form.scheme === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
   return 'sk-...'
 })
 
 const requiresConsoleToken = computed(() => (
-  form.template === 'newapi_console' && form.balance_strategy === 'newapi_user_quota'
+  form.scheme === 'newapi_user_quota' || form.scheme === 'newapi_subscription'
 ))
 
 const apiTokenLabel = computed(() => (
@@ -613,9 +651,9 @@ const apiTokenLabel = computed(() => (
     : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
 ))
 
-const templateFilterOptions = computed(() => [
-  { value: '', label: localText('全部模板', 'All Templates') },
-  ...templateOptions.value,
+const schemeFilterOptions = computed(() => [
+  { value: '', label: localText('全部方案', 'All Schemes') },
+  ...activeSchemeDefinitions.map(item => ({ value: item.value, label: item.label(localText) })),
 ])
 
 const enabledFilterOptions = computed(() => [
@@ -627,6 +665,7 @@ const enabledFilterOptions = computed(() => [
 type ExternalSubscriptionCard = {
   id: string
   name: string
+  scheme: ExternalSubscriptionScheme
   template: ExternalSubscriptionTemplate
   enabled: boolean
   configured: boolean
@@ -683,13 +722,14 @@ const displayCards = computed<ExternalSubscriptionCard[]>(() => {
 const filteredCards = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
   return displayCards.value.filter((card) => {
-    if (templateFilter.value && card.template !== templateFilter.value) return false
+    if (schemeFilter.value && card.scheme !== schemeFilter.value) return false
     if (enabledFilter.value === 'enabled' && !card.enabled) return false
     if (enabledFilter.value === 'disabled' && card.enabled) return false
     if (!query) return true
     const haystack = [
       card.id,
       card.name,
+      card.scheme,
       card.template,
       card.siteUrl,
       card.balance,
@@ -709,25 +749,8 @@ function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
   ].join(' ')
 }
 
-function templateLabel(template: ExternalSubscriptionTemplate) {
-  switch (template) {
-    case 'pixel_access_token':
-      return localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota')
-    case 'buzz_balance':
-      return localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance')
-    case 'active_subscriptions':
-      return localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions')
-    case 'openrouter_credits':
-      return localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits')
-    case 'cloudflare_ai_gateway_credits':
-      return localText('Cloudflare：Token + Account ID → Credits', 'Cloudflare: Token + Account ID → Credits')
-    case 'rawchat_subscriptions':
-      return localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions')
-    case 'mimo_token_plan':
-      return localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan')
-    default:
-      return localText('New API 兼容：控制台接口', 'New API-compatible: Console API')
-  }
+function schemeLabel(scheme: ExternalSubscriptionScheme) {
+  return schemeDefinition(scheme)?.label(localText) || localText('自定义外部订阅方案', 'Custom external subscription scheme')
 }
 
 function buildStatusCard(
@@ -738,6 +761,7 @@ function buildStatusCard(
   return {
     id,
     name: provider?.name || status.name || id,
+    scheme: provider?.scheme || status.scheme || schemeForPair(status.template, status.balance_strategy),
     template: provider?.template || status.template,
     enabled: status.enabled,
     configured: status.configured,
@@ -768,6 +792,7 @@ function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): External
   return {
     id: provider.id,
     name: provider.name,
+    scheme: provider.scheme || schemeForPair(provider.template, provider.balance_strategy),
     template: provider.template,
     enabled: provider.enabled,
     configured: provider.api_token_configured || provider.refresh_token_configured || Boolean(provider.user_id),
@@ -798,8 +823,7 @@ function resetForm() {
   form.id = ''
   form.name = ''
   form.enabled = true
-  form.template = 'newapi_console'
-  form.balance_strategy = 'auto'
+  form.scheme = 'newapi_user_quota'
   form.api_base_url = ''
   form.logo_url = ''
   form.api_token = ''
@@ -810,10 +834,9 @@ function resetForm() {
   keywordsDraft.value = ''
 }
 
-function applyPreset(template: ExternalSubscriptionTemplate) {
-  form.template = template
-  if (template === 'pixel_access_token') {
-    form.balance_strategy = 'pixel_user_quota'
+function applySchemePreset(scheme: ExternalSubscriptionScheme) {
+  form.scheme = scheme
+  if (scheme === 'pixel_access_token') {
     form.api_base_url = 'https://api.ai-pixel.online'
     if (!form.name) form.name = 'Pixel'
     if (!form.id) form.id = 'pixel'
@@ -823,33 +846,14 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'pixel\nai-pixel.online\npixelapi.cc'
     return
   }
-  if (template === 'newapi_console') {
-    if (form.balance_strategy === 'auto') form.balance_strategy = 'newapi_subscription'
+  if (scheme === 'newapi_user_quota') {
     if (!form.api_base_url) form.api_base_url = 'https://api.example.com'
     if (!form.name) form.name = 'NewAPI'
     if (!form.id) form.id = 'newapi-provider'
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'newapi\napi.example.com'
     return
   }
-  if (template === 'active_subscriptions') {
-    if (form.balance_strategy === 'auto') form.balance_strategy = 'active_subscriptions'
-    if (!form.api_base_url) form.api_base_url = 'https://example.com'
-    if (!form.name) form.name = 'Active Subscription'
-    if (!form.id) form.id = 'active-provider'
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'example.com\nactive-provider'
-    return
-  }
-  if (template === 'buzz_balance') {
-    form.balance_strategy = 'auto'
-    if (!form.api_base_url) form.api_base_url = 'https://buzzai.cc'
-    if (!form.name) form.name = 'Buzz'
-    if (!form.id) form.id = 'buzz'
-    if (form.sort_order === 50) form.sort_order = 5
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'buzz\nbuzzai\nbuzzai.cc\nclaude'
-    return
-  }
-  if (template === 'openrouter_credits') {
-    form.balance_strategy = 'auto'
+  if (scheme === 'openrouter_credits') {
     if (!form.api_base_url) form.api_base_url = 'https://openrouter.ai'
     if (!form.name) form.name = 'OpenRouter'
     if (!form.id) form.id = 'openrouter'
@@ -857,8 +861,7 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'openrouter\nopenrouter.ai'
     return
   }
-  if (template === 'cloudflare_ai_gateway_credits') {
-    form.balance_strategy = 'auto'
+  if (scheme === 'cloudflare_ai_gateway_credits') {
     if (!form.api_base_url) form.api_base_url = 'https://api.cloudflare.com/client/v4'
     if (!form.name) form.name = 'Cloudflare AI Gateway'
     if (!form.id) form.id = 'cloudflare'
@@ -866,28 +869,10 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
     if (!keywordsDraft.value.trim()) keywordsDraft.value = 'cloudflare\nai-gateway\nworkers-ai'
     return
   }
-  if (template === 'rawchat_subscriptions') {
-    form.balance_strategy = 'auto'
-    if (!form.api_base_url) form.api_base_url = 'https://rawchat.cn'
-    if (!form.name) form.name = 'RawChat'
-    if (!form.id) form.id = 'rawchat'
-    if (form.sort_order === 50) form.sort_order = 90
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'rawchat\nrawchat.cn'
-    return
-  }
-  if (template === 'mimo_token_plan') {
-    form.balance_strategy = 'auto'
-    if (!form.api_base_url) form.api_base_url = 'https://platform.xiaomimimo.com'
-    if (!form.name) form.name = 'Xiaomi MiMo'
-    if (!form.id) form.id = 'mimo'
-    if (form.sort_order === 50) form.sort_order = 95
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'mimo\nxiaomi\nxiaomimimo'
-  }
 }
 
 function applyModelFlarePreset() {
-  form.template = 'newapi_console'
-  form.balance_strategy = 'newapi_user_quota'
+  form.scheme = 'newapi_user_quota'
   form.api_base_url = 'https://modelflare.dev'
   form.name = 'ModelFlare'
   form.id = 'modelflare'
@@ -908,8 +893,7 @@ function openEditDialog(provider: ExternalSubscriptionProvider) {
   form.id = provider.id
   form.name = provider.name
   form.enabled = provider.enabled
-  form.template = provider.template
-  form.balance_strategy = provider.balance_strategy
+  form.scheme = provider.scheme || schemeForPair(provider.template, provider.balance_strategy)
   form.api_base_url = provider.api_base_url
   form.logo_url = provider.logo_url || ''
   form.api_token = ''
@@ -936,8 +920,7 @@ function buildPayload(): ExternalSubscriptionProviderInput {
     id: editingProvider.value ? undefined : form.id.trim().toLowerCase(),
     name: form.name.trim(),
     enabled: form.enabled,
-    template: form.template,
-    balance_strategy: form.balance_strategy,
+    scheme: form.scheme,
     api_base_url: form.api_base_url.trim(),
     logo_url: form.logo_url.trim(),
     api_token: form.api_token.trim(),
@@ -1104,8 +1087,8 @@ function formatCardQuotaUsage(card: ExternalSubscriptionCard) {
   return used && total ? `${used} / ${total}` : '-'
 }
 
-function cardTemplateLabel(card: ExternalSubscriptionCard) {
-  return templateLabel(card.template)
+function cardSchemeLabel(card: ExternalSubscriptionCard) {
+  return schemeLabel(card.scheme)
 }
 
 const unsubscribeExternalSubscriptionStatuses = externalSubscriptionsAPI.subscribeDisplayStatuses((nextStatuses) => {
