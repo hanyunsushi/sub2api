@@ -100,17 +100,30 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleJSON(ctx context.Context, 
 	req := s.client.R().
 		SetContext(ctx).
 		SetSuccessResult(&envelope)
-	if strings.EqualFold(cfg.Provider, "a6api") {
+	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
+	case "a6api":
 		cookie := strings.TrimSpace(settings.APIToken)
 		if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
 			cookie = strings.TrimSpace(cookie[len("cookie:"):])
 		}
 		req.SetHeader("Cookie", cookie)
-	} else {
+		if auth.UserID != "" {
+			req.SetHeader("New-API-User", auth.UserID)
+		}
+	case "modelflare":
+		cookie := strings.TrimSpace(settings.APIToken)
+		if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
+			cookie = strings.TrimSpace(cookie[len("cookie:"):])
+		}
+		req.SetHeader("Cookie", cookie)
+		if auth.UserID != "" {
+			req.SetHeader("X-ModelFlare-User", auth.UserID)
+		}
+	default:
 		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
-	}
-	if auth.UserID != "" {
-		req.SetHeader("New-API-User", auth.UserID)
+		if auth.UserID != "" {
+			req.SetHeader("New-API-User", auth.UserID)
+		}
 	}
 	resp, err := req.Get(settings.APIBaseURL + path)
 	if err != nil {

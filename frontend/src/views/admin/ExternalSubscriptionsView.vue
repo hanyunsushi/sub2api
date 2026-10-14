@@ -239,9 +239,19 @@
             class="rounded-lg border border-gray-900 bg-white px-4 py-3 text-left transition-colors hover:border-gray-900 hover:bg-white dark:border-white dark:bg-dark-800 dark:hover:bg-gray-100"
             @click="applyPreset('newapi_console')"
           >
-            <div class="text-sm font-semibold text-gray-900 dark:text-white">NewAPI Console</div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ localText('New API 兼容：控制台接口', 'New API-compatible: Console API') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('QL、LIUST、PackyCode 这类控制台余额接口', 'For QL, LIUST, PackyCode style console balance APIs') }}
+              {{ localText('Bearer Token → 用户额度或套餐接口', 'Bearer token → user quota or subscription API') }}
+            </div>
+          </button>
+          <button data-testid="admin-external-subscriptions-button-apply-preset-modelflare"
+            type="button"
+            class="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 text-left transition-colors hover:border-violet-300 hover:bg-violet-100 dark:border-violet-800 dark:bg-violet-900/20 dark:hover:bg-violet-900/30"
+            @click="applyModelFlarePreset"
+          >
+            <div class="text-sm font-semibold text-violet-700 dark:text-violet-300">{{ localText('ModelFlare：Cookie + User ID', 'ModelFlare: Browser Cookie + User ID') }}</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+              {{ localText('浏览器 Cookie → /api/user/self 用户额度', 'Browser Cookie → /api/user/self user quota') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-active-subscriptions"
@@ -249,9 +259,9 @@
             class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
             @click="applyPreset('active_subscriptions')"
           >
-            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">Active Subscriptions</div>
+            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">{{ localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('TCDMX、XHY、Pixel 这类 /api/v1/subscriptions/active', 'For TCDMX, XHY, Pixel style /api/v1/subscriptions/active APIs') }}
+              {{ localText('读取 /api/v1/subscriptions/active', 'Reads /api/v1/subscriptions/active') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-buzz-balance"
@@ -259,7 +269,7 @@
             class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('buzz_balance')"
           >
-            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">Buzz Balance</div>
+            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('Buzz /v1/dashboard/billing 余额接口', 'Buzz /v1/dashboard/billing balance API') }}
             </div>
@@ -269,7 +279,7 @@
             class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
             @click="applyPreset('openrouter_credits')"
           >
-            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">OpenRouter Credits</div>
+            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
               {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
             </div>
@@ -279,9 +289,9 @@
             class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left transition-colors hover:border-orange-300 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-900/20 dark:hover:bg-orange-900/30"
             @click="applyPreset('cloudflare_ai_gateway_credits')"
           >
-            <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">Cloudflare AI Gateway</div>
+            <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">{{ localText('Cloudflare：API Token + Account ID → Credits', 'Cloudflare: API Token + Account ID → Credits') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('Cloudflare AI Gateway credit-balance', 'Cloudflare AI Gateway credit-balance') }}
+              {{ localText('读取 AI Gateway credits', 'Reads AI Gateway credits') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-rawchat-subscriptions"
@@ -289,9 +299,9 @@
             class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
             @click="applyPreset('rawchat_subscriptions')"
           >
-            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">RawChat</div>
+            <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">{{ localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('RawChat 用户中心订阅接口', 'RawChat user-center subscriptions API') }}
+              {{ localText('读取用户中心订阅与额度', 'Reads user-center subscriptions and quota') }}
             </div>
           </button>
           <button data-testid="admin-external-subscriptions-button-apply-preset-mimo-token-plan"
@@ -299,9 +309,9 @@
             class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-200 hover:bg-gray-100 dark:border-dark-600 dark:bg-dark-800 dark:hover:bg-gray-100"
             @click="applyPreset('mimo_token_plan')"
           >
-            <div class="text-sm font-semibold text-gray-500 dark:text-dark-400">Xiaomi MiMo</div>
+            <div class="text-sm font-semibold text-gray-500 dark:text-dark-400">{{ localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan') }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('小米 MiMo Token Plan 余额接口', 'Xiaomi MiMo Token Plan balance API') }}
+              {{ localText('读取 Token Plan 余额', 'Reads Token Plan balance') }}
             </div>
           </button>
         </div>
@@ -382,16 +392,20 @@
               :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
             <p v-if="requiresConsoleToken" class="mt-1 text-xs text-gray-500">
-              {{ isA6APIForm
+              {{ isModelFlareForm
+                ? localText('需填写 ModelFlare 浏览器登录 Cookie，并填写 User ID；模型 API Key 不能读取账户额度。', 'Paste the ModelFlare browser login Cookie and User ID. A model API key cannot read account quota.')
+                : isA6APIForm
                 ? localText('需填写浏览器登录 Cookie（完整 Cookie 请求头值），模型 API Key 不能读取账户额度。', 'Paste the browser login Cookie value. A model API key cannot read account quota.')
                 : localText('需使用服务商控制台访问 Token，模型 API Key 不能读取账户额度。', 'Use a console access token. A model API key cannot read account quota.') }}
             </p>
           </div>
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
-            <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" />
-            <p v-if="isA6APIForm" class="mt-1 text-xs text-gray-500">
-              {{ localText('A6API 还要求发送 New-API-User；请填写浏览器请求中的用户 ID。', 'A6API also requires New-API-User; use the user ID from the browser request.') }}
+            <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" :required="isModelFlareForm" />
+            <p v-if="isA6APIForm || isModelFlareForm" class="mt-1 text-xs text-gray-500">
+              {{ isModelFlareForm
+                ? localText('ModelFlare 会发送 X-ModelFlare-User；请填写浏览器请求中的账号 ID。', 'ModelFlare sends X-ModelFlare-User; use the account ID from the browser request.')
+                : localText('A6API 还要求发送 New-API-User；请填写浏览器请求中的用户 ID。', 'A6API also requires New-API-User; use the user ID from the browser request.') }}
             </p>
           </div>
           <div v-if="requiresRefreshToken">
@@ -522,30 +536,38 @@ const isA6APIForm = computed(() => (
   form.api_base_url.trim().toLowerCase().includes('a6api.com')
 ))
 
+const isModelFlareForm = computed(() => (
+  form.id.trim().toLowerCase() === 'modelflare' ||
+  form.name.trim().toLowerCase().includes('modelflare') ||
+  form.api_base_url.trim().toLowerCase().includes('modelflare.dev')
+))
+
 const templateOptions = computed(() => [
-  { value: 'pixel_access_token', label: 'Pixel Access Token' },
-  { value: 'newapi_console', label: 'NewAPI Console' },
-  { value: 'active_subscriptions', label: 'Active Subscriptions' },
-  { value: 'buzz_balance', label: 'Buzz Balance' },
-  { value: 'openrouter_credits', label: 'OpenRouter Credits' },
-  { value: 'cloudflare_ai_gateway_credits', label: 'Cloudflare AI Gateway' },
-  { value: 'rawchat_subscriptions', label: 'RawChat' },
-  { value: 'mimo_token_plan', label: 'Xiaomi MiMo' },
+  { value: 'pixel_access_token', label: localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota') },
+  { value: 'newapi_console', label: localText('New API 兼容：控制台接口', 'New API-compatible: Console API') },
+  { value: 'active_subscriptions', label: localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions') },
+  { value: 'buzz_balance', label: localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance') },
+  { value: 'openrouter_credits', label: localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits') },
+  { value: 'cloudflare_ai_gateway_credits', label: localText('Cloudflare：Token + Account ID → Credits', 'Cloudflare: Token + Account ID → Credits') },
+  { value: 'rawchat_subscriptions', label: localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions') },
+  { value: 'mimo_token_plan', label: localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan') },
 ])
 
 const balanceStrategyOptions = computed(() => [
-  { value: 'pixel_user_quota', label: 'Pixel Access Token' },
-  { value: 'auto', label: localText('自动', 'Auto') },
-  { value: 'newapi_user_quota', label: 'NewAPI User Quota' },
-  { value: 'newapi_subscription', label: 'NewAPI Subscription' },
-  { value: 'active_subscriptions', label: 'Active Subscriptions' },
-  { value: 'auth_me_balance', label: 'Auth Me Balance' },
-  { value: 'active_with_auth_me_balance', label: 'Active + Auth Me' },
+  { value: 'pixel_user_quota', label: localText('Pixel：访问令牌 → /api/user/self 额度', 'Pixel: Access Token → /api/user/self quota') },
+  { value: 'auto', label: localText('按模板默认接口', 'Template default endpoint') },
+  { value: 'openai_billing', label: localText('OpenAI：账单额度（需授权）', 'OpenAI: Billing quota (authorization required)') },
+  { value: 'newapi_user_quota', label: localText('控制台凭据 → /api/user/self 用户额度', 'Console credential → /api/user/self user quota') },
+  { value: 'newapi_subscription', label: localText('控制台凭据 → /api/subscription/self 套餐', 'Console credential → /api/subscription/self plans') },
+  { value: 'active_subscriptions', label: localText('访问令牌 → /api/v1/subscriptions/active', 'Access token → /api/v1/subscriptions/active') },
+  { value: 'auth_me_balance', label: localText('访问令牌 → /api/v1/auth/me 余额', 'Access token → /api/v1/auth/me balance') },
+  { value: 'active_with_auth_me_balance', label: localText('活跃订阅，失败回退 /auth/me', 'Active subscriptions with /auth/me fallback') },
 ])
 
 const requiresPixelAccessToken = computed(() => form.template === 'pixel_access_token' || form.balance_strategy === 'pixel_user_quota')
 const requiresUserId = computed(() => !requiresPixelAccessToken.value && (
   isA6APIForm.value ||
+  isModelFlareForm.value ||
   (form.template === 'newapi_console' && !['openai_billing', 'newapi_user_quota'].includes(form.balance_strategy)) ||
   form.template === 'cloudflare_ai_gateway_credits'
 ))
@@ -558,16 +580,20 @@ watch(() => form.template, template => {
 const userIdLabel = computed(() => (
   form.template === 'cloudflare_ai_gateway_credits'
     ? 'Account ID'
+    : isModelFlareForm.value
+      ? localText('ModelFlare User ID', 'ModelFlare User ID')
     : localText('用户 ID', 'User ID')
 ))
 
 const userIdPlaceholder = computed(() => (
-  form.template === 'cloudflare_ai_gateway_credits' ? 'Cloudflare account id' : '707'
+  form.template === 'cloudflare_ai_gateway_credits'
+    ? 'Cloudflare account id'
+    : isModelFlareForm.value ? 'ModelFlare user id' : '707'
 ))
 
 const apiTokenPlaceholder = computed(() => {
   if (requiresPixelAccessToken.value) return 'Pixel Access Token'
-  if (isA6APIForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
+  if (isA6APIForm.value || isModelFlareForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
   if (form.template === 'buzz_balance') return 'Buzz API Token'
   if (form.template === 'openrouter_credits') return 'sk-or-...'
@@ -582,7 +608,7 @@ const requiresConsoleToken = computed(() => (
 ))
 
 const apiTokenLabel = computed(() => (
-  requiresPixelAccessToken.value ? localText('访问令牌', 'Access Token') : isA6APIForm.value
+  requiresPixelAccessToken.value ? localText('访问令牌', 'Access Token') : (isA6APIForm.value || isModelFlareForm.value)
     ? localText('登录 Cookie', 'Login Cookie')
     : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
 ))
@@ -686,21 +712,21 @@ function buildProviderLogoText(provider: ExternalSubscriptionProvider) {
 function templateLabel(template: ExternalSubscriptionTemplate) {
   switch (template) {
     case 'pixel_access_token':
-      return 'Pixel Access Token'
+      return localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota')
     case 'buzz_balance':
-      return 'Buzz Balance'
+      return localText('Buzz：API Token → 账单余额', 'Buzz: API Token → Billing Balance')
     case 'active_subscriptions':
-      return 'Active Subscriptions'
+      return localText('访问令牌 → 活跃订阅', 'Access Token → Active Subscriptions')
     case 'openrouter_credits':
-      return 'OpenRouter Credits'
+      return localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits')
     case 'cloudflare_ai_gateway_credits':
-      return 'Cloudflare AI Gateway'
+      return localText('Cloudflare：Token + Account ID → Credits', 'Cloudflare: Token + Account ID → Credits')
     case 'rawchat_subscriptions':
-      return 'RawChat'
+      return localText('RawChat：用户 Token → 订阅', 'RawChat: User Token → Subscriptions')
     case 'mimo_token_plan':
-      return 'Xiaomi MiMo'
+      return localText('MiMo：Token → Token Plan', 'MiMo: Token → Token Plan')
     default:
-      return 'NewAPI Console'
+      return localText('New API 兼容：控制台接口', 'New API-compatible: Console API')
   }
 }
 
@@ -859,6 +885,18 @@ function applyPreset(template: ExternalSubscriptionTemplate) {
   }
 }
 
+function applyModelFlarePreset() {
+  form.template = 'newapi_console'
+  form.balance_strategy = 'newapi_user_quota'
+  form.api_base_url = 'https://modelflare.dev'
+  form.name = 'ModelFlare'
+  form.id = 'modelflare'
+  form.user_id = ''
+  form.refresh_token = ''
+  if (form.sort_order === 50) form.sort_order = 65
+  keywordsDraft.value = 'modelflare\nmodelflare.dev'
+}
+
 function openCreateDialog() {
   editingProvider.value = null
   resetForm()
@@ -1013,6 +1051,7 @@ function cardStatusText(card: ExternalSubscriptionCard) {
 
 function formatTokenMeta(card: ExternalSubscriptionCard) {
   if (card.template === 'pixel_access_token') return card.apiTokenConfigured ? 'Access Token ready' : localText('访问令牌未配置', 'Access Token missing')
+  if (card.id === 'a6api' || card.id === 'modelflare') return card.apiTokenConfigured ? localText('登录 Cookie 已配置', 'Browser Cookie ready') : localText('登录 Cookie 未配置', 'Browser Cookie missing')
   return card.apiTokenConfigured ? 'API Token ready' : localText('Token 未配置', 'Token missing')
 }
 

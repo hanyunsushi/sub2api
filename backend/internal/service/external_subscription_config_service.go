@@ -570,7 +570,7 @@ func (s *ExternalSubscriptionConfigService) mergeDefaultProviders(ctx context.Co
 
 func isDefaultExternalSubscriptionProvider(id string) bool {
 	switch strings.TrimSpace(strings.ToLower(id)) {
-	case "a6api", "openrouter", "cloudflare", "rawchat", "mimo":
+	case "a6api", "modelflare", "openrouter", "cloudflare", "rawchat", "mimo":
 		return true
 	default:
 		return false
@@ -579,7 +579,7 @@ func isDefaultExternalSubscriptionProvider(id string) bool {
 
 func canMarkDeletedExternalSubscriptionProvider(id string) bool {
 	switch strings.TrimSpace(strings.ToLower(id)) {
-	case "buzz", "tcdmx", "qlhazycoder", "xhyapi", "pixel", "a6api", "liust", "packycode", "openrouter", "cloudflare", "rawchat", "mimo":
+	case "buzz", "tcdmx", "qlhazycoder", "xhyapi", "pixel", "a6api", "modelflare", "liust", "packycode", "openrouter", "cloudflare", "rawchat", "mimo":
 		return true
 	default:
 		return false
@@ -778,6 +778,16 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			MatchKeywords:   []string{"packyapi.com", "packycode", "packy"},
 			SortOrder:       60,
 		},
+		{
+			ID:              "modelflare",
+			Name:            "ModelFlare",
+			Enabled:         false,
+			Template:        ExternalSubscriptionTemplateNewAPIConsole,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+			APIBaseURL:      "https://modelflare.dev",
+			MatchKeywords:   []string{"modelflare.dev", "modelflare"},
+			SortOrder:       65,
+		},
 		externalSubscriptionStoredProvider{
 			ID:              "openrouter",
 			Name:            "OpenRouter",
@@ -922,6 +932,9 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	provider.APIToken = strings.TrimSpace(provider.APIToken)
 	provider.UserID = strings.TrimSpace(provider.UserID)
 	provider.RefreshToken = strings.TrimSpace(provider.RefreshToken)
+	if strings.EqualFold(provider.ID, "modelflare") && provider.Enabled && provider.UserID == "" {
+		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("MODELFLARE_USER_ID_REQUIRED", "ModelFlare user id is required when the provider is enabled")
+	}
 	provider.MatchKeywords = normalizeExternalSubscriptionKeywords(provider.MatchKeywords)
 	if len(provider.MatchKeywords) == 0 {
 		provider.MatchKeywords = []string{provider.ID, strings.ToLower(provider.Name)}
@@ -931,7 +944,7 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 
 func defaultExternalSubscriptionBalanceStrategy(providerID, template string) string {
 	switch strings.TrimSpace(strings.ToLower(providerID)) {
-	case "a6api":
+	case "a6api", "modelflare":
 		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota
 	case "packycode":
 		return ExternalSubscriptionBalanceStrategyNewAPIUserQuota

@@ -116,7 +116,15 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 	require.False(t, mimo.APITokenConfigured)
 	require.Contains(t, mimo.MatchKeywords, "xiaomimimo")
 
-	require.Len(t, providers, 12)
+	modelflare := requireExternalSubscriptionProvider(t, providers, "modelflare")
+	require.Equal(t, "ModelFlare", modelflare.Name)
+	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, modelflare.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, modelflare.BalanceStrategy)
+	require.Equal(t, "https://modelflare.dev", modelflare.APIBaseURL)
+	require.False(t, modelflare.Enabled)
+	require.False(t, modelflare.APITokenConfigured)
+	require.Empty(t, modelflare.UserID)
+	require.Len(t, providers, 13)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUserQuota(t *testing.T) {
@@ -158,6 +166,44 @@ func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUs
 	require.InDelta(t, 1234567.0/500000.0, a6api.UsedUSD, 0.000001)
 	require.NotNil(t, a6api.RemainingUSD)
 	require.InDelta(t, 4493107.0/500000.0, *a6api.RemainingUSD, 0.000001)
+}
+
+func TestExternalSubscriptionConfigServiceGetStatusesReadsModelFlareCookieAndUserQuota(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Empty(t, r.Header.Get("Authorization"))
+		require.Equal(t, "session=modelflare-session; theme=dark", r.Header.Get("Cookie"))
+		require.Equal(t, "mf-user-123", r.Header.Get("X-ModelFlare-User"))
+		require.Empty(t, r.Header.Get("New-API-User"))
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"quota_display_type":"USD","quota_per_unit":3333333.3333333335,"usd_exchange_rate":1}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"quota":1000000,"used_quota":200000}}`))
+		default:
+			t.Fatalf("unexpected path %s", r.URL.Path)
+		}
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{{
+		ID: "modelflare", Name: "ModelFlare", Enabled: true,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+		APIBaseURL:      server.URL, APIToken: "Cookie: session=modelflare-session; theme=dark",
+		UserID: "mf-user-123", MatchKeywords: []string{"modelflare"}, SortOrder: 65,
+	}}, map[string]string{
+		SettingKeyExternalSubscriptionDeletedDefaultProviders: `["modelflare"]`,
+	})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	modelflare := requireExternalSubscriptionStatus(t, statuses, "modelflare")
+	require.Equal(t, "USD", modelflare.Currency)
+	require.InDelta(t, 200000.0/3333333.3333333335, modelflare.UsedUSD, 0.0000001)
+	require.NotNil(t, modelflare.RemainingUSD)
+	require.InDelta(t, 1000000.0/3333333.3333333335, *modelflare.RemainingUSD, 0.0000001)
 }
 
 func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {

@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-10-12
+updated: 2026-10-14
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -48,8 +48,8 @@ The backend is a Go HTTP service using Gin for routing, Ent for PostgreSQL persi
 ## Current Capability Surface
 
 - Pixel uses template `pixel_access_token` and balance strategy `pixel_user_quota`, implemented by `external_pixel_subscription_service.go::getPixelAccessTokenStatus`. A console Access Token is sent as Bearer authentication to `/api/status` and `/api/user/self` at `https://api.ai-pixel.online`. The `success/data` envelope and flat or nested user `quota`/`used_quota` fields are converted using provider metadata; missing quota is an error, not a zero balance. This strategy never calls the refresh-token endpoint. Known built-in Pixel legacy addresses/strategies are normalized without replacing saved credentials or other providers.
-- External subscriptions include an A6API provider using the New API user-quota strategy. It requests `/api/status` and `/api/user/self` with the configured browser `Cookie` header, accepts the nested `data.user.quota`/`used_quota` response, and converts quota units using the provider's `quota_per_unit` as USD. Other New API console providers retain their Bearer-token request path.
-- A6API requests also include the configured `New-API-User` value. The upstream endpoint returns `401 Unauthorized` with `New-Api-User header not provided` when the Cookie is valid but this header is absent.
+- External subscriptions include A6API and ModelFlare providers using the New API user-quota strategy. Both request `/api/status` and `/api/user/self`, accept flat or nested `quota`/`used_quota`, and convert quota units using the provider `quota_per_unit` and display currency. A6API sends the configured browser `Cookie` plus `New-API-User`; ModelFlare sends the browser `Cookie` plus `X-ModelFlare-User`. Other New API console providers retain Bearer-token authentication.
+- ModelFlare is built in as provider `modelflare` at `https://modelflare.dev`; its balance credential is a console browser Cookie, not a model API key, and its account identifier is required.
 
 - Group persistence and admin APIs include OpenAI fast-mode controls, reasoning-effort ceilings with downgrade/deny behavior, and per-user public-group restrictions.
 - Usage logs and analytics expose request type, native compaction, requested/upstream reasoning effort, billing type and billing mode; the corresponding migrations and repository filters are versioned under `migrations/` and `internal/repository/`.

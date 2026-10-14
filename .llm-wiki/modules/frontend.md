@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-10-12
+updated: 2026-10-14
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -28,11 +28,13 @@ Vue 3/Vite owns route views, client state and API interaction. The maintained pr
 
 | Area | Active implementation |
 | --- | --- |
-| External provider CRUD and Pixel/A6API credential forms | `ExternalSubscriptionsView.vue`, `api/admin/externalSubscriptions.ts` |
+| External provider CRUD and Pixel/A6API/ModelFlare credential forms | `ExternalSubscriptionsView.vue`, `api/admin/externalSubscriptions.ts` |
 | Account quota-bar matching, totals and token windows | `AccountsView.vue`, quota progress utility/composable/modal |
 | Entity logo editing/display | Official key/group/channel/monitor forms plus `LogoPicker` and `ProviderBrandIcon` |
 | Shared AI-logo library and CDN | `providerBrandIcon.ts`, AI-logo settings APIs |
 | Site branding | Official site name/logo settings and safe favicon injection |
+
+The external-subscription editor names each template and balance strategy by its credential and endpoint/data source (for example, `Cookie + User ID → /api/user/self`) while preserving the stored enum values for compatibility.
 
 The [customization inventory](../concepts/customization-inventory.md) defines the complete active/retired boundary and cross-module persistence paths. External subscription management and account quota consumers enforce admin access. Auth-store changes clear external snapshots independently of mounted UI. Header balances, V1 shared capacity, PWA extensions, the shared menu-icon library and direct menu redirects are removed. Menu icons use official `ImageUpload`; menu visibility, sorting, Markdown/embed and open-button controls follow official code. The account management page renders cards at desktop and mobile sizes while preserving selection, bulk actions, sort, and quota display. Account-local styles compact the cards with 12px padding, 12px card gaps and 6px field-row gaps. The account grid uses a 260px minimum track width, adding columns when space allows while keeping a full-width single column on narrow screens. Priority labels and controls wrap together when needed, retaining four-digit values and +/- editing. Short label/value fields share lines; long metadata spans both columns. Today stats, external quota and proxy details wrap, actions retain icons and labels in one row, and cards keep their own content height. Enabled fields and persistent column preferences remain unchanged. Shared account-usage statistics rows wrap badges at their available width; each request/token/A-cost/U-cost/estimated-total-cost badge stays on one line, retaining the complete value without clipping.
 

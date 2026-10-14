@@ -46,4 +46,34 @@ describe('Pixel access token form', () => {
     }))
     wrapper.unmount()
   })
+
+  it('submits the ModelFlare preset with browser Cookie and User ID quota credentials', async () => {
+    const wrapper = shallowMount(ExternalSubscriptionsView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          TablePageLayout: { template: '<div><slot name="filters" /><slot name="table" /></div>' },
+          BaseDialog: { props: ['show'], template: '<div v-if="show"><slot /><slot name="footer" /></div>' },
+        },
+      },
+    })
+    await flushPromises()
+    await wrapper.get('[data-testid="admin-external-subscriptions-button-open-create-dialog"]').trigger('click')
+    await wrapper.get('[data-testid="admin-external-subscriptions-button-apply-preset-modelflare"]').trigger('click')
+    expect(wrapper.text()).toContain('ModelFlare')
+    expect(wrapper.text()).toContain('浏览器登录 Cookie')
+    expect(wrapper.find('[data-testid="admin-external-subscriptions-input-form-refresh-token"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="admin-external-subscriptions-input-form-user-id"]').exists()).toBe(true)
+    expect(wrapper.get<HTMLInputElement>('[data-testid="admin-external-subscriptions-input-form-user-id"]').element.required).toBe(true)
+    expect(wrapper.get<HTMLInputElement>('[data-testid="admin-external-subscriptions-input-form-api-base-url"]').element.value).toBe('https://modelflare.dev')
+    await wrapper.get('[data-testid="admin-external-subscriptions-input-form-api-token"]').setValue('session=modelflare-session')
+    await wrapper.get('[data-testid="admin-external-subscriptions-input-form-user-id"]').setValue('mf-user-123')
+    await wrapper.get('#external-subscription-form').trigger('submit')
+    await flushPromises()
+    expect(api.createProvider).toHaveBeenCalledWith(expect.objectContaining({
+      id: 'modelflare', name: 'ModelFlare', template: 'newapi_console', balance_strategy: 'newapi_user_quota',
+      api_base_url: 'https://modelflare.dev', api_token: 'session=modelflare-session', user_id: 'mf-user-123', refresh_token: '',
+    }))
+    wrapper.unmount()
+  })
 })

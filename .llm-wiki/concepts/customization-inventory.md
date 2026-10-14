@@ -1,6 +1,6 @@
 ---
 title: Customization Inventory
-updated: 2026-10-12
+updated: 2026-10-14
 sources:
   - backend/internal/server/routes/admin.go
   - backend/internal/service/external_subscription_config_service.go
@@ -31,9 +31,11 @@ The admin route `/admin/settings/external-subscriptions` and backend collection 
 
 Templates: `newapi_console`, `active_subscriptions`, `buzz_balance`, `openrouter_credits`, `cloudflare_ai_gateway_credits`, `rawchat_subscriptions`, `mimo_token_plan`, `pixel_access_token`. Strategies: `auto`, `pixel_user_quota`, `openai_billing`, `newapi_user_quota`, `newapi_subscription`, `active_subscriptions`, `auth_me_balance`, `active_with_auth_me_balance`.
 
-Built-in providers remain Buzz, TCDMX, qlhazycoder, XHYAPI, Pixel, A6API, liust, PackyCode, OpenRouter, Cloudflare AI Gateway, RawChat and Xiaomi MiMo. Provider probes retain parallel execution, six-second timeouts, per-provider errors, 60-second fresh and 30-minute stale caches and persisted display snapshots.
+Built-in providers include Buzz, TCDMX, qlhazycoder, XHYAPI, Pixel, A6API, ModelFlare, liust, PackyCode, OpenRouter, Cloudflare AI Gateway, RawChat and Xiaomi MiMo. Provider probes retain parallel execution, six-second timeouts, per-provider errors, 60-second fresh and 30-minute stale caches and persisted display snapshots.
 
-Pixel retains console Access Token Bearer requests to `/api/status` and `/api/user/self`, provider quota conversion and CNY support, without a refresh-token request. A6API retains browser Cookie plus `New-API-User`. Other protocols and migrations are unchanged by the frontend restoration.
+Pixel retains console Access Token Bearer requests to `/api/status` and `/api/user/self`, provider quota conversion and CNY support, without a refresh-token request. A6API retains browser Cookie plus `New-API-User`; ModelFlare uses browser Cookie plus `X-ModelFlare-User` against `https://modelflare.dev/api/status` and `/api/user/self`. Other protocols and migrations are unchanged by the frontend restoration.
+
+The editor labels templates and balance strategies by the credential and endpoint/data source instead of exposing only internal enum names. The enum values remain unchanged so existing stored provider configurations continue to load.
 
 The editor uses official shared components and gray/primary/dark utilities. Header balance summaries and V1 monitor shared-capacity displays are removed; the official header and monitor grid do not fetch or subscribe to external statuses. Remaining admin/editor and account quota consumers retain display snapshots. Auth-store identity and permission changes synchronously clear cached snapshots, and a generation guard prevents pending requests from repopulating cleared browser storage.
 
