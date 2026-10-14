@@ -1,27 +1,26 @@
 ---
 title: Wiki Sync State
-updated: 2026-10-12
+updated: 2026-10-15
 ---
 
 # Doc Impact Map
 
 | Changed surface | Documentation owner | Evidence |
 | --- | --- | --- |
-| Account usage badge layout | Frontend module and customization inventory | `AccountUsageCell` and `UsageProgressBar` wrap badge rows while preserving each complete value |
-| Baseline comparison | Customization file appendix | Two additional modified shared components; 188 paths, 65 A and 123 M |
-| Verification and dev/prod boundary | Project Authority | User-marked localhost geometry, isolated long-value fixture, focused checks; no production release |
+| Bound external-subscription schemes | Backend/frontend modules and external-subscription inventory | The editor submits one `scheme`; the server derives legacy template/strategy values and exposes only four current schemes for new configuration |
+| OCI application-only release | Project Authority and OCI operations guide | Clean archive, rollback tag, PostgreSQL/application-data backups, explicit image metadata, bounded healthy switch, unchanged PostgreSQL/Redis and formal volumes |
+| Production verification | Project Authority | Local and public route checks plus static bundle evidence for `scheme`, “配置方案” and the four current scheme identifiers |
 
 # Verification
 
-- Source commit: `34c84b0def46058bec47c71bac5f8c4901b96883`. Only two shared usage components change, adding `flex-wrap` to three statistic strips and `shrink-0 whitespace-nowrap` to their badges. No DataTable, card width, data/API or persistence change.
-- Focused Vitest: 3 files / 82 tests pass. Frontend typecheck, lint, i18n completeness 3/3 and production build pass; existing chunk/Browserslist/dynamic-import warnings remain. `git diff --check` passes.
-- On the user-marked localhost page at 1167x816, `939 req`, `166.5M`, `A $123.49` and `U $123.49` are preserved; U-cost wraps inside its field. A DOM/computed-style check finds 48 usage badges across 15 cards within their fields. This local rendering uses the existing preview session; it is not a new production release or provider-balance audit.
-- An isolated fixture renders the real DataTable, AccountUsageCell and UsageProgressBar components with the account-page styles and long values. It covers API Key, Gemini service-account, OpenAI OAuth and Anthropic OAuth, including `预计总费用 $2469.80`. Restoring the old CSS reproduces seven badge overflows and 19 split values at the observed card width; corrected CSS has zero of either across 25 badges, with identical text.
-- Corrected fixture checks at 1440/390/360px and an explicit 260px card in English/dark mode preserve all 25 badges, including `Est. total $2469.80`, with no statistic-strip/field overflow or split values.
-- The prior compact/narrow card fixture used shorter fees and did not cover the reported combination. Its blanket wording is qualified in the authority; current long-value evidence addresses that gap.
-- Existing 3001 preview is preserved. Production remains the authority's last release; no OCI, database, volume or deployment action is performed.
+- Release source: `cd5896d8ed1b82a519836b396d8932adbeeaa784`; production binary reports Sub2API `0.2.15`, commit `cd5896d8e`, built `2026-10-14T15:52:13Z`.
+- The OCI build completed frontend i18n completeness, `vue-tsc`, Vite production build and Go embedded compilation. Existing Browserslist, dynamic-import and large-chunk warnings remain non-blocking.
+- The release used a clean archive with SHA-256 `10664dbdcd875d33845b99e81f602dbbd732c62d1f3e235bd428b9d84acf76de`; the local documentation symlink and AppleDouble/`.DS_Store` residues were excluded.
+- Backup integrity passed for the PostgreSQL dump, application-data archive, runtime Compose file, environment fingerprint, source marker and rollback marker; `pg_restore -l` also passed. Secrets are not recorded here.
+- The active application is healthy. `/health`, `/home`, `/login` and `/admin/settings/external-subscriptions` returned HTTP 200 both through the OCI loopback bind and `https://ai.kreeper.cc`. The route bundle contains `scheme`, “配置方案”, `pixel_access_token`, `newapi_user_quota`, `openrouter_credits` and `cloudflare_ai_gateway_credits` locally and publicly.
+- PostgreSQL and Redis container IDs/start times and the three formal volumes were unchanged. The release did not use `docker compose down -v`.
 
 # Documentation Lint
 
-- 13 Wiki pages, 230 local links and 37 source references have no missing targets; articles are reachable within two clicks. The appendix exactly matches 188 Git paths (65 A, 123 M). Authority symlink and reciprocal index links are valid.
-- Temporary fixture and browser tab are removed after verification; no credentials, generated bundle or screenshot is committed.
+- The authority symlink, reciprocal Wiki links and source references remain valid; the exact volatile release identifiers are owned by the authority document.
+- No credentials, cookies, generated bundles or long deployment logs are committed.
