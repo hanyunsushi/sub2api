@@ -226,52 +226,18 @@
       @close="closeDialog"
     >
       <form id="external-subscription-form" class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <button data-testid="admin-external-subscriptions-button-apply-preset-pixel-access-token"
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <button
+            v-for="definition in activeSchemeDefinitions"
+            :key="definition.value"
+            :data-testid="`admin-external-subscriptions-button-apply-preset-${definition.presetKey || definition.value}`"
             type="button"
-            class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-100"
-            @click="applySchemePreset('pixel_access_token')"
+            class="rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:hover:bg-dark-700"
+            @click="applySchemePreset(definition.value)"
           >
-            <div class="text-sm font-semibold">Pixel Access Token</div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-newapi-user-quota"
-            type="button"
-            class="rounded-lg border border-gray-900 bg-white px-4 py-3 text-left transition-colors hover:border-gray-900 hover:bg-white dark:border-white dark:bg-dark-800 dark:hover:bg-gray-100"
-            @click="applySchemePreset('newapi_user_quota')"
-          >
-            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ localText('New API 兼容：控制台接口', 'New API-compatible: Console API') }}</div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ definition.label(localText) }}</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('控制台凭据 → /api/user/self 用户额度', 'Console credential → /api/user/self user quota') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-modelflare"
-            type="button"
-            class="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 text-left transition-colors hover:border-violet-300 hover:bg-violet-100 dark:border-violet-800 dark:bg-violet-900/20 dark:hover:bg-violet-900/30"
-            @click="applyModelFlarePreset"
-          >
-            <div class="text-sm font-semibold text-violet-700 dark:text-violet-300">{{ localText('ModelFlare：Cookie + User ID', 'ModelFlare: Browser Cookie + User ID') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('浏览器 Cookie → /api/user/self 用户额度', 'Browser Cookie → /api/user/self user quota') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-openrouter-credits"
-            type="button"
-            class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-left transition-colors hover:border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:bg-sky-900/20 dark:hover:bg-sky-900/30"
-            @click="applySchemePreset('openrouter_credits')"
-          >
-            <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('OpenRouter /api/v1/credits 余额接口', 'OpenRouter /api/v1/credits balance API') }}
-            </div>
-          </button>
-          <button data-testid="admin-external-subscriptions-button-apply-preset-cloudflare-ai-gateway-credits"
-            type="button"
-            class="rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-left transition-colors hover:border-orange-300 hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-900/20 dark:hover:bg-orange-900/30"
-            @click="applySchemePreset('cloudflare_ai_gateway_credits')"
-          >
-            <div class="text-sm font-semibold text-orange-700 dark:text-orange-300">{{ localText('Cloudflare：API Token + Account ID → Credits', 'Cloudflare: API Token + Account ID → Credits') }}</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-              {{ localText('读取 AI Gateway credits', 'Reads AI Gateway credits') }}
+              {{ definition.description?.(localText) }}
             </div>
           </button>
         </div>
@@ -347,7 +313,7 @@
               autocomplete="new-password"
               :placeholder="editingProvider?.api_token_configured ? localText('留空保持原 Token', 'leave blank to keep') : apiTokenPlaceholder"
             />
-            <p v-if="requiresConsoleToken" class="mt-1 text-xs text-gray-500">
+            <p v-if="requiresConsoleToken || isCookieCredential" class="mt-1 text-xs text-gray-500">
               {{ isModelFlareForm
                 ? localText('需填写 ModelFlare 浏览器登录 Cookie，并填写 User ID；模型 API Key 不能读取账户额度。', 'Paste the ModelFlare browser login Cookie and User ID. A model API key cannot read account quota.')
                 : isA6APIForm
@@ -357,11 +323,11 @@
           </div>
           <div v-if="requiresUserId">
             <label class="input-label">{{ userIdLabel }}</label>
-            <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" :required="isModelFlareForm" />
-            <p v-if="isA6APIForm || isModelFlareForm" class="mt-1 text-xs text-gray-500">
+            <input data-testid="admin-external-subscriptions-input-form-user-id" v-model="form.user_id" type="text" class="input" :placeholder="userIdPlaceholder" :required="requiresUserId" />
+            <p v-if="isA6APIForm || isModelFlareForm || form.scheme === 'packycode_bearer_newapi_user'" class="mt-1 text-xs text-gray-500">
               {{ isModelFlareForm
                 ? localText('ModelFlare 会发送 X-ModelFlare-User；请填写浏览器请求中的账号 ID。', 'ModelFlare sends X-ModelFlare-User; use the account ID from the browser request.')
-                : localText('A6API 还要求发送 New-API-User；请填写浏览器请求中的用户 ID。', 'A6API also requires New-API-User; use the user ID from the browser request.') }}
+                : localText('该方案会发送 New-API-User；请填写浏览器请求中的用户 ID。', 'This scheme sends New-API-User; use the user ID from the browser request.') }}
             </p>
           </div>
           <div v-if="requiresRefreshToken">
@@ -470,7 +436,7 @@ const form = reactive({
   id: '',
   name: '',
   enabled: true,
-  scheme: 'newapi_user_quota' as ExternalSubscriptionScheme,
+  scheme: 'pixel_access_token' as ExternalSubscriptionScheme,
   api_base_url: '',
   logo_url: '',
   api_token: '',
@@ -486,23 +452,18 @@ const EXTERNAL_CARD_QUOTA_PROGRESS_PREFERENCE: AccountExternalQuotaProgressPrefe
   customTotal: null,
 }
 
-const isA6APIForm = computed(() => (
-  form.id.trim().toLowerCase() === 'a6api' ||
-  form.name.trim().toLowerCase() === 'a6api' ||
-  form.api_base_url.trim().toLowerCase().includes('a6api.com')
-))
-
-const isModelFlareForm = computed(() => (
-  form.id.trim().toLowerCase() === 'modelflare' ||
-  form.name.trim().toLowerCase().includes('modelflare') ||
-  form.api_base_url.trim().toLowerCase().includes('modelflare.dev')
-))
-
 type ExternalSubscriptionSchemeDefinition = {
   value: ExternalSubscriptionScheme
   template: ExternalSubscriptionTemplate
   balance_strategy: ExternalSubscriptionBalanceStrategy
+  presetKey?: string
+  providerId?: string
+  providerName?: string
+  apiBaseUrl?: string
+  sortOrder?: number
+  keywords?: string[]
   label: (localText: (zh: string, en: string) => string) => string
+  description?: (localText: (zh: string, en: string) => string) => string
 }
 
 const activeSchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
@@ -510,34 +471,119 @@ const activeSchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
     value: 'pixel_access_token',
     template: 'pixel_access_token',
     balance_strategy: 'pixel_user_quota',
-    label: localText => localText('Pixel：访问令牌 → 用户额度', 'Pixel: Access Token → User Quota'),
+    presetKey: 'pixel-access-token',
+    providerId: 'pixel',
+    providerName: 'PixelAPI',
+    apiBaseUrl: 'https://api.ai-pixel.online',
+    sortOrder: 40,
+    keywords: ['pixel', 'ai-pixel.online', 'pixelapi.cc'],
+    label: localText => localText('Pixel：Access Token', 'Pixel: Access Token'),
+    description: localText => localText('Authorization: Bearer → /api/user/self', 'Authorization: Bearer → /api/user/self'),
   },
   {
-    value: 'newapi_user_quota',
+    value: 'qlhazycoder_bearer_token',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_subscription',
+    presetKey: 'qlhazycoder-bearer-token',
+    providerId: 'qlhazycoder',
+    providerName: 'QLhazycoder',
+    apiBaseUrl: 'https://api.qlhazycoder.top',
+    sortOrder: 20,
+    keywords: ['qlhazycoder', 'qlhazy'],
+    label: localText => localText('QLhazycoder：Bearer 控制台 Token', 'QLhazycoder: Bearer console token'),
+    description: localText => localText('Authorization: Bearer → 订阅与余额接口', 'Authorization: Bearer → subscription and balance APIs'),
+  },
+  {
+    value: 'a6api_cookie_newapi_user',
     template: 'newapi_console',
     balance_strategy: 'newapi_user_quota',
-    label: localText => localText('New API 控制台凭据 → /api/user/self 用户额度', 'New API console credential → /api/user/self user quota'),
+    presetKey: 'a6api-cookie-newapi-user',
+    providerId: 'a6api',
+    providerName: 'A6API',
+    apiBaseUrl: 'https://a6api.com',
+    sortOrder: 45,
+    keywords: ['a6api', 'a6api.com'],
+    label: localText => localText('A6API：Cookie + New-API-User', 'A6API: Cookie + New-API-User'),
+    description: localText => localText('Cookie + New-API-User → /api/user/self', 'Cookie + New-API-User → /api/user/self'),
   },
   {
-    value: 'openrouter_credits',
+    value: 'packycode_bearer_newapi_user',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_user_quota',
+    presetKey: 'packycode-bearer-newapi-user',
+    providerId: 'packycode',
+    providerName: 'PackyCode',
+    apiBaseUrl: 'https://www.packyapi.com',
+    sortOrder: 60,
+    keywords: ['packycode', 'packyapi.com', 'packy'],
+    label: localText => localText('PackyCode：Bearer 控制台 Token + New-API-User', 'PackyCode: Bearer console token + New-API-User'),
+    description: localText => localText('Authorization + New-API-User → /api/user/self', 'Authorization + New-API-User → /api/user/self'),
+  },
+  {
+    value: 'modelflare_cookie_user',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_user_quota',
+    presetKey: 'modelflare',
+    providerId: 'modelflare',
+    providerName: 'ModelFlare',
+    apiBaseUrl: 'https://modelflare.dev',
+    sortOrder: 65,
+    keywords: ['modelflare', 'modelflare.dev'],
+    label: localText => localText('ModelFlare：Cookie + X-ModelFlare-User', 'ModelFlare: Cookie + X-ModelFlare-User'),
+    description: localText => localText('Cookie + X-ModelFlare-User → /api/user/self', 'Cookie + X-ModelFlare-User → /api/user/self'),
+  },
+  {
+    value: 'openrouter_api_key',
     template: 'openrouter_credits',
     balance_strategy: 'auto',
-    label: localText => localText('OpenRouter：API Key → Credits', 'OpenRouter: API Key → Credits'),
+    presetKey: 'openrouter-api-key',
+    providerId: 'openrouter',
+    providerName: 'OpenRouter',
+    apiBaseUrl: 'https://openrouter.ai',
+    sortOrder: 70,
+    keywords: ['openrouter', 'openrouter.ai'],
+    label: localText => localText('OpenRouter：API Key', 'OpenRouter: API Key'),
+    description: localText => localText('Authorization: Bearer → /api/v1/credits', 'Authorization: Bearer → /api/v1/credits'),
   },
   {
-    value: 'cloudflare_ai_gateway_credits',
+    value: 'cloudflare_api_token_account_id',
     template: 'cloudflare_ai_gateway_credits',
     balance_strategy: 'auto',
-    label: localText => localText('Cloudflare：API Token + Account ID → Credits', 'Cloudflare: API Token + Account ID → Credits'),
+    presetKey: 'cloudflare-api-token-account-id',
+    providerId: 'cloudflare',
+    providerName: 'Cloudflare AI Gateway',
+    apiBaseUrl: 'https://api.cloudflare.com/client/v4',
+    sortOrder: 80,
+    keywords: ['cloudflare', 'ai-gateway', 'workers-ai'],
+    label: localText => localText('Cloudflare：API Token + Account ID', 'Cloudflare: API Token + Account ID'),
+    description: localText => localText('Authorization: Bearer + Account ID → AI Gateway credits', 'Authorization: Bearer + Account ID → AI Gateway credits'),
   },
 ]
 
 const legacySchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
   {
+    value: 'newapi_user_quota',
+    template: 'newapi_console',
+    balance_strategy: 'newapi_user_quota',
+    label: localText => localText('兼容旧方案：New API 用户额度', 'Legacy: New API user quota'),
+  },
+  {
     value: 'newapi_subscription',
     template: 'newapi_console',
     balance_strategy: 'newapi_subscription',
     label: localText => localText('旧方案：控制台凭据 → /api/subscription/self 套餐', 'Legacy: console credential → /api/subscription/self plans'),
+  },
+  {
+    value: 'openrouter_credits',
+    template: 'openrouter_credits',
+    balance_strategy: 'auto',
+    label: localText => localText('兼容旧方案：OpenRouter Credits', 'Legacy: OpenRouter credits'),
+  },
+  {
+    value: 'cloudflare_ai_gateway_credits',
+    template: 'cloudflare_ai_gateway_credits',
+    balance_strategy: 'auto',
+    label: localText => localText('兼容旧方案：Cloudflare AI Gateway Credits', 'Legacy: Cloudflare AI Gateway credits'),
   },
   {
     value: 'active_subscriptions',
@@ -588,15 +634,32 @@ function schemeDefinition(scheme: ExternalSubscriptionScheme | string) {
 }
 
 function schemeForPair(template: ExternalSubscriptionTemplate, balanceStrategy: ExternalSubscriptionBalanceStrategy) {
-  const match = [...activeSchemeDefinitions, ...legacySchemeDefinitions].find(item => (
+  const activeMatches = activeSchemeDefinitions.filter(item => (
+    item.value === 'pixel_access_token' &&
+    item.template === template && item.balance_strategy === balanceStrategy
+  ))
+  if (activeMatches.length === 1) return activeMatches[0].value
+  if (activeMatches.length > 1) {
+    const legacyMatch = legacySchemeDefinitions.find(item => (
+      item.template === template && item.balance_strategy === balanceStrategy
+    ))
+    if (legacyMatch) return legacyMatch.value
+  }
+  const match = legacySchemeDefinitions.find(item => (
     item.template === template && item.balance_strategy === balanceStrategy
   ))
   if (match) return match.value
   if (balanceStrategy === 'auto') {
-    const fallback = [...activeSchemeDefinitions, ...legacySchemeDefinitions].find(item => item.template === template)
+    const fallback = activeSchemeDefinitions.find(item => item.template === template)
+      || legacySchemeDefinitions.find(item => item.template === template)
     if (fallback) return fallback.value
   }
-  return 'newapi_user_quota' as ExternalSubscriptionScheme
+  return 'pixel_access_token' as ExternalSubscriptionScheme
+}
+
+function schemeForProviderId(providerId: string, template: ExternalSubscriptionTemplate, balanceStrategy: ExternalSubscriptionBalanceStrategy) {
+  const definition = activeSchemeDefinitions.find(item => item.providerId === providerId.trim().toLowerCase())
+  return definition?.value || schemeForPair(template, balanceStrategy)
 }
 
 const schemeOptions = computed(() => {
@@ -610,45 +673,59 @@ const schemeOptions = computed(() => {
 })
 
 const requiresPixelAccessToken = computed(() => form.scheme === 'pixel_access_token')
-const requiresUserId = computed(() => !requiresPixelAccessToken.value && (
-  isA6APIForm.value ||
-  isModelFlareForm.value ||
+const isA6APIForm = computed(() => form.scheme === 'a6api_cookie_newapi_user')
+const isModelFlareForm = computed(() => form.scheme === 'modelflare_cookie_user')
+const isCookieCredential = computed(() => isA6APIForm.value || isModelFlareForm.value)
+const requiresUserId = computed(() => (
+  form.scheme === 'a6api_cookie_newapi_user' ||
+  form.scheme === 'packycode_bearer_newapi_user' ||
+  form.scheme === 'modelflare_cookie_user' ||
+  form.scheme === 'cloudflare_api_token_account_id' ||
   form.scheme === 'newapi_subscription' ||
+  form.scheme === 'newapi_user_quota' ||
   form.scheme === 'cloudflare_ai_gateway_credits'
 ))
 const requiresRefreshToken = computed(() => form.scheme === 'active_subscriptions' && !requiresPixelAccessToken.value)
 
 const userIdLabel = computed(() => (
-  form.scheme === 'cloudflare_ai_gateway_credits'
+  form.scheme === 'cloudflare_api_token_account_id'
     ? 'Account ID'
-    : isModelFlareForm.value
+    : form.scheme === 'modelflare_cookie_user'
       ? localText('ModelFlare User ID', 'ModelFlare User ID')
+      : form.scheme === 'a6api_cookie_newapi_user' || form.scheme === 'packycode_bearer_newapi_user'
+        ? 'New-API-User'
     : localText('用户 ID', 'User ID')
 ))
 
 const userIdPlaceholder = computed(() => (
-  form.scheme === 'cloudflare_ai_gateway_credits'
+  form.scheme === 'cloudflare_api_token_account_id'
     ? 'Cloudflare account id'
-    : isModelFlareForm.value ? 'ModelFlare user id' : '707'
+    : form.scheme === 'modelflare_cookie_user' ? 'ModelFlare user id' : '707'
 ))
 
 const apiTokenPlaceholder = computed(() => {
   if (requiresPixelAccessToken.value) return 'Pixel Access Token'
-  if (isA6APIForm.value || isModelFlareForm.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
+  if (isCookieCredential.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
-  if (form.scheme === 'openrouter_credits') return 'sk-or-...'
-  if (form.scheme === 'cloudflare_ai_gateway_credits') return 'Cloudflare API Token'
+  if (form.scheme === 'openrouter_api_key') return 'sk-or-...'
+  if (form.scheme === 'cloudflare_api_token_account_id') return 'Cloudflare API Token'
   return 'sk-...'
 })
 
 const requiresConsoleToken = computed(() => (
-  form.scheme === 'newapi_user_quota' || form.scheme === 'newapi_subscription'
+  form.scheme === 'qlhazycoder_bearer_token' ||
+  form.scheme === 'packycode_bearer_newapi_user' ||
+  form.scheme === 'newapi_user_quota' ||
+  form.scheme === 'newapi_subscription'
 ))
 
 const apiTokenLabel = computed(() => (
   requiresPixelAccessToken.value ? localText('访问令牌', 'Access Token') : (isA6APIForm.value || isModelFlareForm.value)
     ? localText('登录 Cookie', 'Login Cookie')
-    : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token') : 'API Token'
+    : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token')
+      : form.scheme === 'openrouter_api_key' ? 'API Key'
+      : form.scheme === 'cloudflare_api_token_account_id' ? 'API Token'
+      : 'API Token'
 ))
 
 const schemeFilterOptions = computed(() => [
@@ -761,7 +838,7 @@ function buildStatusCard(
   return {
     id,
     name: provider?.name || status.name || id,
-    scheme: provider?.scheme || status.scheme || schemeForPair(status.template, status.balance_strategy),
+    scheme: provider?.scheme || status.scheme || schemeForProviderId(id, status.template, status.balance_strategy),
     template: provider?.template || status.template,
     enabled: status.enabled,
     configured: status.configured,
@@ -792,7 +869,7 @@ function buildProviderOnlyCard(provider: ExternalSubscriptionProvider): External
   return {
     id: provider.id,
     name: provider.name,
-    scheme: provider.scheme || schemeForPair(provider.template, provider.balance_strategy),
+    scheme: provider.scheme || schemeForProviderId(provider.id, provider.template, provider.balance_strategy),
     template: provider.template,
     enabled: provider.enabled,
     configured: provider.api_token_configured || provider.refresh_token_configured || Boolean(provider.user_id),
@@ -823,7 +900,7 @@ function resetForm() {
   form.id = ''
   form.name = ''
   form.enabled = true
-  form.scheme = 'newapi_user_quota'
+  form.scheme = 'pixel_access_token'
   form.api_base_url = ''
   form.logo_url = ''
   form.api_token = ''
@@ -836,50 +913,16 @@ function resetForm() {
 
 function applySchemePreset(scheme: ExternalSubscriptionScheme) {
   form.scheme = scheme
-  if (scheme === 'pixel_access_token') {
-    form.api_base_url = 'https://api.ai-pixel.online'
-    if (!form.name) form.name = 'Pixel'
-    if (!form.id) form.id = 'pixel'
-    form.user_id = ''
-    form.refresh_token = ''
-    if (form.sort_order === 50) form.sort_order = 40
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'pixel\nai-pixel.online\npixelapi.cc'
-    return
-  }
-  if (scheme === 'newapi_user_quota') {
-    if (!form.api_base_url) form.api_base_url = 'https://api.example.com'
-    if (!form.name) form.name = 'NewAPI'
-    if (!form.id) form.id = 'newapi-provider'
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'newapi\napi.example.com'
-    return
-  }
-  if (scheme === 'openrouter_credits') {
-    if (!form.api_base_url) form.api_base_url = 'https://openrouter.ai'
-    if (!form.name) form.name = 'OpenRouter'
-    if (!form.id) form.id = 'openrouter'
-    if (form.sort_order === 50) form.sort_order = 70
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'openrouter\nopenrouter.ai'
-    return
-  }
-  if (scheme === 'cloudflare_ai_gateway_credits') {
-    if (!form.api_base_url) form.api_base_url = 'https://api.cloudflare.com/client/v4'
-    if (!form.name) form.name = 'Cloudflare AI Gateway'
-    if (!form.id) form.id = 'cloudflare'
-    if (form.sort_order === 50) form.sort_order = 80
-    if (!keywordsDraft.value.trim()) keywordsDraft.value = 'cloudflare\nai-gateway\nworkers-ai'
-    return
-  }
-}
-
-function applyModelFlarePreset() {
-  form.scheme = 'newapi_user_quota'
-  form.api_base_url = 'https://modelflare.dev'
-  form.name = 'ModelFlare'
-  form.id = 'modelflare'
+  const definition = activeSchemeDefinitions.find(item => item.value === scheme)
+  if (!definition) return
+  form.id = definition.providerId || ''
+  form.name = definition.providerName || ''
+  form.api_base_url = definition.apiBaseUrl || ''
+  form.logo_url = ''
   form.user_id = ''
   form.refresh_token = ''
-  if (form.sort_order === 50) form.sort_order = 65
-  keywordsDraft.value = 'modelflare\nmodelflare.dev'
+  form.sort_order = definition.sortOrder ?? 50
+  keywordsDraft.value = (definition.keywords || []).join('\n')
 }
 
 function openCreateDialog() {
@@ -1034,7 +1077,8 @@ function cardStatusText(card: ExternalSubscriptionCard) {
 
 function formatTokenMeta(card: ExternalSubscriptionCard) {
   if (card.template === 'pixel_access_token') return card.apiTokenConfigured ? 'Access Token ready' : localText('访问令牌未配置', 'Access Token missing')
-  if (card.id === 'a6api' || card.id === 'modelflare') return card.apiTokenConfigured ? localText('登录 Cookie 已配置', 'Browser Cookie ready') : localText('登录 Cookie 未配置', 'Browser Cookie missing')
+  if (card.scheme === 'a6api_cookie_newapi_user' || card.scheme === 'modelflare_cookie_user') return card.apiTokenConfigured ? localText('登录 Cookie 已配置', 'Browser Cookie ready') : localText('登录 Cookie 未配置', 'Browser Cookie missing')
+  if (card.scheme === 'openrouter_api_key') return card.apiTokenConfigured ? 'API Key ready' : localText('API Key 未配置', 'API Key missing')
   return card.apiTokenConfigured ? 'API Token ready' : localText('Token 未配置', 'Token missing')
 }
 

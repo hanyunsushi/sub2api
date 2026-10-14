@@ -118,7 +118,7 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 
 	modelflare := requireExternalSubscriptionProvider(t, providers, "modelflare")
 	require.Equal(t, "ModelFlare", modelflare.Name)
-	require.Equal(t, ExternalSubscriptionSchemeNewAPIUserQuota, modelflare.Scheme)
+	require.Equal(t, ExternalSubscriptionSchemeModelFlareCookieUser, modelflare.Scheme)
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, modelflare.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, modelflare.BalanceStrategy)
 	require.Equal(t, "https://modelflare.dev", modelflare.APIBaseURL)
@@ -207,6 +207,42 @@ func TestExternalSubscriptionConfigServiceGetStatusesReadsModelFlareCookieAndUse
 	require.InDelta(t, 1000000.0/3333333.3333333335, *modelflare.RemainingUSD, 0.0000001)
 }
 
+func TestExternalSubscriptionConfigServiceReadsPackyCodeBearerAndNewAPIUser(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "Bearer packy-console-token", r.Header.Get("Authorization"))
+		require.Equal(t, "996", r.Header.Get("New-API-User"))
+		require.Empty(t, r.Header.Get("Cookie"))
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/status":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"quota_display_type":"USD","quota_per_unit":1000000}}`))
+		case "/api/user/self":
+			_, _ = w.Write([]byte(`{"success":true,"data":{"quota":5000000,"used_quota":1250000}}`))
+		default:
+			t.Fatalf("unexpected path %s", r.URL.Path)
+		}
+	}))
+	defer server.Close()
+
+	repo := newExternalSubscriptionConfigRepoWithProvidersAndValues([]externalSubscriptionStoredProvider{{
+		ID: "packycode", Name: "PackyCode", Enabled: true,
+		Scheme:          ExternalSubscriptionSchemePackyCodeBearerNewAPIUser,
+		Template:        ExternalSubscriptionTemplateNewAPIConsole,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
+		APIBaseURL:      server.URL, APIToken: "packy-console-token", UserID: "996",
+		MatchKeywords: []string{"packycode"}, SortOrder: 60,
+	}}, map[string]string{SettingKeyExternalSubscriptionDeletedDefaultProviders: `["packycode"]`})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+
+	statuses, err := svc.GetStatuses(context.Background(), ExternalSubscriptionStatusOptions{ForceRefresh: true})
+	require.NoError(t, err)
+	packy := requireExternalSubscriptionStatus(t, statuses, "packycode")
+	require.Equal(t, "USD", packy.Currency)
+	require.InDelta(t, 1.25, packy.UsedUSD, 0.000001)
+	require.NotNil(t, packy.RemainingUSD)
+	require.InDelta(t, 5.0, *packy.RemainingUSD, 0.000001)
+}
+
 func TestExternalSubscriptionConfigServiceNormalizesSchemeAsBoundTemplateAndStrategy(t *testing.T) {
 	repo := newExternalSubscriptionConfigRepo(nil)
 	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
@@ -228,6 +264,69 @@ func TestExternalSubscriptionConfigServiceNormalizesSchemeAsBoundTemplateAndStra
 	require.Equal(t, ExternalSubscriptionSchemeNewAPIUserQuota, provider.Scheme)
 	require.Equal(t, ExternalSubscriptionTemplateNewAPIConsole, provider.Template)
 	require.Equal(t, ExternalSubscriptionBalanceStrategyNewAPIUserQuota, provider.BalanceStrategy)
+}
+
+func TestExternalSubscriptionConfigServiceMigratesBuiltInProvidersToVendorAuthSchemes(t *testing.T) {
+	tests := []struct {
+		id     string
+		legacy string
+		want   string
+	}{
+		{"pixel", ExternalSubscriptionSchemeActiveSubscriptions, ExternalSubscriptionSchemePixelAccessToken},
+		{"qlhazycoder", ExternalSubscriptionSchemeNewAPISubscription, ExternalSubscriptionSchemeQLHazyCoderBearerToken},
+		{"a6api", ExternalSubscriptionSchemeNewAPIUserQuota, ExternalSubscriptionSchemeA6APICookieNewAPIUser},
+		{"packycode", ExternalSubscriptionSchemeNewAPIUserQuota, ExternalSubscriptionSchemePackyCodeBearerNewAPIUser},
+		{"modelflare", ExternalSubscriptionSchemeNewAPIUserQuota, ExternalSubscriptionSchemeModelFlareCookieUser},
+		{"openrouter", ExternalSubscriptionSchemeOpenRouterCredits, ExternalSubscriptionSchemeOpenRouterAPIKey},
+		{"cloudflare", ExternalSubscriptionSchemeCloudflareAIGatewayCredits, ExternalSubscriptionSchemeCloudflareAPITokenAccountID},
+	}
+	for _, tt := range tests {
+		t.Run(tt.id, func(t *testing.T) {
+			provider, err := normalizeExternalSubscriptionStoredProvider(externalSubscriptionStoredProvider{
+				ID: tt.id, Name: tt.id, Enabled: false, Scheme: tt.legacy,
+				Template:        ExternalSubscriptionTemplateNewAPIConsole,
+				BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+				APIBaseURL:      "https://example.com", MatchKeywords: []string{tt.id},
+			})
+			require.NoError(t, err)
+			require.Equal(t, tt.want, provider.Scheme)
+			require.Equal(t, externalSubscriptionSchemeDefinitions[tt.want].template, provider.Template)
+			require.Equal(t, externalSubscriptionSchemeDefinitions[tt.want].balanceStrategy, provider.BalanceStrategy)
+		})
+	}
+}
+
+func TestExternalSubscriptionConfigServiceMigratesLegacyPixelSchemeAfterURLContract(t *testing.T) {
+	provider, err := normalizeExternalSubscriptionStoredProvider(externalSubscriptionStoredProvider{
+		ID:              "pixel",
+		Name:            "PixelAPI",
+		Enabled:         false,
+		Scheme:          ExternalSubscriptionSchemeActiveSubscriptions,
+		Template:        ExternalSubscriptionTemplateActiveSubscriptions,
+		BalanceStrategy: ExternalSubscriptionBalanceStrategyActiveSubscriptions,
+		APIBaseURL:      "https://pixelapi.cc/api/v1",
+		MatchKeywords:   []string{"pixel"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, ExternalSubscriptionSchemePixelAccessToken, provider.Scheme)
+	require.Equal(t, ExternalSubscriptionTemplatePixelAccessToken, provider.Template)
+	require.Equal(t, ExternalSubscriptionBalanceStrategyPixelUserQuota, provider.BalanceStrategy)
+}
+
+func TestExternalSubscriptionConfigServiceUpdatePreservesConfiguredUserIDWhenFormLeavesItBlank(t *testing.T) {
+	repo := newExternalSubscriptionConfigRepoWithProviders([]externalSubscriptionStoredProvider{{
+		ID: "packycode", Name: "PackyCode", Enabled: true,
+		Scheme:     ExternalSubscriptionSchemePackyCodeBearerNewAPIUser,
+		APIBaseURL: DefaultPackyCodeSubscriptionAPIBaseURL, APIToken: "token", UserID: "996",
+		MatchKeywords: []string{"packycode"},
+	}})
+	svc := NewExternalSubscriptionConfigService(NewSettingService(repo, &config.Config{}))
+	updated, err := svc.UpdateProvider(context.Background(), "packycode", ExternalSubscriptionProviderInput{
+		Name: "PackyCode", Enabled: true, Scheme: ExternalSubscriptionSchemePackyCodeBearerNewAPIUser,
+		APIBaseURL: DefaultPackyCodeSubscriptionAPIBaseURL, MatchKeywords: []string{"packycode"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, "996", updated.UserID)
 }
 
 func TestExternalSubscriptionConfigServicePersistsAccountQuotaProgressSettings(t *testing.T) {

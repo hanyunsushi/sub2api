@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -20,18 +21,24 @@ const (
 	// External subscription schemes are the user-facing contract that binds a
 	// request template to its balance endpoint. Template and strategy remain in
 	// the payload for backward compatibility with older clients and settings.
-	ExternalSubscriptionSchemePixelAccessToken           = "pixel_access_token"
-	ExternalSubscriptionSchemeNewAPIUserQuota            = "newapi_user_quota"
-	ExternalSubscriptionSchemeNewAPISubscription         = "newapi_subscription"
-	ExternalSubscriptionSchemeActiveSubscriptions        = "active_subscriptions"
-	ExternalSubscriptionSchemeBuzzBalance                = "buzz_balance"
-	ExternalSubscriptionSchemeOpenRouterCredits          = "openrouter_credits"
-	ExternalSubscriptionSchemeCloudflareAIGatewayCredits = "cloudflare_ai_gateway_credits"
-	ExternalSubscriptionSchemeRawChatSubscriptions       = "rawchat_subscriptions"
-	ExternalSubscriptionSchemeMimoTokenPlan              = "mimo_token_plan"
-	ExternalSubscriptionSchemeOpenAIBilling              = "openai_billing"
-	ExternalSubscriptionSchemeAuthMeBalance              = "auth_me_balance"
-	ExternalSubscriptionSchemeActiveWithAuthMeBalance    = "active_with_auth_me_balance"
+	ExternalSubscriptionSchemePixelAccessToken            = "pixel_access_token"
+	ExternalSubscriptionSchemeQLHazyCoderBearerToken      = "qlhazycoder_bearer_token"
+	ExternalSubscriptionSchemeA6APICookieNewAPIUser       = "a6api_cookie_newapi_user"
+	ExternalSubscriptionSchemePackyCodeBearerNewAPIUser   = "packycode_bearer_newapi_user"
+	ExternalSubscriptionSchemeModelFlareCookieUser        = "modelflare_cookie_user"
+	ExternalSubscriptionSchemeOpenRouterAPIKey            = "openrouter_api_key"
+	ExternalSubscriptionSchemeCloudflareAPITokenAccountID = "cloudflare_api_token_account_id"
+	ExternalSubscriptionSchemeNewAPIUserQuota             = "newapi_user_quota"
+	ExternalSubscriptionSchemeNewAPISubscription          = "newapi_subscription"
+	ExternalSubscriptionSchemeActiveSubscriptions         = "active_subscriptions"
+	ExternalSubscriptionSchemeBuzzBalance                 = "buzz_balance"
+	ExternalSubscriptionSchemeOpenRouterCredits           = "openrouter_credits"
+	ExternalSubscriptionSchemeCloudflareAIGatewayCredits  = "cloudflare_ai_gateway_credits"
+	ExternalSubscriptionSchemeRawChatSubscriptions        = "rawchat_subscriptions"
+	ExternalSubscriptionSchemeMimoTokenPlan               = "mimo_token_plan"
+	ExternalSubscriptionSchemeOpenAIBilling               = "openai_billing"
+	ExternalSubscriptionSchemeAuthMeBalance               = "auth_me_balance"
+	ExternalSubscriptionSchemeActiveWithAuthMeBalance     = "active_with_auth_me_balance"
 
 	ExternalSubscriptionTemplateNewAPIConsole              = "newapi_console"
 	ExternalSubscriptionTemplateActiveSubscriptions        = "active_subscriptions"
@@ -538,18 +545,23 @@ func (s *ExternalSubscriptionConfigService) loadStoredProviders(ctx context.Cont
 		return nil, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_PROVIDERS_INVALID", "external subscription providers setting is invalid")
 	}
 	normalized := make([]externalSubscriptionStoredProvider, 0, len(providers))
+	normalizationUpdated := false
 	for _, provider := range providers {
 		next, err := normalizeExternalSubscriptionStoredProvider(provider)
 		if err != nil {
 			return nil, err
 		}
+		if !reflect.DeepEqual(provider, next) {
+			normalizationUpdated = true
+		}
 		normalized = append(normalized, next)
 	}
 	sortExternalSubscriptionStoredProviders(normalized)
-	merged, updated, err := s.mergeDefaultProviders(ctx, normalized)
+	merged, defaultsUpdated, err := s.mergeDefaultProviders(ctx, normalized)
 	if err != nil {
 		return nil, err
 	}
+	updated := normalizationUpdated || defaultsUpdated
 	if updated {
 		if err := s.saveStoredProviders(ctx, merged); err != nil {
 			return nil, err
@@ -741,8 +753,9 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 		},
 		{
 			ID:              "qlhazycoder",
-			Name:            "qlhazycoder",
+			Name:            "QLhazycoder",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemeQLHazyCoderBearerToken,
 			Template:        ExternalSubscriptionTemplateNewAPIConsole,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPISubscription,
 			APIBaseURL:      DefaultQLHazyCoderSubscriptionAPIBaseURL,
@@ -761,8 +774,9 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 		},
 		{
 			ID:              "pixel",
-			Name:            "Pixel",
+			Name:            "PixelAPI",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemePixelAccessToken,
 			Template:        ExternalSubscriptionTemplatePixelAccessToken,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyPixelUserQuota,
 			APIBaseURL:      DefaultPixelSubscriptionAPIBaseURL,
@@ -773,6 +787,7 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "a6api",
 			Name:            "A6API",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemeA6APICookieNewAPIUser,
 			Template:        ExternalSubscriptionTemplateNewAPIConsole,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 			APIBaseURL:      "https://a6api.com",
@@ -794,6 +809,7 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "packycode",
 			Name:            "PackyCode",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemePackyCodeBearerNewAPIUser,
 			Template:        ExternalSubscriptionTemplateNewAPIConsole,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 			APIBaseURL:      DefaultPackyCodeSubscriptionAPIBaseURL,
@@ -804,6 +820,7 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "modelflare",
 			Name:            "ModelFlare",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemeModelFlareCookieUser,
 			Template:        ExternalSubscriptionTemplateNewAPIConsole,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyNewAPIUserQuota,
 			APIBaseURL:      "https://modelflare.dev",
@@ -814,6 +831,7 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "openrouter",
 			Name:            "OpenRouter",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemeOpenRouterAPIKey,
 			Template:        ExternalSubscriptionTemplateOpenRouterCredits,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
 			APIBaseURL:      DefaultOpenRouterCreditsAPIBaseURL,
@@ -824,6 +842,7 @@ func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider
 			ID:              "cloudflare",
 			Name:            "Cloudflare AI Gateway",
 			Enabled:         false,
+			Scheme:          ExternalSubscriptionSchemeCloudflareAPITokenAccountID,
 			Template:        ExternalSubscriptionTemplateCloudflareAIGatewayCredits,
 			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
 			APIBaseURL:      DefaultCloudflareAIGatewayCreditsAPIBaseURL,
@@ -898,6 +917,9 @@ func normalizeExternalSubscriptionInput(input ExternalSubscriptionProviderInput,
 		if provider.APIToken == "" {
 			provider.APIToken = existing.APIToken
 		}
+		if provider.UserID == "" {
+			provider.UserID = existing.UserID
+		}
 		if provider.RefreshToken == "" {
 			provider.RefreshToken = existing.RefreshToken
 		}
@@ -915,6 +937,24 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_PROVIDER_NAME_REQUIRED", "external subscription provider name is required")
 	}
 	provider.Scheme = strings.TrimSpace(strings.ToLower(provider.Scheme))
+	// Existing built-in providers used broad legacy schemes.  Migrate those
+	// records to the vendor/authentication contract before deriving the bound
+	// template and balance strategy.  Custom providers keep their explicit
+	// legacy scheme for backwards compatibility.
+	pixelLegacyContract := provider.ID == "pixel" && provider.Template == ExternalSubscriptionTemplateActiveSubscriptions
+	if canonical, ok := canonicalExternalSubscriptionSchemeForProviderID(provider.ID); ok {
+		// A legacy Pixel record may intentionally point at the old active-
+		// subscriptions service.  Leave that record alone until the existing
+		// URL-based Pixel migration below decides whether it is really Pixel.
+		// Every other built-in provider is bound to its vendor/auth contract;
+		// this also prevents the UI from persisting a different vendor scheme
+		// against a built-in provider id.
+		if !pixelLegacyContract {
+			provider.Scheme = canonical
+		} else {
+			provider.Scheme = ""
+		}
+	}
 	if provider.Scheme != "" {
 		definition, ok := externalSubscriptionSchemeSpecFor(provider.Scheme)
 		if !ok {
@@ -925,8 +965,7 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	}
 	provider.Template = strings.TrimSpace(provider.Template)
 	// Migrate only the built-in Pixel console contract, not custom providers.
-	if provider.ID == "pixel" && provider.Template == ExternalSubscriptionTemplateActiveSubscriptions &&
-		(provider.BalanceStrategy == "" || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuto || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuthMeBalance) {
+	if provider.ID == "pixel" && provider.Template == ExternalSubscriptionTemplateActiveSubscriptions {
 		baseURL := strings.TrimRight(strings.TrimSpace(provider.APIBaseURL), "/")
 		baseURL = strings.TrimSuffix(baseURL, "/v1")
 		baseURL = strings.TrimSuffix(baseURL, "/api")
@@ -960,7 +999,9 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	if strings.EqualFold(provider.ID, "a6api") && strings.Contains(strings.ToLower(provider.APIBaseURL), "a6api.com") && (provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyAuto || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyOpenAIBilling) {
 		provider.BalanceStrategy = ExternalSubscriptionBalanceStrategyNewAPIUserQuota
 	}
-	provider.Scheme = externalSubscriptionSchemeForPair(provider.Template, provider.BalanceStrategy)
+	if provider.Scheme == "" {
+		provider.Scheme = externalSubscriptionSchemeForPair(provider.Template, provider.BalanceStrategy)
+	}
 	if provider.Scheme == "" {
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_SCHEME_INVALID", "external subscription provider template and balance strategy must form a supported scheme")
 	}
@@ -968,8 +1009,8 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 	provider.APIToken = strings.TrimSpace(provider.APIToken)
 	provider.UserID = strings.TrimSpace(provider.UserID)
 	provider.RefreshToken = strings.TrimSpace(provider.RefreshToken)
-	if strings.EqualFold(provider.ID, "modelflare") && provider.Enabled && provider.UserID == "" {
-		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("MODELFLARE_USER_ID_REQUIRED", "ModelFlare user id is required when the provider is enabled")
+	if provider.Enabled && externalSubscriptionSchemeRequiresUserID(provider.Scheme) && provider.UserID == "" {
+		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_USER_ID_REQUIRED", "the selected external subscription scheme requires a user or account ID when the provider is enabled")
 	}
 	provider.MatchKeywords = normalizeExternalSubscriptionKeywords(provider.MatchKeywords)
 	if len(provider.MatchKeywords) == 0 {
@@ -1284,6 +1325,7 @@ func externalSubscriptionRuntimeConfig(provider externalSubscriptionStoredProvid
 	return externalSubscriptionProviderConfig{
 		Provider:          provider.ID,
 		DisplayName:       provider.Name,
+		Scheme:            externalSubscriptionSchemeForProvider(provider),
 		DefaultAPIBaseURL: provider.APIBaseURL,
 		EnabledKey:        provider.ID + "_enabled",
 		APIBaseURLKey:     provider.ID + "_api_base_url",

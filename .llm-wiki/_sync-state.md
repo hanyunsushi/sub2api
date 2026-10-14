@@ -7,9 +7,9 @@ updated: 2026-10-15
 
 | Changed surface | Documentation owner | Evidence |
 | --- | --- | --- |
-| Bound external-subscription schemes | Backend/frontend modules and external-subscription inventory | The editor submits one `scheme`; the server derives legacy template/strategy values and exposes only four current schemes for new configuration |
+| Vendor-bound external-subscription schemes | Backend/frontend modules and external-subscription inventory | The editor submits one `scheme`; the server binds legacy template/strategy values and authentication headers, migrates seven built-in providers from broad schemes, and exposes seven complete provider presets |
 | OCI application-only release | Project Authority and OCI operations guide | Clean archive, rollback tag, PostgreSQL/application-data backups, explicit image metadata, bounded healthy switch, unchanged PostgreSQL/Redis and formal volumes |
-| Production verification | Project Authority | Local and public route checks plus static bundle evidence for `scheme`, “配置方案” and the four current scheme identifiers |
+| Production verification | Project Authority | Existing release remains the production baseline; this seven-scheme source change is not deployed in this turn |
 
 # Verification
 

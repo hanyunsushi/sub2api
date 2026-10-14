@@ -1,6 +1,12 @@
 import { apiClient } from '@/api/client'
 export type ExternalSubscriptionScheme =
   | 'pixel_access_token'
+  | 'qlhazycoder_bearer_token'
+  | 'a6api_cookie_newapi_user'
+  | 'packycode_bearer_newapi_user'
+  | 'modelflare_cookie_user'
+  | 'openrouter_api_key'
+  | 'cloudflare_api_token_account_id'
   | 'newapi_user_quota'
   | 'newapi_subscription'
   | 'active_subscriptions'

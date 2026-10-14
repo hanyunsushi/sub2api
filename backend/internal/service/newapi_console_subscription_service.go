@@ -100,29 +100,49 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleJSON(ctx context.Context, 
 	req := s.client.R().
 		SetContext(ctx).
 		SetSuccessResult(&envelope)
-	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
-	case "a6api":
-		cookie := strings.TrimSpace(settings.APIToken)
-		if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
-			cookie = strings.TrimSpace(cookie[len("cookie:"):])
-		}
-		req.SetHeader("Cookie", cookie)
+	switch externalSubscriptionAuthModeForConfig(cfg) {
+	case externalSubscriptionAuthAccessToken:
+		// Pixel's credential is an access token for its console balance API.
+		// Do not add a New-API-User header even if the token was pasted in a
+		// legacy JSON wrapper that happened to include a user id.
+		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
+	case externalSubscriptionAuthBearer:
+		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
+	case externalSubscriptionAuthBearerWithNewAPIUser:
+		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
 		if auth.UserID != "" {
 			req.SetHeader("New-API-User", auth.UserID)
 		}
-	case "modelflare":
-		cookie := strings.TrimSpace(settings.APIToken)
-		if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
-			cookie = strings.TrimSpace(cookie[len("cookie:"):])
+	case externalSubscriptionAuthCookieWithNewAPIUser:
+		req.SetHeader("Cookie", normalizeExternalSubscriptionCookie(settings.APIToken))
+		if auth.UserID != "" {
+			req.SetHeader("New-API-User", auth.UserID)
 		}
-		req.SetHeader("Cookie", cookie)
+	case externalSubscriptionAuthCookieWithModelFlareUser:
+		req.SetHeader("Cookie", normalizeExternalSubscriptionCookie(settings.APIToken))
 		if auth.UserID != "" {
 			req.SetHeader("X-ModelFlare-User", auth.UserID)
 		}
 	default:
-		req.SetHeader("Authorization", "Bearer "+settings.APIToken)
-		if auth.UserID != "" {
-			req.SetHeader("New-API-User", auth.UserID)
+		// Legacy schemes predate the explicit authentication contract.  Keep
+		// the old provider-specific behavior only while reading those schemes;
+		// all newly migrated built-ins take one of the cases above.
+		switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
+		case "a6api":
+			req.SetHeader("Cookie", normalizeExternalSubscriptionCookie(settings.APIToken))
+			if auth.UserID != "" {
+				req.SetHeader("New-API-User", auth.UserID)
+			}
+		case "modelflare":
+			req.SetHeader("Cookie", normalizeExternalSubscriptionCookie(settings.APIToken))
+			if auth.UserID != "" {
+				req.SetHeader("X-ModelFlare-User", auth.UserID)
+			}
+		default:
+			req.SetHeader("Authorization", "Bearer "+settings.APIToken)
+			if auth.UserID != "" {
+				req.SetHeader("New-API-User", auth.UserID)
+			}
 		}
 	}
 	resp, err := req.Get(settings.APIBaseURL + path)
@@ -139,6 +159,14 @@ func (s *ExternalSubscriptionService) getNewAPIConsoleJSON(ctx context.Context, 
 		return infraerrors.ServiceUnavailable(newAPIConsoleSubscriptionErrorCode(cfg), fmt.Sprintf("failed to parse %s account status", cfg.DisplayName))
 	}
 	return nil
+}
+
+func normalizeExternalSubscriptionCookie(raw string) string {
+	cookie := strings.TrimSpace(raw)
+	if strings.HasPrefix(strings.ToLower(cookie), "cookie:") {
+		return strings.TrimSpace(cookie[len("cookie:"):])
+	}
+	return cookie
 }
 
 func statusWithNewAPIConsoleError(result *ExternalSubscriptionStatus, err error, cfg externalSubscriptionProviderConfig) (*ExternalSubscriptionStatus, error) {

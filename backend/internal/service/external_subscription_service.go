@@ -56,6 +56,7 @@ type ExternalSubscriptionItem struct {
 type externalSubscriptionProviderConfig struct {
 	Provider          string
 	DisplayName       string
+	Scheme            string
 	DefaultAPIBaseURL string
 	EnabledKey        string
 	APIBaseURLKey     string
