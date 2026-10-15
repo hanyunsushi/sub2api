@@ -1,7 +1,7 @@
 ---
 title: Sub2API Wiki Schema
 updated: 2026-10-15
-last_synced_commit: 960a916bd
+last_synced_commit: 211d4f752
 commit_policy: committed
 authority_entry: ../agent.md
 ---
