@@ -106,6 +106,12 @@ func (_c *GroupCreate) SetNillableLogoURL(v *string) *GroupCreate {
 	return _c
 }
 
+// SetI18n sets the "i18n" field.
+func (_c *GroupCreate) SetI18n(v domain.GroupI18n) *GroupCreate {
+	_c.mutation.SetI18n(v)
+	return _c
+}
+
 // SetRateMultiplier sets the "rate_multiplier" field.
 func (_c *GroupCreate) SetRateMultiplier(v float64) *GroupCreate {
 	_c.mutation.SetRateMultiplier(v)
@@ -1065,6 +1071,10 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultLogoURL
 		_c.mutation.SetLogoURL(v)
 	}
+	if _, ok := _c.mutation.I18n(); !ok {
+		v := group.DefaultI18n
+		_c.mutation.SetI18n(v)
+	}
 	if _, ok := _c.mutation.RateMultiplier(); !ok {
 		v := group.DefaultRateMultiplier
 		_c.mutation.SetRateMultiplier(v)
@@ -1250,6 +1260,9 @@ func (_c *GroupCreate) check() error {
 	}
 	if _, ok := _c.mutation.LogoURL(); !ok {
 		return &ValidationError{Name: "logo_url", err: errors.New(`ent: missing required field "Group.logo_url"`)}
+	}
+	if _, ok := _c.mutation.I18n(); !ok {
+		return &ValidationError{Name: "i18n", err: errors.New(`ent: missing required field "Group.i18n"`)}
 	}
 	if _, ok := _c.mutation.RateMultiplier(); !ok {
 		return &ValidationError{Name: "rate_multiplier", err: errors.New(`ent: missing required field "Group.rate_multiplier"`)}
@@ -1489,6 +1502,10 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LogoURL(); ok {
 		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
 		_node.LogoURL = value
+	}
+	if value, ok := _c.mutation.I18n(); ok {
+		_spec.SetField(group.FieldI18n, field.TypeJSON, value)
+		_node.I18n = value
 	}
 	if value, ok := _c.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)
@@ -1959,6 +1976,18 @@ func (u *GroupUpsert) SetLogoURL(v string) *GroupUpsert {
 // UpdateLogoURL sets the "logo_url" field to the value that was provided on create.
 func (u *GroupUpsert) UpdateLogoURL() *GroupUpsert {
 	u.SetExcluded(group.FieldLogoURL)
+	return u
+}
+
+// SetI18n sets the "i18n" field.
+func (u *GroupUpsert) SetI18n(v domain.GroupI18n) *GroupUpsert {
+	u.Set(group.FieldI18n, v)
+	return u
+}
+
+// UpdateI18n sets the "i18n" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateI18n() *GroupUpsert {
+	u.SetExcluded(group.FieldI18n)
 	return u
 }
 
@@ -3087,6 +3116,20 @@ func (u *GroupUpsertOne) SetLogoURL(v string) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateLogoURL() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateLogoURL()
+	})
+}
+
+// SetI18n sets the "i18n" field.
+func (u *GroupUpsertOne) SetI18n(v domain.GroupI18n) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetI18n(v)
+	})
+}
+
+// UpdateI18n sets the "i18n" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateI18n() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateI18n()
 	})
 }
 
@@ -4547,6 +4590,20 @@ func (u *GroupUpsertBulk) SetLogoURL(v string) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateLogoURL() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateLogoURL()
+	})
+}
+
+// SetI18n sets the "i18n" field.
+func (u *GroupUpsertBulk) SetI18n(v domain.GroupI18n) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetI18n(v)
+	})
+}
+
+// UpdateI18n sets the "i18n" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateI18n() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateI18n()
 	})
 }
 

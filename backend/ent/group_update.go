@@ -111,6 +111,12 @@ func (_u *GroupUpdate) SetNillableLogoURL(v *string) *GroupUpdate {
 	return _u
 }
 
+// SetI18n sets the "i18n" field.
+func (_u *GroupUpdate) SetI18n(v domain.GroupI18n) *GroupUpdate {
+	_u.mutation.SetI18n(v)
+	return _u
+}
+
 // SetRateMultiplier sets the "rate_multiplier" field.
 func (_u *GroupUpdate) SetRateMultiplier(v float64) *GroupUpdate {
 	_u.mutation.ResetRateMultiplier()
@@ -1598,6 +1604,9 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.LogoURL(); ok {
 		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.I18n(); ok {
+		_spec.SetField(group.FieldI18n, field.TypeJSON, value)
+	}
 	if value, ok := _u.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)
 	}
@@ -2319,6 +2328,12 @@ func (_u *GroupUpdateOne) SetNillableLogoURL(v *string) *GroupUpdateOne {
 	if v != nil {
 		_u.SetLogoURL(*v)
 	}
+	return _u
+}
+
+// SetI18n sets the "i18n" field.
+func (_u *GroupUpdateOne) SetI18n(v domain.GroupI18n) *GroupUpdateOne {
+	_u.mutation.SetI18n(v)
 	return _u
 }
 
@@ -3838,6 +3853,9 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if value, ok := _u.mutation.LogoURL(); ok {
 		_spec.SetField(group.FieldLogoURL, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.I18n(); ok {
+		_spec.SetField(group.FieldI18n, field.TypeJSON, value)
 	}
 	if value, ok := _u.mutation.RateMultiplier(); ok {
 		_spec.SetField(group.FieldRateMultiplier, field.TypeFloat64, value)

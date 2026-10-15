@@ -28,6 +28,8 @@ const (
 	FieldDescription = "description"
 	// FieldLogoURL holds the string denoting the logo_url field in the database.
 	FieldLogoURL = "logo_url"
+	// FieldI18n holds the string denoting the i18n field in the database.
+	FieldI18n = "i18n"
 	// FieldRateMultiplier holds the string denoting the rate_multiplier field in the database.
 	FieldRateMultiplier = "rate_multiplier"
 	// FieldPeakRateEnabled holds the string denoting the peak_rate_enabled field in the database.
@@ -231,6 +233,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldLogoURL,
+	FieldI18n,
 	FieldRateMultiplier,
 	FieldPeakRateEnabled,
 	FieldPeakStart,
@@ -331,6 +334,8 @@ var (
 	NameValidator func(string) error
 	// DefaultLogoURL holds the default value on creation for the "logo_url" field.
 	DefaultLogoURL string
+	// DefaultI18n holds the default value on creation for the "i18n" field.
+	DefaultI18n domain.GroupI18n
 	// DefaultRateMultiplier holds the default value on creation for the "rate_multiplier" field.
 	DefaultRateMultiplier float64
 	// DefaultPeakRateEnabled holds the default value on creation for the "peak_rate_enabled" field.
