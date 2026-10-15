@@ -13,6 +13,12 @@ sources:
 
 # Backend Module
 
+## Upstream v0.2.16 integration
+
+The development branch now includes upstream `dcde68aa5881ba7eea569ff1d98a860fba1d8b8c` through merge commit `4a399b4f91e2b5eedf0be7db55ac955aa00b79b8`. Ent/Wire artifacts were regenerated. The merge adds group `i18n` persistence and migrations `242_group_i18n.sql` through `245_gemini_cached_contents_mutation_lease.sql`, plus the upstream Gemini cache, billing and frontend capabilities. The external-subscription scheme boundary remains local and is preserved across the merge.
+
+The production release replaced only the `sub2api` application container. Runtime release identifiers, backups and health evidence are owned by the [Project Authority](../../agent.md).
+
 ## Upstream v0.2.12–v0.2.15 integration
 
 The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. The official update adds the current typed platform/provider catalog paths, new provider protocol services and routing coverage, recharge-bonus/payment changes, long-context and web-search handling, operations/account-monitor fixes, security hardening and regenerated Ent/Wire artifacts. Local external-subscription and branding services remain separate extensions; deployment facts belong to the Project Authority.
