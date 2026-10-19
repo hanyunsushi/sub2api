@@ -1160,6 +1160,7 @@ type oidcProviderFixture struct {
 	AvatarURL         string
 	Email             string
 	EmailVerified     bool
+	RedirectURI       string
 }
 
 func newOIDCOAuthTestHandler(t *testing.T, invitationEnabled bool, oauthCfg config.OIDCConnectConfig) *AuthHandler {
@@ -1254,6 +1255,10 @@ func newOIDCTestProvider(t *testing.T, fixture oidcProviderFixture) (config.OIDC
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/token":
+			if fixture.RedirectURI != "" {
+				require.NoError(t, r.ParseForm())
+				require.Equal(t, fixture.RedirectURI, r.PostForm.Get("redirect_uri"))
+			}
 			require.NoError(t, json.NewEncoder(w).Encode(tokenResponse))
 		case "/userinfo":
 			require.NoError(t, json.NewEncoder(w).Encode(userInfoPayload))

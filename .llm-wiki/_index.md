@@ -12,6 +12,7 @@ updated: 2026-10-12
 - [Directory Structure](architecture/directory-structure.md) - Source layout
 
 # Modules
+- [Console OIDC Backend](modules/console-oidc-backend.md) - Original-site and Console callback compatibility.
 
 - [Frontend](modules/frontend.md) - Vue application boundaries
 - [Backend](modules/backend.md) - Go service boundaries

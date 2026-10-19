@@ -123,6 +123,7 @@ func (h *AuthHandler) OIDCOAuthStart(c *gin.Context) {
 		response.ErrorFrom(c, err)
 		return
 	}
+	cfg = oidcConfigForRequest(cfg, c.Request)
 
 	state, err := oauth.GenerateState()
 	if err != nil {
@@ -204,6 +205,7 @@ func (h *AuthHandler) OIDCOAuthCallback(c *gin.Context) {
 		response.ErrorFrom(c, cfgErr)
 		return
 	}
+	cfg = oidcConfigForRequest(cfg, c.Request)
 
 	frontendCallback := strings.TrimSpace(cfg.FrontendRedirectURL)
 	if frontendCallback == "" {
